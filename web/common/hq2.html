@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>个股行情</title>
+<!-- canvas resources http://stockpage.10jqka.com.cn/ -->
+<link href="http://s.thsi.cn/js/webHQ/1.1.4/main.min.css" rel="stylesheet">
+<link rel="stylesheet" href="http://s.thsi.cn/combo?css/stockpage/&new/common.20130220.css" type="text/css">
+<link rel="stylesheet" href="http://s.thsi.cn/combo?css/stockpage/&new/flot_home.20130204.min.css&home.min.css" type="text/css">
+<script src="http://s.thsi.cn/js/webHQ/resources/excanvas.min.js"></script>
+</head>
+
+<body style="line-height: 1.5; font-family: Tahoma;" class="stockpick_mainbody all_height">
+
+    <div class="m_title m_title_3">
+        <ul class="canvas_tab m_title_0 m_title_10" id="geguQuote" style="line-height: 2">
+            <li class="tab_first button stat" stat="hqt_fst" chartType="stockminute"><a id="changefsView" href="javascript:void(0);">分时图</a></li>
+            <li class="button stat tab_current active" stat="hqt_rkx" chartType="stockkline" period="daily"><a class="draw-type klView" data-type="0" href="javascript:void(0);">日K线</a></li>
+            <li class="button stat" stat="hqt_zkx" chartType="stockkline" period="week"><a class="draw-type klView" data-type="1" href="javascript:void(0);">周K线</a></li>
+            <li class="button stat" stat="hqt_ykx" chartType="stockkline" period="month"><a class="draw-type klView" data-type="2" href="javascript:void(0);">月K线</a></li>
+            <li data-role="fuquan-status" class='fuquan-status' style="display:none;">
+
+                <a href="javascript:;" data-fuquan="1" style="_width:30px;">前复权<span class="canvas-list-arrow">arrow</span></a>
+                <div class='khover' style='display:none;' >
+                    <a data-type="1" href="javascript:;">前复权</a>
+                    <a data-type="2" href="javascript:;">后复权</a>
+                    <a data-type="0" href="javascript:;">不复权</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="flash_cont" style="margin-top: 0px;">
+        <div style="width: 620px; padding: 0; position: relative; display:none; border: none; background: none;" code="sz_000151" id="new_stockInfo_con" class="new_stockInfo_con stockInfo_con stockCanvas_con">
+
+            <div class="canvas-btn-box" style="display:none; top: 257px;">
+                <ul>
+                    <li><a href="javascript:;" id="preEvent" class="canvas-get-pre"></a></li>
+                    <li><a href="javascript:;" id="nextEvent" class="canvas-get-next" ></a></li>
+                    <li><a href="javascript:;" id="zoomInEvent" class="canvas-zoom-in"></a></li>
+                    <li><a href="javascript:;" id="zoomOutEvent" class="canvas-zoom-out"></a></li>
+                </ul>
+            </div>
+            <div class="canvas_target_fun" style="top: 455px;">
+                <ul>
+                    <li class="active"><a href="javascript:;" >MACD</a></li>
+                    <li><a href="javascript:;" >KDJ</a></li>
+                    <li><a href="javascript:;" >RSI</a></li>
+                    <li><a href="javascript:;" >BOLL</a></li>
+                    <li><a href="javascript:;" >W&R</a></li>
+                    <li><a href="javascript:;" >ASI</a></li>
+                    <li><a href="javascript:;" >BIAS</a></li>
+                    <li><a href="javascript:;" >VR</a></li>
+                </ul>
+
+            </div>
+            <div id="canvasPanel" class="canvas-panel" style="width: 620; height: 479px; position: relative; display:none;">
+                <canvas id='tcanvas' width="620" height="479"></canvas>
+            </div>
+            <div class="canvas-panel-mask"></div>
+        </div>
+    </div>
+
+    <!-- canvas resources -->
+    <!--<script data-main="resources/js/dataProvider" src="http://s.thsi.cn/js/webHQ/resources/require.min.js"></script>-->
+    <!-- <script src="http://s.thsi.cn/js/webHQ/stock/2.0.0/combo.min.js"></script> -->
+	<script src="http://s.thsi.cn/js/jquery-1.9.1.min.js"></script>
+    <script src="/js/hq/combo.20160506.js"></script>
+
+    <script type="text/javascript">
+        $(function() {
+            var timer = setInterval(function() {
+                if (window.hx_stockc) {
+                    clearInterval(timer);
+                    var code = window.location.href.split('#')[1] || '33_300033';
+                    var showzjlx = true;
+		    if(code.split('_')[0] === 'sb') showzjlx = false;
+                    var options = {
+                        'element': $('#tcanvas').data({'fsconfig': {
+                            showzjlx: showzjlx,
+                            showGrid: false
+                        }, 'klconfig' : {
+                            showAve: true,
+                            showIndex: true,
+                            startData: '',
+                            endData: '',
+                            //开始绘制K线回调
+                            drawStartFn: function() {
+                                //console.log('start');
+                            },
+                            //结束绘制K线回调
+                            drawEndFn: function() {
+                                console.log('end');
+                                $('.canvas_tab .tab_current').click();
+                            }
+                        }}),
+                        'callFun':'showKl',
+                        'klConfigs':{
+                            //表示股票类型: 0 日k ，1 周k，2 月k；
+                            'stockType':'0',
+                            //表示复权: 0 不复权，1前复权，2后复权
+                            'rehabilitationType':'1',
+                            //'betweenTwoDays':['20151225','20170707'],
+                            // 不需要指标就设置为空
+                            'indicator':'MACD'
+                        }
+                       
+                    }
+                    window.hx_stockc.showCanvasStock(options, code);
+                    $('#new_stockInfo_con').show();
+                }
+            }, 0)
+
+            $('.canvas_tab .button').click(function() {
+                $(this).addClass('tab_current').siblings('li').removeClass('tab_current');
+            })
+        })
+    </script>
+</body></html>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+  <forwards>
+    <forward name="404" path="/404.jsp" />
+    <forward name="index" path="/" />
+  </forwards>
+  
+  <actions>
+    <action path="search" form="" type="com.stk123.web.action.SearchAction" method="" >
+      <forward name="fail" path="/error.jsp" /> 
+	  <forward name="succ" path="/welcome.do" /> 
+    </action>
+    <action path="test" forward="test.html"/>
+    
+    <action path="main" type="com.stk123.web.action.MainAction">
+      <forward name="succ" path="/main.jsp" />
+    </action>
+    
+    <action path="carestk" type="com.stk123.web.action.StkAction" method="care"/>
+    <action path="uncarestk" type="com.stk123.web.action.StkAction" method="uncare"/>
+    
+    <action path="chartstk" type="com.stk123.web.action.StkAction" method="chartstk"/>
+    <action path="chartgrowthpe" type="com.stk123.web.action.MainAction" method="growthPE"/>
+    <action path="chartdailyreportus" type="com.stk123.web.action.MainAction" method="getDailyReportForUS"/>
+    <action path="chartmainstk" type="com.stk123.web.action.MainAction" method="getStkKline"/>
+    
+    <action path="stk" type="com.stk123.web.action.StkAction" >
+      <forward name="fail" path="/error.jsp" /> 
+	  <forward name="succ" path="/stk.jsp" />
+    </action>
+    
+    <action path="stkValueHistory" type="com.stk123.web.action.StkAction" method="stkValueHistory"/>
+    
+    <action path="text" type="com.stk123.web.action.TextAction" />
+    <action path="textdel" type="com.stk123.web.action.TextAction" method="deleteAndList"/>
+    
+    <action path="industry" type="com.stk123.web.action.IndustryAction" >
+      <forward name="succ" path="/industry.jsp" />
+    </action>
+    
+    <action path="industrylist" type="com.stk123.web.action.IndustryAction"  method="list"/>
+    <action path="industryselect" type="com.stk123.web.action.IndustryAction"  method="select"/>
+    
+    <action path="dailyindustryrank" type="com.stk123.web.action.IndustryAction"  method="dailyRank">
+       <forward name="succ" path="/daily/industry_rank.jsp" />
+    </action>
+    
+    <action path="monitorcreate" type="com.stk123.web.action.MonitorAction"  method="create"/>
+    <action path="monitorlist" type="com.stk123.web.action.MonitorAction"  method="list"/>
+    <action path="monitordelete" type="com.stk123.web.action.MonitorAction"  method="delete"/>
+    
+    <action path="article" type="com.stk123.web.action.ArticleAction" >
+       <forward name="succ" path="/article.jsp" />
+    </action>
+
+    <action path="selectarticle" type="com.stk123.web.action.ArticleAction"  method="select"/>
+    
+    <action path="dailyreportnewhigh" type="com.stk123.web.action.DailyReportAction" method="newHigh">
+       <forward name="succ" path="/daily/report.jsp" />
+    </action>
+    
+    <action path="ajax" type="com.stk123.web.action.AjaxAction"/>
+    
+    <action path="keyword" type="com.stk123.web.action.KeywordAction" />
+    <action path="search" type="com.stk123.web.action.SearchAction" >
+    	<forward name="succ" path="/search.jsp" />
+    </action>
+    
+    <action path="index" type="com.stk123.web.action.IndexAction">
+    	<forward name="succ" path="/index.jsp" />
+    </action>
+    
+    <action path="data" type="com.stk123.web.action.IndexAction">
+    	<forward name="succ" path="/data.jsp" />
+    </action>
+    
+    <action path="earning" type="com.stk123.web.action.EarningAction">
+    	<forward name="succ" path="/earning.jsp" />
+    </action>
+    
+    <action path="login" type="com.stk123.web.action.LoginAction">
+    	<forward name="succ" redirect="true" path="/" />
+    	<forward name="fail" redirect="true" path="index" />
+    </action>
+    
+    <action path="reg" type="com.stk123.web.action.LoginAction">
+    	<forward name="succ" redirect="true" path="/" />
+    </action>
+    
+    <action path="sync" type="com.stk123.web.action.SyncAction"/>
+        
+    <action path="upload" type="com.stk123.web.action.UploadAction"/>
+    
+    <action path="news" type="com.stk123.web.action.NewsAction" />
+    
+    <action path="invest" type="com.stk123.web.action.InvestAction" />
+    
+    <action path="screener" type="com.stk123.web.action.ScreenerAction" form="com.stk123.web.form.ScreenerForm">
+    	<forward name="us" path="/screener/us.jsp" />
+    	<forward name="cn" path="/screener/cn.jsp" />
+    </action>
+    
+    <action path="wx" type="com.stk123.web.action.WeixinAction"/>
+  </actions>
+</config>

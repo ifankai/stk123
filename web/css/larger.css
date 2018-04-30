@@ -1,0 +1,136 @@
+@CHARSET "UTF-8";
+/* Large desktop */
+.container {
+  width: 1260px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.content .page-container .row .row,
+.content .page-container .thumbnails .row {
+  margin-left: -20px;
+  *zoom: 1;
+}
+.content .page-container .row .row:before,
+.content .page-container .thumbnails .row:before,
+.content .page-container .row .row:after,
+.content .page-container .thumbnails .row:after {
+  display: table;
+  content: "";
+}
+.content .page-container .row .row:after,
+.content .page-container .thumbnails .row:after {
+  clear: both;
+}
+.content .page-container .row [class*="span"],
+.content .page-container .thumbnails [class*="span"] {
+  float: left;
+  margin-left: 20px;
+}
+.content .page-container .row .container,
+.content .page-container .thumbnails .container,
+.content .page-container .row .navbar-fixed-top .container,
+.content .page-container .thumbnails .navbar-fixed-top .container,
+.content .page-container .row .navbar-fixed-bottom .container,
+.content .page-container .thumbnails .navbar-fixed-bottom .container {
+  width: 1108px;
+}
+.content .page-container .row .span12,
+.content .page-container .thumbnails .span12 {
+  width: 1108px;
+}
+.content .page-container .row .span11,
+.content .page-container .thumbnails .span11 {
+  width: 1014px;
+}
+.content .page-container .row .span10,
+.content .page-container .thumbnails .span10 {
+  width: 920px;
+}
+.content .page-container .row .span9,
+.content .page-container .thumbnails .span9 {
+  width: 826px;
+}
+.content .page-container .row .span8,
+.content .page-container .thumbnails .span8 {
+  width: 732px;
+}
+.content .page-container .row .span7,
+.content .page-container .thumbnails .span7 {
+  width: 638px;
+}
+.content .page-container .row .span6,
+.content .page-container .thumbnails .span6 {
+  width: 440px;
+}
+.content .page-container .row .span5,
+.content .page-container .thumbnails .span5 {
+  width: 450px;
+}
+.content .page-container .row .span4,
+.content .page-container .thumbnails .span4 {
+  width: 356px;
+}
+.content .page-container .row .span3,
+.content .page-container .thumbnails .span3 {
+  width: 262px;
+}
+.content .page-container .row .span2,
+.content .page-container .thumbnails .span2 {
+  width: 162px;
+}
+.content .page-container .row .span1,
+.content .page-container .thumbnails .span1 {
+  width: 74px;
+}
+.content .page-container .row .offset12,
+.content .page-container .thumbnails .offset12 {
+  margin-left: 1148px;
+}
+.content .page-container .row .offset11,
+.content .page-container .thumbnails .offset11 {
+  margin-left: 1054px;
+}
+.content .page-container .row .offset10,
+.content .page-container .thumbnails .offset10 {
+  margin-left: 960px;
+}
+.content .page-container .row .offset9,
+.content .page-container .thumbnails .offset9 {
+  margin-left: 866px;
+}
+.content .page-container .row .offset8,
+.content .page-container .thumbnails .offset8 {
+  margin-left: 772px;
+}
+.content .page-container .row .offset7,
+.content .page-container .thumbnails .offset7 {
+  margin-left: 678px;
+}
+.content .page-container .row .offset6,
+.content .page-container .thumbnails .offset6 {
+  margin-left: 584px;
+}
+.content .page-container .row .offset5,
+.content .page-container .thumbnails .offset5 {
+  margin-left: 490px;
+}
+.content .page-container .row .offset4,
+.content .page-container .thumbnails .offset4 {
+  margin-left: 396px;
+}
+.content .page-container .row .offset3,
+.content .page-container .thumbnails .offset3 {
+  margin-left: 302px;
+}
+.content .page-container .row .offset2,
+.content .page-container .thumbnails .offset2 {
+  margin-left: 208px;
+}
+.content .page-container .row .offset1,
+.content .page-container .thumbnails .offset1 {
+  margin-left: 114px;
+}
+.content{
+margin-top:8px;
+}
