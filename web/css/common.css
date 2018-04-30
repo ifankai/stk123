@@ -1,0 +1,179 @@
+.nodisplay {  
+  display: none;  
+}  
+   
+#results {  
+  position: absolute;  
+  background-color: #fff; 
+}  
+  
+#results ul {  
+border: 1px solid #e0e0e0;
+-webkit-border-radius: 5px;
+-moz-border-radius: 5px;
+border-radius: 5px;
+-moz-box-sizing: border-box;
+-ms-box-sizing: border-box;
+box-sizing: border-box;
+-webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+-moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+margin: 0;  
+padding: 0;  
+list-style: none;  
+width: 100%;  
+}  
+  
+#results ul li {  
+  text-align:left; 
+  margin-bottom: 5px;
+  margin-top: 5px; 
+}  
+  
+#results ul li a {  
+    display: block;  
+    color: #444;  
+    background: #fff;  
+    font: normal 13px arial;  
+    text-decoration: none;  
+    padding: 1px 4px 2px 6px;  
+}  
+  
+* html #results ul li a {  
+    width: 100%;  
+}  
+  
+#results ul li a strong {  
+    color: red;  
+}  
+  
+#results ul li a:hover, #results ul li a.hover {  
+    background: #389abe;  
+    color: #fff;  
+}  
+  
+#results ul li a:hover strong, #results ul li a.hover strong {  
+    color: #fff;  
+}
+.navbar .search {
+float: left;
+width:260px;
+text-align: left;
+margin-left: 20px;
+display: inline-block;
+}
+.search .btn{
+margin-bottom: 0px;
+margin-left: -5px;
+margin-right: 0px;
+margin-top: 6px;
+border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+}
+.search .icon-search{
+height:25px;
+width:25px;
+font-size:21px;
+position: absolute;
+margin-top:12px;
+margin-left:-22px;
+z-index:99;
+cursor: pointer;
+}
+#stkcode {
+border: none;
+border-radius: 0;
+-webkit-border-radius: 0;
+-moz-border-radius: 0;
+-o-border-radius: 0;
+width: 200px;
+margin-top: 6px;
+padding: 3px 0 3px 10px;
+font-size: 12px;
+line-height: 20px;
+height: 20px;
+border: 1px solid #cccccc;
+}
+#username, #password {
+width: 100px;
+border: 1px solid #ddd;
+margin-right: 10px;
+padding: 8px 10px;
+font-size: 14px;
+height: 16px;
+float: left;
+vertical-align: middle;
+}
+#username{
+width: 150px;
+}
+.login-error{
+margin: 0;
+position: absolute;
+left: 623px;
+top: 100px;
+}
+.login-container{
+margin:20px 0px;
+}
+.btn-register, .btn-login{
+background-color: #3385ff;
+margin: 0;
+cursor: pointer;
+color: #fff;
+padding: 0 30px;
+height: 34px;
+font-size: 14px;
+border: none;
+align-items: flex-start;
+text-align: center;
+display: inline-block;
+font-weight: bold;
+margin-left: 5px;
+}
+.btn-register:hover, .btn-login:hover {
+background-color: #0077ee;
+}
+.logo-stk {
+color: #d43f3f;
+font-size:24px;
+font-weight: bold;
+}
+#footer {
+height:50px;
+text-align:center;
+margin-top: 30px;
+margin-bottom: 20px;
+margin-left: auto;
+margin-right: auto;
+vertical-align: bottom;
+position: relative;
+}
+#footer div{
+ padding:5px;
+ font-size:13px;
+}
+
+.show-all img{
+cursor: url(/images/big.cur),auto;
+max-height: 100px;
+}
+.content-detail img{
+cursor: url(/images/small.cur),auto;
+}
+.content-summary .show-text,
+.content-detail .show-text{
+cursor:pointer; 
+color:#0055a2;
+}
+.keyword{
+margin-right:5px; 
+}
+
+div[id^="news-list-"] a,
+a[class="invest-list"] {
+color: #05a;
+}
+div a[class="stk-code"]{
+color: #d43f3f;;
+}
+.div_kline{width:620px;height:480px;border:1px solid #e0e0e0;position:absolute;background:#FFFFFF;left:0px;top:0px;display:none;}

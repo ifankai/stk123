@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<!--[if IE 7]>    <html class="no-js ie7 ie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8 ie" lang="en"> <![endif]-->
+<!--[if IE 9]>    <html class="no-js ie9 ie" lang="en"> <![endif]-->
+<!--[if gt IE 9]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+	<head>
+		<meta charset="utf-8" />
+		<title>Calendar | Wuxia Bootstrap Admin Template</title>
+		<meta name="description" content="" />
+		<meta name="author" content="Walking Pixels | www.walkingpixels.com" />
+		<meta name="robots" content="index, follow" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		
+		<!-- jQuery FullCalendar Styles -->
+		<link rel='stylesheet' type='text/css' href='css/plugins/jquery.fullcalendar.css' />
+		
+		<!-- CSS styles -->
+		<link rel='stylesheet' type='text/css' href='css/wuxia-green.css' />
+		
+		<!-- Fav and touch icons -->
+		<link rel="shortcut icon" href="img/icons/favicon.ico" />
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="img/icons/apple-touch-icon-114-precomposed.png" />
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="img/icons/apple-touch-icon-72-precomposed.png" />
+		<link rel="apple-touch-icon-precomposed" href="img/icons/apple-touch-icon-57-precomposed.png" />
+		
+		<!-- JS Libs -->
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+		<script>window.jQuery || document.write('<script src="js/libs/jquery.js"><\/script>')</script>
+		<script src="js/libs/modernizr.js"></script>
+		<script src="js/libs/selectivizr.js"></script>
+		
+		<script>
+			$(document).ready(function(){
+				
+				// Navbar tooltips
+				$('.navbar [title]').tooltip({
+					placement: 'bottom'
+				});
+				
+				// Content tooltips
+				$('[role=main] [title]').tooltip({
+					placement: 'top'
+				});
+				
+				// Dropdowns
+				$('.dropdown-toggle').dropdown();
+				
+				// Tabs
+				$('.demoTabs a').click(function (e) {
+					e.preventDefault();
+					$(this).tab('show');
+					$('.fullcalendar, .full-calendar-gcal').fullCalendar('render'); // Refresh jQuery FullCalendar for hidden tabs
+				})
+				
+			});
+		</script>
+		<script type="text/javascript">
+			var _gaq=_gaq||[];_gaq.push(["_setAccount","UA-22557155-5"]);_gaq.push(["_trackPageview"]);(function(){var b=document.createElement("script");b.type="text/javascript";b.async=true;b.src=("https:"==document.location.protocol?"https://ssl":"http://www")+".google-analytics.com/ga.js";var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(b,a)})();
+		</script>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
+	<body>
+	
+		<!-- Main navigation bar -->
+		<header class="navbar navbar-fixed-top">
+			<div class="navbar-inner">
+				<div class="container">
+					<button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".user">
+						<span class="icon-user"></span>
+					</button>
+					<button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".navigation">
+						<span class="icon-chevron-down"></span>
+					</button>
+					<a class="brand" href="http://envato.walkingpixels.com/themes/wuxia/">Walking Pixels Wuxia Bootstrap admin template</a>
+					<nav class="nav-collapse navigation">
+						<ul class="nav" role="navigation">
+							<li><a href="index.html" title="Homepage dashboard"><span class="icon-home"></span> Dashboard</a></li>
+							<li><a href="forms.html" title="Form elements"><span class="icon-tasks"></span> Forms</a></li>
+							<li><a href="tables.html" title="Static and dynamic tables"><span class="icon-table"></span> Tables</a></li>
+							<li><a href="typography.html" title="Typography showcase"><span class="icon-font"></span> Typography</a></li>
+							<li><a href="ui-buttons.html" title="Buttons in navbar!"><span class="icon-magic"></span> UI &amp; Buttons</a></li>
+							<li class="divider-vertical"></li>
+							<li><a href="#" title="Buttons in navbar!" class="btn-wuxia-navbar"><div class="btn btn-wuxia"><span class="icon-key"></span> Widgets</div></a></li>
+						</ul>
+					</nav>
+					<nav class="nav-collapse user">
+						<div class="user-info pull-right">
+							<img src="http://placekitten.com/35/35" alt="User avatar" />
+							<div class="btn-group">
+								<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+									<div><strong>John Pixel</strong>Administrator</div>
+									<span class="caret"></span>
+								</a>
+								<ul class="dropdown-menu">
+									<li><a href=""><span class="icon-cogs"></span> Account settings</a></li>
+									<li><a href=""><span class="icon-bell"></span> Preferences</a></li>
+									<li><a href=""><span class="icon-envelope"></span> Email notifications</a></li>
+									<li class="divider"></li>
+									<li><a href=""><span class="icon-signout"></span> Logout</a></li>
+								</ul>
+							</div>
+						</div>
+					</nav>
+				</div>
+			</div>
+		</header>
+		<!-- /Main navigation bar -->
+		
+		<!-- Main content -->
+		<div class="container" role="main">
+		
+			<!-- Breadcrumbs -->
+			<ul class="breadcrumb">
+				<li><a href="#"><span class="icon-home"></span> Home</a></li>
+				<li><a href="#">Wuxia template</a></li>
+				<li class="active">Calendar</li>
+			</ul>
+			<!-- Breadcrumbs -->
+		
+			<!-- Secondary navigation -->
+			<div class="nav-secondary">
+				<nav>
+					<ul>
+						<li><a class="wuxify-me" href="charts.html"><span class="icon-signal"></span>Charts</a></li>
+						<li><a class="wuxify-me" href="gallery.html"><span class="icon-picture"></span>Gallery</a></li>
+						<li><a class="wuxify-me" href="file-explorer.html"><span class="icon-file"></span>File explorer</a></li>
+						<li class="active"><a class="wuxify-me" href="calendar.html"><span class="icon-calendar"></span>Calendar</a></li>
+						<li><a class="wuxify-me" href="grid.html"><span class="icon-th"></span>Grid</a></li>
+						<li><a class="wuxify-me" href="goodies.html"><span class="icon-heart"></span>Goodies</a><span class="badge badge-inverse">6</span></li>
+					</ul>
+				</nav>
+			</div>
+			<!-- /Secondary navigation -->
+			
+			<!-- Main data container -->
+			<div class="content">
+			
+				<!-- Page header -->
+				<div class="page-header">
+					<h1><span class="icon-calendar"></span> Calendar <small>Flexible full-sized drag &amp; drop calendar</small></h1>
+					<ul class="page-header-actions">
+						<li class="active demoTabs"><a href="#basic" class="btn btn-wuxia">Basic</a></li>
+						<li class="demoTabs"><a href="#google" class="btn btn-wuxia">Google</a></li>
+						<li><a href="http://arshaw.com/fullcalendar/" class="btn btn-wuxia btn-inverse pull-right" title="Official FullCalendar documentation" target="_blank"><span class="icon-question-sign"></span> FullCalendar Docs</a></li>
+					</ul>
+				</div>
+				<!-- /Page header -->
+				
+				<!-- Tab content -->
+				<div class="page-container tab-content">
+				
+					<!-- Tab #basic -->
+					<div class="tab-pane active" id="basic">
+						
+						<!-- Grid row -->
+						<div class="row">
+					
+							<!-- Example jQuery FullCalendar -->
+							<!-- Page grid cell (12 blocks - full) -->
+							<article class="span12">
+								<h2>Basic calendar setup</h2>
+								<p>FullCalendar is a jQuery plugin that provides a full-sized, drag & drop calendar like the one below. It uses AJAX to fetch events on-the-fly for each month and is easily configured to use your own feed format (an extension is provided for Google Calendar). It is visually customizable and exposes hooks for user-triggered events (like clicking or dragging an event). It is open source and dual licensed under the MIT or GPL Version 2 licenses.</p>
+								<div class='full-calendar'></div>
+							</article>
+							<!-- /Page grid cell (12 blocks - full) -->
+						
+						</div>
+						<!-- /Grid row -->
+						
+					</div>
+					<!-- Tab #basic -->
+					
+					<!-- Tab #google -->
+					<div class="tab-pane" id="google">
+						
+						<!-- Grid row -->
+						<div class="row">
+					
+							<!-- Example jQuery FullCalendar with Google Calendar -->
+							<!-- Page grid cell (12 blocks - full) -->
+							<article class="span12">
+								<h2>Calendar with Google Calendar feed</h2>
+								<p>FullCalendar is very flexible with tons of options. Except of your own events feed you can use Google or iCal calendars as your feed. This demo demonstrate Google US Holidays calendar as data feed.</p>
+								<div class='full-calendar full-calendar-gcal'></div>
+							</article>
+							<!-- /Page grid cell (12 blocks - full) -->
+						
+						</div>
+						<!-- /Grid row -->
+						
+					</div>
+					<!-- /Tab #google -->
+					
+				</div>
+				<!-- /Tab content -->
+				
+			</div>
+			<!-- /Main data container -->
+			
+		</div>
+		<!-- /Main content -->
+		
+		<!-- Main footer -->
+		<footer class="container">
+			<nav>
+				<ul>
+					<li>&copy; Copyright 2012. All rights reserved.</li>
+					<li><a href="">Documentation</a></li>
+					<li><a href="">Support</a></li>
+					<li><a href="">API</a></li>
+					<li><a href="">Blog</a></li>
+				</ul>
+			</nav>
+			<p>&copy; Copyright &copy; 2013.Company name All rights reserved.<a target="_blank" href="http://sc.chinaz.com/moban/">&#x7F51;&#x9875;&#x6A21;&#x677F;</a></p>
+		</footer>
+		<!-- /Main footer -->
+		
+		<!-- Scripts -->
+		<script src="js/navbar.js"></script>
+		<script src="js/plugins/waypoints.min.js"></script>
+		<script src="js/bootstrap/bootstrap-tooltip.js"></script>
+		<script src="js/bootstrap/bootstrap-dropdown.js"></script>
+		<script src="js/bootstrap/bootstrap-tab.js"></script>
+		<script src="js/bootstrap/bootstrap-collapse.js"></script>
+		
+		<!-- jQuery FullCalendar -->
+		<script src="js/plugins/fullCalendar/jquery.fullcalendar.min.js"></script>
+		
+		<!-- Google Calendar plugin for jQuery FullCalendar -->
+		<script src="js/plugins/fullCalendar/gcal.js"></script>
+		
+		<script>
+			$(document).ready(function() {
+			
+				var date = new Date();
+				var d = date.getDate();
+				var m = date.getMonth();
+				var y = date.getFullYear();
+				
+				$('.full-calendar').fullCalendar({
+					header: {
+						left: 'prev,next today',
+						center: 'title',
+						right: 'month,basicWeek,basicDay'
+					},
+					buttonText: {
+						prev: '<span class="icon-circle-arrow-left"></span>',
+						next: '<span class="icon-circle-arrow-right"></span>'
+					},
+					editable: true,
+					events: [
+						{
+							title: 'All Day Event',
+							start: new Date(y, m, 1)
+						},
+						{
+							title: 'Long Event',
+							start: new Date(y, m, d-5),
+							end: new Date(y, m, d-2)
+						},
+						{
+							id: 999,
+							title: 'Repeating Event',
+							start: new Date(y, m, d-3, 16, 0),
+							allDay: false
+						},
+						{
+							id: 999,
+							title: 'Repeating Event',
+							start: new Date(y, m, d+4, 16, 0),
+							allDay: false
+						},
+						{
+							title: 'Meeting',
+							start: new Date(y, m, d, 10, 30),
+							allDay: false
+						},
+						{
+							title: 'Lunch',
+							start: new Date(y, m, d, 12, 0),
+							end: new Date(y, m, d, 14, 0),
+							allDay: false
+						},
+						{
+							title: 'Birthday Party',
+							start: new Date(y, m, d+1, 19, 0),
+							end: new Date(y, m, d+1, 22, 30),
+							allDay: false
+						},
+						{
+							title: 'Walking Pixels website',
+							start: new Date(y, m, 28),
+							end: new Date(y, m, 29),
+							url: 'http://www.walkingpixels.com/'
+						}
+					]
+				});
+				
+				$('.full-calendar-gcal').fullCalendar({
+					header: {
+						left: 'prev,next today',
+						center: 'title',
+						right: 'month,basicWeek,basicDay'
+					},
+					buttonText: {
+						prev: '<span class="icon-arrow-left"></span>',
+						next: '<span class="icon-arrow-right"></span>'
+					},
+					events: {
+						url: 'http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/basic',
+						className: 'gcal-event', // an option!
+						currentTimezone: 'America/Chicago' // an option!
+					}
+				});
+				
+			});
+		</script>
+		
+	<div style="display:none"><script src='http://v7.cnzz.com/stat.php?id=155540&web_id=155540' language='JavaScript' charset='gb2312'></script></div>
+</body>
+</html>

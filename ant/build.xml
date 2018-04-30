@@ -1,0 +1,51 @@
+<project name="Stk123" default="deploy" basedir="../">
+	
+	<property name="dist_name" value="./stk.zip" />
+	<property name="tomcat_home" value="E:/apache-tomcat/webapps/ROOT" />
+
+	<target name="jar">
+		<jar destfile="./stk.jar" basedir="./bin" includes="**" />
+	</target>
+	
+	<target name="deploy" depends="jar">
+		<copy todir="${tomcat_home}/WEB-INF/lib" failonerror="true">
+			<fileset dir=".">
+				<include name="stk.jar"/>
+			</fileset>
+			<fileset dir="lib">
+				<exclude name="j2ee.jar" />
+				<exclude name="servlet.jar" />
+				<include name="**/*.jar" />
+			</fileset>
+		</copy>
+		<copy todir="${tomcat_home}" failonerror="true">
+			<fileset dir="./web">
+				<include name="**/*.*"/>
+			</fileset>
+		</copy>
+		<copy todir="${tomcat_home}/WEB-INF/classes" failonerror="true">
+			<fileset dir="./bin">
+				<include name="**/*.*"/>
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="clean">
+		<delete includeEmptyDirs="true">
+			<fileset dir="${tomcat_home}/WEB-INF" includes="**/*" />
+		</delete>
+	</target>
+
+	<!--target name="zip" depends="jar">
+		<zip destfile="${dist_name}">
+			<fileset dir="." includes="lib/**/*, ant/**/*" />
+			<fileset dir=".">
+				<include name="config.properties" />
+				<include name="cpappend.bat" />
+				<include name="DailyReport.bat" />
+				<include name="stk.jar" />
+				<include name="a.jsp" />
+			</fileset>
+		</zip>
+	</target-->
+</project>

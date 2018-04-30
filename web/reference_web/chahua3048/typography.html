@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<!--[if IE 7]>    <html class="no-js ie7 ie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8 ie" lang="en"> <![endif]-->
+<!--[if IE 9]>    <html class="no-js ie9 ie" lang="en"> <![endif]-->
+<!--[if gt IE 9]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+	<head>
+		<meta charset="utf-8" />
+		<title>Typography | Wuxia Bootstrap Admin Template</title>
+		<meta name="description" content="" />
+		<meta name="author" content="Walking Pixels | www.walkingpixels.com" />
+		<meta name="robots" content="index, follow" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		
+		<!-- CSS styles -->
+		<link rel='stylesheet' type='text/css' href='css/wuxia-purple.css' />
+		
+		<!-- Fav and touch icons -->
+		<link rel="shortcut icon" href="img/icons/favicon.ico" />
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="img/icons/apple-touch-icon-114-precomposed.png" />
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="img/icons/apple-touch-icon-72-precomposed.png" />
+		<link rel="apple-touch-icon-precomposed" href="img/icons/apple-touch-icon-57-precomposed.png" />
+		
+		<!-- JS Libs -->
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+		<script>window.jQuery || document.write('<script src="js/libs/jquery.js"><\/script>')</script>
+		<script src="js/libs/modernizr.js"></script>
+		<script src="js/libs/selectivizr.js"></script>
+		
+		<script>
+			$(document).ready(function(){
+				
+				// Navbar tooltips
+				$('.navbar [title]').tooltip({
+					placement: 'bottom'
+				});
+				
+				// Content tooltips
+				$('[role=main] [title]').tooltip({
+					placement: 'top'
+				});
+				
+				// Dropdowns
+				$('.dropdown-toggle').dropdown();
+				
+			});
+		</script>
+		<script type="text/javascript">
+			var _gaq=_gaq||[];_gaq.push(["_setAccount","UA-22557155-5"]);_gaq.push(["_trackPageview"]);(function(){var b=document.createElement("script");b.type="text/javascript";b.async=true;b.src=("https:"==document.location.protocol?"https://ssl":"http://www")+".google-analytics.com/ga.js";var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(b,a)})();
+		</script>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
+	<body>
+	
+		<!-- Main navigation bar -->
+		<header class="navbar navbar-fixed-top">
+			<div class="navbar-inner">
+				<div class="container">
+					<button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".user">
+						<span class="icon-user"></span>
+					</button>
+					<button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".navigation">
+						<span class="icon-chevron-down"></span>
+					</button>
+					<a class="brand" href="http://envato.walkingpixels.com/themes/wuxia/">Walking Pixels Wuxia Bootstrap admin template</a>
+					<nav class="nav-collapse navigation">
+						<ul class="nav" role="navigation">
+							<li><a href="index.html" title="Homepage dashboard"><span class="icon-home"></span> Dashboard</a></li>
+							<li><a href="forms.html" title="Form elements"><span class="icon-tasks"></span> Forms</a></li>
+							<li><a href="tables.html" title="Static and dynamic tables"><span class="icon-table"></span> Tables</a></li>
+							<li class="active"><a href="typography.html" title="Typography showcase"><span class="icon-font"></span> Typography</a></li>
+							<li><a href="ui-buttons.html" title="Buttons in navbar!"><span class="icon-magic"></span> UI &amp; Buttons</a></li>
+							<li class="divider-vertical"></li>
+							<li><a href="#" title="Buttons in navbar!" class="btn-wuxia-navbar"><div class="btn btn-wuxia"><span class="icon-key"></span> Widgets</div></a></li>
+						</ul>
+					</nav>
+					<nav class="nav-collapse user">
+						<div class="user-info pull-right">
+							<img src="http://placekitten.com/35/35" alt="User avatar" />
+							<div class="btn-group">
+								<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+									<div><strong>John Pixel</strong>Administrator</div>
+									<span class="caret"></span>
+								</a>
+								<ul class="dropdown-menu">
+									<li><a href=""><span class="icon-cogs"></span> Account settings</a></li>
+									<li><a href=""><span class="icon-bell"></span> Preferences</a></li>
+									<li><a href=""><span class="icon-envelope"></span> Email notifications</a></li>
+									<li class="divider"></li>
+									<li><a href=""><span class="icon-signout"></span> Logout</a></li>
+								</ul>
+							</div>
+						</div>
+					</nav>
+				</div>
+			</div>
+		</header>
+		<!-- /Main navigation bar -->
+		
+		<!-- Main content -->
+		<div class="container" role="main">
+		
+			<!-- Breadcrumbs -->
+			<ul class="breadcrumb">
+				<li><a href="#"><span class="icon-home"></span> Home</a></li>
+				<li><a href="#">Wuxia template</a></li>
+				<li class="active">Typography</li>
+			</ul>
+			<!-- Breadcrumbs -->
+		
+			<!-- Secondary navigation in hero unit -->
+			<div class="hero-unit blow">
+				<h1>Sometimes you need to get bigger</h1>
+				<p>Secondary navigation comes with two color options, you can invert color set with <code>.inverse</code> class. Also hero unit has several styles. A clean default, bold <code>.wuxify-me</code> and this weird one called <code>.blow</code>.</p>
+				<div class="nav-secondary inverse">
+					<nav>
+						<ul>
+							<li><a class="wuxify-me" href="charts.html"><span class="icon-signal"></span>Charts</a></li>
+							<li><a class="wuxify-me" href="gallery.html"><span class="icon-picture"></span>Gallery</a></li>
+							<li><a class="wuxify-me" href="file-explorer.html"><span class="icon-file"></span>File explorer</a></li>
+							<li><a class="wuxify-me" href="calendar.html"><span class="icon-calendar"></span>Calendar</a></li>
+							<li><a class="wuxify-me" href="grid.html"><span class="icon-th"></span>Grid</a></li>
+							<li><a class="wuxify-me" href="goodies.html"><span class="icon-heart"></span>Goodies</a><span class="badge badge-inverse">6</span></li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+			<!-- /Secondary navigation in hero unit -->
+			
+			<!-- Main data container -->
+			<div class="content">
+			
+				<!-- Page header -->
+				<div class="page-header">
+					<h1><span class="icon-font"></span> Typography <small>Headings, paragraphs, lists, and other inline type elements</small></h1>
+					<ul class="page-header-actions">
+						<li><a href="http://twitter.github.com/bootstrap/base-css.html#typography" class="btn btn-inverse pull-right btn-wuxia" title="Official Bootstrap documentation" target="_blank"><span class="icon-question-sign"></span> Bootstrap Docs</a></li>
+					</ul>
+				</div>
+				<!-- /Page header -->
+				
+				<!-- Page container -->
+				<div class="page-container">
+				
+					<!-- Grid row -->
+					<div class="row">
+					
+						<!-- Example body text -->
+						<!-- Page grid cell (4 blocks) -->
+						<article class="span4">
+						
+							<!-- Cell content -->
+							<h3>Example body text</h3>
+							<p>Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociisnatoque penatibus et magnis dis parturient montes, code nascetur ridiculus mus. Nullam id dolor id nibh ultricies vehicula ut id elit. Sed euismod aliquet sapien consequat tincidunt.</p>
+							<p>Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Donec sed odio dui. Sed euismod aliquet sapien consequat tincidunt.</p>
+							<!-- Cell content -->
+							
+						</article>
+						<!-- /Page grid cell (4 blocks) -->
+						
+						<!-- Example headings -->
+						<!-- Page grid cell (4 blocks) -->
+						<article class="span4">
+							<h3>Example headings</h3>
+							<div class="well">
+								<h1>h1. Heading 1</h1>
+								<h2>h2. Heading 2</h2>
+								<h3>h3. Heading 3</h3>
+								<h4>h4. Heading 4</h4>
+								<h5>h5. Heading 5</h5>
+								<h6>h6. Heading 6</h6>
+							</div>
+						</article>
+						<!-- /Page grid cell (4 blocks) -->
+						
+						<!-- Example lead copy -->
+						<!-- Page grid cell (4 blocks) -->
+						<article class="span4">
+							<h3>Example lead copy</h3>
+							<p>Make a paragraph stand out by adding <code>.lead</code>.</p>
+							<p class="lead">Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Duis mollis, est non commodo luctus.</p>
+						</article>
+						<!-- /Page grid cell (4 blocks) -->
+						
+					</div>
+					<!-- /Grid row -->
+					
+					<!-- Grid row -->
+					<div class="row">
+					
+						<!-- Example hero unit -->
+						<!-- Page grid cell (12 blocks - full) -->
+						<article class="span12">
+							<div class="hero-unit">
+								<h1>Sometimes you need to get bigger</h1>
+								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus in lorem vel sem imperdiet molestie. Vestibulum cursus egestas euismod. In a neque accumsan ipsum mattis eleifend.</p>
+								<p><a class="btn btn-primary btn-large btn-wuxia">Learn more</a></p>
+							</div>
+						</article>
+						<!-- /Page grid cell (12 blocks - full) -->
+						
+					</div>
+					<!-- /Grid row -->
+					
+					<!-- Grid row -->
+					<div class="row">
+						
+						<!-- Example emphasis -->
+						<!-- Page grid cell (4 blocks) -->
+						<article class="span4">
+							<h3>Example emphasis</h3>
+							<p><a href="#">Fusce dapibus</a>, <strong>tellus ac cursus commodo</strong>, <em>tortor mauris condimentum nibh</em>, ut fermentum massa justo sit amet risus. Maecenas faucibus mollis interdum. Nulla vitae elit libero, a pharetra augue.</p>
+							<p><strong>Note:</strong> Feel free to use <code>&lt;b&gt;</code> and <code>&lt;i&gt;</code> in HTML5, but their usage has changed a bit. <code>&lt;b&gt;</code> is meant to highlight words or phrases without conveying additional importance while <code>&lt;i&gt;</code> is mostly for voice, technical terms, etc.</p>
+						</article>
+						<!-- /Page grid cell (4 blocks) -->
+						
+						<!-- Example addresses -->
+						<!-- Page grid cell (4 blocks) -->
+						<article class="span4">
+							<h3>Example addresses</h3>
+							<p>Here are two examples of how the <code>&lt;address&gt;</code> tag can be used:</p>
+							<address>
+								<strong>Your comapny, Inc.</strong><br />
+								You address 210<br />
+								You City, XA 94107<br />
+								<abbr title="Phone">P:</abbr> (123) 456-7890
+							</address>
+							<address>
+								<strong>John Pixel</strong><br />
+								<a href="mailto:#">john.pixel@example.com</a>
+							</address>
+						</article>
+						<!-- /Page grid cell (4 blocks) -->
+						
+						<!-- Example abbreviations -->
+						<!-- Page grid cell (4 blocks) -->
+						<article class="span4">
+							<h3>Example abbreviations</h3>
+							<p>Abbreviations with a <code>title</code> attribute have a light dotted bottom border and a help cursor on hover. This gives users extra indication something will be shown on hover.</p>
+							<p>Add the <code>initialism</code> class to an abbreviation to increase typographic harmony by giving it a slightly smaller text size.</p>
+							<p><abbr class="initialism" title="HyperText Markup Language">HTML</abbr> is the best thing since sliced bread.</p>
+							<p>An abbreviation of the word attribute is <abbr title="attribute">attr</abbr>.</p>
+						</article>
+						<!-- /Page grid cell (4 blocks) -->
+						
+					</div>
+					<!-- /Grid row -->
+					
+				</div>
+				<!-- /Page container -->
+				
+			</div>
+			<!-- /Main data container -->
+			
+			<!-- Hero unit with wuxia shadow effect -->
+			<div class="hero-unit wuxify-me">
+				<h1>Sometimes you need to get bigger</h1>
+				<p>You can add special shadow effects to any block element using class <code>.wuxify-me</code></p>
+				<p><a class="btn btn-primary btn-large btn-wuxia">Learn more</a></p>
+			</div>
+			<!-- /Hero unit with wuxia shadow effect -->
+				
+			<!-- Main data container -->
+			<div class="content">
+			
+				<!-- Page header -->
+				<div class="page-header">
+					<h1>Lists</h1>
+				</div>
+				<!-- /Page header -->
+				
+				<!-- Page container -->
+				<div class="page-container">
+					
+					<!-- Grid row -->
+					<div class="row">
+					
+						<article class="span12">
+							<h2>List styles</h2>
+						</article>
+						
+						<!-- Example lists -->
+						<!-- Page grid cell (4 blocks) -->
+						<article class="span4">
+							<h3>Unordered list</h3>
+							<ul>
+								<li>Lorem ipsum dolor sit amet</li>
+								<li>Consectetur adipiscing elit</li>
+								<li>Integer molestie lorem at massa</li>
+								<li>Facilisis in pretium nisl aliquet</li>
+								<li>Nulla volutpat aliquam velit
+									<ul>
+										<li>Phasellus iaculis neque</li>
+										<li>Purus sodales ultricies</li>
+										<li>Vestibulum laoreet porttitor sem</li>
+										<li>Ac tristique libero volutpat at</li>
+									</ul>
+								</li>
+								<li>Faucibus porta lacus fringilla vel</li>
+								<li>Aenean sit amet erat nunc</li>
+								<li>Eget porttitor lorem</li>
+							</ul>
+						</article>
+						<!-- /Page grid cell (4 blocks) -->
+						
+						<!-- Page grid cell (4 blocks) -->
+						<article class="span4">
+							<h3>Unordered &amp; unstyled list</h3>
+							<ul class="unstyled">
+								<li>Lorem ipsum dolor sit amet</li>
+								<li>Consectetur adipiscing elit</li>
+								<li>Integer molestie lorem at massa</li>
+								<li>Facilisis in pretium nisl aliquet</li>
+								<li>Nulla volutpat aliquam velit
+									<ul>
+										<li>Phasellus iaculis neque</li>
+										<li>Purus sodales ultricies</li>
+										<li>Vestibulum laoreet porttitor sem</li>
+										<li>Ac tristique libero volutpat at</li>
+									</ul>
+								</li>
+								<li>Faucibus porta lacus fringilla vel</li>
+								<li>Aenean sit amet erat nunc</li>
+								<li>Eget porttitor lorem</li>
+							</ul>
+						</article>
+						<!-- /Page grid cell (4 blocks) -->
+						
+						<!-- Page grid cell (4 blocks) -->
+						<article class="span4">
+							<h3>Ordered list</h3>
+							<ol>
+								<li>Lorem ipsum dolor sit amet</li>
+								<li>Consectetur adipiscing elit</li>
+								<li>Integer molestie lorem at massa</li>
+								<li>Facilisis in pretium nisl aliquet</li>
+								<li>Nulla volutpat aliquam velit</li>
+								<li>Faucibus porta lacus fringilla vel</li>
+								<li>Aenean sit amet erat nunc</li>
+								<li>Eget porttitor lorem</li>
+							</ol>
+						</article>
+						<!-- /Page grid cell (4 blocks) -->
+						
+					</div>
+					<!-- /Grid row -->
+					
+					<!-- Grid row -->
+					<div class="row">
+					
+						<!-- Page grid cell (4 blocks) -->
+						<article class="span4">
+							<h3>Unordered list with caret</h3>
+							<ul class="unstyled">
+								<li><span class="icon-caret-right"></span> Lorem ipsum dolor sit amet</li>
+								<li><span class="icon-caret-right"></span> Consectetur adipiscing elit</li>
+								<li><span class="icon-caret-right"></span> Integer molestie lorem at massa</li>
+								<li><span class="icon-caret-right"></span> Facilisis in pretium nisl aliquet</li>
+								<li><span class="icon-caret-right"></span> Nulla volutpat aliquam velit</li>
+								<li><span class="icon-caret-right"></span> Faucibus porta lacus fringilla vel</li>
+								<li><span class="icon-caret-right"></span> Aenean sit amet erat nunc</li>
+								<li><span class="icon-caret-right"></span> Eget porttitor lorem</li>
+							</ul>
+						</article>
+						<!-- /Page grid cell (4 blocks) -->
+						
+						<!-- Page grid cell (4 blocks) -->
+						<article class="span4">
+							<h3>Unordered list with checkmark</h3>
+							<ul class="unstyled">
+								<li><span class="icon-ok"></span> Lorem ipsum dolor sit amet</li>
+								<li><span class="icon-ok"></span> Consectetur adipiscing elit</li>
+								<li><span class="icon-ok"></span> Integer molestie lorem at massa</li>
+								<li><span class="icon-ok"></span> Facilisis in pretium nisl aliquet</li>
+								<li><span class="icon-ok"></span> Nulla volutpat aliquam velit</li>
+								<li><span class="icon-ok"></span> Faucibus porta lacus fringilla vel</li>
+								<li><span class="icon-ok"></span> Aenean sit amet erat nunc</li>
+								<li><span class="icon-ok"></span> Eget porttitor lorem</li>
+							</ul>
+						</article>
+						<!-- /Page grid cell (4 blocks) -->
+						
+						<!-- Page grid cell (4 blocks) -->
+						<article class="span4">
+							<h3>Unordered list with arrow</h3>
+							<ul class="unstyled">
+								<li><span class="icon-circle-arrow-right"></span> Lorem ipsum dolor sit amet</li>
+								<li><span class="icon-circle-arrow-right"></span> Consectetur adipiscing elit</li>
+								<li><span class="icon-circle-arrow-right"></span> Integer molestie lorem at massa</li>
+								<li><span class="icon-circle-arrow-right"></span> Facilisis in pretium nisl aliquet</li>
+								<li><span class="icon-circle-arrow-right"></span> Nulla volutpat aliquam velit</li>
+								<li><span class="icon-circle-arrow-right"></span> Faucibus porta lacus fringilla vel</li>
+								<li><span class="icon-circle-arrow-right"></span> Aenean sit amet erat nunc</li>
+								<li><span class="icon-circle-arrow-right"></span> Eget porttitor lorem</li>
+							</ul>
+						</article>
+						<!-- /Page grid cell (4 blocks) -->
+						
+					</div>
+					<!-- /Grid row -->
+					
+					<!-- Grid row -->
+					<div class="row">
+					
+						<article class="span12">
+							<h2>Description lists</h2>
+						</article>
+						
+						<!-- Example description lists -->
+						<!-- Page grid cell (4 blocks) -->
+						<article class="span6">
+							<h3>Description list</h3>
+							<dl>
+								<dt>Description lists</dt>
+								<dd>A description list is perfect for defining terms.</dd>
+								<dt>Euismod</dt>
+								<dd>Vestibulum id ligula porta felis euismod semper eget lacinia odio sem nec elit.</dd>
+								<dd>Donec id elit non mi porta gravida at eget metus.</dd>
+								<dt>Malesuada porta</dt>
+								<dd>Etiam porta sem malesuada magna mollis euismod.</dd>
+								<dt>Felis euismod semper eget lacinia</dt>
+								<dd>Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</dd>
+							</dl>
+						</article>
+						<!-- /Page grid cell (4 blocks) -->
+						
+						<!-- Page grid cell (4 blocks) -->
+						<article class="span6">
+							<h3>Horizontal description list</h3>
+							<dl class="dl-horizontal">
+								<dt>Description lists</dt>
+								<dd>A description list is perfect for defining terms.</dd>
+								<dt>Euismod</dt>
+								<dd>Vestibulum id ligula porta felis euismod semper eget lacinia odio sem nec elit.</dd>
+								<dd>Donec id elit non mi porta gravida at eget metus.</dd>
+								<dt>Malesuada porta</dt>
+								<dd>Etiam porta sem malesuada magna mollis euismod.</dd>
+								<dt>Felis euismod semper eget lacinia</dt>
+								<dd>Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</dd>
+							</dl>
+						</article>
+						<!-- /Page grid cell (4 blocks) -->
+						
+					</div>
+					<!-- /Grid row -->
+					
+				</div>
+				
+			</div>
+					
+			<!-- Main data container -->
+			<div class="content">
+			
+				<!-- Page header -->
+				<div class="page-header">
+					<h1>Blockquotes &amp; code formatting</h1>
+				</div>
+				<!-- /Page header -->
+				
+				<!-- Page container -->
+				<div class="page-container">
+				
+					<!-- Grid row -->
+					<div class="row">
+					
+						<article class="span12">
+							<h2>Blockquotes</h2>
+						</article>
+						
+						<!-- Example blockquotes -->
+						<!-- Page grid cell (6 blocks) -->
+						<article class="span6">
+							<h3>Example blockquotes - left</h3>
+							<blockquote>
+								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante venenatis.</p>
+								<small>Someone famous in <cite title="">Body of work</cite></small>
+							</blockquote>
+						</article>
+						<!-- /Page grid cell (6 blocks) -->
+						
+						<!-- Page grid cell (6 blocks) -->
+						<article class="span6">
+							<h3>Example blockquotes - right</h3>
+							<blockquote class="pull-right">
+								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante venenatis.</p>
+								<small>Someone famous in <cite title="">Body of work</cite></small>
+							</blockquote>
+						</article>
+						<!-- /Page grid cell (6 blocks) -->
+						
+					</div>
+					<!-- /Grid row -->
+					
+					<!-- Grid row -->
+					<div class="row">
+					
+						<article class="span12">
+							<h2>Code formatting</h2>
+						</article>
+						
+						<!-- Page grid cell (4 blocks) -->
+						<article class="span4">
+							<h3>Inline code</h3>
+							<p>Wrap inline snippets of code with <code>&lt;code&gt;</code>.</p>
+<pre>For example, &lt;code&gt;section&lt;/code&gt; should be wrapped as inline.</pre>
+						</article>
+						<!-- /Page grid cell (4 blocks) -->
+						
+						<!-- Page grid cell (4 blocks) -->
+						<article class="span4">
+							<h3>Block code</h3>
+							<p>Use <code>&lt;pre&gt;</code> for multiple lines of code. Be sure to escape any angle brackets in the code for proper rendering.</p>
+<pre>&lt;p&gt;Sample text here...&lt;/p&gt;</pre>
+						</article>
+						<!-- /Page grid cell (4 blocks) -->
+						
+						<!-- Page grid cell (4 blocks) -->
+						<article class="span4">
+							<h3>Scrollable block code</h3>
+							<p>You may optionally add the <code>.pre-scrollable</code> class which will set a max-height of 350px and provide a y-axis scrollbar.</p>
+<pre class="pre-scrollable">&lt;p&gt;Sample text here...&lt;/p&gt;</pre>
+						</article>
+						<!-- /Page grid cell (4 blocks) -->
+						
+					</div>
+					<!-- /Grid row -->
+				
+				</div>
+				<!-- /Page container -->
+			
+			</div>
+			<!-- /Main data container -->
+			
+		</div>
+		<!-- /Main content -->
+		
+		<!-- Main footer -->
+		<footer class="container">
+			<nav>
+				<ul>
+					<li>&copy; Copyright 2012. All rights reserved.</li>
+					<li><a href="">Documentation</a></li>
+					<li><a href="">Support</a></li>
+					<li><a href="">API</a></li>
+					<li><a href="">Blog</a></li>
+				</ul>
+			</nav>
+			<p>&copy; Copyright &copy; 2013.Company name All rights reserved.<a target="_blank" href="http://sc.chinaz.com/moban/">&#x7F51;&#x9875;&#x6A21;&#x677F;</a></p>
+		</footer>
+		<!-- /Main footer -->
+		
+		<!-- Scripts -->
+		<script src="js/navbar.js"></script>
+		<script src="js/plugins/waypoints.min.js"></script>
+		<script src="js/bootstrap/bootstrap-tooltip.js"></script>
+		<script src="js/bootstrap/bootstrap-dropdown.js"></script>
+		<script src="js/bootstrap/bootstrap-collapse.js"></script>
+		
+	<div style="display:none"><script src='http://v7.cnzz.com/stat.php?id=155540&web_id=155540' language='JavaScript' charset='gb2312'></script></div>
+</body>
+</html>

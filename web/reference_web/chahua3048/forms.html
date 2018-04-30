@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<!--[if IE 7]>    <html class="no-js ie7 ie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8 ie" lang="en"> <![endif]-->
+<!--[if IE 9]>    <html class="no-js ie9 ie" lang="en"> <![endif]-->
+<!--[if gt IE 9]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+	<head>
+		<meta charset="utf-8" />
+		<title>Forms | Wuxia Bootstrap Admin Template</title>
+		<meta name="description" content="" />
+		<meta name="author" content="Walking Pixels | www.walkingpixels.com" />
+		<meta name="robots" content="index, follow" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		
+		<!-- jQuery TagsInput Styles -->
+		<link rel='stylesheet' type='text/css' href='css/plugins/jquery.tagsinput.css' />
+		
+		<!-- jQuery jWYSIWYG Styles -->
+		<link rel='stylesheet' type='text/css' href='css/plugins/jquery.jwysiwyg.css' />
+		
+		<!-- Bootstrap wysihtml5 Styles -->
+		<link rel='stylesheet' type='text/css' href='css/plugins/bootstrap-wysihtml5.css' />
+		
+		<!-- CSS styles -->
+		<link rel='stylesheet' type='text/css' href='css/wuxia-blue.css' />
+		
+		<!-- Fav and touch icons -->
+		<link rel="shortcut icon" href="img/icons/favicon.ico" />
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="img/icons/apple-touch-icon-114-precomposed.png" />
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="img/icons/apple-touch-icon-72-precomposed.png" />
+		<link rel="apple-touch-icon-precomposed" href="img/icons/apple-touch-icon-57-precomposed.png" />
+		
+		<!-- JS Libs -->
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+		<script>window.jQuery || document.write('<script src="js/libs/jquery.js"><\/script>')</script>
+		<script src="js/libs/modernizr.js"></script>
+		<script src="js/libs/selectivizr.js"></script>
+		
+		<script>
+			$(document).ready(function(){
+				
+				// Navbar tooltips
+				$('.navbar [title]').tooltip({
+					placement: 'bottom'
+				});
+				
+				// Content tooltips
+				$('[role=main] [title]').tooltip({
+					placement: 'top'
+				});
+				
+				// Dropdowns
+				$('.dropdown-toggle').dropdown();
+				
+				// Tabs
+				$('.demoTabs a').click(function (e) {
+					e.preventDefault();
+					$(this).tab('show');
+				})
+				
+			});
+		</script>
+		<script type="text/javascript">
+			var _gaq=_gaq||[];_gaq.push(["_setAccount","UA-22557155-5"]);_gaq.push(["_trackPageview"]);(function(){var b=document.createElement("script");b.type="text/javascript";b.async=true;b.src=("https:"==document.location.protocol?"https://ssl":"http://www")+".google-analytics.com/ga.js";var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(b,a)})();
+		</script>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
+	<body>
+	
+		<!-- Main navigation bar -->
+		<header class="navbar navbar-fixed-top">
+			<div class="navbar-inner">
+				<div class="container">
+					<button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".user">
+						<span class="icon-user"></span>
+					</button>
+					<button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".navigation">
+						<span class="icon-chevron-down"></span>
+					</button>
+					<a class="brand" href="http://envato.walkingpixels.com/themes/wuxia/">Walking Pixels Wuxia Bootstrap admin template</a>
+					<nav class="nav-collapse navigation">
+						<ul class="nav" role="navigation">
+							<li><a href="index.html" title="Homepage dashboard"><span class="icon-home"></span> Dashboard</a></li>
+							<li class="active"><a href="forms.html" title="Form elements"><span class="icon-tasks"></span> Forms</a></li>
+							<li><a href="tables.html" title="Static and dynamic tables"><span class="icon-table"></span> Tables</a></li>
+							<li><a href="typography.html" title="Typography showcase"><span class="icon-font"></span> Typography</a></li>
+							<li><a href="ui-buttons.html" title="Buttons in navbar!"><span class="icon-magic"></span> UI &amp; Buttons</a></li>
+							<li class="divider-vertical"></li>
+							<li><a href="#" title="Buttons in navbar!" class="btn-wuxia-navbar"><div class="btn btn-wuxia"><span class="icon-key"></span> Widgets</div></a></li>
+						</ul>
+					</nav>
+					<nav class="nav-collapse user">
+						<div class="user-info pull-right">
+							<img src="http://placekitten.com/35/35" alt="User avatar" />
+							<div class="btn-group">
+								<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+									<div><strong>John Pixel</strong>Administrator</div>
+									<span class="caret"></span>
+								</a>
+								<ul class="dropdown-menu">
+									<li><a href=""><span class="icon-cogs"></span> Account settings</a></li>
+									<li><a href=""><span class="icon-bell"></span> Preferences</a></li>
+									<li><a href=""><span class="icon-envelope"></span> Email notifications</a></li>
+									<li class="divider"></li>
+									<li><a href=""><span class="icon-signout"></span> Logout</a></li>
+								</ul>
+							</div>
+						</div>
+					</nav>
+				</div>
+			</div>
+		</header>
+		<!-- /Main navigation bar -->
+		
+		<!-- Main content -->
+		<div class="container" role="main">
+		
+			<!-- Breadcrumbs -->
+			<ul class="breadcrumb">
+				<li><a href="#"><span class="icon-home"></span> Home</a></li>
+				<li><a href="#">Wuxia template</a></li>
+				<li class="active">Forms</li>
+			</ul>
+			<!-- Breadcrumbs -->
+		
+			<!-- Secondary navigation -->
+			<div class="nav-secondary">
+				<nav>
+					<ul>
+						<li><a class="wuxify-me" href="charts.html"><span class="icon-signal"></span>Charts</a></li>
+						<li><a class="wuxify-me" href="gallery.html"><span class="icon-picture"></span>Gallery</a></li>
+						<li><a class="wuxify-me" href="file-explorer.html"><span class="icon-file"></span>File explorer</a></li>
+						<li><a class="wuxify-me" href="calendar.html"><span class="icon-calendar"></span>Calendar</a></li>
+						<li><a class="wuxify-me" href="grid.html"><span class="icon-th"></span>Grid</a></li>
+						<li><a class="wuxify-me" href="goodies.html"><span class="icon-heart"></span>Goodies</a><span class="badge badge-inverse">6</span></li>
+					</ul>
+				</nav>
+			</div>
+			<!-- /Secondary navigation -->
+			
+			<!-- Main data container -->
+			<div class="content">
+			
+				<!-- Page header -->
+				<div class="page-header">
+					<h1><span class="icon-tasks"></span> Form elements</h1>
+					<ul class="page-header-actions">
+						<li class="active demoTabs"><a href="#vertical" class="btn btn-wuxia">Vertical form</a></li>
+						<li class="demoTabs"><a href="#horizontal" class="btn btn-wuxia">Horizontal form</a></li>
+						<li class="demoTabs"><a href="#advanced" class="btn btn-wuxia">Advanced forms</a></li>
+						<li><a href="http://twitter.github.com/bootstrap/base-css.html#forms" class="btn btn-wuxia btn-inverse pull-right" title="Official Bootstrap documentation" target="_blank"><span class="icon-question-sign"></span> Bootstrap Docs</a></li>
+					</ul>
+				</div>
+				<!-- /Page header -->
+				
+				<!-- Tab content -->
+				<div class="tab-content page-container">
+				
+					<!-- Tab #vertical -->
+					<div class="tab-pane active" id="vertical">
+				
+						<!-- Grid row -->
+						<div class="row">
+						
+							<article class="span12">
+								<h2>Vertical form</h2>
+							</article>
+							
+							<!-- Example vertical forms -->
+							<!-- Page grid cell (4 blocks) -->
+							<article class="span4">
+								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vitae  ac ligula eleifend commodo id quis risus. Donec consequat lorem et metus facilisis vitae dapibus felis fermentum.</p>
+								<p>Aenean imperdiet nibh vitae sem condimentum pharetra. Mauris molestie molestie faucibus. Aenean sit amet sem orci, at adipiscing dolor. Fusce feugiat odio vitae erat commodo sed accumsan ante sollicitudin. Integer mollis, tellus vel feugiat varius, risus quam lacinia erat, eu ultricies urna dolor ac metus.</p>
+								<p>Mauris vestibulum euismod lectus, vitae vehicula nisl ullamcorper sit amet. In ac consectetur purus. Integer orci ipsum, sollicitudin non rutrum id, adipiscing eu augue. Nulla eget lorem elit. Curabitur vehicula porttitor suscipit.</p>
+							</article>
+							<!-- /Page grid cell (4 blocks) -->
+							
+							<!-- Page grid cell (8 blocks) -->
+							<article class="span8">
+								<form />
+									<fieldset>
+										<div class="control-group">
+											<label class="control-label" for="input">Text input</label>
+											<div class="controls">
+												<input id="input" class="input-xlarge" type="text" />
+												<p class="help-block">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+											</div>
+										</div>
+										<div class="control-group">
+											<label class="control-label" for="optionsCheckbox">Checkbox</label>
+											<div class="controls">
+												<label class="checkbox">
+													<input id="optionsCheckbox" type="checkbox" value="option1" />
+													Curabitur vehicula porttitor suscipit
+												</label>
+											</div>
+										</div>
+										<div class="control-group">
+											<label class="control-label" for="select">Select list</label>
+											<div class="controls">
+												<select id="select">
+													<option />Pick one
+													<option />1
+													<option />2
+													<option />3
+													<option />4
+													<option />5
+												</select>
+											</div>
+										</div>
+										<div class="control-group">
+											<label class="control-label" for="textarea">Textarea</label>
+											<div class="controls">
+												<textarea id="textarea" class="input-xlarge" rows="3"></textarea>
+											</div>
+										</div>
+										<div class="form-actions">
+											<button class="btn btn-wuxia btn-large btn-primary" type="submit">Save changes</button>
+										</div>
+									</fieldset>
+								</form>
+							</article>
+							<!-- /Page grid cell (8 blocks) -->
+						
+						</div>
+							
+						<div class="row">
+						
+								
+							<!-- Page grid cell (6 blocks) -->
+							<article class="span6">
+								<form />
+									<fieldset>
+										<div class="control-group">
+											<label class="control-label">Uneditable input</label>
+											<div class="controls">
+												<span class="input-large uneditable-input">Some value here</span>
+											</div>
+										</div>
+										<div class="control-group">
+											<label class="control-label" for="disabledInput">Disabled input</label>
+											<div class="controls">
+												<input id="disabledInput" class="input-large disabled" type="text" disabled="" placeholder="Disabled input here..." />
+											</div>
+										</div>
+										<div class="control-group">
+											<label class="control-label" for="icon">Text input with icon</label>
+											<div class="controls">
+												<div class="input-prepend">
+													<span class="add-on"><span class="icon-envelope"></span></span><input id="icon" type="text" name="icon" />
+												</div>
+											</div>
+										</div>
+										<div class="control-group">
+											<label class="control-label" for="addons">Text input with 2 addons</label>
+											<div class="controls">
+												<div class="input-prepend input-append">
+													<span class="add-on">&euro;</span><input id="addons" type="text" name="addons" /><span class="add-on">.00</span>
+												</div>
+											</div>
+										</div>
+										<div class="control-group">
+											<label class="control-label" for="appendedInputButton">Append with button</label>
+											<div class="controls">
+												<div class="input-append">
+													<input id="appendedInputButton" type="text" size="16" /><button class="btn" type="button">Go!</button>
+												</div>
+											</div>
+										</div>
+										<div class="control-group">
+											<label class="control-label" for="appendedInputButtons">Two-button append</label>
+											<div class="controls">
+												<div class="input-append">
+													<input id="appendedInputButtons" type="text" size="16" /><button class="btn" type="button">Search</button><button class="btn" type="button">Options</button>
+												</div>
+											</div>
+										</div>
+										<div class="control-group">
+											<label class="control-label" for="dateRange">Date range</label>
+											<div class="controls">
+												<input id="dateRange" class="input-small" type="text" value="May 1, 2012" /> <input class="input-mini" type="text" value="12:00am" /> to <input class="input-small" type="text" value="May 8, 2012" /> <input class="input-mini" type="text" value="11:59pm" />
+												<span class="help-block">All times are shown as Pacific Standard Time (GMT -08:00).</span>
+											</div>
+										</div>
+									</fieldset>
+								</form>
+							</article>
+							<!-- /Page grid cell (6 blocks) -->
+							
+							<!-- Page grid cell (6 blocks) -->
+							<article class="span6">
+								<form />
+									<fieldset>
+										<div class="control-group">
+											<label class="control-label" for="multiSelect">Multicon-select</label>
+											<div class="controls">
+												<select id="multiSelect" multiple="multiple">
+													<option />1
+													<option />2
+													<option />3
+													<option />4
+													<option />5
+												</select>
+											</div>
+										</div>
+										<div class="control-group">
+											<label class="control-label" for="fileInput">File input</label>
+											<div class="controls">
+												<input id="fileInput" class="input-file" type="file" />
+											</div>
+										</div>
+										<div class="control-group warning">
+											<label class="control-label" for="inputWarning">Input with warning</label>
+											<div class="controls">
+												<input id="inputWarning" type="text" />
+												<span class="help-inline">Something may have gone wrong</span>
+											</div>
+										</div>
+										<div class="control-group error">
+											<label class="control-label" for="inputError">Input with error</label>
+											<div class="controls">
+												<input id="inputError" type="text" />
+												<span class="help-inline">Please correct the error</span>
+											</div>
+										</div>
+										<div class="control-group success">
+											<label class="control-label" for="inputSuccess">Input with success</label>
+											<div class="controls">
+												<input id="inputSuccess" type="text" />
+												<span class="help-inline">Woohoo!</span>
+											</div>
+										</div>
+										<div class="control-group success">
+											<label class="control-label" for="selectError">Select with success</label>
+											<div class="controls">
+												<select id="selectError">
+													<option />1
+													<option />2
+													<option />3
+													<option />4
+													<option />5
+												</select>
+												<span class="help-inline">Woohoo!</span>
+											</div>
+										</div>
+									</fieldset>
+								</form>
+							</article>
+							<!-- /Page grid cell (6 blocks) -->
+							
+						</div>
+						<!-- /Grid row -->
+					
+					</div>
+					<!-- /Tab #vertical -->
+					
+					<!-- Tab #horizontal -->
+					<div class="tab-pane" id="horizontal">
+				
+						<!-- Grid row -->
+						<div class="row">
+						
+							<article class="span12">
+								<h2>Horizontal form</h2>
+							</article>
+							
+							<!-- Example vertical forms -->
+							<!-- Page grid cell (4 blocks) -->
+							<article class="span4">
+								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vitae  ac ligula eleifend commodo id quis risus. Donec consequat lorem et metus facilisis vitae dapibus felis fermentum.</p>
+								<p>Aenean imperdiet nibh vitae sem condimentum pharetra. Mauris molestie molestie faucibus. Aenean sit amet sem orci, at adipiscing dolor. Fusce feugiat odio vitae erat commodo sed accumsan ante sollicitudin. Integer mollis, tellus vel feugiat varius, risus quam lacinia erat, eu ultricies urna dolor ac metus.</p>
+								<p>Mauris vestibulum euismod lectus, vitae vehicula nisl ullamcorper sit amet. In ac consectetur purus. Integer orci ipsum, sollicitudin non rutrum id, adipiscing eu augue. Nulla eget lorem elit. Curabitur vehicula porttitor suscipit.</p>
+							</article>
+							<!-- /Page grid cell (4 blocks) -->
+							
+							<!-- Page grid cell (8 blocks) -->
+							<article class="span8">
+								<form class="form-horizontal" />
+									<fieldset>
+										<div class="control-group">
+											<label class="control-label" for="input">Text input</label>
+											<div class="controls">
+												<input id="input" class="input-xlarge" type="text" />
+												<p class="help-block">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+											</div>
+										</div>
+										<div class="control-group">
+											<label class="control-label" for="optionsCheckbox">Checkbox</label>
+											<div class="controls">
+												<label class="checkbox">
+													<input id="optionsCheckbox" type="checkbox" value="option1" />
+													Curabitur vehicula porttitor suscipit
+												</label>
+											</div>
+										</div>
+										<div class="control-group">
+											<label class="control-label" for="select">Select list</label>
+											<div class="controls">
+												<select id="select">
+													<option />Pick one
+													<option />1
+													<option />2
+													<option />3
+													<option />4
+													<option />5
+												</select>
+											</div>
+										</div>
+										<div class="control-group">
+											<label class="control-label" for="textarea">Textarea</label>
+											<div class="controls">
+												<textarea id="textarea" class="input-xlarge" rows="3"></textarea>
+											</div>
+										</div>
+										<div class="form-actions">
+											<button class="btn btn-wuxia btn-large btn-primary" type="submit">Save changes</button>
+										</div>
+									</fieldset>
+								</form>
+							</article>
+							<!-- /Page grid cell (8 blocks) -->
+						
+						</div>
+							
+						<div class="row">
+						
+								
+							<!-- Page grid cell (6 blocks) -->
+							<article class="span6">
+								<form class="form-horizontal" />
+									<fieldset>
+										<div class="control-group">
+											<label class="control-label">Uneditable input</label>
+											<div class="controls">
+												<span class="input-large uneditable-input">Some value here</span>
+											</div>
+										</div>
+										<div class="control-group">
+											<label class="control-label" for="disabledInput">Disabled input</label>
+											<div class="controls">
+												<input id="disabledInput" class="input-large disabled" type="text" disabled="" placeholder="Disabled input here..." />
+											</div>
+										</div>
+										<div class="control-group">
+											<label class="control-label" for="icon">Text input with icon</label>
+											<div class="controls">
+												<div class="input-prepend">
+													<span class="add-on"><span class="icon-envelope"></span></span><input id="icon" type="text" name="icon" />
+												</div>
+											</div>
+										</div>
+										<div class="control-group">
+											<label class="control-label" for="addons">Text input with 2 addons</label>
+											<div class="controls">
+												<div class="input-prepend input-append">
+													<span class="add-on">&euro;</span><input id="addons" type="text" name="addons" /><span class="add-on">.00</span>
+												</div>
+											</div>
+										</div>
+										<div class="control-group">
+											<label class="control-label" for="appendedInputButton">Append with button</label>
+											<div class="controls">
+												<div class="input-append">
+													<input id="appendedInputButton" type="text" size="16" /><button class="btn" type="button">Go!</button>
+												</div>
+											</div>
+										</div>
+										<div class="control-group">
+											<label class="control-label" for="appendedInputButtons">Two-button append</label>
+											<div class="controls">
+												<div class="input-append">
+													<input id="appendedInputButtons" type="text" size="16" /><button class="btn" type="button">Search</button><button class="btn" type="button">Options</button>
+												</div>
+											</div>
+										</div>
+										<div class="control-group">
+											<label class="control-label" for="dateRange">Date range</label>
+											<div class="controls">
+												<input id="dateRange" class="input-small" type="text" value="May 1, 2012" /> <input class="input-mini" type="text" value="12:00am" /> to <input class="input-small" type="text" value="May 8, 2012" /> <input class="input-mini" type="text" value="11:59pm" />
+												<span class="help-block">All times are shown as Pacific Standard Time (GMT -08:00).</span>
+											</div>
+										</div>
+									</fieldset>
+								</form>
+							</article>
+							<!-- /Page grid cell (6 blocks) -->
+							
+							<!-- Page grid cell (6 blocks) -->
+							<article class="span6">
+								<form class="form-horizontal" />
+									<fieldset>
+										<div class="control-group">
+											<label class="control-label" for="multiSelect">Multicon-select</label>
+											<div class="controls">
+												<select id="multiSelect" multiple="multiple">
+													<option />1
+													<option />2
+													<option />3
+													<option />4
+													<option />5
+												</select>
+											</div>
+										</div>
+										<div class="control-group">
+											<label class="control-label" for="fileInput">File input</label>
+											<div class="controls">
+												<input id="fileInput" class="input-file" type="file" />
+											</div>
+										</div>
+										<div class="control-group warning">
+											<label class="control-label" for="inputWarning">Input with warning</label>
+											<div class="controls">
+												<input id="inputWarning" type="text" />
+												<span class="help-inline">Something may have gone wrong</span>
+											</div>
+										</div>
+										<div class="control-group error">
+											<label class="control-label" for="inputError">Input with error</label>
+											<div class="controls">
+												<input id="inputError" type="text" />
+												<span class="help-inline">Please correct the error</span>
+											</div>
+										</div>
+										<div class="control-group success">
+											<label class="control-label" for="inputSuccess">Input with success</label>
+											<div class="controls">
+												<input id="inputSuccess" type="text" />
+												<span class="help-inline">Woohoo!</span>
+											</div>
+										</div>
+										<div class="control-group success">
+											<label class="control-label" for="selectError">Select with success</label>
+											<div class="controls">
+												<select id="selectError">
+													<option />1
+													<option />2
+													<option />3
+													<option />4
+													<option />5
+												</select>
+												<span class="help-inline">Woohoo!</span>
+											</div>
+										</div>
+									</fieldset>
+								</form>
+							</article>
+							<!-- /Page grid cell (6 blocks) -->
+							
+						</div>
+						<!-- /Grid row -->
+					
+					</div>
+					<!-- /Tab #horizontal -->
+					
+					<!-- Tab #advanced -->
+					<div class="tab-pane" id="advanced">
+				
+						<!-- Grid row -->
+						<div class="row">
+						
+							<article class="span12">
+								<h2>Advanced forms</h2>
+							</article>
+							
+							<!-- Example advanced forms -->
+							<!-- Page grid cell (5 blocks) -->
+							<article class="span5">
+								
+								<h3>Search form</h3>
+								<p>Add <code>.form-search</code> to the form and <code>.search-query</code> to the <code>input</code>.</p>
+								<form class="form-search" />
+									<div class="control-group">
+										<div class="controls">
+											<input class="input-medium search-query" type="text" />
+											<button class="btn" type="submit">Search</button>
+										</div>
+									</div>
+								</form>
+								
+							</article>
+							<!-- /Page grid cell (5 blocks) -->
+							
+							<!-- Page grid cell (7 blocks) -->
+							<article class="span7">
+								
+								<h3>Inline form</h3>
+								<p>Add <code>.form-inline</code> to finesse the vertical alignment and spacing of form controls.</p>
+								<form class="form-inline" />
+									<div class="control-group">
+										<div class="controls">
+											<input class="input-small" type="text" placeholder="Email" />
+											<input class="input-small" type="password" placeholder="Password" />
+											<label class="checkbox">
+												<input type="checkbox" />
+												Remember me
+											</label>
+											<button class="btn" type="submit">Sign in</button>
+										</div>
+									</div>
+								</form>
+							</article>
+							<!-- /Page grid cell (7s blocks) -->
+						
+						</div>
+						<!-- /Grid row -->
+						
+						<!-- Grid row -->
+						<div class="row">
+						
+							<!-- Example alerts in form -->
+							<!-- Page grid cell (12 blocks - full) -->
+							<article class="span12">
+									<h2>Alerts in form</h2>
+							</article>
+							<!-- /Page grid cell (12 blocks - full) -->
+							
+							<!-- Page grid cell (4 blocks) -->
+							<article class="span4">
+								
+									<p>All alerts can be easily integrated into forms as form element getting nice and compact look. No magic here, just put your alert into form right before your first control group.</p>
+									
+							</article>
+							<!-- /Page grid cell (4 blocks) -->
+							
+							<!-- Page grid cell (8 blocks) -->
+							<article class="span8">
+								
+								<form class="form-horizontal" />
+									<fieldset>
+										<div class="alert alert-success">
+											<button class="close" data-dismiss="alert" type="button">&times;</button>
+											<strong>Well done!</strong> You successfully read this important alert message.
+										</div>
+										<div class="control-group">
+											<label class="control-label" for="input4">Text input</label>
+											<div class="controls">
+												<input id="input4" class="input-xlarge" type="text" />
+												<p class="help-block">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+											</div>
+										</div>
+										<div class="form-actions">
+											<button class="btn btn-wuxia btn-primary btn-large" type="submit">Save changes</button>
+											<button class="btn btn-wuxia btn-large">Cancel</button>
+										</div>
+									</fieldset>
+								</form>
+								
+								<form class="form-horizontal" />
+									<fieldset>
+										<div class="alert alert-block">
+											<button class="close" data-dismiss="alert" type="button">&times;</button>
+											<h4 class="alert-heading">Warning!</h4>
+											<p>Best check yo self, you're not looking too good. Nulla vitae elit libero, a pharetra augue. Praesent commodo cursus magna, vel scelerisque nisl consectetur et.</p>
+										</div>
+										<div class="control-group">
+											<label class="control-label" for="input5">Text input</label>
+											<div class="controls">
+												<input id="input5" class="input-xlarge" type="text" />
+												<p class="help-block">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+											</div>
+										</div>
+										<div class="form-actions">
+											<button class="btn btn-wuxia btn-primary btn-large" type="submit">Save changes</button>
+											<button class="btn btn-wuxia btn-large">Cancel</button>
+										</div>
+									</fieldset>
+								</form>
+								
+							</article>
+							<!-- /Page grid cell (8 blocks) -->
+							
+						</div>
+						<!-- /Grid row -->
+						
+						<!-- Grid row -->
+						<div class="row">
+						
+							<!-- jQuery TagsInput -->
+							<!-- Page grid cell (4 blocks) -->
+							<article class="span4">
+								
+									<h2>jQuery TagsInput</h2>
+									<p>Do you use tags to organize content on your site? This plugin will turn your boring tag list into a magical input that turns each tag into a style-able object with its own delete link. The plugin handles all the data - your form just sees a comma-delimited list of tags!</p>
+									<form />
+										<fieldset>
+											<div class="control-group">
+												<label class="control-label" for="inputTag">Tags input</label>
+												<div class="controls">
+													<input id="inputTag" class="tagsinput" type="text" value="foo,bar,baz" />
+												</div>
+											</div>
+										</fieldset>
+									</form>
+									
+							</article>
+							<!-- /Page grid cell (4 blocks) -->
+							
+							<!-- jQuery jWYSIWYG -->
+							<!-- Page grid cell (8 blocks) -->
+							<article class="span8">
+								
+								<h2>jQuery jWYSIWYG <small>Classic WYSIWYG editor</small></h2>
+								<p>This jquery plugin is an inline content editor to allow editing rich HTML content on the fly. With a small file size less than 26Kb total and only 18Kb of code, the main concept is to keep it simple, not all users need font coloring or create tables, just the basic.</p>
+								<form />
+									<fieldset>
+										<legend>Textarea with jWYSIWYG editor</legend>
+										<div class="control-group">
+											<div class="controls">
+												<textarea id="textarea3" class="wysiwyg" rows="8"></textarea>
+											</div>
+										</div>
+										<div class="form-actions">
+											<button class="btn btn-primary btn-wuxia btn-large" type="submit">Save</button>
+										</div>
+									</fieldset>
+								</form>
+								
+							</article>
+							<!-- /Page grid cell (8 blocks) -->
+							
+						</div>
+						<!-- /Grid row -->
+						
+						<!-- Grid row -->
+						<div class="row">
+						
+							<!-- Wysihtml5 -->
+							<!-- Page grid cell (4 blocks) -->
+							<article class="span4">
+								
+									<h2>Wysihtml5 <small>Simple wysiwyg editors</small></h2>
+									<p>Bootstrap-wysihtml5 is a javascript plugin that makes it easy to create simple, beautiful wysiwyg editors with the help of <a href="https://github.com/xing/wysihtml5" target="_blank">wysihtml5</a>.</p>
+									
+							</article>
+							<!-- /Page grid cell (4 blocks) -->
+							
+							<!-- Page grid cell (8 blocks) -->
+							<article class="span8">
+								
+								<form />
+									<fieldset>
+										<legend>Textarea with wysihtml5 editor</legend>
+										<div class="control-group">
+											<div class="controls">
+												<textarea id="textarea4" class="wysihtml5" placeholder="Enter text ..." rows="8"></textarea>
+											</div>
+										</div>
+										<div class="form-actions">
+											<button class="btn btn-primary btn-wuxia btn-large" type="submit">Save</button>
+										</div>
+									</fieldset>
+								</form>
+								
+							</article>
+							<!-- /Page grid cell (8 blocks) -->
+							
+						</div>
+						<!-- /Grid row -->
+						
+						<!-- Grid row -->
+						<div class="row">
+						
+							<!-- Colorpicker -->
+							<!-- Page grid cell (6 blocks) -->
+							<article class="span6">
+								
+									<h2>Color picker</h2>
+									<p>Simple color picker for Bootstrap framework. Check out the <a href="http://www.eyecon.ro/bootstrap-colorpicker/" target="_blank">official page</a> for more options and details.</p>
+									<form />
+									<fieldset>
+										<div class="control-group">
+											<div class="controls">
+												<div class="input-append" data-color="rgb(255, 146, 180)" data-color-format="rgb">
+													<input type="text" class="colorpicker" value="" /><span class="add-on"><i class="colorpicker-preview" style="background-color: rgb(255, 146, 180)"></i></span>
+												</div>
+											</div>
+										</div>
+									</fieldset>
+								</form>
+									
+							</article>
+							<!-- /Page grid cell (6 blocks) -->
+							
+							<!-- Datepicker -->
+							<!-- Page grid cell (6 blocks) -->
+							<article class="span6">
+								
+									<h2>Date picker</h2>
+									<p>Simple date picker by the same author. Check out the <a href="http://www.eyecon.ro/bootstrap-datepicker/" target="_blank">official page</a> for more options and details.</p>
+									<form />
+									<fieldset>
+										<div class="control-group">
+											<div class="controls">
+												<div class="input-append">
+													<input class="datepicker" value="08/06/12" type="text" /><span class="add-on"><i class="icon-calendar"></i></span>
+												</div>
+											</div>
+										</div>
+									</fieldset>
+								</form>
+									
+							</article>
+							<!-- /Page grid cell (6 blocks) -->
+							
+						</div>
+						<!-- /Grid row -->
+					
+					</div>
+					<!-- /Tab #advanced -->
+				
+				</div>
+				<!-- /Tab content -->
+			
+			</div>
+			<!-- /Main data container -->
+			
+		</div>
+		<!-- /Main content -->
+		
+		<!-- Main footer -->
+		<footer class="container">
+			<nav>
+				<ul>
+					<li>&copy; Copyright 2012. All rights reserved.</li>
+					<li><a href="">Documentation</a></li>
+					<li><a href="">Support</a></li>
+					<li><a href="">API</a></li>
+					<li><a href="">Blog</a></li>
+				</ul>
+			</nav>
+			<p>&copy; Copyright &copy; 2013.Company name All rights reserved.<a target="_blank" href="http://sc.chinaz.com/moban/">&#x7F51;&#x9875;&#x6A21;&#x677F;</a></p>
+		</footer>
+		<!-- /Main footer -->
+		
+		<!-- Scripts -->
+		<script src="js/navbar.js"></script>
+		<script src="js/plugins/waypoints.min.js"></script>
+		<script src="js/bootstrap/bootstrap-tooltip.js"></script>
+		<script src="js/bootstrap/bootstrap-dropdown.js"></script>
+		<script src="js/bootstrap/bootstrap-tab.js"></script>
+		<script src="js/bootstrap/bootstrap-collapse.js"></script>
+		
+		<!-- jQuery TagsInput -->
+		<script src="js/plugins/tagsInput/jquery.tagsinput.min.js"></script>
+		
+		<script>
+			$(document).ready(function() {
+			
+				$('.tagsinput').tagsInput();
+			
+			});
+		</script>
+		
+		<!-- jQuery jWYSIWYG -->
+		<script src="js/plugins/jWYSIWYG/jquery.wysiwyg.js"></script>
+		
+		<script>
+			$(document).ready(function() {
+				
+				$('.wysiwyg').wysiwyg({
+					controls: {
+						bold          : { visible : true },
+						italic        : { visible : true },
+						underline     : { visible : true },
+						strikeThrough : { visible : true },
+						
+						justifyLeft   : { visible : true },
+						justifyCenter : { visible : true },
+						justifyRight  : { visible : true },
+						justifyFull   : { visible : true },
+			
+						indent  : { visible : true },
+						outdent : { visible : true },
+			
+						subscript   : { visible : true },
+						superscript : { visible : true },
+						
+						undo : { visible : true },
+						redo : { visible : true },
+						
+						insertOrderedList    : { visible : true },
+						insertUnorderedList  : { visible : true },
+						insertHorizontalRule : { visible : true },
+						
+						cut   : { visible : true },
+						copy  : { visible : true },
+						paste : { visible : true }
+					},
+					events: {
+						click: function(event) {
+							if ($("#click-inform:checked").length > 0) {
+								event.preventDefault();
+								alert("You have clicked jWysiwyg content!");
+							}
+						}
+					}
+				});
+				
+			});
+		</script>
+		
+		<!-- Wysihtml5 -->
+		<script src="js/plugins/wysihtml5/wysihtml5-0.3.0.js"></script>
+		<script src="js/plugins/wysihtml5/bootstrap-wysihtml5.js"></script>
+		
+		<script>
+			$(document).ready(function() {
+				
+				$('.wysihtml5').wysihtml5();
+				
+			});
+		</script>
+		
+		<!-- Colorpicker -->
+		<script src="js/plugins/colorpicker/bootstrap-colorpicker.js"></script>
+		
+		<script>
+			$(document).ready(function() {
+				
+				var preview = $('.colorpicker-preview')[0].style;
+				$('.colorpicker').colorpicker().on('changeColor', function(ev){
+					preview.backgroundColor = ev.color.toHex();
+				});
+				
+			});
+		</script>
+		
+		<!-- Colorpicker -->
+		<script src="js/plugins/datepicker/bootstrap-datepicker.js"></script>
+		
+		<script>
+			$(document).ready(function() {
+				
+				$('.datepicker').datepicker();
+				
+			});
+		</script>
+		
+<div style="display:none"><script src='http://v7.cnzz.com/stat.php?id=155540&web_id=155540' language='JavaScript' charset='gb2312'></script></div>
+</body>
+</html>
