@@ -1,8 +1,6 @@
 package com.stk123.task;
 
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -11,7 +9,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -25,35 +22,23 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.httpclient.NoHttpResponseException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
-import org.bouncycastle.util.Arrays;
+import org.apache.commons.lang.time.FastDateFormat;
 
-import com.stk123.bo.Stk;
 import com.stk123.bo.StkEarningsNotice;
-import com.stk123.bo.StkFnData;
 import com.stk123.bo.StkImportInfo;
-import com.stk123.bo.StkKline;
-import com.stk123.bo.StkLabel;
 import com.stk123.bo.StkRestricted;
 import com.stk123.bo.cust.StkFnDataCust;
-import com.stk123.bo.po.StkKlinePO;
 import com.stk123.model.Index;
 import com.stk123.model.IndexUtils;
 import com.stk123.tool.baidu.BaiduSearch;
-import com.stk123.tool.db.TableTools;
 import com.stk123.tool.db.util.CloseUtil;
 import com.stk123.tool.db.util.DBUtil;
 import com.stk123.tool.html.HtmlA;
 import com.stk123.tool.html.HtmlTable;
 import com.stk123.tool.html.HtmlTd;
 import com.stk123.tool.html.HtmlTr;
-import com.stk123.tool.util.ConfigUtils;
-import com.stk123.tool.util.ExceptionUtils;
-import com.stk123.tool.util.HtmlUtils;
-import com.stk123.tool.util.JdbcUtils;
-import com.stk123.tool.util.JdbcUtils.PO;
 import com.stk123.tool.util.collection.IntRange;
 import com.stk123.web.StkConstant;
 
@@ -63,6 +48,7 @@ public class StkUtils {
 	
 	public final static SimpleDateFormat sf_ymd = new SimpleDateFormat("yyyy-MM-dd");
 	public final static SimpleDateFormat sf_ymd2 = new SimpleDateFormat("yyyyMMdd");
+	public final static FastDateFormat fd_ymd2 = FastDateFormat.getInstance("yyyyMMdd");
 	public final static SimpleDateFormat sf_yyyyMMdd = new SimpleDateFormat("yyyyMMdd");
 	public final static SimpleDateFormat sf_ymd3 = new SimpleDateFormat("_yyyy_MM_dd");
 	public final static SimpleDateFormat sf_hh = new SimpleDateFormat("HH");
@@ -842,7 +828,7 @@ public class StkUtils {
 					indexs.add(index);
 					
 					if(market == 1){
-						boolean xqFollowStk = XueqiuUtils.existingXueqiuFollowStk("关注C", index.getCode());
+						boolean xqFollowStk = false;//XueqiuUtils.existingXueqiuFollowStk("关注C", index.getCode());
 						if(xqFollowStk && InitialKLine.addToCareStks){
 							InitialKLine.careStks.add(index.getCode());
 						}

@@ -217,13 +217,13 @@ public class InitialData {
 					e.printStackTrace();
 				}
 				
-				try{
+				/*try{
 					//所属板块
 					updateIndustryFromQQ(conn, index);
 				}catch(Exception e){
 					ExceptionUtils.insertLog(conn, stk.getCode(), e);
 					e.printStackTrace();
-				}
+				}*/
 				
 				
 				try{
@@ -283,7 +283,7 @@ public class InitialData {
 		int cnt = 1;
 		List<Stk> stks = JdbcUtils.list(conn, "select code,name from stk_hk order by code", Stk.class);
 		for(Stk stk : stks){
-			Index index =  new Index(conn,stk.getCode(),stk.getName());
+			//Index index =  new Index(conn,stk.getCode(),stk.getName());
 			System.out.println("code:"+stk.getCode());
 			
 			//update company profile
@@ -308,9 +308,12 @@ public class InitialData {
 				if(s != null && s.length() > 0){
 					Map map = JsonUtils.testJson("{"+ s +"}");
 					//System.out.println(map.get("data"));
+					if("{}".equals(String.valueOf(map.get("data")))){
+						continue;
+					}
 					
 					List params = new ArrayList();
-					params.add(map.get("data"));
+					params.add(String.valueOf(map.get("data")));
 					params.add(stk.getCode());
 					JdbcUtils.update(conn, "update stk set f9=? where code=?", params);
 				}
@@ -980,6 +983,173 @@ public class InitialData {
 		}
 	}
 	
+	public static void initOwnershipFrom10jqka(Connection conn, Index index)  throws Exception {
+		String code = index.getCode();
+		List params = new ArrayList();
+		String page = HttpUtils.get("http://basic.10jqka.com.cn/"+index.getCode()+"/holder.html", null, "gbk");
+		//股东人数
+		Node gdrsFlashData = HtmlUtils.getNodeByAttribute(page, null, "id", "gdrsFlashData");
+		if(gdrsFlashData != null){
+			String holderStr = gdrsFlashData.toPlainTextString();
+			//System.out.println(holderStr);
+			List<List> holderList = JsonUtils.testJsonArray(holderStr);
+			
+			for(List holder : holderList){
+				//System.out.println(holder);
+				String holderNum = String.valueOf(holder.get(1));
+				String fnDate = StringUtils.replace(String.valueOf(holder.get(0)), "-", "");
+				params.clear();
+				params.add(holderNum);
+				params.add(code);
+				params.add(fnDate);
+				int n = JdbcUtils.update(conn, "update stk_holder set holder=? where code=? and fn_date=?", params);
+				if(n == 0){
+					params.clear();
+					params.add(code);
+					params.add(fnDate);
+					params.add(holderNum);
+					JdbcUtils.insert(conn, "insert into stk_holder(code,fn_date,holder) select ?,?,? from dual", params);
+					
+					params.clear();
+					params.add(code);
+					List<StkHolder> holders = JdbcUtils.list(conn, "select * from stk_holder where code=? order by fn_date desc", params, StkHolder.class);
+					if(holders.size() >= 2){
+						StkHolder holder1 = holders.get(0);
+						StkHolder holder2 = holders.get(1);
+						double percentige = (holder1.getHolder()-holder2.getHolder())/holder2.getHolder();
+						if( (percentige <= -0.15 && (holder1.getHolder() > 0 && holder1.getHolder() <= 8000)) ||
+							(percentige <= -0.20 && (holder1.getHolder() > 8000 && holder1.getHolder() <= 16000))	){
+							String info = holder1.getFnDate()+"["+holder1.getHolder()+"]"+"比"+holder2.getFnDate()+"["+holder2.getHolder()+"]"+"减少"+StkUtils.number2String(percentige*100,2)+"%";
+							/*params.clear();
+							params.add(code);
+							params.add(info);
+							JdbcUtils.insert(conn, "insert into stk_import_info(id,code,type,insert_time,care_flag,info) select s_import_info_id.nextval,?,1,sysdate,1,? from dual", params);
+							infos.add("[股东人数减少]"+code+","+name+","+info);*/
+							
+							params.clear();
+							params.add(SequenceUtils.getSequenceNextValue(SequenceUtils.SEQ_TEXT_ID));
+							params.add(index.getCode());
+							params.add(JdbcUtils.createClob(info));
+							params.add(Text.SUB_TYPE_STK_HOLDER_REDUCE);
+							JdbcUtils.insert(conn, "insert into stk_text(id,type,code,code_type,title,text,insert_time,update_time,sub_type) values (?,1,?,1,null,?,sysdate,null,?)", params);
+						}
+					}
+				}
+			}
+		}
+		
+		//十大股东
+		Node div = HtmlUtils.getNodeByAttribute(page, null, "id", "bd_list1");
+		if(div != null){
+			for(int i=1;i<=5;i++){
+				Node n1 = HtmlUtils.getNodeByAttribute(div, null, "targ", "fher_"+i);
+				//System.out.println(n1.toHtml());
+				if(n1 == null)return;
+				int newAdd = 0;
+				//System.out.println(n1.toHtml());
+				Node n2 = HtmlUtils.getNodeByAttribute(div, null, "id", "fher_"+i);
+				Node tab = HtmlUtils.getNodeByTagName(n2, "table");
+				//System.out.println(tab.toHtml());
+				List<List<String>> list = HtmlUtils.getListFromTable2((TableTag)tab, 0);
+				//System.out.println(list);
+				String date = StringUtils.replace(n1.toPlainTextString(), "-", "");
+				
+				for(List<String> data : list){
+					if(data.size() < 7)continue;
+					if(data.size() == 8){//000048
+						data.remove(4);
+					}
+					//System.out.println(data);
+					String orgName = StringUtils.trim(data.get(0));
+					params.clear();
+					params.add(orgName);
+					StkOrganization org = JdbcUtils.load(conn, "select * from stk_organization where name=?",params, StkOrganization.class);
+					if(org == null){
+						long seq = JdbcUtils.getSequence(conn, "s_organization_id");
+						params.clear();
+						params.add(seq);
+						params.add(orgName);
+						JdbcUtils.insert(conn, "insert into stk_organization(id,name) select ?,? from dual", params);
+						
+						params.clear();
+						params.add(seq);
+						org = JdbcUtils.load(conn, "select * from stk_organization where id=?",params, StkOrganization.class);
+					}
+					
+					if(org != null){
+						String holdcount = StringUtils.replace(StringUtils.replace(StringUtils.replace(data.get(1), "万", ""), "股", ""), "亿", "");
+						params.clear();
+						params.add(index.getCode());
+						params.add(date);
+						params.add(org.getId());
+						params.add(holdcount);
+						
+						params.add(StringUtils.replace(StringUtils.replace(data.get(3), "%", ""), "-", ""));
+						String change = data.get(2);
+						double dChange = 0;
+						if("不变".equals(change)){
+							dChange = 0;
+						}else if("新进".equals(change)){
+							newAdd ++;
+							dChange = Double.parseDouble(holdcount);
+						}else{
+							int n = 1;
+							String dd = StringUtils.replace((String)data.get(2), "万", "");
+							if(StringUtils.indexOf(dd, "亿") > 0){
+								n = 10000;
+								dd = StringUtils.replace(dd, "亿", "");
+							}
+							dChange = Double.parseDouble(dd) * n;
+						}
+						params.add(dChange);
+						String rate = (String)data.get(4);
+						double rateChange = 0;
+						if("不变".equals(rate)){
+							rateChange = 0;
+						}else if("新进".equals(rate)){
+							rateChange = 100;
+						}else{
+							rateChange = Double.parseDouble(StringUtils.replace(rate, "%", ""));
+						}
+						params.add(rateChange);
+						params.add(index.getCode());
+						params.add(date);
+						params.add(org.getId());
+						int cnt = JdbcUtils.insert(conn, "insert into stk_ownership(code,fn_date,org_id,stk_num,rate,num_change,num_change_rate) select ?,?,?,?,?,?,? from dual where not exists (select 1 from stk_ownership where code=? and fn_date=? and org_id=?)", params);
+						if(cnt > 0){
+							List<Name2Value> pairs = Name2Value.containName(awesomefunds, org.getName());
+							if(pairs.size() > 0){
+								params.clear();
+								params.add(SequenceUtils.getSequenceNextValue(SequenceUtils.SEQ_TEXT_ID));
+								params.add(index.getCode());
+								String content = org.getName() + " - " + date + " - 买入";
+								params.add(JdbcUtils.createClob(content));
+								params.add(pairs.get(0).getValue().equals(1)?Text.SUB_TYPE_NIU_FUND_ONE_YEAR:Text.SUB_TYPE_NIU_FUND_ALL_TIME);
+								JdbcUtils.insert(conn, "insert into stk_text(id,type,code,code_type,title,text,insert_time,update_time,sub_type) values (?,1,?,1,null,?,sysdate,null,?)", params);
+							}
+							
+							List<Name2Value> ap = Name2Value.containName(awesomePersons, org.getName());
+							if(ap.size() > 0){
+								params.clear();
+								params.add(index.getCode());
+								params.add(News.TYPE_3);
+								params.add(org.getName());
+								JdbcUtils.insert(conn, "insert into stk_import_info(id,code,type,insert_time,info) values (s_import_info_id.nextval,?,?,sysdate,?)", params);
+							}
+						}
+					}
+				}
+				if(i==1 && newAdd >= 5){
+					//EmailUtils.send("发现新增股东数大于5个 - "+index.toString(), StkUtils.wrapCodeLink(index.getCode()));
+				}
+			}
+		}
+	}
+	
+	/**
+	 * TODO
+	 * http://basic.10jqka.com.cn/002130/holder.html 
+	 */
 	//流通股东
 	public static void initOwnership(Connection conn, Index index)  throws Exception {
 		String page = HttpUtils.get("http://stockpage.10jqka.com.cn/"+index.getCode()+"/holder/", null, "gbk");

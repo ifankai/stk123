@@ -5,6 +5,12 @@ select a.* from stk_earnings_notice a,
 (select code,max(fn_date) fn_date from stk_earnings_notice group by code) b
 where a.code=b.code and a.fn_date=b.fn_date order by a.fn_date desc
 ),
+holder 
+as(
+select a.* from stk_holder a,
+(select code,max(fn_date) fn_date from stk_holder group by code) b
+where a.code=b.code and a.fn_date=b.fn_date order by a.fn_date desc
+),
 forecast
 as(
 select * from (select code,forecast_year,forecast_net_profit from stk_earnings_forecast) pivot (sum(forecast_net_profit)                              
@@ -12,7 +18,7 @@ for forecast_year in (2018 as this_year, 2019 as next_year))
 )
 
 
-select v.*,e.fn_date er_date,e.er_low,e.er_high,e.last_amount,
+select v.*,e.fn_date er_date,e.er_low,e.er_high,e.last_amount,h.holder,
 market_cap/
 nullif((case
   when v.fn_date<e.fn_date then /* 只有预期季度大于当前实际最大季度 */
@@ -44,6 +50,6 @@ round(case when v.PE >0 and (e.er_low+e.er_high)/2 > 0 then v.PE/(e.er_low+e.er_
 (case when f.this_year != 0 then market_cap/f.this_year else null end) as forecast_pe_this_year, 
 (case when f.next_year != 0 then market_cap/f.next_year else null end) as forecast_pe_next_year
 
-from stk_industry_search_view v, earning e, forecast f 
-where v.code=e.code(+) and v.code=f.code(+)
+from stk_industry_search_view v, earning e, forecast f, holder h
+where v.code=e.code(+) and v.code=f.code(+) and v.code=h.code(+)
 --and e.code in ('300247') ; 
