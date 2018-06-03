@@ -55,7 +55,9 @@ public class XueqiuStockArticleJob implements Job {
 				Thread.sleep(1000*10);
 			}
 			if(codeIndex >= stks.size()){
-				EmailUtils.send("雪球个股长文2", StringUtils.join(results, "<br><br>"));
+				if(results.size() > 0){
+					EmailUtils.send("雪球个股长文2", StringUtils.join(results, "<br><br>"));
+				}
 				return;
 			}
 		}catch(Exception e){
@@ -69,7 +71,8 @@ public class XueqiuStockArticleJob implements Job {
 	//https://xueqiu.com/statuses/search.json?count=10&comment=0&symbol=SH603611&hl=0&source=all&sort=alpha&page=1&_=1507209904103
 	public static List<XueqiuArticle> getArticles(Connection conn, String code) throws Exception {
 		String scode = StkUtils.getStkLocation(code)+code;
-		String page = HttpUtils.get("https://xueqiu.com/statuses/search.json?count=10&comment=0&symbol="+scode+"&hl=0&source=all&sort=alpha&page=1&_="+new Date().getTime(),null, XueqiuUtils.getCookies(), "gb2312");
+		Map<String, String> requestHeaders = XueqiuUtils.getCookies();
+		String page = HttpUtils.get("https://xueqiu.com/statuses/search.json?count=10&comment=0&symbol="+scode+"&hl=0&source=all&sort=alpha&page=1&_="+new Date().getTime(),null, requestHeaders, "gb2312");
 		//System.out.println(page);
 		List<XueqiuArticle> results = new ArrayList<XueqiuArticle>();
 		if("400".equals(page)){

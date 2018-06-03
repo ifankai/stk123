@@ -47,7 +47,7 @@ public class HKStkTools {
 			IndexContext context = new IndexContext();
 			
 			List<String> result = new ArrayList<String>();
-			String codes = "00001";
+			String codes = "08597";
 			String sql = null;
 			if(codes != null && codes.length() > 0){
 				sql = "select code,name from stk where market=3 and code in ("+codes+") order by code";
@@ -69,7 +69,9 @@ public class HKStkTools {
 					context.indexs.add(index);
 					System.out.println("code:"+stk.getCode());
 					
-					index.initKLine();
+					//index.initKLine();
+					
+					
 				}catch(Exception e){
 					e.printStackTrace();
 					errors.add(stk.getCode());

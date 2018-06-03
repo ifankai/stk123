@@ -867,6 +867,10 @@ public class Index {
 				}
 				
 			}else{
+				/**
+				 * TODO
+				 * http://webstock.quote.hermes.hexun.com/a/kline?code=szse000001&start=20180601150000&number=-600&type=5&callback=callback
+				 */
 				String page = HttpUtils.get("http://flashquote.stock.hexun.com/Quotejs/DA/" + this.loc + "_" + this.code + "_DA.html?", null, "gbk");
 				List<List> datas = JsonUtils.getList4Json("[[" + StringUtils.substringBetween(page, "[[", "]]") + "]]", ArrayList.class);
 				page = HttpUtils.get("http://finance.sina.com.cn/realstock/company/"+ (loc==1?"sh":"sz") + this.code + "/qianfuquan.js", null, "gbk");
@@ -1945,15 +1949,15 @@ public class Index {
 		return null;
 	}
 	
-	
+	private SimpleDateFormat sf_ymd2 = new SimpleDateFormat("yyyyMMdd"); // 多线程下SimpleDateFormat不安全，所以这里给每个index new自己的instance
 	private List<StkFnDataCust> getFnData() throws Exception{
 		if(fnData != null){
 			return fnData;
 		}
-		this.fnData = (List<StkFnDataCust>)CacheUtils.getByCode(this.getCode(), CacheUtils.KEY_STK_FN);
+		/*this.fnData = (List<StkFnDataCust>)CacheUtils.getByCode(this.getCode(), CacheUtils.KEY_STK_FN);
 		if(fnData != null){
 			return fnData;
-		}
+		}*/
 		
 		//if(this.fnData.size() > 0) return fnData;
 		List params = new ArrayList();
@@ -1969,7 +1973,7 @@ public class Index {
 			for(StkFnDataCust data : this.fnData){
 				data.setFnData(this.fnData);
 				data.setStkFnType(Fn.getFnTypes().get(data.getType().toString()));
-				int mm = StkUtils.get(StkUtils.sf_ymd2.parse(data.getFnDate()), Calendar.MONTH)+1;
+				int mm = StkUtils.get(sf_ymd2.parse(data.getFnDate()), Calendar.MONTH)+1;
 				data.setNumber(StkUtils.getQuarterNumber(MMEnd, mm));
 			}
 		}

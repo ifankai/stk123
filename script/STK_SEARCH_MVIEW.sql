@@ -1,4 +1,5 @@
 drop materialized view STK_SEARCH_MVIEW;
+
 create materialized view STK_SEARCH_MVIEW
 refresh complete on demand
  next sysdate + 2/24
@@ -15,10 +16,13 @@ null as last_net_profit_fn_date,null as net_profit_max,null as net_profit_max_fl
 null as last_net_profit_one_quarter,null as net_profit_last_year,null as Capital_reserve_per_share,
 null as Undistributed_profit_per_share,null as cash_net_profit_rate,null as pe_yoy,
 null as er_date,null as er_low,null as er_high,null as last_amount,null as er_pe,null as er_net_profit_max_flag,
-null as peg,null as forecast_pe_this_year,null as forecast_pe_next_year from stk_hk
+null as peg,null as forecast_pe_this_year,null as forecast_pe_next_year,
+null as holder 
+from stk_hk
 ;
 
-select * from STK_SEARCH_MVIEW order by market, code;
+
+select * from STK_SEARCH_MVIEW where market=1 order by market, code;
 
 call dbms_refresh.refresh('STK_SEARCH_MVIEW');
 

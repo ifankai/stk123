@@ -15,13 +15,13 @@ import org.apache.commons.httpclient.Header;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
+import com.stk123.tool.util.ConfigUtils;
 import com.stk123.tool.util.HttpUtils;
 import com.stk123.tool.util.JsonUtils;
 
-
 public class XueqiuUtils {
 	
-	private static String cookies = null; 
+	private static String cookies = ConfigUtils.getProp("xueqiu.cookie"); 
 	
 	public static Map<String, String> getCookies(){
 		Map<String, String> requestHeaders = new HashMap<String, String>();
@@ -30,7 +30,7 @@ public class XueqiuUtils {
 		}
 		if(cookies == null || cookies.length() == 0){
 			cookies = "aliyungf_tc=AQAAAChdej+MRAcAyEzEKlewsV8BhWiO; xq_a_token.sig=F2iHnlcpCSXgutP8euxdQqDfqq4; xq_r_token.sig=ZcCuq7XTdkGNIafT5ot8irXZzCU; device_id=9e72888b69a1db66c7db8e62c4be5508; s=g012xghag5; bid=26948a7b701285b58366203fbc172ea6_j7fn1q7b; webp=0; snbim_minify=true; __utmt=1; __utma=1.785228432.1505102053.1505126378.1505130297.3; __utmb=1.10.8.1505130359323; __utmc=1; __utmz=1.1505102053.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); captcha_id=WTvEoVxjJGDv6LYrpLfskEMPrAoAvK; xq_a_token=ef5544a2ab4f023740a43b9c7536f2c3869b4838; xqat=ef5544a2ab4f023740a43b9c7536f2c3869b4838; xq_r_token=dbcdb8706fd556ed2172ac5f89dcec581cf1c893; xq_is_login=1; u=6237744859; xq_token_expire=Fri%20Oct%2006%202017%2019%3A49%3A51%20GMT%2B0800%20(CST); Hm_lvt_1db88642e346389874251b5a1eded6e3=1504942936,1505028862,1505051594,1505102153; Hm_lpvt_1db88642e346389874251b5a1eded6e3=1505130466";
-			cookies = "device_id=7e03b129e635a880b2f9c41bf47b6694; s=fx121la7of; bid=26948a7b701285b58366203fbc172ea6_j9krmr16; webp=0; remember=1; remember.sig=K4F3faYzmVuqC0iXIERCQf55g2Y; xq_a_token=2f5a9521c01d0578d5dc96b1b038fbe25fe5395b; xq_a_token.sig=MgfmjCDlb1-oCwr-4lgD53wGH10; xq_r_token=4d680444ea729a36dcce2cbc7674e759dca02eee; xq_r_token.sig=1wKFZlyZ9Mvl0tIl0Mp6c_bqxRI; xq_is_login=1; xq_is_login.sig=J3LxgPVPUzbBg3Kee_PquUfih7Q; u=6237744859; u.sig=jFt0sGgsXMOKMFnjEVjqQCy_ido; aliyungf_tc=AQAAAJbZk0Ir+ggAEWJw3KHMlTTT9njE; Hm_lvt_1db88642e346389874251b5a1eded6e3=1521465684,1523248547; Hm_lpvt_1db88642e346389874251b5a1eded6e3=1523248547; __utmt=1; __utma=1.1695750544.1509767735.1523086188.1523248548.104; __utmb=1.1.10.1523248548; __utmc=1; __utmz=1.1516714240.65.3.utmcsr=localhost|utmccn=(referral)|utmcmd=referral|utmcct=/stk; snbim_minify=true";
+			cookies = "device_id=7e03b129e635a880b2f9c41bf47b6694; s=fx121la7of; bid=26948a7b701285b58366203fbc172ea6_j9krmr16; webp=0; aliyungf_tc=AQAAAFmXpW/eNwkAQvSh02g9nwxYZjLF; snbim_minify=true; __utma=1.1695750544.1509767735.1526700872.1527685346.125; __utmc=1; __utmz=1.1516714240.65.3.utmcsr=localhost|utmccn=(referral)|utmcmd=referral|utmcct=/stk; remember=1; remember.sig=K4F3faYzmVuqC0iXIERCQf55g2Y; xq_a_token=b8b1733f3010dcc2e0fa9203a061039e3db9849f; xq_a_token.sig=eY7aVZ1b2NGWUf8weoa2qRajDAI; xq_r_token=b23ed2dacc5acebb2223cf3d2e980c2015f7d604; xq_r_token.sig=Erv_yB_ciU1hMP8QFajICPVtXcY; xq_is_login=1; xq_is_login.sig=J3LxgPVPUzbBg3Kee_PquUfih7Q; u=6237744859; u.sig=jFt0sGgsXMOKMFnjEVjqQCy_ido; Hm_lvt_1db88642e346389874251b5a1eded6e3=1525514400,1526046498,1527685338,1527686350; Hm_lpvt_1db88642e346389874251b5a1eded6e3=1527907491; _ga=GA1.2.1695750544.1509767735; _gid=GA1.2.1245105765.1527907344";
 		}
     	requestHeaders.put("Cookie", cookies);
     	return requestHeaders;
@@ -120,10 +120,11 @@ public class XueqiuUtils {
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 		//System.out.println(login());
-		Set<String> followStks = XueqiuUtils.getFollowStks("关注C");
+		/*Set<String> followStks = XueqiuUtils.getFollowStks("关注C");
 		System.out.println(followStks);
 		followStks.addAll(XueqiuUtils.getFollowStks("备选"));
-		IOUtils.writeLines(followStks, null, new FileOutputStream(new File("d:\\care.txt")));
+		IOUtils.writeLines(followStks, null, new FileOutputStream(new File("d:\\care.txt")));*/
+		System.out.println(ConfigUtils.getProp("xueqiu.cookie"));
 	}
 
 }
