@@ -750,15 +750,23 @@ public class InitialData {
 	}
 	
 	public static void updateStkF9(Connection conn, Index index) throws Exception {
-		String page = HttpUtils.get("http://f9.eastmoney.com/soft/gp30.php?code="+index.getCode()+(index.getLoc()==1?"01":"02"), null, "utf-8");
+		String page = HttpUtils.get("http://emweb.securities.eastmoney.com/PC_HSF10/CoreConception/CoreConceptionAjax?code="+(index.getLoc()==1?Index.SH_LOWER:Index.SZ_LOWER+index.getCode()), null, "utf-8");
 		//System.out.println(page);
-		List<Node> nodes = HtmlUtils.getNodeListByTagName(page, null, "p");
-		if(nodes.size() > 0){
-			String text = StringUtils.replace(StringUtils.replace(nodes.get(0).toHtml(), "<p style=\"margin-left:10px;line-height:20px;\">", ""),"</p>","");
-			//System.out.println(text);
-			if(text != null && text.length() > 0){
+		Map map = JsonUtils.testJson(page);
+		if(map != null){
+			List<Map> list = (List<Map>)map.get("hxtc");
+			StringBuffer sb = new StringBuffer(1024);
+			int i = 1;
+			for(Map m : list){
+				sb.append("要点"+ i++ + ": ");
+				sb.append(m.get("gjc"));
+				sb.append(" ");
+				sb.append(m.get("ydnr"));
+				sb.append("\r");
+			}
+			if(sb != null && sb.length() > 0){
 				List params = new ArrayList();
-				params.add(JdbcUtils.createClob(text));
+				params.add(JdbcUtils.createClob(sb.toString()));
 				params.add(index.getCode());
 				JdbcUtils.update(conn, "update stk set f9=? where code=?", params);
 			}
@@ -1398,6 +1406,7 @@ public class InitialData {
 					}
 					String page = HttpUtils.get(url, "GBK");
 					Node table = HtmlUtils.getNodeByAttribute(page, null, "id", id);
+					//System.out.println(table.toHtml());
 					if(table == null)break;
 					Map<String,Map<String, String>> datas = HtmlUtils.getListFromTable((TableTag)table, 1, 0);
 					for(StkFnType fnType : fnEntry.getValue()){
@@ -1513,7 +1522,15 @@ public class InitialData {
 						if("原始币种".equals(key)){
 							if(row.size() > 1){
 								params.clear();
-								params.add(row.get(1));
+								String currency = row.get(1);
+								if("美元".equals(row.get(1))){
+									currency = "USD";
+								}else if("人民币".equals(row.get(1))){
+									currency = "CNY";
+								}else if("欧元".equals(row.get(1))){
+									currency = "EUR";
+								}
+								params.add(currency);
 								params.add(code);
 								JdbcUtils.update(conn, "update stk set fn_currency=? where code=?", params);
 								break;
@@ -1597,7 +1614,7 @@ public class InitialData {
 			Map result = (Map)((List)quote.get("result")).get(0);
 			
 			Map defaultKeyStatistics = (Map)result.get("defaultKeyStatistics");
-			if(defaultKeyStatistics.get("lastFiscalYearEnd") != null){
+			if(defaultKeyStatistics != null && defaultKeyStatistics.get("lastFiscalYearEnd") != null){
 				String lastFiscalYearEnd = String.valueOf(((Map)defaultKeyStatistics.get("lastFiscalYearEnd")).get("fmt"));
 				String mostRecentQuarter = String.valueOf(((Map)defaultKeyStatistics.get("mostRecentQuarter")).get("fmt"));
 				String yearEnd = StringUtils.replace(lastFiscalYearEnd, "-", "");
@@ -1630,8 +1647,9 @@ public class InitialData {
 							if(fnValue.indexOf("B") > 0){
 								fnValue = StringUtils.replace(fnValue, "B", "");
 								fnValue = String.valueOf(Double.parseDouble(fnValue)*1000);
-							}else if(fnValue.indexOf("K") > 0){
+							}else if(StringUtils.indexOfIgnoreCase(fnValue, "K") > 0){
 								fnValue = StringUtils.replace(fnValue, "K", "");
+								fnValue = StringUtils.replace(fnValue, "k", "");
 								fnValue = String.valueOf(Double.parseDouble(fnValue)/1000);
 							}
 							

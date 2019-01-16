@@ -62,7 +62,8 @@
 			  <li><a target="_blank" href="http://data.eastmoney.com/cjsj/bankTransfer.html"><span class="icon-book"></span> 东方财富-银证转账</a></li>
 			  <li><a target="_blank" href="http://data.eastmoney.com/xg/xg/default.html"><span class="icon-book"></span> 东方财富-新股申购</a></li>
 			  <li><a target="_blank" href="http://data.eastmoney.com/executive/gdzjc.html"><span class="icon-book"></span> 东方财富-股东增减持</a></li>
-			  
+			  <li><a target="_blank" href="http://data.eastmoney.com/gpzy/pledgeRatio.aspx"><span class="icon-book"></span> 东方财富-上市公司质押比例</a></li>
+			  <li><a target="_blank" href="http://www.cninfo.com.cn/disclosure/prbookinfo.jsp?desc=0&&order=2&&&market=szmb&&stockCode=&&sjplrq="><span class="icon-book"></span> 定期报告预约披露时间表</a></li>
 			  
 			  <li><a target="_blank" href="/dailyreport/<%=StkUtils.getToday() %>/index.html"><span class="icon-book"></span> 策略模型</a></li>
 			  <li><a target="_blank" href="https://www.jisilu.cn/data/indicator/"><span class="icon-book"></span> 市场的估值</a></li>

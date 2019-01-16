@@ -1186,7 +1186,7 @@ function show_div(obj, _windCode){
   setTimeout(function(){window.scroll(0,y_scroll);}, 0);
 }
 function show_kline(obj, _windCode){
-  y_scroll = document.body.scrollTop;
+  y_scroll = document.body.scrollTop==0?document.documentElement.scrollTop:document.body.scrollTop;
   isMouseOver = true;
   show_div(obj, _windCode);
 }
@@ -1209,7 +1209,7 @@ function mover(){
 	isMouseOver = true;
 }
 function mouseover(obj, _windCode){
-  y_scroll = document.body.scrollTop;
+	y_scroll = document.body.scrollTop==0?document.documentElement.scrollTop:document.body.scrollTop;
   isMouseOver = true;
   setTimeout(function(){
 	  show_div(obj, _windCode);

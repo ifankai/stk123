@@ -84,7 +84,7 @@ public class InternetSearch {
 				}
 				//System.out.println(sb.toString());
 				String content = sb.toString();
-				EmailUtils.send("【关注对象最新动态,日期:"+StkUtils.getToday()+"】", content);
+				EmailUtils.send("【新浪博客最新动态,日期:"+StkUtils.getToday()+"】", content);
 				if(content.contains("十进宫")){
 					//EmailUtils.send("kai.fan@suncorp.com.au", "十进宫", content);
 				}

@@ -96,7 +96,7 @@ public class XueqiuComment {
 						Map mp = (Map)it.next();
 						String comment = String.valueOf(mp.get("text"));
 						if(!"".equals(comment) && !"null".equals(comment)){
-							System.out.println(comment);
+							//System.out.println(comment);
 							if(!comment.startsWith("<a"))continue;
 							List<Node> links = HtmlUtils.getNodeListByTagName(comment, null, "a");
 							if(links != null && links.size() > 0){

@@ -315,7 +315,10 @@ if(index.getMarket()==1){
 %>
 <div class="content" style="min-width:1240px;margin-left:-140px">
   <div class="page-header" style="position: relative;">
-    <h3><span class="icon-list"></span> <a target="_blank" href="http://money.finance.sina.com.cn/corp/go.php/vFD_FinancialGuideLine/stockid/<%=index.getCode() %>/displaytype/4.phtml">财务数据</a></h3>
+    <h3><span class="icon-list"></span> 
+    	<a target="_blank" href="http://money.finance.sina.com.cn/corp/go.php/vFD_FinancialGuideLine/stockid/<%=index.getCode() %>/displaytype/4.phtml">
+    	财务数据
+    	</a></h3>
     <div style="position:absolute;left:150px;top:9px;" >
 	    <!-- Nav tabs -->
 	    <ul class="nav nav-tabs" role="tablist">
@@ -406,7 +409,7 @@ if(index.getMarket()==1){
   </div>
 </div>
 <pre>
-<strong>财务数据 观察要点：</strong>
+<strong>财务数据 分析要点：</strong>
   1.毛利率是否在同行业里较高（大于30%~60%），毛利率是否同比增长。
   2.主营收入是否先于净利率增长：<%
   StkImportInfo ii = JdbcUtils.load(sc.getConnection(), "select * from stk_import_info where type=20 and code='"+index.getCode()+"' order by id desc", StkImportInfo.class);
@@ -429,6 +432,10 @@ if(index.getMarket()==1){
   6.销售净利率是否>5%(零售行业除外)，最好在15%以上；ROE是否>8% (来自 - 《投资的本源》 P31)；经营性净现金流与净利润比>70% (P69)
   7.杜邦分析：净资产收益率(ROE) = 销售净利润率    *    资产周转率    *   权益乘数 
                            = (净利润/主营收入) * (主营收入/总资产) * (总资产/净资产)  (来自 - 《投资的本源》 P73)
+    参考文档：<a target="_blank" href="https://note.youdao.com/web/#/file/recent/note/73F3E3712CE7492BBAE3539E12D62666/">浅析“杜邦分析法”</a>
+  8.商誉是否太大。并购重组会产生商誉，具体参见：<a target="_blank" href="https://note.youdao.com/web/#/file/recent/note/3D9A0D55DC1A470BB5D8F4A879C477C5/">警惕商誉的恶之花</a>
+  9.案例分析：<a target="_blank" href="https://note.youdao.com/web/#/file/recent/note/e36b07f35fd55c2864a8cdb175cc3637/">三安光电</a>
+  10.大股东质押比例不能太高，<a target="_blank" href="http://data.eastmoney.com/gpzy/pledgeRatio.aspx">查询质押比例</a>。
 </pre>
 <%}else if(index.getMarket()==2){ 
 	//com.stk123.tool.util.collection.Table tab = index.getFnTable(fnTypes);

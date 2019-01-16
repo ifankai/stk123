@@ -52,7 +52,7 @@ public class XueqiuStockArticleJob implements Job {
 					}
 				}
 				//System.out.println(results);
-				Thread.sleep(1000*10);
+				Thread.sleep(1000*15);
 			}
 			if(codeIndex >= stks.size()){
 				if(results.size() > 0){

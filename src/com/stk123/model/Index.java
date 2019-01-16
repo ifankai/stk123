@@ -391,9 +391,12 @@ public class Index {
 						}
 						if(ss[46].length()>0){
 							pbttm = Double.parseDouble(ss[46]); //sinaµÄpb²»¶Ô
-							Double pbLast = this.getK().getKline().getPbTtm();
-							if(pbLast != null && Math.abs((pbLast-pbttm)/pbLast)>0.2 ){
-								pbttm = this.getPB();
+							StkKline kTmp = this.getK().getKline();
+							if(kTmp != null){
+								Double pbLast = kTmp.getPbTtm();
+								if(pbLast != null && Math.abs((pbLast-pbttm)/pbLast)>0.2 ){
+									pbttm = this.getPB();
+								}
 							}
 						}
 						psttm = this.getPSTTM();
@@ -810,7 +813,7 @@ public class Index {
 		String startDate = StkUtils.formatDate(StkUtils.addDay(now, -n),StkUtils.sf_ymd2);
 		
 		if(market == 1){
-			if(this.getStk().getCate() == 2){
+			if(this.getStk().getCate() == 2 || this.getStk().getCate() == 1){
 				String tmp = null;
 				if(this.code.length() == 6){
 					tmp = (this.loc==1?"sse":"szse") + (this.code.equals("999999")?"000001":this.code);
@@ -866,11 +869,12 @@ public class Index {
 					JdbcUtils.insert(this.getConnection(), "insert into "+tab_stkkline+"(code,kline_date,open,close,last_close,high,low,volumn,amount,close_change,hsl) select ?,?,?,?,?,?,?,?,?,null,null from dual where not exists (select 1 from "+tab_stkkline+" where code=? and kline_date=?)", params);
 				}
 				
-			}else{
-				/**
+			}
+			/*else{
+				*//**
 				 * TODO
 				 * http://webstock.quote.hermes.hexun.com/a/kline?code=szse000001&start=20180601150000&number=-600&type=5&callback=callback
-				 */
+				 *//*
 				String page = HttpUtils.get("http://flashquote.stock.hexun.com/Quotejs/DA/" + this.loc + "_" + this.code + "_DA.html?", null, "gbk");
 				List<List> datas = JsonUtils.getList4Json("[[" + StringUtils.substringBetween(page, "[[", "]]") + "]]", ArrayList.class);
 				page = HttpUtils.get("http://finance.sina.com.cn/realstock/company/"+ (loc==1?"sh":"sz") + this.code + "/qianfuquan.js", null, "gbk");
@@ -905,7 +909,7 @@ public class Index {
 					JdbcUtils.insert(this.getConnection(), "update "+tab_stkkline+" set volumn=?,amount=?,close_change=? where code=? and kline_date=?", params);
 				}
 				//this.initPEFromXueQiu();
-			}
+			}*/
 			setCloseChange();
 			//initHsl(1);
 			//initCapitalFlow();
