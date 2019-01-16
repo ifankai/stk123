@@ -32,14 +32,14 @@ public class UStkTools {
 		try {
 			//HttpUtils.NO_OF_RETRY = 10;
 			conn = DBUtil.getConnection();
-			InitialData.initUStkFromFinviz(conn);
+			//InitialData.initUStkFromFinviz(conn);
 			//InitialData.initUStkFromEasymoney(conn);
 			//if(true)return;
 			//InitialKLine.initUStkPE(conn);
 			List<StkFnType> fnTypes = JdbcUtils.list(conn, "select * from stk_fn_type where market=2 and status=1", StkFnType.class);
 			List<String> errors = new ArrayList<String>();
 			String sql = null;
-			String codes = "JMEI";
+			String codes = "CWEI";
 			if(codes != null && codes.length() > 0){
 				sql = "select code,name from stk_us where market=2 and code in ('"+codes+"') order by code";
 			}else{
@@ -56,6 +56,7 @@ public class UStkTools {
 			for(Stk stk : stks){
 				try{
 					System.out.println(stk.getCode()+","+stk.getName());
+					String code = stk.getCode();
 					Index index = new Index(conn,stk.getCode(),stk.getName());
 					/*
 					if(index.getStk().getHot() < 500 && !StringUtils.containsIgnoreCase(stk.getName(), "etf")){
@@ -63,6 +64,7 @@ public class UStkTools {
 					}*/
 					
 					indexs.add(index);
+					InitialData.initFnDataTTM(conn,StkUtils.now,index,fnTypes);
 					
 					//index.initKLineToday();
 					//index.initKLines();

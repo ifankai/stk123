@@ -28,7 +28,6 @@ import com.stk123.web.StkConstant;
 import com.stk123.web.StkDict;
 import com.stk123.web.bs.StkService;
 
-
 public class EarningsForecast {
 
 	public static void main(String[] args) throws Exception {
@@ -41,7 +40,7 @@ public class EarningsForecast {
 			List<Stk> stks = JdbcUtils.list(conn, "select code,name from stk_cn order by code", Stk.class);
 			List params = new ArrayList();
 			for(Stk stk : stks){
-				//System.out.println(stk.getCode());
+				System.out.println(stk.getCode());
 				try{
 					String page = HttpUtils.get("http://data.eastmoney.com/bbsj/"+stk.getCode()+".html", "GBK");
 					TableTag node = HtmlUtils.getTableNodeByText(page, null, "业绩变动幅度");
@@ -49,12 +48,13 @@ public class EarningsForecast {
 					List<List<String>> datas = HtmlUtils.getListFromTable(node);
 					//System.out.println(datas);
 					Node node4 = HtmlUtils.getNodeByAttribute(page, null, "id", "Table4");
+					if(node4 == null)continue;
 					List<List<String>> datas4 = HtmlUtils.getListFromTable((TableTag)node4, 0);
 					//System.out.println(datas4);
 					
 					for(List<String> data : datas){
 						if(data.size() >= 5){
-							String er = data.get(2);
+							String er = data.get(3);
 							double value = StkUtils.percentigeGreatThan(er);
 							String content = JsonUtils.getJsonString4JavaPOJO(data);
 							params.clear();
@@ -76,7 +76,7 @@ public class EarningsForecast {
 					
 					for(List<String> data : datas){
 						if(data.size() >= 5){
-							String er = data.get(2);
+							String er = data.get(3);
 							Double erLow = null;
 							Double erHigh = null;
 							if(!"-".equals(er)){
@@ -98,14 +98,20 @@ public class EarningsForecast {
 							params.add(data.get(1));
 							params.add(erLow);
 							params.add(erHigh);
-							params.add(data.get(3));
-							params.add("-".equals(data.get(4))?null:data.get(4));
-							params.add(StringUtils.replace(data.get(5), "-", ""));
+							params.add(data.get(5));
+							String amount = "-".equals(data.get(6))?null:data.get(6);
+							int n = 1;
+							if(StringUtils.contains(amount, "亿")){
+								n = 10000;
+								amount = StringUtils.replace(amount, "亿", "");
+							}
+							amount = StringUtils.replace(amount, "万", "");
+							params.add(amount==null?null:Double.parseDouble(amount) * n);
+							params.add(StringUtils.replace(data.get(7), "-", ""));
 							
 							params.add(stk.getCode());
 							params.add(fnDate);
 							JdbcUtils.insert(conn, "insert into stk_earnings_notice select ?,?,?,?,?,?,?,?,null,sysdate from dual where not exists (select 1 from stk_earnings_notice where code=? and fn_date=?)", params);
-							
 							
 							String realDate = null;
 							for(List<String> data4 : datas4){
@@ -148,7 +154,8 @@ public class EarningsForecast {
 				}catch(Exception e){
 					e.printStackTrace();
 					ExceptionUtils.insertLog(conn, stk.getCode(), e);
-					throw e;
+					Thread.sleep(1000 * 180);
+					//throw e;
 				}
 			}
 			/*if(growth.size() > 0){

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.commons.lang.StringUtils;
 import org.quartz.Job;
@@ -36,27 +37,35 @@ public class XueqiuLongArticleJob implements Job {
 		ID_EXCLUDED.add("9485866208");//蛋卷基金
 				
 	}
+	
+	public static int random(int n){
+		Random r = new Random(n);
+		return r.nextInt(n);
+	}
 
 	@Override
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {
 		System.out.println("XueqiuLongArticleJob executing...");
 		List<XueqiuArticle> arts = new ArrayList<XueqiuArticle>();
+		Random r = new Random();
 		try {
 			if(MEMBERS.size() == 0){
 				try{
-					initUsers();
+					//initUsers();
 				}catch(Exception e){
 					EmailUtils.send("XueqiuLongArticleJob initUsers Error", ExceptionUtils.getException(e));
 				}
 			}
+			System.out.println("MEMBERS.size="+MEMBERS.size());
 			int i = 0;
 			for(XueqiuUser user : MEMBERS){
 				//System.out.println("1 user name:"+user.name+",id:"+user.id);
 				this.getLongArticle(user, arts);
 				
-				if(i++ % 100 == 0){
+				if(i++ % 10 == 0){
 					Thread.sleep(1000*15);
 				}
+				Thread.sleep(r.nextInt(1000));
 			}
 			
 			/*if(arts.size() > 0){
@@ -87,9 +96,10 @@ public class XueqiuLongArticleJob implements Job {
 					u.name = user.getName();
 					this.getLongArticle(u, arts);
 				}
-				if(i++ % 100 == 0){
+				if(i++ % 10 == 0){
 					Thread.sleep(1000*15);
 				}
+				Thread.sleep(r.nextInt(1000));
 			}
 			/*if(arts.size() > 0){
 				EmailUtils.send("非关注大V雪球长文", StringUtils.join(arts, "<br><br>"));
@@ -103,6 +113,7 @@ public class XueqiuLongArticleJob implements Job {
 	private void initUsers() throws Exception {
 		int cnt = 1;
 		int maxCnt = 0;
+		Random r = new Random();
 		do{
 			String page = HttpUtils.get("https://xueqiu.com/friendships/groups/members.json?uid=6237744859&gid=0&page="+cnt+"&_="+new Date().getTime(),null,XueqiuUtils.getCookies(), "gb2312");
 			Map m = JsonUtils.testJson(page);
@@ -123,13 +134,21 @@ public class XueqiuLongArticleJob implements Job {
 			if(++cnt > maxCnt){
 				break;
 			}
+			Thread.sleep(r.nextInt(2000));
 		}while(true);
 	}
 	
 	private List<XueqiuArticle> getLongArticle(XueqiuUser user, List<XueqiuArticle> results) throws Exception {
 		int pageCnt = 1;
+		Random r = new Random();
 		while(true){
-			String page = HttpUtils.get("https://xueqiu.com/v4/statuses/user_timeline.json?user_id="+user.id+"&page="+(pageCnt++)+"&type=2&_="+new Date().getTime(),null,XueqiuUtils.getCookies(), "gb2312");
+			Map<String, String> requestHeaders = XueqiuUtils.getCookies();
+			//System.out.println(requestHeaders.get("Cookie"));
+			requestHeaders.put("Content-Type", "application/json;charset=UTF-8");
+			String page = HttpUtils.get("https://xueqiu.com/v4/statuses/user_timeline.json?user_id="+user.id+"&page="+(pageCnt++)+"&type=2&_="+new Date().getTime(),null,requestHeaders, "UTF-8");
+			/*if(StringUtils.equals(page, "400")){
+				Thread.sleep(1000 * 60 * 5);
+			}*/
 			if(JsonUtils.isString(page)){
 				return results;
 			}
@@ -168,6 +187,11 @@ public class XueqiuLongArticleJob implements Job {
 					}
 				}
 			}
+			
+			int sleep = r.nextInt(1000);
+			//System.out.println(sleep);
+			Thread.sleep(sleep);
+			
 			if(flag)break;
 		}
 		return results;
@@ -176,7 +200,11 @@ public class XueqiuLongArticleJob implements Job {
 	public static void main(String[] args) throws Exception {
 		XueqiuLongArticleJob job = new XueqiuLongArticleJob();
 		job.execute(null);
-		//job.initUsers();
+		/*Map<String, String> requestHeaders = XueqiuUtils.getCookies();
+		System.out.println(requestHeaders.get("Cookie"));
+		requestHeaders.put("Content-Type", "application/json;charset=UTF-8");
+		String page = HttpUtils.get("https://xueqiu.com/v4/statuses/user_timeline.json?user_id=2204832111&page=1&type=2&_="+new Date().getTime(),null,requestHeaders, "UTF-8");
+		System.out.println(page);*/
 	}
 
 }

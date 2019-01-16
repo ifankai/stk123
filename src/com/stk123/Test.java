@@ -23,7 +23,7 @@ public class Test {
 		   //System.out.println(String.format("%s请输入要选择的个数%s", str, str));
 		   System.out.println(StringUtils.leftPad("柳 工", 4, "\t"));
 		   System.out.println(ChineseUtils.length("柳 工"));
-		   System.out.println(StringUtils.leftPad("中核钛白", 4, "\t"));
+		   System.out.println(StringUtils.leftPad("1", 4, "0"));
 		  //logger.error("ddddddddddddddd");
 		   
 		   StackTraceElement[] temp=Thread.currentThread().getStackTrace();

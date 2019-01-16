@@ -1,5 +1,6 @@
 package com.stk123.tool.util;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -50,6 +51,7 @@ import org.apache.commons.lang.StringUtils;
 import com.stk123.task.StkUtils;
 import com.stk123.task.XueqiuUtils;
 import com.stk123.web.WebUtils;
+import com.sun.enterprise.util.FileUtil;
 import com.sun.net.ssl.HostnameVerifier;
 import com.sun.net.ssl.HttpsURLConnection;
 
@@ -92,12 +94,12 @@ public class HttpUtils {
 		
 	}
     /**  
-     * ¶¨Òå±àÂë¸ñÊ½ UTF-8  
+     * å®šä¹‰ç¼–ç æ ¼å¼ UTF-8  
      */  
     public static final String URL_PARAM_DECODECHARSET_UTF8 = "UTF-8";   
        
     /**  
-     * ¶¨Òå±àÂë¸ñÊ½ GBK  
+     * å®šä¹‰ç¼–ç æ ¼å¼ GBK  
      */  
     public static final String URL_PARAM_DECODECHARSET_GBK = "GBK";   
        
@@ -109,7 +111,7 @@ public class HttpUtils {
     private static MultiThreadedHttpConnectionManager connectionManager = null;  
     private static SimpleHttpConnectionManager simpleConnectionManager = null;
   
-    private static int connectionTimeOut = 60000;   //1·ÖÖÓ
+    private static int connectionTimeOut = 60000;   //1åˆ†é’Ÿ
     private static int socketTimeOut = 60000;   
     private static int maxConnectionPerHost = 20;   
     private static int maxTotalConnections = 20;   
@@ -173,11 +175,11 @@ public class HttpUtils {
     }
        
     /**  
-     * POST·½Ê½Ìá½»Êı¾İ  
-     * @param url   ´ıÇëÇóµÄURL  
-     * @param params   ÒªÌá½»µÄÊı¾İ  
-     * @param enc   ±àÂë  
-     * @return   ÏìÓ¦½á¹û  
+     * POSTæ–¹å¼æäº¤æ•°æ®  
+     * @param url   å¾…è¯·æ±‚çš„URL  
+     * @param params   è¦æäº¤çš„æ•°æ®  
+     * @param enc   ç¼–ç   
+     * @return   å“åº”ç»“æœ  
      */  
     public static String post(String url, Map<String, String> params, String enc){   
     	return HttpUtils.post(url, params, null,null, enc, null);
@@ -218,7 +220,7 @@ public class HttpUtils {
             	}
             }
             //postMethod.getParams().setParameter("http.protocol.cookie-policy",CookiePolicy.BROWSER_COMPATIBILITY);
-            //½«±íµ¥µÄÖµ·ÅÈëpostMethodÖĞ  
+            //å°†è¡¨å•çš„å€¼æ”¾å…¥postMethodä¸­  
             /*if(params != null){
 	            Set<String> keySet = params.keySet();   
 	            for(String key : keySet){   
@@ -238,7 +240,7 @@ public class HttpUtils {
             if(body != null){
             	postMethod.setRequestBody(body);
             }
-            //Ö´ĞĞpostMethod   
+            //æ‰§è¡ŒpostMethod   
             int statusCode = client.executeMethod(postMethod);   
             if(statusCode == HttpStatus.SC_OK) {
             	if(respHeaders != null){
@@ -249,13 +251,13 @@ public class HttpUtils {
             	}
                 response = postMethod.getResponseBodyAsString();   
             }else{   
-            	System.err.println("ÏìÓ¦×´Ì¬Âë = " + postMethod.getStatusCode());   
+            	System.err.println("å“åº”çŠ¶æ€ç  = " + postMethod.getStatusCode());   
             }   
         }catch(HttpException e){   
-        	System.err.println("·¢ÉúÖÂÃüµÄÒì³££¬¿ÉÄÜÊÇĞ­Òé²»¶Ô»òÕß·µ»ØµÄÄÚÈİÓĞÎÊÌâ");   
+        	System.err.println("å‘ç”Ÿè‡´å‘½çš„å¼‚å¸¸ï¼Œå¯èƒ½æ˜¯åè®®ä¸å¯¹æˆ–è€…è¿”å›çš„å†…å®¹æœ‰é—®é¢˜");   
         	e.printStackTrace();
         }catch(IOException e){   
-        	System.err.println("·¢ÉúÍøÂçÒì³£");  
+        	System.err.println("å‘ç”Ÿç½‘ç»œå¼‚å¸¸");  
         	e.printStackTrace();
         	if(useProxy){
         		
@@ -271,11 +273,11 @@ public class HttpUtils {
     }
     
     /**  
-     * GET·½Ê½Ìá½»Êı¾İ  
-     * @param url  ´ıÇëÇóµÄURL  
-     * @param params  ÒªÌá½»µÄÊı¾İ  
-     * @param enc  ±àÂë  
-     * @return  ÏìÓ¦½á¹û  
+     * GETæ–¹å¼æäº¤æ•°æ®  
+     * @param url  å¾…è¯·æ±‚çš„URL  
+     * @param params  è¦æäº¤çš„æ•°æ®  
+     * @param enc  ç¼–ç   
+     * @return  å“åº”ç»“æœ  
      */
     public static String get(String url, Map<String, String> params, String enc) throws Exception {
     	return HttpUtils.get(url, params,null, enc, NO_OF_RETRY);
@@ -349,8 +351,9 @@ public class HttpUtils {
             		getMethod.setRequestHeader(entry.getKey(), entry.getValue());
             	}
             }
+            //System.out.println(getMethod.getRequestHeaders("Cookie")[0]);
             client.getParams().setParameter(ProtocolCookiePolicy, CookiePolicy.BROWSER_COMPATIBILITY);
-            //Ö´ĞĞgetMethod   
+            //æ‰§è¡ŒgetMethod   
             int statusCode = client.executeMethod(getMethod);   
             if(statusCode == HttpStatus.SC_OK) {   
                 //response = getMethod.getResponseBodyAsString();   
@@ -372,20 +375,20 @@ public class HttpUtils {
             	StkUtils.printStackTrace();
             }
             /*if("502".equals(response)){
-            	EmailUtils.send("HTTP´úÀíÒì³£¡¾502¡¿,stop...", url);
-            	System.err.println("HTTP´úÀíÒì³£¡¾502¡¿"+url);
+            	EmailUtils.send("HTTPä»£ç†å¼‚å¸¸ã€502ã€‘,stop...", url);
+            	System.err.println("HTTPä»£ç†å¼‚å¸¸ã€502ã€‘"+url);
             	Thread.currentThread().stop();
             }*/
         }catch(HttpException e){   
-        	System.err.println("·¢ÉúÖÂÃüµÄÒì³££¬¿ÉÄÜÊÇĞ­Òé²»¶Ô»òÕß·µ»ØµÄÄÚÈİÓĞÎÊÌâ:"+url);
+        	System.err.println("å‘ç”Ÿè‡´å‘½çš„å¼‚å¸¸ï¼Œå¯èƒ½æ˜¯åè®®ä¸å¯¹æˆ–è€…è¿”å›çš„å†…å®¹æœ‰é—®é¢˜:"+url);
         	//e.printStackTrace();
         	throw e;
         }catch(IOException e){   
-        	System.err.println("·¢ÉúÍøÂçÒì³£:"+(proxy!=null?(" proxy:"+proxy.ip+":"+proxy.port+", "):"")+url); 
+        	System.err.println("å‘ç”Ÿç½‘ç»œå¼‚å¸¸:"+(proxy!=null?(" proxy:"+proxy.ip+":"+proxy.port+", "):"")+url); 
         	//e.printStackTrace();
         	throw e;
         }catch(Exception e){   
-        	System.err.println("·¢ÉúÒì³£:"+url); 
+        	System.err.println("å‘ç”Ÿå¼‚å¸¸:"+url); 
         	//e.printStackTrace();
         	throw e;
         }finally{   
@@ -398,9 +401,9 @@ public class HttpUtils {
     }      
   
     /**  
-     * ¾İMapÉú³ÉURL×Ö·û´®  
+     * æ®Mapç”ŸæˆURLå­—ç¬¦ä¸²  
      * @param map   Map  
-     * @param valueEnc  URL±àÂë  
+     * @param valueEnc  URLç¼–ç   
      * @return   URL  
      */  
     private static String getUrl(Map<String, String> map, String valueEnc) {
@@ -432,9 +435,9 @@ public class HttpUtils {
     
     /**
      * @param url 
-     * @param parameterName ÏÂÔØÎÄ¼şÃûÊÇparameterµÄÖµ
-     * @param path ÏÂÔØÎÄ¼ş´æ·ÅÂ·¾¶
-     * @param fileName Ö¸¶¨ÏÂÔØÎÄ¼şÃû£¬»áºöÂÔparameterNameÕâ¸ö²ÎÊı£¬²»Ö¸¶¨ÔòÎªnull
+     * @param parameterName ä¸‹è½½æ–‡ä»¶åæ˜¯parameterçš„å€¼
+     * @param path ä¸‹è½½æ–‡ä»¶å­˜æ”¾è·¯å¾„
+     * @param fileName æŒ‡å®šä¸‹è½½æ–‡ä»¶åï¼Œä¼šå¿½ç•¥parameterNameè¿™ä¸ªå‚æ•°ï¼Œä¸æŒ‡å®šåˆ™ä¸ºnull
      */
 	public static void download(String url, String parameterName, String path, String fileName) throws Exception {
 		HttpState httpState = new HttpState();
@@ -629,15 +632,120 @@ public class HttpUtils {
 		System.out.println(file.exists());
 		FileUtils.copyURLToFile(new URL("http://js.xueqiu.com/images/face/21lol.png"), new File("d:/share/download/js.xueqiu.com/images/face/21lol.png"));*/
 		//HttpUtils.useProxy = true;
-		String page = HttpUtils.get("http://stockapp.finance.qq.com/mstats/menu_childs.php?id=hk_hy", "gb2312");
+		/*String page = HttpUtils.get("http://stockapp.finance.qq.com/mstats/menu_childs.php?id=hk_hy", "gb2312");
 		Map<String, Map<String, String>> map = JsonUtils.testJson(page);
 		for(Map.Entry<String, Map<String, String>> entry : map.entrySet()){
 			System.out.println(entry.getValue().get("t"));
 			//http://stock.gtimg.cn/data/hk_sector_rank.php?sector=FNS9&metric=price&pageSize=20&reqPage=1&order=0&var_name=list_data
 		}
-		System.out.println(page);
+		System.out.println(page);*/
 		
+		//copy /b  E:\downloads\mv\file_name\*.ts  E:\downloads\mv\zzz\file_name.ts
+		//downloadMV("https://play.cdmbo.com/20180920/wLKC0pYj/800kb/hls/K8CoW3338001.ts", "åè¡€æ¨èå·¨ä¹³å¥³ç¥ææ¢“ç†™ä¸æ‘„å½±å¸ˆæ¿€æƒ…å¥¶ç‚®è„šäº¤åå…¥å¼å•ªå•ª", 1);
+		//downloadMV("https://play.cdmbo.com/20180920/vo8s9HDp/800kb/hls/d4Fm9e1161000.ts", "æ¼‚äº®çš„å°å§å§åˆ¶æœå…¨è£¸ç›´æ’­ ç¬‘çš„å¥½ç”œ", 0);
+		//downloadMV("https://play.cdmbo.com/20180920/4blq5qJf/800kb/hls/mWEgJe5128000.ts", "éŸ©å›½ç¾å¥³ä¸»æ’­KBJ1711å°ºåº¦ç›´æ’­è¡¨æ¼”", 0);
 		
+		downloadMV("https://play.bfdzym.com/20181031/2PHwQ3B9/800kb/hls/wTEtJZW6687000.ts", "ç¾ä¹³å§å¦¹èŠ±ç›´æ’­å°ç§€ ç›¸äº’å®‰æ…° åˆ†ä¸æ¸…è°æ˜¯è°äº†", 0);
+
+	}
+	
+	public static void downloadMV(String ds, final String toDir, int start) throws Exception{
+		System.out.println(toDir);
+		//int start = 0;
+		String replace = "00"+start+".ts";
+		int end = 500;
+		
+		final String target = "E:\\downloads\\mv\\"+toDir+"\\";
+		File targetDir = new File(target);
+		if(!targetDir.exists()){
+			targetDir.mkdirs();
+		}
+		
+		for(int i = start;i <= end;i++){
+			String fileName = StringUtils.replace(StringUtils.substringAfterLast(ds, "/"), replace, StringUtils.leftPad(String.valueOf(i), 3, "0")+".ts"); // "3M91ZO6546"+StringUtils.leftPad(String.valueOf(i), 3, "0")+".ts";
+			final String url = StringUtils.substringBeforeLast(ds, "/")+ "/" + fileName;
+			//System.out.println(url);
+			
+			RetryUtils.retryIfException(3, 30*1000, new Retry(){
+				@Override
+				public void run() throws Exception {
+					HttpUtils.download2(url, target);
+				}
+			});
+			
+			File file = new File(target + fileName + ".mp2t");
+			if(file.exists()){
+				file.renameTo(new File(target + fileName));
+			}
+			file = new File(target + fileName+".html");
+			if(file.exists()){
+				file.delete();
+				break;
+			}
+		}
+		run(toDir);
+	}
+	
+	public static void run(String fileName){
+		try {
+			String command = "copy /b E:\\downloads\\mv\\\""+fileName+"\\\"*.ts  E:\\downloads\\mv\\zzz\\\""+fileName+"\".ts \n";
+			System.out.println(command);
+            //Process process = Runtime.getRuntime().exec("cmd.exe /c "+command);
+            /*BufferedInputStream bis = new BufferedInputStream(process.getInputStream());
+            BufferedReader br = new BufferedReader(new InputStreamReader(bis));
+            String line;
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+            }*/
+
+            /*process.waitFor();
+            if (process.exitValue() != 0) {
+                System.out.println("error!");
+            }*/
+
+            //bis.close();
+            //br.close();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } 
+	}
+	
+	public static void download2(String url, String path) throws Exception {
+		HttpUtils.download2(url, null, path, null);
+	}
+	
+	public static void download2(String url, String parameterName, String path, String fileName) throws Exception {
+		HttpState httpState = new HttpState();
+        client.setState(httpState);
+        useProxy(httpState,url);
+        
+        GetMethod httpGet = null;
+		try {
+			httpGet = new GetMethod(url);
+			int statusCode = client.executeMethod(httpGet);
+			//System.out.println(statusCode);
+			InputStream in = httpGet.getResponseBodyAsStream();
+			Header header = httpGet.getResponseHeader("Content-Type");
+			if(header == null)return;
+			String contentType = header.getValue();
+			//System.out.println(contentType);
+			String fileType = contentType.substring(contentType.lastIndexOf("/") + 1);
+			if(fileName == null){
+				//System.out.println(httpGet.getResponseCharSet());
+				fileName = getFileNameByUrl(url, URL_PARAM_DECODECHARSET_UTF8, fileType, parameterName);
+			}
+			FileOutputStream out = new FileOutputStream(new File(path + fileName));
+			byte[] b = new byte[1024];
+			int len = 0;
+			while ((len = in.read(b)) != -1) {
+				out.write(b, 0, len);
+			}
+			in.close();
+			out.close();
+		} finally {
+			httpGet.releaseConnection();
+		}
 	}
     
 }

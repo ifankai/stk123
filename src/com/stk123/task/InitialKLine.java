@@ -336,7 +336,7 @@ public class InitialKLine {
 			List<Stk> stks = JdbcUtils.list(conn, "select code,name from stk_cn order by code", Stk.class);
 			if(!analyse){
 				System.out.println("initKLines..........");
-				initKLines(stks, flag, 3);
+				initKLines(stks, flag, 4);
 				System.out.println("initKLines..........end");
 				if(!flag){
 					EmailUtils.send("周六数据同步完成！！！","...");
@@ -347,7 +347,7 @@ public class InitialKLine {
 				for(String code : stksUnInit){
 					try{
 						Index tmpIndex = new Index(conn, code);
-						tmpIndex.initKLineToday();
+						tmpIndex.initKLine();
 					}catch(Exception e){
 						EmailUtils.send("[InitialKLine出错]修补K线数据出错 stk="+ code, e);
 					}

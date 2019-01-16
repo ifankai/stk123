@@ -25,6 +25,19 @@ public class RetryUtils {
 		}while(--time > 0);
 	}
 	
+	public static void retryIfException(int time, long sleep, Retry retry) throws Exception{
+		do{
+			boolean throwException = false;
+			try{
+				retry.run();
+			}catch(Exception e){
+				throwException = true;
+			}
+			if(!throwException)break;
+			Thread.sleep(sleep);
+		}while(--time > 0);
+	}
+	
 	public static void retryIfException(Retry retry) throws Exception{
 		try{
 			retry.run();

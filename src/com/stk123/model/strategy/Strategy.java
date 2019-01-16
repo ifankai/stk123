@@ -17,6 +17,7 @@ import com.stk123.task.XueqiuUtils;
 import com.stk123.tool.db.util.CloseUtil;
 import com.stk123.tool.db.util.DBUtil;
 import com.stk123.tool.util.EmailUtils;
+import com.stk123.tool.util.ExceptionUtils;
 import com.stk123.tool.util.JdbcUtils;
 import com.stk123.tool.util.collection.Name2Value;
 
@@ -89,7 +90,11 @@ public abstract class Strategy {
 		params.add(StringUtils.join(codes, ","));
 		params.add(date);
 		params.add(title+"["+indexs.size()+"]");
-		JdbcUtils.insert(conn, "insert into stk_strategy select s_strategy_id.nextval,?,?,?,sysdate from dual where not exists (select 1 from stk_strategy where strategy_date=? and name=?)", params);
+		try{
+			JdbcUtils.insert(conn, "insert into stk_strategy select s_strategy_id.nextval,?,?,?,sysdate from dual where not exists (select 1 from stk_strategy where strategy_date=? and name=?)", params);
+		}catch(Exception e){
+			ExceptionUtils.insertLog(conn, e);
+		}
 	}
 	
 	private void logToDB2(Connection conn,String date, String title, List<Index> indexs){
