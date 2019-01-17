@@ -15,7 +15,6 @@ import com.stk123.task.XueqiuUtils;
 import com.stk123.tool.db.util.CloseUtil;
 import com.stk123.tool.db.util.DBUtil;
 import com.stk123.tool.util.EmailUtils;
-import com.util.Arrays;
 
 import junit.framework.Assert;
 
@@ -40,9 +39,9 @@ public class Strategy18 extends Strategy {
 		}
 		
 		if(results.size() > 0){
-			super.logStrategy(conn, today,"Ä£ÐÍ18-kÏßµÍÎ»Ê®×ÖÐÇ", results);
-			super.sendAndReport("Ä£ÐÍ18-kÏßµÍÎ»Ê®×ÖÐÇ", results.size(), today,
-					"²ßÂÔÀ´Ô´£º¸»´ºÍ¨ÐÅ[300299]-2017/07/19<br><br><br>"+
+			super.logStrategy(conn, today,"Ä£ï¿½ï¿½18-kï¿½ßµï¿½Î»Ê®ï¿½ï¿½ï¿½ï¿½", results);
+			super.sendAndReport("Ä£ï¿½ï¿½18-kï¿½ßµï¿½Î»Ê®ï¿½ï¿½ï¿½ï¿½", results.size(), today,
+					"ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½[300299]-2017/07/19<br><br><br>"+
 					StkUtils.createHtmlTable(today, results));
 		}
 	}

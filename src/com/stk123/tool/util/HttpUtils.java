@@ -351,7 +351,8 @@ public class HttpUtils {
             		getMethod.setRequestHeader(entry.getKey(), entry.getValue());
             	}
             }
-            //System.out.println(getMethod.getRequestHeaders("Cookie")[0]);
+            /*if(getMethod.getRequestHeaders("Cookie").length > 0)
+                System.out.println(getMethod.getRequestHeaders("Cookie")[0]);*/
             client.getParams().setParameter(ProtocolCookiePolicy, CookiePolicy.BROWSER_COMPATIBILITY);
             //执行getMethod   
             int statusCode = client.executeMethod(getMethod);   

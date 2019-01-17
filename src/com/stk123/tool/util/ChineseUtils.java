@@ -5,49 +5,49 @@ import java.io.UnsupportedEncodingException;
 import com.stk123.web.StkConstant;
 
 public class ChineseUtils {
-	
-	private final static String BLANK = "";
-	/**  
-     * ÅĞ¶ÏÒ»¸ö×Ö·ûÊÇAscill×Ö·û»¹ÊÇÆäËü×Ö·û£¨Èçºº£¬ÈÕ£¬º«ÎÄ×Ö·û£©  
-     *   
-     * @param c ĞèÒªÅĞ¶ÏµÄ×Ö·û  
-     * @return ·µ»Øtrue,Ascill×Ö·û  
-     */   
-    public static boolean isLetter(char c) {   
-        int k = 0x80;   
-        return c / k == 0 ? true : false;   
-    }   
-   
-    /**  
-     * µÃµ½Ò»¸ö×Ö·û´®µÄ³¤¶È,ÏÔÊ¾µÄ³¤¶È,Ò»¸öºº×Ö»òÈÕº«ÎÄ³¤¶ÈÎª2,Ó¢ÎÄ×Ö·û³¤¶ÈÎª1  
-     *   
-     * @param s ĞèÒªµÃµ½³¤¶ÈµÄ×Ö·û´®  
-     * @return iµÃµ½µÄ×Ö·û´®³¤¶È  
-     */   
-    public static int length(String s) {   
-        if (s == null)   
-            return 0;   
-        char[] c = s.toCharArray();   
-        int len = 0;   
-        for (int i = 0; i < c.length; i++) {   
-            len++;   
-            if (!isLetter(c[i])) {   
+
+    private final static String BLANK = "";
+    /**
+     * åˆ¤æ–­ä¸€ä¸ªå­—ç¬¦æ˜¯Ascillå­—ç¬¦è¿˜æ˜¯å…¶å®ƒå­—ç¬¦ï¼ˆå¦‚æ±‰ï¼Œæ—¥ï¼ŒéŸ©æ–‡å­—ç¬¦ï¼‰
+     *
+     * @param c éœ€è¦åˆ¤æ–­çš„å­—ç¬¦
+     * @return è¿”å›true,Ascillå­—ç¬¦
+     */
+    public static boolean isLetter(char c) {
+        int k = 0x80;
+        return c / k == 0 ? true : false;
+    }
+
+    /**
+     * å¾—åˆ°ä¸€ä¸ªå­—ç¬¦ä¸²çš„é•¿åº¦,æ˜¾ç¤ºçš„é•¿åº¦,ä¸€ä¸ªæ±‰å­—æˆ–æ—¥éŸ©æ–‡é•¿åº¦ä¸º2,è‹±æ–‡å­—ç¬¦é•¿åº¦ä¸º1
+     *
+     * @param s éœ€è¦å¾—åˆ°é•¿åº¦çš„å­—ç¬¦ä¸²
+     * @return iå¾—åˆ°çš„å­—ç¬¦ä¸²é•¿åº¦
+     */
+    public static int length(String s) {
+        if (s == null)
+            return 0;
+        char[] c = s.toCharArray();
+        int len = 0;
+        for (int i = 0; i < c.length; i++) {
+            len++;
+            if (!isLetter(c[i])) {
                 len++;
-            }   
-        }   
-        return len;   
-    }  
-    
-    public static int lengthForOracle(String s) {   
-        if (s == null)   
-            return 0;   
-        char[] c = s.toCharArray();   
-        int len = 0;   
-        for (int i = 0; i < c.length; i++) {   
-            len++;   
-            if (!isLetter(c[i])) {   
+            }
+        }
+        return len;
+    }
+
+    public static int lengthForOracle(String s) {
+        if (s == null)
+            return 0;
+        char[] c = s.toCharArray();
+        int len = 0;
+        for (int i = 0; i < c.length; i++) {
+            len++;
+            if (!isLetter(c[i])) {
                 len++;
-                len++;//for oracle ·¢ÏÖÒ»¸öºº×ÖÕ¼3¸ö×Ö½Ú
+                len++;//for oracle å‘ç°ä¸€ä¸ªæ±‰å­—å 3ä¸ªå­—èŠ‚
                 /*
                 SQL> select parameter,value from nls_database_parameters where parameter like 'NLS_CHARACTERSET';
 
@@ -58,76 +58,76 @@ public class ChineseUtils {
                 NLS_CHARACTERSET
                 AL32UTF8
                 */
-            }   
-        }   
-        return len;   
+            }
+        }
+        return len;
     }
-   
-    /**  
-     * ½ØÈ¡Ò»¶Î×Ö·ûµÄ³¤¶È,²»Çø·ÖÖĞÓ¢ÎÄ,Èç¹ûÊı×Ö²»ÕıºÃ£¬ÔòÉÙÈ¡Ò»¸ö×Ö·ûÎ»  
-     *   
-     * @param  origin Ô­Ê¼×Ö·û´®  
-     * @param len ½ØÈ¡³¤¶È(Ò»¸öºº×Ö³¤¶È°´2ËãµÄ)  
-     * @param c ºó×º             
-     * @return ·µ»ØµÄ×Ö·û´®  
-     */   
-    public static String substring(String origin, int len, String c) {   
-        if (origin == null || origin.equals(BLANK) || len < 1)   
-            return BLANK;   
-        byte[] strByte = new byte[len]; 
-        if (len >= length(origin)) {   
-            return origin+c;   
-        }   
-        try {   
-            System.arraycopy(origin.getBytes(StkConstant.ENCODING_GBK), 0, strByte, 0, len);   
-            int count = 0;   
-            for (int i = 0; i < len; i++) {   
-                int value = (int) strByte[i];   
-                if (value < 0) {   
-                    count++;   
-                }   
-            }   
-            if (count % 2 != 0) {   
-                len = (len == 1) ? ++len : --len;   
-            }   
+
+    /**
+     * æˆªå–ä¸€æ®µå­—ç¬¦çš„é•¿åº¦,ä¸åŒºåˆ†ä¸­è‹±æ–‡,å¦‚æœæ•°å­—ä¸æ­£å¥½ï¼Œåˆ™å°‘å–ä¸€ä¸ªå­—ç¬¦ä½
+     *
+     * @param  origin åŸå§‹å­—ç¬¦ä¸²
+     * @param len æˆªå–é•¿åº¦(ä¸€ä¸ªæ±‰å­—é•¿åº¦æŒ‰2ç®—çš„)
+     * @param c åç¼€
+     * @return è¿”å›çš„å­—ç¬¦ä¸²
+     */
+    public static String substring(String origin, int len, String c) {
+        if (origin == null || origin.equals(BLANK) || len < 1)
+            return BLANK;
+        byte[] strByte = new byte[len];
+        if (len >= length(origin)) {
+            return origin+c;
+        }
+        try {
+            System.arraycopy(origin.getBytes(StkConstant.ENCODING_GBK), 0, strByte, 0, len);
+            int count = 0;
+            for (int i = 0; i < len; i++) {
+                int value = (int) strByte[i];
+                if (value < 0) {
+                    count++;
+                }
+            }
+            if (count % 2 != 0) {
+                len = (len == 1) ? ++len : --len;
+            }
             len = len - 2;
-            return new String(strByte, 0, len, StkConstant.ENCODING_GBK)+c;   
-        } catch (UnsupportedEncodingException e) {   
-            throw new RuntimeException(e);   
-        }   
-    } 
-    
-    
- // ¼òÌåÖĞÎÄµÄ±àÂë·¶Î§´ÓB0A1£¨45217£©Ò»Ö±µ½F7FE£¨63486£©
+            return new String(strByte, 0, len, StkConstant.ENCODING_GBK)+c;
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    // ç®€ä½“ä¸­æ–‡çš„ç¼–ç èŒƒå›´ä»B0A1ï¼ˆ45217ï¼‰ä¸€ç›´åˆ°F7FEï¼ˆ63486ï¼‰
     private static int BEGIN = 45217;
     private static int END = 63486;
 
-    // °´ÕÕÉùÄ¸±íÊ¾£¬Õâ¸ö±íÊÇÔÚGB2312ÖĞµÄ³öÏÖµÄµÚÒ»¸öºº×Ö£¬Ò²¾ÍÊÇËµ¡°°¡¡±ÊÇ´ú±íÊ××ÖÄ¸aµÄµÚÒ»¸öºº×Ö¡£
-    // i, u, v¶¼²»×öÉùÄ¸, ×Ô¶¨¹æÔò¸úËæÇ°ÃæµÄ×ÖÄ¸
-    private static char[] chartable = { '°¡', '°Å', '²Á', '´î', '¶ê', '·¢', '¸Á', '¹ş',
-            '¹ş', '»÷', '¿¦', 'À¬', 'Âè', 'ÄÃ', 'Å¶', 'Å¾', 'ÆÚ', 'È»', 'Èö', 'Ëú', 'Ëú',
-            'Ëú', 'ÍÚ', 'Îô', 'Ñ¹', 'ÔÑ', };
+    // æŒ‰ç…§å£°æ¯è¡¨ç¤ºï¼Œè¿™ä¸ªè¡¨æ˜¯åœ¨GB2312ä¸­çš„å‡ºç°çš„ç¬¬ä¸€ä¸ªæ±‰å­—ï¼Œä¹Ÿå°±æ˜¯è¯´â€œå•Šâ€æ˜¯ä»£è¡¨é¦–å­—æ¯açš„ç¬¬ä¸€ä¸ªæ±‰å­—ã€‚
+    // i, u, véƒ½ä¸åšå£°æ¯, è‡ªå®šè§„åˆ™è·Ÿéšå‰é¢çš„å­—æ¯
+    private static char[] chartable = { 'å•Š', 'èŠ­', 'æ“¦', 'æ­', 'è›¾', 'å‘', 'å™¶', 'å“ˆ',
+            'å“ˆ', 'å‡»', 'å–€', 'åƒ', 'å¦ˆ', 'æ‹¿', 'å“¦', 'å•ª', 'æœŸ', 'ç„¶', 'æ’’', 'å¡Œ', 'å¡Œ',
+            'å¡Œ', 'æŒ–', 'æ˜”', 'å‹', 'åŒ', };
 
-    // ¶şÊ®Áù¸ö×ÖÄ¸Çø¼ä¶ÔÓ¦¶şÊ®Æß¸ö¶Ëµã
-    // GB2312Âëºº×ÖÇø¼äÊ®½øÖÆ±íÊ¾
+    // äºŒåå…­ä¸ªå­—æ¯åŒºé—´å¯¹åº”äºŒåä¸ƒä¸ªç«¯ç‚¹
+    // GB2312ç æ±‰å­—åŒºé—´åè¿›åˆ¶è¡¨ç¤º
     private static int[] table = new int[27];
 
-    // ¶ÔÓ¦Ê××ÖÄ¸Çø¼ä±í
+    // å¯¹åº”é¦–å­—æ¯åŒºé—´è¡¨
     private static char[] initialtable = { 'a', 'b', 'c', 'd', 'e', 'f', 'g',
             'h', 'h', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
             't', 't', 'w', 'x', 'y', 'z', };
 
-    // ³õÊ¼»¯
+    // åˆå§‹åŒ–
     static {
         for (int i = 0; i < 26; i++) {
-            table[i] = gbValue(chartable[i]);// µÃµ½GB2312ÂëµÄÊ××ÖÄ¸Çø¼ä¶Ëµã±í£¬Ê®½øÖÆ¡£
+            table[i] = gbValue(chartable[i]);// å¾—åˆ°GB2312ç çš„é¦–å­—æ¯åŒºé—´ç«¯ç‚¹è¡¨ï¼Œåè¿›åˆ¶ã€‚
         }
-        table[26] = END;// Çø¼ä±í½áÎ²
+        table[26] = END;// åŒºé—´è¡¨ç»“å°¾
     }
 
-    // ------------------------public·½·¨Çø------------------------
+    // ------------------------publicæ–¹æ³•åŒº------------------------
     /**
-     * ¸ù¾İÒ»¸ö°üº¬ºº×ÖµÄ×Ö·û´®·µ»ØÒ»¸öºº×ÖÆ´ÒôÊ××ÖÄ¸µÄ×Ö·û´® ×îÖØÒªµÄÒ»¸ö·½·¨£¬Ë¼Â·ÈçÏÂ£ºÒ»¸ö¸ö×Ö·û¶ÁÈë¡¢ÅĞ¶Ï¡¢Êä³ö
+     * æ ¹æ®ä¸€ä¸ªåŒ…å«æ±‰å­—çš„å­—ç¬¦ä¸²è¿”å›ä¸€ä¸ªæ±‰å­—æ‹¼éŸ³é¦–å­—æ¯çš„å­—ç¬¦ä¸² æœ€é‡è¦çš„ä¸€ä¸ªæ–¹æ³•ï¼Œæ€è·¯å¦‚ä¸‹ï¼šä¸€ä¸ªä¸ªå­—ç¬¦è¯»å…¥ã€åˆ¤æ–­ã€è¾“å‡º
      */
     public static String cn2py(String SourceStr) {
         String Result = "";
@@ -143,42 +143,42 @@ public class ChineseUtils {
         return Result;
     }
 
-    // ------------------------private·½·¨Çø------------------------
+    // ------------------------privateæ–¹æ³•åŒº------------------------
     /**
-     * ÊäÈë×Ö·û,µÃµ½ËûµÄÉùÄ¸,Ó¢ÎÄ×ÖÄ¸·µ»Ø¶ÔÓ¦µÄ´óĞ´×ÖÄ¸,ÆäËû·Ç¼òÌåºº×Ö·µ»Ø '0'
-     * 
+     * è¾“å…¥å­—ç¬¦,å¾—åˆ°ä»–çš„å£°æ¯,è‹±æ–‡å­—æ¯è¿”å›å¯¹åº”çš„å¤§å†™å­—æ¯,å…¶ä»–éç®€ä½“æ±‰å­—è¿”å› '0'
+     *
      */
     private static char Char2Initial(char ch) {
-        // ¶ÔÓ¢ÎÄ×ÖÄ¸µÄ´¦Àí£ºĞ¡Ğ´×ÖÄ¸×ª»»Îª´óĞ´£¬´óĞ´µÄÖ±½Ó·µ»Ø
+        // å¯¹è‹±æ–‡å­—æ¯çš„å¤„ç†ï¼šå°å†™å­—æ¯è½¬æ¢ä¸ºå¤§å†™ï¼Œå¤§å†™çš„ç›´æ¥è¿”å›
         if (ch >= 'a' && ch <= 'z')
             return (char) (ch - 'a' + 'A');
         if (ch >= 'A' && ch <= 'Z')
             return ch;
 
-        // ¶Ô·ÇÓ¢ÎÄ×ÖÄ¸µÄ´¦Àí£º×ª»¯ÎªÊ××ÖÄ¸£¬È»ºóÅĞ¶ÏÊÇ·ñÔÚÂë±í·¶Î§ÄÚ£¬
-        // Èô²»ÊÇ£¬ÔòÖ±½Ó·µ»Ø¡£
-        // ÈôÊÇ£¬ÔòÔÚÂë±íÄÚµÄ½øĞĞÅĞ¶Ï¡£
-        int gb = gbValue(ch);// ºº×Ö×ª»»Ê××ÖÄ¸
+        // å¯¹éè‹±æ–‡å­—æ¯çš„å¤„ç†ï¼šè½¬åŒ–ä¸ºé¦–å­—æ¯ï¼Œç„¶ååˆ¤æ–­æ˜¯å¦åœ¨ç è¡¨èŒƒå›´å†…ï¼Œ
+        // è‹¥ä¸æ˜¯ï¼Œåˆ™ç›´æ¥è¿”å›ã€‚
+        // è‹¥æ˜¯ï¼Œåˆ™åœ¨ç è¡¨å†…çš„è¿›è¡Œåˆ¤æ–­ã€‚
+        int gb = gbValue(ch);// æ±‰å­—è½¬æ¢é¦–å­—æ¯
 
-        if ((gb < BEGIN) || (gb > END))// ÔÚÂë±íÇø¼äÖ®Ç°£¬Ö±½Ó·µ»Ø
+        if ((gb < BEGIN) || (gb > END))// åœ¨ç è¡¨åŒºé—´ä¹‹å‰ï¼Œç›´æ¥è¿”å›
             return ch;
 
         int i;
-        for (i = 0; i < 26; i++) {// ÅĞ¶ÏÆ¥ÅäÂë±íÇø¼ä£¬Æ¥Åäµ½¾Íbreak,ÅĞ¶ÏÇø¼äĞÎÈç¡°[,)¡±
-                if ((gb >= table[i]) && (gb < table[i+1]))
-                    break;
+        for (i = 0; i < 26; i++) {// åˆ¤æ–­åŒ¹é…ç è¡¨åŒºé—´ï¼ŒåŒ¹é…åˆ°å°±break,åˆ¤æ–­åŒºé—´å½¢å¦‚â€œ[,)â€
+            if ((gb >= table[i]) && (gb < table[i+1]))
+                break;
         }
-        
-        if (gb==END) {//²¹ÉÏGB2312Çø¼ä×îÓÒ¶Ë
+
+        if (gb==END) {//è¡¥ä¸ŠGB2312åŒºé—´æœ€å³ç«¯
             i=25;
         }
-        return initialtable[i]; // ÔÚÂë±íÇø¼äÖĞ£¬·µ»ØÊ××ÖÄ¸
+        return initialtable[i]; // åœ¨ç è¡¨åŒºé—´ä¸­ï¼Œè¿”å›é¦–å­—æ¯
     }
 
     /**
-     * È¡³öºº×ÖµÄ±àÂë cn ºº×Ö
+     * å–å‡ºæ±‰å­—çš„ç¼–ç  cn æ±‰å­—
      */
-    private static int gbValue(char ch) {// ½«Ò»¸öºº×Ö£¨GB2312£©×ª»»ÎªÊ®½øÖÆ±íÊ¾¡£
+    private static int gbValue(char ch) {// å°†ä¸€ä¸ªæ±‰å­—ï¼ˆGB2312ï¼‰è½¬æ¢ä¸ºåè¿›åˆ¶è¡¨ç¤ºã€‚
         String str = new String();
         str += ch;
         try {
@@ -190,8 +190,8 @@ public class ChineseUtils {
             return 0;
         }
     }
-    
+
     public static void main(String[] args) throws Exception {
-    	System.out.println(cn2py("ÖØÇìÖØÊÓ·¢Õ¹ITĞĞÒµ£¬´ó¶àÊıÍâÆó£¬Èç£¬IBMµÈ½ø×¤É½³Ç"));
+        System.out.println(cn2py("é‡åº†é‡è§†å‘å±•ITè¡Œä¸šï¼Œå¤§å¤šæ•°å¤–ä¼ï¼Œå¦‚ï¼ŒIBMç­‰è¿›é©»å±±åŸ"));
     }
 }

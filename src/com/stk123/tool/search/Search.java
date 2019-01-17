@@ -58,7 +58,6 @@ import com.stk123.tool.util.collection.Name2Value;
 import com.stk123.web.StkDict;
 import com.stk123.web.WebUtils;
 import com.stk123.web.bs.IndexService;
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
 
 public class Search {
 	
@@ -83,9 +82,9 @@ public class Search {
 		Connection conn = null;
 		try{
 			conn = Pool.getPool().getConnection();
-			// ½¨Á¢ÄÚ´æË÷Òý¶ÔÏó
+			// ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			directoryStkAndIndustry = new RAMDirectory();
-			// ÅäÖÃIndexWriterConfig
+			// ï¿½ï¿½ï¿½ï¿½IndexWriterConfig
 			IndexWriterConfig iwConfig = IKUtils.getConfig();
 			iwConfig.setOpenMode(OpenMode.CREATE);
 			IndexWriter iwriter = new IndexWriter(directoryStkAndIndustry, iwConfig);
@@ -161,7 +160,7 @@ public class Search {
 		System.out.println("Search.initUserText,userId="+this.userId+",dir="+(INDEX_PATH + File.separator + userId));
 		Connection conn = null;
 		try{
-			// ÅäÖÃIndexWriterConfig
+			// ï¿½ï¿½ï¿½ï¿½IndexWriterConfig
 			IndexWriterConfig iwConfig = IKUtils.getConfig();
 			iwConfig.setOpenMode(OpenMode.CREATE);
 			IndexWriter iwriter = new IndexWriter(this.directoryUser, iwConfig);
@@ -197,7 +196,7 @@ public class Search {
 		//System.out.println("search=="+keyword);
 		BooleanQuery query = new BooleanQuery();
 		BooleanQuery.setMaxClauseCount(Integer.MAX_VALUE);
-		//query.setMinimumNumberShouldMatch(1);//ÏÂÃæshould±ØÐëÓÐÖÁÉÙÒ»¸öwordÆ¥Åä
+		//query.setMinimumNumberShouldMatch(1);//ï¿½ï¿½ï¿½ï¿½shouldï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½wordÆ¥ï¿½ï¿½
 		if(type != null){
 			TermQuery tq = new TermQuery(new Term(DocumentField.TYPE.value(), type.value()));
 			query.add(tq, BooleanClause.Occur.MUST);
@@ -216,13 +215,13 @@ public class Search {
 			Lexeme le = null;
 			while((le = se.next()) != null){
 				String tKeyWord = le.getLexemeText();
-				//ÉèÖÃ²éÑ¯ÅÅ³ý´Ê»ã
+				//ï¿½ï¿½ï¿½Ã²ï¿½Ñ¯ï¿½Å³ï¿½ï¿½Ê»ï¿½
 				if(defaultExcludes != null && defaultExcludes.contains(tKeyWord)){
 					continue;
 				}
 				//System.out.print(tKeyWord+",");
 				TermQuery tq = new TermQuery(new Term(searchFields[i].value(),tKeyWord));
-				//ÉèÖÃÈ¨ÖØ
+				//ï¿½ï¿½ï¿½ï¿½È¨ï¿½ï¿½
 				if(searchWordsWeight != null){
 					List<Name2Value> weights = Name2Value.containName(searchWordsWeight, tKeyWord);
 					if(searchWordsWeight != null && weights.size() > 0){

@@ -33,7 +33,6 @@ import com.stk123.tool.util.JsonUtils;
 import com.stk123.tool.util.collection.Name2Value;
 import com.stk123.web.action.ScreenerAction;
 import com.stk123.web.form.ScreenerForm;
-import com.util.Arrays;
 
 public class StrategyManager {
 	
@@ -53,26 +52,26 @@ public class StrategyManager {
 		Strategy.followIndexs = getFollowIndex(conn);
 		
 		//List<Index> erIndexs = getEarningForecastIndex(conn);
-		//List<Index> search_9 = getSearchCondition(conn, 9);//ÐÂÄÜÔ´Æû³µ²úÒµÁ´
-		//List<Index> search_16 = getSearchCondition(conn, 16);//Ð¡½ðÊô
+		//List<Index> search_9 = getSearchCondition(conn, 9);//ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òµï¿½ï¿½
+		//List<Index> search_16 = getSearchCondition(conn, 16);//Ð¡ï¿½ï¿½ï¿½ï¿½
 		
-		strategys.add(new Strategy1());//60ÈÕ¾ùÏßÉÏÉýÇÒ»îÔ¾·ÅÁ¿
-		strategys.add(new Strategy2());//120ÈÕ¾ùÏßÉÏÉý60ÈÕÏßÏÂ½µ
-		strategys.add(new Strategy3());//ENE»îÔ¾¸ö¹É
-		strategys.add(new Strategy4());//Á¬Ðø5ÈÕËõÁ¿
-		strategys.add(new Strategy5());//Í»ÆÆÇ÷ÊÆÏß
-		strategys.add(new Strategy6());//·ÅÁ¿ºóÁ¬Ðø3ÈÕËõÁ¿
-		strategys.add(new Strategy7());//Á¬Ðø5ÈÕÏÂµøÁ¿ÄÜÈ´·Å´ó
+		strategys.add(new Strategy1());//60ï¿½Õ¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½Ô¾ï¿½ï¿½ï¿½ï¿½
+		strategys.add(new Strategy2());//120ï¿½Õ¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½60ï¿½ï¿½ï¿½ï¿½ï¿½Â½ï¿½
+		strategys.add(new Strategy3());//ENEï¿½ï¿½Ô¾ï¿½ï¿½ï¿½ï¿½
+		strategys.add(new Strategy4());//ï¿½ï¿½ï¿½ï¿½5ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		strategys.add(new Strategy5());//Í»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		strategys.add(new Strategy6());//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½3ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		strategys.add(new Strategy7());//ï¿½ï¿½ï¿½ï¿½5ï¿½ï¿½ï¿½Âµï¿½ï¿½ï¿½ï¿½ï¿½È´ï¿½Å´ï¿½
 		//strategys.add(new Strategy8());
-		strategys.add(new Strategy9());//×î½ü5±¶¾ÞÁ¿
-		strategys.add(new Strategy10());//Èý¶Ñ¾ÞÁ¿ºóËõÁ¿
-		strategys.add(new Strategy11());//¶þ¶Ñ¾ÞÁ¿ºóËõÁ¿
-		strategys.add(new Strategy12());//60ÈÕÄÚ³öÏÖÌìÁ¿ºó»Øµ÷µ½60¾ùÏßÏÂ·½
-		strategys.add(new Strategy13());//30ÈÕÄÚ³öÏÖÌìÁ¿ºó»Øµ÷µ½20¾ùÏßÏÂ·½ÇÒ³öÏÖ¶þÆ·³­µ×
-		strategys.add(new Strategy14());//Ð¡Ê®×ÖÐÇÇÒËõÁ¿
-		strategys.add(new Strategy15());//¾ÞÁ¿ºókÏßÕñ·ùËõÐ¡ÇÒÃ»ÓÐµ÷ÕûÌ«Éî
-		strategys.add(new Strategy16());//ÑôÏß·ÅÁ¿ÒõÏßËõÁ¿
-		//strategys.add(new Strategy17());//KÏß²øÈÆ
+		strategys.add(new Strategy9());//ï¿½ï¿½ï¿½5ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		strategys.add(new Strategy10());//ï¿½ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		strategys.add(new Strategy11());//ï¿½ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		strategys.add(new Strategy12());//60ï¿½ï¿½ï¿½Ú³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½60ï¿½ï¿½ï¿½ï¿½ï¿½Â·ï¿½
+		strategys.add(new Strategy13());//30ï¿½ï¿½ï¿½Ú³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½20ï¿½ï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½Ò³ï¿½ï¿½Ö¶ï¿½Æ·ï¿½ï¿½ï¿½ï¿½
+		strategys.add(new Strategy14());//Ð¡Ê®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		strategys.add(new Strategy15());//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½kï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½Ã»ï¿½Ðµï¿½ï¿½ï¿½Ì«ï¿½ï¿½
+		strategys.add(new Strategy16());//ï¿½ï¿½ï¿½ß·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		//strategys.add(new Strategy17());//Kï¿½ß²ï¿½ï¿½ï¿½
 		
 		List<Strategy> slist = getSearchConditionWithStrategy(conn);
 		for(Strategy s : slist){
@@ -81,12 +80,12 @@ public class StrategyManager {
 		
 		List<Index> netProfitGrwothGreaterThanZeroIndexs = getNetProfitGrwothGreaterThanZero(conn);
 		
-		strategys.add(new Strategy20("¾ùÏß¶Ìµø³¤Éý",getIndexMA20And120(netProfitGrwothGreaterThanZeroIndexs, date),false,true));
-		strategys.add(new Strategy20("Ç°ÆÚ»»ÊÖÂÊ200%ÒÔÉÏ",getIndexHighHsl(netProfitGrwothGreaterThanZeroIndexs, date),false,true));
+		strategys.add(new Strategy20("ï¿½ï¿½ï¿½ß¶Ìµï¿½ï¿½ï¿½ï¿½ï¿½",getIndexMA20And120(netProfitGrwothGreaterThanZeroIndexs, date),false,true));
+		strategys.add(new Strategy20("Ç°ï¿½Ú»ï¿½ï¿½ï¿½ï¿½ï¿½200%ï¿½ï¿½ï¿½ï¿½",getIndexHighHsl(netProfitGrwothGreaterThanZeroIndexs, date),false,true));
 		
-		strategys.add(new Strategy19("¹Ø×¢C",Strategy.followIndexs,false,true));//Í»ÆÆÇ÷ÊÆÏß
-		//strategys.add(new Strategy18("¹Ø×¢C",Strategy.followIndexs,false,true));//×ÔÑ¡¹ÉkÏßµÍÎ»Ê®×ÖÐÇ
-		strategys.add(new Strategy20("¹Ø×¢C",Strategy.followIndexs,false,true));//Ä£ÐÍ20-ËõÁ¿Ð¡Ê®×ÖÐÇ
+		strategys.add(new Strategy19("ï¿½ï¿½×¢C",Strategy.followIndexs,false,true));//Í»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		//strategys.add(new Strategy18("ï¿½ï¿½×¢C",Strategy.followIndexs,false,true));//ï¿½ï¿½Ñ¡ï¿½ï¿½kï¿½ßµï¿½Î»Ê®ï¿½ï¿½ï¿½ï¿½
+		strategys.add(new Strategy20("ï¿½ï¿½×¢C",Strategy.followIndexs,false,true));//Ä£ï¿½ï¿½20-ï¿½ï¿½ï¿½ï¿½Ð¡Ê®ï¿½ï¿½ï¿½ï¿½
 	}
 	
 	public static List<Name2Value<String,Name2Value<Integer, Class>>> APPLY_STRATEGY = null;
@@ -94,9 +93,9 @@ public class StrategyManager {
 	public static List<Name2Value<String,Name2Value<Integer, Class>>> getApplyStrategy() {
 		if(APPLY_STRATEGY != null)return APPLY_STRATEGY;
 		List<Name2Value<String,Name2Value<Integer, Class>>> s = new ArrayList();
-		//s.add(new Name2Value("²ßÂÔ18-µÍÎ»KÏßÊ®×ÖÐÇ", new Name2Value(18, Strategy18.class)));
-		s.add(new Name2Value("²ßÂÔ19-Í»ÆÆÇ÷ÊÆÏß", new Name2Value(19, Strategy19.class)));
-		s.add(new Name2Value("²ßÂÔ20-Ê®×ÖÐÇ", new Name2Value(20, Strategy20.class)));
+		//s.add(new Name2Value("ï¿½ï¿½ï¿½ï¿½18-ï¿½ï¿½Î»Kï¿½ï¿½Ê®ï¿½ï¿½ï¿½ï¿½", new Name2Value(18, Strategy18.class)));
+		s.add(new Name2Value("ï¿½ï¿½ï¿½ï¿½19-Í»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½", new Name2Value(19, Strategy19.class)));
+		s.add(new Name2Value("ï¿½ï¿½ï¿½ï¿½20-Ê®ï¿½ï¿½ï¿½ï¿½", new Name2Value(20, Strategy20.class)));
 		return APPLY_STRATEGY = s;
 	}
 	
@@ -176,12 +175,12 @@ public class StrategyManager {
 	public static List<Index> getFollowIndex(Connection conn) throws Exception {
 		Set<String>	followStks = null;
 		try{
-			followStks = XueqiuUtils.getFollowStks("¹Ø×¢C");
-			followStks.addAll(XueqiuUtils.getFollowStks("±¸Ñ¡"));
+			followStks = XueqiuUtils.getFollowStks("ï¿½ï¿½×¢C");
+			followStks.addAll(XueqiuUtils.getFollowStks("ï¿½ï¿½Ñ¡"));
 			IOUtils.writeLines(followStks, null, new FileOutputStream(new File("d:\\care.txt")));
 		}catch(Exception e){
 			followStks = new HashSet(IOUtils.readLines(new FileInputStream("d:\\care.txt")));
-			EmailUtils.send("Ñ©ÇòÌáÈ¡¡®¹Ø×¢C¡¯Ê§°Ü", e);//½â¾ö·½°¸£º°ÑXueqiuUtilsµÄcookieÌæ»»³É×îÐÂµÄ			
+			EmailUtils.send("Ñ©ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½×¢Cï¿½ï¿½Ê§ï¿½ï¿½", e);//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½XueqiuUtilsï¿½ï¿½cookieï¿½æ»»ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½			
 		}
 		
 		return IndexUtils.codeToIndex(conn, followStks);

@@ -26,7 +26,6 @@ import com.stk123.tool.db.util.CloseUtil;
 import com.stk123.tool.db.util.DBUtil;
 import com.stk123.tool.util.EmailUtils;
 import com.stk123.tool.util.JdbcUtils;
-import com.util.Arrays;
 
 public class ShortTrade implements Job{
 	
