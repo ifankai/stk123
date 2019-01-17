@@ -67,7 +67,7 @@ public class AlgorithmUtils {
   
     public static void testPermutation() throws Exception {  
         int[] arr = {1, 2, 3, 4, 5, 6, 7, 8};  
-        List<int[]> result = new ArrayList<>();  
+        List<int[]> result = new ArrayList<int[]>();
         permutation(result, arr, 0, 2);//从arr中取两个元素排列(即N=8,M=2)  
         System.out.println(result.size());  
         for (int[] is : result) {  

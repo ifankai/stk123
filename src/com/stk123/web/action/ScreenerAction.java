@@ -36,7 +36,7 @@ import com.stk123.web.StkConstant;
 import com.stk123.web.WebUtils;
 import com.stk123.web.context.StkContext;
 import com.stk123.web.form.ScreenerForm;
-import com.util.Arrays;
+import com.stk123.tool.util.Arrays;
 
 public class ScreenerAction implements StkConstant {
 	

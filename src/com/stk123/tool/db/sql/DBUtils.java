@@ -1,5 +1,7 @@
 package com.stk123.tool.db.sql;
 
+import com.stk123.tool.util.JdbcUtils;
+
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -456,13 +458,13 @@ public final class DBUtils {
 		public static final String $ = "_";
 		
 		private static class Join {
-			private Table parentTable;
-			private Table childTable;
+			private Query.Table parentTable;
+			private Query.Table childTable;
 			private String[] parentColumns;
 			private String[] childColumns;
 			private int joinType;
 			
-			Join(Table childTable,String[] childColumns,Table parentTable,String[] parentColumns,int joinType){
+			Join(Query.Table childTable,String[] childColumns,Query.Table parentTable,String[] parentColumns,int joinType){
 				this.childTable = childTable;
 				this.childColumns = childColumns;
 				this.parentTable = parentTable;
@@ -470,7 +472,7 @@ public final class DBUtils {
 				this.joinType = joinType;
 			}
 			
-			Join(Table childTable,String childColumn,Table parentTable,String parentColumn,int joinType){
+			Join(Query.Table childTable,String childColumn,Query.Table parentTable,String parentColumn,int joinType){
 				this.childTable = childTable;
 				this.parentTable = parentTable;
 				addColumns(childColumn,parentColumn);

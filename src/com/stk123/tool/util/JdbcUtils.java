@@ -1005,8 +1005,8 @@ public final class JdbcUtils {
 		public static final String $ = "_";
 		
 		private static class Join {
-			private Table parentTable;
-			private Table childTable;
+			private Query.Table parentTable;
+			private Query.Table childTable;
 			private String[] parentColumns;
 			private String[] childColumns;
 			private int joinType;
@@ -1019,7 +1019,7 @@ public final class JdbcUtils {
 				this.joinType = joinType;
 			}*/
 			
-			Join(Table childTable,String childColumn,Table parentTable,String parentColumn,int joinType){
+			Join(Query.Table childTable,String childColumn,Query.Table parentTable,String parentColumn,int joinType){
 				this.childTable = childTable;
 				this.parentTable = parentTable;
 				addColumns(childColumn,parentColumn);
@@ -1241,9 +1241,9 @@ public final class JdbcUtils {
 		}
 	}
 	
-	private static<T> Object rs2Object(ResultSet rs, T resultClass,ResultSetLoader<T> loader) throws SQLException {
+	/*private static<T> Object rs2Object(ResultSet rs, T resultClass,ResultSetLoader<T> loader) throws SQLException {
 		return JdbcUtils.rs2Object(rs, resultClass.getClass(), loader);
-	}
+	}*/
 	
 	private static<T> Object rs2Object(ResultSet rs, Class resultClass,ResultSetLoader<T> loader) throws SQLException {
 		if(resultClass == null && loader == null){

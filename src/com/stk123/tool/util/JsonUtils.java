@@ -152,9 +152,9 @@ public class JsonUtils {
 			String type = (String)nv.getValue();
 			Object param = nv.getName();
 			if("java.util.Date".equals(type)){
-				param = new java.util.Date((long)nv.getName());
+				param = new java.util.Date(Long.parseLong(nv.getName().toString()));
 			}else if("java.sql.Timestamp".equals(type)){
-				param = new java.sql.Timestamp((long)nv.getName());
+				param = new java.sql.Timestamp(Long.parseLong(nv.getName().toString()));
 			}
 			params.add(param);
 		}
