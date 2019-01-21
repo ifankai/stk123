@@ -4,6 +4,7 @@ public class Portfolio {
     private String symbol;
     private String name;
     private String exchange;
+    private String market; // cn/hk/us
 
     public String getSymbol() {
         return symbol;
@@ -27,5 +28,13 @@ public class Portfolio {
 
     public void setExchange(String exchange) {
         this.exchange = exchange;
+    }
+
+    public String getMarket() {
+        return market;
+    }
+
+    public void setMarket(String market) {
+        this.market = market;
     }
 }
