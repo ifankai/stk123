@@ -64,7 +64,9 @@ public class Utils {
         for(Portfolio portfolio : portfolios){
             JSONObject symbol = jsonObject2.getJSONObject(portfolio.getSymbol());
             String closeAt = symbol.getString("closed_at");
+            String market = symbol.getString("market");
             if(StringUtils.isEmpty(closeAt)){
+                portfolio.setMarket(market);
                 result.add(portfolio);
             }
         }
