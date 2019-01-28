@@ -189,6 +189,7 @@ $(function() {
         <a target="_blank" href="http://www.baidu.com/s?wd=<%=stkName %>%20site%3A(blog.eastmoney.com)&ie=utf-8&cl=3&t=12">东财Blog</a>
         <a target="_blank" href="http://www.baidu.com/s?wd=<%=stkName %>%20site%3A(xueqiu.com)&ie=utf-8&cl=3&t=12">雪球搜索</a>
         <a target="_blank" href="http://weixin.sogou.com/weixin?type=2&query=<%=stkName %>&ie=utf8&s_from=input&_sug_=y&_sug_type_=">微信搜索</a>
+        <a target="_blank" href="https://www.qichacha.com/search?key=<%=stkName %>">企查查</a>
         </p>
        </blockquote>
     </article>
