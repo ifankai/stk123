@@ -341,7 +341,7 @@ if(index.getMarket()==1){
 					if(fnType.getTab().intValue() == 1){
 						tabs.add(i++);
 						String dispName = fnType.getDispName()==null?fnType.getName():fnType.getDispName();
-			%><th title="<%=dispName%>"><%=dispName%></th><%
+			%><th title="<%=dispName%>" <%=fnType.getColspan()!=null?"colspan="+fnType.getColspan():"" %>><%=dispName%></th><%
 					}
 				}
 			%>
@@ -361,6 +361,9 @@ if(index.getMarket()==1){
 				  for(StkFnDataCust fn : fnData){
 					  if(tabs.contains(j++)){
 						  out.print("<td>"+(fn==null?"--":fn.getFnValueToString())+"</td>");
+						  if(fn!=null && fn.getStkFnType()!=null && fn.getStkFnType().getColspan() != null){
+							  out.print("<td>"+(StkUtils.numberFormat2Digits(fn.getFnDateByOneQuarter()))+"</td>");
+						  }
 					  }
 				  } 
 				%></tr>
