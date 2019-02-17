@@ -39,7 +39,8 @@ public class XueqiuUtils {
 				}
 			}
 		};
-		//my.start();
+		my.setDaemon(true);
+		my.start();
 	}
 	
 	public static Map<String, String> getCookies(){
