@@ -2081,6 +2081,7 @@ public class Index {
 					StkFnDataCust tmp = fnTypeDatas.get(type);
 					if(tmp != null){
 						isAllNull = false;
+						tmp.setStkFnType(fnType);
 					}else{
 						if(fnType.getReCalc() != null && fnTypeDatas.get(fnType.getReCalc()) != null){
 							tmp = new StkFnDataCust();

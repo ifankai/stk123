@@ -68,5 +68,6 @@
 	<classpathentry kind="lib" path="lib/ojdbc6.jar"/>
 	<classpathentry kind="lib" path="lib/commons-beanutils-1.9.3.jar"/>
 	<classpathentry kind="lib" path="lib/h2-1.4.196.jar"/>
+	<classpathentry kind="lib" path="lib/fastjson-1.0.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

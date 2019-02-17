@@ -47,6 +47,9 @@ public class StkFnType implements Serializable {
 
     @Column(name="PRECISION")
     private Integer precision;
+    
+    @Column(name="COLSPAN")
+    private Integer colspan;
 
 
     public Integer getType(){
@@ -140,8 +143,13 @@ public class StkFnType implements Serializable {
         this.precision = precision;
     }
 
-
-    public String toString(){
+    public Integer getColspan() {
+		return colspan;
+	}
+	public void setColspan(Integer colspan) {
+		this.colspan = colspan;
+	}
+	public String toString(){
         return "type="+type+",name="+name+",nameAlias="+nameAlias+",source="+source+",status="+status+",market="+market+",isPercent="+isPercent+",currencyUnitAdjust="+currencyUnitAdjust+",dispName="+dispName+",dispOrder="+dispOrder+",reCalc="+reCalc+",tab="+tab+",precision="+precision;
     }
 
