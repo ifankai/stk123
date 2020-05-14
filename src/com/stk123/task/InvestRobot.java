@@ -15,6 +15,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hwpf.usermodel.Table;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
+import org.htmlparser.Node;
+import org.htmlparser.nodes.TagNode;
+import org.htmlparser.tags.TableTag;
 
 import com.stk123.bo.Stk;
 import com.stk123.bo.StkInvestigation;
@@ -23,6 +26,7 @@ import com.stk123.tool.db.util.DBUtil;
 import com.stk123.tool.util.ConfigUtils;
 import com.stk123.tool.util.EmailUtils;
 import com.stk123.tool.util.FileType;
+import com.stk123.tool.util.HtmlUtils;
 import com.stk123.tool.util.HttpUtils;
 import com.stk123.tool.util.JdbcUtils;
 import com.stk123.tool.util.JsonUtils;
@@ -45,6 +49,8 @@ public class InvestRobot {
 			System.setProperty("javax.xml.parsers.DocumentBuilderFactory","com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
 			run(InitialDate);
 			
+			//parse2();
+			
 		}catch(Exception e){
 			StringWriter aWriter = new StringWriter();
 			e.printStackTrace(new PrintWriter(aWriter));
@@ -57,19 +63,19 @@ public class InvestRobot {
 		Connection conn = null;
 		try {
 			conn = DBUtil.getConnection();
-			List<Stk> stks = JdbcUtils.list(conn, "select code,name from stk_cn order by code", Stk.class);
-			for(Stk stk : stks){
-				System.out.println(stk.getCode());
-				Index index =  new Index(conn,stk.getCode(),stk.getName());
-				List<Map> news = parse(index, date);
+			//List<Stk> stks = JdbcUtils.list(conn, "select code,name from stk_cn order by code", Stk.class);
+			//for(Stk stk : stks){
+				//System.out.println(stk.getCode());
+				//Index index =  new Index(conn,stk.getCode(),stk.getName());
+				List<Map> news = parse2();
 				for(Map map : news){
 					List params = new ArrayList();
-					params.add(stk.getCode());
+					params.add(map.get("code"));
 					params.add(map.get("sourceUrl"));
 					List<StkInvestigation> infos = JdbcUtils.list(conn, "select * from stk_investigation where code=? and source_url=?", params, StkInvestigation.class);
 					if(infos.size() == 0){
 						params.clear();
-						params.add(stk.getCode());
+						params.add(map.get("code"));
 						params.add((String)map.get("title"));
 						params.add((String)map.get("investigator"));
 						params.add(map.get("investigatorCount"));
@@ -83,7 +89,7 @@ public class InvestRobot {
 					}
 				}
 				//break;
-			}
+			//}*/
 			
 			List<StkInvestigation> list = JdbcUtils.list(conn, "select * from stk_investigation where invest_date = (select max(invest_date) from stk_investigation) order by investigator_count desc", StkInvestigation.class);
 			List<String> s = new ArrayList();
@@ -95,6 +101,101 @@ public class InvestRobot {
 		} finally {
 			if (conn != null) conn.close();
 		}
+	}
+	/**
+	 * http://irm.cninfo.com.cn/ircs/sse/sseSubIndex.do?condition.type=6
+	 */
+	public static List<Map> parse2() throws Exception {
+		List<Map> news = new ArrayList<Map>();
+		String page = HttpUtils.get("http://irm.cninfo.com.cn/ircs/interaction/irmInformationList.do?irmType=251314", "utf-8");
+		System.out.println(page);
+		if("404".equals(page)){
+			return news;
+		}
+		Node div = HtmlUtils.getNodeByAttribute(page, null, "class", "irmbox");
+		Node table = HtmlUtils.getNodeByTagName(div, "table");
+		//List<List<String>> list = HtmlUtils.getListFromTable2((TableTag)table,-1);
+		List<Node> rows = HtmlUtils.getNodeListByTagName(table, "tr");
+		for(Node row : rows){
+			Node link = HtmlUtils.getNodeByTagName(row, "a");
+			String code = link.toPlainTextString();
+			Node a = HtmlUtils.getNodeByTagName(row, "a", 1);
+			String downloadUrl = HtmlUtils.getAttribute(a, "href");
+			String title = HtmlUtils.getAttribute(a, "title");
+			//Node em = HtmlUtils.getNodeByTagName(row, "em");
+			Node span = HtmlUtils.getNodeByTagName(row, "span", 1);
+			String investDate = span.toPlainTextString();
+			Map map = download(code, downloadUrl, title, investDate);
+			map.put("code", code);
+			System.out.println(map);
+			news.add(map);
+		}
+		return news;
+	}
+	
+	public static Map download(String code, String downloadUrl, String title, String investDate) throws Exception {
+		//String filePath = String.valueOf(item.get(1));
+		//String downloadUrl = "http://www.cninfo.com.cn/"+filePath;
+		String fileName = StringUtils.substringAfterLast(downloadUrl, "/");
+		String downloadFilePath = ConfigUtils.getProp("stk_report")+ code +"\\invest\\";
+		File path = new File(downloadFilePath);
+		if(!path.exists()){
+			FileUtils.forceMkdir(path);
+		}
+		HttpUtils.download(downloadUrl,null, downloadFilePath, fileName);
+		String sourceType = "pdf";
+		String fileType = FileType.getFileType(downloadFilePath + fileName);
+		if(!StringUtils.endsWithIgnoreCase(fileType, sourceType)){
+			System.out.println(sourceType+","+fileType);
+			if("rtf".equalsIgnoreCase(fileType)){
+				sourceType = "RTF";
+			}else if("docx".equalsIgnoreCase(fileType) && "doc".equalsIgnoreCase(sourceType)){
+				sourceType = "DOCX";
+			}else{
+				sourceType = fileType;
+			}
+		}
+		
+		Map map = new HashMap();
+		map.put("sourceUrl", downloadUrl);
+		map.put("sourceType", sourceType);
+		map.put("title", title);
+		map.put("investDate", StkUtils.sf_ymd.parse(investDate));
+		
+		if("doc".equalsIgnoreCase(sourceType)){
+			Table tb = WordUtils.getTable(downloadFilePath + fileName,0);
+			if(tb != null){
+				String investigator = WordUtils.getCellWhenColumnContain(tb, 0, "参与单位", 1);
+				if(investigator != null){
+					investigator = StringUtils.replace(investigator, "               ", "");
+					if(investigator.length() >= 1500){
+						investigator = investigator.substring(0, 1300);
+					}
+					map.put("investigator", investigator);
+					map.put("investigatorCount", investigator.length());
+				}
+				String text = WordUtils.getCellWhenColumnContain(tb, 0, "主要内容", 1);
+				if(text != null){
+					map.put("text", text);
+					map.put("textCount", text.length());
+				}
+			}
+		}else if("docx".equalsIgnoreCase(sourceType)){
+			XWPFTable tb = WordUtils.getTableX(downloadFilePath + fileName,0);
+			if(tb != null){
+				String investigator = WordUtils.getCellXWhenColumnContain(tb, 0, "参与单位", 1);
+				if(investigator != null){
+					map.put("investigator", investigator);
+					map.put("investigatorCount", investigator.length());
+				}
+				String text = WordUtils.getCellXWhenColumnContain(tb, 0, "主要内容", 1);
+				if(text != null){
+					map.put("text", text);
+					map.put("textCount", text.length());
+				}
+			}
+		}
+		return map;
 	}
 	
 	public static List<Map> parse(Index index,Date DateBefore) throws Exception {
@@ -177,4 +278,5 @@ public class InvestRobot {
 		}
 		return news;
 	}
+	
 }

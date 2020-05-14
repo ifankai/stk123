@@ -23,6 +23,7 @@ import org.htmlparser.Node;
 import com.stk123.bo.StkCare;
 import com.stk123.bo.StkInvestigation;
 import com.stk123.bo.StkMonitor;
+import com.stk123.bo.StkText;
 import com.stk123.model.Index;
 import com.stk123.model.K;
 import com.stk123.model.Keyword;
@@ -38,6 +39,7 @@ import com.stk123.tool.search.Search;
 import com.stk123.tool.util.HtmlUtils;
 import com.stk123.tool.util.HttpUtils;
 import com.stk123.tool.util.JdbcUtils;
+import com.stk123.tool.util.JdbcUtils.IngoreCaseHashMap;
 import com.stk123.tool.util.JsonUtils;
 import com.stk123.tool.util.collection.Name2Value;
 import com.stk123.tool.web.util.RequestUtils;
@@ -99,6 +101,57 @@ public class StkAction {
 			map.add(care.getParam1()==null?"":care.getParam1());
 			//map.add(care.getParam2()==null?"":care.getParam2());
 			map.add(StkUtils.formatDate(care.getInsertTime(), StkUtils.sf_ymd));
+			list.add(map);
+		}
+		String json = JsonUtils.getJsonString4JavaPOJO(list);
+		sc.setResponse("{\"data\":" + json + "}");
+	}
+	
+	public void listFund() throws Exception {
+		StkContext sc = StkContext.getContext();
+		HttpServletRequest request = sc.getRequest();
+		Connection conn = sc.getConnection();
+		String fund = request.getParameter("fund");
+		
+		List<List> list = new ArrayList<List>();
+		List<Map<String,Object>> cares = JdbcUtils.list(conn, "select a.code,a.fn_date,b.name,a.stk_num,a.rate,a.num_change,a.num_change_rate "
+				+ "from stk_ownership a, stk_organization b where a.org_id=b.id and b.name like '%"+fund+"%' and  a.num_change_rate > 0 "
+						+ "order by a.fn_date desc,a.stk_num desc", IngoreCaseHashMap.class);
+		for(Map<String,Object> care : cares){
+			Index index = new Index(conn, (String)care.get("code"));
+			List map = new ArrayList();
+			map.add(StkUtils.wrapCodeAndNameAsHtml(index.getCode(), index.getName()));
+			map.add(care.get("fn_date"));
+			map.add(care.get("name"));
+			map.add(care.get("stk_num"));
+			map.add(care.get("rate"));
+			map.add(care.get("num_change"));
+			map.add(care.get("num_change_rate"));
+			list.add(map);
+		}
+		String json = JsonUtils.getJsonString4JavaPOJO(list);
+		sc.setResponse("{\"data\":" + json + "}");
+	}
+	
+	public void listNewFund() throws Exception {
+		StkContext sc = StkContext.getContext();
+		HttpServletRequest request = sc.getRequest();
+		Connection conn = sc.getConnection();
+		
+		List<List> list = new ArrayList<List>();
+		List<Map<String,Object>> cares = JdbcUtils.list(conn, "select a.code,a.fn_date,count(a.num_change_rate) cnt,"
+				+ "listagg(c.name,'<br>') within group (order by a.num_change_rate) name "
+				+ "from stk_ownership a,stk_cn b, stk_organization c "
+				+ "where a.code=b.CODE and length(c.name)>3 /*排除个人投资者*/ and a.org_id=c.id and b.listing_date < to_char(add_months(sysdate, -12),'yyyymmdd') "
+				+ "and a.fn_date > to_char(add_months(sysdate, -5),'yyyymmdd') and a.num_change_rate>0 "
+				+ "group by a.code,a.fn_date having count(a.num_change_rate) >= 8 order by a.fn_date desc", IngoreCaseHashMap.class);
+		for(Map<String,Object> care : cares){
+			Index index = new Index(conn, (String)care.get("code"));
+			List map = new ArrayList();
+			map.add(StkUtils.wrapCodeAndNameAsHtml(index.getCode(), index.getName()));
+			map.add(care.get("fn_date"));
+			map.add(care.get("cnt"));
+			map.add(care.get("name"));
 			list.add(map);
 		}
 		String json = JsonUtils.getJsonString4JavaPOJO(list);
@@ -207,6 +260,17 @@ public class StkAction {
 		String code = request.getParameter(StkConstant.PARAMETER_S);
 		Index index = new Index(StkContext.getConnection(),code); 
 		List<List> list = index.getValueHistoryList();
+		String json = "{\"data\":"+JsonUtils.getJsonString4JavaPOJO(list)+StkConstant.MARK_BRACE_RIGHT;
+		sc.setResponse(json);
+	}
+	
+	public void listOnwer() throws Exception{
+		StkContext sc = StkContext.getContext();
+		HttpServletRequest request = sc.getRequest();
+		String date = request.getParameter(StkConstant.PARAMETER_DATE);
+		String code = request.getParameter(StkConstant.PARAMETER_S);
+		Index index = new Index(StkContext.getConnection(),code); 
+		List<List> list = index.getOnwershipByDate(date);
 		String json = "{\"data\":"+JsonUtils.getJsonString4JavaPOJO(list)+StkConstant.MARK_BRACE_RIGHT;
 		sc.setResponse(json);
 	}
@@ -517,13 +581,16 @@ public class StkAction {
 		Connection conn = sc.getConnection();
 		
 		List<List> list = new ArrayList<List>();
-		List<XueqiuArticle> articles = XueqiuStockArticleJob.getArticles(code, 250, 5);
-		for(XueqiuArticle article : articles){
+		//List<XueqiuArticle> articles = XueqiuStockArticleJob.getArticles(code, 250, 5);
+		List params = new ArrayList();
+		params.add(code);
+		List<StkText> texts = JdbcUtils.list(conn,"select * from stk_text where code=? and type=3 order by insert_time desc" ,params, StkText.class);
+		for(StkText article : texts){
 			List l = new ArrayList();
-			l.add(article.user.toString());
-			l.add(article.titleToHtml());
-			l.add(article.replyToHtml());
-			l.add(StkUtils.formatDate(new Date(article.createAt)));
+			l.add(article.getTitle());
+			l.add(article.getText());
+			l.add("");
+			l.add(StkUtils.sf_ymd9.format(article.getInsertTime()));
 			list.add(l);
 		}
 		String json = JsonUtils.getJsonString4JavaPOJO(list);

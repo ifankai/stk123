@@ -137,12 +137,19 @@ public class InitialData {
 		try{
 			infos.clear();
 			InitialData.initialStk(conn,StkUtils.now);
+		}catch(Exception e){
+			EmailUtils.send("Initial A Stock initial Data Error", e);
+			e.printStackTrace();
+		}
+		
+		try{
 			InitialData.initialIndustryFromCnIndex(conn, 14);
 			InitialData.updateIndustryFromHexun(conn);
 		}catch(Exception e){
 			EmailUtils.send("Initial A Stock Industry Data Error", e);
 			e.printStackTrace();
 		}
+		
 		try{
 			InitialData.initialIndustryFrom10jqka(conn,"gn");
 			InitialData.initialIndustryFrom10jqka(conn,"thshy");
@@ -172,7 +179,7 @@ public class InitialData {
 				Index index = new Index(conn,stk.getCode(),stk.getName());
 				try{
 					//行业，盈利预期
-					updateStkInfoFromWind(conn,index,StkUtils.now,fnTypes);
+					//updateStkInfoFromWind(conn,index,StkUtils.now,fnTypes);
 					//fn
 					initFnDataTTM(conn,StkUtils.now,index,fnTypes);
 				}catch(Exception e){
@@ -194,6 +201,14 @@ public class InitialData {
 					//十大流通股东
 					InitialData.initOwnership(conn, index);
 					
+				}catch(Exception e){
+					ExceptionUtils.insertLog(conn, stk.getCode(), e);
+					e.printStackTrace();
+				}
+				
+				try{
+					//股东人数
+					initHolderFrom10jqka(conn, index);
 				}catch(Exception e){
 					ExceptionUtils.insertLog(conn, stk.getCode(), e);
 					e.printStackTrace();
@@ -341,7 +356,7 @@ public class InitialData {
 	
 	/***************************************** A Stock *****************************************/
 	
-	private static void initialStk(Connection conn,Date now) throws Exception {
+	public static void initialStk(Connection conn,Date now) throws Exception {
 		String[] ss = InitialData.getAllStocksCode().split(",");
 		List params = new ArrayList();
 		StringBuffer sb = new StringBuffer();
@@ -357,7 +372,7 @@ public class InitialData {
 						String var = StringUtils.substringBefore(s, "=\"");
 						String code = StringUtils.substring(var, var.length()-6);
 						String name = StringUtils.substringBetween(s, "=\"", ",");
-						
+						System.out.println("code="+code+", name="+name);
 						if(code.length() != 6 && !StkUtils.isAllNumeric(code))continue;
 						
 						params.clear();
@@ -379,7 +394,11 @@ public class InitialData {
 							sql = "update stk set name=? where code=?";
 							JdbcUtils.insert(conn, sql, params);
 						}
-						updateStkStaticInfo(conn,code);
+						try{
+							updateStkStaticInfo(conn,code);
+						}catch(Exception e){
+							ExceptionUtils.insertLog(conn, code, e);
+						}
 					}
 				}
 				sb = new StringBuffer();
@@ -757,12 +776,14 @@ public class InitialData {
 			List<Map> list = (List<Map>)map.get("hxtc");
 			StringBuffer sb = new StringBuffer(1024);
 			int i = 1;
-			for(Map m : list){
-				sb.append("要点"+ i++ + ": ");
-				sb.append(m.get("gjc"));
-				sb.append(" ");
-				sb.append(m.get("ydnr"));
-				sb.append("\r");
+			if(list != null){
+				for(Map m : list){
+					sb.append("要点"+ i++ + ": ");
+					sb.append(m.get("gjc"));
+					sb.append(" ");
+					sb.append(m.get("ydnr"));
+					sb.append("\r");
+				}
 			}
 			if(sb != null && sb.length() > 0){
 				List params = new ArrayList();
@@ -773,6 +794,7 @@ public class InitialData {
 		}
 	}
 	
+	//http://www.windin.com/home/stock/html_wind/000002.SH.shtml
 	public static void updateStkInfoFromWind(Connection conn,Index index,Date now,List<StkFnType> fnTypes) throws Exception {
 		String code = index.getCode();
 		String name = index.getName();
@@ -991,7 +1013,7 @@ public class InitialData {
 		}
 	}
 	
-	public static void initOwnershipFrom10jqka(Connection conn, Index index)  throws Exception {
+	public static void initHolderFrom10jqka(Connection conn, Index index)  throws Exception {
 		String code = index.getCode();
 		List params = new ArrayList();
 		String page = HttpUtils.get("http://basic.10jqka.com.cn/"+index.getCode()+"/holder.html", null, "gbk");
@@ -1005,6 +1027,7 @@ public class InitialData {
 			for(List holder : holderList){
 				//System.out.println(holder);
 				String holderNum = String.valueOf(holder.get(1));
+				if("{}".equals(holderNum))continue;
 				String fnDate = StringUtils.replace(String.valueOf(holder.get(0)), "-", "");
 				params.clear();
 				params.add(holderNum);
@@ -1046,121 +1069,15 @@ public class InitialData {
 			}
 		}
 		
-		//十大股东
-		Node div = HtmlUtils.getNodeByAttribute(page, null, "id", "bd_list1");
-		if(div != null){
-			for(int i=1;i<=5;i++){
-				Node n1 = HtmlUtils.getNodeByAttribute(div, null, "targ", "fher_"+i);
-				//System.out.println(n1.toHtml());
-				if(n1 == null)return;
-				int newAdd = 0;
-				//System.out.println(n1.toHtml());
-				Node n2 = HtmlUtils.getNodeByAttribute(div, null, "id", "fher_"+i);
-				Node tab = HtmlUtils.getNodeByTagName(n2, "table");
-				//System.out.println(tab.toHtml());
-				List<List<String>> list = HtmlUtils.getListFromTable2((TableTag)tab, 0);
-				//System.out.println(list);
-				String date = StringUtils.replace(n1.toPlainTextString(), "-", "");
-				
-				for(List<String> data : list){
-					if(data.size() < 7)continue;
-					if(data.size() == 8){//000048
-						data.remove(4);
-					}
-					//System.out.println(data);
-					String orgName = StringUtils.trim(data.get(0));
-					params.clear();
-					params.add(orgName);
-					StkOrganization org = JdbcUtils.load(conn, "select * from stk_organization where name=?",params, StkOrganization.class);
-					if(org == null){
-						long seq = JdbcUtils.getSequence(conn, "s_organization_id");
-						params.clear();
-						params.add(seq);
-						params.add(orgName);
-						JdbcUtils.insert(conn, "insert into stk_organization(id,name) select ?,? from dual", params);
-						
-						params.clear();
-						params.add(seq);
-						org = JdbcUtils.load(conn, "select * from stk_organization where id=?",params, StkOrganization.class);
-					}
-					
-					if(org != null){
-						String holdcount = StringUtils.replace(StringUtils.replace(StringUtils.replace(data.get(1), "万", ""), "股", ""), "亿", "");
-						params.clear();
-						params.add(index.getCode());
-						params.add(date);
-						params.add(org.getId());
-						params.add(holdcount);
-						
-						params.add(StringUtils.replace(StringUtils.replace(data.get(3), "%", ""), "-", ""));
-						String change = data.get(2);
-						double dChange = 0;
-						if("不变".equals(change)){
-							dChange = 0;
-						}else if("新进".equals(change)){
-							newAdd ++;
-							dChange = Double.parseDouble(holdcount);
-						}else{
-							int n = 1;
-							String dd = StringUtils.replace((String)data.get(2), "万", "");
-							if(StringUtils.indexOf(dd, "亿") > 0){
-								n = 10000;
-								dd = StringUtils.replace(dd, "亿", "");
-							}
-							dChange = Double.parseDouble(dd) * n;
-						}
-						params.add(dChange);
-						String rate = (String)data.get(4);
-						double rateChange = 0;
-						if("不变".equals(rate)){
-							rateChange = 0;
-						}else if("新进".equals(rate)){
-							rateChange = 100;
-						}else{
-							rateChange = Double.parseDouble(StringUtils.replace(rate, "%", ""));
-						}
-						params.add(rateChange);
-						params.add(index.getCode());
-						params.add(date);
-						params.add(org.getId());
-						int cnt = JdbcUtils.insert(conn, "insert into stk_ownership(code,fn_date,org_id,stk_num,rate,num_change,num_change_rate) select ?,?,?,?,?,?,? from dual where not exists (select 1 from stk_ownership where code=? and fn_date=? and org_id=?)", params);
-						if(cnt > 0){
-							List<Name2Value> pairs = Name2Value.containName(awesomefunds, org.getName());
-							if(pairs.size() > 0){
-								params.clear();
-								params.add(SequenceUtils.getSequenceNextValue(SequenceUtils.SEQ_TEXT_ID));
-								params.add(index.getCode());
-								String content = org.getName() + " - " + date + " - 买入";
-								params.add(JdbcUtils.createClob(content));
-								params.add(pairs.get(0).getValue().equals(1)?Text.SUB_TYPE_NIU_FUND_ONE_YEAR:Text.SUB_TYPE_NIU_FUND_ALL_TIME);
-								JdbcUtils.insert(conn, "insert into stk_text(id,type,code,code_type,title,text,insert_time,update_time,sub_type) values (?,1,?,1,null,?,sysdate,null,?)", params);
-							}
-							
-							List<Name2Value> ap = Name2Value.containName(awesomePersons, org.getName());
-							if(ap.size() > 0){
-								params.clear();
-								params.add(index.getCode());
-								params.add(News.TYPE_3);
-								params.add(org.getName());
-								JdbcUtils.insert(conn, "insert into stk_import_info(id,code,type,insert_time,info) values (s_import_info_id.nextval,?,?,sysdate,?)", params);
-							}
-						}
-					}
-				}
-				if(i==1 && newAdd >= 5){
-					//EmailUtils.send("发现新增股东数大于5个 - "+index.toString(), StkUtils.wrapCodeLink(index.getCode()));
-				}
-			}
-		}
 	}
 	
 	/**
-	 * TODO
-	 * http://basic.10jqka.com.cn/002130/holder.html 
+	 * http://basic.10jqka.com.cn/000001/holder.html
 	 */
 	//流通股东
 	public static void initOwnership(Connection conn, Index index)  throws Exception {
-		String page = HttpUtils.get("http://stockpage.10jqka.com.cn/"+index.getCode()+"/holder/", null, "gbk");
+		String page = HttpUtils.get("http://basic.10jqka.com.cn/"+index.getCode()+"/holder.html", null, "gbk");
+		//System.out.println("initOwnership="+page);
 		Node div = HtmlUtils.getNodeByAttribute(page, null, "id", "bd_list1");
 		if(div == null)return;
 		//System.out.println(div.toHtml());
@@ -1173,12 +1090,21 @@ public class InitialData {
 			Node n2 = HtmlUtils.getNodeByAttribute(div, null, "id", "fher_"+i);
 			Node tab = HtmlUtils.getNodeByTagName(n2, "table");
 			//System.out.println(tab.toHtml());
+			int 质押占其直接持股比 = 0; //有没有‘质押占其直接持股比’这列，有的话为1，没有为0
+			if(StringUtils.contains(tab.toHtml(), "质押占其直接持股比")){
+				质押占其直接持股比 = 1;
+			}
+			int 机构成本估算 = 0;
+			if(StringUtils.contains(tab.toHtml(), "机构成本估算")){
+				机构成本估算 = 1;
+			}
+			
 			List<List<String>> list = HtmlUtils.getListFromTable2((TableTag)tab, 0);
 			//System.out.println(list);
 			String date = StringUtils.replace(n1.toPlainTextString(), "-", "");
 			
 			for(List<String> data : list){
-				if(data.size() < 8)continue;
+				if(data.size() < 6)continue;
 				//System.out.println(data);
 				String orgName = StringUtils.trim(data.get(0));
 				params.clear();
@@ -1197,7 +1123,7 @@ public class InitialData {
 				}
 				
 				if(org != null){
-					String holdcount = StringUtils.replace(StringUtils.replace(StringUtils.replace(data.get(1), "万", ""), "股", ""), "亿", "");
+					double holdcount = StkUtils.getAmount万(StringUtils.replace(data.get(1), "股", ""));
 					params.clear();
 					params.add(index.getCode());
 					params.add(date);
@@ -1206,12 +1132,13 @@ public class InitialData {
 					
 					params.add(StringUtils.replace(data.get(3), "%", ""));
 					String change = data.get(2);
+					if("退出".equals(change)) continue;
 					double dChange = 0;
 					if("不变".equals(change)){
 						dChange = 0;
 					}else if("新进".equals(change)){
 						newAdd ++;
-						dChange = Double.parseDouble(holdcount);
+						dChange = holdcount;
 					}else{
 						int n = 1;
 						String dd = StringUtils.replace((String)data.get(2), "万", "");
@@ -1222,11 +1149,13 @@ public class InitialData {
 						dChange = Double.parseDouble(dd) * n;
 					}
 					params.add(dChange);
-					String rate = (String)data.get(5);
+					String rate = (String)data.get(4+质押占其直接持股比+机构成本估算);
 					double rateChange = 0;
 					if("不变".equals(rate)){
 						rateChange = 0;
 					}else if("新进".equals(rate)){
+						rateChange = 100;
+					}else if("限售股流通".equals(rate)){
 						rateChange = 100;
 					}else{
 						rateChange = Double.parseDouble(StringUtils.replace(rate, "%", ""));
@@ -1608,7 +1537,7 @@ public class InitialData {
 			String page = HttpUtils.get("https://query1.finance.yahoo.com/v10/finance/quoteSummary/"+index.getCode()+"?formatted=true&lang=en-US&region=US&modules=defaultKeyStatistics%2CfinancialData%2CsummaryDetail%2CcalendarEvents&corsDomain=finance.yahoo.com", null, "utf-8");
 			//{"quoteSummary":{"result":[{"summaryDetail":{"maxAge":1,"priceHint":{"raw":2,"fmt":"2","longFmt":"2"},"previousClose":{"raw":99.23,"fmt":"99.23"},"open":{"raw":98.98,"fmt":"98.98"},"dayLow":{"raw":97.8201,"fmt":"97.82"},"dayHigh":{"raw":100.48,"fmt":"100.48"},"regularMarketPreviousClose":{"raw":99.23,"fmt":"99.23"},"regularMarketOpen":{"raw":98.98,"fmt":"98.98"},"regularMarketDayLow":{"raw":97.8201,"fmt":"97.82"},"regularMarketDayHigh":{"raw":100.48,"fmt":"100.48"},"dividendRate":{},"dividendYield":{},"exDividendDate":{},"payoutRatio":{},"fiveYearAvgDividendYield":{},"beta":{"raw":0.999804,"fmt":"1.00"},"trailingPE":{"raw":51.37789,"fmt":"51.38"},"forwardPE":{"raw":39.035156,"fmt":"39.04"},"volume":{"raw":598443,"fmt":"598.44k","longFmt":"598,443"},"regularMarketVolume":{"raw":598443,"fmt":"598.44k","longFmt":"598,443"},"averageVolume":{"raw":629137,"fmt":"629.14k","longFmt":"629,137"},"averageVolume10days":{"raw":834914,"fmt":"834.91k","longFmt":"834,914"},"averageDailyVolume10Day":{"raw":834914,"fmt":"834.91k","longFmt":"834,914"},"bid":{"raw":96.81,"fmt":"96.81"},"ask":{"raw":0.0,"fmt":"0.00"},"bidSize":{"raw":200,"fmt":"200","longFmt":"200"},"askSize":{"raw":0,"fmt":null,"longFmt":"0"},"marketCap":{"raw":2739790848,"fmt":"2.74B","longFmt":"2,739,790,848"},"yield":{},"ytdReturn":{},"totalAssets":{},"expireDate":{},"strikePrice":{},"openInterest":{},"fiftyTwoWeekLow":{"raw":33.9,"fmt":"33.90"},"fiftyTwoWeekHigh":{"raw":100.48,"fmt":"100.48"},"priceToSalesTrailing12Months":{"raw":3.9237008,"fmt":"3.92"},"fiftyDayAverage":{"raw":87.47857,"fmt":"87.48"},"twoHundredDayAverage":{"raw":66.70993,"fmt":"66.71"},"trailingAnnualDividendRate":{},"trailingAnnualDividendYield":{},"navPrice":{}},"defaultKeyStatistics":{"maxAge":1,"enterpriseValue":{},"forwardPE":{"raw":39.035156,"fmt":"39.04"},"profitMargins":{"raw":0.07786,"fmt":"7.79%"},"floatShares":{"raw":26641453,"fmt":"26.64M","longFmt":"26,641,453"},"sharesOutstanding":{"raw":27417100,"fmt":"27.42M","longFmt":"27,417,100"},"sharesShort":{"raw":4101930,"fmt":"4.1M","longFmt":"4,101,930"},"sharesShortPriorMonth":{"raw":3965860,"fmt":"3.97M","longFmt":"3,965,860"},"heldPercentInsiders":{"raw":0.0322,"fmt":"3.22%"},"heldPercentInstitutions":{"raw":0.71199995,"fmt":"71.20%"},"shortRatio":{"raw":10.44,"fmt":"10.44"},"shortPercentOfFloat":{"raw":0.141524,"fmt":"14.15%"},"beta":{"raw":0.999804,"fmt":"1"},"morningStarOverallRating":{},"morningStarRiskRating":{},"category":null,"bookValue":{"raw":14.902,"fmt":"14.90"},"priceToBook":{"raw":6.705811,"fmt":"6.71"},"annualReportExpenseRatio":{},"ytdReturn":{},"beta3Year":{},"totalAssets":{},"yield":{},"fundFamily":null,"fundInceptionDate":{},"legalType":null,"threeYearAverageReturn":{},"fiveYearAverageReturn":{},"priceToSalesTrailing12Months":{},"lastFiscalYearEnd":{"raw":1483142400,"fmt":"2016-12-31"},"nextFiscalYearEnd":{"raw":1546214400,"fmt":"2018-12-31"},"mostRecentQuarter":{"raw":1491004800,"fmt":"2017-04-01"},"earningsQuarterlyGrowth":{"raw":3.16,"fmt":"316.00%"},"revenueQuarterlyGrowth":{},"netIncomeToCommon":{"raw":54366000,"fmt":"54.37M","longFmt":"54,366,000"},"trailingEps":{"raw":1.945,"fmt":"1.95"},"forwardEps":{"raw":2.56,"fmt":"2.56"},"pegRatio":{"raw":3.19,"fmt":"3.19"},"lastSplitFactor":null,"lastSplitDate":{},"enterpriseToRevenue":{},"enterpriseToEbitda":{},"52WeekChange":{"raw":1.6376929,"fmt":"163.77%"},"SandP52WeekChange":{"raw":0.16081035,"fmt":"16.08%"},"lastDividendValue":{},"lastCapGain":{},"annualHoldingsTurnover":{}},"calendarEvents":{"maxAge":1,"earnings":{"earningsDate":[{"raw":1500940800,"fmt":"2017-07-25"}],"earningsAverage":{"raw":-0.28,"fmt":"-0.28"},"earningsLow":{"raw":-0.35,"fmt":"-0.35"},"earningsHigh":{"raw":0.0,"fmt":"0.00"},"revenueAverage":{"raw":174660000,"fmt":"174.66M","longFmt":"174,660,000"},"revenueLow":{"raw":165480000,"fmt":"165.48M","longFmt":"165,480,000"},"revenueHigh":{"raw":185000000,"fmt":"185M","longFmt":"185,000,000"}},"exDividendDate":{},"dividendDate":{}},"financialData":{"maxAge":86400,"currentPrice":{"raw":99.93,"fmt":"99.93"},"targetHighPrice":{"raw":90.0,"fmt":"90.00"},"targetLowPrice":{"raw":57.0,"fmt":"57.00"},"targetMeanPrice":{"raw":74.4,"fmt":"74.40"},"targetMedianPrice":{"raw":72.0,"fmt":"72.00"},"recommendationMean":{"raw":2.8,"fmt":"2.80"},"recommendationKey":"hold","numberOfAnalystOpinions":{"raw":5,"fmt":"5","longFmt":"5"},"totalCash":{"raw":275670016,"fmt":"275.67M","longFmt":"275,670,016"},"totalCashPerShare":{"raw":10.055,"fmt":"10.06"},"ebitda":{"raw":86783000,"fmt":"86.78M","longFmt":"86,783,000"},"totalDebt":{"raw":0,"fmt":null,"longFmt":"0"},"quickRatio":{"raw":3.233,"fmt":"3.23"},"currentRatio":{"raw":3.877,"fmt":"3.88"},"totalRevenue":{"raw":698267008,"fmt":"698.27M","longFmt":"698,267,008"},"debtToEquity":{},"revenuePerShare":{"raw":25.603,"fmt":"25.60"},"returnOnAssets":{"raw":0.09137,"fmt":"9.14%"},"returnOnEquity":{"raw":0.13234,"fmt":"13.23%"},"grossProfits":{"raw":319315000,"fmt":"319.31M","longFmt":"319,315,000"},"freeCashflow":{"raw":94818752,"fmt":"94.82M","longFmt":"94,818,752"},"operatingCashflow":{"raw":94560000,"fmt":"94.56M","longFmt":"94,560,000"},"earningsGrowth":{"raw":3.462,"fmt":"346.20%"},"revenueGrowth":{"raw":0.288,"fmt":"28.80%"},"grossMargins":{"raw":0.49365002,"fmt":"49.37%"},"ebitdaMargins":{"raw":0.124280006,"fmt":"12.43%"},"operatingMargins":{"raw":0.10521,"fmt":"10.52%"},"profitMargins":{"raw":0.07786,"fmt":"7.79%"}}}],"error":null}}
 			//System.out.println(page);
-			if(page == null)return;
+			if(page == null || !StringUtils.startsWith(page, "{"))return;
 			Map summary = JsonUtils.testJson(page);
 			Map quote = (Map)summary.get("quoteSummary");
 			Map result = (Map)((List)quote.get("result")).get(0);
@@ -1691,6 +1620,9 @@ public class InitialData {
 		}
 		for(int i=0;i<=999;i++){
 			sb.append("sh603"+StringUtils.leftPad(""+i, 3, '0')+",");
+		}
+		for(int i=0;i<=999;i++){
+			sb.append("sh688"+StringUtils.leftPad(""+i, 3, '0')+",");
 		}
 		for(int i=0;i<=999;i++){
 			sb.append("sz000"+StringUtils.leftPad(""+i, 3, '0')+",");

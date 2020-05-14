@@ -419,6 +419,16 @@ public class HtmlUtils {
 		}
 		return null;
 	}
+	public static Node getNodeByTagName(Node node,String tagName,int k) throws Exception {
+		NodeList nodeList = new NodeList();
+		NodeFilter nodefilter = new org.htmlparser.filters.TagNameFilter(tagName);
+		node.collectInto(nodeList, nodefilter);
+		for (int i = 0; i < nodeList.size(); i++) {
+			Node n = nodeList.elementAt(k);
+			return n;
+		}
+		return null;
+	}
 	
 	public static List<Node> getNodeListByTagName(Node node,String tagName) throws Exception {
 		List<Node> result = new ArrayList<Node>();

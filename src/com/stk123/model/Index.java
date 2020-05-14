@@ -3732,6 +3732,20 @@ public class Index {
 		return JdbcUtils.list(this.getConnection(), "select * from stk_capital_flow where code=? and flow_date>=? order by flow_date asc", params, StkCapitalFlow.class);
 	}
 	
+	/***************** stk_ownership ************/
+	public List<String> getOnwershipDates(){
+		List params = new ArrayList();
+		params.add(code);
+		return JdbcUtils.list(this.getConnection(), "select fn_date from(select distinct fn_date from stk_ownership where code=? order by fn_date desc) where rownum <= 16", params, String.class);
+	}
+	
+	public List<List> getOnwershipByDate(String date){
+		List params = new ArrayList();
+		params.add(code);
+		params.add(StringUtils.replace(date, "-", ""));
+		return JdbcUtils.list(this.getConnection(), "select b.name,a.stk_num,a.rate,a.num_change,a.num_change_rate from stk_ownership a, stk_organization b where a.org_id=b.id and a.code=? and a.fn_date=? order by a.fn_date desc,a.stk_num desc", params, ArrayList.class);
+	}
+	
 	
 	public String getCode() {
 		return code;

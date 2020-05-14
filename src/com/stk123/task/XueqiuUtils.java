@@ -152,8 +152,8 @@ public class XueqiuUtils {
 		/*followStks.addAll(XueqiuUtils.getFollowStks("备选"));
 		IOUtils.writeLines(followStks, null, new FileOutputStream(new File("d:\\care.txt")));*/
 		//System.out.println(ConfigUtils.getProp("xueqiu.cookie"));
-		//XueqiuUtils.getFollowStks("关注C");
-		XueqiuUtils.getCookies();
+		System.out.println(XueqiuUtils.getFollowStks("关注C"));
+		//XueqiuUtils.getCookies();
 	}
 
 }

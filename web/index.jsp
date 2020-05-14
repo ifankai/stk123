@@ -26,8 +26,8 @@ color: #878d96;
   <button type="button" class="btn-register" data-toggle="modal" data-target="#myModal">马上注册</button>
   <div style="float: right;">
     <form id="form1" action="/login" method="post" style="vertical-align: middle;margin: 0px">
-    <input type="text" class="text" id="username" placeholder="登陆邮箱" name="username" tabindex="1">
-    <input type="password" class="text" id="password" placeholder="密码" name="password" tabindex="2"> 
+    <input type="text" class="text" id="username" placeholder="登陆邮箱" name="username" tabindex="1" value="ifankaigmail.com">
+    <input type="password" class="text" id="password" placeholder="密码" name="password" tabindex="2" value="123456"> 
     <input type="checkbox" id="autologin" name="autologin" value="1" checked tabindex="3"/>
     <span style="font-size: 14px;vertical-align: middle;">&nbsp;自动登录</span>
     <button class="btn-login" tabindex="4">登录</button>
@@ -269,14 +269,106 @@ $(document).ready(function(){
 </div>
 
 <script>
-$(document).ready(function() {
+/* $(document).ready(function() {
   $('.careTable').dataTable( {
     "language": datatable_lang,
     "order": [[ 7, "desc" ]],
     "ajax":"/stk?method=getCare"
   });
-});
+}); */
 </script>
+
+
+
+<div class="content">
+  <div class="page-header" style="position: relative;">
+    <h3><span class="icon-tasks"></span> 基金加仓</h3>
+    <div style="position: absolute;left:140px;top:9px;" >
+	    <ul class="nav nav-tabs" role="tablist">
+	<%
+		int j=0;
+		List<StkDictionary> funds = StkDict.getDictionaryOrderByParam(StkDict.FAMOUS_FUNDS);
+		for(StkDictionary subType : funds){
+			j++;
+	%>      
+	      <li <%=j==1?"class='active'":"" %>><a href="#org-<%=j %>" id="org-tab-<%=j %>" data="<%=subType.getKey()%>" data-index="<%=j %>" role="tab" data-toggle="tab"><%=subType.getKey() %></a></li>
+	<%
+		}
+	%>      
+		  <li><a href="#org-0" id="org-tab-0" data="" role="tab" data-toggle="tab">查询结果</a></li>
+		  <li><a href="#org-a" id="org-tab-a" data="" role="tab" data-toggle="tab">十大股东都是新进的</a></li>
+	    </ul>
+    </div>
+    <div class="controls" style="float:right;padding-top:40px">
+		<div class="input-append">
+		    包括减仓 <input type="checkbox" id="org-decrease-included" />
+			从 <input class="datepicker" id="org-from" value="<%=StkUtils.getDate(-400, StkUtils.sf_ymd14) %>" type="text" style="width:70px"><span class="add-on"><i class="icon-calendar"></i></span>
+			到 <input class="datepicker" id="org-to" value="<%=StkUtils.getToday(StkUtils.sf_ymd14) %>" type="text" style="width:70px"><span class="add-on"><i class="icon-calendar"></i></span>
+			<input type="text" id="org-search" style="width: 80px" placeholder="基金关键字"/>
+			<button class="btn" onclick="searchFundByKeyword();">查询</button>
+		</div>
+	</div>
+  </div>
+  <div class="page-container">
+    <div class="tab-content">
+    
+      <div class="tab-pane" id="org-0" >
+      	<table class="careTable table table-striped table-bordered" id="org-table-0">
+          <thead><tr>
+            <th>股票</th><th>日期</th><th>机构或基金名称</th><th>持有数量(股)</th><th>占流通股比例</th><th>持股变化(股)</th><th>变动比例</th>
+          </tr></thead>
+        </table>
+	  </div>
+<%
+	j = 0;
+	for(StkDictionary subType : funds){
+		j++;
+%>
+      <div class="tab-pane <%=j==1?"active":"" %>" id="org-<%=j%>" >
+      	<table class="careTable table table-striped table-bordered" id="org-table-<%=j %>">
+          <thead><tr>
+            <th>股票</th><th>日期</th><th>机构或基金名称</th><th>持有数量(股)</th><th>占流通股比例</th><th>持股变化(股)</th><th>变动比例</th>
+          </tr></thead>
+        </table>
+	  </div>
+<%
+	}
+%>
+	  <div class="tab-pane" id="org-a" >
+      	<table class="careTable table table-striped table-bordered" id="org-table-a">
+          <thead><tr>
+            <th>股票</th><th>日期</th><th>新进个数</th><th>新进机构或基金</th>
+          </tr></thead>
+        </table>
+	  </div>
+	  
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+$(function() {
+  listFund(1, '<%=funds.get(0).getKey()%>');
+  $("a[id^='org-tab-']").on('click', function(){listFund($(this).attr('data-index'),$(this).attr('data'));});
+  $("#org-tab-a").on('click', function(){listNewFund(); });
+});
+
+function searchFundByKeyword(){
+	$('#org-tab-0').click();
+	$('#org-table-0').DataTable().destroy();
+	listFund(0, $('#org-search').val());
+}
+function listNewFund(){
+	$('#org-a').parent().addClass('active');
+	$('#org-table-a').DataTable( {
+	    "language": datatable_lang,
+	    "processing": true,
+	    "ordering": false,
+	    "retrieve": true,
+	    "ajax":"/stk?method=listNewFund"
+	});
+}
+</script>
+
 
 
 <div class="content">

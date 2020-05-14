@@ -646,8 +646,9 @@ public class HttpUtils {
 		//downloadMV("https://play.cdmbo.com/20180920/vo8s9HDp/800kb/hls/d4Fm9e1161000.ts", "漂亮的小姐姐制服全裸直播 笑的好甜", 0);
 		//downloadMV("https://play.cdmbo.com/20180920/4blq5qJf/800kb/hls/mWEgJe5128000.ts", "韩国美女主播KBJ1711尺度直播表演", 0);
 		
-		downloadMV("https://play.bfdzym.com/20181031/2PHwQ3B9/800kb/hls/wTEtJZW6687000.ts", "美乳姐妹花直播小秀 相互安慰 分不清谁是谁了", 0);
+		//downloadMV("https://play.bfdzym.com/20181031/2PHwQ3B9/800kb/hls/wTEtJZW6687000.ts", "美乳姐妹花直播小秀 相互安慰 分不清谁是谁了", 0);
 
+		HttpUtils.download("http://bp.pep.com.cn/jc/yjcz/czsxjc/202001/P020200210126052860555.pdf", "d:\\share\\义务教育教科书\\");
 	}
 	
 	public static void downloadMV(String ds, final String toDir, int start) throws Exception{

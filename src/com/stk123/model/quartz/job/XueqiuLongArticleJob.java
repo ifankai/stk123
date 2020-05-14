@@ -23,6 +23,9 @@ import com.stk123.tool.util.HttpUtils;
 import com.stk123.tool.util.JdbcUtils;
 import com.stk123.tool.util.JsonUtils;
 
+/**
+ * 雪球用户页面长文
+ */
 public class XueqiuLongArticleJob implements Job {
 	
 	private static List<XueqiuUser> MEMBERS = new ArrayList<XueqiuUser>();
