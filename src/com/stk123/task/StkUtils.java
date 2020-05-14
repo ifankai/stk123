@@ -1217,6 +1217,16 @@ public class StkUtils {
             CloseUtil.close(conn);
         }
     }
+    
+    public static double getAmount万(String amount){
+    	int n = 1;
+		String dd = StringUtils.replace(amount, "万", "");
+		if(StringUtils.indexOf(dd, "亿") > 0){
+			n = 10000;
+			dd = StringUtils.replace(dd, "亿", "");
+		}
+		return Double.parseDouble(dd) * n;
+    }
 
     //PEG＝市盈率／未来3至5年年度净利润复合增长率
     //净利润复合增长率 = [(现有价值/基础价值)^(1/年数) - 1] x 100%

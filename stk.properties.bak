@@ -1,0 +1,32 @@
+####### stk properties ########
+
+####css js image version#####
+version=20140101
+
+host=localhost
+port=80
+
+
+#下载沪深300市盈率xls数据
+initial_csi300=d:\\share\\download\\
+
+#dailyreport email备份下载路径
+path_dailyreport_email_backup=E:\\apache-tomcat\\webapps\\ROOT\\dailyreport\\
+
+#text的image下载路径
+path_text_img_download=D:/share/workspace/stk123/web/images/download/
+
+#article/text每页显示条数
+article_list_per_page=27
+text_list_per_page=10
+
+#sync url
+sync_url=http://localhost/sync
+sync_key=123123123
+
+#allowed upload image type
+upload_image_type=bmp,jpg,jpeg,gif,png
+
+stk_report=E:\\apache-tomcat\\webapps\\ROOT\\stock\\
+
+xueqiu.cookie=_ga=aliyungf_tc=AQAAADp3Ok+OTAMA00/EKhQF2sIbuP3c; Hm_lvt_1db88642e346389874251b5a1eded6e3=1558843398; _ga=GA1.2.81447886.1558843400; device_id=0b1b6fad1839d2d4b0a3e78394d75fb9; s=ck120gkd8m; bid=26948a7b701285b58366203fbc172ea6_jw4hxulk; __utma=1.81447886.1558843400.1558848080.1558848080.1; __utmc=1; __utmz=1.1558848080.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); snbim_minify=true; _gid=GA1.2.403628900.1559047343; xq_a_token.sig=573lp2HFFWA60cOl83qUzM1UrTE; xq_r_token.sig=bXMNB_2b4bVNtsBH2TWhk6Lb5Sg; u=2827912397; xq_a_token=31579c3e161eddc0fba0ca4d492fed5525f62ca7; xqat=31579c3e161eddc0fba0ca4d492fed5525f62ca7; xq_r_token=c0990370246c5c3a2925d993092f8c4a44580ac3; xq_token_expire=Sat%20Jun%2022%202019%2021%3A08%3A18%20GMT%2B0800%20(China%20Standard%20Time); xq_is_login=1; _gat=1; Hm_lpvt_1db88642e346389874251b5a1eded6e3=1559048824

@@ -4,7 +4,7 @@ import org.h2.util.StringUtils;
 
 import java.util.List;
 
-public class XueqiuWhoBuyThisStock {
+public class WhoBuyThisStock {
 
     public static void main(String[] args) throws Exception {
         String code = "MDGL";

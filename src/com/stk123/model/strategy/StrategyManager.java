@@ -52,26 +52,26 @@ public class StrategyManager {
 		Strategy.followIndexs = getFollowIndex(conn);
 		
 		//List<Index> erIndexs = getEarningForecastIndex(conn);
-		//List<Index> search_9 = getSearchCondition(conn, 9);//����Դ������ҵ��
-		//List<Index> search_16 = getSearchCondition(conn, 16);//С����
+		//List<Index> search_9 = getSearchCondition(conn, 9);//锟斤拷锟斤拷源锟斤拷锟斤拷锟斤拷业锟斤拷
+		//List<Index> search_16 = getSearchCondition(conn, 16);//小锟斤拷锟斤拷
 		
-		strategys.add(new Strategy1());//60�վ��������һ�Ծ����
-		strategys.add(new Strategy2());//120�վ�������60�����½�
-		strategys.add(new Strategy3());//ENE��Ծ����
-		strategys.add(new Strategy4());//����5������
-		strategys.add(new Strategy5());//ͻ��������
-		strategys.add(new Strategy6());//����������3������
-		strategys.add(new Strategy7());//����5���µ�����ȴ�Ŵ�
-		//strategys.add(new Strategy8());
-		strategys.add(new Strategy9());//���5������
-		strategys.add(new Strategy10());//���Ѿ���������
-		strategys.add(new Strategy11());//���Ѿ���������
-		strategys.add(new Strategy12());//60���ڳ���������ص���60�����·�
-		strategys.add(new Strategy13());//30���ڳ���������ص���20�����·��ҳ��ֶ�Ʒ����
-		strategys.add(new Strategy14());//Сʮ����������
-		strategys.add(new Strategy15());//������k�������С��û�е���̫��
-		strategys.add(new Strategy16());//���߷�����������
-		//strategys.add(new Strategy17());//K�߲���
+		strategys.add(new Strategy1());//模型1-60日均线上升且活跃放量
+		strategys.add(new Strategy2());//模型2-120日均线上升60日线下降
+		strategys.add(new Strategy3());//模型3-ENE活跃个股
+		strategys.add(new Strategy4());//模型4-连续5日缩量
+		strategys.add(new Strategy5());//模型5-突破趋势线
+		strategys.add(new Strategy6());//模型6-放量后连续3日缩量
+		strategys.add(new Strategy7());//模型7-连续5日下跌量能却放大
+		//strategys.add(new Strategy8()); //模型8-5浪下跌
+		strategys.add(new Strategy9());//模型9-最近5倍巨量
+		strategys.add(new Strategy10());//模型10-三堆巨量后缩量
+		strategys.add(new Strategy11());//模型11-二堆巨量后缩量
+		strategys.add(new Strategy12());//模型12-60日内出现天量后回调到60均线下方
+		strategys.add(new Strategy13());//模型13-30日内出现天量后回调到20均线下方且出现二品抄底
+		strategys.add(new Strategy14());//模型14-次新-小十字星且缩量
+		strategys.add(new Strategy15());//模型15-巨量后k线振幅缩小且没有调整太深
+		strategys.add(new Strategy16());//模型16-阳线放量阴线缩量
+		//strategys.add(new Strategy17());//K锟竭诧拷锟斤拷
 		
 		List<Strategy> slist = getSearchConditionWithStrategy(conn);
 		for(Strategy s : slist){
@@ -80,12 +80,12 @@ public class StrategyManager {
 		
 		List<Index> netProfitGrwothGreaterThanZeroIndexs = getNetProfitGrwothGreaterThanZero(conn);
 		
-		strategys.add(new Strategy20("���߶̵�����",getIndexMA20And120(netProfitGrwothGreaterThanZeroIndexs, date),false,true));
-		strategys.add(new Strategy20("ǰ�ڻ�����200%����",getIndexHighHsl(netProfitGrwothGreaterThanZeroIndexs, date),false,true));
+		//strategys.add(new Strategy20("锟斤拷锟竭短碉拷锟斤拷锟斤拷",getIndexMA20And120(netProfitGrwothGreaterThanZeroIndexs, date),false,true));
+		//strategys.add(new Strategy20("前锟节伙拷锟斤拷锟斤拷200%锟斤拷锟斤拷",getIndexHighHsl(netProfitGrwothGreaterThanZeroIndexs, date),false,true));
 		
-		strategys.add(new Strategy19("��עC",Strategy.followIndexs,false,true));//ͻ��������
-		//strategys.add(new Strategy18("��עC",Strategy.followIndexs,false,true));//��ѡ��k�ߵ�λʮ����
-		strategys.add(new Strategy20("��עC",Strategy.followIndexs,false,true));//ģ��20-����Сʮ����
+		strategys.add(new Strategy19("关注C",Strategy.followIndexs,false,true));//模型19-突破趋势线
+		//strategys.add(new Strategy18("锟斤拷注C",Strategy.followIndexs,false,true));//锟斤拷选锟斤拷k锟竭碉拷位十锟斤拷锟斤拷
+		strategys.add(new Strategy20("关注C",Strategy.followIndexs,false,true));//模型20-十字星
 	}
 	
 	public static List<Name2Value<String,Name2Value<Integer, Class>>> APPLY_STRATEGY = null;
@@ -93,9 +93,9 @@ public class StrategyManager {
 	public static List<Name2Value<String,Name2Value<Integer, Class>>> getApplyStrategy() {
 		if(APPLY_STRATEGY != null)return APPLY_STRATEGY;
 		List<Name2Value<String,Name2Value<Integer, Class>>> s = new ArrayList();
-		//s.add(new Name2Value("����18-��λK��ʮ����", new Name2Value(18, Strategy18.class)));
-		s.add(new Name2Value("����19-ͻ��������", new Name2Value(19, Strategy19.class)));
-		s.add(new Name2Value("����20-ʮ����", new Name2Value(20, Strategy20.class)));
+		//s.add(new Name2Value("锟斤拷锟斤拷18-锟斤拷位K锟斤拷十锟斤拷锟斤拷", new Name2Value(18, Strategy18.class)));
+		s.add(new Name2Value("模型19-突破趋势线", new Name2Value(19, Strategy19.class)));
+		s.add(new Name2Value("模型20-十字星", new Name2Value(20, Strategy20.class)));
 		return APPLY_STRATEGY = s;
 	}
 	
@@ -175,12 +175,12 @@ public class StrategyManager {
 	public static List<Index> getFollowIndex(Connection conn) throws Exception {
 		Set<String>	followStks = null;
 		try{
-			followStks = XueqiuUtils.getFollowStks("��עC");
-			followStks.addAll(XueqiuUtils.getFollowStks("��ѡ"));
+			followStks = XueqiuUtils.getFollowStks("锟斤拷注C");
+			followStks.addAll(XueqiuUtils.getFollowStks("锟斤拷选"));
 			IOUtils.writeLines(followStks, null, new FileOutputStream(new File("d:\\care.txt")));
 		}catch(Exception e){
 			followStks = new HashSet(IOUtils.readLines(new FileInputStream("d:\\care.txt")));
-			EmailUtils.send("ѩ����ȡ����עC��ʧ��", e);//�����������XueqiuUtils��cookie�滻�����µ�			
+			EmailUtils.send("雪锟斤拷锟斤拷取锟斤拷锟斤拷注C锟斤拷失锟斤拷", e);//锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟絏ueqiuUtils锟斤拷cookie锟芥换锟斤拷锟斤拷锟铰碉拷			
 		}
 		
 		return IndexUtils.codeToIndex(conn, followStks);

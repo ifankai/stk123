@@ -54,7 +54,7 @@ public class AStkTools {
 			//Industry.updateCapitalFlow(conn, "20170303", "gnzjl");
 			
 			List<String> result = new ArrayList<String>();
-			String codes = "";
+			String codes = "000001";
 			String sql = null;
 			if(codes != null && codes.length() > 0){
 				sql = "select code,name from stk where market=1 and code in ("+codes+") order by code";
@@ -70,7 +70,11 @@ public class AStkTools {
 			//HttpUtils.setUseProxy(true,"xueqiu.com");
 			String today = StkUtils.getToday();
 			//today = "20170522";
-			Index.KLineWhereClause = Index.KLINE_20140101;
+			/*Index.KLineWhereClause = Index.KLINE_20140101;
+			System.out.println("dddddddddddddddddd");
+			JdbcUtils.delete(conn, "delete from stk_kline where kline_date>to_char(sysdate,'yyyymmdd')",null);
+			System.out.println("dddddddddddddddddd");*/
+			//InitialData.initialStk(conn, new Date());
 			
 			for(Stk stk : stks){
 				try{
@@ -78,7 +82,7 @@ public class AStkTools {
 					context.indexs.add(index);
 					System.out.println(stk.getCode());
 					//InitialData.initOwnership(conn, index);
-					//InitialData.initOwnershipFrom10jqka(conn, index);
+					InitialData.initHolderFrom10jqka(conn, index);
 					//InitialData.updateStkF9(conn, index);
 
 					//K k = index.getK("20160530");
@@ -143,49 +147,10 @@ public class AStkTools {
 					indexs.add(index);
 					System.out.println(stk.getCode()+","+count+","+d);*/
 					
-					/*if(k==null)continue;
-					//System.out.println(k.getDate());
-					do{
-						if(Strategy11.condition(k) || Strategy10.condition(k)){
-							System.out.println(k);
-							//System.out.println(index.getCode()+","+index.getName()+",change="+index.changePercent);
-						}
-						
-						K k750 = k.getKByHVV(750);
-						K k60 = k.getKByHVV(60);
-						
-						if(k750.getDate().equals(k60.getDate())
-								&& k.getClose() <= k.getMA(K.Close, 60)
-								&& k.getMA(K.Close, 60) > k.before(1).getMA(K.Close, 60)){
-							System.out.println(k);
-						}
-						
-						if(Strategy12.condition(k)){
-							System.out.println("Strategy12:"+k);
-						}
-						
-						if(Strategy13.condition(k)){
-							System.out.println("Strategy13:"+k);
-						}
-						
-						//if(index.getKs().size() > 300)continue;
-						if(Strategy14.condition(k)){
-							System.out.println("Strategy14:"+k);
-							//System.out.println(index.getCode()+","+index.getName()+",change="+index.changePercent);
-						}
-						
-						if(Strategy15.condition(k)){
-							System.out.println("Strategy15:"+k);
-							//System.out.println(index.getCode()+","+index.getName()+",change="+index.changePercent);
-						}
-						
-						
-						//-----------//
-						k = k.getBefore();
-						if(k==null || k.getDate().compareTo("20160101")<=0)break;
-					}while(true);*/
+					//K k = index.getK(0);
 					
-					InitialData.initFnDataTTM(conn, StkUtils.now, index, fnTypes);
+					
+					//InitialData.initFnDataTTM(conn, StkUtils.now, index, fnTypes);
 					
 				}catch(Exception e){
 					e.printStackTrace();

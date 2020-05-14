@@ -46,7 +46,7 @@ public class XueqiuUserJob implements Job {
 			do{
 				try{
 					System.out.println(cnt);
-					String page = HttpUtils.get("https://xueqiu.com/friendships/followers.json?pageNo="+cnt+"&uid="+userId+"&size=100&_="+new Date().getTime(),null,XueqiuUtils.getCookies(), "gb2312");
+					String page = HttpUtils.get("https://xueqiu.com/friendships/followers.json?pageNo="+cnt+"&uid="+userId,null,XueqiuUtils.getCookies(), "gb2312");
 					//System.out.println(page);
 					Map m = JsonUtils.testJson(page);
 					maxCnt = Integer.parseInt(String.valueOf(m.get("maxPage")));
@@ -65,7 +65,7 @@ public class XueqiuUserJob implements Job {
 						}
 					}
 					
-					if(cnt%500 == 0){
+					if(cnt%200 == 0){
 						Thread.currentThread().sleep(1000*60*5);
 					}
 					

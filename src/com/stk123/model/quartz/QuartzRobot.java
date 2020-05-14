@@ -46,7 +46,7 @@ public class QuartzRobot {
 		QuartzManager.addJob("BaiduNewsSearchJob",baiduNewSearchJob,"0 0 9 ? * * *");
 		
 		XueqiuLongArticleJob xueqiuLongArticleJob = new XueqiuLongArticleJob();
-		QuartzManager.addJob("XueqiuLongArticleJob",xueqiuLongArticleJob,"0 0 4 ? * * *");
+		//QuartzManager.addJob("XueqiuLongArticleJob",xueqiuLongArticleJob,"0 0 4 ? * * *");
 		
 		XueqiuUserJob xueqiuUserJob = new XueqiuUserJob();
 		QuartzManager.addJob("XueqiuUserJob",xueqiuUserJob,"0 0 3 ? * SAT *");

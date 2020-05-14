@@ -358,18 +358,6 @@ public class InitialKLine {
 			System.out.println(".............. A ................");
 			if(initonly)return;
 			
-			IndexContext context = new IndexContext();
-			IndexContext contextYesterday = new IndexContext();
-			for(Stk stk : stks){
-				Index index = new Index(conn,stk.getCode(),stk.getName());
-				context.indexs.add(index);
-				contextYesterday.indexs.add(index);
-				//更新非公开发行，员工持股价格溢价率
-				NoticeRobot.updateRate(conn, index);
-				
-				//跟新pe/pb ntile
-				index.updateNtile();
-			}
 			//---------------------------------
 			// check stk after initial k line
 			//---------------------------------
@@ -382,6 +370,46 @@ public class InitialKLine {
 			params.add(today);
 			params.add(today);
 			int i = JdbcUtils.insert(conn, "insert into stk_pe(id,report_date) select ?,? from dual where not exists (select 1 from stk_pe where report_date=?)", params);
+			
+			
+			System.out.println("calculate peg."+new Date());
+			//peg(today, context.indexs);
+			
+			params.clear();
+			params.add(today);
+			Double totalPE = JdbcUtils.load("select avg(pe_ttm) from stk_kline where kline_date=? and pe_ttm is not null and pe_ttm>3 and pe_ttm<200", params, Double.class);
+			totalPE = StkUtils.numberFormat(totalPE, 2);
+			Double totalPB = JdbcUtils.load("select avg(pb_ttm) from stk_kline where kline_date=? and pb_ttm is not null and pb_ttm>0 and pb_ttm<30", params, Double.class);
+			totalPB = StkUtils.numberFormat(totalPB, 2);
+			Double midPB = JdbcUtils.load("select median(pb_ttm) from stk_kline where kline_date=? and pb_ttm is not null and pb_ttm>0 and pb_ttm<30", params, Double.class);
+			midPB = StkUtils.numberFormat(midPB, 2);
+			Double midPE = JdbcUtils.load("select median(pe_ttm) from stk_kline where kline_date=? and pe_ttm is not null and pe_ttm>3 and pe_ttm<200", params, Double.class);
+			midPE = StkUtils.numberFormat(midPE, 2);
+			
+			if(i >= 1){
+				params.clear();
+				params.add(totalPE);
+				params.add(totalPB);
+				params.add(midPB);
+				params.add(midPE);
+				params.add(reportId);
+				JdbcUtils.update(conn, "update stk_pe set total_pe=?,total_pb=?,mid_pb=?,mid_pe=? where id=?", params);
+				System.gc();
+			}
+			
+			
+			IndexContext context = new IndexContext();
+			IndexContext contextYesterday = new IndexContext();
+			for(Stk stk : stks){
+				Index index = new Index(conn,stk.getCode(),stk.getName());
+				context.indexs.add(index);
+				contextYesterday.indexs.add(index);
+				//更新非公开发行，员工持股价格溢价率
+				NoticeRobot.updateRate(conn, index);
+				
+				//跟新pe/pb ntile
+				index.updateNtile();
+			}
 			
 			System.out.println("策略 at:"+new Date());
 			strategy(conn,false);
@@ -491,8 +519,8 @@ public class InitialKLine {
 			//System.out.println("5.沧州老张选股法");
 			//checkStkByLaoZhang(conn, context, contextYesterday, newHighs);
 			
-			System.out.println("6.250日底部箱体突破股票，箱体最低到突破(最高)涨幅不超过60%");
-			checkStkCreate250DaysBoxHigh(conn, context);
+			//System.out.println("6.250日底部箱体突破股票，箱体最低到突破(最高)涨幅不超过60%");
+			//checkStkCreate250DaysBoxHigh(conn, context);
 			
 			//System.out.println("7.短线60日股票强度排行");
 			//check60DaysRS(conn, context, contextYesterday);
@@ -501,7 +529,7 @@ public class InitialKLine {
 			//K today = sh.getK();
 			//rankIndustryByK(conn, today.getDate(), "cnindex");
 			
-			System.out.println("9.回补前期跳空缺口");
+			//System.out.println("9.回补前期跳空缺口");
 			/*List<Index> gaps = IndexUtils.getUpGaps(context.indexs,today , 250, 30);
 			if(gaps.size() > 0){
 				StringBuffer sb = new StringBuffer();
@@ -511,16 +539,16 @@ public class InitialKLine {
 				EmailUtils.sendAndReport("回补前期跳空缺口，总共："+gaps.size()+",日期:"+today, StkUtils.createHtmlTable(today, gaps));
 			}*/
 			
-			//System.out.println("10.K线缠绕");
+			System.out.println("10.K线缠绕");
 			//checkKIntersect(today, context);
 			
-			System.out.println("12.南京高人战法");
+			//System.out.println("12.南京高人战法");
 			//checkCreateHighStk(context);
 			
 			System.out.println("13.突破600日天量");
-			checkHighHugeVolume(context);
+			//checkHighHugeVolume(context);
 			
-			System.out.println("14.天量后缩量");
+			//System.out.println("14.天量后缩量");
 			//checkHugeVolumeLittleVolume(context.indexs, today, 1);
 			
 			//15.王朋选股
@@ -610,19 +638,7 @@ public class InitialKLine {
 						StkUtils.createHtmlTable(today, results));
 				addToFlowStks = true;
 			}*/
-			System.out.println("calculate peg."+new Date());
-			//peg(today, context.indexs);
 			
-			params.clear();
-			params.add(today);
-			Double totalPE = JdbcUtils.load("select avg(pe_ttm) from stk_kline where kline_date=? and pe_ttm is not null and pe_ttm>3 and pe_ttm<200", params, Double.class);
-			totalPE = StkUtils.numberFormat(totalPE, 2);
-			Double totalPB = JdbcUtils.load("select avg(pb_ttm) from stk_kline where kline_date=? and pb_ttm is not null and pb_ttm>0 and pb_ttm<30", params, Double.class);
-			totalPB = StkUtils.numberFormat(totalPB, 2);
-			Double midPB = JdbcUtils.load("select median(pb_ttm) from stk_kline where kline_date=? and pb_ttm is not null and pb_ttm>0 and pb_ttm<30", params, Double.class);
-			midPB = StkUtils.numberFormat(midPB, 2);
-			Double midPE = JdbcUtils.load("select median(pe_ttm) from stk_kline where kline_date=? and pe_ttm is not null and pe_ttm>3 and pe_ttm<200", params, Double.class);
-			midPE = StkUtils.numberFormat(midPE, 2);
 			
 			//Integer reportId =  JdbcUtils.load(conn, "select nvl(max(id)+1,100001) from stk_pe", Integer.class);
 			
@@ -667,12 +683,8 @@ public class InitialKLine {
 				//params.add(JdbcUtils.createClob(context.averagePEIndexs));
 				params.add(context.averagePE);
 				params.add(context.averagePB);
-				params.add(totalPE);
-				params.add(totalPB);
-				params.add(midPB);
-				params.add(midPE);
 				params.add(reportId);
-				JdbcUtils.update(conn, "update stk_pe set average_pe=?,avg_pb=?,total_pe=?,total_pb=?,mid_pb=?,mid_pe=? where id=?", params);
+				JdbcUtils.update(conn, "update stk_pe set average_pe=?,avg_pb=? where id=?", params);
 			
 				//System.gc();
 				//eneStatistics(conn, today, context, true);

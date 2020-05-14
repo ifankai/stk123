@@ -192,6 +192,6 @@ public class ChineseUtils {
     }
 
     public static void main(String[] args) throws Exception {
-        System.out.println(cn2py("重庆重视发展IT行业，大多数外企，如，IBM等进驻山城"));
+        System.out.println(length("上周"));
     }
 }

@@ -2,9 +2,12 @@ package com.stk123.model.quartz.job;
 
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.quartz.Job;
@@ -17,16 +20,22 @@ import com.stk123.task.StkUtils;
 import com.stk123.task.XueqiuUtils;
 import com.stk123.tool.db.util.CloseUtil;
 import com.stk123.tool.db.util.DBUtil;
+import com.stk123.tool.db.util.sequence.SequenceUtils;
+import com.stk123.tool.util.ChineseUtils;
 import com.stk123.tool.util.EmailUtils;
 import com.stk123.tool.util.HttpUtils;
 import com.stk123.tool.util.JdbcUtils;
 import com.stk123.tool.util.JsonUtils;
-
+/**
+ * 雪球个股页面长文
+ */
 public class XueqiuStockArticleJob implements Job {
 	
 	private static int codeIndex = 0;
 	private static List<Stk> stocks = null;
 	public static List<XueqiuArticle> results = new ArrayList();
+	
+	private static Set<String> ids = new HashSet<String>();
 
 	@Override
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {
@@ -35,12 +44,21 @@ public class XueqiuStockArticleJob implements Job {
 			conn = DBUtil.getConnection();
 			List<Stk> stks = stocks;
 			if(stks == null){
-				stks = stocks = JdbcUtils.list(conn, "select code,name from stk_cn order by code", Stk.class);
+				String sql = "select * from ( "
+						+ "select code,name from stk_cn a "
+						+ "where hot>3000 and not exists (select 1 from stk_cn b where a.code=b.code and b.name like '%ST%') "
+						+ "union all "
+						+ "select code,name from stk_hk where hot>1000 ) order by reverse(code)";
+				stks = stocks = JdbcUtils.list(conn, sql, Stk.class);
+				if(new Date().getDate() % 2 == 0){
+					Collections.reverse(stks);
+				}
 			}
+			
 			if(codeIndex >= stks.size()){
 				return;
 			}
-			for(int i=0; i<3 && codeIndex <stks.size(); i++){
+			for(int i=0; i<4 && codeIndex <stks.size(); i++){
 				Stk stk = stks.get(codeIndex++);
 				System.out.println("XueqiuStockArticleJob="+stk.getCode()+"["+results.size()+"]");
 				List<XueqiuArticle> list = getArticles(conn, stk.getCode());
@@ -57,6 +75,7 @@ public class XueqiuStockArticleJob implements Job {
 			if(codeIndex >= stks.size()){
 				if(results.size() > 0){
 					EmailUtils.send("雪球个股长文2", StringUtils.join(results, "<br><br>"));
+					results.clear();
 				}
 				return;
 			}
@@ -64,6 +83,11 @@ public class XueqiuStockArticleJob implements Job {
 			e.printStackTrace();
 		}finally{
 			CloseUtil.close(conn);
+			if(codeIndex >= stocks.size()){
+				if(results.size() > 0){
+					EmailUtils.send("雪球个股长文end", StringUtils.join(results, "<br><br>"));
+				}
+			}
 		}
 
 	}
@@ -71,8 +95,13 @@ public class XueqiuStockArticleJob implements Job {
 	//https://xueqiu.com/statuses/search.json?count=10&comment=0&symbol=SH603611&hl=0&source=all&sort=alpha&page=1&_=1507209904103
 	public static List<XueqiuArticle> getArticles(Connection conn, String code) throws Exception {
 		String scode = StkUtils.getStkLocation(code)+code;
+		if(StringUtils.length(code) == 5){
+			scode = code;
+		}
 		Map<String, String> requestHeaders = XueqiuUtils.getCookies();
-		String page = HttpUtils.get("https://xueqiu.com/statuses/search.json?count=10&comment=0&symbol="+scode+"&hl=0&source=all&sort=alpha&page=1&_="+new Date().getTime(),null, requestHeaders, "gb2312");
+		//String page = HttpUtils.get("https://xueqiu.com/statuses/search.json?count=10&comment=0&symbol="+scode+"&hl=0&source=all&sort=alpha&page=1&_="+new Date().getTime(),null, requestHeaders, "gb2312");
+		
+		String page = HttpUtils.get("https://xueqiu.com/query/v1/symbol/search/status?count=100&comment=0&symbol="+scode+"&hl=0&source=all&sort=&page=1&q=",null, requestHeaders, "gb2312");
 		//System.out.println(page);
 		List<XueqiuArticle> results = new ArrayList<XueqiuArticle>();
 		if("400".equals(page)){
@@ -89,25 +118,28 @@ public class XueqiuStockArticleJob implements Job {
 				String title = (String)art.get("title");
 				String text = (String)art.get("text");
 				//System.out.println("title:"+title);
-				Map retweeted_status = (Map)art.get("retweeted_status");
-				if(retweeted_status != null && StringUtils.isEmpty(title)){
-					title = (String)retweeted_status.get("title");
+				//Map retweeted_status = (Map)art.get("retweeted_status");
+				if(StringUtils.isEmpty(title)){
+					title = (String)art.get("text");
+					if(ChineseUtils.length(title) < 100){//内容长度控制，太短的排除掉，100=50个中文
+						continue;
+					}
 				}
 				String name = index.getName();
 				if(StringUtils.length(text) > 300 && (text.contains(name) || text.contains(StringUtils.replace(name, " ", "")))){
 					flag = true;
-				}else
-				if(!StringUtils.isEmpty(title) && (title.contains(name) || title.contains(StringUtils.replace(name, " ", "")))){
+				}else if(!StringUtils.isEmpty(title) && (title.contains(name) || title.contains(StringUtils.replace(name, " ", "")))){
 					flag = true;
 				}
 				
 				if(flag){
-					if(Integer.parseInt(String.valueOf(art.get("reply_count"))) >= 10 || (retweeted_status != null && Integer.parseInt(String.valueOf(retweeted_status.get("reply_count"))) >= 10)){
+					if(Integer.parseInt(String.valueOf(art.get("reply_count"))) >= 10){
 						XueqiuUser u = new XueqiuUser();
 						u.id = String.valueOf(art.get("user_id"));
 						u.name = String.valueOf(((Map)art.get("user")).get("screen_name"));
 						
 						XueqiuArticle a = new XueqiuArticle();
+						a.code = code;
 						a.user = u;
 						a.createAt = createAt;
 						a.id = String.valueOf(art.get("id"));
@@ -117,12 +149,30 @@ public class XueqiuStockArticleJob implements Job {
 						if(a.title == null || a.title.length() == 0){
 							a.title = a.description;
 						}
-						results.add(a);
+						if(!ids.contains(a.id)){
+							results.add(a);
+							ids.add(a.id);
+							insertText(conn, code, a);
+						}
 					}
 				}
 			}
 		}
 		return results;
+	}
+	
+	private static void insertText(Connection conn, String code, XueqiuArticle xa) throws Exception {
+		List params = new ArrayList();
+		long id = SequenceUtils.getSequenceNextValue(SequenceUtils.SEQ_TEXT_ID);
+		params.add(id);
+		params.add(code);
+		params.add(xa.id);
+		params.add(JdbcUtils.createClob(conn, xa.toString()));
+		params.add(new Date(xa.createAt));
+
+		params.add(code);
+		params.add(xa.id);
+		int ret = JdbcUtils.insert(conn, "insert into stk_text(id,type,code,code_type,title,text,insert_time,update_time,sub_type) select ?,3,?,1,?,?,?,null,0 from dual where not exists (select 1 from stk_text where code=? and title=?)", params);
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -182,7 +232,10 @@ public class XueqiuStockArticleJob implements Job {
 					if(a.title == null || a.title.length() == 0){
 						a.title = a.description;
 					}
-					results.add(a);
+					if(!ids.contains(a.id)){
+						results.add(a);
+						ids.add(a.id);
+					}
 					//System.out.println(new java.util.Date(Long.valueOf(String.valueOf(art.get("created_at"))))+":["+art.get("title")+"]"+art.get("description"));
 				}
 			}

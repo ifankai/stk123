@@ -623,6 +623,57 @@ function stkValueHistory(code){
     } );
 }
 
+function listOnwer(date){
+	var code = $("#scode").val();
+	$('#owner-table-'+date).DataTable( {
+		"processing": true,
+		"paging":false,
+        "ordering": false,
+        "filter":false,
+        "info":false,
+        "ajax": '/stk?method=listOnwer&date='+date+'&s='+code,
+        "columnDefs": [
+               {
+                   "render": function ( data, type, row ) {
+                       return '<a>'+data +'</a>';
+                   },
+                   "targets": 0
+               },
+               {
+                   "render": function ( data, type, row ) {
+                	   if(data >= 100)
+                		   return '<b style="color: red;">'+data +'%</b>';
+                	   else 
+                		   return data + '%';
+                   },
+                   "targets": 4
+               }
+           ]
+    } );
+}
+
+function listFund(i, fund){
+	$('#org-table-'+i).DataTable( {
+	    "language": datatable_lang,
+	    "processing": true,
+	    "ordering": false,
+	    "retrieve": true,
+	    //"order": [[ 7, "desc" ]],
+	    "ajax":"/stk?method=listFund&fund="+fund,
+	    "columnDefs": [
+	                   {
+	                       "render": function ( data, type, row ) {
+	                    	   if(data >= 100)
+	                    		   return '<b style="color: red;">'+data +'%</b>';
+	                    	   else
+	                    		   return data + '%';
+	                       },
+	                       "targets": 6
+	                   }
+	               ]
+	});
+}
+
 //---- stk monitor ----//
 function monitor(uri){
 	$.ajax({

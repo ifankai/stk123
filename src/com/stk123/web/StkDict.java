@@ -27,6 +27,7 @@ public class StkDict {
 	public final static Integer XUEQIU_ZHUTIE = new Integer(5);//雪球主贴
 	
 	public final static Integer NIUSAN = new Integer(20);//牛散
+	public final static Integer FAMOUS_FUNDS = new Integer(21);//著名基金  insert into stk_dictionary select 21,1,'华夏大盘精选',null,1,null,null,null,null from dual;
 	
 	public final static Integer INTERNET_SEARCH_TYPE = new Integer(10);//internet search type
 	

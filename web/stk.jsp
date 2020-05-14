@@ -530,9 +530,66 @@ if(index.getMarket()==1){
 </pre>
 
 <%if(index.getMarket() == 1){ %>
+
+
 <div class="content">
   <div class="page-header" style="position: relative;">
-    <h3 style="line-height: 59px;"><span class="icon-tasks"></span> <a target="_blank" href="http://www.windin.com/Tools/NewsDetail.aspx?windcode=<%=index.getCode() %>.<%=index.getLoc()==1?"SH":"SZ" %>">新闻</a></h3>
+    <h3 style="line-height: 59px;"><span class="icon-tasks"></span> 
+    	<a target="_blank" href="http://stockpage.10jqka.com.cn/<%=index.getCode() %>/holder/">十大流通股东</a>
+    </h3>
+    <div style="position: absolute;left:175px;top:9px;" >
+    <ul class="nav nav-tabs" role="tablist">
+<%
+	List<String> onwerDates = index.getOnwershipDates();
+	int i = 0;
+	for(String date : onwerDates){
+		i++; 
+%>      
+      <li <%=i==1?"class='active'":"" %>><a href="#owner-<%=date %>" id="onwer-tab-<%=date %>" data="<%=date%>" role="tab" data-toggle="tab"><%=date %></a></li>
+<%
+	}
+%>      
+    </ul>
+  </div>
+  </div>
+  <div class="page-container">
+    <div class="tab-content" >
+<%
+	i = 0;
+	for(String date : onwerDates){
+		i++;
+%>
+      <div class="tab-pane <%=i==1?"active":"" %>" id="owner-<%=date%>" >
+      	<div id="owner-list-<%=date %>" style="height:100%;overflow:auto;text-align:left;">
+      		<table id="owner-table-<%=date %>" class="datatable table table-stk">
+		        <thead>
+		           <tr>
+		             <th>机构或基金名称</th><th>持有数量(股)</th><th>占流通股比例</th><th>持股变化(股)</th><th>变动比例</th>
+		           </tr>
+		        </thead>
+		      </table>
+      	</div>
+	  </div>
+<%
+	}
+%>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+$(function() {
+  listOnwer('<%=onwerDates.get(0)%>');
+  $("a[id^='onwer-tab-']").one('click', function(){listOnwer($(this).attr('data'));});
+});
+</script>
+
+
+
+<div class="content">
+  <div class="page-header" style="position: relative;">
+    <h3 style="line-height: 59px;"><span class="icon-tasks"></span> 
+    	<a target="_blank" href="http://www.windin.com/Tools/NewsDetail.aspx?windcode=<%=index.getCode() %>.<%=index.getLoc()==1?"SH":"SZ" %>">新闻</a>
+    </h3>
     <div style="position: absolute;left:100px;top:9px;" >
     <ul class="nav nav-tabs" role="tablist">
       <li class="active"><a href="#news-all" role="tab" data-toggle="tab">全部</a></li>
@@ -674,6 +731,10 @@ function listXueqiuArticle() {
     "ajax":"/stk?method=getXueqiuArticle&code="+$("#scode").val()
   });
 };
+$(function() {
+	listXueqiuArticle();
+});
+</script>
 </script>
 
 <div class="content">
