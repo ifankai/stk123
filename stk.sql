@@ -39,7 +39,7 @@ alter table stk add year_end varchar2(4);
 alter table stk add next_earning number(10,2);
 alter table stk modify next_quarter_earning varchar2(4000);
 alter table stk add cate number(1) default 1;--1:个股 2:指数  3:基金
-alter table stk add f9 clob; 
+alter table stk add f9 clob;
 alter table stk add address varchar2(20);
 
 create or replace view stk_cn as select * from stk where market=1 and cate=1;
@@ -87,7 +87,7 @@ alter table stk_fn_data
 alter table stk_fn_data
   add constraint fk_fn_data__type foreign key (type)
   references stk_fn_type (type);
-create index idx_fn_data__code on stk_fn_data (code); 
+create index idx_fn_data__code on stk_fn_data (code);
 create index idx_fn_data__code_type on stk_fn_data (code,type,fn_date);
 
 create table STK_FN_DATA_US
@@ -113,7 +113,7 @@ create index IDX_FN_DATA_US__CODE on STK_FN_DATA_US (CODE)
 
 create index IDX_FN_DATA_US__CODE_TYPE on STK_FN_DATA_US (CODE, TYPE, FN_DATE)
   tablespace STK_TABLESPACE_2;
-  
+
 
 create table STK_FN_DATA_US_year
 (
@@ -150,7 +150,7 @@ create table stk_info_log(
 alter table stk_info_log
   add constraint fk_info_log__code foreign key (code)
   references stk (code);
-create index idx_info_log__code on stk_info_log (code);  
+create index idx_info_log__code on stk_info_log (code);
 
 create table stk_error_log(
   code   varchar2(10),
@@ -160,7 +160,7 @@ create table stk_error_log(
 alter table stk_error_log
   add constraint fk_error_log__code foreign key (code)
   references stk (code);
-alter table stk_error_log disable constraint fk_error_log__code ; 
+alter table stk_error_log disable constraint fk_error_log__code ;
 
 create table stk_industry_type(
   id number(6),
@@ -171,7 +171,7 @@ alter table stk_industry_type add care_flag number(2) default 0;
 alter table stk_industry_type add constraint pk_id primary key (id);
 alter table stk_industry_type add parent_id number(6);
 alter table stk_industry_type add us_name varchar2(200);
-create index idx_industry_type_name on stk_industry_type (name); 
+create index idx_industry_type_name on stk_industry_type (name);
 
 create table stk_industry(
   code   varchar2(10),
@@ -196,7 +196,7 @@ create table stk_billboard(
 alter table stk_billboard
   add constraint fk_billboard__code foreign key (code)
   references stk (code);
-create index idx_billboard__code on stk_billboard (code);   
+create index idx_billboard__code on stk_billboard (code);
 
 create table stk_dept_type(
   dept_id number(8),
@@ -235,7 +235,7 @@ alter table stk_kline add pe_lyr number(10,2);
 
 create table stk_industry_rank(
  industry_id   number(6),
- period        number(4), 
+ period        number(4),
  rank_date     varchar2(8),
  rank       number(4),
  close_change number(6,2),
@@ -287,7 +287,7 @@ create table stk_pe(
 alter table stk_pe
   add constraint fk_pe__code foreign key (code)
   references stk (code);
-create index idx_pe__code on stk_pe (code);  
+create index idx_pe__code on stk_pe (code);
 alter table stk_pe add (ene_upper_cnt number(6),ene_lower_cnt number(6));
 alter table stk_pe add (upper_1 number(6),lower_1 number(6));
 alter table stk_pe add bias number(6,2);
@@ -301,7 +301,7 @@ create table stk_earnings_forecast(
 alter table stk_earnings_forecast
   add constraint fk_earnings_forecast__code foreign key (code)
   references stk (code);
-create index idx_earnings_forecast__code on stk_earnings_forecast (code);  
+create index idx_earnings_forecast__code on stk_earnings_forecast (code);
 
 create table stk_internet_search(
   search_source number(4),
@@ -362,7 +362,7 @@ create sequence s_organization_type_id
 　　INCREMENT BY 1
 　　START WITH 1
 　　NOMAXVALUE
-　　NOCYCLE 
+　　NOCYCLE
 　　CACHE 10;
 
 create table stk_organization(
@@ -375,7 +375,7 @@ create sequence s_organization_id
 　　INCREMENT BY 1
 　　START WITH 1000
 　　NOMAXVALUE
-　　NOCYCLE 
+　　NOCYCLE
 　　CACHE 10;
 
 
@@ -383,7 +383,7 @@ create table stk_ownership(
   code VARCHAR2(10),
   fn_date varchar2(8),
   org_id number(8),
-  stk_num number(12,2), 
+  stk_num number(12,2),
   rate number(6,2),
   num_change number(12,2)
 );
@@ -407,7 +407,7 @@ create sequence s_keyword_id
 　　INCREMENT BY 1
 　　START WITH 100000
 　　NOMAXVALUE
-　　NOCYCLE 
+　　NOCYCLE
 　　CACHE 10;
 
 create table stk_keyword_link(
@@ -428,7 +428,7 @@ create sequence s_keyword_link_id
 　　INCREMENT BY 1
 　　START WITH 10000000
 　　NOMAXVALUE
-　　NOCYCLE 
+　　NOCYCLE
 　　CACHE 10;
 
 create table stk_text(
@@ -443,7 +443,7 @@ create table stk_text(
 );
 comment on column stk_text.type is '0:收藏文章; 短文:1; 长文:2';
 alter table stk_text add constraint pk_text_id primary key (id);
-alter table stk_text add disp_order number(4) default 0; 
+alter table stk_text add disp_order number(4) default 0;
 create index idx_text__code_type on stk_text (code,code_type);
 create sequence s_text_id INCREMENT BY 1 START WITH 100000 NOMAXVALUE NOCYCLE CACHE 10;
 
@@ -465,7 +465,7 @@ create table stk_kline_rank_industry(
   rank_date varchar2(8),
   rank_days number(4),
   rank_percent number(6,2),
-  rank number(6)  
+  rank number(6)
 );
 alter table stk_kline_rank_industry
   add constraint fk_kline_rank_ind_id foreign key (industry_id)
@@ -498,7 +498,7 @@ create table stk_data_eastmoney_guba(
   num_total number(8),
   insert_time date
 );
-create index idx_data_eastmoney_guba_code on stk_data_eastmoney_guba (code); 
+create index idx_data_eastmoney_guba_code on stk_data_eastmoney_guba (code);
 create index idx_data_eastmoney_guba_date on stk_data_eastmoney_guba (insert_date);
 
 
@@ -546,8 +546,8 @@ create table stk_capital_flow(
   small_percent number(8,2),
   insert_time date
 );
-create index idx_capital_flow_code on stk_capital_flow (code); 
-create index idx_capital_flow_code_date on stk_capital_flow (code,flow_date); 
+create index idx_capital_flow_code on stk_capital_flow (code);
+create index idx_capital_flow_code_date on stk_capital_flow (code,flow_date);
 
 
 create table stk_monitor(
@@ -566,16 +566,16 @@ create table stk_monitor(
 );
 create sequence s_monitor_id INCREMENT BY 1 START WITH 1000 NOMAXVALUE NOCYCLE CACHE 10;
 alter table stk_monitor add constraint pk_monitor_id primary key (id);
-create index idx_monitor_code on stk_monitor (code); 
-create index idx_monitor_trigger_date on stk_monitor (trigger_date); 
+create index idx_monitor_code on stk_monitor (code);
+create index idx_monitor_trigger_date on stk_monitor (trigger_date);
 
 create table stk_dictionary(
-  type number(8), 
+  type number(8),
   key varchar2(40),
   text varchar2(200),
   remark varchar2(400)
 );
-create index idx_dictionary_type on stk_dictionary (type); 
+create index idx_dictionary_type on stk_dictionary (type);
 
 create table stk_label(
   id number(6),
@@ -605,7 +605,7 @@ create table stk_user(
   name varchar2(40),
   nickname varchar2(100),
   password varchar2(40),
-  email varchar2(200)  
+  email varchar2(200)
 );
 alter table stk_user add constraint pk_user_id primary key (id);
 create sequence s_user_id INCREMENT BY 1 START WITH 10000000 NOMAXVALUE NOCYCLE CACHE 10;
@@ -642,18 +642,18 @@ alter table STK_PE                   disable constraint FK_PE__CODE             
 
 ---init end---
 
- 
+
 /*
-10	净资产收益率	financialratios59	12.00	
-20	净利润增长率	financialratios44	20.00	
-30	销售毛利率	financialratios36	30.00	
-35	销售净利率	financialratios32	20.00	
-40	主营收入增长率	financialratios43	20.00	
-50	应收账款周转率	financialratios3	5.00	
-60	现金流量比率	financialratios51	50.00	
-70	经现流净资产比	financialratios48	0.10	
+10	净资产收益率	financialratios59	12.00
+20	净利润增长率	financialratios44	20.00
+30	销售毛利率	financialratios36	30.00
+35	销售净利率	financialratios32	20.00
+40	主营收入增长率	financialratios43	20.00
+50	应收账款周转率	financialratios3	5.00
+60	现金流量比率	financialratios51	50.00
+70	经现流净资产比	financialratios48	0.10
 80	资产负债率	financialratios56		40.00
-90	流动比率	financialratios1	2.00	
+90	流动比率	financialratios1	2.00
 100	净利润
 200	预收账款
 210	应收账款
@@ -743,14 +743,14 @@ select * from stk_kline where code='600140';
 select * from stk_kline where code='600278' order by kline_date desc;
 select count(1) from stk_kline;
 
-select count(1) from stk a, stk_industry b, stk_industry_type c 
+select count(1) from stk a, stk_industry b, stk_industry_type c
 where a.code=b.code and b.industry=c.id and c.source='hexun_conception'
 and a.code='300150';
 
 --number of every industry for hexun_conception
-select industry,count(industry) from stk_industry a 
+select industry,count(industry) from stk_industry a
 where a.industry in (select id from stk_industry_type where source='hexun_conception')
-group by industry having count(industry)>1; 
+group by industry having count(industry)>1;
 
 select * from stk_industry where industry=1150;
 
@@ -834,7 +834,7 @@ select count(1) from stk_kline where  hsl is not null ;
 
 select * from stk_kline order by code asc;
 select * from stk where market=1;
-select name,code,next_quarter_earning from stk where market=1 and code<>'999999' 
+select name,code,next_quarter_earning from stk where market=1 and code<>'999999'
  and next_quarter_earning like '%2013-12-31%' and next_quarter_earning like '%增长%' order by code;
 
 select * from stk_earnings_forecast order by insert_time desc;
@@ -865,7 +865,7 @@ select * from stk_kline_us where code='GIVN' order by kline_date desc;
 
 select * from stk where code in ('601268','600700');
 select * from stk_fn_type where market=2;
-select a.code,a.type,b.re_calc,b.name,a.fn_date,a.fn_value from stk_fn_data a , stk_fn_type b 
+select a.code,a.type,b.re_calc,b.name,a.fn_date,a.fn_value from stk_fn_data a , stk_fn_type b
   where a.type=b.type and a.code='300082' and a.type='106' order by a.type,a.fn_date desc;
 select distinct type from stk_fn_data;
 select * from stk_fn_type where market=1 order by disp_order for update;
@@ -882,7 +882,7 @@ select * from stk_internet_search;
 
 select * from stk_kline_us where code='TFG' order by kline_date desc;
 select * from STK_FN_DATA_US where fn_date='20130930';
-select b.type,b.name,a.fn_date,a.fn_value from stk_fn_data_us a, stk_fn_type b 
+select b.type,b.name,a.fn_date,a.fn_value from stk_fn_data_us a, stk_fn_type b
   where a.type=b.type and code='NTES' order by type,fn_date desc;
 select * from stk where code in ('NTES');
 
@@ -985,7 +985,7 @@ select * from stk_data_ppi order by ppi_date desc;
 delete from stk_data_ppi;
 
 select * from stk_data_ppi_type where name like '%氨纶%';
-select distinct b.name,a.code,a.fn_date,a.stk_num,a.rate from stk_ownership a, stk b where a.code=b.code 
+select distinct b.name,a.code,a.fn_date,a.stk_num,a.rate from stk_ownership a, stk b where a.code=b.code
 and a.org_id in (47676) order by fn_date desc,rate desc;
 select * from stk_organization_type;
 select * from stk_organization where name like '%李嘉鑫%';
@@ -1013,11 +1013,11 @@ select * from stk_kline_rank_industry where rank_date='20131111' and rank <= 5 o
 select * from stk_kline_rank_industry_stock where rank_id=138331;
 
 select * from stk_capital_flow where code='300037' order by flow_date desc;
-select sum(main_amount+super_large_amount),sum(large_amount+middle_amount+small_amount) from stk_capital_flow 
+select sum(main_amount+super_large_amount),sum(large_amount+middle_amount+small_amount) from stk_capital_flow
    where code='002582' order by flow_date desc;
 select flow_date,sum(main_amount+super_large_amount),sum(large_amount+middle_amount+small_amount) from stk_capital_flow  group by flow_date order by flow_date desc;
 select flow_date,sum(main_amount+super_large_amount+large_amount+middle_amount+small_amount),sum(main_amount+super_large_amount),sum(main_amount+small_amount) from stk_capital_flow  group by flow_date order by flow_date desc;
-   
+
 select * from stk_capital_flow where flow_date='20131118' and main_percent>=15 and super_large_percent>=15 order by main_percent asc;
 
 select * from stk_monitor for update;
@@ -1157,7 +1157,7 @@ select * from stk_keyword where name='预告';
 select * from stk_fn_data where code='600268' and type=303 order by fn_date desc;
 
 
-with 
+with
 t as (select distinct fn_date from stk_fn_data where code='000001'),
 t1 as (select fn_date,type,fn_value from stk_fn_data where code='000001' and type=103),
 t2 as (select fn_date,type,fn_value from stk_fn_data where code='000001' and type=303)
@@ -1168,11 +1168,14 @@ select * from stk_text;
 
 create table test(
   id int(6),
-  name varchar(100),  
+  name varchar(100),
   company_desc text,
   insert_time DATETIME
 );
 
 
 
-{table:'stk',sql:'',data:['','','']}
+select a.name,sum(d.stk_num),count(*) from stk_industry_type a, stk_industry b, stk_organization c, stk_ownership d
+where a.id=b.industry and d.code=b.code and d.org_id=c.id and a.name='xueqiu_industry'
+group by a.name
+
