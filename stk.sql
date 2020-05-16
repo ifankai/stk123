@@ -1,3 +1,11 @@
+﻿SELECT * FROM DBA_TABLESPACES;
+SELECT * FROM DBA_DATA_FILES;
+SELECT * FROM DBA_TEMP_FILES;
+select name from v$tablespace;
+
+select sum(bytes)/1024/1024/1024 from dba_segments;
+Select Segment_Name,Sum(bytes)/1024/1024 M From User_Extents Group By Segment_Name order by M desc;
+
 --init table--
 /*drop table STK_BILLBOARD;
 drop table STK_DEPT_TYPE;
@@ -33,17 +41,19 @@ alter table stk add earning_expect varchar2(4000);
 alter table stk add earning_expect_date date;
 alter table stk add company_profile clob;
 alter table stk add sale_limit clob;
-alter table stk add market number(1); --1��A�� 2������ 5�����
+alter table stk add market number(1); --1：A股 2：美股 5：外汇  3:港股
 alter table stk modify name varchar2(100);
 alter table stk add year_end varchar2(4);
 alter table stk add next_earning number(10,2);
 alter table stk modify next_quarter_earning varchar2(4000);
-alter table stk add cate number(1) default 1;--1:���� 2:ָ��  3:����
-alter table stk add f9 clob;
-alter table stk add address varchar2(20);
+alter table stk add cate number(1) default 1;--1:个股 2:指数  3:基金  4:同花顺板块指数
+alter table stk add f9 clob; 
+alter table stk add hot number(8) default 0; -- xueqiu follows
+alter table stk add fn_currency varchar2(4); --财务币种 
 
 create or replace view stk_cn as select * from stk where market=1 and cate=1;
-create or replace view stk_us as select * from stk where market=2 and cate=1;
+create or replace view stk_us as select * from stk where market=2 and cate=1 and status=0;
+create or replace view stk_hk as select * from stk where market=3 and cate=1;
 
 create index idx_stk__market_cate on stk (market,cate);
 
@@ -53,8 +63,6 @@ create table stk_fn_type(
 );
 alter table stk_fn_type add constraint pk_stk_fn_type primary key (type);
 alter table stk_fn_type add sina_typecode varchar2(20);
-alter table stk_fn_type add not_less_value number(6,2);
-alter table stk_fn_type add not_great_value number(6,2);
 alter table stk_fn_type add source number(2) default 1;
 alter table stk_fn_type modify type number(4);
 alter table stk_fn_type add status number(2) default 1;
@@ -68,8 +76,10 @@ ALTER TABLE stk_fn_type RENAME COLUMN cn_name TO disp_name;
 ALTER TABLE stk_fn_type RENAME COLUMN sina_typecode TO name_alias;
 alter table stk_fn_type modify name_alias varchar2(100);
 alter table stk_fn_type add re_calc varchar2(20);
-alter table stk_fn_type drop column not_less_value;
-alter table stk_fn_type drop column not_great_value;
+alter table stk_fn_type add tab number(1) default 0;
+alter table stk_fn_type add precision number(1) default 2;
+alter table stk_fn_type add colspan number(1);
+
 
 create table stk_fn_data(
   code   varchar2(10),
@@ -79,7 +89,7 @@ create table stk_fn_data(
   insert_time date
 );
 alter table stk_fn_data modify type number(4);
-alter table stk_fn_data modify fn_value number(20,2);
+alter table stk_fn_data modify fn_value number(22,4);
 alter table stk_fn_data add update_time date;
 alter table stk_fn_data
   add constraint fk_fn_data__code foreign key (code)
@@ -87,7 +97,6 @@ alter table stk_fn_data
 alter table stk_fn_data
   add constraint fk_fn_data__type foreign key (type)
   references stk_fn_type (type);
-create index idx_fn_data__code on stk_fn_data (code);
 create index idx_fn_data__code_type on stk_fn_data (code,type,fn_date);
 
 create table STK_FN_DATA_US
@@ -100,6 +109,8 @@ create table STK_FN_DATA_US
   UPDATE_TIME DATE
 )
 tablespace STK_TABLESPACE_2;
+alter table STK_FN_DATA_US modify fn_value number(22,4);
+alter table STK_FN_DATA_US add Fiscal_Year_Ends NUMBER(1);
 
 alter table STK_FN_DATA_US
   add constraint FK_FN_DATA_US__CODE foreign key (CODE)
@@ -108,12 +119,9 @@ alter table STK_FN_DATA_US
   add constraint FK_FN_DATA_US__TYPE foreign key (TYPE)
   references STK_FN_TYPE (TYPE);
 
-create index IDX_FN_DATA_US__CODE on STK_FN_DATA_US (CODE)
-  tablespace STK_TABLESPACE_2;
-
 create index IDX_FN_DATA_US__CODE_TYPE on STK_FN_DATA_US (CODE, TYPE, FN_DATE)
   tablespace STK_TABLESPACE_2;
-
+  
 
 create table STK_FN_DATA_US_year
 (
@@ -150,17 +158,17 @@ create table stk_info_log(
 alter table stk_info_log
   add constraint fk_info_log__code foreign key (code)
   references stk (code);
-create index idx_info_log__code on stk_info_log (code);
+create index idx_info_log__code on stk_info_log (code);  
 
 create table stk_error_log(
   code   varchar2(10),
-  error  varchar2(4000),
+  error  clob,
   insert_time date
 );
 alter table stk_error_log
   add constraint fk_error_log__code foreign key (code)
   references stk (code);
-alter table stk_error_log disable constraint fk_error_log__code ;
+alter table stk_error_log disable constraint fk_error_log__code ; 
 
 create table stk_industry_type(
   id number(6),
@@ -171,7 +179,14 @@ alter table stk_industry_type add care_flag number(2) default 0;
 alter table stk_industry_type add constraint pk_id primary key (id);
 alter table stk_industry_type add parent_id number(6);
 alter table stk_industry_type add us_name varchar2(200);
-create index idx_industry_type_name on stk_industry_type (name);
+create index idx_industry_type_name on stk_industry_type (name); 
+
+create sequence s_industry_type_id
+　　INCREMENT BY 1
+　　START WITH 100000
+　　NOMAXVALUE
+　　NOCYCLE 
+　　CACHE 10;
 
 create table stk_industry(
   code   varchar2(10),
@@ -189,14 +204,19 @@ create table stk_billboard(
   trans_date  varchar2(10),
   dept_id  number(8),
   buy_amount number(18,2) default 0.0,
+  buy_ratio number(6,2),
   sell_amount number(18,2) default 0.0,
-  volume number(8,2),
-  proportion number(6,2)
+  sell_ratio number(6,2),
+  net_amount number(18,2) default 0.0
 );
+alter table stk_billboard add buy_sell number(1);
+alter table stk_billboard add seq number(2);
 alter table stk_billboard
   add constraint fk_billboard__code foreign key (code)
   references stk (code);
-create index idx_billboard__code on stk_billboard (code);
+create index idx_billboard__code on stk_billboard (code);   
+create index idx_billboard__trans_date on stk_billboard (trans_date);
+create index idx_billboard__dept_id on stk_billboard (dept_id);   
 
 create table stk_dept_type(
   dept_id number(8),
@@ -227,15 +247,21 @@ create table stk_kline(
  amount number(16,2),
  close_change number(12,6)
 );
-create index idx_kline__code on stk_kline (code);
+create index idx_kline__date on stk_kline (kline_date);
 create index idx_kline__code_date on stk_kline (code,kline_date);
 alter table stk_kline add hsl number(8,2);
 alter table stk_kline add pe_ttm number(10,2);
 alter table stk_kline add pe_lyr number(10,2);
+alter table stk_kline add percentage number(6,2);
+alter table stk_kline add ps_ttm number(10,2);
+alter table stk_kline add pb_ttm number(10,2);
+alter table stk_kline add pe_ntile number(3);
+alter table stk_kline add pb_ntile number(3);
+alter table stk_kline add ps_ntile number(3);
 
 create table stk_industry_rank(
  industry_id   number(6),
- period        number(4),
+ period        number(4), 
  rank_date     varchar2(8),
  rank       number(4),
  close_change number(6,2),
@@ -264,15 +290,28 @@ create table stk_import_info(
   info   varchar2(2000)
 );
 alter table stk_import_info modify info varchar2(4000);
+alter table stk_import_info modify id number(10);
+alter table stk_import_info add title varchar2(1000);
+alter table stk_import_info add url_source varchar2(1000);
+alter table stk_import_info add url_target varchar2(1000);
+alter table stk_import_info add info_create_time date;
 alter table stk_import_info add constraint pk_import_info primary key (id);
 alter table stk_import_info
   add constraint fk_import_info__code foreign key (code)
   references stk (code);
+create sequence s_import_info_id
+　　INCREMENT BY 1
+　　START WITH 100000
+　　NOMAXVALUE
+　　NOCYCLE 
+　　CACHE 10;  
 
 create table stk_import_info_type(
   type   number(4),
   name   varchar2(200)
 );
+alter table stk_import_info_type add match_pattern varchar2(400);
+alter table stk_import_info_type add not_match_pattern varchar2(400);
 alter table stk_import_info_type add constraint pk_import_info_type primary key (type);
 alter table stk_import_info
   add constraint fk_import_info__type foreign key (type)
@@ -287,10 +326,28 @@ create table stk_pe(
 alter table stk_pe
   add constraint fk_pe__code foreign key (code)
   references stk (code);
-create index idx_pe__code on stk_pe (code);
+create index idx_pe__code on stk_pe (code);  
 alter table stk_pe add (ene_upper_cnt number(6),ene_lower_cnt number(6));
 alter table stk_pe add (upper_1 number(6),lower_1 number(6));
 alter table stk_pe add bias number(6,2);
+alter table stk_pe add (ene_upper number(6,2),ene_lower number(6,2));
+alter table stk_pe add result_1 number(8,2); -- 二品抄底-买入时机
+alter table stk_pe add result_2 number(8,2); -- 一品抄底-大势已去
+alter table stk_pe add avg_pb number(8,2); -- 平均pb
+alter table stk_pe add total_pe number(8,2); --整体pe
+alter table stk_pe add total_pb number(8,2); --整体pb
+alter table stk_pe add mid_pb number(8,2); --中位pb
+alter table stk_pe add mid_pe number(8,2); --中位pe
+alter table stk_pe add result_3 number(8,2);
+alter table stk_pe add result_4 number(8,2);
+alter table stk_pe add result_5 number(8,2);
+alter table stk_pe add result_6 number(8,2);
+alter table stk_pe add result_7 number(8,2);
+alter table stk_pe add result_8 number(8,2);
+alter table stk_pe add result_9 number(8,2);
+alter table stk_pe add result_10 number(8,2);
+alter table stk_pe add result_11 number(8,2);
+alter table stk_pe add result_12 number(8,2);
 
 create table stk_earnings_forecast(
   code varchar2(10),
@@ -298,10 +355,11 @@ create table stk_earnings_forecast(
   forecast_net_profit number(16,2),
   insert_time date
 );
+alter table stk_earnings_forecast add pe number(8,2);
 alter table stk_earnings_forecast
   add constraint fk_earnings_forecast__code foreign key (code)
   references stk (code);
-create index idx_earnings_forecast__code on stk_earnings_forecast (code);
+create index idx_earnings_forecast__code on stk_earnings_forecast (code);  
 
 create table stk_internet_search(
   search_source number(4),
@@ -350,20 +408,53 @@ create table STK_KLINE_US
 tablespace STK_TABLESPACE_2;
 alter table stk_kline_us add pe_ttm number(10,2);
 alter table stk_kline_us add pe_lyr number(10,2);
-create index IDX_KLINE_M__CODE on STK_KLINE_US (CODE) tablespace STK_TABLESPACE_2;
+alter table stk_kline_us add percentage number(6,2);
+alter table stk_kline_us add pb_ttm number(10,2);
+alter table stk_kline_us add ps_ttm number(10,2);
+create index IDX_KLINE_M__DATE on STK_KLINE_US (KLINE_DATE) tablespace STK_TABLESPACE_2;
 create index IDX_KLINE_M__CODE_DATE on STK_KLINE_US (CODE, KLINE_DATE) tablespace STK_TABLESPACE_2;
 
+
+CREATE TABLE STK_KLINE_HK
+   (	"CODE" VARCHAR2(10), 
+	"KLINE_DATE" VARCHAR2(8), 
+	"OPEN" NUMBER(8,3), 
+	"CLOSE" NUMBER(8,3), 
+	"LAST_CLOSE" NUMBER(8,3), 
+	"HIGH" NUMBER(8,3), 
+	"LOW" NUMBER(8,3), 
+	"VOLUMN" NUMBER(16,2), 
+	"AMOUNT" NUMBER(16,2), 
+	"CLOSE_CHANGE" NUMBER(12,6), 
+	"HSL" NUMBER(8,2), 
+	"PE_TTM" NUMBER(10,2), 
+	"PE_LYR" NUMBER(10,2), 
+	"PS_TTM" NUMBER(10,2), 
+	"PB_TTM" NUMBER(10,2), 
+	 CONSTRAINT "FK_KLINE_HK__CODE" FOREIGN KEY ("CODE")
+	  REFERENCES "STK"."STK" ("CODE") 
+   )
+TABLESPACE "STK_TABLESPACE_2" ;   
+create index IDX_KLINE_HK__CODE on STK_KLINE_HK (CODE) tablespace STK_TABLESPACE_2;
+create index IDX_KLINE_HK__DATE on STK_KLINE_HK (KLINE_DATE) tablespace STK_TABLESPACE_2;
+create index IDX_KLINE_HK__CODE_DATE on STK_KLINE_HK (CODE, KLINE_DATE) tablespace STK_TABLESPACE_2;
+
+alter table stk_kline_hk add percentage number(6,2);
+
+
+/*
 create table stk_organization_type(
   id number(4),
   name varchar2(100)
 );
 alter table stk_organization_type add constraint pk_organization_type_id primary key (id);
 create sequence s_organization_type_id
-����INCREMENT BY 1
-����START WITH 1
-����NOMAXVALUE
-����NOCYCLE
-����CACHE 10;
+　　INCREMENT BY 1
+　　START WITH 1
+　　NOMAXVALUE
+　　NOCYCLE 
+　　CACHE 10;
+*/
 
 create table stk_organization(
   id number(8),
@@ -372,25 +463,25 @@ create table stk_organization(
 alter table stk_organization add constraint pk_organization_id primary key (id);
 create index idx_organization_name on stk_organization (name);
 create sequence s_organization_id
-����INCREMENT BY 1
-����START WITH 1000
-����NOMAXVALUE
-����NOCYCLE
-����CACHE 10;
+　　INCREMENT BY 1
+　　START WITH 1000
+　　NOMAXVALUE
+　　NOCYCLE 
+　　CACHE 10;
 
 
 create table stk_ownership(
   code VARCHAR2(10),
   fn_date varchar2(8),
   org_id number(8),
-  stk_num number(12,2),
+  stk_num number(12,2), 
   rate number(6,2),
   num_change number(12,2)
 );
+alter table stk_ownership add num_change_rate number(8,2);
 alter table stk_ownership add constraint fk_ownership__org_id foreign key (org_id) references stk_organization (id);
 create index idx_ownership__code on stk_ownership (code);
-alter table stk_ownership add type number(4);
-alter table stk_ownership add constraint fk_ownership__type foreign key (type) references stk_organization_type (id);
+
 
 create table stk_keyword(
   id number(12),
@@ -404,11 +495,11 @@ alter table stk_keyword add constraint pk_keyword_id primary key (id);
 create index idx_keyword__name on stk_keyword (name);
 ALTER TABLE stk_keyword ADD CONSTRAINT uidx_keyword_name UNIQUE (name);
 create sequence s_keyword_id
-����INCREMENT BY 1
-����START WITH 100000
-����NOMAXVALUE
-����NOCYCLE
-����CACHE 10;
+　　INCREMENT BY 1
+　　START WITH 100000
+　　NOMAXVALUE
+　　NOCYCLE 
+　　CACHE 10;
 
 create table stk_keyword_link(
   id number(12),
@@ -417,7 +508,7 @@ create table stk_keyword_link(
   keyword_id number(12)  not null,
   boost number(8) default 1
 );
-alter table stk_keyword_link add link_type number(6) default 0;  -- default(manually add):0, ��Ӫҵ��:1
+alter table stk_keyword_link add link_type number(6) default 0;  -- default(manually add):0, 主营业务:1
 alter table stk_keyword_link add insert_time date;
 alter table stk_keyword_link add constraint pk_keyword_link_id primary key (id);
 alter table stk_keyword_link add constraint fk_keyword_link__key_id foreign key (keyword_id) references stk_keyword (id);
@@ -425,15 +516,15 @@ create index idx_keyword_link__code on stk_keyword_link (code);
 create index idx_keyword_link__code_type on stk_keyword_link (code,code_type);
 create index idx_keyword_link__key_id on stk_keyword_link (keyword_id);
 create sequence s_keyword_link_id
-����INCREMENT BY 1
-����START WITH 10000000
-����NOMAXVALUE
-����NOCYCLE
-����CACHE 10;
+　　INCREMENT BY 1
+　　START WITH 10000000
+　　NOMAXVALUE
+　　NOCYCLE 
+　　CACHE 10;
 
 create table stk_text(
 	id number(8),
-  type number(4),  --���ģ�1�����ģ�2
+  type number(4),  --短文：1，长文：2
 	code varchar2(20),
 	code_type number(6), -- 1: stock  2: industry ...
   title varchar2(1000),
@@ -441,17 +532,21 @@ create table stk_text(
 	insert_time date,
   update_time date
 );
-comment on column stk_text.type is '0:�ղ�����; ����:1; ����:2';
+comment on column stk_text.type is '0:收藏文章; 短文:1; 长文:2; 雪球评论:3';
 alter table stk_text add constraint pk_text_id primary key (id);
-alter table stk_text add disp_order number(4) default 0;
+alter table stk_text add disp_order number(4) default 0; 
+alter table stk_text add user_id number(8) default 1;
+alter table stk_text add sub_type number(4) default 0; -- see Text.java sub type
 create index idx_text__code_type on stk_text (code,code_type);
+create index idx_text__user_id on stk_text (user_id);
+create index idx_text__sub_type on stk_text (sub_type);
 create sequence s_text_id INCREMENT BY 1 START WITH 100000 NOMAXVALUE NOCYCLE CACHE 10;
 
 
 create table stk_data_industry_pe(
   industry_id number(6),
   pe_date varchar2(8),
-  type number(1),   -- 1����С�壬2����ҵ�壬3������
+  type number(1),   -- 1：中小板，2：创业板，3：沪深
   pe  number(10,2),
   pe_ttm number(10,2),
   insert_time date
@@ -465,7 +560,7 @@ create table stk_kline_rank_industry(
   rank_date varchar2(8),
   rank_days number(4),
   rank_percent number(6,2),
-  rank number(6)
+  rank number(6)  
 );
 alter table stk_kline_rank_industry
   add constraint fk_kline_rank_ind_id foreign key (industry_id)
@@ -498,7 +593,7 @@ create table stk_data_eastmoney_guba(
   num_total number(8),
   insert_time date
 );
-create index idx_data_eastmoney_guba_code on stk_data_eastmoney_guba (code);
+create index idx_data_eastmoney_guba_code on stk_data_eastmoney_guba (code); 
 create index idx_data_eastmoney_guba_date on stk_data_eastmoney_guba (insert_date);
 
 
@@ -546,8 +641,8 @@ create table stk_capital_flow(
   small_percent number(8,2),
   insert_time date
 );
-create index idx_capital_flow_code on stk_capital_flow (code);
-create index idx_capital_flow_code_date on stk_capital_flow (code,flow_date);
+create index idx_capital_flow_code on stk_capital_flow (code); 
+create index idx_capital_flow_code_date on stk_capital_flow (code,flow_date); 
 
 
 create table stk_monitor(
@@ -566,16 +661,22 @@ create table stk_monitor(
 );
 create sequence s_monitor_id INCREMENT BY 1 START WITH 1000 NOMAXVALUE NOCYCLE CACHE 10;
 alter table stk_monitor add constraint pk_monitor_id primary key (id);
-create index idx_monitor_code on stk_monitor (code);
-create index idx_monitor_trigger_date on stk_monitor (trigger_date);
+create index idx_monitor_code on stk_monitor (code); 
+create index idx_monitor_trigger_date on stk_monitor (trigger_date); 
 
 create table stk_dictionary(
-  type number(8),
+  type number(8), 
   key varchar2(40),
   text varchar2(200),
   remark varchar2(400)
 );
-create index idx_dictionary_type on stk_dictionary (type);
+alter table stk_dictionary add param varchar2(200);
+alter table stk_dictionary add param_2 varchar2(100);
+alter table stk_dictionary add param_3 varchar2(100);
+alter table stk_dictionary add param_4 varchar2(100);
+alter table stk_dictionary add param_5 varchar2(100);
+create index idx_dictionary_type on stk_dictionary (type); 
+
 
 create table stk_label(
   id number(6),
@@ -584,6 +685,8 @@ create table stk_label(
   update_time date
 );
 alter table stk_label add constraint pk_label_id primary key (id);
+alter table stk_label add user_id number(8) default 1;
+create index idx_label__user_id on stk_label (user_id);
 create sequence s_label_id INCREMENT BY 1 START WITH 100000 NOMAXVALUE NOCYCLE CACHE 10;
 
 create table stk_label_text(
@@ -599,32 +702,162 @@ alter table stk_label_text
   references stk_label (id);
 create sequence s_label_text_id INCREMENT BY 1 START WITH 10000000 NOMAXVALUE NOCYCLE CACHE 10;
 
-
 create table stk_user(
   id number(8),
-  name varchar2(40),
   nickname varchar2(100),
   password varchar2(40),
-  email varchar2(200)
+  email varchar2(200)  
 );
+alter table stk_user add earning_search_params varchar2(2000);
 alter table stk_user add constraint pk_user_id primary key (id);
-create sequence s_user_id INCREMENT BY 1 START WITH 10000000 NOMAXVALUE NOCYCLE CACHE 10;
-ALTER TABLE stk_user ADD CONSTRAINT uidx_user_name UNIQUE (name);
+--create sequence s_user_id INCREMENT BY 1 START WITH 10000000 NOMAXVALUE NOCYCLE CACHE 10;
+ALTER TABLE stk_user ADD CONSTRAINT uidx_user_nickname UNIQUE (nickname);
+ALTER TABLE stk_user ADD CONSTRAINT uidx_user_email UNIQUE (email);
 
 
+CREATE TABLE stk_sequence ( 
+  seq_name varchar2(30) NOT NULL, 
+  seq_value number(10) DEFAULT 10000
+);
+alter table stk_sequence add constraint pk_sequence_name primary key (seq_name);
+insert into stk_sequence(seq_name, seq_value) values ('s_keyword_id',20000000);
+insert into stk_sequence(seq_name, seq_value) values ('s_keyword_link_id',20000000);
+insert into stk_sequence(seq_name, seq_value) values ('s_label_id',200000);
+insert into stk_sequence(seq_name, seq_value) values ('s_label_text_id',20000000);
+insert into stk_sequence(seq_name, seq_value) values ('s_text_id',20000000);
+insert into stk_sequence(seq_name, seq_value) values ('s_data_ppi_type_id',20000);
+insert into stk_sequence(seq_name, seq_value) values ('s_organization_id',200000);
+insert into stk_sequence(seq_name, seq_value) values ('s_organization_type_id',2000);
+--production start with '3' number
 
----
-create table stk_migration(
+
+create table stk_index_node(
   id number(8),
-  table_name varchar2(100),
-  sql_text varchar2(2000),
-  sql_data clob,
-  migration_flag number(1) default 0, --0:initial,1:succ,2:fail
+  parent_id number(8),
+  name varchar2(200),
+  disp_order number(4) default 0
+);
+alter table stk_index_node add node_level number(2);
+alter table stk_index_node add chart_template varchar2(1000);
+alter table stk_index_node add constraint pk_index_node primary key (id);
+
+
+create table stk_investigation(
+  id number(8),
+  code varchar2(10),
+  title varchar2(1000),
+  investigator varchar2(4000),
+  investigator_count number(8),
+  text clob,
+  text_count number(8),
+  invest_date date,
+  insert_date date
+);
+alter table stk_investigation add source_url varchar2(1000);
+alter table stk_investigation add source_type varchar2(10);
+create sequence s_investigation_id INCREMENT BY 1 START WITH 100000 NOMAXVALUE NOCYCLE CACHE 10;
+alter table stk_investigation add constraint pk_investigation_id primary key (id);
+create index idx_investigation_code on stk_investigation (code); 
+create index idx_investigation_invest_date on stk_investigation (invest_date);
+
+create table stk_care(
+  code varchar2(10),
+  type varchar2(100),
+  info varchar2(1000),
+  url varchar2(1000),
+  memo varchar2(4000),
+  insert_time date,
+  info_create_time date,
+  param1 varchar2(200),
+  param2 varchar2(200)
+);
+
+
+create table stk_word(
+ id number(10),
+ type number(1) not null, -- 1:基本面词库, 2:情绪面类词库, 3:概念类词库
+ sub_type number(2), -- 1:正面, 2:负面
+ name varchar2(40) not null,
+ weight number(4) default 1,
+ parent_id number(10),
+ child_id number(10),
+ description varchar2(200)
+);
+create sequence s_word_id INCREMENT BY 1 START WITH 100000 NOMAXVALUE NOCYCLE CACHE 10;
+alter table stk_word add constraint pk_word_id primary key (id);
+create unique index idx_word_type_sub_name on stk_word (type,sub_type,name);
+
+create table stk_restricted(
+    code varchar2(10),
+    report_date varchar2(10),
+    listing_date varchar2(10), 
+    ban_amount number(12,2),
+    ban_market_value number(10,4)
+);
+
+create index idx_restricted_code on stk_restricted(code); 
+
+--业绩预告
+create table stk_earnings_notice (
+  code varchar2(10),
+  fn_date varchar2(10),
+  detail varchar2(2000),
+  er_low number(8,2),
+  er_high number(8,2),
+  er_type varchar2(10),
+  last_amount number(12,2),
+  notice_date varchar2(10), --业绩预告公告日
+  real_date varchar2(10) --季报实际公告日
+);
+alter table stk_earnings_notice add insert_time date;
+alter table stk_earnings_notice
+  add constraint fk_earnings_notice__code foreign key (code)
+  references stk (code);
+create index idx_earnings_notice__code on stk_earnings_notice (code);  
+
+
+create table stk_daily_report_us(
+  report_date varchar2(10),
+  result_1 number(8,2),
+  result_2 number(8,2),
+  result_3 number(8,2),
+  result_4 number(8,2),
+  result_5 number(8,2)
+);
+
+
+create table stk_xueqiu_user(
+  id number(10),
+  user_id varchar2(12),
+  name varchar2(100)
+);
+create sequence s_xueqiu_user_id INCREMENT BY 1 START WITH 10000 NOMAXVALUE NOCYCLE CACHE 10;
+alter table stk_xueqiu_user add constraint pk_xueqiu_user_id primary key (id);
+
+
+create table stk_search_condition (
+  id number(6),
+  type varchar2(20),
+  name varchar2(200),
+  text clob,
   insert_time date,
   update_time date
 );
 
+--drop table stk_strategy;
+create table stk_strategy(
+ id number(6),
+ strategy_date varchar(10),
+ name varchar2(400),
+ text varchar2(4000),
+ insert_time date
+);
+create sequence s_strategy_id INCREMENT BY 1 START WITH 1000 NOMAXVALUE NOCYCLE CACHE 10;
+alter table stk_strategy add constraint pk_strategy_id primary key (id);
 
+select * from tab where tname like 'STK_%';
+
+----------------------------------
 alter table STK_BILLBOARD            disable constraint FK_BILLBOARD__CODE        ;
 alter table STK_BILLBOARD            disable constraint FK_BILLBOARD__DEPT_ID     ;
 alter table STK_EARNINGS_FORECAST    disable constraint FK_EARNINGS_FORECAST__CODE;
@@ -642,39 +875,63 @@ alter table STK_PE                   disable constraint FK_PE__CODE             
 
 ---init end---
 
-
+ 
 /*
-10	���ʲ�������	financialratios59	12.00
-20	������������	financialratios44	20.00
-30	����ë����	financialratios36	30.00
-35	���۾�����	financialratios32	20.00
-40	��Ӫ����������	financialratios43	20.00
-50	Ӧ���˿���ת��	financialratios3	5.00
-60	�ֽ���������	financialratios51	50.00
-70	���������ʲ���	financialratios48	0.10
-80	�ʲ���ծ��	financialratios56		40.00
-90	��������	financialratios1	2.00
-100	������
-200	Ԥ���˿�
-210	Ӧ���˿�
-300	��Ӫ�ֽ���
+10	净资产收益率	financialratios59	12.00	
+20	净利润增长率	financialratios44	20.00	
+30	销售毛利率	financialratios36	30.00	
+35	销售净利率	financialratios32	20.00	
+40	主营收入增长率	financialratios43	20.00	
+50	应收账款周转率	financialratios3	5.00	
+60	现金流量比率	financialratios51	50.00	
+70	经现流净资产比	financialratios48	0.10	
+80	资产负债率	financialratios56		40.00
+90	流动比率	financialratios1	2.00	
+100	净利润
+200	预收账款
+210	应收账款
+300	经营现金流
 */
 
 
 ----end
+
+select * from stk_pe order by report_date desc;
+
+declare
+  today varchar2(8);
+  totalPe number;
+  totalPb number;
+  midPb   number;
+  midPe   number;
+begin
+  today := '20200309';
+  select avg(pe_ttm) into totalPe from stk_kline where kline_date=today and pe_ttm is not null and pe_ttm>3 and pe_ttm<200;
+  select avg(pb_ttm) into totalPb from stk_kline where kline_date=today and pb_ttm is not null and pb_ttm>0 and pb_ttm<30;
+  select median(pb_ttm) into midPb from stk_kline where kline_date=today and pb_ttm is not null and pb_ttm>0 and pb_ttm<30;
+  select median(pe_ttm) into midPe from stk_kline where kline_date=today and pe_ttm is not null and pe_ttm>3 and pe_ttm<200;
+  update stk_pe set total_pe=totalPe,total_pb=totalPb,mid_pb=midPb,mid_pe=midPe where report_date=today;
+end;
+/
+
+
+
+
 
 select * from tab where tname like 'STK%';
 select * from stk_stat_data;
 
 select * from stk_fn_type;
 select * from stk_fn_type where market=1;
-select * from stk_fn_data where type='200';
+select * from stk_fn_data where code='300293' and type=303 order by fn_date desc;
 select * from stk_industry a,stk_industry_type b where a.industry=b.id;
-select * from stk_industry_type ;
+select * from stk_xueqiu_user ;
 select * from stk_industry for update;
 
-truncate table stk_error_log;
+delete from stk_error_log;
 select * from stk_error_log order by insert_time desc;
+select * from stk_holder where code='002131' order by fn_date desc;
+select * from stk_ownership where code='002131' order by fn_date desc,rate desc;
 
 select count(1) from stk;--2464
 select * from stk order by code;
@@ -685,7 +942,6 @@ select * from stk_industry where code='300350' for update;
 update stk set status=1,status_date=sysdate where code='601933' and status <> 1;
 select code,name,total_capital,cur_price,total_capital*cur_price from stk where code in ('000423','000425','000501','000538','000780','000880','000887','000937','002081','002082','002089','002128','002304','600028','600031','600036','600066','600067','600104','600123','600139','600153','600161','600195','600252','600271','600276','600309','600315','600327','600348','600395','600436','600508','600511','600519','600547','600561','600570','600582','600594','600600','600658','600729','600739','600742','600743','600745','600779','600805','600809','600816','600828','600829','600845','600875','600880','600887','600970','600971','601006','601166','601169','601328','601398','601666','601699','601988','000006','000012','000028','000069','000157','000338','000411','000417','000506','000527','000537','000540','000550','000568','000581','000596','000623','000631','000650','000651','000661','000671','000708','000718','000732','000792','000848','000858','000861','000869','000895','000900','000933','000963','000979','000983','000987','000999','002001','002007','002022','002024','002038','002051','002063','002065','002069','002091','002096','002104','002140','002146','002152','002153','002191','002223','002242','002244','002250','002252','002269','300003','600115','600216','600223','600225','600375','600406','600505','600660','600785','600794','600897','600983','601088','601111','601899','601939') order by total_capital*cur_price;
 select * from stk where name like '%N%';
-update stk set status = 0 where name like '%ST%';
 select * from stk where status=1 for update;
 select * from stk_fn_type for update;
 
@@ -695,7 +951,7 @@ select * from stk_fn_data order by code,fn_date desc;
 select * from stk_fn_data where code='600706' order by fn_date desc;
 select * from stk_import_info where code='600643';
 select * from stk_import_info where id not in (
-select * from stk_import_info where info like '%������%��%');
+select * from stk_import_info where info like '%净利润%增%');
 select * from stk_fn_data where code='002230' and type in (111,303) order by type desc,fn_date desc;
 select * from stk_fn_type where market=1;
 
@@ -710,7 +966,7 @@ select * from stk_info_log where code='002275';
 select * from stk_info_log order by code;
 
 select * from stk_error_log order by insert_time desc;
-delete from stk_error_log;
+truncate table stk_error_log;
 
 update stk set status=1,status_date=sysdate where code in (300262) and status <> 1;
 select * from stk where status=1 order by status_date;
@@ -743,14 +999,14 @@ select * from stk_kline where code='600140';
 select * from stk_kline where code='600278' order by kline_date desc;
 select count(1) from stk_kline;
 
-select count(1) from stk a, stk_industry b, stk_industry_type c
+select count(1) from stk a, stk_industry b, stk_industry_type c 
 where a.code=b.code and b.industry=c.id and c.source='hexun_conception'
 and a.code='300150';
 
 --number of every industry for hexun_conception
-select industry,count(industry) from stk_industry a
+select industry,count(industry) from stk_industry a 
 where a.industry in (select id from stk_industry_type where source='hexun_conception')
-group by industry having count(industry)>1;
+group by industry having count(industry)>1; 
 
 select * from stk_industry where industry=1150;
 
@@ -779,7 +1035,7 @@ select * from stk_error_log order by insert_time desc;
 delete from stk_error_log where error like '%at task.InitialData.setFnData(InitialData.java:44%';
 
 select * from stk_holder a,stk b where a.code=b.code and holder<=5000 and fn_date='20120630' order by holder;
-select * from stk_holder where code='300080';
+select * from stk_holder where code='300359';
 select * from stk_import_info_type for update;
 select * from stk_import_info;
 select * from stk_import_info where care_flag=1 order by code asc,id desc;
@@ -791,13 +1047,13 @@ select * from stk_holder where code='300244' order by fn_date desc;
 
 
 select * from stk where market=1 order by code desc;
-select * from stk where code='5173' for update;
+select * from stk where code='002555';
 select * from stk_fn_data where code='600587' and type=100 order by fn_date desc;
 select * from stk_fn_type for update;
 /*
-ë�� = ������ - �ɱ��ܼ�
+毛利 = 总收入 - 成本总计
 */
-insert into stk_fn_type select 3004,'�ֽ�������',null,null,null,12,1,2 from dual;
+insert into stk_fn_type select 3004,'现金净增减额',null,null,null,12,1,2 from dual;
 select * from stk_industry where code='5173' for update;
 select * from stk_industry_type order by id desc;
 select * from stk_error_log order by insert_time desc;
@@ -817,7 +1073,7 @@ select s.code,s.name from stk s,stk_industry i,stk_industry_type t where s.code=
 
 select * from stk_industry_rank where rank_date='20121205' order by rank_date desc, period desc, rank asc;
 select * from stk_billboard where dept_id=127 order by trans_date desc;
-select * from stk_dept_type where dept_name like '%����%';--127
+select * from stk_dept_type where dept_name like '%机构%';--127
 select * from stk_billboard where code='002443' order by trans_date desc;
 
 
@@ -834,8 +1090,8 @@ select count(1) from stk_kline where  hsl is not null ;
 
 select * from stk_kline order by code asc;
 select * from stk where market=1;
-select name,code,next_quarter_earning from stk where market=1 and code<>'999999'
- and next_quarter_earning like '%2013-12-31%' and next_quarter_earning like '%����%' order by code;
+select name,code,next_quarter_earning from stk where market=1 and code<>'999999' 
+ and next_quarter_earning like '%2013-12-31%' and next_quarter_earning like '%增长%' order by code;
 
 select * from stk_earnings_forecast order by insert_time desc;
 select distinct code from stk_earnings_forecast;
@@ -847,7 +1103,7 @@ insert into stk_internet_search
 select 10,'',null,null,1,'' from dual;
 
 select * from stk where market=2 and code='WBAI' order by code asc;
-select * from stk where company_profile like '%�ྦྷ��%';
+select * from stk where company_profile like '%多晶硅%';
 select * from stk where code = '.DJI';
 select * from stk where code like '.%';
 select * from stk_industry_type where source='xueqiu_meigu';
@@ -865,7 +1121,7 @@ select * from stk_kline_us where code='GIVN' order by kline_date desc;
 
 select * from stk where code in ('601268','600700');
 select * from stk_fn_type where market=2;
-select a.code,a.type,b.re_calc,b.name,a.fn_date,a.fn_value from stk_fn_data a , stk_fn_type b
+select a.code,a.type,b.re_calc,b.name,a.fn_date,a.fn_value from stk_fn_data a , stk_fn_type b 
   where a.type=b.type and a.code='300082' and a.type='106' order by a.type,a.fn_date desc;
 select distinct type from stk_fn_data;
 select * from stk_fn_type where market=1 order by disp_order for update;
@@ -882,12 +1138,12 @@ select * from stk_internet_search;
 
 select * from stk_kline_us where code='TFG' order by kline_date desc;
 select * from STK_FN_DATA_US where fn_date='20130930';
-select b.type,b.name,a.fn_date,a.fn_value from stk_fn_data_us a, stk_fn_type b
+select b.type,b.name,a.fn_date,a.fn_value from stk_fn_data_us a, stk_fn_type b 
   where a.type=b.type and code='NTES' order by type,fn_date desc;
 select * from stk where code in ('NTES');
 
---NTES (����)
---Gross Margin (ë����ttm = ë��ttm/������ttm)
+--NTES (网易)
+--Gross Margin (毛利率ttm = 毛利ttm/总收入ttm)
 SUM(1697.61	1546.08	1608.27	1361.91)/SUM(2264.53	2152.59	2270.87	2001.96)=0.7150
 
 select * from stk_fn_type;
@@ -913,7 +1169,7 @@ select * from stk where year_end <> '1231'
 
 
 select * from stk_industry_type order by id desc;
-select * from stk_industry_type where name='���ܸ���';
+select * from stk_industry_type where name='风能概念';
 
 select s.* from stk_industry s,stk_industry_type t where s.industry=t.id and t.source='cnindex' order by t.source,s.industry;
 
@@ -945,7 +1201,7 @@ select * from stk_error_log order by insert_time desc;
 select count(1) from stk_error_log;
 
 select * from stk_internet_search where search_source=1 for update;
-select * from stk_text where title like '%����ʱ�����˾%';
+select * from stk_text where title like '%伙伴资本看公司%';
 
 select * from stk_kline_rank_industry where rank_date='20131101' and rank_days=2 order by change_percent desc;
 select * from stk_kline_rank_industry where rank_date='20131101' and rank <= 5 order by rank_days asc,rank asc;
@@ -974,7 +1230,7 @@ update stk_pe set average_pe=average_pe-2 where report_date<='20131018';
 
 select * from stk_keyword where status=-1 order by insert_time desc for update;
 update stk_keyword set status =-1 where status=1;
-select * from stk_keyword where name='����';
+select * from stk_keyword where name='生产';
 select * from stk_keyword_link where keyword_id=104423;
 
 select distinct sk.name from stk_keyword sk,stk_keyword_link skl where sk.deleted=0 and sk.id=skl.keyword_id and skl.link_type=0;
@@ -984,26 +1240,31 @@ select * from stk_data_ppi_type;
 select * from stk_data_ppi order by ppi_date desc;
 delete from stk_data_ppi;
 
-select * from stk_data_ppi_type where name like '%����%';
-select distinct b.name,a.code,a.fn_date,a.stk_num,a.rate from stk_ownership a, stk b where a.code=b.code
-and a.org_id in (47676) order by fn_date desc,rate desc;
-select * from stk_organization_type;
-select * from stk_organization where name like '%�����%';
-select * from stk_organization where name like '%����%';--55541,55542,55547,64558,45511,45522,47311,47318,79473,79522
-select * from stk_organization where name like '%�Խ�ƽ%';--56763
-select * from stk_organization where name like '%����%';--51575
-select * from stk_organization where name like '%����ٻ%';--45671
-select * from stk_organization where name like '%���%';
-select * from stk_organization where name like '%�����%';
-select * from stk_organization where name like '%������%';
-select * from stk_organization where name like '%��ľ˳%';--43029
-select * from stk_organization where name like '%������%';--62505
-select * from stk_organization where name like '%��ľ˳%';--43029
-select * from stk_organization where name like '%����ǿ%';--57768
-select * from stk_organization where name like '%Ҷ��%';--61694
-select * from stk_organization where name like '%����%';--46970
-select * from stk_organization where name like '%������%';--47676
+select * from stk_ownership where fn_date is not null order by fn_date asc;
+select count(1) from stk_ownership where fn_date is null;
 
+select * from stk_data_ppi_type where name like '%氨纶%';
+select distinct b.name,a.code,a.fn_date,a.stk_num,a.rate from stk_ownership a, stk b where a.code=b.code 
+and a.org_id in (56763,218922) order by fn_date desc,rate desc;
+select * from stk_organization_type;
+select * from stk_organization where name like '%李嘉鑫%';
+select * from stk_organization where name like '%泽熙%';--55541,55542,55547,64558,45511,45522,47311,47318,79473,79522
+select * from stk_organization where name like '%赵建平%';--56763,218922
+select * from stk_organization where name like '%许磊%';--51575
+select * from stk_organization where name like '%宋聿倩%';--45671
+select * from stk_organization where name like '%濮文%';
+select * from stk_organization where name like '%沈昌宇%';
+select * from stk_organization where name like '%张利明%';
+select * from stk_organization where name like '%黄木顺%';--43029
+select * from stk_organization where name like '%吴鸣霄%';--62505
+select * from stk_organization where name like '%刘世强%';--57768
+select * from stk_organization where name like '%叶光%';--61694
+select * from stk_organization where name like '%吴旗%';--46970
+select * from stk_organization where name like '%韩常乐%';--47676
+select * from stk_organization where name like '%景华%';
+select * from stk_organization where name like '%何雪萍%';--62325
+
+select * from stk_dictionary where type=20 for update;
 select * from stk_ownership;
 select code,count(org_id) from stk_ownership where fn_date='20130930' group by code;
 
@@ -1013,26 +1274,39 @@ select * from stk_kline_rank_industry where rank_date='20131111' and rank <= 5 o
 select * from stk_kline_rank_industry_stock where rank_id=138331;
 
 select * from stk_capital_flow where code='300037' order by flow_date desc;
-select sum(main_amount+super_large_amount),sum(large_amount+middle_amount+small_amount) from stk_capital_flow
+select sum(main_amount+super_large_amount),sum(large_amount+middle_amount+small_amount) from stk_capital_flow 
    where code='002582' order by flow_date desc;
 select flow_date,sum(main_amount+super_large_amount),sum(large_amount+middle_amount+small_amount) from stk_capital_flow  group by flow_date order by flow_date desc;
 select flow_date,sum(main_amount+super_large_amount+large_amount+middle_amount+small_amount),sum(main_amount+super_large_amount),sum(main_amount+small_amount) from stk_capital_flow  group by flow_date order by flow_date desc;
-
+   
 select * from stk_capital_flow where flow_date='20131118' and main_percent>=15 and super_large_percent>=15 order by main_percent asc;
 
 select * from stk_monitor for update;
-select * from stk_dictionary where type=5;
-insert into stk_dictionary select 5,5964068708,'СС����',null from dual;
-insert into stk_dictionary select 5,3875738003,'��ȼ��',null from dual;
-insert into stk_dictionary select 5,8510627167,'����Ī��һƽ',null from dual;
-insert into stk_dictionary select 5,6011012030,'�������ٶ�(����ˮ��)',null from dual;
-
-
+select * from stk_dictionary where type=5 for update;
+insert into stk_dictionary select 5,5964068708,'小小辛巴',null from dual;
+insert into stk_dictionary select 5,3875738003,'可燃冰',null from dual;
+insert into stk_dictionary select 5,8510627167,'利弗莫尔一平',null from dual;
+insert into stk_dictionary select 5,6011012030,'重力加速度(风生水起)',null from dual;
+insert into stk_dictionary select 5,7401664031,'辨却先生',null,null,null,null from dual;
+insert into stk_dictionary select 5,3004708315,'路过十八次',null,null,null,null from dual;
+insert into stk_dictionary select 5,1552517314,'闲人老钟',null,null,null,null from dual;
+insert into stk_dictionary select 5,8425332309,'海进',null,null,null,null from dual;
+insert into stk_dictionary select 5,6911202198,'山的沉稳水的灵动',null,null,null,null from dual;
+insert into stk_dictionary select 5,8255849716,'跟我走吧14',null,null,null,null from dual;
+insert into stk_dictionary select 5,4440514088,'投星资产',null,null,null,null,null,null from dual;
+insert into stk_dictionary select 5,3349896301,'金融之王',null,null,null,null,null,null from dual;
+insert into stk_dictionary select 5,8255849716,'跟我走吧14',null,null,null,null,null,null from dual;
+insert into stk_dictionary select 5,4051442683,'乐视首席',null,null,null,null,null,null from dual;
+insert into stk_dictionary select 5,9887656769,'梁宏',null,null,null,null,null,null from dual;
+insert into stk_dictionary select 5,2821861040,'炒的是心',null,null,null,null,null,null from dual;
+insert into stk_dictionary select 5,9640778912,'英科睿资鹰',null,null,null,null,null,null from dual;
+insert into stk_dictionary select 5,1965949492,'婷夢',null,null,null,null,null,null from dual;
+insert into stk_dictionary select 5,1538598451,'万法归宗',null,null,null,null,null,null from dual;
 
 select * from stk_text order by insert_time desc for update;
 select * from stk_text where text like '%***+2%';
 select * from stk_text where code='000997';
-select * from stk where replace(name,' ','')='�ºͳ�';
+select * from stk where replace(name,' ','')='新和成';
 insert into stk_text select s_text_id.nextval,1,'',1,null,'',sysdate,null;
 
 select * from (select * from stk_text where type=2 and code=? and title=? order by insert_time desc) where rownum<=1;
@@ -1055,7 +1329,13 @@ select * from stk_report_daily where type in (100,101) order by insert_time desc
 select * from stk_industry_type;
 
 
-select * from stk_pe where report_date>='20140227' order by id asc for update;
+select * from stk_pe where report_date>='20140227' order by id desc for update;
+select * from stk_daily_report_us order by report_date desc;
+select * from stk_kline_us where kline_date='20170711';
+
+select * from stk_industry_type where source='my_industry_fntype';
+select * from stk_industry where industry=1783;
+
 
 ALTER PROFILE DEFAULT LIMIT PASSWORD_LIFE_TIME UNLIMITED;
 select * from dba_profiles where profile='DEFAULT' and resource_name='PASSWORD_LIFE_TIME';
@@ -1066,7 +1346,7 @@ select value from v$parameter where name = 'processes';
 alter system set processes = 300 scope = spfile;
 shutdown immediate;
 
- --�鿴��ǰ����Щ�û�����ʹ������
+ --查看当前有哪些用户正在使用数据
     SELECT osuser, a.username,cpu_time/executions/1000000||'s', sql_fulltext,machine
     from v$session a, v$sqlarea b
     where a.sql_address =b.address order by cpu_time/executions desc;
@@ -1105,7 +1385,7 @@ select * from stk where market=5;
 select * from stk where code='399101' for update;
 select * from stk_cn where total_capital>=100000;
 select * from stk_kline where code='01000010' order by kline_date desc;
-select * from stk_kline where code='399905' order by kline_date desc;
+select * from stk_kline where code='600600' order by kline_date desc;
 select * from stk_kline where code='999999' order by kline_date desc;
 --delete from stk_kline where code='USDHKD';
 
@@ -1115,67 +1395,1241 @@ select avg(num_click)/1000 click,sum(num_reply),insert_date from stk_data_eastmo
 select * from stk_capital_flow;
 select round(avg(main_amount+super_large_amount),2) flow,flow_date from stk_capital_flow a,stk_cn b where a.code=b.code and b.TOTAL_CAPITAL<=50000 and main_amount!=0 and super_large_amount!=0 group by flow_date order by flow_date desc;
 
-select * from stk_organization where name like '%����ս�����˲�ҵ��Ʊ%';
-select * from stk_ownership a,stk_organization b where a.org_id=b.id and code='002657' order by fn_date desc;
+select * from stk_organization where name like '%中邮战略新兴产业股票%';
+
+--查询十大股东
+select * from stk_ownership a,stk_organization b where a.org_id=b.id and code='002587' order by fn_date desc;
+
 select * from stk_text  order by insert_time desc;
 
-select * from stk_fn_data where code='300024' and type=210 order by fn_date desc;
+select * from stk_fn_data where code='300024' and type=110 order by fn_date desc;
 select * from stk_fn_type where market=1 order by type;
-select * from stk_kline where code='601989' order by kline_date desc;
+select * from stk_kline where code='300236' order by kline_date desc;
 
-SELECT name,F_TRANS_PINYIN_CAPITAL(name) FROM stk_cn where code=601988;
+SELECT name,F_TRANS_PINYIN_CAPITAL(name) FROM stk_cn where code=002614;
 SELECT case when market = 1 then name||','||F_TRANS_PINYIN_CAPITAL(name)||','||code when market = 2 then code end "activity",code val FROM stk order by code asc;
-
-select * from stk_pe order by report_date;
-
-select * from stk_text where text like '%�����²�%' or code='300105';
-select * from stk_industry_type where source='cnindex';
-select * from stk_data_industry_pe a, stk_industry_type b where a.type=3 and a.industry_id=b.id and b.id=1769 order by pe_date desc;
-
-select * from stk_text order by id desc;
-select * from stk_text where code='002038';
-select * from stk_text where text like '%�����������ֹ�Ʊ��ѡ�ɵ�%';
-
-select * from stk where code='AGQ' for update;
-select * from stk_kline_us where code='CLWR' order by kline_date desc;
-
-select * from stk_dictionary where type =3 for update;
-select * from stk_internet_search where search_source=11 for update;
-insert into stk_dictionary select 10,1,'���˲���',null from dual;
-insert into stk_dictionary select 10,11,'����Ժ',null from dual;
 
 
 select * from stk_label;
 select * from stk_label_text where text_id=10610440;
 
-select * from stk_data_ppi_type where name like '%��%';
+select * from stk_data_ppi_type where name like '%橡胶%';
 select * from stk_data_ppi where type_id=1336 order by ppi_date desc;
 
 select * from stk_industry_type where id=1798;
-select * from stk_keyword where name='Ԥ��';
+select * from stk_keyword where name='预告';
 
 select * from stk_fn_data where code='600268' and type=303 order by fn_date desc;
 
 
-with
+with 
 t as (select distinct fn_date from stk_fn_data where code='000001'),
 t1 as (select fn_date,type,fn_value from stk_fn_data where code='000001' and type=103),
 t2 as (select fn_date,type,fn_value from stk_fn_data where code='000001' and type=303)
 select t.fn_date, t1.fn_value "103", t2.fn_value "303" from t,t1,t2 where t.fn_date=t1.fn_date and t.fn_date=t2.fn_date order by t.fn_date
 
-select * from stk_user;
-select * from stk_text;
+select * from stk_user for update;
+select * from stk_fn_type where market=1;
 
-create table test(
-  id int(6),
-  name varchar(100),
-  company_desc text,
-  insert_time DATETIME
+select * from stk_fn_type where market=1 and disp_order <> 1000 order by disp_order asc for update;
+
+--{table:'stk',sql:'',data:['','','']}
+
+select * from stk_pe order by id desc;
+select * from stk_text where id=10610675;
+
+select * from stk_keyword order by id desc;
+select * from stk_keyword_link order by id desc;
+select * from stk_label;
+select * from stk_label_text order by id desc;
+
+select  from stk_text where id=10610672;
+select * from STK_INDUSTRY_RANK ;
+
+select * from stk_text order by id desc;
+select * from stk_organization_type;
+select count(1) from stk_capital_flow where flow_date>='20140401' and flow_date<='20140701';
+
+select * from stk_sequence;
+
+---
+create table stk_sync_table(
+  name varchar2(200),
+  pk varchar2(200) 
 );
+create table stk_sync_task(
+  id number(8),
+  name varchar2(200),
+  task_start_time date,
+  task_end_time date
+);
+alter table stk_sync_task add sync_start_time date;
+alter table stk_sync_task add constraint pk_sync_task_id primary key (id);
+create index idx_sync_task__name on stk_sync_task (name);
 
 
 
-select a.name,sum(d.stk_num),count(*) from stk_industry_type a, stk_industry b, stk_organization c, stk_ownership d
-where a.id=b.industry and d.code=b.code and d.org_id=c.id and a.name='xueqiu_industry'
-group by a.name
+create table stk_sync(
+  id number(8),
+  task_id number(8) default 0,
+  table_name varchar2(100),
+  sql_type number(1), --1:insert, 2:update, 3:delete
+  sql_text varchar2(2000),
+  sql_params clob,
+  status number(1) default 0, --0:initial,1:succ,2:fail
+  error_msg clob,
+  insert_time date,
+  sync_time date
+);
+alter table stk_sync add constraint pk_sync_id primary key (id);
+alter table stk_sync
+  add constraint fk_sync__task_id foreign key (task_id)
+  references stk_sync_task (id);
+create index idx_sync__task_id on stk_sync (task_id);
+create index idx_sync__table_name on stk_sync (table_name);
+create index idx_sync__status on stk_sync (status);
 
+
+create table sync_log(
+  id number(8),
+  insert_time date,
+  log_text clob
+);
+alter table sync_log add constraint pk_sync_log_id primary key (id);
+
+create table sync_test(
+  id number(8),
+  name varchar2(100),
+  msg clob,
+  insert_time date
+);
+insert into stk_sync_table select 'sync_test',null from dual;
+
+
+select * from sync_test;
+select * from stk_sync_table;
+select * from stk_sync_task;
+select * from stk_sync order by id desc;
+
+select * from stk_cn where next_quarter_earning like '%2015年1-6月%';
+select * from stk_cn a where (select count(1) from stk_kline b where b.code=a.code)=0;
+select * from stk_kline where kline_date>=to_char(sysdate,'yyyyMMdd');
+select * from stk_error_log order by insert_time desc;
+
+select * from stk_monitor where trigger_date is null;
+select * from stk_error_log order by insert_time desc;
+truncate table stk_error_log;
+select * from stk_text order by id desc; 
+select * from stk_keyword order by insert_time desc;
+select * from stk_text where code='000997';
+select * from stk_keyword_link order by id desc for update; 
+
+select * from stk_pe order by report_date desc;
+select * from stk_kline where code='399905' order by kline_date desc;
+
+select * from stk_industry_type;
+select * from stk_label for update;
+select * from stk_label_text where label_id=100002;
+
+select count(1) from stk_cn;
+select * from stk_fn_type where market=1;
+
+select a.code from stk a, stk_kline b where a.code=b.code and b.kline_date = '20140912' and b.percentage is not null order by b.percentage desc;
+
+select * from stk_dictionary where type = 200 for update;
+
+select * from stk_organization_type;
+select * from stk_ownership where type=7 order by fn_date desc;
+select * from stk_label where user_id=1 order by F_TRANS_PINYIN_CAPITAL(name);
+
+
+
+select * from stk_dictionary where type=1000 for update;
+
+select * from stk_index_node for update;
+select * from stk_data_industry_pe
+
+select * from stk_pe;
+select * from stk_pe order by report_date desc for update;
+
+select * from stk_industry_type where id=1767;
+select * from stk_industry_type where source='cnindex';
+
+with
+t1 as (select pe_date,pe_ttm from stk_data_industry_pe where industry_id=1767 and type=1),
+t2 as (select pe_date,pe_ttm from stk_data_industry_pe where industry_id=1767 and type=2),
+t3 as (select pe_date,pe_ttm from stk_data_industry_pe where industry_id=1767 and type=3),
+t4 as (select avg(pe_ttm) pe_ttm,pe_date from stk_data_industry_pe where industry_id=1767 group by pe_date)
+select t1.pe_date d,t1.pe_ttm a,t2.pe_ttm b,t3.pe_ttm c,trunc(t4.pe_ttm,2) v from t1,t2,t3,t4 where t1.pe_date=t2.pe_date and t2.pe_date=t3.pe_date and t3.pe_date=t4.pe_date order by t1.pe_date asc;
+
+select * from stk_data_industry_pe where industry_id=1767 order by pe_date ;
+select avg(pe_ttm),pe_date from stk_data_industry_pe where industry_id=1767 group by pe_date order by pe_date ;
+
+select * from stk_user for update;
+
+select id,title,disp_order from stk_text where type=0 and user_id=2 order by disp_order desc,insert_time desc
+select length(text),id from stk_text order by insert_time desc;
+select * from stk_text where id=10610650;
+
+select * from stk_industry where code='000997' and industry in (select id from stk_industry_type where source='my_industry_fntype')
+
+select * from stk_text;
+update stk_text set text=replace(text,'http://localhost:8888','');
+
+select * from stk_label order by insert_time desc;
+select * from stk_industry where industry=1826;
+
+select sum(length(text))/1024/1024 from stk_text where insert_time >= to_date(to_char(sysdate,'yyyymm'),'yyyymm') and insert_time < to_date(to_char(add_months(sysdate,1),'yyyymm'),'yyyymm');
+select length('中文test') from dual;
+select to_date(to_char(add_months(sysdate,1),'yyyymm'),'yyyymm') from dual;
+
+select * from stk_fn_type where market=1;
+select * from stk_data_ppi_type where name='环氧丙烷';
+select * from stk_data_ppi  order by ppi_date desc;
+
+select * from stk_keyword  where name='磷肥';
+select * from stk_keyword_link where keyword_id=101232;
+select * from stk_index_node for update;
+
+select * from (select * from stk_kline where code='999999' order by kline_date desc) where rownum<=1;
+select * from stk_kline where code='300260' order by kline_date desc;
+
+select * from stk_text order by insert_time desc;
+select * from stk_kline where kline_date>=to_char(sysdate-2,'yyyymmdd');
+
+select distinct source from stk_industry_type;
+select * from stk_industry_type where source='my_industry_fntype' for update;
+select * from stk_dictionary where type=400 for update;
+
+select * from stk_label_text where label_id=100090 and exists (select 1 from stk_label where label_id=100090 and user_id=1);
+
+select * from stk_data_ppi_type order by name asc;
+select * from stk_data_ppi order by ppi_date desc;
+
+select * from stk_text where id=20004501 for update;
+select * from stk_text order by id desc;
+select * from stk_text where text like '%一年期牛基%';
+select * from stk_text where code is null;
+select * from stk_text where text like '%股东人数减少%';
+update stk_text set sub_type=50 where text like '%股东人数减少%' and type=1;
+
+select * from stk_dept_type;
+select * from stk_billboard;
+
+select * from stk_monitor where type=1 and trigger_date is null order by insert_date asc
+select * from stk_user for update;
+
+select * from stk_import_info_type for update;
+select * from stk_import_info where code='002060' order by id desc;
+select * from stk_import_info where code='300208' and type=200 order by id desc for update;
+select * from stk_import_info order by info_create_time desc;
+select * from stk_import_info order by insert_time desc;
+select * from stk_import_info where type=1 for update;
+
+select * from stk_us a where a.code like 'N%';
+select * from stk_us a, stk_kline_us b where a.code like 'FA%' and a.CODE=b.code and b.close=25.06;
+
+select * from stk_cn where code='002747' for update;
+select s_import_info_id.nextval from dual;
+
+select * from stk_sequence;
+insert into stk_import_info(id,code,type,insert_time,info,title,url_source,url_target) values 
+(s_import_info_id.nextval,'000001',140,sysdate,null,'平安银行首秀三季报 重组、逾期贷款集中江浙地区','http://www.windin.com/Tools/NewsDetail.aspx?windcode=000001.SZstart=end=pid=21ajax=','http://snap.windin.com/ns/findsnap.php?ad=0')
+
+select count(1) from stk_cn;
+
+select s_import_info_id.nextval from dual;
+
+select * from stk_investigation where  investigator_count > 0;
+select count(1) from stk_investigation;
+select * from stk_investigation where code='300032';
+select * from stk_investigation where investigator like '%泽熙%' order by invest_date desc;
+select * from stk_investigation where investigator like '%重阳%' order by invest_date desc;
+select * from stk_investigation where investigator like '%景顺长城%' order by invest_date desc;
+
+select * from stk_cn where code='002750';
+select * from stk where cate=2;
+
+select * from stk_organization_type;
+select * from stk_earnings_forecast order by insert_time desc;
+
+select code from stk_cn where code not in (select code from stk_kline where kline_date=to_char(sysdate,'yyyymmdd'));
+select count(1) from stk_cn s, stk_kline k where s.code=k.code and k.kline_date='20150413';
+
+select * from stk_kline where code in ('999999','002038','002002') and kline_date='20150312';
+select * from stk_capital_flow order by flow_date desc;
+
+select * from stk_kline k where k.kline_date='20150323' and k.close=20.66;
+select * from stk_kline k where k.code='01000905' order by kline_date desc;
+
+select * from stk_report_daily order by insert_time desc;
+select count(1) from stk_cn;
+
+select * from stk_fn_data where type=111 and fn_date='20141231' and fn_value>300;
+select * from stk_text where code in ('900940','200056') for update;
+
+select * from stk_us where code='ABGB';
+update stk set hot =0 where hot is null;
+select * from stk_us where hot is null;
+select * from stk_kline_us where code='BAC' order by kline_date desc;
+
+
+select * from stk_kline_us where code='NOAH' order by kline_date desc;
+select count(1) from stk_kline_us where kline_date='20150424';
+select * from stk_industry;
+select * from stk_industry_type where source='sina_meigu' and name like '%中%';
+select * from stk_industry_type where name like '%中%';
+
+select * from stk_industry_type where source='qq_conception';
+select * from stk_industry i,stk_industry_type t where i.industry=t.id and t.source='qq_conception' and i.code='603126';
+
+select code,name from stk_us where market=2 and code>0 order by code;
+
+select * from stk_cn where hot > 0 order by hot desc;
+
+select distinct sub_type from stk_text;
+select * from stk_text where code='002094' order by id desc;
+
+select * from stk_capital_flow where code='601818' order by flow_date desc;
+select round((main_percent+super_large_percent)/2,2) from stk_capital_flow where code='601818' and flow_date='20150605' order by flow_date desc;
+
+select * from stk_organization where name like '罗斌%'; -- 风生水起
+select * from stk_organization order by id desc;
+update stk_organization set name = replace(name,' ','');
+select * from stk_ownership where code='002587' order by fn_date desc;
+select * from stk_ownership a,stk_organization b where a.org_id=b.id and code='002587' order by fn_date desc;
+select * from stk_ownership where org_id=206895;
+
+select * from stk_dictionary for update;
+
+select * from stk_import_info_type where type < 100 order by type;
+select * from stk_import_info_type order by type for update;
+update stk_import_info_type set not_match_pattern=replace(not_match_pattern,',',';')
+select * from stk_import_info where code='300032' order by insert_time desc for update;
+
+select * from stk_organization where name like '%泽熙%';
+select distinct b.name,a.code,a.fn_date,a.stk_num,a.rate,o.name from stk_ownership a,stk_organization o, stk b 
+where a.code=b.code and a.org_id = o.id
+  and o.name like '%社保%' order by fn_date desc,rate desc;
+  
+select * from stk_pe order by id desc for update;  
+
+select * from stk_care for update;
+select * from stk_capital_flow where code='601336' order by flow_date desc;
+
+select * from stk_fn_data where code='002119' and type=210 order by fn_date desc;
+select * from stk_fn_type where type=210;
+
+select * from stk where code='002781';
+select * from stk_dictionary where type=300 for update;
+
+
+select * from stk_monitor where type =2 order by param_5 asc;
+select s.name,m.* from stk_monitor m,stk s where m.code=s.code and m.type=2 and m.code in ('600089','600239','600321','600330','600562','600571','600673','600706','600745','600818','601929','603618','000058','000063','000158','000413','000417','000425','000430','000506','000507','000509','000536','000543','000544','000551','000571','000581','000593','000615','000636','000657','000681','000687','000701','000710','000726','000727','000790','000798','000831','000837','000901','000911','000918','000925','000926','000939','000948','000955','000973','600963','000090','000415','000523','002006','002009','002010','002016','002022','002029','002034','002042','002045','002050','002055','002060','002063','002077','002085','002093','002111','002114','002118','002123','002125','002135','002156','002160','002169','002172','002181','002182','002193','002197','002218','002264','002274','002279','002280','002281','002298','002305','002317','002321','002322','002327','002330','002331','002335','002344','002349','002356','002357','002361','002363','002364','002379','002382','002397','002408','002422','002431','002437','002439','002441','002442','002447','002448','002449','002453','002476','002483','002485','002486','002488','002502','002505','002508','002511','002513','002520','002532','002536','002538','002539','002551','002562','002567','002579','002580','002597','002603','002609','002610','002611','002612','002618','002626','002631','002632','002634','002640','002644','002645','002656','002659','002674','002679','002680','002683','002684','002688','002690','002695','002698','002729','002733','002739','002750','002751','002756','000592')
+order by param_5 asc;
+select * from stk_error_log;
+
+select * from stk_earnings_forecast where forecast_net_profit=0 ;
+select s.name,e.* from stk_earnings_forecast e,stk s where e.code=s.code and e.forecast_year=2017 and s.code='002587' order by pe asc;
+select * from stk_us where code like 'N%' and hot<100;
+select * from stk_earnings_forecast where code='002587';
+
+select s.code,s.name,"2015_pe"/(("2015_np"-"2014_np"+0.00001)/"2014_np")/100 "2015_peg" from stk s,(
+select distinct ef.code,
+  (select a.forecast_net_profit from stk_earnings_forecast a where a.code = ef.code and a.forecast_year=2014) "2014_np", 
+  (select a.pe from stk_earnings_forecast a where a.code = ef.code and a.forecast_year=2014) "2014_pe",
+  (select a.forecast_net_profit from stk_earnings_forecast a where a.code = ef.code and a.forecast_year=2015) "2015_np",
+  (select a.pe from stk_earnings_forecast a where a.code = ef.code and a.forecast_year=2015) "2015_pe",
+  (select a.forecast_net_profit from stk_earnings_forecast a where a.code = ef.code and a.forecast_year=2016) "2016_np",
+  (select a.pe from stk_earnings_forecast a where a.code = ef.code and a.forecast_year=2016) "2016_pe",
+  nvl((select a.forecast_net_profit from stk_earnings_forecast a where a.code = ef.code and a.forecast_year=2017),0) "2017_np",
+  nvl((select a.pe from stk_earnings_forecast a where a.code = ef.code and a.forecast_year=2017),0) "2017_pe"
+from stk_earnings_forecast ef where ef.forecast_net_profit>0) e where s.code=e.code/* and s.code='300267' */
+order by "2015_peg" desc;
+
+select * from stk_earnings_forecast where code=002118;
+select * from stk_cn order by hot desc;
+select * from stk_us  order by insert_time desc;
+
+select avg(pe_ttm),count(1) from stk_kline where kline_date='20150615' and pe_ttm is not null and pe_ttm>3 and pe_ttm<200;
+select avg(pe_ttm),count(1) from stk_kline where kline_date='20150814' and pe_ttm is not null and pe_ttm>3 and pe_ttm<200;
+select avg(pb_ttm),count(1) from stk_kline where kline_date='20150817' and pb_ttm is not null and pb_ttm>0 and pb_ttm<30;
+select avg(pe_ttm),count(1) from stk_kline_us where kline_date='20150727' and pe_ttm is not null and pe_ttm>3 and pe_ttm<200;
+select * from stk_daily_us;
+select * from stk_kline where kline_date='20180906' order by pb_ttm;
+select pb_ttm,rownum from stk_kline where kline_date='20150803' and pb_ttm is not null and pb_ttm>0 and pb_ttm<30 order by pb_ttm;
+select median(pb_ttm),count(1) from stk_kline where kline_date='20180912' and pb_ttm is not null and pb_ttm>0 and pb_ttm<30;
+select median(pe_ttm),count(1) from stk_kline where kline_date='20180905' and pe_ttm is not null and pe_ttm>3 and pe_ttm<200;
+
+select * from stk_internet_search where status=1 order by search_source for update;
+select * from stk_trans_account order by id desc for update;
+
+select * from stk_data_eastmoney_guba order by insert_time desc;
+
+select * from stk_dept_type  order by dept_id desc;
+select distinct code from stk_billboard where trans_date='20150916' order by code asc, trans_date desc,buy_sell,seq asc;
+select count(1) from stk_billboard;
+select * from stk_billboard where code='600634';
+
+select sum(buy_amount)-sum(sell_amount) from stk_billboard where trans_date='20150916';
+select trans_date,trunc(sum(buy_amount)-sum(sell_amount)) from stk_billboard 
+group by trans_date order by trans_date desc;
+
+select trans_date,trunc(sum(buy_amount)-sum(sell_amount)) from stk_billboard where dept_id=127
+group by trans_date order by trans_date desc;
+select trans_date,trunc(sum(buy_amount)-sum(sell_amount)) from stk_billboard where dept_id=1027
+group by trans_date order by trans_date desc;--国泰君安证券股份有限公司上海福山路证券营业部：泽熙基金惯用营业部
+
+select trans_date,trunc(sum(buy_amount)-sum(sell_amount)) from stk_billboard where dept_id in (485,1027,7597)
+group by trans_date order by trans_date desc;
+select trans_date,trunc(sum(buy_amount)-sum(sell_amount)) from stk_billboard where dept_id in (7597)
+group by trans_date order by trans_date desc;
+
+select to_char(to_date('20081121','yyyymmdd'),'yyyyww') from dual;
+
+select to_char(to_date(trans_date,'yyyymmdd'),'yyyyww'),trunc(sum(buy_amount)-sum(sell_amount)) from stk_billboard 
+--where dept_id in (1027,7608)
+where dept_id in (485,1027,7597)
+group by to_char(to_date(trans_date,'yyyymmdd'),'yyyyww') order by to_char(to_date(trans_date,'yyyymmdd'),'yyyyww') desc;
+
+select * from stk_dept_type where dept_name like '%杭州四季路证券营业部%';
+select * from stk_dept_type where dept_id=1027;
+
+select dept_id,trans_date,trunc(sum(buy_amount)-sum(sell_amount)) amount from stk_billboard 
+where trans_date >='20150915' and trans_date <='20150930' 
+group by trans_date,dept_id having trunc(sum(buy_amount)-sum(sell_amount)) >0 and count(dept_id)>10 
+order by trans_date desc;
+
+select * from stk_industry_type where source='qq_conception';
+select * from stk_industry where industry in (select id from stk_industry_type where source='qq_conception');
+
+--资金流入股，可以用来分析板块，抓到启动最强板块 -- step 1: 资金流入股
+select s.code,s.name,f.flow_date,f.main_amount,f.main_percent+f.super_large_percent 
+from stk_capital_flow f, stk_cn s, stk_kline k
+where f.code=s.code and f.code=k.code and f.flow_date=k.kline_date 
+and k.open!=k.close and k.open!=k.high
+and f.main_percent+f.super_large_percent>=20 
+and f.flow_date='20150916' 
+order by f.flow_date,f.main_percent+f.super_large_percent desc;
+
+--资金流入股，可以用来分析板块，抓到启动最强板块 -- step 2: 可以用来分析板块
+select z.ind_name,count(z.ind_name) from (
+select s.code,s.name,f.flow_date,f.main_amount,f.main_percent+f.super_large_percent, t.name ind_name, t.source
+from stk_capital_flow f, stk_cn s, stk_kline k, stk_industry i, stk_industry_type t
+where f.code=s.code and f.code=k.code and f.flow_date=k.kline_date 
+and k.open!=k.close and k.open!=k.high and s.CODE = i.code and i.industry=t.id
+and f.main_percent+f.super_large_percent>=25 
+and f.flow_date>='20151210' and f.flow_date<='20151214'
+order by f.flow_date,f.main_percent+f.super_large_percent desc) z
+where z.ind_name not in ('融资融券','转融券','再融资','深成500','沪股通','沪深300','中证500','大盘','上证180',
+'参股金融','股权激励','定向增发','资本货物','高价','基金增仓','重组概念','重组并购','券商重仓','社保重仓','新股改革')
+and z.source in ('qq_conception','hexun_conception')
+group by z.ind_name having count(z.ind_name)>=5 order by count(z.ind_name) desc;
+
+--资金流入股，可以用来分析板块，抓到启动最强板块及个股 -- step 3: 抓到启动最强板块 -> 电气部件与设备 -> 充电桩
+select distinct s.code,s.name,f.flow_date,f.main_amount,f.main_percent+f.super_large_percent, t.name ind_name, s.HOT
+from stk_capital_flow f, stk_cn s, stk_kline k, stk_industry i, stk_industry_type t
+where f.code=s.code and f.code=k.code and f.flow_date=k.kline_date 
+and k.open!=k.close and k.open!=k.high and s.CODE = i.code and i.industry=t.id
+and f.main_percent+f.super_large_percent>=25 and s.TOTAL_CAPITAL <= 50000
+and f.flow_date>='20151210' and f.flow_date<='20151214' 
+and t.name in ('股权投资','原材料','云计算','机械、设备、仪表','金属、非金属')
+order by f.main_percent+f.super_large_percent desc;
+
+--step 4: 再从选出的个股里查看最强概念板块
+select t.name,count(t.name) from stk_industry i, stk_industry_type t
+where i.industry=t.id and i.code in (
+select distinct s.code
+from stk_capital_flow f, stk_cn s, stk_kline k, stk_industry i, stk_industry_type t
+where f.code=s.code and f.code=k.code and f.flow_date=k.kline_date 
+and k.open!=k.close and k.open!=k.high and s.CODE = i.code and i.industry=t.id
+and f.main_percent+f.super_large_percent>=25 and s.TOTAL_CAPITAL <= 50000
+and f.flow_date>='20150914' and f.flow_date<='20150918' 
+and t.name in ('机械、设备、仪表','电子商务','云计算','信息技术业','锂电池')) 
+group by t.name having t.name not in ('融资融券','转融券','再融资','深成500','沪股通','沪深300','中证500','大盘','上证180',
+'参股金融','股权激励','定向增发','资本货物','高价','基金增仓','重组概念','重组并购','券商重仓','社保重仓','新股改革') 
+order by count(t.name) desc;
+
+
+
+--资金流入
+select * from stk_capital_flow where code='300417' order by flow_date desc;
+
+select code,type,fn_date,fn_value from stk_fn_data where code=601908  and fn_value is not null order by fn_date desc
+select s.* from stk_industry s,stk_industry_type t where s.industry=t.id and s.code='000002' 
+order by s.industry,t.source;
+
+select * from stk_industry_type order by id desc;
+select count(1) from stk_industry order by industry desc;
+
+select * from stk_keyword;
+select * from stk_keyword_link;
+select * from stk_word order by type,sub_type;
+select * from stk_word for update;
+
+insert into stk_word select s_word_id.nextval,1,1,'增长',1,null,null,null from dual;
+insert into stk_word select s_word_id.nextval,3,null,'物流',1,null,null,null from dual;
+
+
+--资金流入股，可以用来分析板块，抓到启动最强板块 -- step 1: 分析板块
+select z.ind_name,count(z.ind_name) from (
+select s.code,s.name,f.flow_date,f.main_amount,f.main_percent+f.super_large_percent, t.name ind_name, t.source
+from stk_capital_flow f, stk_cn s, stk_kline k, stk_industry i, stk_industry_type t
+where f.code=s.code and f.code=k.code and f.flow_date=k.kline_date 
+and k.open!=k.close and k.open!=k.high and s.CODE = i.code and i.industry=t.id
+and f.main_percent+f.super_large_percent>=25 
+and f.flow_date>='20160105' and f.flow_date<='20160111'
+order by f.flow_date,f.main_percent+f.super_large_percent desc) z
+where z.ind_name not in ('融资融券','转融券','再融资','深成500','沪股通','沪深300','中证500','大盘','上证180',
+'参股金融','股权激励','定向增发','资本货物','高价','基金增仓','重组概念','重组并购','券商重仓','社保重仓','新股改革',
+'证金持股','汇金持股','股权投资','广东','北京','浙江','业绩预升','金融参股','上证380','金融改革','预盈预增','小盘')
+and z.source in ('qq_conception','hexun_conception')
+group by z.ind_name having count(z.ind_name)>=5 order by count(z.ind_name) desc;
+
+--资金流入股，可以用来分析板块，抓到启动最强板块及个股 step 2: 抓到启动最强板块
+select t.name,count(t.name) from stk_industry i, stk_industry_type t
+where i.industry=t.id and i.code in (
+select distinct s.code
+from stk_capital_flow f, stk_cn s, stk_kline k, stk_industry i, stk_industry_type t
+where f.code=s.code and f.code=k.code and f.flow_date=k.kline_date 
+and k.open!=k.close and k.open!=k.high and s.CODE = i.code and i.industry=t.id
+and f.main_percent+f.super_large_percent>=25 and s.TOTAL_CAPITAL <= 50000
+and f.flow_date>='20160105' and f.flow_date<='20160111' 
+and t.name in ('成渝特区','电子商务','信息技术业','地方国资整合','机械、设备、仪表')) 
+group by t.name having t.name not in ('融资融券','转融券','再融资','深成500','沪股通','沪深300','中证500','大盘','上证180',
+'参股金融','股权激励','定向增发','资本货物','高价','基金增仓','重组概念','重组并购','券商重仓','社保重仓','新股改革',
+'证金持股','汇金持股','股权投资','广东','北京','浙江','业绩预升','金融参股','上证380','金融改革','预盈预增','小盘')
+order by count(t.name) desc;
+
+--资金流入股，可以用来分析板块，抓到启动最强板块及个股 -- step 3: 抓到启动最强个股
+select distinct s.code,s.name,f.flow_date,f.main_amount,f.main_percent+f.super_large_percent, t.name ind_name, s.HOT, trunc(s.TOTAL_CAPITAL/10000,2) captial
+from stk_capital_flow f, stk_cn s, stk_kline k, stk_industry i, stk_industry_type t
+where f.code=s.code and f.code=k.code and f.flow_date=k.kline_date 
+and k.open!=k.close and k.open!=k.high and s.CODE = i.code and i.industry=t.id
+and f.main_percent+f.super_large_percent>=25 and s.TOTAL_CAPITAL <= 50000
+and f.flow_date>='20160105' and f.flow_date<='20160111' 
+and t.name in (select name from stk_word where type=3)
+--and t.name in ('云计算','4G概念','智慧城市','大数据','锂电池','健康中国')
+--and s.code in ('002295','000683','002455','600614','002474','001696','002079','002576','600685','600326','002276','600435','300161','600378','603021','002552','000561','300346','000547','300337','002542','002527','002329','002363','002309','002581','002397','600316','600282','600017','601886','300221','002253','000599','000893','600829','002522','000961','002686','002113','600062','600303','002007','000068','300267','000411','600711','002073','600255','002444','002171','002050','000919','002118','002448','002498','600436','002395','002242','002669','002665','300248','002031','300029','603111','002258','600483','600706','603123','300086','300427','000585','000409','601677','002417','002130','600079','600339','000937','300136','002475','002611','600398','002123','300390','000985','600678','601699','002451','600008','300229','002048','300376','000554','600425','002421','600986','300400','300378','002035','600486','300340','002195','300026','600322','600642','002740','300166','300462')
+order by f.main_percent+f.super_large_percent desc;
+
+select code,name from stk where market=1 and cate=2 order by code;
+
+select * from stk_ownership where org_id in (select id from stk_organization where name like '中邮%') 
+ and code='300468' order by fn_date desc and fn_date='20150930';
+
+select * from stk_ownership where code='300468'
+
+ 
+select * from stk_organization where name like '中邮%';
+
+select * from stk_import_info where title like '%中科招商%';
+select * from stk_import_info where type>=100 and type not in (190) order by info_create_time desc,insert_time desc
+select * from (select * from stk_pe a where report_date<>'20151203' order by report_date desc) where rownum=1;
+select count(1) from stk_import_info where type>=100 order by info_create_time desc
+
+
+select * from stk_industry_type where name='虚拟现实';
+insert into stk_industry_type(id,name,source) values(s_industry_type_id.nextval,'虚拟现实','hexun_conception');
+
+select next_quarter_earning from stk where code='002301';
+select * from stk_capital_flow where code in (select code from stk where cate=4) order by flow_date desc;
+
+
+select * from stk_capital_flow where code='885598' ;
+update stk_capital_flow set flow_date='20160816' where code in (select code from stk where cate=4) and flow_date != '20160815';
+
+select * from stk where code='885640';
+select * from stk_kline k where k.code='885598' order by kline_date desc;
+select * from stk_kline k where k.code='399006' order by kline_date desc;
+
+select * from (select * from stk_pe order by report_date desc) a where rownum=1
+select * from stk_kline where code='300431' order by kline_date desc;
+select kline_date from (select kline_date from stk_kline where code='999999' order by kline_date desc) where rownum=1
+
+select * from stk where market=1 and cate=2;
+select * from stk where code like '99%';
+select * from stk_kline where code='999999' order by kline_date desc;
+
+select * from stk_kline where code='000001' order by kline_date desc;
+delete from stk_kline where code='999999' and kline_date>='20151221';
+
+select * from stk_fn_data where code='300190' order by fn_date desc;
+select distinct source from stk_industry_type;
+select * from stk_industry_type order by id desc;
+select * from stk_industry where industry=117132;
+delete from stk_kline k where k.code in (
+select code from stk where market=1 and cate=4 ) and k.close is null;
+
+select * from stk_data_industry_pe order by insert_time desc;
+
+select a.name,b.close-b.open from stk a, stk_kline b where a.code=b.code and a.market=1 and a.cate=4 and b.kline_date='20160613';
+
+select * from stk_kline_us where code='TWER' order by kline_date desc;
+select * from stk_cn where code='603309' for update;
+
+select * from stk_import_info where type=21 and code='300327';
+select * from stk_restricted where code='300212' order by listing_date desc;
+select * from stk_import_info where code='300212' and type=190 order by insert_time desc;
+
+
+select * from stk_fn_type where market=1 and disp_order <> 1000 order by disp_order asc for update;
+
+select * from (select * from stk_import_info where code='002119' and type>=100 and id<168228 order by info_create_time desc) where rownum=1;
+
+truncate table stk_organization
+
+select * from stk_ownership order by code, fn_date desc, rate desc;
+select * from stk_organization order by name;
+select * from stk_monitor order by insert_date desc;
+select * from stk_kline where code='300015' order by kline_date desc for update;
+
+select * from stk_capital_flow where code='300379' order by flow_date desc;
+
+select * from stk where code='603611' for update;
+select * from stk where next_earning >= 100;
+
+select * from stk_earnings_notice where code='600487';
+select * from stk_fn_type;
+select * from stk_fn_data where code='600487' and type=303 order by fn_date desc;
+
+select s.name,e.* from stk_earnings_notice e, stk s where e.code=s.code 
+and e.er_high>=100 and e.fn_date in ('20160930') and e.last_amount>0;
+
+select * from stk_dictionary where type=1005 order by type desc,to_number(param) asc for update;
+select * from stk_user for update;
+
+select source, count(1) from stk_industry_type group by source;
+select * from stk_industry i,stk_industry_type t where i.code='600497' and i.industry=t.id;
+
+select * from stk_kline where code='01000905' order by kline_date desc;
+select * from stk_kline where code='399905' order by kline_date desc;
+select * from stk_kline where code='300246' order by kline_date desc;
+
+select * from stk_capital_flow where code='603067' order by flow_date desc;
+select * from stk_capital_flow where super_large_percent>large_percent 
+and large_percent>middle_percent and middle_percent>small_percent and small_percent>=0
+ order by flow_date desc;
+
+select * from stk where cate=2; 
+select report_date, result_3, result_4, result_5 from stk_pe order by report_date desc for update;
+
+ 
+select distinct b.kline_date "date",
+                b.kline_date,
+                a.average_pe "pe",
+                b.close "value",
+                a.bias,
+                a.ene_upper_cnt eneupper,
+                a.ene_lower_cnt enelower,
+                c.flow flowlarge,
+                d.flow flowsmall,
+                e.close sh180,a.result_3,a.result_4,a.result_5
+  from stk_kline b
+  left join stk_pe a on b.kline_date = a.report_date
+  left join (select main_amount flow,
+                    flow_date
+               from stk_capital_flow a, stk_cn b
+              where a.code = b.code
+                and b.TOTAL_CAPITAL >= 100000
+                and main_amount != 0) c on b.kline_date = c.flow_date
+  left join (select round(avg(main_amount), 2) flow,
+                    flow_date
+               from stk_capital_flow a, stk_cn b
+              where a.code = b.code
+                and b.TOTAL_CAPITAL <= 50000
+                and main_amount != 0
+                and super_large_amount != 0
+              group by flow_date) d on b.kline_date = d.flow_date
+  left join stk_kline e on b.kline_date = e.kline_date
+                       and e.code = '01000010'
+ where b.code = '01000905'
+   and b.kline_date >= '20130520'
+ order by b.kline_date desc;
+
+select * from stk_earnings_forecast where code='300121' order by insert_time desc; 
+select * from stk_pe order by report_date desc for update;
+
+select * from stk_industry_type where name like '%180';
+select * from stk_industry where industry = 117132;
+
+select * from stk_restricted;
+
+select * from stk_kline_us where code='DIG' order by kline_date desc;
+
+select * from stk_kline_us order by kline_date desc;
+
+select * from stk_industry_type where source='easymoney_meigu';
+select distinct source from stk_industry_type;
+select * from stk_industry;
+select * from stk_industry where industry=885739;
+
+select code,name,hot,cate from stk_us order by code ;
+select * from stk where market=2 and cate!=1;
+select code,name from stk where market=2 and cate=2 order by code;
+
+select avg(pe_ttm) from stk_kline_us where kline_date='20161014' and code in (select code from stk_industry where industry=885739) and pe_ttm is not null and pe_ttm>3 and pe_ttm<200;
+
+select kline_date,avg(pe_ttm),count(1) from stk_kline_us 
+where code in (select code from stk_industry where industry=885739) and pe_ttm is not null and pe_ttm>3 and pe_ttm<200 group by kline_date order by kline_date desc;
+
+select * from stk_daily_report_us for update;
+
+select pb_ttm,code from stk_kline where code in (select code from stk_industry where industry=117132) 
+and pe_ttm is not null and pb_ttm>0 and pb_ttm<10 and kline_date='20161102';
+
+select * from (
+select avg(pb_ttm),round(avg(pb_ttm),2),kline_date,count(1) from stk_kline k, stk_industry i where k.code=i.code and i.industry=117132 
+and k.pb_ttm is not null and pb_ttm>0 and pb_ttm<10 group by k.kline_date ) order by kline_date desc;
+
+select * from (
+select avg(pe_ttm),round(avg(pe_ttm),2),kline_date,count(1) from stk_kline k, stk_industry i where k.code=i.code and i.industry=117132 
+and k.pe_ttm is not null and pe_ttm>0 and pe_ttm<30 group by k.kline_date ) order by kline_date desc;
+
+ 
+select * from stk_us where name like '%ETF%';
+select * from stk_us where name like '%柬埔寨%';
+
+select * from stk_monitor;
+select * from stk_import_info_type for update;
+
+select * from stk_internet_search;
+
+select * from stk_kline where code='601718' order by kline_date desc;
+select code from stk_cn where code not in (select code from stk_kline where kline_date=to_char(sysdate,'yyyymmdd'));
+
+
+select * from stk_xueqiu_user where name='gdlz';
+select count(1) from stk_xueqiu_user;
+
+select avg(pe_ttm),count(1) from stk_kline_us where kline_date='20170110' and pe_ttm is not null and pe_ttm>3 and pe_ttm<200;
+select avg(pe_ttm),kline_date from stk_kline_us where pe_ttm is not null and pe_ttm>3 and pe_ttm<200 group by kline_date order by kline_date desc;
+
+select * from stk_daily_report_us order by report_date desc;
+
+select (k.hsl*s.TOTAL_CAPITAL)/100 from stk_kline k, stk_cn s where k.code=s.CODE and kline_date='20170112';
+
+--上证换手率
+select k.kline_date,sum(k.hsl*s.TOTAL_CAPITAL)/sum(s.TOTAL_CAPITAL),count(k.kline_date) from stk_kline k, stk_cn s 
+where k.code=s.CODE and k.hsl is not null and s.code >=600000 and s.CODE<602000
+ group by k.kline_date order by k.kline_date desc;
+ 
+select k.kline_date,avg(k.pb_ttm),count(1) from stk_kline k, stk_cn s 
+where k.code=s.CODE and k.pb_ttm is not null and pe_ttm>3 and pe_ttm<200
+ and s.code >=600000 and s.CODE<602000
+ group by k.kline_date order by k.kline_date desc; 
+ 
+ select avg(pb_ttm),kline_date,count(1) from stk_kline 
+ where pb_ttm is not null and pe_ttm>3 and pe_ttm<200
+  and code>=600000 and CODE<602000
+ group by kline_date 
+ order by kline_date desc;
+
+select * from stk_earnings_notice where code='000826';
+
+select * from stk_earnings_notice where fn_date='20170331' and code = '300412' and last_amount>0 order by insert_time desc
+
+select * from stk_fn_data order by fn_date desc;
+
+select * from stk_user;
+
+select substr(listing_date,0,7) from stk_restricted where code='002743' order by report_date desc;
+select a.*,substr(a.listing_date,0,7) m_date,k.close from stk_restricted a, stk_kline k where a.code=k.code and k.kline_date='20170203';
+
+select m_date,sum(ban_amount) from (select a.*,substr(a.listing_date,0,7) m_date from stk_restricted a) r 
+group by m_date order by m_date desc;
+
+--未来解禁总市值 - 判断大盘高低点  https://xueqiu.com/1652627245/80263715
+select m_date,round(sum(ban_amount*close),0) from (select a.*,substr(a.listing_date,0,7) m_date,k.close from stk_restricted a, stk_kline k where a.code=k.code and k.kline_date='20170203') r 
+group by m_date order by m_date desc;
+
+select * from stk_ownership order by fn_date desc;
+
+select code,name from stk where market=1 and cate=2 and name='昨日换手前十';
+
+select s.name, e.* from stk_earnings_notice e , stk_cn s
+where e.code=s.code and e.real_date is not null and e.real_date<='20170415' order by e.real_date desc;
+
+
+select * from (
+select k.*,(s.total_capital*k.close)/10000 mv from stk_kline k, stk s,
+(select max(kline_date) kdate from stk_kline where code in ('01000852','399006')) d
+where k.code=s.code and k.kline_date = d.kdate) c 
+left join
+(select a.* from stk_earnings_notice a,
+(select code,max(fn_date) fn_date from stk_earnings_notice group by code) b
+where a.code=b.code and a.fn_date=b.fn_date) e on c.code=e.code 
+where c.code='002849' 
+;
+
+
+select * from stk_earnings_notice where fn_date='20161231' and er_low >= 100 and er_high >= 50 and notice_date >= 20160921
+and notice_date <= 20170328 and code='002106';
+
+select * from stk_earnings_notice where (code, fn_date) in (select code,max(fn_date) from stk_earnings_notice where 1=1
+and code in ('300415','600479','002196','002182','300484','300246','002136') group by code) order by insert_time desc
+action=com.stk123.web.action.EarningAction,method=getEarningNotice
+
+select * from (
+select * from ( select k.*,(s.total_capital*k.close)/10000 mv from stk_kline k, stk s, (select max(kline_date) kdate 
+from stk_kline where code in ('01000852','399006')) d where k.code=s.code and k.kline_date = d.kdate) c left join (select a
+.* from stk_earnings_notice a, (select code,max(fn_date) fn_date from stk_earnings_notice group by code) b where a.code=
+b.code and a.fn_date=b.fn_date) e on c.code=e.code)  where pe_ttm >= 50 and pe_ttm <= 54
+
+
+select * from stk_fn_data a,
+(select code,max(fn_date) fn_date from stk_fn_data where type=111 group by code) b
+where a.type=111 and a.code=b.code and a.fn_date=b.fn_date;
+
+
+select * from stk_industry_type;
+select * from stk_fn_data where code='000527' and type=111 order by fn_date desc;
+
+select * from stk where cate=2 and address='10jqka_gn';
+select * from stk_kline where code='600265' order by kline_date desc;
+
+
+select * from stk_capital_flow where code='885611' order by flow_date desc;
+
+select *　from stk_earnings_notice where code='300450';
+
+select * from stk_earnings_notice where fn_date='20170331' and er_low >= 50 and er_high >= 50 
+and notice_date >= 20170220 and notice_date <= 20200201 order by insert_time desc;
+
+select * from stk_text where code='60006' for update;
+update stk_text set text=replace(text,'[股东人数减少]','') where sub_type=10;
+select * from stk_dictionary where type=400 for update;
+
+insert into stk_text(id,type,code,code_type,title,text,insert_time,update_time,sub_type) 
+values (s_text_id.nextval,2,'000826',1,'启迪桑德研究报告：海通证券-启迪桑德-000826-公司研究报告：环境综合服务龙头，进军环卫更上层楼-170308',null,sysdate,null,100)
+select * from stk_text where id=10614540 for update;
+
+select * from stk_text where sub_type=110 order by insert_time desc;
+
+select * from stk_earnings_notice where code='300450' order by fn_date desc;
+select er_low from stk_earnings_notice e, (select max(fn_date) fdate from stk_earnings_notice where code='300450') n where e.fn_date=n.fdate and e.code='300450' ;
+
+select * from stk_pe order by report_date desc for update;
+
+select * from stk_fn_type for update;
+
+select * from stk_kline where open=0;
+select * from stk_holder order by fn_date desc;
+
+select * from stk_earnings_notice order by notice_date desc;
+
+select s.name, e.* from stk_earnings_notice e , stk_cn s
+where e.code=s.code and e.real_date is not null and e.notice_date<='20170415' order by e.notice_date desc;
+
+select * from stk_text where sub_type=110 order by insert_time desc;
+
+--delete from stk_text where Id in(select max(Id) from stk_text where sub_type=110 group by Title having COUNT(*) > 1); 
+--commit;
+
+select * from stk where code='000728';
+select count(*) from stk_cn where hot>10000;
+select * from stk_hk where hot>1000;
+
+select * from (
+select code,name from stk_cn a where hot>3000 and not exists (select 1 from stk_cn b where a.code=b.code and b.name like '%ST%')
+union all
+select code,name from stk_hk where hot>1000 ) order by reverse(code)
+
+select * from stk_earnings_forecast where code='002536' order by forecast_year desc;
+select * from stk_dictionary where type=1005 for update;
+
+
+select * from stk_earnings_notice where (code, fn_date) in (select code,max(fn_date) from stk_earnings_notice where 1=1
+and code in ('002106') group by code) order by insert_time desc;
+
+
+
+select * from ( select * from ( select k.*,(s.total_capital*k.close)/10000 mv from stk_kline k, stk s, (select max(kline_date) kdate from stk_kline where code in ('01000852','399006')) d where k.code=s.code and k.kline_date = d.kdate) c 
+left join (select a.* from stk_earnings_notice a, (select code,max(fn_date) fn_date from stk_earnings_notice group by code)
+ b where a.code=b.code and a.fn_date=b.fn_date) e on c.code=e.code) where 1=1  and pe_ttm >= 30 and pe_ttm <= 35 and mv
+>= 50 and mv <= 100 and code='002106';
+
+select * from stk_fn_data where code='002106';
+
+
+select *
+  from (select code,
+               type,
+               fn_date,
+               fn_value,
+               ROW_NUMBER() over(PARTITION by type order by fn_date desc) as num
+          from stk_fn_data where code='000997') t
+ where t.num = 1;
+
+
+select * from stk_earnings_notice where (code, fn_date) in (select code,max(fn_date) from stk_earnings_notice where 1=1
+and code in ('300415','600479','002196','002182','300484','300246','002106','603168','300253','002449','300429','002195'
+,'300306','600742','300497','002376','002536','002106','000997') group by code) order by insert_time desc
+
+
+select *
+  from stk_earnings_notice e
+  left join (select t.fn_value,t.type,t.code
+    from (select s.*,
+                 ROW_NUMBER() over(PARTITION by code,type order by fn_date desc) as num
+            from stk_fn_data s ) t
+       where t.num = 1) fn on e.code=fn.code and fn.type=109 
+ where (e.code, e.fn_date) in
+       (select code, max(fn_date)
+          from stk_earnings_notice
+         where 1 = 1
+           and code in ('000997')
+         group by code)      
+ order by insert_time desc;
+
+
+select * from stk where market=3;
+select * from stk_fn_data where code='002139' and type=101 order by fn_date desc;
+select * from stk_fn_type where market=1 and source=2 order by disp_order asc, tab asc for update;
+select * from stk_fn_type where market=1 for update;
+
+select * from stk_fn_type where market=2 and status=1 ;
+ 
+select code from stk_fn_data_us where type=1008 group by code order by fn_date desc;
+select * from stk_fn_data_us where code='XOMA' order by fn_date desc;
+select * from stk_kline_us where code='IRBT' order by kline_date desc;
+
+
+create or replace view stk_fn_data_table_view as
+select * from (select type,fn_value,code,fn_date from stk_fn_data) pivot (sum(fn_value) for type in (121,400)) where code='000001';
+
+
+
+create or replace view stk_fn_data_search_view as
+with currentDate 
+as
+(select t.code,t.fn_date,t.num
+    from (select s.code,s.fn_Date,
+                 ROW_NUMBER() over(PARTITION by code order by fn_date desc) as num
+            from (select distinct code,fn_date from stk_fn_data where fn_date>to_char(sysdate-1000,'yyyyMMDD')) s ) t
+       where t.num = 1),
+lastDate 
+as
+(select t.code,t.fn_date,t.num
+    from (select s.code,s.fn_Date,
+                 ROW_NUMBER() over(PARTITION by code order by fn_date desc) as num
+            from (select distinct code,fn_date from stk_fn_data where fn_date>to_char(sysdate-1000,'yyyyMMDD')) s ) t
+       where t.num = 5),       
+currentdata       
+as
+(select a.* from (select type, fn_value,code,fn_date from stk_fn_data) 
+pivot (sum(fn_value) for type in (121,400)) a, currentDate m
+where a.code=m.code and a.fn_date=m.fn_date ),
+lastdata       
+as
+(select a.* from (select type,fn_value,code,fn_date from stk_fn_data) 
+pivot (sum(fn_value) for type in (121,400)) a, lastDate m
+where a.code=m.code and a.fn_date=m.fn_date )
+select c.* from currentdata c, lastdata d where c.code=d.code
+;
+
+
+
+select f.code,k.name,f.fn_value from stk_fn_data f, stk k 
+where f.code=k.code and fn_date='20161231' and type=109 order by fn_value desc;
+
+select * from stk_fn_type where source=100 ;
+select * from stk_fn_type where market=2 and status=1 for update;
+select * from stk_fn_data_us where code='IRBT' and fn_date='20170401' and type<4000 order by fn_date desc;
+delete from stk_fn_data_us where type in (1007,1010,2004)
+
+--create or replace view stk_fn_data_us_table_view as
+with todayk as
+(select t.close,t.code,t.kline_date
+    from (select s.*,
+                 ROW_NUMBER() over(PARTITION by code order by kline_date desc) as num
+            from stk_kline_us s where code='FNSR' ) t
+       where t.num = 1) 
+select fn.code,fn.fn_date,
+"4004" as "ROE(ttm)",
+"1001" as "营收总额(Q)",
+round((decode(sum("1001") over (order by fn_date desc rows between 4 following and 4 following),0,0,"1001"/sum("1001") over (order by fn_date desc rows between 4 following and 4 following))-1)*100,2)||'%' as "营收增长率(qoq)",
+round(decode("1001",0,0,"1002"/"1001")*100,2)||'%' as "毛利率(Q)",
+"1008" as "净利润(Q)",
+"1007" as "净利润(不计非经项)",
+round((decode(sum("1008") over (order by fn_date desc rows between 4 following and 4 following),0,0,"1008"/sum("1008") over (order by fn_date desc rows between 4 following and 4 following))-1)*100,2)||'%' as "净利润增长率(qoq)",
+round(decode((sum("1008") over (order by fn_date desc rows between 1 following and 4 following)),0,0,(sum("1008") over (order by fn_date desc rows between 0 preceding and 3 following))/(sum("1008") over (order by fn_date desc rows between 1 following and 4 following))-1)*100,2)||'%' as "净利润增长率(ttm)",
+"2001" as "总资产",
+round(decode("2001",0,0,"2002"/"2001")*100,2)||'%' as "负债率",
+"1004" as "运营开支",
+round(decode("1001",0,0,"1004"/"1001")*100,2)||'%' as "运营占比营收率",
+"1003" as	"研发费用",
+"2005" as "应收账款",
+"2010" as "应付帐款",
+"2006" as "库存总额",
+"2007" as "现金及现金等价物",
+"2008" as	"短期投资",
+"2009" as	"长期投资",
+"3001" as	"运营活动所产生现金",
+"3002" as	"投资活动所产生现金",
+"3003" as	"融资活动所产生现金",
+"3004" as	"现金净增减额",
+"4014" as "速动比率",
+"4012" as "流动比率(mrq)",
+"4008" as "EPS(ttm)",
+"4005" as "每股收入(ttm)",
+"4013" as "每股价值(mrq)",
+round(decode("4008",0,0,k.close/"4008"),2) as "PE",
+round(decode("4005",0,0,k.close/"4005"),2) as "PS",
+round(decode("4013",0,0,k.close/"4013"),2) as "PB",
+"4018" as "PEG"
+from (
+select * from (select type,fn_value,code,fn_date,fiscal_year_ends from stk_fn_data_us where code='FNSR' 
+) pivot (sum(fn_value)
+for type in (
+4004, /*ROE(ttm)*/ 
+1002, --毛利
+1001, --营收总额
+1008,  --净利润
+1007, --归属普通股东收益(不计非经常项目)
+2001, --资产总额
+2002, --债务总额
+1004, --运营开支总额
+1003,	--研发费用
+2005, --应收账款总计(净额)
+2010, --应付帐款
+2006, --库存总额
+2007, --现金及现金等价物
+2008,	--短期投资
+2009,	--长期投资
+3001,	--运营活动所产生现金
+3002,	--投资活动所产生现金
+3003,	--融资活动所产生现金
+3004,	--现金净增减额
+4014, --速动比率
+4012, --流动比率(mrq)
+4008, --EPS(ttm)
+4005, --每股收入(ttm)
+4018, --PEG
+4013 --帐面价值(mrq)
+))  
+order by fn_date desc) fn, todayk k where fn.code=k.code;
+
+select * from stk_fn_data_us_table_view where code='MOMO';
+
+select * from stk_kline_us where code='IRBT' order by kline_date desc;
+select avg(pe_ttm) from stk_kline_us where kline_date='20170602' and code in 
+(select code from stk_industry where industry=885739) and pe_ttm is not null and pe_ttm>3 and pe_ttm<200
+
+select * from stk_error_log order by insert_time desc;
+select * from stk where status=1;
+
+select * from stk_kline where code='000001'  order by kline_date desc;
+select * from stk_kline where kline_date ='20180912' and ps_ttm is null;
+
+select type,nvl(disp_name,name),re_calc from stk_fn_type where market=1 order by disp_order asc;
+
+
+select kline_date,pe_ttm,ntile(100) over(order by pe_ttm) pe_ntile,pb_ttm, ntile(100) over(order by pb_ttm) pb_ntile
+from stk_kline where kline_date>=to_char(sysdate-1825,'yyyymmdd') and code='600482' order by kline_date desc;
+
+
+select * from stk_kline where pe_ntile is not null;
+select * from stk_kline where kline_date='20170707';
+
+select * from stk where code='885496';
+select trunc(sysdate-to_date(listing_date,'yyyymmdd')) from stk where code='600337';
+
+select * from stk_pe order by report_date desc for update;
+select * from stk_earnings_notice;
+select * from stk_error_log order by insert_time desc;
+select * from stk_capital_flow order by flow_date desc;
+
+
+--3263 3197
+select avg(pe_ttm) from stk_kline where kline_date='20200313' and pe_ttm is not null and pe_ttm>3 and pe_ttm<200
+
+select * from stk where code='600718';
+select * from stk_earnings_notice a,
+(select code,max(fn_date) fn_date from stk_earnings_notice group by code) b
+where a.code=b.code and a.fn_date=b.fn_date and a.code='002652';
+
+select * from stk_earnings_forecast where code='000001';
+
+select * from stk_search_condition for update;
+select * from stk_kline where kline_date='20170710';
+
+select * from stk_capital_flow where code='000001' order by flow_date desc;
+select count(1) from stk_rrrrcapital_flow where code is null;
+
+select * from stk_data_industry_pe order by pe_date desc;
+select distinct source from stk_industry_type;
+select * from stk_industry_type where source in ('10jqka_gn','10jqka_thshy') order by source,name;
+
+select * from stk_earnings_notice where code='002245' order by notice_date desc;
+select * from stk_fn_type where market=1 for update;
+
+select * from stk_data_ppi order by insert_time desc;
+select * from stk_industry;
+select * from stk_industry_type where name like '%水泥%';
+select * from stk_search_mview;
+
+select * from stk_investigation order by insert_date desc;
+select * from stk_cn where code='603728'
+
+select * from stk_capital_flow;
+
+select * from(
+select f.code,k.name,round(avg(f.main_amount),2) hot from stk_capital_flow f, stk k where f.code=k.code and k.cate=4 
+and f.flow_date>=to_char(sysdate-30,'yyyymmdd')
+group by f.code,k.name) order by hot desc;
+
+
+select avg(f.main_amount) hot,f.code,k.name from stk_capital_flow f, stk k where f.code=k.code and k.cate=4 
+and f.flow_date<=to_char(sysdate-5,'yyyymmdd') and f.flow_date>=to_char(sysdate-35,'yyyymmdd')
+group by f.code,k.name;
+
+select avg(f.main_amount),f.code,k.name from stk_capital_flow f, stk k where f.code=k.code and k.cate=4 
+and f.flow_date<=to_char(sysdate-30,'yyyymmdd') and f.flow_date>=to_char(sysdate-60,'yyyymmdd')
+group by f.code,k.name;
+
+
+select * from stk_search_condition order by nvl(update_time, insert_time);
+
+select * from stk_search_mview v where 1=1  and code in ('300344') and code not in ('300344');
+
+select * from  stk_capital_flow order  by flow_date desc;
+select flow_date,name,hot from(select f.code,k.name,round(avg(f.main_amount),2) hot,max(f.flow_date) flow_date from stk_capital_flow f, stk k where f.code=k.code and k.cate=4 and f.flow_date between to_char(sysdate-30,'yyyymmdd') and to_char(sysdate-0,'yyyymmdd') group by f.code,k.name) order by hot desc;
+
+select * from stk where cate=4 and name like '%网约车%';
+select * from stk_industry_type where id=885623;
+select * from stk_industry_type where source='10jqka_gn' for update;
+select * from stk_industry where industry=885623;
+
+select * from stk where code='300452';
+
+select * from stk_hk where code='01195';
+select null as test from dual;
+
+select * from stk_hk where f9 like '%钢铁%'
+select * from stk_kline;
+select * from stk_import_info where code='300438' and title like '%回购%' and title not like '%注销%' order by id desc;
+select * from stk_import_info where title like '%回购%' and title not like '%注销%' and insert_time >= add_months(sysdate,-1);
+select * from stk_fn_type where market=1 order by disp_order for update;
+
+select * from stk_fn_data where code='600525' and type=209;
+
+select * from stk_import_info_type for update;
+select * from stk_kline_hk;
+
+
+select * from stk_fn_type where market=1 order by type for update;
+select * from stk_fn_data_us where code='JMEI' and type =2020;
+select * from stk_kline_us  where code='JMEI' order by kline_date desc;
+
+select * FROM stk_ownership where code='603999' order by fn_date desc;
+select * from stk_error_log order by insert_time desc;
+select count(1) from stk_error_log;
+select * from stk_fn_data where code='603998';
+
+select * from stk_restricted where code='002732';
+
+select * from stk_text where code='002052' order by id desc;
+
+select * from stk where code='300145';
+select * from stk_kline where  code='603970' order by kline_date desc;
+select count(1) from stk_kline where kline_date='20180830';
+select median(pb_ttm) from stk_kline where kline_date='20180905';
+select median(pe_ttm) from stk_kline where kline_date='20180905';
+select median(pe) from stk_search_mview where market=1 and listing_days>120;
+select median(pb) from stk_search_mview where market=1 and listing_days>120;
+select count(1) from stk_search_mview where market=1 and listing_days is null;
+
+select * from stk_strategy where text like '%000671%' order by strategy_date desc;
+
+select * from  stk_industry_type where id=885759 ;
+select * from stk_dictionary where type=1006 for update;
+
+select * from stk_ownership where code='000559' order by fn_date desc for update;
+select * from stk_investigation where invest_date = (select max(invest_date) from stk_investigation) order by investigator_count desc;
+
+select * from stk_text order by insert_time desc;
+select * from stk_user;
+
+select * from stk_earnings_notice order by notice_date desc;
+select * from stk_earnings_notice where code='000004' order by insert_time desc;
+select * from stk_import_info where code='002798' order by insert_time desc;
+select * from stk_organization where name like '%一一八%';
+select * from stk_ownership where org_id=237543 order by fn_date desc;
+
+select * from stk_organization where name like '%赵%'
+select * from stk_cn s,stk_kline k where s.code=k.code and s.code like '00%4' and k.low=6.92 order by k.kline_date desc;
+
+select * from stk_investigation order by insert_date desc;
+select * from stk_investigation where investigator like '%高瓴%' order by insert_date desc;
+
+select code,name from stk where market=1 and cate=4 order by code;
+
+Select 'ok' From Dual Where 1 / 0 = 1 And 1 = 2;
+Select 'ok' From Dual Where 1 = 2 And 1 / 0 = 1;
+select * from dual where 1?=2 and 1=1 and 3?=2
+
+select count(1) from stk_kline where kline_date='20180815';
+select * from stk_kline where kline_date='20190510';
+select * from STK_SEARCH_MVIEW where code='002131';
+select * from stk_earnings_notice where code='002624' order by fn_date desc;
+
+
+select median(pb_ttm),count(1) from stk_kline where kline_date='20180914' and pb_ttm is not null and pb_ttm>0 and pb_ttm<30;
+select median(pe_ttm),count(1) from stk_kline where kline_date='20180905' and pe_ttm is not null and pe_ttm>3 and pe_ttm<200;
+
+select * from stk_us order by insert_time desc;
+
+
+Select username,PROFILE FROM dba_users;
+Select * FROM dba_profiles s Where s.profile='DEFAULT' AND resource_name='PASSWORD_LIFE_TIME';
+Alter PROFILE DEFAULT LIMIT PASSWORD_LIFE_TIME UNLIMITED;
+alter user stk identified by stkpwd;
+
+
+select id,type,code,code_type,title,text,nvl(update_time,insert_time) update_time,disp_order,sub_type from stk_text 
+where user_id=1 and code='002531' and code_type=? order by nvl(update_time,insert_time) desc;
+
+select * from stk_text where sub_type is null;
+update stk_text set sub_type=0 where sub_type is null;
+
+
+
+select * from stk_organization where name like '%摩根士丹利%';
+select * from stk_ownership where org_id=239897 order by fn_date desc;
+
+select b.name,a.stk_num,a.rate,a.num_change,a.num_change_rate from stk_ownership a, stk_organization b where a.org_id=b.id and a.code='000002' order by a.fn_date desc,a.stk_num desc;
+select fn_date from(select distinct fn_date from stk_ownership where code='000002' order by fn_date desc) where rownum <= 16
+
+
+select * from stk_dictionary where type=21;
+insert into stk_dictionary select 21,'华夏大盘精选','华夏大盘精选',null,1,null,null,null,null from dual;
+
+select * from stk_holder where code='000037' order by fn_date desc;
+
+
+select a.code,a.fn_date,b.name,a.stk_num,a.rate,a.num_change,a.num_change_rate from stk_ownership a, stk_organization b where a.org_id=b.id and b.name like '%景顺长城内需增长%' order by a.fn_date desc,a.stk_num desc;
+
+
+select * from stk_cn order by code desc;
+select * from stk where code='600928';
+
+select * from stk_cn where listing_date < to_char(add_months(sysdate, -12),'yyyymmdd');
+
+select length('白植平') from dual
+
+select a.code,a.fn_date,count(a.num_change_rate) cnt,listagg(c.name,', ') within group (order by a.num_change_rate) name from stk_ownership a,stk_cn b, stk_organization c
+where a.code=b.CODE and length(c.name)>3 and a.org_id=c.id and b.listing_date < to_char(add_months(sysdate, -12),'yyyymmdd') and a.fn_date > to_char(add_months(sysdate, -5),'yyyymmdd') and a.num_change_rate>0
+group by a.code,a.fn_date having count(a.num_change_rate) >= 8 order by a.fn_date desc
+
+select * from stk_industry_type;
+select source,count(1) from stk_industry_type group by source;
+select * from stk_organization;
+
+select * from (
+select a.name,d.fn_date,trunc(sum(d.stk_num)/10000),count(distinct c.id) cnt_org,count(distinct b.code) cnt_code 
+from stk_industry_type a, stk_industry b, stk_organization c, stk_ownership d
+where a.id=b.industry and d.code=b.code and d.org_id=c.id and a.source='qq_conception' and length(c.name)>5
+and d.fn_date in ('20200331','20191231','20190930','20190630','20190331')
+group by a.name,d.fn_date )
+order by name,fn_date desc;

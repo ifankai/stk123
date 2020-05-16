@@ -1,10 +1,63 @@
---system/admin@XE
---stkdaily.com/dailystk.com/ifankai.com/daydaystk.com/stkcart.com
+--SQL>conn system/system@XE as sysdba;
+
 select * from tab;
 
 select tablespace_name,sum(bytes)/1024/1024 || 'M' from dba_free_space group by tablespace_name;
 --查看表的数据大小
 select segment_name, sum(bytes)/1024/1024 Mbytese from user_segments where segment_type='TABLE' group by segment_name order by Mbytese desc;
+
+--查看表空间的利用率
+SELECT D.TABLESPACE_NAME,
+       SPACE || 'M' "SUM_SPACE(M)",
+       BLOCKS "SUM_BLOCKS",
+       SPACE - NVL(FREE_SPACE, 0) || 'M' "USED_SPACE(M)",
+       ROUND((1 - NVL(FREE_SPACE, 0) / SPACE) * 100, 2) ||
+       
+       '%' "USED_RATE(%)",
+       FREE_SPACE || 'M' "FREE_SPACE(M)"
+  FROM (SELECT TABLESPACE_NAME,
+               ROUND(SUM(BYTES) / (1024 * 1024), 2) SPACE,
+               SUM(BLOCKS) BLOCKS
+          FROM DBA_DATA_FILES
+         GROUP BY TABLESPACE_NAME) D,
+       (SELECT TABLESPACE_NAME,
+               ROUND(SUM(BYTES) / (1024 * 1024), 2)
+               
+               FREE_SPACE
+          FROM DBA_FREE_SPACE
+         GROUP BY TABLESPACE_NAME) F
+ WHERE D.TABLESPACE_NAME = F.TABLESPACE_NAME(+)
+UNION ALL
+
+--如果有临时表空间  
+SELECT D.TABLESPACE_NAME,
+       SPACE || 'M' "SUM_SPACE(M)",
+       BLOCKS SUM_BLOCKS,
+       USED_SPACE || 'M' "USED_SPACE(M)",
+       ROUND(NVL(USED_SPACE, 0) / SPACE * 100, 2) || '%'
+       
+       "USED_RATE(%)",
+       NVL(FREE_SPACE, 0) || 'M' "FREE_SPACE(M)"
+  FROM (SELECT TABLESPACE_NAME,
+               ROUND(SUM(BYTES) / (1024 * 1024), 2) SPACE,
+               SUM(BLOCKS) BLOCKS
+          FROM DBA_TEMP_FILES
+         GROUP BY TABLESPACE_NAME) D,
+       (SELECT TABLESPACE_NAME,
+               ROUND(SUM(BYTES_USED) / (1024 * 1024), 2)
+               
+               USED_SPACE,
+               ROUND(SUM(BYTES_FREE) / (1024 * 1024), 2)
+               
+               FREE_SPACE
+          FROM V$TEMP_SPACE_HEADER
+         GROUP BY TABLESPACE_NAME) F
+ WHERE D.TABLESPACE_NAME = F.TABLESPACE_NAME(+)
+ ORDER BY 1;
+
+--释放表空间
+alter tablespace STK_TABLESPACE_TEMP shrink space;
+alter database tempfile 'D:\oradata\stk_temp.dbf' resize 1024M;
 
 --查看当前有哪些用户正在使用数据
 SELECT osuser, a.username,cpu_time/executions/1000000||'s', sql_fulltext,machine 
@@ -54,3 +107,11 @@ create temporary tablespace stk_tablespace_temp tempfile 'D:\oradata\stk_temp.db
 create user stk identified by stkpwd default tablespace stk_tablespace_1 temporary tablespace stk_tablespace_temp;
 grant connect,resource,dba to stk;
 create tablespace stk_tablespace_2 datafile 'E:\oradata\stk_data_2.dbf' size 2048M autoextend on next 200M maxsize 10240M extent management local;
+
+select file_name,tablespace_name,status from dba_data_files;
+select tablespace_name,file_name,bytes/1024/1024 file_size,autoextensible,status from dba_temp_files;
+select group#,sequence#,bytes/1024/1024 sizeMB,members,status from v$log;
+select group#,status,type,member from v$logfile;
+
+
+
