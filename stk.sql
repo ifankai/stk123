@@ -2605,8 +2605,6 @@ select fn_date from(select distinct fn_date from stk_ownership where code='00000
 select * from stk_dictionary where type=21;
 insert into stk_dictionary select 21,'华夏大盘精选','华夏大盘精选',null,1,null,null,null,null from dual;
 
-select * from stk_holder where code='000037' order by fn_date desc;
-
 
 select a.code,a.fn_date,b.name,a.stk_num,a.rate,a.num_change,a.num_change_rate from stk_ownership a, stk_organization b where a.org_id=b.id and b.name like '%景顺长城内需增长%' order by a.fn_date desc,a.stk_num desc;
 
@@ -2626,10 +2624,71 @@ select * from stk_industry_type;
 select source,count(1) from stk_industry_type group by source;
 select * from stk_organization;
 
+select * from stk_dictionary where type=21;
+
 select * from (
 select a.name,d.fn_date,trunc(sum(d.stk_num)/10000),count(distinct c.id) cnt_org,count(distinct b.code) cnt_code 
 from stk_industry_type a, stk_industry b, stk_organization c, stk_ownership d
-where a.id=b.industry and d.code=b.code and d.org_id=c.id and a.source='qq_conception' and length(c.name)>5
+where a.id=b.industry and d.code=b.code and d.org_id=c.id and a.source='hexun_conception' and length(c.name)>5 
 and d.fn_date in ('20200331','20191231','20190930','20190630','20190331')
 group by a.name,d.fn_date )
 order by name,fn_date desc;
+
+
+select * from stk_holder where code='000026' order by fn_date desc;
+
+select code,count(*) cnt from (
+select code,fn_date,holder, sum(holder) over (order by code,fn_date desc rows between 1 following and 1 following) pre_holder, 
+row_number() over (partition by code order by fn_date desc) rown
+from stk_holder where fn_date >=20200101 order by code,fn_date desc
+) where rown <= 5 and holder < pre_holder group by code having count(*)=5 order by code asc;
+
+000026
+000027
+000042
+000413
+000612
+000631
+000667
+000668
+000732
+000752
+000777
+000780
+000826
+000936
+000972
+000982
+000993
+002013
+002034
+002378
+002379
+002577
+002598
+002599
+002690
+002695
+002857
+300023
+300057
+300122
+300124
+300137
+300301
+300355
+300374
+300421
+300530
+300567
+300641
+300645
+300818
+300821
+600057
+600256
+600647
+600760
+603090
+603528
+603996
