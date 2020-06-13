@@ -346,7 +346,7 @@ $(document).ready(function(){
   </div>
 </div>
 <pre>
-   其他牛人牛基：葛卫东，睿远
+   其他牛人牛基：进化论,宁波宁聚,林园,明汯,景林
 </pre>
 <script type="text/javascript">
 $(function() {
