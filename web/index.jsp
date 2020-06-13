@@ -345,6 +345,9 @@ $(document).ready(function(){
     </div>
   </div>
 </div>
+<pre>
+   其他牛人牛基：葛卫东，睿远
+</pre>
 <script type="text/javascript">
 $(function() {
   listFund(1, '<%=funds.get(0).getKey()%>');
