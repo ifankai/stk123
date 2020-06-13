@@ -2603,7 +2603,8 @@ select fn_date from(select distinct fn_date from stk_ownership where code='00000
 
 
 select * from stk_dictionary where type=21;
-insert into stk_dictionary select 21,'华夏大盘精选','华夏大盘精选',null,1,null,null,null,null from dual;
+insert into stk_dictionary select 21,'葛卫东','葛卫东',null,11,null,null,null,null from dual;
+insert into stk_dictionary select 21,'睿远','睿远',null,12,null,null,null,null from dual;
 
 
 select a.code,a.fn_date,b.name,a.stk_num,a.rate,a.num_change,a.num_change_rate from stk_ownership a, stk_organization b where a.org_id=b.id and b.name like '%景顺长城内需增长%' order by a.fn_date desc,a.stk_num desc;

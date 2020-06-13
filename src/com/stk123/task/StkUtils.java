@@ -1,5 +1,9 @@
 package com.stk123.task;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.text.DateFormat;
@@ -188,6 +192,8 @@ public class StkUtils {
         printStackTrace();
 
         System.out.println(StringUtils.length("嗯，那是我以前写的。不过，对于吕建明这样的企业家，我认为钱对于他们早已要无有任何意义了，当把做事业放成第一位了。分红不分红倒在其次，上一次的高价增发失败，估计对公司形象确实也受到一定的影响。我感觉，吕倒是一个有情怀的人，不过，对自己的公司，或许也有时像对待自己的孩子一样，喜欢过了估值难免高些。但总体来讲，我认为并无大碍，一切还是按公司的公开信息和数据说话吧。"));
+        
+        System.out.println(StkUtils.getSysClipboardText());
     }
 
     public static void printStackTrace(){
@@ -1436,5 +1442,28 @@ public class StkUtils {
 	 月K线查询：http://image.sinajs.cn/newchart/monthly/n/sh000001.gif
 	 */
 
+    /**
+     *1. 从剪切板获得文字。
+     */
+    public static String getSysClipboardText() {
+        String ret = "";
+        Clipboard sysClip = Toolkit.getDefaultToolkit().getSystemClipboard();
+        // 获取剪切板中的内容
+        Transferable clipTf = sysClip.getContents(null);
+
+        if (clipTf != null) {
+            // 检查内容是否是文本类型
+            if (clipTf.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+                try {
+                    ret = (String) clipTf
+                            .getTransferData(DataFlavor.stringFlavor);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return ret;
+    }
 
 }

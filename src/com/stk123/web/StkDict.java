@@ -65,6 +65,11 @@ public class StkDict {
 	}
 	
 	public static List<StkDictionary> getDictionary(Integer type){
+		try {
+			init();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		return new ArrayList(dict.get(type).values());
 	}
 	

@@ -47,7 +47,7 @@ color:#CC0033;
         <blockquote>
           <table><tr>
           <td width="42px"><span>收盘：</span></td><td><%=index.getK().getClose() %></td>
-          <td width="60px"><span>总股本：</span></td><td><%=StkUtils.number2String(index.getStk().getTotalCapital()/10000,2) %>亿</td>
+          <td width="60px"><span>总股本：</span></td><td><%=index.getStk().getTotalCapital()!=null?StkUtils.number2String(index.getStk().getTotalCapital()/10000,2):"" %>亿</td>
           <td width="60px"><span>总市值：</span></td><td><%=StkUtils.number2String(index.getTotalMarketValue(),2)%>亿</td>
           <td width="80px"><span>PE<sup>TTM</sup>/PE：</span></td><td><%=index.getK().getKline().getPeTtm() %>/<%=StkUtils.number2String(index.getPE(), 2) %></td>
           <td width="42px"><span>PB<sup>TTM</sup>：</span></td><td><%=StkUtils.number2String(index.getPB(),2) %></td>
