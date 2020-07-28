@@ -63,7 +63,7 @@ public class K implements Serializable, Cloneable {
 	public K(int i, int market, StkKline kLine, K lastKLine, boolean flag){
 		if(kLine == null)return;
 		this.setKline(kLine);
-		if(i == 0 || market == 2 || !flag){
+		if(i == 0 || market == 2 || market == 3 || !flag){
 			this.setDate(kLine.getKlineDate());
 			this.setOpen(kLine.getOpen());
 			this.setClose(kLine.getClose());

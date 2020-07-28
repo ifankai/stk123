@@ -36,6 +36,7 @@ public class BaiduNewsSearchJob implements Job {
 	@Override
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {
 		for(Name2Value<String, Boolean> nv : NEWS_LIST){
+			System.out.println("BaiduNewsSearchJob:"+nv.getName());
 			List<String> results;
 			try {
 				results = BaiduSearch.getBaiduNews(StkUtils.addDay(new Date(), -1), nv.getName(), nv.getValue());

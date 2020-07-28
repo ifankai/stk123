@@ -10,6 +10,8 @@
   	pageContext.setAttribute(StkConstant.PAGE_TITLE, stkNameCode); 
 %>
 <%@include file="/common/header.jsp" %>
+<%@include file="/common/js_datatables.jsp" %>
+<%@include file="/common/js_ckeditor.jsp" %>
 <style type="text/css">
 a {
 text-decoration:none;
@@ -503,7 +505,7 @@ if(index.getMarket()==1){
 <%} %>
 
 
-<%@include file="/common/js_datatables.jsp" %>
+<%if(index.getMarket() == 1){ %>
 <div class="content">
   <div class="page-header">
     <h3><span class="icon-list"></span> 数据统计 <a href="https://www.lixinger.com/analytics/company/sz/<%=index.getCode() %>/detail/fundamental/value" target="_black">理性人数据</a> <a href="https://guorn.com/stock/history?his=1&ticker=<%=index.getCode() %>,0.M.%E8%82%A1%E7%A5%A8%E6%AF%8F%E6%97%A5%E6%8C%87%E6%A0%87_%E5%B8%82%E7%9B%88%E7%8E%87.0,1" target="_black">果仁网数据</a></h3>
@@ -529,7 +531,7 @@ if(index.getMarket()==1){
   1.原则上 PEG<0.8 才能买入（陌上花香）。
 </pre>
 
-<%if(index.getMarket() == 1){ %>
+
 
 
 <div class="content">
@@ -582,9 +584,9 @@ $(function() {
   $("a[id^='onwer-tab-']").one('click', function(){listOnwer($(this).attr('data'));});
 });
 </script>
+<%} %>
 
-
-
+<%if(index.getMarket() == 1 || index.getMarket() == 3){ %>
 <div class="content">
   <div class="page-header" style="position: relative;">
     <h3 style="line-height: 59px;"><span class="icon-tasks"></span> 
@@ -762,7 +764,7 @@ $(function() {
   1.查看公司现有股东情况，如果当前没有几家基金或机构，那不排除基金随后就开始建仓的可能。
 </pre>
 
-<%@include file="/common/js_ckeditor.jsp" %>
+
 <div class="content">
   <div class="page-header" style="position: relative;">
     <h3><span class="icon-edit"></span> 文档编辑</h3>
@@ -816,6 +818,7 @@ $(function() {
   </div>
 </div>
 
+
 <div class="content">
   <div class="page-container">
 		<div id="chartstk" style="width:100%; height:600px;"></div>
@@ -838,6 +841,7 @@ $(function() {
 <%} %>		
   </div>
 </div>  
+
   
 </div>
 <%@include file="/common/footer.jsp" %>

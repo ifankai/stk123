@@ -77,6 +77,7 @@ public class StkUtils {
 
     public final static String PATTERN_1 = "[0-9]*(\\.?)[0-9]+(亿|万)";
     public final static String PATTERN_YYYYMMDD_HHMM_CHINESE = "\\d{4}年\\d{2}月\\d{2}日\\s*\\d{2}:\\d{2}";
+    public final static String PATTERN_YYYY_MM_DD = "\\d{4}-\\d{2}-\\d{2}";
 
     public final static Date now = new Date();
 

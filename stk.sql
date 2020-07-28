@@ -148,6 +148,28 @@ create index IDX_FN_DATA_US_year_CODE_TYPE on STK_FN_DATA_US_year (CODE, TYPE, F
   tablespace STK_TABLESPACE_2;
 
 
+create table STK_FN_DATA_HK
+(
+  CODE        VARCHAR2(10),
+  TYPE        NUMBER(4),
+  FN_DATE     VARCHAR2(8),
+  FN_VALUE    NUMBER(20,4),
+  INSERT_TIME DATE,
+  UPDATE_TIME DATE
+)
+tablespace STK_TABLESPACE_2;
+
+alter table STK_FN_DATA_HK
+  add constraint FK_FN_DATA_HK__CODE foreign key (CODE)
+  references STK (CODE);
+alter table STK_FN_DATA_HK
+  add constraint FK_FN_DATA_HK__TYPE foreign key (TYPE)
+  references STK_FN_TYPE (TYPE);
+
+create index IDX_FN_DATA_HK__CODE_TYPE on STK_FN_DATA_HK (CODE, TYPE, FN_DATE)
+  tablespace STK_TABLESPACE_2;
+  
+
 create table stk_info_log(
   code   varchar2(10),
   source varchar2(20),
@@ -2636,13 +2658,18 @@ group by a.name,d.fn_date )
 order by name,fn_date desc;
 
 
-select * from stk_holder where code='000026' order by fn_date desc;
+select * from stk_holder where code='000883' order by fn_date desc;
 
-select code,count(*) cnt from (
-select code,fn_date,holder, sum(holder) over (order by code,fn_date desc rows between 1 following and 1 following) pre_holder,
+
+select a.code,name,count(*) cnt from (
+select code,fn_date,holder, 
+sum(holder) over (order by code,fn_date desc rows between 1 following and 1 following) last_holder /*前面一期人数*/,
+sum(holder) over (order by code,fn_date desc rows between 5 following and 5 following) last5_holder,/*前面第5期人数*/
 row_number() over (partition by code order by fn_date desc) rown
-from stk_holder where fn_date >=20200101 order by code,fn_date desc
-) where rown <= 5 and holder < pre_holder group by code having count(*)=5 order by code asc;
+from stk_holder where fn_date >=20190630 order by code,fn_date desc
+) a,stk_cn s where a.code=s.code and rown <= 5 and holder < last_holder 
+and holder/last5_holder<=0.9 /*最近期人数至少比前第5期人数少10%*/
+group by a.code,s.name having count(*)=5 order by a.code asc;
 
 --增加and条件：股东户数小于3万 or 最近人数至少比前5期人数少10%
 
