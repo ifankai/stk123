@@ -37,7 +37,7 @@ public class XueqiuUserJob implements Job {
 	}
 	
 	private static void initUser(String userId) throws Exception {
-		
+		System.out.println("XueqiuUserJob:"+userId);
 		Connection conn = null;
 		try {
 			conn = DBUtil.getConnection();
@@ -45,7 +45,7 @@ public class XueqiuUserJob implements Job {
 			int maxCnt = 0;
 			do{
 				try{
-					System.out.println(cnt);
+					//System.out.println(cnt);
 					String page = HttpUtils.get("https://xueqiu.com/friendships/followers.json?pageNo="+cnt+"&uid="+userId,null,XueqiuUtils.getCookies(), "gb2312");
 					//System.out.println(page);
 					Map m = JsonUtils.testJson(page);

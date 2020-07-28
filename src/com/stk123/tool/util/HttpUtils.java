@@ -642,13 +642,20 @@ public class HttpUtils {
 		System.out.println(page);*/
 		
 		//copy /b  E:\downloads\mv\file_name\*.ts  E:\downloads\mv\zzz\file_name.ts
-		//downloadMV("https://play.cdmbo.com/20180920/wLKC0pYj/800kb/hls/K8CoW3338001.ts", "吐血推荐巨乳女神李梓熙与摄影师激情奶炮脚交后入式啪啪", 1);
-		//downloadMV("https://play.cdmbo.com/20180920/vo8s9HDp/800kb/hls/d4Fm9e1161000.ts", "漂亮的小姐姐制服全裸直播 笑的好甜", 0);
-		//downloadMV("https://play.cdmbo.com/20180920/4blq5qJf/800kb/hls/mWEgJe5128000.ts", "韩国美女主播KBJ1711尺度直播表演", 0);
+		//mediaCoder ts转码mp4
 		
-		//downloadMV("https://play.bfdzym.com/20181031/2PHwQ3B9/800kb/hls/wTEtJZW6687000.ts", "美乳姐妹花直播小秀 相互安慰 分不清谁是谁了", 0);
+		downloadMV("https://play.bo159159.com/20190909/hc2noKd0/700kb/hls/i5Nh5tGR3651001.ts", "清纯可爱的小姐姐非常优秀", 1);
+		downloadMV("https://play.cdmbo.com/20180729/cd6pExyh/800kb/hls/2uVx8zqh2033000.ts", "两个不错的气质大学生妹子合租房里捞外快担心有人在门外不时要去看看", 0);
+		downloadMV("https://play.168168bo.com/20190111/bu2hrbwx/700kb/hls/QAgHE4683002.ts", "漂亮小姐姐情趣网装直播小秀 看着很清纯的", 2);
 
-		HttpUtils.download("http://bp.pep.com.cn/jc/yjcz/czsxjc/202001/P020200210126052860555.pdf", "d:\\share\\义务教育教科书\\");
+		
+		
+		
+		
+		
+		
+
+		//HttpUtils.download("http://bp.pep.com.cn/jc/yjcz/czsxjc/202001/P020200210126052860555.pdf", "d:\\share\\义务教育教科书\\");
 	}
 	
 	public static void downloadMV(String ds, final String toDir, int start) throws Exception{

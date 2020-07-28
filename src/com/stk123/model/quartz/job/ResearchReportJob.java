@@ -40,6 +40,7 @@ public class ResearchReportJob implements Job {
 	 * @param subType select * from stk_dictionary where type=400
 	 */
 	public static void getReportByType(String type, int subType) throws Exception {
+		System.out.println("ResearchReportJob:"+type);
 		Connection conn = null;
 		try {
 			conn = DBUtil.getConnection();

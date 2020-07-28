@@ -6,6 +6,11 @@
   pageContext.setAttribute(StkConstant.PAGE_TITLE, "小智慧365_我的投资地盘"); 
 %>
 <%@include file="/common/header.jsp" %>
+<%@include file="/common/js_datatables.jsp" %>
+<%@include file="/common/js_easyui_jqueryui.jsp" %>
+<%@include file="/common/js_amcharts.jsp" %>
+<%@include file="/common/js_jstree.jsp" %>
+<%@include file="/common/js_contextmenu.jsp" %>
 
 <style type="text/css">
 .dataTables_filter input{
@@ -236,7 +241,6 @@ $(document).ready(function(){
 </script>
 
 
-<%@include file="/common/js_datatables.jsp" %>
 <div class="content">
   <!-- Page header -->
   <div class="page-header" style="position: relative;">
@@ -296,7 +300,7 @@ $(document).ready(function(){
 		}
 	%>      
 		  <li><a href="#org-0" id="org-tab-0" data="" role="tab" data-toggle="tab">查询结果</a></li>
-		  <li><a href="#org-a" id="org-tab-a" data="" role="tab" data-toggle="tab">十大股东都是新进的</a></li>
+		  <li><a href="#org-a" id="org-tab-a" data="" role="tab" data-toggle="tab"><b>十大股东都是新进的</b></a></li>
 	    </ul>
     </div>
     <div class="controls" style="float:right;padding-top:40px">
@@ -619,7 +623,7 @@ $(function() {
 		    仅查询标题 <input type="checkbox" id="text_content_included" checked/>
 			从 <input class="datepicker" id="text_from" value="<%=StkUtils.getDate(-365, StkUtils.sf_ymd14) %>" type="text" style="width:70px"><span class="add-on"><i class="icon-calendar"></i></span>
 			到 <input class="datepicker" id="text_to" value="<%=StkUtils.getToday(StkUtils.sf_ymd14) %>" type="text" style="width:70px"><span class="add-on"><i class="icon-calendar"></i></span>
-			<input type="text" id="text_search" style="width: 80px" placeholder="查询关键字"/>
+			<input type="text" id="text_search" style="width: 80px" value="困境反转"/>
 			<button class="btn" onclick="searchTextByKeyword();">查询关键字</button>
 		</div>
 	</div>
@@ -647,6 +651,9 @@ $(function() {
     </div>
   </div>
 </div>
+<pre>
+   查询关键字：高成长,行业龙头，反转
+</pre>
 <script type="text/javascript">
 $(function() {
   listDocument('all',1);
@@ -842,9 +849,6 @@ $(document).ready(function() {
 </div>  
 
 
-<%@include file="/common/js_easyui_jqueryui.jsp" %>
-<%@include file="/common/js_amcharts.jsp" %>
-<%@include file="/common/js_jstree.jsp" %>
 <style type="text/css">
 .over{
 background-color: #eeeeee;
@@ -1216,5 +1220,4 @@ function reloadData(id,t) {
 <%@include file="/common/footer.jsp" %>
 </body>
 </html>
-<!-- 可以放在最后加载的js -->
-<%@include file="/common/js_contextmenu.jsp" %>
+

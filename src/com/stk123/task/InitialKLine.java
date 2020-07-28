@@ -227,54 +227,54 @@ public class InitialKLine {
 			
 			System.out.println("1.创新高选股法");
 			List<Index> newHighs = IndexUtils.getNewHighs(indexs, today, DAYS_OF_NEWHIGHT_250);
-			if(newHighs.size() > 0){
+			/*if(newHighs.size() > 0){
 				Collections.sort(newHighs, new Comparator<Index>(){
 					@Override
 					public int compare(Index o1, Index o2) {
 						return (o2.getStk().getHot() - o1.getStk().getHot());
 					}});
 				EmailUtils.send("[美股]创"+DAYS_OF_NEWHIGHT_250+"日新高股,总计:"+newHighs.size()+",日期:"+today, StkUtils.createHtmlTable(today, newHighs));
-			}
+			}*/
 			
 			newHighs = IndexUtils.getNewHighs(indexs, today, DAYS_OF_NEWHIGHT_120);
-			if(newHighs.size() > 0){
+			/*if(newHighs.size() > 0){
 				Collections.sort(newHighs, new Comparator<Index>(){
 					@Override
 					public int compare(Index o1, Index o2) {
 						return (o2.getStk().getHot() - o1.getStk().getHot());
 					}});
 				EmailUtils.send("[美股]创"+DAYS_OF_NEWHIGHT_120+"日新高股,总计:"+newHighs.size()+",日期:"+today, StkUtils.createHtmlTable(today, newHighs));
-			}
+			}*/
 			
 			System.out.println("2.黄金三角选股法");
-			checkUSGoldTriangle(today, indexs);
+			//checkUSGoldTriangle(today, indexs);
 			
 			System.out.println("3.K线缠绕选股法");
-			checkUSKIntersect(today, indexs);
+			//checkUSKIntersect(today, indexs);
 			
 			System.out.println("4.突破下降趋势选股法");
-			checkUSKUpTrendLine(today, indexs);
+			//checkUSKUpTrendLine(today, indexs);
 			
 			System.out.println("4.[周线]趋势线突破");
-			checkWeeklyTrandLine(today, indexs);
+			//checkWeeklyTrandLine(today, indexs);
 			
 			System.out.println("10.[月线]趋势线突破");
-			checkMonthlyTrandLine(today, indexs);
+			//checkMonthlyTrandLine(today, indexs);
 			
 			System.out.println("5.天量后缩量");
-			checkHugeVolumeLittleVolume(indexs, today, 2);
+			//checkHugeVolumeLittleVolume(indexs, today, 2);
 			
 			System.out.println("6.MACD一品抄底");
-			checkYiPinChaoDiMACD(conn, today, indexs, 2);
+			//checkYiPinChaoDiMACD(conn, today, indexs, 2);
 			
 			System.out.println("7.二品抄底-买入时机");
-			checkErPinChaoDi(conn, today, indexs, 2, true, false);
+			//checkErPinChaoDi(conn, today, indexs, 2, true, false);
 			
 			System.out.println("7.[周线]二品抄底-买入时机");
-			checkErPinChaoDi(conn, today, indexs, 2, true, true);
+			//checkErPinChaoDi(conn, today, indexs, 2, true, true);
 			
 			System.out.println("8.[周线]MACD粘合");
-			checkMACDWeekly(today, indexs);
+			//checkMACDWeekly(today, indexs);
 			
 			System.out.println("10.周线6连阴后macd背离");
 			
@@ -422,37 +422,37 @@ public class InitialKLine {
 			checkIndustry(conn, today, "10jqka_thshy");
 			
 			//策略模型选股
-			StrategyManager mgr = new StrategyManager(conn, today);
+			/*StrategyManager mgr = new StrategyManager(conn, today);
 			mgr.init(context.indexs);
-			mgr.execute();
+			mgr.execute();*/
 			
 			//List<Index> newHighs = new ArrayList<Index>();
 			System.out.println("1.check股票有没有创600日新高");
 			//1.check股票有没有创600日历史新高
 			List<Index> newHighs = IndexUtils.getNewHighs(context.indexs, today, DAYS_OF_NEWHIGHT_600);
-			if(newHighs.size() > 0){
+			/*if(newHighs.size() > 0){
 				EmailUtils.sendAndReport("创"+DAYS_OF_NEWHIGHT_600+"日新高股,总计:"+newHighs.size()+",日期:"+today, StkUtils.createHtmlTable(today, newHighs));
-			}
+			}*/
 			
 			newHighs = IndexUtils.getNewHighs(context.indexs, today, DAYS_OF_NEWHIGHT_120);
-			if(newHighs.size() > 0){
+			/*if(newHighs.size() > 0){
 				EmailUtils.sendAndReport("创"+DAYS_OF_NEWHIGHT_120+"日新高股,总计:"+newHighs.size()+",日期:"+today, StkUtils.createHtmlTable(today, newHighs));
-			}
+			}*/
 			System.out.println("1.1.接近600日新高");
-			List<Index> closeNewHighs = IndexUtils.getCloseNewHighs(context.indexs, today, DAYS_OF_NEWHIGHT_600);
+			/*List<Index> closeNewHighs = IndexUtils.getCloseNewHighs(context.indexs, today, DAYS_OF_NEWHIGHT_600);
 			if(closeNewHighs.size() > 0){
 				EmailUtils.sendAndReport("接近"+DAYS_OF_NEWHIGHT_600+"日新高股,总计:"+closeNewHighs.size()+",日期:"+today, StkUtils.createHtmlTable(today, closeNewHighs));
-			}
+			}*/
 			System.out.println("1.2.接近120日新高");
-			closeNewHighs = IndexUtils.getCloseNewHighs(context.indexs, today, DAYS_OF_NEWHIGHT_120);
+			/*closeNewHighs = IndexUtils.getCloseNewHighs(context.indexs, today, DAYS_OF_NEWHIGHT_120);
 			if(closeNewHighs.size() > 0){
 				EmailUtils.sendAndReport("接近"+DAYS_OF_NEWHIGHT_120+"日新高股,总计:"+closeNewHighs.size()+",日期:"+today, StkUtils.createHtmlTable(today, closeNewHighs));
-			}
+			}*/
 			System.out.println("1.3.接近600日新高且K线缠绕");
-			closeNewHighs = IndexUtils.getCloseNewHighsAndInteract(context.indexs, today, DAYS_OF_NEWHIGHT_600);
+			/*closeNewHighs = IndexUtils.getCloseNewHighsAndInteract(context.indexs, today, DAYS_OF_NEWHIGHT_600);
 			if(closeNewHighs.size() > 0){
 				EmailUtils.sendAndReport("接近"+DAYS_OF_NEWHIGHT_600+"日新高且K线缠绕股,总计:"+closeNewHighs.size()+",日期:"+today, StkUtils.createHtmlTable(today, closeNewHighs));
-			}
+			}*/
 			
 			//3.search TODO 增加和昨天比较后新加的
 			/*datas = IndexUtils.search(context.indexs, today, 3, 120, false);

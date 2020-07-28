@@ -20,6 +20,7 @@ public class PPIIndexNewHighJob implements Job {
 
 	@Override
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {
+		System.out.println("PPIIndexNewHighJob");
 		try {
 			run();
 		} catch (Exception e) {

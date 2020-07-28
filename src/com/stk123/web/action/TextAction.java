@@ -376,11 +376,11 @@ public class TextAction implements StkConstant {
 		sc.setResponse(sb.toString());
 	}
 	
-	public final static String SQL_SELECT_TEXT_ALL_BY_KEYWORD = "select * from stk_text where insert_time between ? and ? and title like ? order by insert_time desc";
-	public final static String SQL_COUNT_TEXT_ALL_BY_KEYWORD = "select count(1) from stk_text where insert_time between ? and ? and title like ?";
+	public final static String SQL_SELECT_TEXT_ALL_BY_KEYWORD = "select * from stk_text where insert_time between ? and ? and (title like ? or text like ?) order by insert_time desc";
+	public final static String SQL_COUNT_TEXT_ALL_BY_KEYWORD = "select count(1) from stk_text where insert_time between ? and ? and (title like ? or text like ?)";
 	
-	public final static String SQL_SELECT_TEXT_BY_SUBTYPE_BY_KEYWORD = "select * from stk_text where sub_type=? and insert_time between ? and ? and title like ? order by insert_time desc";
-	public final static String SQL_COUNT_TEXT_BY_SUBTYPE_BY_KEYWORD = "select count(1) from stk_text where sub_type=? and insert_time between ? and ? and title like ?";
+	public final static String SQL_SELECT_TEXT_BY_SUBTYPE_BY_KEYWORD = "select * from stk_text where sub_type=? and insert_time between ? and ? and (title like ? or text like ?) order by insert_time desc";
+	public final static String SQL_COUNT_TEXT_BY_SUBTYPE_BY_KEYWORD = "select count(1) from stk_text where sub_type=? and insert_time between ? and ? and (title like ? or text like ?)";
 	
 	public void listDocumentByKeyword() throws Exception {
 		StkContext sc = StkContext.getContext();
@@ -400,6 +400,7 @@ public class TextAction implements StkConstant {
 			params.add(new Timestamp(StkUtils.sf_ymd14.parse(fromTime).getTime()));
 			params.add(new Timestamp(StkUtils.sf_ymd14.parse(toTime).getTime()));
 			params.add("%"+keyword+"%");
+			params.add("%"+keyword+"%");
 			texts = JdbcUtils.list(conn,JdbcUtils.DIALECT.getLimitedString(SQL_SELECT_TEXT_ALL_BY_KEYWORD, (page-1)*perPage, perPage),params, StkText.class);
 			count = JdbcUtils.load(conn, SQL_COUNT_TEXT_ALL_BY_KEYWORD,params, Integer.class);
 		}else{
@@ -407,6 +408,7 @@ public class TextAction implements StkConstant {
 			params.add(subtype);
 			params.add(new Timestamp(StkUtils.sf_ymd14.parse(fromTime).getTime()));
 			params.add(new Timestamp(StkUtils.sf_ymd14.parse(toTime).getTime()));
+			params.add("%"+keyword+"%");
 			params.add("%"+keyword+"%");
 			texts = JdbcUtils.list(conn,JdbcUtils.DIALECT.getLimitedString(SQL_SELECT_TEXT_BY_SUBTYPE_BY_KEYWORD, (page-1)*perPage, perPage),params, StkText.class);
 			count = JdbcUtils.load(conn, SQL_COUNT_TEXT_BY_SUBTYPE_BY_KEYWORD,params, Integer.class);
