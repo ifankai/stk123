@@ -15,6 +15,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hwpf.usermodel.Table;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.htmlparser.Node;
 import org.htmlparser.nodes.TagNode;
 import org.htmlparser.tags.TableTag;
@@ -33,7 +34,7 @@ import com.stk123.tool.util.JsonUtils;
 import com.stk123.tool.util.WordUtils;
 
 public class InvestRobot {
-	
+
 	private static Date InitialDate = null;
 	static{
 		try {
@@ -48,9 +49,9 @@ public class InvestRobot {
 		try{
 			System.setProperty("javax.xml.parsers.DocumentBuilderFactory","com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
 			run(InitialDate);
-			
+
 			//parse2();
-			
+
 		}catch(Exception e){
 			StringWriter aWriter = new StringWriter();
 			e.printStackTrace(new PrintWriter(aWriter));
@@ -58,7 +59,7 @@ public class InvestRobot {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void run(Date date) throws Exception {
 		Connection conn = null;
 		try {
@@ -67,7 +68,7 @@ public class InvestRobot {
 			//for(Stk stk : stks){
 				//System.out.println(stk.getCode());
 				//Index index =  new Index(conn,stk.getCode(),stk.getName());
-				List<Map> news = parse2();
+				List<Map> news = parse3();
 				for(Map map : news){
 					List params = new ArrayList();
 					params.add(map.get("code"));
@@ -90,7 +91,7 @@ public class InvestRobot {
 				}
 				//break;
 			//}*/
-			
+
 			List<StkInvestigation> list = JdbcUtils.list(conn, "select * from stk_investigation where invest_date = (select max(invest_date) from stk_investigation) order by investigator_count desc", StkInvestigation.class);
 			List<String> s = new ArrayList();
 			for(StkInvestigation inv : list){
@@ -102,6 +103,30 @@ public class InvestRobot {
 			if (conn != null) conn.close();
 		}
 	}
+
+	/**
+	 * 投资者关系 PDF
+	 * http://irm.cninfo.com.cn/ircs/index/search
+	 */
+	public static List<Map> parse3() throws Exception {
+		List<Map> list = new ArrayList<Map>();
+		String page = HttpUtils.post("http://irm.cninfo.com.cn/ircs/index/search", "pageNo=1&pageSize=10&searchTypes=4%2C&market=&industry=&stockCode=", "utf-8");
+		ObjectMapper mapper = new ObjectMapper();
+		InvestJson json = mapper.readValue(page, InvestJson.class);
+		if(json != null) {
+			for (Results result : json.getResults()) {
+				String downloadUrl = result.getAttachmentUrl();
+				String code = result.getStockCode();
+				String title = result.getMainContent();
+				String investDate = StkUtils.formatDate(new Date(Long.parseLong(result.getPubDate())));
+				System.out.println(code+", "+title+", "+downloadUrl);
+				Map map = download(code, downloadUrl, title, investDate);
+				list.add(map);
+			}
+		}
+		return list;
+	}
+
 	/**
 	 * http://irm.cninfo.com.cn/ircs/sse/sseSubIndex.do?condition.type=6
 	 */
@@ -132,7 +157,7 @@ public class InvestRobot {
 		}
 		return news;
 	}
-	
+
 	public static Map download(String code, String downloadUrl, String title, String investDate) throws Exception {
 		//String filePath = String.valueOf(item.get(1));
 		//String downloadUrl = "http://www.cninfo.com.cn/"+filePath;
@@ -155,13 +180,13 @@ public class InvestRobot {
 				sourceType = fileType;
 			}
 		}
-		
+
 		Map map = new HashMap();
 		map.put("sourceUrl", downloadUrl);
 		map.put("sourceType", sourceType);
 		map.put("title", title);
 		map.put("investDate", StkUtils.sf_ymd.parse(investDate));
-		
+
 		if("doc".equalsIgnoreCase(sourceType)){
 			Table tb = WordUtils.getTable(downloadFilePath + fileName,0);
 			if(tb != null){
@@ -197,7 +222,7 @@ public class InvestRobot {
 		}
 		return map;
 	}
-	
+
 	public static List<Map> parse(Index index,Date DateBefore) throws Exception {
 		List<Map> news = new ArrayList<Map>();
 		Date now = new Date();
@@ -214,7 +239,7 @@ public class InvestRobot {
 			if(investDate.before(DateBefore)){
 				break;
 			}
-			
+
 			String filePath = String.valueOf(item.get(1));
 			String downloadUrl = "http://www.cninfo.com.cn/"+filePath;
 			String fileName = StringUtils.substringAfterLast(filePath, "/");
@@ -234,13 +259,13 @@ public class InvestRobot {
 					sourceType = "DOCX";
 				}
 			}
-			
+
 			Map map = new HashMap();
 			map.put("sourceUrl", downloadUrl);
 			map.put("sourceType", sourceType);
 			map.put("title", item.get(2));
 			map.put("investDate", investDate);
-			
+
 			if("doc".equalsIgnoreCase(sourceType)){
 				Table tb = WordUtils.getTable(downloadFilePath + fileName,0);
 				if(tb != null){
@@ -278,5 +303,236 @@ public class InvestRobot {
 		}
 		return news;
 	}
-	
+
+}
+class InvestJson
+{
+	private int pageNo;
+
+	private int pageSize;
+
+	private int totalRecord;
+
+	private int totalPage;
+
+	private List<Results> results;
+
+	private boolean count;
+
+	public void setPageNo(int pageNo){
+		this.pageNo = pageNo;
+	}
+	public int getPageNo(){
+		return this.pageNo;
+	}
+	public void setPageSize(int pageSize){
+		this.pageSize = pageSize;
+	}
+	public int getPageSize(){
+		return this.pageSize;
+	}
+	public void setTotalRecord(int totalRecord){
+		this.totalRecord = totalRecord;
+	}
+	public int getTotalRecord(){
+		return this.totalRecord;
+	}
+	public void setTotalPage(int totalPage){
+		this.totalPage = totalPage;
+	}
+	public int getTotalPage(){
+		return this.totalPage;
+	}
+	public void setResults(List<Results> results){
+		this.results = results;
+	}
+	public List<Results> getResults(){
+		return this.results;
+	}
+	public void setCount(boolean count){
+		this.count = count;
+	}
+	public boolean getCount(){
+		return this.count;
+	}
+}
+
+class Results
+{
+	private String esId;
+
+	private String indexId;
+
+	private int contentType;
+
+	private List<String> trade;
+
+	private String mainContent;
+
+	private String attachmentUrl;
+
+	private String stockCode;
+
+	private String secid;
+
+	private String companyShortName;
+
+	private String companyLogo;
+
+	private List<String> boardType;
+
+	private String filetype;
+
+	private String pubDate;
+
+	private String updateDate;
+
+	private int score;
+
+	private int topStatus;
+
+	private int praiseCount;
+
+	private boolean praiseStatus;
+
+	private boolean favoriteStatus;
+
+	private boolean attentionCompany;
+
+	private int qaStatus;
+
+	private String packageDate;
+
+	public void setEsId(String esId){
+		this.esId = esId;
+	}
+	public String getEsId(){
+		return this.esId;
+	}
+	public void setIndexId(String indexId){
+		this.indexId = indexId;
+	}
+	public String getIndexId(){
+		return this.indexId;
+	}
+	public void setContentType(int contentType){
+		this.contentType = contentType;
+	}
+	public int getContentType(){
+		return this.contentType;
+	}
+	public void setTrade(List<String> trade){
+		this.trade = trade;
+	}
+	public List<String> getTrade(){
+		return this.trade;
+	}
+	public void setMainContent(String mainContent){
+		this.mainContent = mainContent;
+	}
+	public String getMainContent(){
+		return this.mainContent;
+	}
+	public void setAttachmentUrl(String attachmentUrl){
+		this.attachmentUrl = attachmentUrl;
+	}
+	public String getAttachmentUrl(){
+		return this.attachmentUrl;
+	}
+	public void setStockCode(String stockCode){
+		this.stockCode = stockCode;
+	}
+	public String getStockCode(){
+		return this.stockCode;
+	}
+	public void setSecid(String secid){
+		this.secid = secid;
+	}
+	public String getSecid(){
+		return this.secid;
+	}
+	public void setCompanyShortName(String companyShortName){
+		this.companyShortName = companyShortName;
+	}
+	public String getCompanyShortName(){
+		return this.companyShortName;
+	}
+	public void setCompanyLogo(String companyLogo){
+		this.companyLogo = companyLogo;
+	}
+	public String getCompanyLogo(){
+		return this.companyLogo;
+	}
+	public void setBoardType(List<String> boardType){
+		this.boardType = boardType;
+	}
+	public List<String> getBoardType(){
+		return this.boardType;
+	}
+	public void setFiletype(String filetype){
+		this.filetype = filetype;
+	}
+	public String getFiletype(){
+		return this.filetype;
+	}
+	public void setPubDate(String pubDate){
+		this.pubDate = pubDate;
+	}
+	public String getPubDate(){
+		return this.pubDate;
+	}
+	public void setUpdateDate(String updateDate){
+		this.updateDate = updateDate;
+	}
+	public String getUpdateDate(){
+		return this.updateDate;
+	}
+	public void setScore(int score){
+		this.score = score;
+	}
+	public int getScore(){
+		return this.score;
+	}
+	public void setTopStatus(int topStatus){
+		this.topStatus = topStatus;
+	}
+	public int getTopStatus(){
+		return this.topStatus;
+	}
+	public void setPraiseCount(int praiseCount){
+		this.praiseCount = praiseCount;
+	}
+	public int getPraiseCount(){
+		return this.praiseCount;
+	}
+	public void setPraiseStatus(boolean praiseStatus){
+		this.praiseStatus = praiseStatus;
+	}
+	public boolean getPraiseStatus(){
+		return this.praiseStatus;
+	}
+	public void setFavoriteStatus(boolean favoriteStatus){
+		this.favoriteStatus = favoriteStatus;
+	}
+	public boolean getFavoriteStatus(){
+		return this.favoriteStatus;
+	}
+	public void setAttentionCompany(boolean attentionCompany){
+		this.attentionCompany = attentionCompany;
+	}
+	public boolean getAttentionCompany(){
+		return this.attentionCompany;
+	}
+	public void setQaStatus(int qaStatus){
+		this.qaStatus = qaStatus;
+	}
+	public int getQaStatus(){
+		return this.qaStatus;
+	}
+	public void setPackageDate(String packageDate){
+		this.packageDate = packageDate;
+	}
+	public String getPackageDate(){
+		return this.packageDate;
+	}
 }
