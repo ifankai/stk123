@@ -6,6 +6,8 @@ import org.apache.commons.io.FilenameUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FileEncodingUtils {
 
@@ -13,16 +15,21 @@ public class FileEncodingUtils {
         EncodingDetect ed = new EncodingDetect();
         Collection<File> files = FileUtils.listFiles(new File("D:\\git\\stk123\\src\\com\\stk123"), new String[]{"java"}, true);
         for (File file : files) {
-            String fileContent = FileUtils.readFileToString(file);
-            if(test(fileContent)){
-                String fileEncode = EncodingDetect.codings[ed.detectEncoding(file)];
+            String fileEncode = EncodingDetect.codings[ed.detectEncoding(file)];
+            if("OTHER".equals(fileEncode)){
+                System.out.println("[OTHER]file:" + file.toString() + ", encoding:"+fileEncode);
+                continue;
+            }
+            String fileContent = FileUtils.readFileToString(file, fileEncode);
+            if(isMessyCode(fileContent)){
                 System.out.println("file:" + file.toString() + ", encoding:"+fileEncode);
             }
         }
 
     }
 
-    public static boolean test(String str) {
+    //是否存在乱码
+    public static boolean isMessyCode(String str) {
         for (int i = 0; i < str.length(); i++) {
             char c = str.charAt(i);
             // 当从Unicode编码向某个字符集转换时，如果在该字符集中没有对应的编码，则得到0x3f（即问号字符?）
@@ -33,6 +40,6 @@ public class FileEncodingUtils {
             }
         }
         return false;
-
     }
+
 }
