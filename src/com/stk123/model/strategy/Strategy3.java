@@ -57,8 +57,8 @@ public class Strategy3 extends Strategy {
 				System.out.println(index.getCode()+","+index.getName()+",change="+index.changePercent);
 			}
 			System.out.println(StkUtils.join(results, ","));*/
-			super.logStrategy(conn, today, "Ä£ÐÍ3-ENE»îÔ¾¸ö¹É", results);
-			EmailUtils.sendAndReport("Ä£ÐÍ3-ENE»îÔ¾¸ö¹É,¸öÊý£º"+results.size()+",ÈÕÆÚ:"+today,StkUtils.createHtmlTable(today, results));
+			super.logStrategy(conn, today, "æ¨¡åž‹3-ENEæ´»è·ƒä¸ªè‚¡", results);
+			EmailUtils.sendAndReport("æ¨¡åž‹3-ENEæ´»è·ƒä¸ªè‚¡,ä¸ªæ•°ï¼š"+results.size()+",æ—¥æœŸ:"+today,StkUtils.createHtmlTable(today, results));
 		}
 	 
 

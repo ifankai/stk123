@@ -289,13 +289,13 @@ public class AStkTools {
 	
 	public static List<String> kws = new ArrayList<String>();
 	static{
-		kws.add("ÊÍ·Å²úÄÜ");
-		kws.add("²úÄÜÊÍ·Å");
-		kws.add("Öğ½¥Ó¯Àû");
-		kws.add("¸ßËÙ³É³¤");
-		kws.add("¸ß³É³¤");
-		kws.add("¸ßÔö³¤");
-		kws.add("ÊĞ³¡Ç°¾°¿É¹Û");
+		kws.add("é‡Šæ”¾äº§èƒ½");
+		kws.add("äº§èƒ½é‡Šæ”¾");
+		kws.add("é€æ¸ç›ˆåˆ©");
+		kws.add("é«˜é€Ÿæˆé•¿");
+		kws.add("é«˜æˆé•¿");
+		kws.add("é«˜å¢é•¿");
+		kws.add("å¸‚åœºå‰æ™¯å¯è§‚");
 	}
 	
 	public static void test(Index index) throws Exception {
@@ -308,7 +308,7 @@ public class AStkTools {
 		List<List> list = JsonUtils.getList4Json(json+"]", List.class);
 		for(List item : list){
 			String title = String.valueOf(item.get(2));
-			if(title.contains("Äê¶È±¨¸æ") || title.contains("¼¾¶È±¨¸æÈ«ÎÄ")){
+			if(title.contains("å¹´åº¦æŠ¥å‘Š") || title.contains("å­£åº¦æŠ¥å‘Šå…¨æ–‡")){
 				String filePath = String.valueOf(item.get(1));
 				String downloadFilePath = NoticeRobot.download(filePath,index);
 				String sourceType = String.valueOf(item.get(3));
@@ -329,14 +329,14 @@ public class AStkTools {
 	}
 	
 	
-	//¶şÆ·³­µ×
+	//äºŒå“æŠ„åº•
 	public static double erpinchaodi(Index index, String today) throws Exception {
 		//String today = "20150508";
 		K k = index.getK(today);
 		if(k != null && !index.isStop(today)){
-			//Ç÷ÊÆ:3*SMA((CLOSE-LLV(LOW,27))/(HHV(HIGH,27)-LLV(LOW,27))*100,5,1)
+			//è¶‹åŠ¿:3*SMA((CLOSE-LLV(LOW,27))/(HHV(HIGH,27)-LLV(LOW,27))*100,5,1)
 			//      -2*SMA(SMA((CLOSE-LLV(LOW,27))/(HHV(HIGH,27)-LLV(LOW,27))*100,5,1),3,1),COLOR00FFFF;
-		    //»ú¹¹½¨²Ö: IF(Ç÷ÊÆ<5,40,0),COLORFFFFFF,LINETHICK3;
+		    //æœºæ„å»ºä»“: IF(è¶‹åŠ¿<5,40,0),COLORFFFFFF,LINETHICK3;
 			
 			double x = k.getEMA(3, 1, new K.Calculator(){
 				public double calc(K k) throws Exception {

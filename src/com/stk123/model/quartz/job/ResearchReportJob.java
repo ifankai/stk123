@@ -36,7 +36,7 @@ public class ResearchReportJob implements Job {
 	}
 	
 	/**
-	 * @param type 1:公司调研  2:行业分析
+	 * @param type 1:鍏徃璋冪爺  2:琛屼笟鍒嗘瀽
 	 * @param subType select * from stk_dictionary where type=400
 	 */
 	public static void getReportByType(String type, int subType) throws Exception {

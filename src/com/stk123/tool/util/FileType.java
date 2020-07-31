@@ -9,7 +9,7 @@ import java.util.HashMap;
 import org.apache.commons.lang.StringUtils;
 
 public class FileType {
-	// »º´æÎÄ¼şÍ·ĞÅÏ¢-ÎÄ¼şÍ·ĞÅÏ¢
+	// ç¼“å­˜æ–‡ä»¶å¤´ä¿¡æ¯-æ–‡ä»¶å¤´ä¿¡æ¯
 	public static final HashMap<String, String> mFileTypes = new MatchHashMap<String, String>();
 
 	static {
@@ -22,10 +22,10 @@ public class FileType {
 		//
 		mFileTypes.put("41433130", "dwg"); // CAD
 		mFileTypes.put("38425053", "psd");
-		mFileTypes.put("7B5C7274", "rtf"); // ÈÕ¼Ç±¾
+		mFileTypes.put("7B5C7274", "rtf"); // æ—¥è®°æœ¬
 		mFileTypes.put("3C3F786D6C", "xml");
 		mFileTypes.put("68746D6C3E", "html");
-		mFileTypes.put("44656C69766572792D646174653A", "eml"); // ÓÊ¼ş
+		mFileTypes.put("44656C69766572792D646174653A", "eml"); // é‚®ä»¶
 		mFileTypes.put("D0CF11E0", "doc");
 		mFileTypes.put("5374616E64617264204A", "mdb");
 		mFileTypes.put("252150532D41646F6265", "ps");
@@ -45,22 +45,22 @@ public class FileType {
 	}
 
 	/**
-	 * ¸ù¾İÎÄ¼şÂ·¾¶»ñÈ¡ÎÄ¼şÍ·ĞÅÏ¢
+	 * æ ¹æ®æ–‡ä»¶è·¯å¾„è·å–æ–‡ä»¶å¤´ä¿¡æ¯
 	 * 
 	 * @param filePath
-	 *            ÎÄ¼şÂ·¾¶
-	 * @return ÎÄ¼şÍ·ĞÅÏ¢
+	 *            æ–‡ä»¶è·¯å¾„
+	 * @return æ–‡ä»¶å¤´ä¿¡æ¯
 	 */
 	public static String getFileType(String filePath) {
 		return mFileTypes.get(getFileHeader(filePath));
 	}
 
 	/**
-	 * ¸ù¾İÎÄ¼şÂ·¾¶»ñÈ¡ÎÄ¼şÍ·ĞÅÏ¢
+	 * æ ¹æ®æ–‡ä»¶è·¯å¾„è·å–æ–‡ä»¶å¤´ä¿¡æ¯
 	 * 
 	 * @param filePath
-	 *            ÎÄ¼şÂ·¾¶
-	 * @return ÎÄ¼şÍ·ĞÅÏ¢
+	 *            æ–‡ä»¶è·¯å¾„
+	 * @return æ–‡ä»¶å¤´ä¿¡æ¯
 	 */
 	public static String getFileHeader(String filePath) {
 		FileInputStream is = null;
@@ -84,11 +84,11 @@ public class FileType {
 	}
 
 	/**
-	 * ¸ù¾İÎÄ¶ÔÏó»ñÈ¡ÎÄ¼şÍ·ĞÅÏ¢
+	 * æ ¹æ®æ–‡å¯¹è±¡è·å–æ–‡ä»¶å¤´ä¿¡æ¯
 	 * 
 	 * @param filePath
-	 *            ÎÄ¼şÂ·¾¶
-	 * @return ÎÄ¼şÍ·ĞÅÏ¢
+	 *            æ–‡ä»¶è·¯å¾„
+	 * @return æ–‡ä»¶å¤´ä¿¡æ¯
 	 */
 	public static String getFileHeader(File filePath) {
 		InputStream is = null;
@@ -111,16 +111,16 @@ public class FileType {
 	}
 
 	/**
-	 * ½«Òª¶ÁÈ¡ÎÄ¼şÍ·ĞÅÏ¢µÄÎÄ¼şµÄbyteÊı×é×ª»»³ÉstringÀàĞÍ±íÊ¾
+	 * å°†è¦è¯»å–æ–‡ä»¶å¤´ä¿¡æ¯çš„æ–‡ä»¶çš„byteæ•°ç»„è½¬æ¢æˆstringç±»å‹è¡¨ç¤º
 	 * 
 	 * @param src
-	 *            Òª¶ÁÈ¡ÎÄ¼şÍ·ĞÅÏ¢µÄÎÄ¼şµÄbyteÊı×é
-	 * @return ÎÄ¼şÍ·ĞÅÏ¢ ÏÂÃæÕâ¶Î´úÂë¾ÍÊÇÓÃÀ´¶ÔÎÄ¼şÀàĞÍ×÷ÑéÖ¤µÄ·½·¨£¬ µÚÒ»¸ö²ÎÊıÊÇÎÄ¼şµÄ×Ö½ÚÊı×é£¬µÚ¶ş¸ö¾ÍÊÇ¶¨ÒåµÄ¿ÉÍ¨¹ıÀàĞÍ¡£´úÂëºÜ¼òµ¥£¬
-	 *         Ö÷ÒªÊÇ×¢ÒâÖĞ¼äµÄÒ»´¦
-	 *         £¬½«×Ö½ÚÊı×éµÄÇ°ËÄÎ»×ª»»³É16½øÖÆ×Ö·û´®£¬²¢ÇÒ×ª»»µÄÊ±ºò£¬ÒªÏÈºÍ0xFF×öÒ»´ÎÓëÔËËã¡£ÕâÊÇÒòÎª£¬Õû¸öÎÄ¼şÁ÷µÄ×Ö½ÚÊı×éÖĞ
-	 *         £¬ÓĞºÜ¶àÊÇ¸ºÊı
-	 *         £¬½øĞĞÁËÓëÔËËãºó£¬¿ÉÒÔ½«Ç°ÃæµÄ·ûºÅÎ»¶¼È¥µô£¬ÕâÑù×ª»»³ÉµÄ16½øÖÆ×Ö·û´®×î¶à±£ÁôÁ½Î»£¬Èç¹ûÊÇÕıÊıÓÖĞ¡ÓÚ10£¬ÄÇÃ´×ª»»ºóÖ»ÓĞÒ»Î»
-	 *         £¬ĞèÒªÔÚÇ°Ãæ²¹0£¬ÕâÑù×öµÄÄ¿µÄÊÇ·½±ã±È½Ï£¬È¡ÍêÇ°ËÄÎ»Õâ¸öÑ­»·¾Í¿ÉÒÔÖÕÖ¹ÁË¡£
+	 *            è¦è¯»å–æ–‡ä»¶å¤´ä¿¡æ¯çš„æ–‡ä»¶çš„byteæ•°ç»„
+	 * @return æ–‡ä»¶å¤´ä¿¡æ¯ ä¸‹é¢è¿™æ®µä»£ç å°±æ˜¯ç”¨æ¥å¯¹æ–‡ä»¶ç±»å‹ä½œéªŒè¯çš„æ–¹æ³•ï¼Œ ç¬¬ä¸€ä¸ªå‚æ•°æ˜¯æ–‡ä»¶çš„å­—èŠ‚æ•°ç»„ï¼Œç¬¬äºŒä¸ªå°±æ˜¯å®šä¹‰çš„å¯é€šè¿‡ç±»å‹ã€‚ä»£ç å¾ˆç®€å•ï¼Œ
+	 *         ä¸»è¦æ˜¯æ³¨æ„ä¸­é—´çš„ä¸€å¤„
+	 *         ï¼Œå°†å­—èŠ‚æ•°ç»„çš„å‰å››ä½è½¬æ¢æˆ16è¿›åˆ¶å­—ç¬¦ä¸²ï¼Œå¹¶ä¸”è½¬æ¢çš„æ—¶å€™ï¼Œè¦å…ˆå’Œ0xFFåšä¸€æ¬¡ä¸è¿ç®—ã€‚è¿™æ˜¯å› ä¸ºï¼Œæ•´ä¸ªæ–‡ä»¶æµçš„å­—èŠ‚æ•°ç»„ä¸­
+	 *         ï¼Œæœ‰å¾ˆå¤šæ˜¯è´Ÿæ•°
+	 *         ï¼Œè¿›è¡Œäº†ä¸è¿ç®—åï¼Œå¯ä»¥å°†å‰é¢çš„ç¬¦å·ä½éƒ½å»æ‰ï¼Œè¿™æ ·è½¬æ¢æˆçš„16è¿›åˆ¶å­—ç¬¦ä¸²æœ€å¤šä¿ç•™ä¸¤ä½ï¼Œå¦‚æœæ˜¯æ­£æ•°åˆå°äº10ï¼Œé‚£ä¹ˆè½¬æ¢ååªæœ‰ä¸€ä½
+	 *         ï¼Œéœ€è¦åœ¨å‰é¢è¡¥0ï¼Œè¿™æ ·åšçš„ç›®çš„æ˜¯æ–¹ä¾¿æ¯”è¾ƒï¼Œå–å®Œå‰å››ä½è¿™ä¸ªå¾ªç¯å°±å¯ä»¥ç»ˆæ­¢äº†ã€‚
 	 */
 	private static String bytesToHexString(byte[] src) {
 		StringBuilder builder = new StringBuilder();
@@ -129,7 +129,7 @@ public class FileType {
 		}
 		String hv;
 		for (int i = 0; i < src.length; i++) {
-			// ÒÔÊ®Áù½øÖÆ£¨»ùÊı 16£©ÎŞ·ûºÅÕûÊıĞÎÊ½·µ»ØÒ»¸öÕûÊı²ÎÊıµÄ×Ö·û´®±íÊ¾ĞÎÊ½£¬²¢×ª»»Îª´óĞ´
+			// ä»¥åå…­è¿›åˆ¶ï¼ˆåŸºæ•° 16ï¼‰æ— ç¬¦å·æ•´æ•°å½¢å¼è¿”å›ä¸€ä¸ªæ•´æ•°å‚æ•°çš„å­—ç¬¦ä¸²è¡¨ç¤ºå½¢å¼ï¼Œå¹¶è½¬æ¢ä¸ºå¤§å†™
 			hv = Integer.toHexString(src[i] & 0xFF).toUpperCase();
 			if (hv.length() < 2) {
 				builder.append(0);
@@ -140,7 +140,7 @@ public class FileType {
 	}
 
 	public static void main(String[] args) throws Exception {
-		final String fileType = getFileType("E:\\stock\\000625_³¤°²Æû³µ\\invest\\64016299.DOC");
+		final String fileType = getFileType("E:\\stock\\000625_é•¿å®‰æ±½è½¦\\invest\\64016299.DOC");
 		System.out.println(fileType);
 	}
 }

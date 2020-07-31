@@ -46,24 +46,24 @@ import com.stk123.tool.util.JsonUtils;
 
 /**
  * wind url
- * A¹É³ıÈ¨³ıÏ¢Ô¤¸æ:
+ * Aè‚¡é™¤æƒé™¤æ¯é¢„å‘Š:
  * http://wwtnews.windin.com/home/stocks/default.aspx?columnid=30900000&subcolumnid=2
  * 
- * »ú¹¹¼ö¹É
+ * æœºæ„èè‚¡
  * http://wwtnews.windin.com/home/stocks/default.aspx?columnid=30500000
  * 
- * ĞÂ¹É
+ * æ–°è‚¡
  * http://wwtnews.windin.com/home/stocks/default.aspx?columnid=31200000
  * 
- * ĞĞÒµÕÇµø·ùÅÅÃû
+ * è¡Œä¸šæ¶¨è·Œå¹…æ’å
  * http://www.windin.com/home/top/marketfocus/BoardTop20desc.shtml
  * 
- * Òµ¼¨Ô¤¾¯
+ * ä¸šç»©é¢„è­¦
  * http://www.windin.com/home/top/hotcount/FinacialCountWarnningquarter.shtml
  * 
- * ¸ö¹ÉÍ¶×ÊÆÀ¼¶
+ * ä¸ªè‚¡æŠ•èµ„è¯„çº§
  * http://wwtnews.windin.com/WUDS/web/F9/Stock/WEST/rating/DealerRating.aspx?WindCode=002275.SZ
- * ¸ö¹ÉÓ¯ÀûÔ¤²â»ù±¾ĞÅÏ¢
+ * ä¸ªè‚¡ç›ˆåˆ©é¢„æµ‹åŸºæœ¬ä¿¡æ¯
  * http://wwtnews.windin.com/WUDS/web/F9/Stock/WEST/EPS/EarningsForecast.aspx?WindCode=002275.sz
  * 
  * http://m.wind.com.cn/WBBWebService/DataGetor.aspx
@@ -72,9 +72,9 @@ import com.stk123.tool.util.JsonUtils;
  * http://www.soupingguo.com/app/433136674/
  * 
  * TODO
- * 1.Ã¿ÌõĞÂÎÅºóÃæ¼Ó¡¾¹Ø×¢¡¿¡¾È¡Ïû¡¿
- * 2.×îĞÂ¼¾¶È£¬ĞĞÒµÒµ¼¨£¨¾»ÀûÈó£©×ÜÌåÅÅÃû¡£  ĞĞÒµ¹ÉÊı£¬Í³¼Æ¹ÉÊı£¬Ôö³¤Õ¼±È£¬Æ½¾ùÍ¬±ÈÔö³¤ÂÊÅÅĞĞ£¬Ôö³¤¹ÉÆ½¾ùÅÅĞĞ£¬Ôö³¤¹ÉÇ°5ÃûÆ½¾ùÅÅĞĞ
- *   [´óÊÂÌáĞÑ] select * from stk_import_info where info like '%¾»ÀûÈó%Ôö%';
+ * 1.æ¯æ¡æ–°é—»åé¢åŠ ã€å…³æ³¨ã€‘ã€å–æ¶ˆã€‘
+ * 2.æœ€æ–°å­£åº¦ï¼Œè¡Œä¸šä¸šç»©ï¼ˆå‡€åˆ©æ¶¦ï¼‰æ€»ä½“æ’åã€‚  è¡Œä¸šè‚¡æ•°ï¼Œç»Ÿè®¡è‚¡æ•°ï¼Œå¢é•¿å æ¯”ï¼Œå¹³å‡åŒæ¯”å¢é•¿ç‡æ’è¡Œï¼Œå¢é•¿è‚¡å¹³å‡æ’è¡Œï¼Œå¢é•¿è‚¡å‰5åå¹³å‡æ’è¡Œ
+ *   [å¤§äº‹æé†’] select * from stk_import_info where info like '%å‡€åˆ©æ¶¦%å¢%';
  */
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -128,7 +128,7 @@ public class DailyReport {
 		Connection conn = null;
 		StringBuffer html = new StringBuffer(1024);
 		//html.append(StkUtils.writeHtmlHead());
-		html.append("<div><img src='http://www.yz21.org/stock/szsec/sh-zj.png' alt='»¦ÊĞ´óÅÌ×Ê½ğÖ¸±ê' /></div>");
+		html.append("<div><img src='http://www.yz21.org/stock/szsec/sh-zj.png' alt='æ²ªå¸‚å¤§ç›˜èµ„é‡‘æŒ‡æ ‡' /></div>");
 		try{
 			conn = DBUtil.getConnection();
 			String mailTitle = "Daily Report ("+StkUtils.formatDate(new Date())+")";
@@ -186,19 +186,19 @@ public class DailyReport {
 		HtmlTr headTr = new HtmlTr();
 		headTr.attributes.put("onclick", "show(this)");
 		HtmlTd headTd = new HtmlTd();
-		headTd.text = "¸ö¹É";
+		headTd.text = "ä¸ªè‚¡";
 		headTr.columns.add(headTd);
 		headTd = new HtmlTd();
-		headTd.text = "ĞĞÒµ";
+		headTd.text = "è¡Œä¸š";
 		headTr.columns.add(headTd);
 		headTd = new HtmlTd();
-		headTd.text = "ÒªÎÅ";
+		headTd.text = "è¦é—»";
 		headTr.columns.add(headTd);
 		headTd = new HtmlTd();
-		headTd.text = "ÈÕÆÚ";
+		headTd.text = "æ—¥æœŸ";
 		headTr.columns.add(headTd);
 		headTd = new HtmlTd();
-		headTd.text = "²Ù×÷";
+		headTd.text = "æ“ä½œ";
 		headTr.columns.add(headTd);
 		importTable.rows.add(headTr);
 		
@@ -368,13 +368,13 @@ public class DailyReport {
 				HtmlTr headTr = new HtmlTr();
 				headTr.attributes.put("onclick", "show(this)");
 				HtmlTd headTd = new HtmlTd();
-				headTd.text = "ĞĞÒµ["+a.getPeriod()+"ÈÕ]";
+				headTd.text = "è¡Œä¸š["+a.getPeriod()+"æ—¥]";
 				headTr.columns.add(headTd);
 				headTd = new HtmlTd();
-				headTd.text = "ÀúÊ·ÅÅĞĞ";
+				headTd.text = "å†å²æ’è¡Œ";
 				headTr.columns.add(headTd);
 				headTd = new HtmlTd();
-				headTd.text = "¸ö¹É";
+				headTd.text = "ä¸ªè‚¡";
 				headTr.columns.add(headTd);
 				rankTable.rows.add(headTr);
 				rankTables.add(rankTable);
@@ -441,19 +441,19 @@ public class DailyReport {
 		HtmlTr headTr = new HtmlTr();
 		headTr.attributes.put("onclick", "show(this)");
 		HtmlTd headTd = new HtmlTd();
-		headTd.text = "¸ö¹É";
+		headTd.text = "ä¸ªè‚¡";
 		headTr.columns.add(headTd);
 		headTd = new HtmlTd();
-		headTd.text = "ĞĞÒµ";
+		headTd.text = "è¡Œä¸š";
 		headTr.columns.add(headTd);
 		headTd = new HtmlTd();
-		headTd.text = "¹Ø×¢ÈÕÆÚ";
+		headTd.text = "å…³æ³¨æ—¥æœŸ";
 		headTr.columns.add(headTd);
 		headTd = new HtmlTd();
-		headTd.text = "¸ö¹ÉĞÂÎÅ";
+		headTd.text = "ä¸ªè‚¡æ–°é—»";
 		headTr.columns.add(headTd);
 		headTd = new HtmlTd();
-		headTd.text = "²Ù×÷";
+		headTd.text = "æ“ä½œ";
 		headTr.columns.add(headTd);
 		careTable.rows.add(headTr);
 		
@@ -461,15 +461,15 @@ public class DailyReport {
 		for(Stk stk:careStks){
 			HtmlTr row = new HtmlTr();
 			row.attributes.put("style", "display:none");
-			//µÚÒ»ÁĞ
+			//ç¬¬ä¸€åˆ—
 			HtmlTd column = DailyReport.createStkColumn(stk.getCode(), stk.getName());
 			row.columns.add(column);
 			
-			//µÚ¶şÁĞ - ĞĞÒµ
+			//ç¬¬äºŒåˆ— - è¡Œä¸š
 			column = createIndustryColumn(conn,stk.getCode());
 			row.columns.add(column);
 			
-			//µÚÈıÁĞ ¿ªÊ¼¹Ø×¢ÈÕÆÚ
+			//ç¬¬ä¸‰åˆ— å¼€å§‹å…³æ³¨æ—¥æœŸ
 			column = new HtmlTd();
 			int workingDays = StkUtils.getWorkingDays(stk.getStatusDate(), new Date());
 			String strWDays = "";
@@ -481,22 +481,22 @@ public class DailyReport {
 			column.text = StkUtils.sf_ymd.format(new Date(stk.getStatusDate().getTime())).substring(2, 10)+strWDays;
 			row.columns.add(column);	
 			
-			//µÚËÄÁĞ ¹«Ë¾ĞÂÎÅ
+			//ç¬¬å››åˆ— å…¬å¸æ–°é—»
 			column = new HtmlTd();
 			String text = getInfoFromWindForCareStk(stk.getCode());
 			
 			if(stk.getEarningExpect() != null){
 				if(text.length() > 0) text += "<br>";
-				text += "[Ó¯ÀûÔ¤²â]"+stk.getEarningExpect();
+				text += "[ç›ˆåˆ©é¢„æµ‹]"+stk.getEarningExpect();
 			}
 			if(stk.getSaleLimit() != null){
 				if(text.length() > 0) text += "<br>";
-				text += "[½â½ûÈÕ]"+stk.getSaleLimit();
+				text += "[è§£ç¦æ—¥]"+stk.getSaleLimit();
 			}
 			column.text = text.length()>0?text:html_empty;
 			row.columns.add(column);
 			
-			//µÚÎåÁĞ ¹Ø×¢
+			//ç¬¬äº”åˆ— å…³æ³¨
 			column = createCareColumn(stk.getCode());
 			row.columns.add(column);
 			
@@ -540,10 +540,10 @@ public class DailyReport {
 				
 				if(titleContainKeywords.size() > 0){
 					if(stk.getEarningExpect() != null){
-						titleContainKeywords.add("[Ó¯ÀûÔ¤²â]"+stk.getEarningExpect());
+						titleContainKeywords.add("[ç›ˆåˆ©é¢„æµ‹]"+stk.getEarningExpect());
 					}
 					if(stk.getSaleLimit() != null){
-						titleContainKeywords.add("[½â½ûÈÕ]"+stk.getSaleLimit());
+						titleContainKeywords.add("[è§£ç¦æ—¥]"+stk.getSaleLimit());
 					}
 					createReportTableRow(conn,row,stk.getCode(),stk.getName(),titleContainKeywords);
 					table.rows.add(row);
@@ -573,7 +573,7 @@ public class DailyReport {
 		String loc = StkUtils.getStkLocation(code);
 		StringBuilder careInfos = new StringBuilder();
 		
-		//wind¹«Ë¾ĞÂÎÅ
+		//windå…¬å¸æ–°é—»
 		String url = "http://www.windin.com/Tools/NewsDetail.aspx?windcode="+code+"."+loc;
 		String page = HttpUtils.get(url,null,"GBK");
 		Node node = HtmlUtils.getNodeByAttribute(HtmlUtils.unescape(page),"","id","lblData");
@@ -696,7 +696,7 @@ public class DailyReport {
 		List params = new ArrayList();
 		String loc = StkUtils.getStkLocation(code);;
 		
-		//wind´óÊÂÌáĞÑ
+		//windå¤§äº‹æé†’
 		String url = "http://114.80.159.18/CorpEventsWeb/NewsEventAlert.aspx?windcode="+code+"."+loc+"&t=1";
 		String page = HttpUtils.get(url,null,"GBK");
 		Node node = HtmlUtils.getNodeByAttribute(page,"","id","TABLE2");
@@ -724,7 +724,7 @@ public class DailyReport {
 				params.add(url);
 				if(contains(title, keywordsInclude) && !contains(title, keywordsExclude)){
 					HtmlA a = new HtmlA();
-					a.text = name+":´óÊÂÌáĞÑ";
+					a.text = name+":å¤§äº‹æé†’";
 					a.attributes.put("href", url);
 					titleContainKeywords.add("[Wind]"+a.toHtml());
 				}
@@ -745,14 +745,14 @@ public class DailyReport {
 					}
 					if(contains(title2, keywordsInclude) && !contains(title2, keywordsExclude)){
 						HtmlA a = new HtmlA();
-						a.text = "´óÊÂÌáĞÑ";
+						a.text = "å¤§äº‹æé†’";
 						a.attributes.put("href", url);
 						titleContainKeywords.add("["+a.toHtml()+"]"+StkUtils.wrapColorForKeyword(title2, keywordsInclude));
 						
 						if(StkUtils.percentigeContainAndGreatThan(title2,50.0)){
 							params.clear();
 							params.add(code);
-							params.add("[´óÊÂÌáĞÑ]"+title2);
+							params.add("[å¤§äº‹æé†’]"+title2);
 							JdbcUtils.insert(conn, "insert into stk_import_info(id,code,type,insert_time,care_flag,info) select (select nvl(max(id)+1,100001) from stk_import_info),?,1,sysdate,1,? from dual", params);
 						}
 					}
@@ -769,7 +769,7 @@ public class DailyReport {
 			}
 		}
 
-		//wind¹«Ë¾ĞÂÎÅ
+		//windå…¬å¸æ–°é—»
 		url = "http://www.windin.com/Tools/NewsDetail.aspx?windcode="+code+"."+loc;
 		page = HttpUtils.get(url,null,"GBK");
 		node = HtmlUtils.getNodeByAttribute(HtmlUtils.unescape(page),"","id","lblData");
@@ -885,11 +885,11 @@ public class DailyReport {
 				HtmlTd td = new HtmlTd();
 				td.text = html_empty;
 				tr.columns.add(td);
-				for(int i = 0; i <= (fnReportQuarts - 1) && i < fnDatas.size(); i++){//×î½ü5¸ö¼¾¶È
+				for(int i = 0; i <= (fnReportQuarts - 1) && i < fnDatas.size(); i++){//æœ€è¿‘5ä¸ªå­£åº¦
 					td = new HtmlTd();
 					td.text = fnDatas.get(i).getFnDate().substring(2,8);
 					if(fnDatas.get(i).getFnDate().compareTo(stk.getListingDate()) < 0){
-						td.text += "*"; //ÉÏÊĞÇ°
+						td.text += "*"; //ä¸Šå¸‚å‰
 					}
 					tr.columns.add(td);
 				}
@@ -897,12 +897,12 @@ public class DailyReport {
 				td.text = html_empty;
 				tr.columns.add(td);
 				int n = 0;
-				for(StkFnData fnData:fnDatas){//×î½ü3Äê
+				for(StkFnData fnData:fnDatas){//æœ€è¿‘3å¹´
 					if(fnData.getFnDate().contains("1231")){
 						td = new HtmlTd();
 						td.text = fnData.getFnDate().substring(2,8);
 						if(fnData.getFnDate().compareTo(stk.getListingDate()) < 0){
-							td.text += "*"; //ÉÏÊĞÇ°
+							td.text += "*"; //ä¸Šå¸‚å‰
 						}
 						tr.columns.add(td);
 						n ++;
@@ -931,10 +931,10 @@ public class DailyReport {
 				}
 			}*/
 			
-			if(hasLessValue){//²ÆÎñÖ¸±ê²»ºÃ
+			if(hasLessValue){//è´¢åŠ¡æŒ‡æ ‡ä¸å¥½
 				String color = "color:#999999";
 				table.rows.add(createFnDataRow(table.rows.get(0),fnType,fnDatas,color,from));
-			}else{//²ÆÎñÖ¸±ê½ÏºÃorÃ»ÓĞÊı¾İ
+			}else{//è´¢åŠ¡æŒ‡æ ‡è¾ƒå¥½oræ²¡æœ‰æ•°æ®
 				table.rows.add(createFnDataRow(table.rows.get(0),fnType,fnDatas,null,from));
 			}
 		}
@@ -964,58 +964,58 @@ public class DailyReport {
 				td.text = String.valueOf(fnData.getFnValue()==null?"":fnData.getFnValue());
 			}
 			
-			if((i == 1 || i == 2) && fnData != null){//µÚ1£¬2¼¾Í¬±ÈÔö³¤ÊÇ·ñ>30%
+			if((i == 1 || i == 2) && fnData != null){//ç¬¬1ï¼Œ2å­£åŒæ¯”å¢é•¿æ˜¯å¦>30%
 				StkFnData lastYearFnData = get(fnDatas,String.valueOf(Integer.parseInt(fnData.getFnDate())-10000));
-				if(fnData.getFnValue() > 0 && lastYearFnData != null && lastYearFnData.getFnValue() < 0){//Ò»ÕıÒ»¸º
-					if(i==1){//µÚÒ»¼¾
+				if(fnData.getFnValue() > 0 && lastYearFnData != null && lastYearFnData.getFnValue() < 0){//ä¸€æ­£ä¸€è´Ÿ
+					if(i==1){//ç¬¬ä¸€å­£
 						td.attributes.put("style","color:#FF0000");
 					}
-					if(i==2){//µÚ¶ş¼¾
+					if(i==2){//ç¬¬äºŒå­£
 						td.attributes.put("style","color:#FF6600");
 					}
 					td.text += "(+)";
-				}else if(fnData.getFnValue() < 0 && lastYearFnData != null && lastYearFnData.getFnValue() > 0){//Ò»¸ºÒ»Õı
-					if(i==1){//µÚÒ»¼¾
+				}else if(fnData.getFnValue() < 0 && lastYearFnData != null && lastYearFnData.getFnValue() > 0){//ä¸€è´Ÿä¸€æ­£
+					if(i==1){//ç¬¬ä¸€å­£
 						td.attributes.put("style","color:#336600");
 					}
-					if(i==2){//µÚ¶ş¼¾
+					if(i==2){//ç¬¬äºŒå­£
 						td.attributes.put("style","color:#339900");
 					}
 					td.text += "(-)";
-				}else if(fnData.getFnValue() < 0 && lastYearFnData != null && lastYearFnData.getFnValue() < 0){//¶¼ÊÇ¸ºµÄ
+				}else if(fnData.getFnValue() < 0 && lastYearFnData != null && lastYearFnData.getFnValue() < 0){//éƒ½æ˜¯è´Ÿçš„
 					double upByYearGreaterThan30 = upByYear(fnDatas,fnData.getFnDate());
 					if(upByYearGreaterThan30 <= -0.2){
-						if(i==1){//µÚÒ»¼¾
+						if(i==1){//ç¬¬ä¸€å­£
 							td.attributes.put("style","color:#FF0000");
 						}
-						if(i==2){//µÚ¶ş¼¾
+						if(i==2){//ç¬¬äºŒå­£
 							td.attributes.put("style","color:#FF6600");
 						}
 						td.text += "("+StkUtils.number2String(upByYearGreaterThan30*100,0)+"%)";
 					}else if(upByYearGreaterThan30 >= 0.2){
-						if(i==1){//µÚÒ»¼¾
+						if(i==1){//ç¬¬ä¸€å­£
 							td.attributes.put("style","color:#336600");
 						}
-						if(i==2){//µÚ¶ş¼¾
+						if(i==2){//ç¬¬äºŒå­£
 							td.attributes.put("style","color:#339900");
 						}
 						td.text += "("+StkUtils.number2String(upByYearGreaterThan30*100,0)+"%)";
 					}
-				}else{//¶¼ÊÇÕıµÄ
+				}else{//éƒ½æ˜¯æ­£çš„
 					double upByYearGreaterThan30 = upByYear(fnDatas,fnData.getFnDate());
 					if(upByYearGreaterThan30 >= 0.2){
-						if(i==1){//µÚÒ»¼¾
+						if(i==1){//ç¬¬ä¸€å­£
 							td.attributes.put("style","color:#FF0000");
 						}
-						if(i==2){//µÚ¶ş¼¾
+						if(i==2){//ç¬¬äºŒå­£
 							td.attributes.put("style","color:#FF6600");
 						}
 						td.text += "("+StkUtils.number2String(upByYearGreaterThan30*100,0)+"%)";
 					}else if(upByYearGreaterThan30 <= -0.2){
-						if(i==1){//µÚÒ»¼¾
+						if(i==1){//ç¬¬ä¸€å­£
 							td.attributes.put("style","color:#336600");
 						}
-						if(i==2){//µÚ¶ş¼¾
+						if(i==2){//ç¬¬äºŒå­£
 							td.attributes.put("style","color:#339900");
 						}
 						td.text += "("+StkUtils.number2String(upByYearGreaterThan30*100,0)+"%)";
@@ -1072,15 +1072,15 @@ public class DailyReport {
 	
 	private static void createReportTableRow(Connection conn,HtmlTr tr,String code,String name,List<String> titleContainKeywords) throws Exception{
 		HtmlTd td = null;
-		//µÚÒ»ÁĞ - ¹ÉÆ±
+		//ç¬¬ä¸€åˆ— - è‚¡ç¥¨
 		td = createStkColumn(code,name);
 		tr.columns.add(td);
 		
-		//µÚ¶şÁĞ - ĞĞÒµ
+		//ç¬¬äºŒåˆ— - è¡Œä¸š
 		td = createIndustryColumn(conn,code);
 		tr.columns.add(td);
 		
-		//µÚÈıÁĞ - ×ÊÑ¶
+		//ç¬¬ä¸‰åˆ— - èµ„è®¯
 		td = new HtmlTd();
 		td.attributes.put("width", "50%");//360px
 		for(String s:titleContainKeywords){
@@ -1092,7 +1092,7 @@ public class DailyReport {
 		}
 		tr.columns.add(td);
 		
-		//µÚËÄÁĞ - Action
+		//ç¬¬å››åˆ— - Action
 		td = createCareColumn(code);
 		tr.columns.add(td);
 		
@@ -1113,7 +1113,7 @@ public class DailyReport {
 		td.text = td.text+"["+StkUtils.wrapCode(code)+"]"+"["+link.toHtml()+"]";
 		
 		link = new HtmlA();
-		link.text = "Çé±¨";
+		link.text = "æƒ…æŠ¥";
 		link.attributes.put("href", "http://www.windin.com/Tools/IntelligenceDetail.aspx?windcode="+code+"."+loc);
 		td.text = td.text+"["+link.toHtml()+"]";
 		
@@ -1132,10 +1132,10 @@ public class DailyReport {
 	private static HtmlTd createCareColumn(String code){
 		HtmlTd td = new HtmlTd();
 		HtmlA link = new HtmlA();
-		link.text = "¹Ø×¢";
+		link.text = "å…³æ³¨";
 		link.attributes.put("href", "http://210.13.77.68:8180/insurance/loginPage.do?p=care&c="+code);
 		HtmlA a = new HtmlA();
-		a.text = "È¡Ïû";
+		a.text = "å–æ¶ˆ";
 		a.attributes.put("href", "http://210.13.77.68:8180/insurance/loginPage.do?p=uncare&c="+code);
 		td.text = "["+link.toHtml()+"]["+a.toHtml()+"]";
 		return td;
@@ -1143,10 +1143,10 @@ public class DailyReport {
 	
 	private static String createIndustryCare(String industryId){
 		HtmlA link = new HtmlA();
-		link.text = "¹Ø×¢";
+		link.text = "å…³æ³¨";
 		link.attributes.put("href", "http://210.13.77.68:8180/insurance/loginPage.do?p=ind_care&c="+industryId);
 		HtmlA a = new HtmlA();
-		a.text = "È¡Ïû";
+		a.text = "å–æ¶ˆ";
 		a.attributes.put("href", "http://210.13.77.68:8180/insurance/loginPage.do?p=ind_uncare&c="+industryId);
 		return "["+link.toHtml()+"]["+a.toHtml()+"]";
 	}
@@ -1154,10 +1154,10 @@ public class DailyReport {
 	private static HtmlTd createImportInfoCareColumn(String id){
 		HtmlTd td = new HtmlTd();
 		HtmlA link = new HtmlA();
-		link.text = "¹Ø×¢";
+		link.text = "å…³æ³¨";
 		link.attributes.put("href", "http://210.13.77.68:8180/insurance/loginPage.do?p=imp_care&c="+id);
 		HtmlA a = new HtmlA();
-		a.text = "È¡Ïû";
+		a.text = "å–æ¶ˆ";
 		a.attributes.put("href", "http://210.13.77.68:8180/insurance/loginPage.do?p=imp_uncare&c="+id);
 		td.text = "["+link.toHtml()+"]["+a.toHtml()+"]";
 		return td;

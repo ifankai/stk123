@@ -57,7 +57,7 @@ public class BreakoutTrendLineJob implements Job {
 				
 				if(kRealTime != null){
 					if(kRealTime.getClose() == 0.0){
-						continue;//Í£ÅÆµÄ
+						continue;//åœç‰Œçš„
 					}
 					if(!kRealTime.dateEquals(k)){
 						index.addK(kRealTime);
@@ -87,7 +87,7 @@ public class BreakoutTrendLineJob implements Job {
 						}else{
 							StkFnDataCust fn = index.getFnDataLastestByType(index.FN_GROSS_MARGIN);
 							Double gm = fn.getFnValue();
-							if(gm != null && gm.doubleValue() >= 50){//Ã«ÀûÂÊ>=50%
+							if(gm != null && gm.doubleValue() >= 50){//æ¯›åˆ©ç‡>=50%
 								results.add(index);
 							}else{
 								List<String> nextEF = null;
@@ -137,7 +137,7 @@ public class BreakoutTrendLineJob implements Job {
 				
 				if(breakouts.size() > 0){
 					BaiduSearch.SearchSwitch = false;
-					EmailUtils.sendImport("KÏßÍ»ÆÆÏÂ½µÇ÷ÊÆ¸öÊı£º"+breakouts.size()+",Ê±¼ä:"+ StkUtils.sf_ymd15.format(new Date()), 
+					EmailUtils.sendImport("Kçº¿çªç ´ä¸‹é™è¶‹åŠ¿ä¸ªæ•°ï¼š"+breakouts.size()+",æ—¶é—´:"+ StkUtils.sf_ymd15.format(new Date()), 
 							StkUtils.createHtmlTable(today, breakouts));
 				}
 				
@@ -164,7 +164,7 @@ public class BreakoutTrendLineJob implements Job {
 	private static boolean existingXueqiuFollow(String code){
 		if(FollowC.size() == 0){
 			try {
-				FollowC = XueqiuUtils.getFollowStks("¹Ø×¢C");
+				FollowC = XueqiuUtils.getFollowStks("å…³æ³¨C");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

@@ -46,7 +46,7 @@ public class Strategy20 extends Strategy {
 			System.out.println(index.getCode()+","+index.getName()+",change="+index.changePercent);
 		}*/
 		if(results.size() > 0){
-			super.logStrategy(conn, today, "Ä£ĞÍ20-Ê®×ÖĞÇ", results);
+			super.logStrategy(conn, today, "æ¨¡å‹20-åå­—æ˜Ÿ", results);
 		}
 	}
 	

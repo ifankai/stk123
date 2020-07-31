@@ -24,7 +24,7 @@ public class ListUtils {
     }
 	
 	/**
-	 * ÏÈÈ¡µÃn+1¸öelementµ½sublistÀï,½øĞĞ±È½Ï,É¾³ı×îĞ¡µÄ,È»ºóÔÙÍùÀïÃæ¼Ó1¸öelement,¼ÌĞø±È½Ï
+	 * å…ˆå–å¾—n+1ä¸ªelementåˆ°sublisté‡Œ,è¿›è¡Œæ¯”è¾ƒ,åˆ é™¤æœ€å°çš„,ç„¶åå†å¾€é‡Œé¢åŠ 1ä¸ªelement,ç»§ç»­æ¯”è¾ƒ
 	 * @param list
 	 * @param n
 	 * @param get

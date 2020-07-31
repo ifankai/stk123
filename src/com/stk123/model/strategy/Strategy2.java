@@ -89,7 +89,7 @@ public class Strategy2 extends Strategy {
 			/*for(Index index : results){
 				System.out.println(index.getCode()+","+index.getName()+",change="+index.changePercent);
 			}*/
-			EmailUtils.sendAndReport("Ä£ĞÍ2-120ÈÕ¾ùÏßÉÏÉı60ÈÕÏßÏÂ½µ,¸öÊı£º"+results.size()+",ÈÕÆÚ:"+today,StkUtils.createHtmlTable(today, results));
+			EmailUtils.sendAndReport("æ¨¡å‹2-120æ—¥å‡çº¿ä¸Šå‡60æ—¥çº¿ä¸‹é™,ä¸ªæ•°ï¼š"+results.size()+",æ—¥æœŸ:"+today,StkUtils.createHtmlTable(today, results));
 		}
 	 
 

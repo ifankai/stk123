@@ -98,8 +98,8 @@ public class NoticeRobot {
 			}
 			
 			String title = String.valueOf(item.get(2));
-			//if(!(title.contains("Äê¶È±¨¸æ") || title.contains("¼¾¶È±¨¸æÈ«ÎÄ")))continue;
-			if(title.contains("Ô±¹¤³Ö¹É")){
+			//if(!(title.contains("å¹´åº¦æŠ¥å‘Š") || title.contains("å­£åº¦æŠ¥å‘Šå…¨æ–‡")))continue;
+			if(title.contains("å‘˜å·¥æŒè‚¡")){
 				//System.out.println(title);
 				String filePath = String.valueOf(item.get(1));
 				String downloadFilePath = download(filePath,index);
@@ -107,24 +107,24 @@ public class NoticeRobot {
 				String fileType = getFileType(downloadFilePath, sourceType);
 				if("pdf".equalsIgnoreCase(fileType)){
 					String spdf = PDFUtils.getText(downloadFilePath);
-					Set<String> sets = StkUtils.getMatchStrings(spdf, "(ÊÕÅÌ¼Û)( ?)[0-9]*(\\.?)[0-9]+( ?)(Ôª²âËã)");
+					Set<String> sets = StkUtils.getMatchStrings(spdf, "(æ”¶ç›˜ä»·)( ?)[0-9]*(\\.?)[0-9]+( ?)(å…ƒæµ‹ç®—)");
 					if(sets != null && sets.size() == 0){
-						sets = StkUtils.getMatchStrings(spdf, "(¹ºÂò¾ù¼Û)( ?)[0-9]*(\\.?)[0-9]+( ?)(Ôª/¹É)");
+						sets = StkUtils.getMatchStrings(spdf, "(è´­ä¹°å‡ä»·)( ?)[0-9]*(\\.?)[0-9]+( ?)(å…ƒ/è‚¡)");
 					}
 					prices1.addAll(sets);
 					if(sets!= null && sets.size() > 0){
 						//System.out.println(item);
 						String p = sets.iterator().next();
-						String s = StkUtils.getMatchStrings(p,"\\d+(\\.?)(\\d+)?( *)(Ôª)").iterator().next();
-						double price = Double.parseDouble(StringUtils.replace(StringUtils.replace(s, " ", ""),"Ôª",""));
+						String s = StkUtils.getMatchStrings(p,"\\d+(\\.?)(\\d+)?( *)(å…ƒ)").iterator().next();
+						double price = Double.parseDouble(StringUtils.replace(StringUtils.replace(s, " ", ""),"å…ƒ",""));
 						//System.out.println(price);							
-						insertStkMonitor(conn, index, "Ô±¹¤³Ö¹É", price, item);
+						insertStkMonitor(conn, index, "å‘˜å·¥æŒè‚¡", price, item);
 						
 						break;
 					}
 				}
 			}
-			else if(StringUtils.contains(title, "·Ç¹«¿ª·¢ĞĞ")){
+			else if(StringUtils.contains(title, "éå…¬å¼€å‘è¡Œ")){
 				String filePath = String.valueOf(item.get(1));
 				//System.out.println(filePath);
 				String downloadFilePath = download(filePath,index);
@@ -134,55 +134,55 @@ public class NoticeRobot {
 					String spdf = PDFUtils.getText(downloadFilePath);
 					
 					if(createDate.after(StkUtils.addDay(new Date(), -1))){
-						/*if(StkUtils.getMatchString(title, "»ñµÃÖĞ¹ú(Ö¤¼à»á|Ö¤È¯¼à¶½).{0,10}(ºË×¼|ÉóºËÍ¨¹ı|Åú¸´)") != null){
-							EmailUtils.sendAndReport("¡¾·Ç¹«¿ª·¢ĞĞ¹ÉÆ±»ñµÃÖĞ¹úÖ¤¼à»áºË×¼¡¿-"+ index.getName(), 
+						/*if(StkUtils.getMatchString(title, "è·å¾—ä¸­å›½(è¯ç›‘ä¼š|è¯åˆ¸ç›‘ç£).{0,10}(æ ¸å‡†|å®¡æ ¸é€šè¿‡|æ‰¹å¤)") != null){
+							EmailUtils.sendAndReport("ã€éå…¬å¼€å‘è¡Œè‚¡ç¥¨è·å¾—ä¸­å›½è¯ç›‘ä¼šæ ¸å‡†ã€‘-"+ index.getName(), 
 									StkUtils.wrapCodeAndNameAsHtml(index) + " - " + StkUtils.wrapLink(title, "http://www.cninfo.com.cn/information/companyinfo.html?fulltext?"+index.getCode()));
 						}*/
 						//System.out.println(downloadFilePath);
-						if(StkUtils.getMatchString(title, "·Ç¹«¿ª·¢ĞĞ.{0,15}(±¨¸æ|¹«¸æ)") != null){
-							Set<String> matches = StkUtils.getMatchStrings(spdf,"·¢ĞĞ.{2,10}ÎŞËø¶¨ÆÚ");
-							matches.addAll(StkUtils.getMatchStrings(spdf,"·¢ĞĞ.{2,10}ÎŞÏŞÊÛÆÚ"));
-							matches.addAll(StkUtils.getMatchStrings(spdf,"·¢ĞĞ.{2,10}²»ÉèÏŞÊÛÆÚ"));
-							matches.addAll(StkUtils.getMatchStrings(spdf,"·¢ĞĞ.{2,10}ÎŞÏŞÊÛÌõ¼ş"));
-							matches.addAll(StkUtils.getMatchStrings(spdf,"·¢ĞĞ½áÊø.{0,6}¿É.{0,2}½»Ò×"));
+						if(StkUtils.getMatchString(title, "éå…¬å¼€å‘è¡Œ.{0,15}(æŠ¥å‘Š|å…¬å‘Š)") != null){
+							Set<String> matches = StkUtils.getMatchStrings(spdf,"å‘è¡Œ.{2,10}æ— é”å®šæœŸ");
+							matches.addAll(StkUtils.getMatchStrings(spdf,"å‘è¡Œ.{2,10}æ— é™å”®æœŸ"));
+							matches.addAll(StkUtils.getMatchStrings(spdf,"å‘è¡Œ.{2,10}ä¸è®¾é™å”®æœŸ"));
+							matches.addAll(StkUtils.getMatchStrings(spdf,"å‘è¡Œ.{2,10}æ— é™å”®æ¡ä»¶"));
+							matches.addAll(StkUtils.getMatchStrings(spdf,"å‘è¡Œç»“æŸ.{0,6}å¯.{0,2}äº¤æ˜“"));
 							
 							if(matches.size() > 0){
-								EmailUtils.sendAndReport("¡ï¡¾·Ç¹«¿ª·¢ĞĞ-ÎŞÏŞÊÛÆÚ¡¿-"+ index.getName(), 
+								EmailUtils.sendAndReport("â˜…ã€éå…¬å¼€å‘è¡Œ-æ— é™å”®æœŸã€‘-"+ index.getName(), 
 										StkUtils.wrapCodeAndNameAsHtml(index)+" "+matches + " - " + StkUtils.wrapLink(title, "http://www.cninfo.com.cn/information/companyinfo.html?fulltext?"+index.getCode()));
 							}
 						}
 					}
 					
-					Set<String> sets = StkUtils.getMatchStrings(spdf, "(·Ç¹«¿ª·¢ĞĞ¹ÉÆ±¼Û¸ñÎª)( ?)[0-9]*(\\.?)[0-9]+( *)(Ôª/¹É)");
+					Set<String> sets = StkUtils.getMatchStrings(spdf, "(éå…¬å¼€å‘è¡Œè‚¡ç¥¨ä»·æ ¼ä¸º)( ?)[0-9]*(\\.?)[0-9]+( *)(å…ƒ/è‚¡)");
 					if(sets != null && sets.size() == 0){
-						sets = StkUtils.getMatchStrings(spdf, "(·¢ĞĞ¼Û¸ñÎª)( ?)[0-9]*(\\.?)[0-9]+( *)(Ôª/¹É)");
+						sets = StkUtils.getMatchStrings(spdf, "(å‘è¡Œä»·æ ¼ä¸º)( ?)[0-9]*(\\.?)[0-9]+( *)(å…ƒ/è‚¡)");
 					}
 					if(sets != null && sets.size() == 0){
-						sets = StkUtils.getMatchStrings(spdf, "(½»Ò×ÈÕ¹«Ë¾¹ÉÆ±½»Ò×¾ù¼Û£¬¼´)( ?)[0-9]*(\\.?)[0-9]+( *)(Ôª/¹É)");
+						sets = StkUtils.getMatchStrings(spdf, "(äº¤æ˜“æ—¥å…¬å¸è‚¡ç¥¨äº¤æ˜“å‡ä»·ï¼Œå³)( ?)[0-9]*(\\.?)[0-9]+( *)(å…ƒ/è‚¡)");
 					}
 					if(sets != null && sets.size() == 0){
-						sets = StkUtils.getMatchStrings(spdf, "(¸ö½»Ò×ÈÕ¹ÉÆ±½»Ò×)(.{0,50})(¼´)( ?)[0-9]*(\\.?)[0-9]+( *)(Ôª/¹É)");
+						sets = StkUtils.getMatchStrings(spdf, "(ä¸ªäº¤æ˜“æ—¥è‚¡ç¥¨äº¤æ˜“)(.{0,50})(å³)( ?)[0-9]*(\\.?)[0-9]+( *)(å…ƒ/è‚¡)");
 					}
 					if(sets != null && sets.size() == 0){
-						sets = StkUtils.getMatchStrings(spdf, "(ÒÔ)( ?)[0-9]*(\\.?)[0-9]+( *)(Ôª/¹ÉÎª±¾´Î·¢ĞĞµÄ·¢ĞĞ¼Û¸ñ)");
+						sets = StkUtils.getMatchStrings(spdf, "(ä»¥)( ?)[0-9]*(\\.?)[0-9]+( *)(å…ƒ/è‚¡ä¸ºæœ¬æ¬¡å‘è¡Œçš„å‘è¡Œä»·æ ¼)");
 					}
 					if(sets != null && sets.size() == 0){
-						sets = StkUtils.getMatchStrings(spdf, "(Ã¿¹É·¢ĞĞ¼ÛÎªÈËÃñ±Ò£¬¼´)( ?)[0-9]*(\\.?)[0-9]+( *)(Ôª)");
+						sets = StkUtils.getMatchStrings(spdf, "(æ¯è‚¡å‘è¡Œä»·ä¸ºäººæ°‘å¸ï¼Œå³)( ?)[0-9]*(\\.?)[0-9]+( *)(å…ƒ)");
 					}
 					prices2.addAll(sets);
 					if(sets!= null && sets.size() > 0){
 						//System.out.println(item);
 						String p = sets.iterator().next();
-						String s = StkUtils.getMatchStrings(p,"\\d+(\\.?)(\\d+)?( *)(Ôª)").iterator().next();
-						double price = Double.parseDouble(StringUtils.replace(StringUtils.replace(s, " ", ""),"Ôª",""));
+						String s = StkUtils.getMatchStrings(p,"\\d+(\\.?)(\\d+)?( *)(å…ƒ)").iterator().next();
+						double price = Double.parseDouble(StringUtils.replace(StringUtils.replace(s, " ", ""),"å…ƒ",""));
 						//System.out.println(price);							
-						insertStkMonitor(conn, index, "·Ç¹«¿ª·¢ĞĞ", price, item);
+						insertStkMonitor(conn, index, "éå…¬å¼€å‘è¡Œ", price, item);
 						
 						break;
 					}
 				}
 			}
-			else if(StringUtils.contains(title, "¹ÉÈ¨¼¤Àø") || StringUtils.contains(title, "¹ÉÆ±¼¤Àø")){
+			else if(StringUtils.contains(title, "è‚¡æƒæ¿€åŠ±") || StringUtils.contains(title, "è‚¡ç¥¨æ¿€åŠ±")){
 				//System.out.println(item);
 				String filePath = String.valueOf(item.get(1));
 				String downloadFilePath = download(filePath,index);
@@ -190,9 +190,9 @@ public class NoticeRobot {
 				String fileType = getFileType(downloadFilePath, sourceType);
 				if("pdf".equalsIgnoreCase(fileType)){
 					String spdf = PDFUtils.getText(downloadFilePath);
-					Set<String> sets = StkUtils.getMatchStrings(spdf, "(¾»ÀûÈóÔö³¤ÂÊ²»µÍÓÚ)( ?)[0-9]*(\\.?)[0-9]+( *)(%)");
+					Set<String> sets = StkUtils.getMatchStrings(spdf, "(å‡€åˆ©æ¶¦å¢é•¿ç‡ä¸ä½äº)( ?)[0-9]*(\\.?)[0-9]+( *)(%)");
 					if(sets != null && sets.size() == 0){
-						sets = StkUtils.getMatchStrings(spdf, "(ÓªÒµÊÕÈëÔö³¤ÂÊ²»µÍÓÚ)( ?)[0-9]*(\\.?)[0-9]+( *)(%)");
+						sets = StkUtils.getMatchStrings(spdf, "(è¥ä¸šæ”¶å…¥å¢é•¿ç‡ä¸ä½äº)( ?)[0-9]*(\\.?)[0-9]+( *)(%)");
 					}
 					if(sets!= null && sets.size() > 0){
 						//System.out.println(item);
@@ -206,28 +206,28 @@ public class NoticeRobot {
 								tmp = price;
 							}
 						}
-						//System.out.println("¹ÉÈ¨¼¤Àø="+tmp);							
+						//System.out.println("è‚¡æƒæ¿€åŠ±="+tmp);							
 						if(tmp >= 100){
 							List params = new ArrayList();
 							params.add(index.getCode());
 							params.add(News.TYPE_5);
-							params.add("[¹ÉÈ¨¼¤Àø] "+ tmp +"% - "+ title + " - "+item.get(5));
+							params.add("[è‚¡æƒæ¿€åŠ±] "+ tmp +"% - "+ title + " - "+item.get(5));
 							params.add(index.getCode());
 							params.add(News.TYPE_5);
-							params.add("[¹ÉÈ¨¼¤Àø] "+ tmp +"% - "+ title + " - "+item.get(5));
+							params.add("[è‚¡æƒæ¿€åŠ±] "+ tmp +"% - "+ title + " - "+item.get(5));
 							JdbcUtils.insert(conn, "insert into stk_import_info select s_import_info_id.nextval,?,?,sysdate,1,?,null,null,null,null from dual "
 									+ "where not exists (select 1 from stk_import_info where code=? and type=? and info=?)", params);
-							//EmailUtils.send("·¢ÏÖ¹ÉÈ¨¼¤Àø", item.toString());
+							//EmailUtils.send("å‘ç°è‚¡æƒæ¿€åŠ±", item.toString());
 						}
 						break;
 					}
 				}
 			}
-			else if(title.contains("Äê¶È±¨¸æ") || title.contains("¼¾¶È±¨¸æÈ«ÎÄ")){
+			else if(title.contains("å¹´åº¦æŠ¥å‘Š") || title.contains("å­£åº¦æŠ¥å‘Šå…¨æ–‡")){
 				String filePath = String.valueOf(item.get(1));
 				String fileName = StringUtils.substringAfterLast(filePath, "/");
 				String downloadFilePath = download(filePath,index);
-				Text.insert(conn, 2, index.getCode(), title, "<a target='_blank' href='/stock/"+index.getCode()+"/notice/"+fileName+"'>±¨¸æÁ´½Ó</a>", Text.SUB_TYPE_STK_REPORT, new Date());
+				Text.insert(conn, 2, index.getCode(), title, "<a target='_blank' href='/stock/"+index.getCode()+"/notice/"+fileName+"'>æŠ¥å‘Šé“¾æ¥</a>", Text.SUB_TYPE_STK_REPORT, new Date());
 				String sourceType = String.valueOf(item.get(3));
 				String fileType = getFileType(downloadFilePath, sourceType);
 				if("pdf".equalsIgnoreCase(fileType)){
@@ -237,8 +237,8 @@ public class NoticeRobot {
 					boolean flag = false;
 					for(int i=0;i<ls.size();i++){
 						String line = ls.get(i);
-						if(StringUtils.contains(line, "ÒÑÀÛ¼ÆÍ¶ÈëÄ¼¼¯×Ê½ğ×Ü¶î") ||
-								StringUtils.contains(line, "ÒÑÀÛ¼ÆÊ¹ÓÃÄ¼¼¯×Ê½ğ×Ü¶î")){
+						if(StringUtils.contains(line, "å·²ç´¯è®¡æŠ•å…¥å‹Ÿé›†èµ„é‡‘æ€»é¢") ||
+								StringUtils.contains(line, "å·²ç´¯è®¡ä½¿ç”¨å‹Ÿé›†èµ„é‡‘æ€»é¢")){
 							//System.out.println(line);
 							String n1 = StkUtils.getNumberFromString(line);
 							//System.out.println(n1);
@@ -246,7 +246,7 @@ public class NoticeRobot {
 							int j = 1;
 							while(true){
 								line = ls.get(i-j);
-								if(StringUtils.contains(line, "rÄ¼¼¯×Ê½ğ×Ü¶î")){
+								if(StringUtils.contains(line, "rå‹Ÿé›†èµ„é‡‘æ€»é¢")){
 									//System.out.println(line);
 									String n2 = StkUtils.getNumberFromString(line);
 									double d1 = Double.parseDouble(n1);
@@ -256,10 +256,10 @@ public class NoticeRobot {
 										List params = new ArrayList();
 										params.add(index.getCode());
 										params.add(News.TYPE_21);
-										params.add("[Ä¼¼¯×Ê½ğÊ¹ÓÃĞ¡ÓÚ80%´óÓÚ20%] "+ title + ",  n1="+n1+",n2="+n2);
+										params.add("[å‹Ÿé›†èµ„é‡‘ä½¿ç”¨å°äº80%å¤§äº20%] "+ title + ",  n1="+n1+",n2="+n2);
 										params.add(index.getCode());
 										params.add(News.TYPE_21);
-										params.add("[Ä¼¼¯×Ê½ğÊ¹ÓÃĞ¡ÓÚ80%´óÓÚ20%] "+ title + ",  n1="+n1+",n2="+n2);
+										params.add("[å‹Ÿé›†èµ„é‡‘ä½¿ç”¨å°äº80%å¤§äº20%] "+ title + ",  n1="+n1+",n2="+n2);
 										JdbcUtils.insert(conn, "insert into stk_import_info select s_import_info_id.nextval,?,?,sysdate,1,?,null,null,null,null from dual "
 												+ "where not exists (select 1 from stk_import_info where code=? and type=? and info=?)", params);
 									}
@@ -274,7 +274,7 @@ public class NoticeRobot {
 					break;
 				}
 			}
-			else if(title.contains("Òµ¼¨Ô¤¸æĞŞÕı")){
+			else if(title.contains("ä¸šç»©é¢„å‘Šä¿®æ­£")){
 				String filePath = String.valueOf(item.get(1));
 				//System.out.println(filePath);
 				String downloadFilePath = download(filePath,index);
@@ -282,8 +282,8 @@ public class NoticeRobot {
 				String fileType = getFileType(downloadFilePath, sourceType);
 				if("pdf".equalsIgnoreCase(fileType)){
 					String spdf = PDFUtils.getText(downloadFilePath);
-					if(StringUtils.contains(spdf, "¡öÍ¬ÏòÉÏÉı") || title.contains("¡Ì Í¬ÏòÉÏÉı") || title.contains("¡ÌÍ¬ÏòÉÏÉı")){
-						EmailUtils.send("Òµ¼¨ÉÏĞŞ", StkUtils.wrapCodeAndNameAsHtml(index)+"-"+StkUtils.wrapLink(title, "http://www.cninfo.com.cn/"+filePath));
+					if(StringUtils.contains(spdf, "â– åŒå‘ä¸Šå‡") || title.contains("âˆš åŒå‘ä¸Šå‡") || title.contains("âˆšåŒå‘ä¸Šå‡")){
+						EmailUtils.send("ä¸šç»©ä¸Šä¿®", StkUtils.wrapCodeAndNameAsHtml(index)+"-"+StkUtils.wrapLink(title, "http://www.cninfo.com.cn/"+filePath));
 					}
 				}
 			}
@@ -292,10 +292,10 @@ public class NoticeRobot {
 	
 	public static void insertStkMonitor(Connection conn, Index index, String type, double price, List<String> item) throws Exception {
 		/**
-		 * param1 = Ô±¹¤³Ö¹É/·Ç¹«¿ª·¢ĞĞ
-		 * param2 = ¼Û¸ñ
-		 * param3 = ¹«¸æ·¢²¼ÈÕÆÚ
-		 * param4 = ²»¸´È¨Ê±£¬¼Û¸ñ¶ÔÓ¦µÄ×î¿¿½üµÄÈÕÆÚ
+		 * param1 = å‘˜å·¥æŒè‚¡/éå…¬å¼€å‘è¡Œ
+		 * param2 = ä»·æ ¼
+		 * param3 = å…¬å‘Šå‘å¸ƒæ—¥æœŸ
+		 * param4 = ä¸å¤æƒæ—¶ï¼Œä»·æ ¼å¯¹åº”çš„æœ€é è¿‘çš„æ—¥æœŸ
 		 * result1 = source file url
 		 */
 		List params = new ArrayList();

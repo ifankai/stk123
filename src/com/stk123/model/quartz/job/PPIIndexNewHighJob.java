@@ -48,13 +48,13 @@ public class PPIIndexNewHighJob implements Job {
 					if(latest.getValue() >= max){
 						List<String> data = new ArrayList<String>();
 						data.add("<a href='http://localhost/data?s="+type.getName()+"' target='_black'>"+type.getName()+"</a>");
-						data.add("<a href='http://www.iwencai.com/stockpick/search?typed=1&preParams=&ts=1&f=1&qs=result_rewrite&selfsectsn=&querytype=&searchfilter=&tid=stockpick&w="+type.getName()+"&queryarea=' target='_black'>²éÎÊ²Æ</a>");
+						data.add("<a href='http://www.iwencai.com/stockpick/search?typed=1&preParams=&ts=1&f=1&qs=result_rewrite&selfsectsn=&querytype=&searchfilter=&tid=stockpick&w="+type.getName()+"&queryarea=' target='_black'>æŸ¥é—®è´¢</a>");
 						
 						StkDataPpi latest2 = JdbcUtils.load(conn, 2, "select * from stk_data_ppi where type_id=? and ppi_date between to_char(sysdate-60,'yyyymmdd') and to_char(sysdate,'yyyymmdd') order by ppi_date desc", params, StkDataPpi.class);
 						params.add(latest2.getPpiDate());
 						max = JdbcUtils.load(conn, "select max(value) from stk_data_ppi where type_id=? and ppi_date between to_char(sysdate-350,'yyyymmdd') and ?", params, Double.class);
 						if(latest2.getValue() < max){
-							data.add("ĞÂ¼ÓÈë");
+							data.add("æ–°åŠ å…¥");
 						}else{
 							data.add("");
 						}
@@ -65,10 +65,10 @@ public class PPIIndexNewHighJob implements Job {
 			}
 			if(datas.size() > 0){
 				List<String> titles = new ArrayList<String>();
-				titles.add("´ó×ÚÉÌÆ·");
+				titles.add("å¤§å®—å•†å“");
 				titles.add("");
 				titles.add("");
-				EmailUtils.send("´ó×ÚÉÌÆ· new high, ¸öÊı£º"+datas.size(), StkUtils.createHtmlTable(titles, datas));
+				EmailUtils.send("å¤§å®—å•†å“ new high, ä¸ªæ•°ï¼š"+datas.size(), StkUtils.createHtmlTable(titles, datas));
 			}
 		}finally{
 			if (conn != null)conn.close();

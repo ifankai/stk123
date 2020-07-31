@@ -64,14 +64,14 @@ public class SearchEngine {
 	public static synchronized SearchEngine getInstance() throws Exception{
 		if(search != null)return search;
 		Connection conn = ConnectionPool.getInstance().getConnection();
-		// ½¨Á¢ÄÚ´æË÷Òı¶ÔÏó
+		// å»ºç«‹å†…å­˜ç´¢å¼•å¯¹è±¡
 		Directory directory = new RAMDirectory();
 		
-		// ÅäÖÃIndexWriterConfig
+		// é…ç½®IndexWriterConfig
 		IndexWriterConfig iwConfig = IKUtils.getConfig();
 		iwConfig.setOpenMode(OpenMode.CREATE_OR_APPEND);
 		IndexWriter iwriter = new IndexWriter(directory, iwConfig);
-		// Ğ´ÈëË÷Òı
+		// å†™å…¥ç´¢å¼•
 		List<Stk> stks = JdbcUtils.list(conn, "select code,name from stk_cn order by code", Stk.class);
 		for(Stk stk : stks){
 			Index index =  new Index(conn,stk.getCode(),stk.getName());
@@ -105,7 +105,7 @@ public class SearchEngine {
 		
 		ConnectionPool.getInstance().release(conn);
 		
-		// ÊµÀı»¯ËÑË÷Æ÷
+		// å®ä¾‹åŒ–æœç´¢å™¨
 		search = new SearchEngine(directory);
 		return search;
 	}
@@ -114,20 +114,20 @@ public class SearchEngine {
 	
 	/**
 	 * 
-	 * @param keyword ËÑË÷µÄ¹Ø¼ü×Ö
-	 * @param type  ËÑË÷ÀàĞÍ·¶Î§,±ÈÈçstk,text,industry
-	 * @param sortByTime Èç¹ûtype=text£¬Ôò·µ»Ø½á¹û¿ÉÒÔ°´Ê±¼äÅÅĞò
-	 * @param searchFields ÔÚÄÄĞ©field·¶Î§ÀïËÑË÷
+	 * @param keyword æœç´¢çš„å…³é”®å­—
+	 * @param type  æœç´¢ç±»å‹èŒƒå›´,æ¯”å¦‚stk,text,industry
+	 * @param sortByTime å¦‚æœtype=textï¼Œåˆ™è¿”å›ç»“æœå¯ä»¥æŒ‰æ—¶é—´æ’åº
+	 * @param searchFields åœ¨å“ªäº›fieldèŒƒå›´é‡Œæœç´¢
 	 * @param cnt
-	 * @param searchWordsWeight ËÑË÷×ÖµÄÈ¨ÖØ
-	 * @param defaultExcludes ÅÅ³ıµÄËÑË÷×Ö
+	 * @param searchWordsWeight æœç´¢å­—çš„æƒé‡
+	 * @param defaultExcludes æ’é™¤çš„æœç´¢å­—
 	 * @return
 	 * @throws Exception
 	 */
 	public List<Document> search(String keyword, DocumentType type, boolean sortByTime, DocumentField[] searchFields, int cnt, List<Name2Value> searchWordsWeight,Set<String> defaultExcludes) throws Exception {
 		System.out.println("search=="+keyword);
 		BooleanQuery query = new BooleanQuery();
-		query.setMinimumNumberShouldMatch(1);//ÏÂÃæshould±ØĞëÓĞÖÁÉÙÒ»¸öwordÆ¥Åä
+		query.setMinimumNumberShouldMatch(1);//ä¸‹é¢shouldå¿…é¡»æœ‰è‡³å°‘ä¸€ä¸ªwordåŒ¹é…
 		if(type != null){
 			TermQuery tq = new TermQuery(new Term(DocumentField.TYPE.value(), type.value()));
 			query.add(tq, BooleanClause.Occur.MUST);
@@ -141,13 +141,13 @@ public class SearchEngine {
 			Lexeme le = null;
 			while((le = se.next()) != null){
 				String tKeyWord = le.getLexemeText();
-				//ÉèÖÃ²éÑ¯ÅÅ³ı´Ê»ã
+				//è®¾ç½®æŸ¥è¯¢æ’é™¤è¯æ±‡
 				if(defaultExcludes != null && defaultExcludes.contains(tKeyWord)){
 					continue;
 				}
 				System.out.print(tKeyWord+",");
 				TermQuery tq = new TermQuery(new Term(searchFields[i].value(),tKeyWord));
-				//ÉèÖÃÈ¨ÖØ
+				//è®¾ç½®æƒé‡
 				if(searchWordsWeight != null){
 					List<Name2Value> weights = Name2Value.containName(searchWordsWeight, tKeyWord);
 					if(searchWordsWeight != null && weights.size() > 0){
@@ -177,7 +177,7 @@ public class SearchEngine {
 			ScoreDoc score = scoreDocs[i];
 			Document targetDoc = isearcher.doc(scoreDocs[i].doc);
 			//System.out.println("score="+score.score);
-			//-----------------------keyword¸ßÁÁÏÔÊ¾-------------------//
+			//-----------------------keywordé«˜äº®æ˜¾ç¤º-------------------//
 			for(DocumentField field : searchFields){
 				String text = targetDoc.get(field.value());
 				if (text != null) {
@@ -187,7 +187,7 @@ public class SearchEngine {
 				
 					TokenStream tokenStream = analyzer.tokenStream(field.value(), new StringReader(text));
 					String highLightText = highlighter.getBestFragment(tokenStream,text);
-					//System.out.println("¡ï¸ßÁÁÏÔÊ¾µÚ " + (i + 1) + " Ìõ¼ìË÷½á¹ûÈçÏÂËùÊ¾£º"+field.value()+"="+targetDoc.get(DocumentField.TITLE.value())+","+targetDoc.get(DocumentField.ID.value()));
+					//System.out.println("â˜…é«˜äº®æ˜¾ç¤ºç¬¬ " + (i + 1) + " æ¡æ£€ç´¢ç»“æœå¦‚ä¸‹æ‰€ç¤ºï¼š"+field.value()+"="+targetDoc.get(DocumentField.TITLE.value())+","+targetDoc.get(DocumentField.ID.value()));
 					//System.out.println(highLightText);
 					if(highLightText != null){
 						targetDoc.removeFields(field.value());

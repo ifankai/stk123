@@ -11,15 +11,15 @@ import javax.mail.internet.MimeMessage;
      
 public class SendMail {     
      
-    private static final String MAIL_USER = "ifankai";   //ÓÊ¼ş·şÎñÆ÷µÇÂ¼ÓÃ»§Ãû     
-    private static final String MAIL_PASSWORD = "181302kevin";   //ÓÊ¼ş·şÎñÆ÷µÇÂ¼ÃÜÂë     
-    private static final String MAIL_FROM = "ifankai@sina.com";  //·¢ËÍÓÊ¼şµØÖ·     
+    private static final String MAIL_USER = "ifankai";   //é‚®ä»¶æœåŠ¡å™¨ç™»å½•ç”¨æˆ·å     
+    private static final String MAIL_PASSWORD = "181302kevin";   //é‚®ä»¶æœåŠ¡å™¨ç™»å½•å¯†ç      
+    private static final String MAIL_FROM = "ifankai@sina.com";  //å‘é€é‚®ä»¶åœ°å€     
          
          
     /**   
-     * @param mail      ÊÕ¼şÈË   
-     * @param subject   Ö÷Ìâ   
-     * @param text      ÄÚÈİ   
+     * @param mail      æ”¶ä»¶äºº   
+     * @param subject   ä¸»é¢˜   
+     * @param text      å†…å®¹   
      */     
     public static void sendMail(String mail,String subject,String text) {     
      
@@ -45,7 +45,7 @@ public class SendMail {
             transport.sendMessage(message, message     
                     .getRecipients(Message.RecipientType.TO));     
             transport.close();     
-            System.out.println("ÄãµÄÓÊ¼şÒÑ·¢³ö");     
+            System.out.println("ä½ çš„é‚®ä»¶å·²å‘å‡º");     
         } catch (Exception m) {     
             System.out.println(m.toString());     
         }     
@@ -55,7 +55,7 @@ public class SendMail {
      * @param args   
      */     
     public static void main(String[] args) {     
-    	sendMail("kevin.fan@ebaotech.com", "²âÊÔ", "ÎÒÊÇËæ»úÊı");     
+    	sendMail("kevin.fan@ebaotech.com", "æµ‹è¯•", "æˆ‘æ˜¯éšæœºæ•°");     
     }     
      
 } 

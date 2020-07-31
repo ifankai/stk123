@@ -45,7 +45,7 @@ public class Trade {
 
 	}
 	
-	public final static Factor F1000B = new Factor(1, 1000,"¶şÆ·³­µ×-ºìÏßÉÏ´©Âò");
+	public final static Factor F1000B = new Factor(1, 1000,"äºŒå“æŠ„åº•-çº¢çº¿ä¸Šç©¿ä¹°");
 	public final static Condition C1000B = new Condition() {
 		public Factor execute(TradeContext context) throws Exception {
 			K k = context.getK();
@@ -63,7 +63,7 @@ public class Trade {
 		}
 	};
 	
-	public final static Factor F1001B = new Factor(1,1001,"¶şÆ·³­µ×-Ç÷ÊÆÏßÔÚÏÂÃæ");
+	public final static Factor F1001B = new Factor(1,1001,"äºŒå“æŠ„åº•-è¶‹åŠ¿çº¿åœ¨ä¸‹é¢");
 	public final static Condition C1001B = new Condition() {
 		public Factor execute(TradeContext context) throws Exception {
 			K k = context.getK();
@@ -76,7 +76,7 @@ public class Trade {
 		}
 	};
 
-	public final static Factor F1002B = new Factor(1,1002,"Á¿ÄÜ´óÓÚ5ÈÕ¾ùÁ¿");
+	public final static Factor F1002B = new Factor(1,1002,"é‡èƒ½å¤§äº5æ—¥å‡é‡");
 	public final static Condition C1002B = new Condition() {
 		public Factor execute(TradeContext context) throws Exception {
 			K k = context.getK();
@@ -87,7 +87,7 @@ public class Trade {
 		}
 	};
 
-	public final static Factor F1003B = new Factor(3,1003,"MACDµ×²¿±³Àë");
+	public final static Factor F1003B = new Factor(3,1003,"MACDåº•éƒ¨èƒŒç¦»");
 	public final static Condition C1003B = new Condition() {
 		public Factor execute(TradeContext context) throws Exception {
 			K k = context.getK();			
@@ -108,7 +108,7 @@ public class Trade {
 		}
 	};
 
-	public final static Factor F1004B = new Factor(1,1004,"MACDÔÚ0Öá²øÈÆ");
+	public final static Factor F1004B = new Factor(1,1004,"MACDåœ¨0è½´ç¼ ç»•");
 	public final static Condition C1004B = new Condition() {
 		public Factor execute(TradeContext context) throws Exception {
 			K k = context.getK();
@@ -125,7 +125,7 @@ public class Trade {
 		}
 	};
 
-	public final static Factor F1005B = new Factor(2,1005,"MACD 0ÖáÏÂÃæ2´ÎÒÔÉÏ½ğ²æ");
+	public final static Factor F1005B = new Factor(2,1005,"MACD 0è½´ä¸‹é¢2æ¬¡ä»¥ä¸Šé‡‘å‰");
 	public final static Condition C1005B = new Condition() {
 		public Factor execute(TradeContext context) throws Exception {
 			K k = context.getK();
@@ -153,9 +153,9 @@ public class Trade {
 				if(d != null && d > 0){
 					d = tmp.getCapitalFlowPercent(k.before(1).getDate());
 					if(d > 0){
-						return new Factor(2,1006,"×Ê½ğÁ¬ĞøÁ÷Èë"+d);
+						return new Factor(2,1006,"èµ„é‡‘è¿ç»­æµå…¥"+d);
 					}
-					return new Factor(1,1006,"×Ê½ğÁ÷Èë"+d);
+					return new Factor(1,1006,"èµ„é‡‘æµå…¥"+d);
 				}
 			}
 			return null;
@@ -163,7 +163,7 @@ public class Trade {
 	};
 	
 	//--------------------//
-	public final static Factor F2001B = new Factor(-1,2001,"Á¿ÄÜĞ¡ÓÚ10ÈÕ¾ùÁ¿");
+	public final static Factor F2001B = new Factor(-1,2001,"é‡èƒ½å°äº10æ—¥å‡é‡");
 	public final static Condition C2001B = new Condition() {
 		public Factor execute(TradeContext context) throws Exception {
 			K k = context.getK();
@@ -174,7 +174,7 @@ public class Trade {
 		}
 	};
 
-	public final static Factor F2002B = new Factor(-1,2002,"DIFÎª¸ºÇÒMACDĞ¡ÓÚDIF");
+	public final static Factor F2002B = new Factor(-1,2002,"DIFä¸ºè´Ÿä¸”MACDå°äºDIF");
 	public final static Condition C2002B = new Condition() {
 		public Factor execute(TradeContext context) throws Exception {
 			MACD macd = context.getMACD();
@@ -185,7 +185,7 @@ public class Trade {
 		}
 	};
 
-	public final static Factor F2003B = new Factor(-2,2003,"¶şÆ·³­µ×-Ç÷ÊÆÏß´óÓÚ80");
+	public final static Factor F2003B = new Factor(-2,2003,"äºŒå“æŠ„åº•-è¶‹åŠ¿çº¿å¤§äº80");
 	public final static Condition C2003B = new Condition() {
 		public Factor execute(TradeContext context) throws Exception {
 			K k = context.getK();
@@ -197,7 +197,7 @@ public class Trade {
 		}
 	};
 
-	public final static Factor F2004B = new Factor(-1,2004,"¶şÆ·³­µ×-Ç÷ÊÆÏß´óÓÚ50");
+	public final static Factor F2004B = new Factor(-1,2004,"äºŒå“æŠ„åº•-è¶‹åŠ¿çº¿å¤§äº50");
 	public final static Condition C2004B = new Condition() {
 		public Factor execute(TradeContext context) throws Exception {
 			K k = context.getK();
@@ -209,7 +209,7 @@ public class Trade {
 		}
 	};
 
-	public final static Factor F2005B = new Factor(-1,2005,"60,30,20,10ÈÕ¾ùÏß¿ÕÍ·ÅÅÁĞ");
+	public final static Factor F2005B = new Factor(-1,2005,"60,30,20,10æ—¥å‡çº¿ç©ºå¤´æ’åˆ—");
 	public final static Condition C2005B = new Condition() {
 		public Factor execute(TradeContext context) throws Exception {
 			K k = context.getK();
@@ -222,7 +222,7 @@ public class Trade {
 		}
 	};
 
-	public final static Factor F2006B = new Factor(-2,2006,"60ÈÕ¾ùÏß¸Õ¹ÕÍ·ÏòÏÂ");
+	public final static Factor F2006B = new Factor(-2,2006,"60æ—¥å‡çº¿åˆšæ‹å¤´å‘ä¸‹");
 	public final static Condition C2006B = new Condition() {
 		public Factor execute(TradeContext context) throws Exception {
 			K k = context.getK();
@@ -244,7 +244,7 @@ public class Trade {
 	/**
 	 * sell
 	 */
-	public final static Factor F3000S = new Factor(1, 3000,"¶şÆ·³­µ×-ºìÏßÏÂ´©Âô");
+	public final static Factor F3000S = new Factor(1, 3000,"äºŒå“æŠ„åº•-çº¢çº¿ä¸‹ç©¿å–");
 	public final static Condition C3000S = new Condition() {
 		public Factor execute(TradeContext context) throws Exception {
 			K k = context.getK();

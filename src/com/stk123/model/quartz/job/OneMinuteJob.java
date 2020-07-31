@@ -21,9 +21,9 @@ public class OneMinuteJob implements Job {
 	
 	public static List<String> CODES = new ArrayList<String>();
 	static{
-		CODES.add("01000852");//ÖĞÖ¤1000
-		CODES.add("01000905");//ÖĞÖ¤500
-		CODES.add("01000016");//ÉÏÖ¤50
+		CODES.add("01000852");//ä¸­è¯1000
+		CODES.add("01000905");//ä¸­è¯500
+		CODES.add("01000016");//ä¸Šè¯50
 		CODES.add("399006");
 		
 	}
@@ -54,14 +54,14 @@ public class OneMinuteJob implements Job {
 					double warn = 1500;
 					if(SendMail.get(code+"warning") == null && k.getClose() <= warn){
 						SendMail.put(code+"warning", "warning");
-						sb.append("[¾¯¸æ]"+index.getName()+"["+code+"]"+"µøÆÆÇ°ÆÚµÍµã"+warn+"<br>");
-						//EmailUtils.send(EmailUtils.IMPORTANT + "[¾¯¸æ]"+index.getName()+"["+code+"]"+"µøÆÆÇ°ÆÚÉÏÕÇÈ±¿Ú"+warn+"","");
+						sb.append("[è­¦å‘Š]"+index.getName()+"["+code+"]"+"è·Œç ´å‰æœŸä½ç‚¹"+warn+"<br>");
+						//EmailUtils.send(EmailUtils.IMPORTANT + "[è­¦å‘Š]"+index.getName()+"["+code+"]"+"è·Œç ´å‰æœŸä¸Šæ¶¨ç¼ºå£"+warn+"","");
 					}
 					warn = 2280;
 					if(SendMail.get(code+"warning2") == null && k.getClose() >= warn){
 						SendMail.put(code+"warning2", "warning");
-						sb.append("[¾¯¸æ]"+index.getName()+"["+code+"]"+"ÉÏ´©"+warn+"Òª¼õ²Ö·ñ£¿<br>");
-						//EmailUtils.send(EmailUtils.IMPORTANT + "[¾¯¸æ]"+index.getName()+"["+code+"]"+"ÉÏ´©"+warn+"Òª¼õ²Ö·ñ£¿MACD 30·ÖÖÓÊÇ·ñ±³Àë£¿","");
+						sb.append("[è­¦å‘Š]"+index.getName()+"["+code+"]"+"ä¸Šç©¿"+warn+"è¦å‡ä»“å¦ï¼Ÿ<br>");
+						//EmailUtils.send(EmailUtils.IMPORTANT + "[è­¦å‘Š]"+index.getName()+"["+code+"]"+"ä¸Šç©¿"+warn+"è¦å‡ä»“å¦ï¼ŸMACD 30åˆ†é’Ÿæ˜¯å¦èƒŒç¦»ï¼Ÿ","");
 					}
 				}
 				if(sb.length() > 0){

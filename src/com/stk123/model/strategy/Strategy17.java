@@ -81,18 +81,18 @@ public class Strategy17 extends Strategy {
 			}});
 		int cnt = results.size()+results2.size()+results3.size()+results4.size()+results5.size();
 		if(cnt > 0){
-			/*super.logStrategy(conn, today, "Ä£ĞÍ17-KÏß²øÈÆ-10,20,30,60,120ÈÕKÏß²øÈÆ", results2);
-			super.logStrategy(conn, today, "Ä£ĞÍ17-KÏß²øÈÆ-10,20,30,60,250ÈÕKÏß²øÈÆ", results3);
-			super.logStrategy(conn, today, "Ä£ĞÍ17-KÏß²øÈÆ-10,20,30,60ÈÕKÏß²øÈÆ", results4);
-			super.logStrategy(conn, today, "Ä£ĞÍ17-KÏß²øÈÆ-10,20,30ÈÕKÏß²øÈÆ", results5);
-			super.logStrategy(conn, today, "Ä£ĞÍ17-KÏß²øÈÆ", results);*/
-			EmailUtils.sendAndReport("Ä£ĞÍ17-KÏß²øÈÆ,¸öÊı£º" + cnt
-					+ ",ÈÕÆÚ:" + today, "<b>ÇĞ¼Ç×îºÃµÈ¾ùÏß×ß³ö¶àÍ·ÅÅÁĞºóÔÙÈë£¬¶ÌÆÚ¾ùÏß½ğ²æ³¤ÆÚ¾ùÏß</b>"
-					+ "<br>10,20,30,60,120ÈÕKÏß²øÈÆ<br>"	+ StkUtils.createHtmlTable(today, results2)  
-					+ "<br><br>10,20,30,60,250ÈÕKÏß²øÈÆ<br>" + StkUtils.createHtmlTable(today, results3) 
-					+ "<br><br>10,20,30,60ÈÕKÏß²øÈÆ<br>" + StkUtils.createHtmlTable(today, results4) 
+			/*super.logStrategy(conn, today, "æ¨¡å‹17-Kçº¿ç¼ ç»•-10,20,30,60,120æ—¥Kçº¿ç¼ ç»•", results2);
+			super.logStrategy(conn, today, "æ¨¡å‹17-Kçº¿ç¼ ç»•-10,20,30,60,250æ—¥Kçº¿ç¼ ç»•", results3);
+			super.logStrategy(conn, today, "æ¨¡å‹17-Kçº¿ç¼ ç»•-10,20,30,60æ—¥Kçº¿ç¼ ç»•", results4);
+			super.logStrategy(conn, today, "æ¨¡å‹17-Kçº¿ç¼ ç»•-10,20,30æ—¥Kçº¿ç¼ ç»•", results5);
+			super.logStrategy(conn, today, "æ¨¡å‹17-Kçº¿ç¼ ç»•", results);*/
+			EmailUtils.sendAndReport("æ¨¡å‹17-Kçº¿ç¼ ç»•,ä¸ªæ•°ï¼š" + cnt
+					+ ",æ—¥æœŸ:" + today, "<b>åˆ‡è®°æœ€å¥½ç­‰å‡çº¿èµ°å‡ºå¤šå¤´æ’åˆ—åå†å…¥ï¼ŒçŸ­æœŸå‡çº¿é‡‘å‰é•¿æœŸå‡çº¿</b>"
+					+ "<br>10,20,30,60,120æ—¥Kçº¿ç¼ ç»•<br>"	+ StkUtils.createHtmlTable(today, results2)  
+					+ "<br><br>10,20,30,60,250æ—¥Kçº¿ç¼ ç»•<br>" + StkUtils.createHtmlTable(today, results3) 
+					+ "<br><br>10,20,30,60æ—¥Kçº¿ç¼ ç»•<br>" + StkUtils.createHtmlTable(today, results4) 
 					+ "<br><br>" + StkUtils.createHtmlTable(today, results) 
-					+ "<br><br>10,20,30ÈÕKÏß²øÈÆ<br>" + StkUtils.createHtmlTable(today, results5) 
+					+ "<br><br>10,20,30æ—¥Kçº¿ç¼ ç»•<br>" + StkUtils.createHtmlTable(today, results5) 
 					);
 		}
 

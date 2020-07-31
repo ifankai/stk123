@@ -12,7 +12,7 @@ import com.stk123.tool.util.ChineseUtils;
 public class TradeStrategy2 extends Strategy<Output> {
 
 	public TradeStrategy2() {
-		this.name = "µ×²¿·ÅÁ¿";
+		this.name = "åº•éƒ¨æ”¾é‡";
 	}
 
 	@Override

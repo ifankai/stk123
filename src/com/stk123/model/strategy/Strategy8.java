@@ -38,7 +38,7 @@ public class Strategy8 extends Strategy {
 			
 		}
 		if(results.size() > 0){
-			EmailUtils.sendAndReport("Ä£ĞÍ8-5ÀËÏÂµø,¸öÊı£º"+results.size()+",ÈÕÆÚ:"+today,
+			EmailUtils.sendAndReport("æ¨¡å‹8-5æµªä¸‹è·Œ,ä¸ªæ•°ï¼š"+results.size()+",æ—¥æœŸ:"+today,
 				StkUtils.createHtmlTable(today, results));
 		}
 

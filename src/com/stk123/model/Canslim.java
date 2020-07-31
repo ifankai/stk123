@@ -3,12 +3,12 @@ package com.stk123.model;
 import java.io.Serializable;
 
 /**
- * CAN SLIM Å·ÄÎ¶û
+ * CAN SLIM æ¬§å¥ˆå°”
  *
- * N:¹É¼ÛÇ¿¶È
+ * N:è‚¡ä»·å¼ºåº¦
  */
 public class Canslim implements Serializable {
-	//N:¹É¼ÛÇ¿¶È
+	//N:è‚¡ä»·å¼ºåº¦
 	private int closeChangeRank;
 	private double closeChange;
 	private int closeChangeRS;

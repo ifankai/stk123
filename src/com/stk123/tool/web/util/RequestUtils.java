@@ -69,7 +69,7 @@ public class RequestUtils {
                 String name = (String) parameterNames.nextElement();  
                 String value = request.getParameter(name);  
   
-                BeanUtils.setProperty(t, name, value);//Ê¹ÓÃBeanUtilsÀ´ÉèÖÃ¶ÔÏóÊôĞÔµÄÖµ  
+                BeanUtils.setProperty(t, name, value);//ä½¿ç”¨BeanUtilsæ¥è®¾ç½®å¯¹è±¡å±æ€§çš„å€¼  
   
             }  
         } catch (Exception e) {  
@@ -116,8 +116,8 @@ public class RequestUtils {
 	/**
 	 * @param request
 	 * @param paramName
-	 *            ²ÎÊıÃû³Æ
-	 * @return ´Órequest»ñÈ¡²ÎÊı¶ÔÓ¦×Ö·û´®Öµ
+	 *            å‚æ•°åç§°
+	 * @return ä»requestè·å–å‚æ•°å¯¹åº”å­—ç¬¦ä¸²å€¼
 	 */
 	public static String getString(HttpServletRequest request, String paramName) {
 		String value = request.getParameter(paramName);
@@ -127,8 +127,8 @@ public class RequestUtils {
 	/**
 	 * @param request
 	 * @param paramName
-	 *            ²ÎÊıÃû³Æ
-	 * @return ´Órequest»ñÈ¡ÊôĞÔ¶ÔÓ¦×Ö·û´®Öµ
+	 *            å‚æ•°åç§°
+	 * @return ä»requestè·å–å±æ€§å¯¹åº”å­—ç¬¦ä¸²å€¼
 	 */
 	public static String getStrAttribute(HttpServletRequest request, String paramName) {
 		String value = (String) request.getAttribute(paramName);
@@ -138,8 +138,8 @@ public class RequestUtils {
 	/**
 	 * @param request
 	 * @param paramName
-	 *            ²ÎÊıÃû³Æ
-	 * @return ´Órequest»ñÈ¡²ÎÊı¶ÔÓ¦Êı×éÖµ
+	 *            å‚æ•°åç§°
+	 * @return ä»requestè·å–å‚æ•°å¯¹åº”æ•°ç»„å€¼
 	 */
 	public static String[] getArray(HttpServletRequest request, String paramName) {
 		return request.getParameterValues(paramName);
@@ -148,8 +148,8 @@ public class RequestUtils {
 	/**
 	 * @param request
 	 * @param paramName
-	 *            ²ÎÊıÃû³Æ
-	 * @return ´Órequest»ñÈ¡²ÎÊı¶ÔÓ¦ByteÖµ
+	 *            å‚æ•°åç§°
+	 * @return ä»requestè·å–å‚æ•°å¯¹åº”Byteå€¼
 	 */
 	public static byte getByte(HttpServletRequest request, String paramName) {
 		String value = request.getParameter(paramName);
@@ -162,8 +162,8 @@ public class RequestUtils {
 	/**
 	 * @param request
 	 * @param paramName
-	 *            ²ÎÊıÃû³Æ
-	 * @return ´Órequest»ñÈ¡²ÎÊı¶ÔÓ¦ÕûĞÍÖµ
+	 *            å‚æ•°åç§°
+	 * @return ä»requestè·å–å‚æ•°å¯¹åº”æ•´å‹å€¼
 	 */
 	public static int getInt(HttpServletRequest request, String paramName) {
 		String value = request.getParameter(paramName);
@@ -182,8 +182,8 @@ public class RequestUtils {
 	/**
 	 * @param request
 	 * @param paramName
-	 *            ²ÎÊıÃû³Æ
-	 * @return ´Órequest»ñÈ¡²ÎÊı¶ÔÓ¦ÕûĞÍÖµ
+	 *            å‚æ•°åç§°
+	 * @return ä»requestè·å–å‚æ•°å¯¹åº”æ•´å‹å€¼
 	 */
 	public static int getIntAttribute(HttpServletRequest request, String paramName) {
 		String value = request.getAttribute(paramName).toString();
@@ -202,8 +202,8 @@ public class RequestUtils {
 	/**
 	 * @param request
 	 * @param paramName
-	 *            ²ÎÊıÃû³Æ
-	 * @return ´Órequest»ñÈ¡²ÎÊı¶ÔÓ¦³¤ÕûĞÍÖµ
+	 *            å‚æ•°åç§°
+	 * @return ä»requestè·å–å‚æ•°å¯¹åº”é•¿æ•´å‹å€¼
 	 */
 	public static long getLong(HttpServletRequest request, String paramName) {
 		String value = request.getParameter(paramName);
@@ -223,8 +223,8 @@ public class RequestUtils {
 	/**
 	 * @param request
 	 * @param paramName
-	 *            ²ÎÊıÃû³Æ
-	 * @return ´Órequest»ñÈ¡²ÎÊı¶ÔÓ¦¶ÌÕûĞÍÖµ
+	 *            å‚æ•°åç§°
+	 * @return ä»requestè·å–å‚æ•°å¯¹åº”çŸ­æ•´å‹å€¼
 	 */
 	public static short getShort(HttpServletRequest request, String paramName) {
 		String value = request.getParameter(paramName);
@@ -237,8 +237,8 @@ public class RequestUtils {
 	/**
 	 * @param request
 	 * @param paramName
-	 *            ²ÎÊıÃû³Æ
-	 * @return ´Órequest»ñÈ¡²ÎÊı¶ÔÓ¦²¼¶ûÖµ
+	 *            å‚æ•°åç§°
+	 * @return ä»requestè·å–å‚æ•°å¯¹åº”å¸ƒå°”å€¼
 	 */
 	public static boolean getBoolean(HttpServletRequest request,
 			String paramName) {

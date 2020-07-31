@@ -13,14 +13,14 @@ import sun.misc.BASE64Encoder;
 public class ImageUtils {
 	
 	public static void main(String[] args){
-		System.out.println(getImageStr("D:\\KÏßÍ¼\\000990.PNG"));
+		System.out.println(getImageStr("D:\\Kçº¿å›¾\\000990.PNG"));
 	}
 
-	public static String getImageStr(String imgFile) {// ½«Í¼Æ¬ÎÄ¼ş×ª»¯Îª×Ö½ÚÊı×é×Ö·û´®£¬²¢¶ÔÆä½øĞĞBase64±àÂë´¦Àí
-		//String imgFile = "d:\\111.jpg";// ´ı´¦ÀíµÄÍ¼Æ¬
+	public static String getImageStr(String imgFile) {// å°†å›¾ç‰‡æ–‡ä»¶è½¬åŒ–ä¸ºå­—èŠ‚æ•°ç»„å­—ç¬¦ä¸²ï¼Œå¹¶å¯¹å…¶è¿›è¡ŒBase64ç¼–ç å¤„ç†
+		//String imgFile = "d:\\111.jpg";// å¾…å¤„ç†çš„å›¾ç‰‡
 		InputStream in = null;
 		byte[] data = null;
-		// ¶ÁÈ¡Í¼Æ¬×Ö½ÚÊı×é
+		// è¯»å–å›¾ç‰‡å­—èŠ‚æ•°ç»„
 		try {
 			in = new FileInputStream(imgFile);
 			data = new byte[in.available()];
@@ -29,23 +29,23 @@ public class ImageUtils {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		// ¶Ô×Ö½ÚÊı×éBase64±àÂë
+		// å¯¹å­—èŠ‚æ•°ç»„Base64ç¼–ç 
 		BASE64Encoder encoder = new BASE64Encoder();
-		return encoder.encode(data);// ·µ»ØBase64±àÂë¹ıµÄ×Ö½ÚÊı×é×Ö·û´®
+		return encoder.encode(data);// è¿”å›Base64ç¼–ç è¿‡çš„å­—èŠ‚æ•°ç»„å­—ç¬¦ä¸²
 	}
 	
 	public static String getImageStr(byte[] data) {
 		if(data == null)return null;
-		// ¶Ô×Ö½ÚÊı×éBase64±àÂë
+		// å¯¹å­—èŠ‚æ•°ç»„Base64ç¼–ç 
 		BASE64Encoder encoder = new BASE64Encoder();
-		return encoder.encode(data);// ·µ»ØBase64±àÂë¹ıµÄ×Ö½ÚÊı×é×Ö·û´®
+		return encoder.encode(data);// è¿”å›Base64ç¼–ç è¿‡çš„å­—èŠ‚æ•°ç»„å­—ç¬¦ä¸²
 	}
 	
 	/**
-	 * ½«Base64Î»±àÂëµÄÍ¼Æ¬½øĞĞ½âÂë£¬²¢±£´æµ½Ö¸¶¨Ä¿Â¼
+	 * å°†Base64ä½ç¼–ç çš„å›¾ç‰‡è¿›è¡Œè§£ç ï¼Œå¹¶ä¿å­˜åˆ°æŒ‡å®šç›®å½•
 	 * 
 	 * @param base64
-	 *            base64±àÂëµÄÍ¼Æ¬ĞÅÏ¢
+	 *            base64ç¼–ç çš„å›¾ç‰‡ä¿¡æ¯
 	 * @return
 	 */
 	public static void decodeBase64ToImage(String base64, String path,
@@ -62,20 +62,20 @@ public class ImageUtils {
 		}
 	}
 
-	public static boolean GenerateImage(String imgStr) {// ¶Ô×Ö½ÚÊı×é×Ö·û´®½øĞĞBase64½âÂë²¢Éú³ÉÍ¼Æ¬
-		if (imgStr == null) // Í¼ÏñÊı¾İÎª¿Õ
+	public static boolean GenerateImage(String imgStr) {// å¯¹å­—èŠ‚æ•°ç»„å­—ç¬¦ä¸²è¿›è¡ŒBase64è§£ç å¹¶ç”Ÿæˆå›¾ç‰‡
+		if (imgStr == null) // å›¾åƒæ•°æ®ä¸ºç©º
 			return false;
 		BASE64Decoder decoder = new BASE64Decoder();
 		try {
-			// Base64½âÂë
+			// Base64è§£ç 
 			byte[] b = decoder.decodeBuffer(imgStr);
 			for (int i = 0; i < b.length; ++i) {
-				if (b[i] < 0) {// µ÷ÕûÒì³£Êı¾İ
+				if (b[i] < 0) {// è°ƒæ•´å¼‚å¸¸æ•°æ®
 					b[i] += 256;
 				}
 			}
-			// Éú³ÉjpegÍ¼Æ¬
-			String imgFilePath = "d:\\222.jpg";// ĞÂÉú³ÉµÄÍ¼Æ¬
+			// ç”Ÿæˆjpegå›¾ç‰‡
+			String imgFilePath = "d:\\222.jpg";// æ–°ç”Ÿæˆçš„å›¾ç‰‡
 			OutputStream out = new FileOutputStream(imgFilePath);
 			out.write(b);
 			out.flush();

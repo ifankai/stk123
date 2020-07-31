@@ -24,7 +24,7 @@ import com.stk123.tool.util.JdbcUtils;
 import com.stk123.tool.util.JsonUtils;
 
 /**
- * Ñ©ÇòÓÃ»§Ò³Ãæ³¤ÎÄ
+ * é›ªçƒç”¨æˆ·é¡µé¢é•¿æ–‡
  */
 public class XueqiuLongArticleJob implements Job {
 	
@@ -32,12 +32,12 @@ public class XueqiuLongArticleJob implements Job {
 	
 	private static List<String> ID_EXCLUDED = new ArrayList<String>();
 	static{
-		ID_EXCLUDED.add("5124430882");//ÒªÎÅÖ±²¥
-		ID_EXCLUDED.add("3966435964");//»Û²©×ÊÑ¶-Âõ²©
-		ID_EXCLUDED.add("2724224241");//Ë½Ä¼ÅÅÅÅÍø
-		ID_EXCLUDED.add("2228854973");//ÔÆ²Æ¾­
-		ID_EXCLUDED.add("6093797154");//»ª±¦ÓÍÆø
-		ID_EXCLUDED.add("9485866208");//µ°¾í»ù½ğ
+		ID_EXCLUDED.add("5124430882");//è¦é—»ç›´æ’­
+		ID_EXCLUDED.add("3966435964");//æ…§åšèµ„è®¯-è¿ˆåš
+		ID_EXCLUDED.add("2724224241");//ç§å‹Ÿæ’æ’ç½‘
+		ID_EXCLUDED.add("2228854973");//äº‘è´¢ç»
+		ID_EXCLUDED.add("6093797154");//åå®æ²¹æ°”
+		ID_EXCLUDED.add("9485866208");//è›‹å·åŸºé‡‘
 				
 	}
 	
@@ -72,7 +72,7 @@ public class XueqiuLongArticleJob implements Job {
 			}
 			
 			/*if(arts.size() > 0){
-				EmailUtils.send("Ñ©Çò³¤ÎÄ", StringUtils.join(arts, "<br><br>"));
+				EmailUtils.send("é›ªçƒé•¿æ–‡", StringUtils.join(arts, "<br><br>"));
 			}*/
 			
 			Connection conn = null;
@@ -105,7 +105,7 @@ public class XueqiuLongArticleJob implements Job {
 				Thread.sleep(r.nextInt(1000));
 			}
 			/*if(arts.size() > 0){
-				EmailUtils.send("·Ç¹Ø×¢´óVÑ©Çò³¤ÎÄ", StringUtils.join(arts, "<br><br>"));
+				EmailUtils.send("éå…³æ³¨å¤§Vé›ªçƒé•¿æ–‡", StringUtils.join(arts, "<br><br>"));
 			}*/
 			
 		} catch (Exception e) {
@@ -126,7 +126,7 @@ public class XueqiuLongArticleJob implements Job {
 				if(ID_EXCLUDED.contains(String.valueOf(user.get("id")))){
 					continue;
 				}
-				if(Integer.parseInt(String.valueOf(user.get("verified_type"))) == 4){//Ñ©Çò¹Ù·½ÕËºÅ
+				if(Integer.parseInt(String.valueOf(user.get("verified_type"))) == 4){//é›ªçƒå®˜æ–¹è´¦å·
 					continue;
 				}
 				XueqiuUser u = new XueqiuUser();
@@ -185,7 +185,7 @@ public class XueqiuLongArticleJob implements Job {
 					results.add(a);
 					if(results.size() >= 20){
 						//System.out.println("send xueqiu long article mail ......");
-						EmailUtils.send("Ñ©Çò³¤ÎÄ", StringUtils.join(results, "<br><br>"));
+						EmailUtils.send("é›ªçƒé•¿æ–‡", StringUtils.join(results, "<br><br>"));
 						results.clear();
 					}
 				}

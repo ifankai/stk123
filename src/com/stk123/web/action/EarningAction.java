@@ -122,7 +122,7 @@ public class EarningAction {
 		String real = request.getParameter("real");
 		
 		boolean flag = true;
-		//¾ßÌå±êµÄ²éÑ¯£¬ËùÒÔ²»ÓÃÅÅ³ı
+		//å…·ä½“æ ‡çš„æŸ¥è¯¢ï¼Œæ‰€ä»¥ä¸ç”¨æ’é™¤
 		if("true".equals(querycarestkonly) || !StringUtils.isEmpty(querystk)){
 			flag = false;
 		}
@@ -148,7 +148,7 @@ public class EarningAction {
             sql.append(" left join (select t.fn_value as Gross_margin,t.type,t.code");
 			sql.append(" from (select s.*,ROW_NUMBER() over(PARTITION by code,type order by fn_date desc) as num");
             sql.append(" from stk_fn_data s ) t");
-            sql.append(" where t.num = 1) fn on c.code=fn.code and fn.type=106");//106:Ã«ÀûÂÊ
+            sql.append(" where t.num = 1) fn on c.code=fn.code and fn.type=106");//106:æ¯›åˆ©ç‡
 			
 			sql.append(" ) ");
 			sql.append(" where 1=1 ");
@@ -183,7 +183,7 @@ public class EarningAction {
             sql.append(" left join (select t.fn_value as gross_margin,t.type,t.code");
 			sql.append(" from (select s.*,ROW_NUMBER() over(PARTITION by code,type order by fn_date desc) as num");
             sql.append(" from stk_fn_data s ) t");
-            sql.append(" where t.num = 1) fn on c.code=fn.code and fn.type=106");//106:Ã«ÀûÂÊ
+            sql.append(" where t.num = 1) fn on c.code=fn.code and fn.type=106");//106:æ¯›åˆ©ç‡
 			
 			sql.append(" where ");
 			
@@ -290,7 +290,7 @@ public class EarningAction {
 					}
 				}
 				map.add(StkUtils.number2String(mv,2));
-				//Ã«ÀûÂÊ
+				//æ¯›åˆ©ç‡
 				//StkFnDataCust fn = index.getFnDataLastestByType(index.FN_GROSS_MARGIN);
 				map.add(StkUtils.numberFormat2Digits(care.getGrossMargin()) + "%");	
 				map.add(care.getFnDate()==null?"":StkUtils.formatDate(care.getFnDate()));
@@ -316,15 +316,15 @@ public class EarningAction {
 				if(care.getRealDate() != null){
 					Double jlr = null;
 					try{
-						String str = StkUtils.getMatchString(care.getDetail(),"-?[0-9]*(\\.?)[0-9]*ÍòÔª.{1}-?[0-9]*(\\.?)[0-9]*ÍòÔª");
+						String str = StkUtils.getMatchString(care.getDetail(),"-?[0-9]*(\\.?)[0-9]*ä¸‡å…ƒ.{1}-?[0-9]*(\\.?)[0-9]*ä¸‡å…ƒ");
 						double jlr2 = care.getLastAmount()/10000*(1+perGrowth);
 						if(str != null){
-							double jlrlow = Double.parseDouble(StringUtils.substringBefore(str, "ÍòÔª"));
-							double jlrhigh = Double.parseDouble(StkUtils.getNumberFromString(StringUtils.substringAfter(str, "ÍòÔª")).replaceAll("-", ""));
+							double jlrlow = Double.parseDouble(StringUtils.substringBefore(str, "ä¸‡å…ƒ"));
+							double jlrhigh = Double.parseDouble(StkUtils.getNumberFromString(StringUtils.substringAfter(str, "ä¸‡å…ƒ")).replaceAll("-", ""));
 							jlr2 = (jlrlow+jlrhigh)/2/10000;
 						}else{
-							if("Ô¤Ó¯".equals(care.getErType()) && care.getLastAmount() < 0){
-								jlr2 = Math.abs(care.getLastAmount()/10000*(1+perGrowth));//ÒòÎªÔ¤Ó¯£¬ËùÒÔjlr²»¿ÉÄÜÊÇ¸ºÊı
+							if("é¢„ç›ˆ".equals(care.getErType()) && care.getLastAmount() < 0){
+								jlr2 = Math.abs(care.getLastAmount()/10000*(1+perGrowth));//å› ä¸ºé¢„ç›ˆï¼Œæ‰€ä»¥jlrä¸å¯èƒ½æ˜¯è´Ÿæ•°
 							}
 						}
 						if(care.getFnDate().endsWith(StkUtils.MMDD_Q4)){
@@ -362,10 +362,10 @@ public class EarningAction {
 						continue;
 					}
 				}
-				//Òµ¼¨Ô¤¸æºópe
+				//ä¸šç»©é¢„å‘Šåpe
 				map.add(pe==null?"-":pe);
-				//ÀúÊ·µÍpe
-				//Òµ¼¨Ô¤¸æºópe/ÀúÊ·µÍpe
+				//å†å²ä½pe
+				//ä¸šç»©é¢„å‘Šåpe/å†å²ä½pe
 				double totalpe = 0.0;
 				double maxpe = 0.0;
 				int m = 0;
@@ -394,9 +394,9 @@ public class EarningAction {
 				double jlrzz = index.getCAGRByEarningsForecast();
 				map.add(pe==null||jlrzz == 0?"-":StkUtils.number2String(pe/jlrzz, 2));
 				
-				//Òµ¼¨ĞŞÕı
+				//ä¸šç»©ä¿®æ­£
 				/*List<StkImportInfo> infos = index.getImportInfoAfterDate(260, start30);
-				map.add(infos.size()>0?"ÉÏµ÷":"-");*/
+				map.add(infos.size()>0?"ä¸Šè°ƒ":"-");*/
 				List<StkEarningsForecast> efs = index.getEarningsForecast();
 				boolean has1 = false;
 				boolean has2 = false;
@@ -420,30 +420,30 @@ public class EarningAction {
 					map.add("-");
 				}
 				
-				//Òµ¼¨Ô¤¸æ¹«¸æÈÕÆÚ
+				//ä¸šç»©é¢„å‘Šå…¬å‘Šæ—¥æœŸ
 				map.add(care.getNoticeDate()!=null?StkUtils.formatDate(care.getNoticeDate()):"-");
 				map.add(care.getRealDate()!=null?StkUtils.formatDate(care.getRealDate()):"-");
 				map.add(care.getInsertTime()!=null?StkUtils.formatDate(care.getInsertTime(), StkUtils.sf_ymd):"-");
-				//ÁÁµã
+				//äº®ç‚¹
 				/*List<String> ld = new ArrayList<String>();
 				infos = index.getImportInfoAfterDate(140, start180);
 				if(infos.size() > 0){
-					ld.add("ÖØ×é²¢¹º("+infos.size()+")");
+					ld.add("é‡ç»„å¹¶è´­("+infos.size()+")");
 				}
-				//·Ç¹«¶¨Ôö
+				//éå…¬å®šå¢
 				infos = index.getImportInfoAfterDate(150, start180);
 				if(infos.size() > 0){
-					ld.add("·Ç¹«¶¨Ôö("+infos.size()+")");
+					ld.add("éå…¬å®šå¢("+infos.size()+")");
 				}
-				//Ôö³ÖÔ±¹¤³Ö¹É
+				//å¢æŒå‘˜å·¥æŒè‚¡
 				infos = index.getImportInfoAfterDate(120, start180);
 				if(infos.size() > 0){
-					ld.add("Ôö³ÖÔ±³Ö("+infos.size()+")");
+					ld.add("å¢æŒå‘˜æŒ("+infos.size()+")");
 				}
-				//¹Õµã
+				//æ‹ç‚¹
 				infos = index.getImportInfoAfterDate(210, start180);
 				if(infos.size() > 0){
-					ld.add("¹Õµã("+infos.size()+")");
+					ld.add("æ‹ç‚¹("+infos.size()+")");
 				}
 				map.add(WebUtils.display(StringUtils.join(ld, ","), 6, false));*/
 				

@@ -15,18 +15,18 @@ public class QuartzTest {
         TestJob job = new TestJob();  
         String job_name ="11";  
         try {  
-            System.out.println(returnstr+ "¡¾ÏµÍ³Æô¶¯¡¿");  
-            QuartzManager.addJob(job_name,job,"0/2 * * * * ?"); //Ã¿2ÃëÖÓÖ´ĞĞÒ»´Î  
+            System.out.println(returnstr+ "ã€ç³»ç»Ÿå¯åŠ¨ã€‘");  
+            QuartzManager.addJob(job_name,job,"0/2 * * * * ?"); //æ¯2ç§’é’Ÿæ‰§è¡Œä¸€æ¬¡  
 
 //            Thread.sleep(10000);  
-//            System.out.println("¡¾ĞŞ¸ÄÊ±¼ä¡¿");  
+//            System.out.println("ã€ä¿®æ”¹æ—¶é—´ã€‘");  
 //            QuartzManager.modifyJobTime(job_name,"0/10 * * * * ?");  
 //            Thread.sleep(20000);  
-//            System.out.println("¡¾ÒÆ³ı¶¨Ê±¡¿");  
+//            System.out.println("ã€ç§»é™¤å®šæ—¶ã€‘");  
 //            QuartzManager.removeJob(job_name);  
 //            Thread.sleep(10000);  
 //              
-//            System.out.println("/n¡¾Ìí¼Ó¶¨Ê±ÈÎÎñ¡¿");  
+//            System.out.println("/nã€æ·»åŠ å®šæ—¶ä»»åŠ¡ã€‘");  
 //            QuartzManager.addJob(job_name,job,"0/5 * * * * ?");  
               
         }  catch (Exception e) {  

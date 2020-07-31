@@ -160,8 +160,8 @@ public class ActionServlet extends HttpServlet {
 		        	throw new ServletException("forward name '"+forward+"' is not existing under action "+actionConfig.getPath()); 
 		        }
 		        /**
-		         * ÄÚ²¿Ìø×ª£¬¸ù¾İmvc-config.xmlµÄÅäÖÃ
-		         * <forward name="fail" redirect="true" path="index" />Ö±½Óµ½×ªµ½path=indexµÄactionÉÏ 
+		         * å†…éƒ¨è·³è½¬ï¼Œæ ¹æ®mvc-config.xmlçš„é…ç½®
+		         * <forward name="fail" redirect="true" path="index" />ç›´æ¥åˆ°è½¬åˆ°path=indexçš„actionä¸Š 
 		         */
 		        actionConfig = mvcConfig.getActions().get(forwardConfig.getPath());
     		}while(actionConfig != null);
@@ -178,7 +178,7 @@ public class ActionServlet extends HttpServlet {
     public ActionContext createActionContext(HttpServletRequest request, 
     		HttpServletResponse response, Object form) throws ServletException {
         ActionContext oldContext = ActionContext.getContext();
-        if (oldContext != null) {//ÄÚ²¿Ìø×ª
+        if (oldContext != null) {//å†…éƒ¨è·³è½¬
             return oldContext;
         } else {
         	ActionContext ctx = null;
@@ -197,12 +197,12 @@ public class ActionServlet extends HttpServlet {
             if(session != null){
             	User user = (User)session.getAttribute(StkConstant.SESSION_CURRENT_USER);
     			ctx.put(StkConstant.SESSION_CURRENT_USER, user);
-            	//throw new ServletException("ÇëÖØĞÂµÇÂ½!");
+            	//throw new ServletException("è¯·é‡æ–°ç™»é™†!");
             }
             if(!StkUtils.isDev()){
             	StkUser su = new StkUser();
             	su.setId(1);
-            	su.setNickname("Stk123Ö®Â·");
+            	su.setNickname("Stk123ä¹‹è·¯");
             	User user = new User(su);
             	if(session == null){
             		session = request.getSession();

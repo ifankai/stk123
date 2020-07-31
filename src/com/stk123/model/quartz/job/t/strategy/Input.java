@@ -7,17 +7,17 @@ public class Input {
 	
 	private int id = 0;
 	/**
-	 * ×ÜµÄÊ±¼ä¶Î,µ¥Î»:Ğ¡Ê±
+	 * æ€»çš„æ—¶é—´æ®µ,å•ä½:å°æ—¶
 	 */
 	private double hours = 0.0;
 	
 	/**
-	 * Æ½Ì¨×î¸ßµãÓë×îµÍµã±ÈÖµ
+	 * å¹³å°æœ€é«˜ç‚¹ä¸æœ€ä½ç‚¹æ¯”å€¼
 	 */
 	private double percent = 0.0;
 	
 	/**
-	 * ¶à¾ÃÊ±¼äÄÚ·¢ÉúamountµÄ±¶Á¿¶ÔÓ¦µÄrank
+	 * å¤šä¹…æ—¶é—´å†…å‘ç”Ÿamountçš„å€é‡å¯¹åº”çš„rank
 	 * <atime, [amount multiple]>
 	 */
 	private Name2Value<Integer, Name2Value<Double,Double>> timeAmountMultiple = null;
@@ -26,8 +26,8 @@ public class Input {
 	
 	//----------------------------------------------
 	//----------------------------------------------
-	private K k = null; //Âú×ãÌõ¼şµÄkÏß
-	private double multiple = 0.0;//Á¿ÄÜ±¶Êı
+	private K k = null; //æ»¡è¶³æ¡ä»¶çš„kçº¿
+	private double multiple = 0.0;//é‡èƒ½å€æ•°
 	
 	public Input(int id, double hours, Name2Value<Integer, Name2Value<Double,Double>> timeAmountMultiple, int rank){
 		this(id, hours,0, timeAmountMultiple, rank);

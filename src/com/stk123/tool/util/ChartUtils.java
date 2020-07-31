@@ -71,7 +71,7 @@ public class ChartUtils {
 			createLineChart(dataset,null,null,null,"999999");*/
 			
 			DefaultCategoryDataset chartDate = new DefaultCategoryDataset();  
-	        // Ôö¼Ó²âÊÔÊı¾İ£¬µÚÒ»¸ö²ÎÊıÊÇ·ÃÎÊÁ¿£¬×îºóÒ»¸öÊÇÊ±¼ä£¬ÖĞ¼äÊÇÏÔÊ¾ÓÃ²»¿¼ÂÇ  
+	        // å¢åŠ æµ‹è¯•æ•°æ®ï¼Œç¬¬ä¸€ä¸ªå‚æ•°æ˜¯è®¿é—®é‡ï¼Œæœ€åä¸€ä¸ªæ˜¯æ—¶é—´ï¼Œä¸­é—´æ˜¯æ˜¾ç¤ºç”¨ä¸è€ƒè™‘  
 	        chartDate.addValue(-10.90, "", "20160810");  
 	        chartDate.addValue(14.10, "", "20160811");  
 	        chartDate.addValue(30.50, "", "20160812");  
@@ -102,7 +102,7 @@ public class ChartUtils {
         plot.getDomainAxis().setVisible(false);
         
         ValueAxis rangeAxis = plot.getRangeAxis();
-        //ÉèÖÃYÖáµÄ×î´óÖµ
+        //è®¾ç½®Yè½´çš„æœ€å¤§å€¼
         //rangeAxis.setUpperBound(50);
         //rangeAxis.setLowerBound(-50);
         
@@ -114,8 +114,8 @@ public class ChartUtils {
                 return Color.GREEN;
             } 
         };
-        renderer.setItemLabelAnchorOffset(0); //°ÑÖµÉèÖÃÎª0
-	    //ÏÔÊ¾Ã¿¸öÖùµÄÊıÖµ£¬²¢ĞŞ¸Ä¸ÃÊıÖµµÄ×ÖÌåÊôĞÔ
+        renderer.setItemLabelAnchorOffset(0); //æŠŠå€¼è®¾ç½®ä¸º0
+	    //æ˜¾ç¤ºæ¯ä¸ªæŸ±çš„æ•°å€¼ï¼Œå¹¶ä¿®æ”¹è¯¥æ•°å€¼çš„å­—ä½“å±æ€§
 	    renderer.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator());
 	    renderer.setBaseItemLabelsVisible(true);
 	    plot.setRenderer(renderer);
@@ -126,7 +126,7 @@ public class ChartUtils {
 
 	}
 	
-	// time Ê±ĞòÍ¼ 
+	// time æ—¶åºå›¾ 
     private static TimeSeriesCollection getDataSetTimeSeries() { 
         TimeSeries s1 = new TimeSeries("L&G European Index Trust", Month.class); 
         s1.add(new Month(2, 2001), 181.8); 
@@ -176,7 +176,7 @@ public class ChartUtils {
     private static void genTimeSeries() { 
         TimeSeriesCollection dataset = getDataSetTimeSeries(); 
         JFreeChart chart = ChartFactory.createTimeSeriesChart( 
-                "Ê±ĞòÍ¼TimeSeries", 
+                "æ—¶åºå›¾TimeSeries", 
                 "Date", 
                 "Price Per Unit", 
                 dataset, 
@@ -189,11 +189,11 @@ public class ChartUtils {
             fos_jpg = new FileOutputStream(path+"fruittime.jpg"); 
             ChartUtils.writeChartAsJPEG(fos_jpg,1,chart,800,600,null); 
             FileOutputStream output = new FileOutputStream(path+"fruittime2.png"); 
-            //ÉèÖÃ±³¾°É« 
+            //è®¾ç½®èƒŒæ™¯è‰² 
             chart.setBackgroundPaint(Color.WHITE); 
-            //ÉèÖÃÊ±ĞòÍ¼ÖĞÏßÌõµÄÑÕÉ« 
+            //è®¾ç½®æ—¶åºå›¾ä¸­çº¿æ¡çš„é¢œè‰² 
             XYLineAndShapeRenderer xylinerenderer=(XYLineAndShapeRenderer)chart.getXYPlot().getRenderer(); 
-            //ÒÔÏÂ·Ö±ğ¸øÍ¬Ò»¸öÇúÏßÍ¼ÖĞ3ÌõÇúÏßÉèÖÃÑÕÉ«,0ÎªµÚÒ»Ìõ1ÎªµÚ¶şÌõ,...... 
+            //ä»¥ä¸‹åˆ†åˆ«ç»™åŒä¸€ä¸ªæ›²çº¿å›¾ä¸­3æ¡æ›²çº¿è®¾ç½®é¢œè‰²,0ä¸ºç¬¬ä¸€æ¡1ä¸ºç¬¬äºŒæ¡,...... 
             xylinerenderer.setSeriesPaint(0,Color.YELLOW); 
             //chart.setBorderPaint(Color.BLUE); 
             ChartUtilities.writeChartAsPNG(output, chart, 800, 600); 
@@ -220,12 +220,12 @@ public class ChartUtils {
 
 	
 	public static void KLineCombineChart() { 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");//ÉèÖÃÈÕÆÚ¸ñÊ½ 
-        double highValue = Double.MIN_VALUE;//ÉèÖÃKÏßÊı¾İµ±ÖĞµÄ×î´óÖµ 
-        double minValue = Double.MAX_VALUE;//ÉèÖÃKÏßÊı¾İµ±ÖĞµÄ×îĞ¡Öµ 
-        double high2Value = Double.MIN_VALUE;//ÉèÖÃ³É½»Á¿µÄ×î´óÖµ 
-        double min2Value = Double.MAX_VALUE;//ÉèÖÃ³É½»Á¿µÄ×îµÍÖµ 
-        OHLCSeries series = new OHLCSeries("");//¸ß¿ªµÍÊÕÊı¾İĞòÁĞ£¬¹ÉÆ±KÏßÍ¼µÄËÄ¸öÊı¾İ£¬ÒÀ´ÎÊÇ¿ª£¬¸ß£¬µÍ£¬ÊÕ 
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");//è®¾ç½®æ—¥æœŸæ ¼å¼ 
+        double highValue = Double.MIN_VALUE;//è®¾ç½®Kçº¿æ•°æ®å½“ä¸­çš„æœ€å¤§å€¼ 
+        double minValue = Double.MAX_VALUE;//è®¾ç½®Kçº¿æ•°æ®å½“ä¸­çš„æœ€å°å€¼ 
+        double high2Value = Double.MIN_VALUE;//è®¾ç½®æˆäº¤é‡çš„æœ€å¤§å€¼ 
+        double min2Value = Double.MAX_VALUE;//è®¾ç½®æˆäº¤é‡çš„æœ€ä½å€¼ 
+        OHLCSeries series = new OHLCSeries("");//é«˜å¼€ä½æ”¶æ•°æ®åºåˆ—ï¼Œè‚¡ç¥¨Kçº¿å›¾çš„å››ä¸ªæ•°æ®ï¼Œä¾æ¬¡æ˜¯å¼€ï¼Œé«˜ï¼Œä½ï¼Œæ”¶ 
         series.add(new Day(28, 9, 2007), 9.2, 9.58, 9.16, 9.34); 
         series.add(new Day(27, 9, 2007), 8.9, 9.06, 8.83, 8.96); 
         series.add(new Day(26, 9, 2007), 9.0, 9.1, 8.82, 9.04); 
@@ -256,9 +256,9 @@ public class ChartUtils {
         series.add(new Day(22, 8, 2007), 6.96, 7.15, 6.93, 7.11); 
         series.add(new Day(21, 8, 2007), 7.10, 7.15, 7.02, 7.07); 
         series.add(new Day(20, 8, 2007), 7.02, 7.19, 6.94, 7.14); 
-        final OHLCSeriesCollection seriesCollection = new OHLCSeriesCollection();//±£ÁôKÏßÊı¾İµÄÊı¾İ¼¯£¬±ØĞëÉêÃ÷Îªfinal£¬ºóÃæÒªÔÚÄäÃûÄÚ²¿ÀàÀïÃæÓÃµ½ 
+        final OHLCSeriesCollection seriesCollection = new OHLCSeriesCollection();//ä¿ç•™Kçº¿æ•°æ®çš„æ•°æ®é›†ï¼Œå¿…é¡»ç”³æ˜ä¸ºfinalï¼Œåé¢è¦åœ¨åŒ¿åå†…éƒ¨ç±»é‡Œé¢ç”¨åˆ° 
         seriesCollection.addSeries(series); 
-        TimeSeries series2=new TimeSeries("");//¶ÔÓ¦Ê±¼ä³É½»Á¿Êı¾İ 
+        TimeSeries series2=new TimeSeries("");//å¯¹åº”æ—¶é—´æˆäº¤é‡æ•°æ® 
         series2.add(new Day(28, 9, 2007), 260659400/100); 
         series2.add(new Day(27, 9, 2007), 119701900/100); 
         series2.add(new Day(26, 9, 2007), 109719000/100); 
@@ -289,83 +289,83 @@ public class ChartUtils {
         series2.add(new Day(22, 8, 2007), 232570200/100); 
         series2.add(new Day(21, 8, 2007), 215693200/100); 
         series2.add(new Day(20, 8, 2007), 200287500/100); 
-        TimeSeriesCollection timeSeriesCollection=new TimeSeriesCollection();//±£Áô³É½»Á¿Êı¾İµÄ¼¯ºÏ 
+        TimeSeriesCollection timeSeriesCollection=new TimeSeriesCollection();//ä¿ç•™æˆäº¤é‡æ•°æ®çš„é›†åˆ 
         timeSeriesCollection.addSeries(series2); 
 
-        //»ñÈ¡KÏßÊı¾İµÄ×î¸ßÖµºÍ×îµÍÖµ 
-        int seriesCount = seriesCollection.getSeriesCount();//Ò»¹²ÓĞ¶àÉÙ¸öĞòÁĞ£¬Ä¿Ç°ÎªÒ»¸ö 
+        //è·å–Kçº¿æ•°æ®çš„æœ€é«˜å€¼å’Œæœ€ä½å€¼ 
+        int seriesCount = seriesCollection.getSeriesCount();//ä¸€å…±æœ‰å¤šå°‘ä¸ªåºåˆ—ï¼Œç›®å‰ä¸ºä¸€ä¸ª 
         for (int i = 0; i < seriesCount; i++) { 
-            int itemCount = seriesCollection.getItemCount(i);//Ã¿Ò»¸öĞòÁĞÓĞ¶àÉÙ¸öÊı¾İÏî 
+            int itemCount = seriesCollection.getItemCount(i);//æ¯ä¸€ä¸ªåºåˆ—æœ‰å¤šå°‘ä¸ªæ•°æ®é¡¹ 
             for (int j = 0; j < itemCount; j++) { 
-                if (highValue < seriesCollection.getHighValue(i, j)) {//È¡µÚi¸öĞòÁĞÖĞµÄµÚj¸öÊı¾İÏîµÄ×î´óÖµ 
+                if (highValue < seriesCollection.getHighValue(i, j)) {//å–ç¬¬iä¸ªåºåˆ—ä¸­çš„ç¬¬jä¸ªæ•°æ®é¡¹çš„æœ€å¤§å€¼ 
                     highValue = seriesCollection.getHighValue(i, j); 
                 } 
-                if (minValue > seriesCollection.getLowValue(i, j)) {//È¡µÚi¸öĞòÁĞÖĞµÄµÚj¸öÊı¾İÏîµÄ×îĞ¡Öµ 
+                if (minValue > seriesCollection.getLowValue(i, j)) {//å–ç¬¬iä¸ªåºåˆ—ä¸­çš„ç¬¬jä¸ªæ•°æ®é¡¹çš„æœ€å°å€¼ 
                     minValue = seriesCollection.getLowValue(i, j); 
                 } 
             } 
         } 
-        //»ñÈ¡×î¸ßÖµºÍ×îµÍÖµ 
-        int seriesCount2 = timeSeriesCollection.getSeriesCount();//Ò»¹²ÓĞ¶àÉÙ¸öĞòÁĞ£¬Ä¿Ç°ÎªÒ»¸ö 
+        //è·å–æœ€é«˜å€¼å’Œæœ€ä½å€¼ 
+        int seriesCount2 = timeSeriesCollection.getSeriesCount();//ä¸€å…±æœ‰å¤šå°‘ä¸ªåºåˆ—ï¼Œç›®å‰ä¸ºä¸€ä¸ª 
         for (int i = 0; i < seriesCount2; i++) { 
-            int itemCount = timeSeriesCollection.getItemCount(i);//Ã¿Ò»¸öĞòÁĞÓĞ¶àÉÙ¸öÊı¾İÏî 
+            int itemCount = timeSeriesCollection.getItemCount(i);//æ¯ä¸€ä¸ªåºåˆ—æœ‰å¤šå°‘ä¸ªæ•°æ®é¡¹ 
             for (int j = 0; j < itemCount; j++) { 
-                if (high2Value < timeSeriesCollection.getYValue(i,j)) {//È¡µÚi¸öĞòÁĞÖĞµÄµÚj¸öÊı¾İÏîµÄÖµ 
+                if (high2Value < timeSeriesCollection.getYValue(i,j)) {//å–ç¬¬iä¸ªåºåˆ—ä¸­çš„ç¬¬jä¸ªæ•°æ®é¡¹çš„å€¼ 
                     high2Value = timeSeriesCollection.getYValue(i,j); 
                 } 
-                if (min2Value > timeSeriesCollection.getYValue(i, j)) {//È¡µÚi¸öĞòÁĞÖĞµÄµÚj¸öÊı¾İÏîµÄÖµ 
+                if (min2Value > timeSeriesCollection.getYValue(i, j)) {//å–ç¬¬iä¸ªåºåˆ—ä¸­çš„ç¬¬jä¸ªæ•°æ®é¡¹çš„å€¼ 
                     min2Value = timeSeriesCollection.getYValue(i, j); 
                 } 
             } 
         } 
 
-        final CandlestickRenderer candlestickRender=new CandlestickRenderer();//ÉèÖÃKÏßÍ¼µÄ»­Í¼Æ÷£¬±ØĞëÉêÃ÷Îªfinal£¬ºóÃæÒªÔÚÄäÃûÄÚ²¿ÀàÀïÃæÓÃµ½ 
-        candlestickRender.setUseOutlinePaint(true); //ÉèÖÃÊÇ·ñÊ¹ÓÃ×Ô¶¨ÒåµÄ±ß¿òÏß£¬³ÌĞò×Ô´øµÄ±ß¿òÏßµÄÑÕÉ«²»·ûºÏÖĞ¹ú¹ÉÆ±ÊĞ³¡µÄÏ°¹ß 
-        candlestickRender.setAutoWidthMethod(CandlestickRenderer.WIDTHMETHOD_AVERAGE);//ÉèÖÃÈçºÎ¶ÔKÏßÍ¼µÄ¿í¶È½øĞĞÉè¶¨ 
-        candlestickRender.setAutoWidthGap(0.001);//ÉèÖÃ¸÷¸öKÏßÍ¼Ö®¼äµÄ¼ä¸ô 
-        candlestickRender.setUpPaint(Color.RED);//ÉèÖÃ¹ÉÆ±ÉÏÕÇµÄKÏßÍ¼ÑÕÉ« 
-        candlestickRender.setDownPaint(Color.GREEN);//ÉèÖÃ¹ÉÆ±ÏÂµøµÄKÏßÍ¼ÑÕÉ« 
-        DateAxis x1Axis=new DateAxis();//ÉèÖÃxÖá£¬Ò²¾ÍÊÇÊ±¼äÖá 
-        x1Axis.setAutoRange(false);//ÉèÖÃ²»²ÉÓÃ×Ô¶¯ÉèÖÃÊ±¼ä·¶Î§ 
+        final CandlestickRenderer candlestickRender=new CandlestickRenderer();//è®¾ç½®Kçº¿å›¾çš„ç”»å›¾å™¨ï¼Œå¿…é¡»ç”³æ˜ä¸ºfinalï¼Œåé¢è¦åœ¨åŒ¿åå†…éƒ¨ç±»é‡Œé¢ç”¨åˆ° 
+        candlestickRender.setUseOutlinePaint(true); //è®¾ç½®æ˜¯å¦ä½¿ç”¨è‡ªå®šä¹‰çš„è¾¹æ¡†çº¿ï¼Œç¨‹åºè‡ªå¸¦çš„è¾¹æ¡†çº¿çš„é¢œè‰²ä¸ç¬¦åˆä¸­å›½è‚¡ç¥¨å¸‚åœºçš„ä¹ æƒ¯ 
+        candlestickRender.setAutoWidthMethod(CandlestickRenderer.WIDTHMETHOD_AVERAGE);//è®¾ç½®å¦‚ä½•å¯¹Kçº¿å›¾çš„å®½åº¦è¿›è¡Œè®¾å®š 
+        candlestickRender.setAutoWidthGap(0.001);//è®¾ç½®å„ä¸ªKçº¿å›¾ä¹‹é—´çš„é—´éš” 
+        candlestickRender.setUpPaint(Color.RED);//è®¾ç½®è‚¡ç¥¨ä¸Šæ¶¨çš„Kçº¿å›¾é¢œè‰² 
+        candlestickRender.setDownPaint(Color.GREEN);//è®¾ç½®è‚¡ç¥¨ä¸‹è·Œçš„Kçº¿å›¾é¢œè‰² 
+        DateAxis x1Axis=new DateAxis();//è®¾ç½®xè½´ï¼Œä¹Ÿå°±æ˜¯æ—¶é—´è½´ 
+        x1Axis.setAutoRange(false);//è®¾ç½®ä¸é‡‡ç”¨è‡ªåŠ¨è®¾ç½®æ—¶é—´èŒƒå›´ 
         try{ 
-            x1Axis.setRange(dateFormat.parse("2007-08-20"),dateFormat.parse("2007-09-29"));//ÉèÖÃÊ±¼ä·¶Î§£¬×¢ÒâÊ±¼äµÄ×î´óÖµÒª±ÈÒÑÓĞµÄÊ±¼ä×î´óÖµÒª¶àÒ»Ìì 
+            x1Axis.setRange(dateFormat.parse("2007-08-20"),dateFormat.parse("2007-09-29"));//è®¾ç½®æ—¶é—´èŒƒå›´ï¼Œæ³¨æ„æ—¶é—´çš„æœ€å¤§å€¼è¦æ¯”å·²æœ‰çš„æ—¶é—´æœ€å¤§å€¼è¦å¤šä¸€å¤© 
         }catch(Exception e){ 
             e.printStackTrace(); 
         } 
-        x1Axis.setTimeline(SegmentedTimeline.newMondayThroughFridayTimeline());//ÉèÖÃÊ±¼äÏßÏÔÊ¾µÄ¹æÔò£¬ÓÃÕâ¸ö·½·¨¾ÍŞğ³ıµôÁËÖÜÁùºÍÖÜÈÕÕâĞ©Ã»ÓĞ½»Ò×µÄÈÕÆÚ(ºÜ¶àÈË¶¼²»ÖªµÀÓĞ´Ë·½·¨)£¬Ê¹Í¼ĞÎ¿´ÉÏÈ¥Á¬Ğø 
-        x1Axis.setAutoTickUnitSelection(false);//ÉèÖÃ²»²ÉÓÃ×Ô¶¯Ñ¡Ôñ¿Ì¶ÈÖµ 
-        x1Axis.setTickMarkPosition(DateTickMarkPosition.MIDDLE);//ÉèÖÃ±ê¼ÇµÄÎ»ÖÃ 
-        x1Axis.setStandardTickUnits(DateAxis.createStandardDateTickUnits());//ÉèÖÃ±ê×¼µÄÊ±¼ä¿Ì¶Èµ¥Î» 
-        x1Axis.setTickUnit(new DateTickUnit(DateTickUnit.DAY,7));//ÉèÖÃÊ±¼ä¿Ì¶ÈµÄ¼ä¸ô£¬Ò»°ãÒÔÖÜÎªµ¥Î» 
-        x1Axis.setDateFormatOverride(new SimpleDateFormat("yyyy-MM-dd"));//ÉèÖÃÏÔÊ¾Ê±¼äµÄ¸ñÊ½ 
-        NumberAxis y1Axis=new NumberAxis();//Éè¶¨yÖá£¬¾ÍÊÇÊı×ÖÖá 
-        y1Axis.setAutoRange(false);//²»²»Ê¹ÓÃ×Ô¶¯Éè¶¨·¶Î§ 
-        y1Axis.setRange(minValue*0.9, highValue*1.1);//Éè¶¨yÖáÖµµÄ·¶Î§£¬±È×îµÍÖµÒªµÍÒ»Ğ©£¬±È×î´óÖµÒª´óÒ»Ğ©£¬ÕâÑùÍ¼ĞÎ¿´ÆğÀ´»áÃÀ¹ÛĞ© 
-        y1Axis.setTickUnit(new NumberTickUnit((highValue*1.1-minValue*0.9)/10));//ÉèÖÃ¿Ì¶ÈÏÔÊ¾µÄÃÜ¶È 
-        XYPlot plot1=new XYPlot(seriesCollection,x1Axis,y1Axis,candlestickRender);//ÉèÖÃ»­Í¼ÇøÓò¶ÔÏó 
+        x1Axis.setTimeline(SegmentedTimeline.newMondayThroughFridayTimeline());//è®¾ç½®æ—¶é—´çº¿æ˜¾ç¤ºçš„è§„åˆ™ï¼Œç”¨è¿™ä¸ªæ–¹æ³•å°±æ‘’é™¤æ‰äº†å‘¨å…­å’Œå‘¨æ—¥è¿™äº›æ²¡æœ‰äº¤æ˜“çš„æ—¥æœŸ(å¾ˆå¤šäººéƒ½ä¸çŸ¥é“æœ‰æ­¤æ–¹æ³•)ï¼Œä½¿å›¾å½¢çœ‹ä¸Šå»è¿ç»­ 
+        x1Axis.setAutoTickUnitSelection(false);//è®¾ç½®ä¸é‡‡ç”¨è‡ªåŠ¨é€‰æ‹©åˆ»åº¦å€¼ 
+        x1Axis.setTickMarkPosition(DateTickMarkPosition.MIDDLE);//è®¾ç½®æ ‡è®°çš„ä½ç½® 
+        x1Axis.setStandardTickUnits(DateAxis.createStandardDateTickUnits());//è®¾ç½®æ ‡å‡†çš„æ—¶é—´åˆ»åº¦å•ä½ 
+        x1Axis.setTickUnit(new DateTickUnit(DateTickUnit.DAY,7));//è®¾ç½®æ—¶é—´åˆ»åº¦çš„é—´éš”ï¼Œä¸€èˆ¬ä»¥å‘¨ä¸ºå•ä½ 
+        x1Axis.setDateFormatOverride(new SimpleDateFormat("yyyy-MM-dd"));//è®¾ç½®æ˜¾ç¤ºæ—¶é—´çš„æ ¼å¼ 
+        NumberAxis y1Axis=new NumberAxis();//è®¾å®šyè½´ï¼Œå°±æ˜¯æ•°å­—è½´ 
+        y1Axis.setAutoRange(false);//ä¸ä¸ä½¿ç”¨è‡ªåŠ¨è®¾å®šèŒƒå›´ 
+        y1Axis.setRange(minValue*0.9, highValue*1.1);//è®¾å®šyè½´å€¼çš„èŒƒå›´ï¼Œæ¯”æœ€ä½å€¼è¦ä½ä¸€äº›ï¼Œæ¯”æœ€å¤§å€¼è¦å¤§ä¸€äº›ï¼Œè¿™æ ·å›¾å½¢çœ‹èµ·æ¥ä¼šç¾è§‚äº› 
+        y1Axis.setTickUnit(new NumberTickUnit((highValue*1.1-minValue*0.9)/10));//è®¾ç½®åˆ»åº¦æ˜¾ç¤ºçš„å¯†åº¦ 
+        XYPlot plot1=new XYPlot(seriesCollection,x1Axis,y1Axis,candlestickRender);//è®¾ç½®ç”»å›¾åŒºåŸŸå¯¹è±¡ 
 
         XYBarRenderer xyBarRender=new XYBarRenderer(){ 
-            private static final long serialVersionUID = 1L;//ÎªÁË±ÜÃâ³öÏÖ¾¯¸æÏûÏ¢£¬ÌØÉè¶¨´ËÖµ 
-            public Paint getItemPaint(int i, int j){//ÄäÃûÄÚ²¿ÀàÓÃÀ´´¦Àíµ±ÈÕµÄ³É½»Á¿ÖùĞÎÍ¼µÄÑÕÉ«ÓëKÏßÍ¼µÄÑÕÉ«±£³ÖÒ»ÖÂ 
-                if(seriesCollection.getCloseValue(i,j)>seriesCollection.getOpenValue(i,j)){//ÊÕÅÌ¼Û¸ßÓÚ¿ªÅÌ¼Û£¬¹ÉÆ±ÉÏÕÇ£¬Ñ¡ÓÃ¹ÉÆ±ÉÏÕÇµÄÑÕÉ« 
+            private static final long serialVersionUID = 1L;//ä¸ºäº†é¿å…å‡ºç°è­¦å‘Šæ¶ˆæ¯ï¼Œç‰¹è®¾å®šæ­¤å€¼ 
+            public Paint getItemPaint(int i, int j){//åŒ¿åå†…éƒ¨ç±»ç”¨æ¥å¤„ç†å½“æ—¥çš„æˆäº¤é‡æŸ±å½¢å›¾çš„é¢œè‰²ä¸Kçº¿å›¾çš„é¢œè‰²ä¿æŒä¸€è‡´ 
+                if(seriesCollection.getCloseValue(i,j)>seriesCollection.getOpenValue(i,j)){//æ”¶ç›˜ä»·é«˜äºå¼€ç›˜ä»·ï¼Œè‚¡ç¥¨ä¸Šæ¶¨ï¼Œé€‰ç”¨è‚¡ç¥¨ä¸Šæ¶¨çš„é¢œè‰² 
                     return candlestickRender.getUpPaint(); 
                 }else{ 
                     return candlestickRender.getDownPaint(); 
                 } 
             }}; 
 
-            xyBarRender.setMargin(0.1);//ÉèÖÃÖùĞÎÍ¼Ö®¼äµÄ¼ä¸ô 
-            NumberAxis y2Axis=new NumberAxis();//ÉèÖÃYÖá£¬ÎªÊıÖµ,ºóÃæµÄÉèÖÃ£¬²Î¿¼ÉÏÃæµÄyÖáÉèÖÃ 
+            xyBarRender.setMargin(0.1);//è®¾ç½®æŸ±å½¢å›¾ä¹‹é—´çš„é—´éš” 
+            NumberAxis y2Axis=new NumberAxis();//è®¾ç½®Yè½´ï¼Œä¸ºæ•°å€¼,åé¢çš„è®¾ç½®ï¼Œå‚è€ƒä¸Šé¢çš„yè½´è®¾ç½® 
             y2Axis.setAutoRange(false); 
             y2Axis.setRange(min2Value*0.9, high2Value*1.1); 
             y2Axis.setTickUnit(new NumberTickUnit((high2Value*1.1-min2Value*0.9)/4)); 
-            XYPlot plot2=new XYPlot(timeSeriesCollection,null,y2Axis,xyBarRender);//½¨Á¢µÚ¶ş¸ö»­Í¼ÇøÓò¶ÔÏó£¬Ö÷Òª´ËÊ±µÄxÖáÉèÎªÁËnullÖµ£¬ÒòÎªÒªÓëµÚÒ»¸ö»­Í¼ÇøÓò¶ÔÏó¹²ÏíxÖá 
-            CombinedDomainXYPlot combineddomainxyplot = new CombinedDomainXYPlot(x1Axis);//½¨Á¢Ò»¸öÇ¡µ±µÄÁªºÏÍ¼ĞÎÇøÓò¶ÔÏó£¬ÒÔxÖáÎª¹²ÏíÖá 
-            combineddomainxyplot.add(plot1, 2);//Ìí¼ÓÍ¼ĞÎÇøÓò¶ÔÏó£¬ºóÃæµÄÊı×ÖÊÇ¼ÆËãÕâ¸öÇøÓò¶ÔÏóÓ¦¸ÃÕ¼¾İ¶à´óµÄÇøÓò2/3 
-            combineddomainxyplot.add(plot2, 1);//Ìí¼ÓÍ¼ĞÎÇøÓò¶ÔÏó£¬ºóÃæµÄÊı×ÖÊÇ¼ÆËãÕâ¸öÇøÓò¶ÔÏóÓ¦¸ÃÕ¼¾İ¶à´óµÄÇøÓò1/3 
-            combineddomainxyplot.setGap(10);//ÉèÖÃÁ½¸öÍ¼ĞÎÇøÓò¶ÔÏóÖ®¼äµÄ¼ä¸ô¿Õ¼ä 
-            JFreeChart chart = new JFreeChart("ÖĞ¹úÁªÍ¨", JFreeChart.DEFAULT_TITLE_FONT, combineddomainxyplot, false); 
-            ChartFrame frame = new ChartFrame("ÖĞ¹úÁªÍ¨¹ÉÆ±", chart); 
+            XYPlot plot2=new XYPlot(timeSeriesCollection,null,y2Axis,xyBarRender);//å»ºç«‹ç¬¬äºŒä¸ªç”»å›¾åŒºåŸŸå¯¹è±¡ï¼Œä¸»è¦æ­¤æ—¶çš„xè½´è®¾ä¸ºäº†nullå€¼ï¼Œå› ä¸ºè¦ä¸ç¬¬ä¸€ä¸ªç”»å›¾åŒºåŸŸå¯¹è±¡å…±äº«xè½´ 
+            CombinedDomainXYPlot combineddomainxyplot = new CombinedDomainXYPlot(x1Axis);//å»ºç«‹ä¸€ä¸ªæ°å½“çš„è”åˆå›¾å½¢åŒºåŸŸå¯¹è±¡ï¼Œä»¥xè½´ä¸ºå…±äº«è½´ 
+            combineddomainxyplot.add(plot1, 2);//æ·»åŠ å›¾å½¢åŒºåŸŸå¯¹è±¡ï¼Œåé¢çš„æ•°å­—æ˜¯è®¡ç®—è¿™ä¸ªåŒºåŸŸå¯¹è±¡åº”è¯¥å æ®å¤šå¤§çš„åŒºåŸŸ2/3 
+            combineddomainxyplot.add(plot2, 1);//æ·»åŠ å›¾å½¢åŒºåŸŸå¯¹è±¡ï¼Œåé¢çš„æ•°å­—æ˜¯è®¡ç®—è¿™ä¸ªåŒºåŸŸå¯¹è±¡åº”è¯¥å æ®å¤šå¤§çš„åŒºåŸŸ1/3 
+            combineddomainxyplot.setGap(10);//è®¾ç½®ä¸¤ä¸ªå›¾å½¢åŒºåŸŸå¯¹è±¡ä¹‹é—´çš„é—´éš”ç©ºé—´ 
+            JFreeChart chart = new JFreeChart("ä¸­å›½è”é€š", JFreeChart.DEFAULT_TITLE_FONT, combineddomainxyplot, false); 
+            ChartFrame frame = new ChartFrame("ä¸­å›½è”é€šè‚¡ç¥¨", chart); 
             frame.pack(); 
             frame.setVisible(true); 
     } 

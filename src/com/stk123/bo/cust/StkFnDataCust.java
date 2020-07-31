@@ -14,10 +14,10 @@ import com.stk123.web.StkConstant;
 public class StkFnDataCust extends StkFnData implements TableCell {
 	
 	private StkFnDataCust before;
-	private int number;//4 µÚËÄ¼¾¶È,3µÚÈı¼¾¶È,2µÚ¶ş¼¾¶È,1µÚÒ»¼¾¶È
+	private int number;//4 ç¬¬å››å­£åº¦,3ç¬¬ä¸‰å­£åº¦,2ç¬¬äºŒå­£åº¦,1ç¬¬ä¸€å­£åº¦
 	private List<StkFnDataCust> fnData;
 	
-	//¶ÔÓÚ  µ¥¼¾Êı¾İÀàĞÍ£¬¿ÉÒÔµ÷ÓÃÕâ¸ö·½·¨£¬µÃµ½°´²ÆÎñÄêÊı¾İ£¬¼´Èı¼¾¶ÈÊÇÇ°Èı¼¾¶ÈÊı¾İÖ®ºÍ
+	//å¯¹äº  å•å­£æ•°æ®ç±»å‹ï¼Œå¯ä»¥è°ƒç”¨è¿™ä¸ªæ–¹æ³•ï¼Œå¾—åˆ°æŒ‰è´¢åŠ¡å¹´æ•°æ®ï¼Œå³ä¸‰å­£åº¦æ˜¯å‰ä¸‰å­£åº¦æ•°æ®ä¹‹å’Œ
 	public Double getFnDataByFnQuarter(){
 		double total = 0.0;
 		if(this.getFnValue() != null)total = this.getFnValue();
@@ -31,7 +31,7 @@ public class StkFnDataCust extends StkFnData implements TableCell {
 		return total;
 	}
 	
-	//¶ÔÓÚ  °´²ÆÎñ¼¾¶ÈµÄÊı¾İ£¬¿ÉÒÔµ÷ÓÃÕâ¸ö·½·¨£¬µÃµ½°´µ¥¼¾¶ÈÊı¾İ£¬¼´Èı¼¾¶ÈÊı¾İÊÇ£¨Èı¼¾¶ÈÊı¾İ ¼õ ¶ş¼¾¶ÈÊı¾İ£©
+	//å¯¹äº  æŒ‰è´¢åŠ¡å­£åº¦çš„æ•°æ®ï¼Œå¯ä»¥è°ƒç”¨è¿™ä¸ªæ–¹æ³•ï¼Œå¾—åˆ°æŒ‰å•å­£åº¦æ•°æ®ï¼Œå³ä¸‰å­£åº¦æ•°æ®æ˜¯ï¼ˆä¸‰å­£åº¦æ•°æ® å‡ äºŒå­£åº¦æ•°æ®ï¼‰
 	public Double getFnDateByOneQuarter() throws Exception{
 		if(this.getNumber() == 1)return this.getFnValue();
 		if(this.getBefore() != null){
@@ -44,7 +44,7 @@ public class StkFnDataCust extends StkFnData implements TableCell {
 		return this.getFnDataByTTM(false);
 	}
 	
-	//¼ÆËãÇ°Ãæ4¸ö¼¾¶ÈÊı¾İÖ®ºÍ
+	//è®¡ç®—å‰é¢4ä¸ªå­£åº¦æ•°æ®ä¹‹å’Œ
 	public Double getFnDataByTTM(boolean isSingleQuarter) throws Exception{
 		Double total = 0.0;
 		int y = 4;
@@ -68,10 +68,10 @@ public class StkFnDataCust extends StkFnData implements TableCell {
 	
 	
 	/*
-	 * Í¬±È
-	 * Èç¹ûÊı¾İÊÇ ²ÆÎñÄêÊı¾İ£¬isFnYearÉèÎªfalse£¬½á¹ûÎª °´²ÆÎñÄêÍ¬±È
-	 * Èç¹ûÊı¾İÊÇ µ¥¼¾Êı¾İ£¬isFnYearÉèÎªtrue£¬½á¹ûÎª °´²ÆÎñÄêÍ¬±È£»
-	 *                    isFnYearÉèÎªfalse£¬½á¹ûÎª °´µ¥¼¾Í¬±È
+	 * åŒæ¯”
+	 * å¦‚æœæ•°æ®æ˜¯ è´¢åŠ¡å¹´æ•°æ®ï¼ŒisFnYearè®¾ä¸ºfalseï¼Œç»“æœä¸º æŒ‰è´¢åŠ¡å¹´åŒæ¯”
+	 * å¦‚æœæ•°æ®æ˜¯ å•å­£æ•°æ®ï¼ŒisFnYearè®¾ä¸ºtrueï¼Œç»“æœä¸º æŒ‰è´¢åŠ¡å¹´åŒæ¯”ï¼›
+	 *                    isFnYearè®¾ä¸ºfalseï¼Œç»“æœä¸º æŒ‰å•å­£åŒæ¯”
 	 */
 	public Double getRateOfYear(boolean isFnYear) throws Exception{
 		String year = "";
@@ -112,7 +112,7 @@ public class StkFnDataCust extends StkFnData implements TableCell {
 		return null;
 	}
 	
-	//»·±È
+	//ç¯æ¯”
 	public Double getRateOfQuarter(){
 		Double dValue = this.getFnValue();
 		if(dValue != null && before != null && before.getFnValue() != null){

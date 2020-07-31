@@ -100,7 +100,7 @@ public class BillBoardReport {
 					List<List<String>> tableList = HtmlUtils.getListFromTable((TableTag)table, 1);
 					for(List<String> row : tableList){
 						String trs = row.toString();
-						if(trs.contains("×ÜºÏ¼Æ:")){
+						if(trs.contains("æ€»åˆè®¡:")){
 							break;
 						}
 						//System.out.println(trs);
@@ -158,7 +158,7 @@ public class BillBoardReport {
 				List<List<String>> tableList = HtmlUtils.getListFromTable((TableTag)table, 1);
 				for(List<String> row : tableList){
 					String trs = row.toString();
-					if(trs.contains("×ÜºÏ¼Æ:")){
+					if(trs.contains("æ€»åˆè®¡:")){
 						break;
 					}
 					//System.out.println(trs);
@@ -233,7 +233,7 @@ public class BillBoardReport {
 				boolean isbuy = false;
 				for(List<String> tr : tabList){
 					String trs = tr.toString();
-					if(trs.contains("»ú¹¹×¨ÓÃ")){
+					if(trs.contains("æœºæ„ä¸“ç”¨")){
 						isbuy = true;
 						break;
 					}
@@ -254,7 +254,7 @@ public class BillBoardReport {
 							List<List<String>> tableList = HtmlUtils.getListFromTable((TableTag)tables.get(0), 1);
 							for(List<String> tr : tableList){
 								String trs = tr.toString();
-								if(trs.contains("»ú¹¹×¨ÓÃ")){//Ò²¾ÍÊÇËµ60ÌìÄÚ²»ÊÇÊ×´ÎÂòÈëÁË
+								if(trs.contains("æœºæ„ä¸“ç”¨")){//ä¹Ÿå°±æ˜¯è¯´60å¤©å†…ä¸æ˜¯é¦–æ¬¡ä¹°å…¥äº†
 									isbuy = false;
 									break;
 								}
@@ -265,7 +265,7 @@ public class BillBoardReport {
 						}
 					}
 					if(isbuy){
-						System.out.println("Ê×´ÎÂòÈë:"+code);
+						System.out.println("é¦–æ¬¡ä¹°å…¥:"+code);
 						result.add("<a target='_blank' href='http://data.eastmoney.com/soft/stock/StockDetail.aspx?code="+code+"'>"+s[4]+"["+code+"]</a>");
 						
 						List params = new ArrayList();
@@ -277,7 +277,7 @@ public class BillBoardReport {
 						if(infos.size() == 0){
 							Index in = new Index(conn, code);
 							if(in.getStock() != null){
-								Text.insert(conn, code, "[60ÈÕÄÚ»ú¹¹Ê×´ÎÂòÈë]",Text.SUB_TYPE_ORG_BUY_WITHIN_60);
+								Text.insert(conn, code, "[60æ—¥å†…æœºæ„é¦–æ¬¡ä¹°å…¥]",Text.SUB_TYPE_ORG_BUY_WITHIN_60);
 							}
 						}
 					}
@@ -285,7 +285,7 @@ public class BillBoardReport {
 			}
 			//System.out.println(row);
 		}
-		//EmailUtils.send("»ú¹¹60ÈÕÄÚÊ×´ÎÂòÈë", StringUtils.join(result, "<br>"));
+		//EmailUtils.send("æœºæ„60æ—¥å†…é¦–æ¬¡ä¹°å…¥", StringUtils.join(result, "<br>"));
 	}
 
 }

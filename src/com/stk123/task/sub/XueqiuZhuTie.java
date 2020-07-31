@@ -29,7 +29,7 @@ import com.stk123.web.StkDict;
 
 
 /**
- * Ñ©ÇòÖ÷Ìù
+ * é›ªçƒä¸»è´´
  * http://xueqiu.com/statuses/user_timeline.json?user_id=5964068708&page=1&type=&access_token=ZAKjlaAg7GQSInYrP2cnSl&_=1396073863568
  */
 public class XueqiuZhuTie {
@@ -58,7 +58,7 @@ public class XueqiuZhuTie {
 						break;
 					}
 				}catch(Exception e){
-					EmailUtils.send("ÊµÊ±¼à¿ØÑ©ÇòÖ÷Ìù³ö´í", e);
+					EmailUtils.send("å®æ—¶ç›‘æ§é›ªçƒä¸»è´´å‡ºé”™", e);
 					e.printStackTrace();
 					//ExceptionUtils.insertLog(conn, null, e);
 					//if(noOfError > 5)break;
@@ -102,10 +102,10 @@ public class XueqiuZhuTie {
 			if(results.size() > 0){
 				//System.out.println(StringUtils.join(results, "<br/>"));
 				String content = StringUtils.join(results, "<br/><br/>");
-				EmailUtils.send("ÊµÊ±¼à¿ØÑ©ÇòÖ÷Ìù", content);
+				EmailUtils.send("å®æ—¶ç›‘æ§é›ªçƒä¸»è´´", content);
 				Date now = new Date();
-				if(now.getHours() <= 15 && content != null && (content.contains("Ğ¡Ğ¡ĞÁ°Í")||content.contains("æÃ‰ô"))){
-					//EmailUtils.send("kai.fan@suncorp.com.au", "Ö÷Ìù", content);
+				if(now.getHours() <= 15 && content != null && (content.contains("å°å°è¾›å·´")||content.contains("å©·??"))){
+					//EmailUtils.send("kai.fan@suncorp.com.au", "ä¸»è´´", content);
 				}
 				results.add("--------------------");
 				Collections.reverse(results);
@@ -115,7 +115,7 @@ public class XueqiuZhuTie {
 			noOfError ++;
 			if(noOfError < 2){
 				try {
-					EmailUtils.send("ÊµÊ±¼à¿ØÑ©ÇòÖ÷Ìù³ö´í", e);
+					EmailUtils.send("å®æ—¶ç›‘æ§é›ªçƒä¸»è´´å‡ºé”™", e);
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}

@@ -23,9 +23,9 @@ public class InvestorRelationship {
 	
 	public static final List<String> KEYWORDS = new ArrayList<String>();
 	static{
-		KEYWORDS.add("重组");
-		KEYWORDS.add("并购");
-		KEYWORDS.add("收购");
+		KEYWORDS.add("閲嶇粍");
+		KEYWORDS.add("骞惰喘");
+		KEYWORDS.add("鏀惰喘");
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -98,10 +98,10 @@ public class InvestorRelationship {
 					}});
 				StringBuffer sb = new StringBuffer();
 				for(Index index : results){
-					sb.append(index.getName()+"[<a target='_blank' href='http://"+StkConstant.HOST_PORT+"/stk.do?s="+index.getCode()+"'>"+index.getCode()+"</a>]"+"["+StkUtils.number2String(index.getTotalMarketValue(),2)+"亿]"+"<a target='_blank' href='http://ircs.p5w.net/ircs/interaction/bbs.do?stockcode="+index.getCode()+"&stocktype=S'>来源</a>,"+index.changePercent);
+					sb.append(index.getName()+"[<a target='_blank' href='http://"+StkConstant.HOST_PORT+"/stk.do?s="+index.getCode()+"'>"+index.getCode()+"</a>]"+"["+StkUtils.number2String(index.getTotalMarketValue(),2)+"浜縘"+"<a target='_blank' href='http://ircs.p5w.net/ircs/interaction/bbs.do?stockcode="+index.getCode()+"&stocktype=S'>鏉ユ簮</a>,"+index.changePercent);
 					sb.append("<br>");
 				}
-				EmailUtils.send("互动平台-并购重组，个数："+results.size()+"，日期："+today, sb.toString());
+				EmailUtils.send("浜掑姩骞冲彴-骞惰喘閲嶇粍锛屼釜鏁帮細"+results.size()+"锛屾棩鏈燂細"+today, sb.toString());
 			}
 		} finally {
 			if (conn != null) conn.close();

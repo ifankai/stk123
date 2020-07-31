@@ -76,15 +76,15 @@ public class Index {
 	public final static String SH_LOWER = "sh";
 	public final static String SZ_LOWER = "sz";
 	
-	public String FN_JLR = StkConstant.FN_TYPE_CN_JLR;//¾»ÀûÈó
-	public String FN_JLRZZL = StkConstant.FN_TYPE_CN_JLRZZL;//¾»ÀûÈóÔö³¤ÂÊ
-	public String FN_MGJZC = StkConstant.FN_TYPE_CN_MGJZC; //Ã¿¹É¾»×Ê²ú_µ÷Õûºó(Ôª)
-	public String FN_ZYSR = StkConstant.FN_TYPE_CN_ZYSR; //Ö÷ÓªÊÕÈë
-	public String FN_YFFY = StkConstant.FN_TYPE_CN_YFFY; //ÑĞ·¢·ÑÓÃ
-	public String FN_GDQY = StkConstant.FN_TYPE_CN_GDQY; //¹éÊôÓÚÄ¸¹«Ë¾¹É¶«È¨ÒæºÏ¼Æ
-	public String FN_ZYSRZZL = StkConstant.FN_TYPE_CN_ZYSRZZL;//Ö÷ÓªÊÕÈëÔö³¤ÂÊ
+	public String FN_JLR = StkConstant.FN_TYPE_CN_JLR;//å‡€åˆ©æ¶¦
+	public String FN_JLRZZL = StkConstant.FN_TYPE_CN_JLRZZL;//å‡€åˆ©æ¶¦å¢é•¿ç‡
+	public String FN_MGJZC = StkConstant.FN_TYPE_CN_MGJZC; //æ¯è‚¡å‡€èµ„äº§_è°ƒæ•´å(å…ƒ)
+	public String FN_ZYSR = StkConstant.FN_TYPE_CN_ZYSR; //ä¸»è¥æ”¶å…¥
+	public String FN_YFFY = StkConstant.FN_TYPE_CN_YFFY; //ç ”å‘è´¹ç”¨
+	public String FN_GDQY = StkConstant.FN_TYPE_CN_GDQY; //å½’å±äºæ¯å…¬å¸è‚¡ä¸œæƒç›Šåˆè®¡
+	public String FN_ZYSRZZL = StkConstant.FN_TYPE_CN_ZYSRZZL;//ä¸»è¥æ”¶å…¥å¢é•¿ç‡
 	public String FN_ROE = StkConstant.FN_TYPE_CN_ROE;//ROE
-	public String FN_GROSS_MARGIN = StkConstant.FN_TYPE_CN_GROSS_MARGIN;//Ã«ÀûÂÊ
+	public String FN_GROSS_MARGIN = StkConstant.FN_TYPE_CN_GROSS_MARGIN;//æ¯›åˆ©ç‡
 	
 	public final static int FN_Growth = 1;
 	public final static int FN_Potential = 2;
@@ -120,12 +120,12 @@ public class Index {
 	private String code;
 	private String name;
 	public double changePercent;
-	public boolean isNew = false; //¿´ÊÇ²»ÊÇ½ñÌìĞÂÈëÑ¡µÄ¹É
-	public boolean isDeleted = false; //×òÌìÈëÑ¡£¬¶ø½ñÌìÃ»ÓĞÈëÑ¡
+	public boolean isNew = false; //çœ‹æ˜¯ä¸æ˜¯ä»Šå¤©æ–°å…¥é€‰çš„è‚¡
+	public boolean isDeleted = false; //æ˜¨å¤©å…¥é€‰ï¼Œè€Œä»Šå¤©æ²¡æœ‰å…¥é€‰
 	public int order;
 	
 	private int loc;// 1:sh, 2:sz
-	private int market;// 1:A¹É, 2:ÃÀ¹É, 3:¸Û¹É
+	private int market;// 1:Aè‚¡, 2:ç¾è‚¡, 3:æ¸¯è‚¡
 	public final static int CN = 1;
 	public final static int US = 2;
 	public final static int HK = 3;
@@ -137,7 +137,7 @@ public class Index {
 	private Stk stock;
 	private Map<String,List<String>> industryNames = new HashMap<String,List<String>>();
 	//private List<Industry> industries = new ArrayList<Industry>();
-	private Canslim canslim = new Canslim(); //Å·ÄÎ¶û
+	private Canslim canslim = new Canslim(); //æ¬§å¥ˆå°”
 	private PE pe;
 
 	private LinkedList<K> ks = null; 
@@ -231,7 +231,7 @@ public class Index {
 	
 	public void setMarketFnType(){
 		if(this.market == 2){
-			FN_JLR = "1008";//¾»ÀûÈó
+			FN_JLR = "1008";//å‡€åˆ©æ¶¦
 			FN_ROE = "4004";
 			FN_MGJZC = "4013";
 		}
@@ -274,7 +274,7 @@ public class Index {
 		return ExceptionUtils.exception(this.code+","+this.name, e);
 	}
 	
-	/********************************* ³õÊ¼»¯ĞÅÏ¢ ******************************************/
+	/********************************* åˆå§‹åŒ–ä¿¡æ¯ ******************************************/
 	private final static String SQL_INIT = "select * from stk_fn_type where status=1 and market=";
 	//init stk info and fn data
 	public void init() throws Exception {
@@ -283,7 +283,7 @@ public class Index {
 		}
 		List<StkFnType> fnTypes = JdbcUtils.list(this.getConnection(), SQL_INIT + this.market, StkFnType.class);
 		if(this.market == 1){
-			//ĞĞÒµ£¬Ó¯ÀûÔ¤ÆÚ
+			//è¡Œä¸šï¼Œç›ˆåˆ©é¢„æœŸ
 			InitialData.updateStkInfoFromWind(this.getConnection(),this,StkUtils.now,fnTypes);
 		}
 		//fn
@@ -358,7 +358,7 @@ public class Index {
 				
 				return;
 			}
-			//ÌÚÑ¶¹ÉÆ±½Ó¿Ú http://qt.gtimg.cn/&q=
+			//è…¾è®¯è‚¡ç¥¨æ¥å£ http://qt.gtimg.cn/&q=
 			page = HttpUtils.get("http://qt.gtimg.cn/&q="+tmpCode, null, "");
 			if(page != null && page.length() > 0){
 				String str = StringUtils.substringBetween(page, "\"", "\"");
@@ -369,8 +369,8 @@ public class Index {
 					String date = ss[30].substring(0, 8);
 					double close = Double.parseDouble(ss[3]);
 					double open = Double.parseDouble(ss[5]);
-					if(close == 0.0 || open == 0.0){//Í£ÅÆ
-						//System.out.println("Í£ÅÆ");
+					if(close == 0.0 || open == 0.0){//åœç‰Œ
+						//System.out.println("åœç‰Œ");
 						return;
 					}
 					
@@ -390,7 +390,7 @@ public class Index {
 							pettm = Double.parseDouble(ss[39]);
 						}
 						if(ss[46].length()>0){
-							pbttm = Double.parseDouble(ss[46]); //sinaµÄpb²»¶Ô
+							pbttm = Double.parseDouble(ss[46]); //sinaçš„pbä¸å¯¹
 							StkKline kTmp = this.getK().getKline();
 							if(kTmp != null){
 								Double pbLast = kTmp.getPbTtm();
@@ -448,8 +448,8 @@ public class Index {
 				if(ss.length > 40){
 					double close = Double.parseDouble(ss[3]);
 					double open = Double.parseDouble(ss[5]);
-					if(close == 0.0 || open == 0.0){//Í£ÅÆ
-						//System.out.println("Í£ÅÆ");
+					if(close == 0.0 || open == 0.0){//åœç‰Œ
+						//System.out.println("åœç‰Œ");
 						return;
 					}
 					String date = StringUtils.replace(ss[30].substring(0, 10), "-", "");
@@ -466,7 +466,7 @@ public class Index {
 					//System.out.println("date="+date+",lastClose="+lastClose+",open="+open+",close="+close+",high="+high+",low="+low+",volume="+volume+",amount="+amount+",percentage="+percentage+",pettm="+pettm);
 					
 					List params = new ArrayList();
-					//¼ÆËãPB
+					//è®¡ç®—PB
 					params.add(code);
 					Double bv = JdbcUtils.first(this.getConnection(), "select fn_value from stk_fn_data_us where type=4013 and code=? order by fn_date desc", params, Double.class);
 					Double pbttm = (bv == null || bv == 0)?null:close/bv;
@@ -506,8 +506,8 @@ public class Index {
 				if(ss.length > 40){
 					double close = Double.parseDouble(ss[3]);
 					double open = Double.parseDouble(ss[5]);
-					if(close == 0.0 || open == 0.0){//Í£ÅÆ
-						//System.out.println("Í£ÅÆ");
+					if(close == 0.0 || open == 0.0){//åœç‰Œ
+						//System.out.println("åœç‰Œ");
 						return;
 					}
 					String date = StringUtils.replace(ss[30].substring(0, 10), "/", "");
@@ -572,57 +572,57 @@ public class Index {
 				if(node == null)return;
 				String str = node.toHtml();
 				node = HtmlUtils.getNodeByAttribute(str, "", "id", "currentQuote");
-				if("Í£ÅÆ".equals(node.toPlainTextString())){
+				if("åœç‰Œ".equals(node.toPlainTextString())){
 					return;
 				}
 				
 				node = HtmlUtils.getNodeByAttribute(str, "", "id", "timeInfo");
-				if(node == null)return;//Í£ÅÆ
-				if("-&nbsp;&nbsp;".equals(node.toPlainTextString()))return;//ĞÂ¹É
+				if(node == null)return;//åœç‰Œ
+				if("-&nbsp;&nbsp;".equals(node.toPlainTextString()))return;//æ–°è‚¡
 				String date = StkUtils.formatDate(StkUtils.sf_ymd.parse(StkUtils.YEAR + "-" + StringUtils.substring(node.toPlainTextString(), 0, 5)),StkUtils.sf_ymd2);
-				node = HtmlUtils.getNodeByText(str, "", "½ñ¿ª£º");
-				if(node == null){//Í£ÅÆÁË
+				node = HtmlUtils.getNodeByText(str, "", "ä»Šå¼€ï¼š");
+				if(node == null){//åœç‰Œäº†
 					return;
 				}
 				String open = node.getLastChild().toPlainTextString();
-				if("-".equals(open) || (StkUtils.isAllNumericOrDot(open) && Double.parseDouble(open) == 0.0)){//Í£ÅÆÁË
+				if("-".equals(open) || (StkUtils.isAllNumericOrDot(open) && Double.parseDouble(open) == 0.0)){//åœç‰Œäº†
 					return;
 				}
 				node = HtmlUtils.getNodeByAttribute(str, "", "class", "quote-percentage");
 				String percentage = StringUtils.substringBetween(node.toPlainTextString(), "(", "%)");
 				
-			    node = HtmlUtils.getNodeByText(str, "", "×òÊÕ");
+			    node = HtmlUtils.getNodeByText(str, "", "æ˜¨æ”¶");
 				String close = StringUtils.substringBetween(str, "data-current=\"", "\"");
-				node = HtmlUtils.getNodeByText(str, "", "×òÊÕ");
+				node = HtmlUtils.getNodeByText(str, "", "æ˜¨æ”¶");
 				String lastClose = node.getLastChild().toPlainTextString();
-				node = HtmlUtils.getNodeByText(str, "", "×î¸ß");
+				node = HtmlUtils.getNodeByText(str, "", "æœ€é«˜");
 				String high = node.getLastChild().toPlainTextString();
-				node = HtmlUtils.getNodeByText(str, "", "×îµÍ");
+				node = HtmlUtils.getNodeByText(str, "", "æœ€ä½");
 				String low = node.getLastChild().toPlainTextString();
-				node = HtmlUtils.getNodeByText(str, "", "³É½»Á¿");
+				node = HtmlUtils.getNodeByText(str, "", "æˆäº¤é‡");
 				String svolumn = node.getChildren().elementAt(1).toPlainTextString();
-				svolumn = StringUtils.replace(svolumn, "¹É", "");
+				svolumn = StringUtils.replace(svolumn, "è‚¡", "");
 				int n = 1;
-				if(StringUtils.indexOf(svolumn, "Íò") > 0){
+				if(StringUtils.indexOf(svolumn, "ä¸‡") > 0){
 					n = 10000;
-					svolumn = StringUtils.replace(svolumn, "Íò", "");
-				}else if(StringUtils.indexOf(svolumn, "ÒÚ") > 0){
+					svolumn = StringUtils.replace(svolumn, "ä¸‡", "");
+				}else if(StringUtils.indexOf(svolumn, "äº¿") > 0){
 					n = 100000000;
-					svolumn = StringUtils.replace(svolumn, "ÒÚ", "");
+					svolumn = StringUtils.replace(svolumn, "äº¿", "");
 				}else if("-".equals(svolumn)){
 					svolumn = "0";
 				}
 				double volumn = Double.parseDouble(svolumn)*n;
-				node = HtmlUtils.getNodeByText(str, "", "³É½»¶î");
+				node = HtmlUtils.getNodeByText(str, "", "æˆäº¤é¢");
 				String samount= node.getLastChild().toPlainTextString();
 				if("-".equals(samount)){
 					samount = "0";
-				}else if(StringUtils.indexOf(samount, "Íò") > 0){
+				}else if(StringUtils.indexOf(samount, "ä¸‡") > 0){
 					n = 10000;
-					samount = StringUtils.replace(samount, "Íò", "");
-				}else if(StringUtils.indexOf(samount, "ÒÚ") > 0){
+					samount = StringUtils.replace(samount, "ä¸‡", "");
+				}else if(StringUtils.indexOf(samount, "äº¿") > 0){
 					n = 100000000;
-					samount = StringUtils.replace(samount, "ÒÚ", "");
+					samount = StringUtils.replace(samount, "äº¿", "");
 				}
 				double amount = Double.parseDouble(samount)*n;
 				
@@ -660,10 +660,10 @@ public class Index {
 				String pbTTM = null;
 				if(this.getStk().getCate().intValue() == 1){
 					//this.initPEFromXueQiu(str);
-					//Node nodeLYR = HtmlUtils.getNodeByText(str, "", "ÊĞÓ¯ÂÊLYR£º");
-					Node nodePE = HtmlUtils.getNodeByText(str, "", "ÊĞÓ¯ÂÊ(¾²)/(¶¯)£º");
+					//Node nodeLYR = HtmlUtils.getNodeByText(str, "", "å¸‚ç›ˆç‡LYRï¼š");
+					Node nodePE = HtmlUtils.getNodeByText(str, "", "å¸‚ç›ˆç‡(é™)/(åŠ¨)ï¼š");
 					if(nodePE == null){
-						EmailUtils.send("[Error]Ñ©ÇòÈ¡PE/PB³ö´í!", code);
+						EmailUtils.send("[Error]é›ªçƒå–PE/PBå‡ºé”™!", code);
 					}
 					if(nodePE != null){
 						lyr = StringUtils.substringBefore(nodePE.getLastChild().toPlainTextString(), "/");
@@ -672,12 +672,12 @@ public class Index {
 					//System.out.println("lyr="+lyr+",ttm="+peTTM);
 					params.add(NumberUtils.isNumber(peTTM)?peTTM:null);
 					params.add(NumberUtils.isNumber(lyr)?lyr:null);
-					Node nodePS = HtmlUtils.getNodeByText(str, "", "ÊĞÏúÂÊ(¶¯)£º");
+					Node nodePS = HtmlUtils.getNodeByText(str, "", "å¸‚é”€ç‡(åŠ¨)ï¼š");
 					if(nodePS != null){
 						psTTM = nodePS.getLastChild().toPlainTextString();
 						params.add(NumberUtils.isNumber(psTTM)?psTTM:null);
 					}
-					Node nodePB = HtmlUtils.getNodeByText(str, "", "ÊĞ¾»ÂÊ(¶¯)£º");
+					Node nodePB = HtmlUtils.getNodeByText(str, "", "å¸‚å‡€ç‡(åŠ¨)ï¼š");
 					if(nodePB != null){
 						pbTTM = nodePB.getLastChild().toPlainTextString();
 						params.add(NumberUtils.isNumber(pbTTM)?pbTTM:null);
@@ -913,7 +913,7 @@ public class Index {
 			setCloseChange();
 			//initHsl(1);
 			//initCapitalFlow();
-		}else if(market == 2){//ÃÀ¹É
+		}else if(market == 2){//ç¾è‚¡
 			String page = HttpUtils.get("http://stock.finance.sina.com.cn/usstock/api/json.php/US_MinKService.getDailyK?symbol="+this.code.toLowerCase()+"&___qn=3", null, "GBK");
 			//System.out.println(page);
 			if(page == null || "null".equals(page))return;
@@ -1098,7 +1098,7 @@ public class Index {
 		int cate = this.getStk().getCate().intValue();
 		if(cate == 4){
 			String page = HttpUtils.get("http://q.10jqka.com.cn/stock/gn/" + this.getNameforCate4(), "gb2312");
-			Node node = HtmlUtils.getNodeByText(page, null, "×Ê½ğ¾»Á÷Èë");
+			Node node = HtmlUtils.getNodeByText(page, null, "èµ„é‡‘å‡€æµå…¥");
 			if(node == null)return;
 			List params = new ArrayList();
 			params.add(code);
@@ -1260,8 +1260,8 @@ public class Index {
 	/**
 	 */
 	private void updatePEFromXueQiu(String page) throws Exception {
-		Node nodeLYR = HtmlUtils.getNodeByText(page, "", "ÊĞÓ¯ÂÊLYR£º");
-		Node nodeTTM = HtmlUtils.getNodeByText(page, "", "ÊĞÓ¯ÂÊTTM£º");
+		Node nodeLYR = HtmlUtils.getNodeByText(page, "", "å¸‚ç›ˆç‡LYRï¼š");
+		Node nodeTTM = HtmlUtils.getNodeByText(page, "", "å¸‚ç›ˆç‡TTMï¼š");
 		List params = new ArrayList();
 		params.add(nodeLYR!=null?nodeLYR.getLastChild().toPlainTextString():"0");
 		String peTTM = nodeTTM!=null?nodeTTM.getLastChild().toPlainTextString():"0";
@@ -1301,7 +1301,7 @@ public class Index {
 	}
 	
 	
-	/******************************** »ù±¾ĞÅÏ¢ **********************************************/
+	/******************************** åŸºæœ¬ä¿¡æ¯ **********************************************/
 	//private final static String SQL_SELECT_STK_BASIC_INFO = "select name,code,status,total_capital,earning_expect,market,year_end,cate,address from stk where code=?";
 	public Stk getStk() {
 		/*if(stk != null)return stk;
@@ -1485,10 +1485,10 @@ public class Index {
 	public static String KLINE_BEFORE_DATE = null;
 	
 	/**
-	 * Ç°¸´È¨
+	 * å‰å¤æƒ
 	 */
 	public LinkedList<K> getKs() throws Exception {
-		if(code.startsWith("88")){//Í¬»¨Ë³¸ÅÄî°å¿ékÏßÊı¾İ
+		if(code.startsWith("88")){//åŒèŠ±é¡ºæ¦‚å¿µæ¿å—kçº¿æ•°æ®
 			return getKs(false);
 		}
 		return getKs(true);
@@ -1509,7 +1509,7 @@ public class Index {
 	
 	/**
 	 * kline_date>='20100101'
-	 * @param flag true:Ç°¸´È¨ false:²»¸´È¨
+	 * @param flag true:å‰å¤æƒ false:ä¸å¤æƒ
 	 * @param loc sh:1, sz:2
 	 * @throws Exception
 	 */
@@ -1557,7 +1557,7 @@ public class Index {
 	}
 	
 	/**
-	 * @param flag true: °ÑkwsÖ±½Ó¸³Öµ¸ø ks
+	 * @param flag true: æŠŠkwsç›´æ¥èµ‹å€¼ç»™ ks
 	 */
 	public LinkedList<K> getKsWeekly(boolean flag) throws Exception {
 		if(kws != null)return kws;
@@ -1735,10 +1735,10 @@ public class Index {
 	
 	/**
 	 * @param date
-	 * @param days È¡dateÇ°¶àÉÙdaysµÄKÏß
+	 * @param days å–dateå‰å¤šå°‘daysçš„Kçº¿
 	 * @param type open/close/high/low/amount/volumn/hsl
 	 * @param type2 ma/sum
-	 * @param days2 type2¶àÉÙdays2µÄma/sum
+	 * @param days2 type2å¤šå°‘days2çš„ma/sum
 	 * @return
 	 * @throws Exception
 	 */
@@ -1815,7 +1815,7 @@ public class Index {
 	}
 	
 	/**
-	 * highµÄ¸ßµã
+	 * highçš„é«˜ç‚¹
 	 */
 	public K getKByHHV(String startDate, String endDate) throws Exception {
 		int start = this.indexOfAfter(startDate);
@@ -1833,7 +1833,7 @@ public class Index {
 		return ret;
 	}
 	/**
-	 * closeµÄ¸ßµã
+	 * closeçš„é«˜ç‚¹
 	 */
 	public K getKByHCV(String startDate, String endDate) throws Exception {
 		int start = this.indexOfAfter(startDate);
@@ -1851,7 +1851,7 @@ public class Index {
 		return ret;
 	}
 	/**
-	 * lowµÄµÍµã
+	 * lowçš„ä½ç‚¹
 	 */
 	public K getKByLLV(String startDate, String endDate) throws Exception {
 		int start = this.indexOfAfter(startDate);
@@ -1869,7 +1869,7 @@ public class Index {
 		return ret;
 	}
 	/**
-	 * closeµÄµÍµã
+	 * closeçš„ä½ç‚¹
 	 */
 	public K getKByLCV(String startDate, String endDate) throws Exception {
 		int start = this.indexOfAfter(startDate);
@@ -1888,7 +1888,7 @@ public class Index {
 	}
 	
 	/**
-	 * volumnµÄ¸ßµã
+	 * volumnçš„é«˜ç‚¹
 	 */
 	public K getKByHVV(String startDate, String endDate) throws Exception {
 		int start = this.indexOfAfter(startDate);
@@ -1953,7 +1953,7 @@ public class Index {
 		return null;
 	}
 	
-	private SimpleDateFormat sf_ymd2 = new SimpleDateFormat("yyyyMMdd"); // ¶àÏß³ÌÏÂSimpleDateFormat²»°²È«£¬ËùÒÔÕâÀï¸øÃ¿¸öindex new×Ô¼ºµÄinstance
+	private SimpleDateFormat sf_ymd2 = new SimpleDateFormat("yyyyMMdd"); // å¤šçº¿ç¨‹ä¸‹SimpleDateFormatä¸å®‰å…¨ï¼Œæ‰€ä»¥è¿™é‡Œç»™æ¯ä¸ªindex newè‡ªå·±çš„instance
 	private List<StkFnDataCust> getFnData() throws Exception{
 		if(fnData != null){
 			return fnData;
@@ -2053,7 +2053,7 @@ public class Index {
 
 	private List<List<StkFnDataCust>> fnTable = new ArrayList<List<StkFnDataCust>>();
 	/**
-	 * @param n±íÊ¾ÏÔÊ¾nÄêµÄ¼¾¶ÈÊı¾İ£¬ÆäËûÖ»ÏÔÊ¾Äê¶ÈÊı¾İ
+	 * @param nè¡¨ç¤ºæ˜¾ç¤ºnå¹´çš„å­£åº¦æ•°æ®ï¼Œå…¶ä»–åªæ˜¾ç¤ºå¹´åº¦æ•°æ®
 	 */
 	public List<List<StkFnDataCust>> getFnTable(List<StkFnType> fnTypes,int n) throws Exception{
 		if(fnTable.size() > 0)return this.fnTable;
@@ -2106,7 +2106,7 @@ public class Index {
 			n --;
 			year --;
 		}
-		//ÉèÖÃfndataÇ°ÃæÒ»¸ö¼¾¶ÈµÄfndata
+		//è®¾ç½®fndataå‰é¢ä¸€ä¸ªå­£åº¦çš„fndata
 		for(int i=0;i<fnTable.size()-1;i++){
 			List<StkFnDataCust> list = fnTable.get(i);
 			for(int j=0;j<list.size();j++){
@@ -2119,7 +2119,7 @@ public class Index {
 		return fnTable;
 	}
 	
-	private int fnMaxYear = 0;//×î½ü²ÆÎñÊı¾İµÄÄê·İ
+	private int fnMaxYear = 0;//æœ€è¿‘è´¢åŠ¡æ•°æ®çš„å¹´ä»½
 	public int getFnMaxYear() throws Exception{
 		if(fnMaxYear != 0){
 			return fnMaxYear;
@@ -2214,7 +2214,7 @@ public class Index {
 		return StkUtils.numberFormat(total/tmp,2);
 	}
 	
-	/********************************** ×ÜÊĞÖµ  (ÒÚ)****************************************/
+	/********************************** æ€»å¸‚å€¼  (äº¿)****************************************/
 	private double marketValue = 0.0;
 	public double getTotalMarketValue() throws Exception{
 		if(marketValue > 0)return marketValue;
@@ -2225,7 +2225,7 @@ public class Index {
 		return this.getTotalMarketValue();
 	}
 	
-	/********************************** ps ÊĞÏúÂÊ  ****************************************/
+	/********************************** ps å¸‚é”€ç‡  ****************************************/
 	
 	public double getPSTTM() throws Exception{
 		StkFnDataCust data = this.getFnDataLastestByType(FN_ZYSR);
@@ -2261,7 +2261,7 @@ public class Index {
 	}
 	
 	
-	/********************************** pb ÊĞ¾»ÂÊ  ****************************************/
+	/********************************** pb å¸‚å‡€ç‡  ****************************************/
 	
 	public double getPB() throws Exception{
 		StkFnDataCust data = this.getFnDataLastestByType(FN_GDQY);
@@ -2284,7 +2284,7 @@ public class Index {
 		return null;
 	}
 	
-	/********************************** pr ÊĞÑĞÂÊ  ****************************************/
+	/********************************** pr å¸‚ç ”ç‡  ****************************************/
 	
 	public double getPR() throws Exception{
 		StkFnDataCust data = this.getFnDataLastestByType(FN_YFFY);
@@ -2316,7 +2316,7 @@ public class Index {
 	}
 	
 	
-	/********************************** pe ÊĞÓ¯ÂÊ ****************************************/
+	/********************************** pe å¸‚ç›ˆç‡ ****************************************/
 	public Double getPETTM(String date) throws Exception{
 		if(date == null){
 			date = StkUtils.getToday();
@@ -2348,7 +2348,7 @@ public class Index {
 	}
 	
 	/**
-	 * PE, Í³¼ÆÉÏ4¸ö¼¾¶ÈµÄjlr
+	 * PE, ç»Ÿè®¡ä¸Š4ä¸ªå­£åº¦çš„jlr
 	 */
 	public PE getPETTMByCalculation(String yyyyMMdd) throws Exception {
 		if(this.pe != null){
@@ -2381,21 +2381,21 @@ public class Index {
 	}
 	
 	/**
-	 * µÃµ½²ÆÎñÊı¾İ×î½üÊÇÄÄ¸ö¼¾¶È
+	 * å¾—åˆ°è´¢åŠ¡æ•°æ®æœ€è¿‘æ˜¯å“ªä¸ªå­£åº¦
 	 */
 	public String getLastestQuarter() throws Exception {
 		if(this.getFnData().size() == 0)return null;
 		return this.getFnData().get(0).getFnDate();
 	}
 	
-	/********************************** Ö÷ÓªÊÕÈëÔö³¤ÂÊ *************************************/
+	/********************************** ä¸»è¥æ”¶å…¥å¢é•¿ç‡ *************************************/
 	public String getOperatingIncomeGrowthRateAsString() throws Exception {
 		StkFnDataCust fn = getFnDataLastestByType(FN_ZYSRZZL);
 		return fn!=null?fn.getFnValueToString():StkConstant.MARK_DOUBLE_HYPHEN;
 	}
 	
 	
-	/********************************** ¼¾¶È¾»ÀûÈó ****************************************/
+	/********************************** å­£åº¦å‡€åˆ©æ¶¦ ****************************************/
 	
 	public int isGrowthOrPotentialOrReversion() throws Exception {
 		if(this.isGrowth()){
@@ -2410,10 +2410,10 @@ public class Index {
 		return Index.FN_Common;
 	}
 
-	private final static String STK_TYPE_CZG = "³É³¤¹É";
-	private final static String STK_TYPE_QLG = "Ç±Á¦¹É";
-	private final static String STK_TYPE_FZG = "·´×ª¹É";
-	private final static String STK_TYPE_PTG = "ÆÕÍ¨¹É";
+	private final static String STK_TYPE_CZG = "æˆé•¿è‚¡";
+	private final static String STK_TYPE_QLG = "æ½œåŠ›è‚¡";
+	private final static String STK_TYPE_FZG = "åè½¬è‚¡";
+	private final static String STK_TYPE_PTG = "æ™®é€šè‚¡";
 	
 	public String isGrowthOrPotentialOrReversionName() throws Exception {
 		if(market == 1){
@@ -2436,14 +2436,14 @@ public class Index {
 		String curyyyyMMdd = this.getFnData().get(0).getFnDate();
 		String lastyyyyMMdd = StkUtils.getPrevQuarter(curyyyyMMdd);
 		String last2yyyyMMdd = StkUtils.getPrevQuarter(lastyyyyMMdd);
-		//¾»ÀûÂÊÔö³¤ÂÊ
+		//å‡€åˆ©ç‡å¢é•¿ç‡
 		double jlrzzl = this.getNetProfitGrowthAsNumber(curyyyyMMdd);
 		double lastjlrzzl = this.getNetProfitGrowthAsNumber(lastyyyyMMdd);
 		double last2jlrzzl = this.getNetProfitGrowthAsNumber(last2yyyyMMdd);
 		if(jlrzzl > 0 && (jlrzzl - lastjlrzzl > 20) && lastjlrzzl < 10 && jlrzzl > last2jlrzzl){
 			return true;
 		}
-		//Ôö¼ÓÖ÷ÓªÊÕÈëÔö³¤ÂÊ·´×ª¹É
+		//å¢åŠ ä¸»è¥æ”¶å…¥å¢é•¿ç‡åè½¬è‚¡
 		StkFnDataCust fnData = this.getFnData(FN_ZYSRZZL, curyyyyMMdd);
 		double zyzzl = fnData != null?(fnData.getFnValue()==null?0.0:fnData.getFnValue()):0.0;
 		fnData = this.getFnData(FN_ZYSRZZL, lastyyyyMMdd);
@@ -2457,9 +2457,9 @@ public class Index {
 	}
 	
 	/**
-	 * ¼ÆËãµ¥¼¾¶È¾»ÀûÈó
-	 * @param yyyyMMdd±ØĞëÊÇ0331,0630,0930,1231
-	 * @return Êı¾İ²»È«·µ»Ø0
+	 * è®¡ç®—å•å­£åº¦å‡€åˆ©æ¶¦
+	 * @param yyyyMMddå¿…é¡»æ˜¯0331,0630,0930,1231
+	 * @return æ•°æ®ä¸å…¨è¿”å›0
 	 */
 	public double getNetProfitByOneQuarter(String yyyyMMdd) throws Exception {
 		String MMdd = StkUtils.formatDate(StkUtils.sf_ymd2.parse(yyyyMMdd), StkUtils.sf_MMdd);
@@ -2484,8 +2484,8 @@ public class Index {
 	private Map<String,Double> netProfitGrowth = new HashMap<String,Double>();
 	
 	/**
-	 * jlrÍ¬±ÈÔö³¤ÂÊ
-	 * @param MMdd±ØĞëÊÇ 0331,0630,0930,1231
+	 * jlråŒæ¯”å¢é•¿ç‡
+	 * @param MMddå¿…é¡»æ˜¯ 0331,0630,0930,1231
 	 */
 	public Double getNetProfitGrowth(String yyyyMMdd) throws Exception{
 		if(netProfitGrowth.get(yyyyMMdd) != null){
@@ -2521,7 +2521,7 @@ public class Index {
 	
 	private Map<String,Double> netProfitGrowthAverageValue = new HashMap<String,Double>();
 	/**
-	 * Ç°quarters¸ö¼¾¶È£¬Ã¿¼¾net profit growthÒª>=x£¬Ôò·µ»ØÕâĞ©¼¾¶ÈjlrÆ½¾ùÖµ£¬·ñÔò·µ»Ø0
+	 * å‰quartersä¸ªå­£åº¦ï¼Œæ¯å­£net profit growthè¦>=xï¼Œåˆ™è¿”å›è¿™äº›å­£åº¦jlrå¹³å‡å€¼ï¼Œå¦åˆ™è¿”å›0
 	 */
 	public double getNetProfitGrowthAverageValue(int quarters, int x) throws Exception {
 		String key = quarters+"_"+x;
@@ -2556,7 +2556,7 @@ public class Index {
 	
 	/**
 	 * @deprecated
-	 * ³É³¤ĞÔ£º×î½üÈıÄê¾»ÀûÈóÔö³¤ÎªÕı£¬µ±Äê¼¾¶È¾»ÀûÈóÔö³¤Ò²ÊÇÕı
+	 * æˆé•¿æ€§ï¼šæœ€è¿‘ä¸‰å¹´å‡€åˆ©æ¶¦å¢é•¿ä¸ºæ­£ï¼Œå½“å¹´å­£åº¦å‡€åˆ©æ¶¦å¢é•¿ä¹Ÿæ˜¯æ­£
 	 */
 	public double valuationByGrowing(String fnType) throws Exception {
 		int curYear = StkUtils.YEAR;
@@ -2610,8 +2610,8 @@ public class Index {
 	
 	/**
 	 * Not be used by webapp
-	 * ¸´ºÏÔö³¤ÂÊ(CAGR)
-	 * ¹«Ê½£º Ä©Äê2008µÄÊı¶î£¨19,500£©³ıÒÔÊ×Äê2005µÄÊı¶î£¨10,000£©£¬µÃ1.95£¬ÔÙÈ¡1/(2008-2005)´ÎÃİ£¬Ò²¾ÍÊÇ¿ªÄêÊı´Î·½¸ù£¬×îºó¼õÈ¥1¡£
+	 * å¤åˆå¢é•¿ç‡(CAGR)
+	 * å…¬å¼ï¼š æœ«å¹´2008çš„æ•°é¢ï¼ˆ19,500ï¼‰é™¤ä»¥é¦–å¹´2005çš„æ•°é¢ï¼ˆ10,000ï¼‰ï¼Œå¾—1.95ï¼Œå†å–1/(2008-2005)æ¬¡å¹‚ï¼Œä¹Ÿå°±æ˜¯å¼€å¹´æ•°æ¬¡æ–¹æ ¹ï¼Œæœ€åå‡å»1ã€‚
 	 */
 	public void valuationByCAGR(String yyyyMMdd) throws Exception {
 		List params = new ArrayList();
@@ -2633,20 +2633,20 @@ public class Index {
 				double d2LastLast = Math.pow(fnDatas.get(i+2).getFnValue()/fnDatas.get(fnDatas.size()-3+2).getFnValue(), 1.0/(fnDatas.size()-3))-1;
 				if(d2 >= d3 && d3 >= d4 && d4 > 0 && d3 >= d3Last && d3Last > 0 && d2 >= d2Last && d2Last >= d2LastLast && d2LastLast > 0){
 					System.out.print(this.finance());
-					//¸´ºÏÔö³¤ÂÊA
-					System.out.println("¸´ºÏÔö³¤ÂÊA,2Äê,"+StkUtils.number2String(d2,2)+",3Äê,"+StkUtils.number2String(d3,2)+",4Äê,"+StkUtils.number2String(d4,2));
+					//å¤åˆå¢é•¿ç‡A
+					System.out.println("å¤åˆå¢é•¿ç‡A,2å¹´,"+StkUtils.number2String(d2,2)+",3å¹´,"+StkUtils.number2String(d3,2)+",4å¹´,"+StkUtils.number2String(d4,2));
 					System.out.println();
-				}else if(d2 >= d3 && d2 >= d2Last && d2Last > 0 && d3 >= d3Last && d3Last > 0){//2Äê¸´ºÏ´óÓÚ3Äê¸´ºÏ£¬½ñÄêÈ¥Äê¸´ºÏ´óÓÚÈ¥ÄêÇ°Äê¸´ºÏ
+				}else if(d2 >= d3 && d2 >= d2Last && d2Last > 0 && d3 >= d3Last && d3Last > 0){//2å¹´å¤åˆå¤§äº3å¹´å¤åˆï¼Œä»Šå¹´å»å¹´å¤åˆå¤§äºå»å¹´å‰å¹´å¤åˆ
 					System.out.print(this.finance());
-					//¸´ºÏÔö³¤ÂÊB
-					System.out.println("¸´ºÏÔö³¤ÂÊB,2Äê,"+StkUtils.number2String(d2,2)+",3Äê,"+StkUtils.number2String(d3,2)+",4Äê,"+StkUtils.number2String(d4,2));
+					//å¤åˆå¢é•¿ç‡B
+					System.out.println("å¤åˆå¢é•¿ç‡B,2å¹´,"+StkUtils.number2String(d2,2)+",3å¹´,"+StkUtils.number2String(d3,2)+",4å¹´,"+StkUtils.number2String(d4,2));
 					System.out.println();
 				}
 			}
 		}
 	}
 	
-	/********************************** Ó¯ÀûÔ¤ÆÚ ****************************************/
+	/********************************** ç›ˆåˆ©é¢„æœŸ ****************************************/
 
 	private List<StkEarningsForecast> earningsForecastList = null;
 	
@@ -2702,7 +2702,7 @@ public class Index {
 		for(Map.Entry<String, Map<String, String>> data : datas.entrySet()){
 			if(data.getKey().indexOf("E") >= 0){
 				Map<String, String> map = data.getValue();
-				String netProfit = map.get("¾»ÀûÈó(Ôª)");
+				String netProfit = map.get("å‡€åˆ©æ¶¦(å…ƒ)");
 				if("--".equals(netProfit)){
 					continue;
 				}
@@ -2719,7 +2719,7 @@ public class Index {
 					params.clear();
 					params.add(code);
 					params.add("20"+StringUtils.replace(data.getKey(), "E", ""));
-					netProfit = map.get("¾»ÀûÈó(Ôª)");
+					netProfit = map.get("å‡€åˆ©æ¶¦(å…ƒ)");
 					params.add(np);
 					JdbcUtils.insert(this.getConnection(), "insert into stk_earnings_forecast select ?,?,?,sysdate,null from dual", params);
 				}
@@ -2741,7 +2741,7 @@ public class Index {
 		}
 	}
 	
-	/********************************** Òµ¼¨Ô¤¸æ ****************************************/
+	/********************************** ä¸šç»©é¢„å‘Š ****************************************/
 	
 	private List<StkEarningsNotice> performanceNoticesList = null;
 	
@@ -2766,11 +2766,11 @@ public class Index {
 	}
 	
 	public String parseAmount(String s){
-		if(StringUtils.indexOf(s, "Íò") > 0){
-			s = StringUtils.replace(s, "Íò", "");
+		if(StringUtils.indexOf(s, "ä¸‡") > 0){
+			s = StringUtils.replace(s, "ä¸‡", "");
 			return String.valueOf(Double.parseDouble(s)/10000);
-		}else if(StringUtils.indexOf(s, "ÒÚ") > 0){
-			s = StringUtils.replace(s, "ÒÚ", "");
+		}else if(StringUtils.indexOf(s, "äº¿") > 0){
+			s = StringUtils.replace(s, "äº¿", "");
 		}
 		return s;
 	}
@@ -2793,7 +2793,7 @@ public class Index {
 		return null;
 	}
 	
-	/********************************** Ö÷ÓªÒµÎñ  ****************************************/
+	/********************************** ä¸»è¥ä¸šåŠ¡  ****************************************/
 	
 	public void initKeywordOnMainBusiness() throws Exception{
 		String page = HttpUtils.get("http://stock.jrj.com.cn/share,"+this.code+",zyyw.shtml","gbk");
@@ -2806,7 +2806,7 @@ public class Index {
         	TableHeader[] headers = row.getHeaders();
         	if(headers.length > 0){
         		TableHeader header = headers[0];
-        		if(header.toPlainTextString().contains("µØÓò"))break;
+        		if(header.toPlainTextString().contains("åœ°åŸŸ"))break;
         	}
         	TableColumn[] cols = row.getColumns();
         	if(cols.length > 0){
@@ -2853,13 +2853,13 @@ public class Index {
 	}
 	
 	
-	/********************************** ×ÛºÏ²ÆÎñ ****************************************/
+	/********************************** ç»¼åˆè´¢åŠ¡ ****************************************/
 	
 	private String finance = null;
 	
 	/**
 	 * Not be used by webapp
-	 * ÔÙ¼Ó¡°¾­ÓªÏÖ½ğÁ÷¡±£¬¡°Ó¦ÊÕ¿î¡°£¬¡±»õ´æ¡±,"ÈıÏî·ÑÓÃ±ÈÖØ"
+	 * å†åŠ â€œç»è¥ç°é‡‘æµâ€ï¼Œâ€œåº”æ”¶æ¬¾â€œï¼Œâ€è´§å­˜â€,"ä¸‰é¡¹è´¹ç”¨æ¯”é‡"
 	 * @return
 	 * @throws Exception
 	 */
@@ -2870,9 +2870,9 @@ public class Index {
 		String yyyyMMdd = StkUtils.YEAR+StkUtils.MMDD_Q4;
 		StringBuffer sb = new StringBuffer();
 		double totalCapital = this.getStk().getTotalCapital()/10000;
-		String expect = StringUtils.replace(StringUtils.replace(StringUtils.replace(this.getStk().getEarningExpect(), ",", "£¬"), "?", ""), "<br>", "£»");
-		sb.append(this.code+","+this.getStk().getName()+",×Ü¹É±¾,"+StkUtils.number2String(totalCapital,2)+",Ñ©ÇòPE£º"+this.getPETTM()+",¿ÉÍ¶×ÊPE£º"+this.getPECanBuy()+",ĞĞÒµ,"+StringUtils.join(this.getIndustryName(), "/")).append(",,,").append(expect).append("\n");
-		sb.append("Äê·İ,×îµÍ¼Û,×î¸ß¼Û,¾»ÀûÈó,ROE,Ã«ÀûÂÊ,¸ºÕ®ÂÊ,Ö÷ÓªÊÕÈëÔö³¤,Ó¦ÊÕÕË¿î,Ô¤ÊÕÕË¿î,ÈıÏî·ÑÓÃ±ÈÖØ,¾­ÓªÏÖ½ğÁ÷,¾»ÀûÈóÔö³¤ÂÊ,¹É¶«ÈËÊı,×îµÍÊĞÖµ,×î¸ßÊĞÖµ,PEµÍ,PE¸ß,PEGµÍ,PEG¸ß").append("\n");
+		String expect = StringUtils.replace(StringUtils.replace(StringUtils.replace(this.getStk().getEarningExpect(), ",", "ï¼Œ"), "?", ""), "<br>", "ï¼›");
+		sb.append(this.code+","+this.getStk().getName()+",æ€»è‚¡æœ¬,"+StkUtils.number2String(totalCapital,2)+",é›ªçƒPEï¼š"+this.getPETTM()+",å¯æŠ•èµ„PEï¼š"+this.getPECanBuy()+",è¡Œä¸š,"+StringUtils.join(this.getIndustryName(), "/")).append(",,,").append(expect).append("\n");
+		sb.append("å¹´ä»½,æœ€ä½ä»·,æœ€é«˜ä»·,å‡€åˆ©æ¶¦,ROE,æ¯›åˆ©ç‡,è´Ÿå€ºç‡,ä¸»è¥æ”¶å…¥å¢é•¿,åº”æ”¶è´¦æ¬¾,é¢„æ”¶è´¦æ¬¾,ä¸‰é¡¹è´¹ç”¨æ¯”é‡,ç»è¥ç°é‡‘æµ,å‡€åˆ©æ¶¦å¢é•¿ç‡,è‚¡ä¸œäººæ•°,æœ€ä½å¸‚å€¼,æœ€é«˜å¸‚å€¼,PEä½,PEé«˜,PEGä½,PEGé«˜").append("\n");
 		String MMdd = StkUtils.formatDate(StkUtils.sf_ymd2.parse(yyyyMMdd), StkUtils.sf_MMdd);
 		boolean flag = false;
 		while(true){
@@ -2975,11 +2975,11 @@ public class Index {
 			
 			yyyyMMdd = (Integer.parseInt(year)-1)+MMdd;
 			Map<String,StkFnDataCust> dLast = this.getFnDataByDate(yyyyMMdd);
-			//¾»ÀûÈó
+			//å‡€åˆ©æ¶¦
 			//double jlr = d.get(FN_JLR)==null?0.0:d.get(FN_JLR).getFnValue();			
 			double jlrLast = dLast.get(FN_JLR)==null?0.0:dLast.get(FN_JLR).getFnValue();
 			
-			//¹É¶«È¨Òæ
+			//è‚¡ä¸œæƒç›Š
 			//double gdqy = d.get(FN_GDQY)==null?0.0:d.get(FN_GDQY).getFnValue();			
 			double gdqyLast = dLast.get(FN_GDQY)==null?0.0:dLast.get(FN_GDQY).getFnValue();
 			//double jlrAdd = d.get(FN_JLRZZL)==null?0.0:(d.get(FN_JLRZZL).getFnValue()==null?0.0:d.get(FN_JLRZZL).getFnValue());
@@ -3010,7 +3010,7 @@ public class Index {
 	}
 	
 	
-	/********************************** KÏßĞÎÌ¬·ÖÎö£¬´´ĞÂ¸ß £¬Áí¼û IndexUtils ****************************************/
+	/********************************** Kçº¿å½¢æ€åˆ†æï¼Œåˆ›æ–°é«˜ ï¼Œå¦è§ IndexUtils ****************************************/
 	
 	public List<Gap> getGaps(String endDate, int days) throws Exception {
 		List<Gap> tmpGaps = new ArrayList<Gap>();
@@ -3067,7 +3067,7 @@ public class Index {
 	/**
 	 * 
 	 * @param endDate
-	 * @param days ¸ßÓÚÇ°ºó ¸÷nÌì²ÅËã¸ßµã
+	 * @param days é«˜äºå‰å å„nå¤©æ‰ç®—é«˜ç‚¹
 	 * @param n
 	 * @return
 	 * @throws Exception
@@ -3094,7 +3094,7 @@ public class Index {
 		return highPoints;
 	}
 	/**
-	 * Ò»°ãÈ¡µÄ²ÎÊıÎª (days,n) = (10,2) or (60,5/6)
+	 * ä¸€èˆ¬å–çš„å‚æ•°ä¸º (days,n) = (10,2) or (60,5/6)
 	 */
 	public List<K> getKsHistoryHighPoint2(String endDate, int days, int n) throws Exception{
 		List<K> highPoints = new ArrayList<K>();
@@ -3130,9 +3130,9 @@ public class Index {
 	}
 	
 	/**
-	 * ·µ»ØÀúÊ·ÉÏµÄ¸ßµÍµã£¬¸ßµÍµãÇ°ºónÌì¶¼±È¸ßµãµÍ »ò ±ÈµÍµã¸ß
-	 * ·µ»ØµÄlistÀïµÄ·Ö²¼ÊÇÒ»¸öµÍµãÒ»¸ö¸ßµã...£¬×îºÃµÄ·Ö²¼ÊÇ£º²»³öÏÖÁ½¸ö¸ß/µÍµãÔÚÒ»ÆğµÄÏÖÏó(Êµ¼ÊÊÇ¿ÉÄÜ³öÏÖÕâÖÖÇé¿ö)
-	 * Ò»°ãnÈ¡daysµÄÊ®·ÖÖ®Ò»
+	 * è¿”å›å†å²ä¸Šçš„é«˜ä½ç‚¹ï¼Œé«˜ä½ç‚¹å‰ånå¤©éƒ½æ¯”é«˜ç‚¹ä½ æˆ– æ¯”ä½ç‚¹é«˜
+	 * è¿”å›çš„listé‡Œçš„åˆ†å¸ƒæ˜¯ä¸€ä¸ªä½ç‚¹ä¸€ä¸ªé«˜ç‚¹...ï¼Œæœ€å¥½çš„åˆ†å¸ƒæ˜¯ï¼šä¸å‡ºç°ä¸¤ä¸ªé«˜/ä½ç‚¹åœ¨ä¸€èµ·çš„ç°è±¡(å®é™…æ˜¯å¯èƒ½å‡ºç°è¿™ç§æƒ…å†µ)
+	 * ä¸€èˆ¬nå–daysçš„ååˆ†ä¹‹ä¸€
 	 */
 	public List<K> getKsHistoryHighAndLow(String endDate, int days, int n) throws Exception {
 		List<K> result = new ArrayList<K>();
@@ -3156,7 +3156,7 @@ public class Index {
 		return result;
 	}
 	
-	/** ÅĞ¶Ïclose/high/open/lowµÄÖµµÄÇ÷ÊÆÊÇ²»ÊÇÉÏÉıµÄ£¬ident±íÊ¾È¡ident¸öÖµµÄÆ½¾ù¼Û¸ñ */
+	/** åˆ¤æ–­close/high/open/lowçš„å€¼çš„è¶‹åŠ¿æ˜¯ä¸æ˜¯ä¸Šå‡çš„ï¼Œidentè¡¨ç¤ºå–identä¸ªå€¼çš„å¹³å‡ä»·æ ¼ */
 	public boolean isUp(List<K> ks, int ident, int type) throws Exception {
 		if (ks.size() <= ident) {
 			return false;
@@ -3202,7 +3202,7 @@ public class Index {
 		return days;
 	}
 	
-	//kÏßÊÇ²»ÊÇ²øÈÆ
+	//kçº¿æ˜¯ä¸æ˜¯ç¼ ç»•
 	public K isKIntersect(String date,int days) throws Exception {
 		K k = this.getK(date);
 		while(k != null){
@@ -3220,7 +3220,7 @@ public class Index {
 		return null;
 	}
 	
-	//10,20,30,60,120 KÏß²øÈÆ
+	//10,20,30,60,120 Kçº¿ç¼ ç»•
 	public boolean isKIntersect2(String date) throws Exception {
 		double flag = 0.035;
 		double[] d = new double[5];
@@ -3272,7 +3272,7 @@ public class Index {
 		return false;
 	}
 	
-	//10,20,30,60,250 KÏß²øÈÆ
+	//10,20,30,60,250 Kçº¿ç¼ ç»•
 	public boolean isKIntersect3(String date) throws Exception {
 		double flag = 0.04;
 		double[] d = new double[5];
@@ -3324,7 +3324,7 @@ public class Index {
 		return false;
 	}
 	
-	//10,20,30,60 KÏß²øÈÆ
+	//10,20,30,60 Kçº¿ç¼ ç»•
 	public boolean isKIntersect4(String date) throws Exception {
 		double flag = 0.025;
 		double[] d = new double[4];
@@ -3370,7 +3370,7 @@ public class Index {
 		return false;
 	}
 	
-	//10,20,30 KÏß²øÈÆ
+	//10,20,30 Kçº¿ç¼ ç»•
 	public boolean isKIntersect5(String date) throws Exception {
 		double flag = 0.015;
 		double[] d = new double[3];
@@ -3504,12 +3504,12 @@ public class Index {
 		return false;
 	}
 	
-	//ÊÇ·ñÍ»ÆÆ¶ÌÆÚ£¨60,6£©ÏÂ½µÇ÷ÊÆÏß
+	//æ˜¯å¦çªç ´çŸ­æœŸï¼ˆ60,6ï¼‰ä¸‹é™è¶‹åŠ¿çº¿
 	public boolean isBreakOutShortTrendLine(String date) throws Exception {
 		return this.isBreakOutTrendLine(date, 60, 6);
 	}
 	
-	//ÊÇ·ñÍ»ÆÆ³¤ÆÚ£¨120,12£©ÏÂ½µÇ÷ÊÆÏß
+	//æ˜¯å¦çªç ´é•¿æœŸï¼ˆ120,12ï¼‰ä¸‹é™è¶‹åŠ¿çº¿
 	public boolean isBreakOutLongTrendLine(String date) throws Exception {
 		return this.isBreakOutTrendLine(date, 120, 12);
 	}
@@ -3606,7 +3606,7 @@ public class Index {
 	 * @param date
 	 * @param m
 	 * @param n
-	 * @param days = 1,±íÊ¾Ëã¼ÆµÄÊÇÃ÷Ìì£¬2±íÊ¾¼ÆËãºóÌì
+	 * @param days = 1,è¡¨ç¤ºç®—è®¡çš„æ˜¯æ˜å¤©ï¼Œ2è¡¨ç¤ºè®¡ç®—åå¤©
 	 * @return
 	 * @throws Exception
 	 */
@@ -3843,7 +3843,7 @@ public class Index {
 	
 	public String toHtml(){
 		try {
-			return this.getName() + "["+StkUtils.wrapCodeLink(this.code)+"]["+StkUtils.number2String(this.getTotalMarketValue(),2)+"ÒÚ]";
+			return this.getName() + "["+StkUtils.wrapCodeLink(this.code)+"]["+StkUtils.number2String(this.getTotalMarketValue(),2)+"äº¿]";
 		} catch (Exception e) {
 			e.printStackTrace();
 		} 
@@ -3852,7 +3852,7 @@ public class Index {
 	
 	public String toString(){
 		try {
-			return this.getName() + "["+this.code+"]["+StkUtils.number2String(this.getTotalMarketValue(),2)+"ÒÚ]";
+			return this.getName() + "["+this.code+"]["+StkUtils.number2String(this.getTotalMarketValue(),2)+"äº¿]";
 		} catch (Exception e) {
 			e.printStackTrace();
 		} 

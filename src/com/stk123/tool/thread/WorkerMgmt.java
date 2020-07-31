@@ -7,13 +7,13 @@ import java.util.List;
 public final class WorkerMgmt {
 	private static final int MAX_REQUEST = 100;
 	private final Request[] requestQueue;
-	private int tail; // ¤IÏÂ´ÎÒªputRequestµÄÎ»ÖÃ
-	private int head; // ¤IÏÂ´ÎÒªtakeRequestµÄÎ»ÖÃ
-	private int count; // RequestµÄ´ÎÊı
+	private int tail; // ä¸‹æ¬¡è¦putRequestçš„ä½ç½®
+	private int head; // ä¸‹æ¬¡è¦takeRequestçš„ä½ç½®
+	private int count; // Requestçš„æ¬¡æ•°
 
 	private final List<Worker> workers;
 	private WorkerMonitor monitor;
-	private int monitorSleep = 30;//ÃëÖÓ
+	private int monitorSleep = 30;//ç§’é’Ÿ
 
 	public WorkerMgmt(int workerNo) {
 		this.requestQueue = new Request[MAX_REQUEST];
@@ -27,7 +27,7 @@ public final class WorkerMgmt {
 		}
 		monitor = new WorkerMonitor("monitor");
 	}
-	
+
 	public WorkerMgmt() {
 		this.requestQueue = new Request[MAX_REQUEST];
 		this.head = 0;
@@ -36,7 +36,7 @@ public final class WorkerMgmt {
 		workers = new ArrayList<Worker>();
 		monitor = new WorkerMonitor("monitor");
 	}
-	
+
 	public void addWorker(int workerNo){
 		for (int i = 0; i < workerNo; i++) {
 			workers.add(new Worker("Worker-" + i, this));
@@ -82,41 +82,41 @@ public final class WorkerMgmt {
 		notifyAll();
 		return request;
 	}
-	
+
 	public int workerSize() {
 		return workers.size();
 	}
-	
+
 	public void setMonitorWorkerSleep(int m) {
 		this.monitorSleep = m;
 	}
-	
-	private Request terminatedRequest = null;//ËùÓĞ¹¤ÈË¶¼terminateºóµÄrequest¹¤×÷¡£
+
+	private Request terminatedRequest = null;//æ‰€æœ‰å·¥äººéƒ½terminateåçš„requestå·¥ä½œã€‚
 	public void setRequestAllWorkersTerminated(Request request){
 		this.terminatedRequest = request;
 	}
-	
-	//worker ¼à¿ØÏß³Ì
+
+	//worker ç›‘æ§çº¿ç¨‹
 	class WorkerMonitor extends Thread {
-		
+
 		private WorkerMonitor(String name){
 			super(name);
 		}
-		
+
 		public void run() {
 			int error = 0;
-			
+
 			try {
 				Thread.sleep(monitorSleep*1000);
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
 			}
-			
+
 			while (monitorSleep > 0) {
 				try {
 					Thread.sleep(monitorSleep*1000);
 					Log.log((workers.size())+" worker(s) are working, still ["+count+"] requests");
-					synchronized(workers) 
+					synchronized(workers)
 					{
 						//isAllWorkerTerminated = true;
 						for(int i=0;i<workers.size();i++){
@@ -128,7 +128,7 @@ public final class WorkerMgmt {
 							}
 						}
 					}
-					
+
 					if(workers.size() == 0){
 						monitorSleep -= 2;
 					}

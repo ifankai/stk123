@@ -104,7 +104,7 @@ public class ScreenerAction implements StkConstant {
 				//row.add(view.getListingDays());
 				row.add(display(view.getIndustry()));
 				
-				//industry ·ÖÎö£¬¿´¼¯ÖĞÔÚÄÄ¸öĞĞÒµ
+				//industry åˆ†æï¼Œçœ‹é›†ä¸­åœ¨å“ªä¸ªè¡Œä¸š
 				if(view.getIndustry() != null){
 					String[] inds = view.getIndustry().split(",");
 					for(String ind : inds){
@@ -122,7 +122,7 @@ public class ScreenerAction implements StkConstant {
 				row.add(StkUtils.numberFormat2Digits(view.getRoe()));
 				
 				row.add(formatDate(view.getErDate()));
-				//Òµ¼¨Ô¤¸æ
+				//ä¸šç»©é¢„å‘Š
 				if(view.getErLow() == null){
 					row.add(MARK_HYPHEN);
 					row.add(MARK_HYPHEN);
@@ -134,16 +134,16 @@ public class ScreenerAction implements StkConstant {
 					row.add(StkUtils.numberFormat0Digits((view.getErLow() + view.getErHigh())/2));
 				}
 				row.add(StkUtils.numberFormat2Digits(view.getPeg()));
-				row.add(view.getErNetProfitMaxFlag().intValue()==1?"¸ß":MARK_EMPTY);
+				row.add(view.getErNetProfitMaxFlag().intValue()==1?"é«˜":MARK_EMPTY);
 				//PE
 				row.add(StkUtils.numberFormat2Digits(view.getPe()));
-				//¾²PE/¶¯PE
+				//é™PE/åŠ¨PE
 				if(view.getPeYoy() != null && view.getPe()!=null&&view.getPe()!=0) {
 					row.add(StkUtils.numberFormat2Digits(view.getPeYoy()/view.getPe()));
 				}else{
 					row.add(MARK_HYPHEN);
 				}
-				//Ô¤¸æPE
+				//é¢„å‘ŠPE
 				row.add(StkUtils.numberFormat2Digits(view.getErPe()));
 				if(view.getPe() != null && view.getErPe() != null && view.getErPe() != 0){					
 					row.add(StkUtils.numberFormat2Digits(view.getPe()/view.getErPe()));
@@ -163,14 +163,14 @@ public class ScreenerAction implements StkConstant {
 				row.add(StkUtils.nvl(view.getSaleProfitMargin(), MARK_HYPHEN, StkUtils.numberFormat2Digits(view.getSaleProfitMargin())+MARK_PERCENTAGE));
 				
 				row.add(StkUtils.nvl(view.getRevenueGrowthRate(), MARK_HYPHEN, StkUtils.numberFormat2Digits(view.getRevenueGrowthRate())+MARK_PERCENTAGE));
-				row.add(view.getRevenueMaxFlag().intValue()==1?"¸ß":MARK_EMPTY);
+				row.add(view.getRevenueMaxFlag().intValue()==1?"é«˜":MARK_EMPTY);
 				
 				row.add(rateStatus(view.getNetProfitGrowthRate()));				
-				row.add(view.getNetProfitMaxFlag().intValue()==1?"¸ß":MARK_EMPTY);
+				row.add(view.getNetProfitMaxFlag().intValue()==1?"é«˜":MARK_EMPTY);
 				
-				//¾­ÓªÏÖ½ğ¾»Á÷Á¿Óë¾»ÀûÈóµÄ±ÈÂÊ
+				//ç»è¥ç°é‡‘å‡€æµé‡ä¸å‡€åˆ©æ¶¦çš„æ¯”ç‡
 				row.add(StkUtils.nvl(view.getCashNetProfitRate(), MARK_HYPHEN, view.getCashNetProfitRate()+MARK_PERCENTAGE));
-				//¸ºÕ®ÂÊ
+				//è´Ÿå€ºç‡
 				row.add(StkUtils.nvl(view.getDebtRate(), MARK_HYPHEN, StkUtils.numberFormat2Digits(view.getDebtRate())+MARK_PERCENTAGE));
 				row.add(StkUtils.nvl(view.getResearchRate(), MARK_HYPHEN, StkUtils.numberFormat2Digits(view.getResearchRate())+MARK_PERCENTAGE));
 				
@@ -277,7 +277,7 @@ public class ScreenerAction implements StkConstant {
 		String codes = form.getCodes();
 		if(codes != null){
 			codes = StringUtils.replace(codes, " ", "");
-			codes = StringUtils.replace(codes, "£¬", ",");
+			codes = StringUtils.replace(codes, "ï¼Œ", ",");
 			String[] ss = codes.split(",");
 			Set<String> set = new LinkedHashSet<String>();
 			for(String s : ss){
@@ -455,9 +455,9 @@ public class ScreenerAction implements StkConstant {
 	
 	private static String rateStatus(Double rate) {
 		if(rate != null){
-			if(rate == -999)return "Ğø¿÷";
-			else if(rate == 999)return "Å¤¿÷";
-			else if(rate == -9999)return "×ª¿÷";
+			if(rate == -999)return "ç»­äº";
+			else if(rate == 999)return "æ‰­äº";
+			else if(rate == -9999)return "è½¬äº";
 			else{
 				return rate+StkConstant.MARK_PERCENTAGE;
 			}
@@ -620,8 +620,8 @@ public class ScreenerAction implements StkConstant {
 	public static String Industry_Excludes = null;
 	public static void addIndustryExcludes(){
 		Industry_Excludes = null;
-		Industry_Excludes = "Éî¹ÉÍ¨,Ô¤Ó¯Ô¤Ôö,»ã½ğ³Ö¹É,Éî³É500,»ù½ğÔö²Ö,ÈÚ×ÊÈÚÈ¯,×Ê±¾Æ·,ÖĞÖ¤500,×ªÈÚÈ¯,»¦Éî300,ÖĞ¼Û,»¦¹ÉÍ¨,Ã÷ĞÇ»ù½ğ,¸ß¼Û,¹ã¶«,Ô­²ÄÁÏ,Ôö³Ö»Ø¹º,";
-		Industry_Excludes+= "ÖØ×é²¢¹º,½­ËÕ=18, Õã½­=17, ²Î¹É½ğÈÚ,É½¶«=15, ²Î¹ÉĞÂÈı°å,±±¾©,¶¨ÏòÔö·¢=11, QFII³Ö¹É,ÖĞÅÌ=8, ÉîÖ¤100=8,´óÅÌ,¸£½¨,°²»Õ,";
-		Industry_Excludes+= "ÉÏÖ¤380=12,Õ®×ª¹É,ÉÏÖ¤180,µÍ¼Û,²ÙÅÌÊÖ80,Ğ¡ÅÌ,´ÎĞÂÒÑ¿ª°å,ËÄ´¨,ÉÏº£,Ô¤¿÷Ô¤¼õ,Éî¸ÛÍ¨";
+		Industry_Excludes = "æ·±è‚¡é€š,é¢„ç›ˆé¢„å¢,æ±‡é‡‘æŒè‚¡,æ·±æˆ500,åŸºé‡‘å¢ä»“,èèµ„èåˆ¸,èµ„æœ¬å“,ä¸­è¯500,è½¬èåˆ¸,æ²ªæ·±300,ä¸­ä»·,æ²ªè‚¡é€š,æ˜æ˜ŸåŸºé‡‘,é«˜ä»·,å¹¿ä¸œ,åŸææ–™,å¢æŒå›è´­,";
+		Industry_Excludes+= "é‡ç»„å¹¶è´­,æ±Ÿè‹=18, æµ™æ±Ÿ=17, å‚è‚¡é‡‘è,å±±ä¸œ=15, å‚è‚¡æ–°ä¸‰æ¿,åŒ—äº¬,å®šå‘å¢å‘=11, QFIIæŒè‚¡,ä¸­ç›˜=8, æ·±è¯100=8,å¤§ç›˜,ç¦å»º,å®‰å¾½,";
+		Industry_Excludes+= "ä¸Šè¯380=12,å€ºè½¬è‚¡,ä¸Šè¯180,ä½ä»·,æ“ç›˜æ‰‹80,å°ç›˜,æ¬¡æ–°å·²å¼€æ¿,å››å·,ä¸Šæµ·,é¢„äºé¢„å‡,æ·±æ¸¯é€š";
 	}
 }

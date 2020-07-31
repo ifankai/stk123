@@ -43,7 +43,7 @@ public class Strategy19 extends Strategy {
 		}
 		
 		if(results.size() > 0){
-			super.logStrategy(conn, today, "模型19-突破趋势线", results);
+			super.logStrategy(conn, today, "涓佸瀭19-寰�瀹冨畢鎵鹃樋", results);
 		}
 	}
 	

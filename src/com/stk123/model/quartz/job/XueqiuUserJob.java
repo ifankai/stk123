@@ -25,11 +25,11 @@ public class XueqiuUserJob implements Job {
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {
 		System.out.println("XueqiuUserJob executing...");
 		try {
-			initUser("1287305957");//Ñ©Çò·ÃÌ¸
-			initUser("1955602780");//²»Ã÷ÕæÏàµÄÈºÖÚ
-			initUser("7607677791");//ÍºğÕÍ¶×Ê
-			initUser("5819606767");//DAVID×ÔÓÉÖ®Â·
-			initUser("3386153330");//ÁõÖ¾³¬
+			initUser("1287305957");//é›ªçƒè®¿è°ˆ
+			initUser("1955602780");//ä¸æ˜çœŸç›¸çš„ç¾¤ä¼—
+			initUser("7607677791");//ç§ƒé¹«æŠ•èµ„
+			initUser("5819606767");//DAVIDè‡ªç”±ä¹‹è·¯
+			initUser("3386153330");//åˆ˜å¿—è¶…
 		} catch (Exception e) {
 			EmailUtils.send("XueqiuUser Error", ExceptionUtils.getException(e));
 		}

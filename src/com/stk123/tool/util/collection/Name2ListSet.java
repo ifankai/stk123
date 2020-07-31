@@ -7,7 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * name/listµÄset¼¯£¬¼¯ÀïnameÊÇÎ¨Ò»µÄ
+ * name/listçš„seté›†ï¼Œé›†é‡Œnameæ˜¯å”¯ä¸€çš„
  */
 public class Name2ListSet<K,M> {
 	

@@ -14,27 +14,27 @@ import java.util.List;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class Tree extends TreeNode {
-    
+
     private static final long serialVersionUID = 1L;
 
     private Tree(){
         super();
 	}
-	
+
 	public static Tree getTree(List list, int rootId)
 	{
 		Tree rs = new Tree();
-	    Collections.sort(list, new Compare()); //锟斤拷锟斤拷
+	    Collections.sort(list, new Compare());
 	    for (int i = 0; i < list.size(); i++)
 	    {
 	      TreeNode tnode = (TreeNode) list.get(i);
 	      if (tnode.getLevel() == rootId)
-	      { //锟角凤拷锟斤拷锟�?
+	      {
 	        rs.getChildren().add(tnode);
 	      }
 	      else
 	      {
-	      	TreeNode parent = null; //寻锟揭革拷锟斤拷锟�           
+	      	TreeNode parent = null;
 	      	for (int j = 0; j < rs.getChildren().size(); j++) {
 	      		TreeNode tmp = (TreeNode) rs.getChildren().get(j);
 	      		if ( tmp.getNodeId() == tnode.getParentId())
@@ -46,11 +46,11 @@ public class Tree extends TreeNode {
 	      			parent = rs.getNode(tnode.getParentId());
 	      		}
 	      		if (parent == null)
-	      		{ //未锟揭碉�?
+	      		{
 	      			throw new NullPointerException("Node " + tnode.getParentId() + " not found.");
 	      		}
 	      		else
-	      		{ //锟揭碉拷
+	      		{
 	      			tnode.setParent(parent);
 	      	        parent.getChildren().add(tnode);
 	      			break;
@@ -60,11 +60,10 @@ public class Tree extends TreeNode {
 	    }
 	    return rs;
 	}
-	
+
 	/**
-	 * 锟斤拷目录锟斤拷锟叫诧拷锟揭憋拷识为id锟侥斤拷锟�.
-	 * @param id String 锟斤拷锟斤拷�?
-	 * @return Node 锟斤拷识为id锟侥斤拷锟�(未锟揭碉拷锟斤拷锟斤拷null)
+	 * @param id String
+	 * @return Node
 	 */
 	public TreeNode getNode(int id)
 	{
@@ -74,9 +73,9 @@ public class Tree extends TreeNode {
 	    }
 	    return getNode(getChildren().iterator(), id);
 	}
-	
+
 	private TreeNode getNode(Iterator it, int id)
-	{ //锟斤拷锟揭斤拷锟�?
+	{
 		while (it.hasNext())
 	    {
 		  TreeNode n = (TreeNode) it.next();
@@ -95,7 +94,7 @@ public class Tree extends TreeNode {
 	    }
 	    return null;
 	}
-	
+
 	/*
 	 * 得到所有节点
 	 */
@@ -111,8 +110,7 @@ public class Tree extends TreeNode {
 			}
 		}
 	}
-    
-//  锟矫碉拷锟节碉拷锟斤拷全路锟斤拷
+
     final public String getFullName(int id,String sep)
     {
         String fullName = String.valueOf(id);
@@ -121,17 +119,17 @@ public class Tree extends TreeNode {
         while(parent.getParent() != null){
             parent = parent.getParent();
             fullName = parent.getNodeId()+sep+fullName;
-        }        
+        }
         while(node.hasChildren()){
             node = (TreeNode)node.getChildren().get(0);
             fullName += sep+node.getNodeId();
         }
         return fullName;
     }
-	
+
 }
 
-class Compare implements Comparator //锟皆斤拷惆碔D锟斤拷锟斤拷
+class Compare implements Comparator
 {
 	public Compare()
 	{}

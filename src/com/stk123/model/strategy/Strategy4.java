@@ -20,7 +20,7 @@ public class Strategy4 extends Strategy {
 	
 	
 	/**
-	 * TODO 5ÈÕ¾ùÁ¿·Å´óÁ¿ºóËõÁ¿£¬·ÅµÄ´óÁ¿±ØĞëÊÇÇ°Ãæ80ÌìÄÚµÄ×î´ó5ÈÕ¾ùÁ¿
+	 * TODO 5æ—¥å‡é‡æ”¾å¤§é‡åç¼©é‡ï¼Œæ”¾çš„å¤§é‡å¿…é¡»æ˜¯å‰é¢80å¤©å†…çš„æœ€å¤§5æ—¥å‡é‡
 	 */
 
 	@Override
@@ -75,7 +75,7 @@ public class Strategy4 extends Strategy {
 				System.out.println(index.getCode()+","+index.getName()+",change="+index.changePercent);
 			}
 			System.out.println(StkUtils.join(results, ","));*/
-			EmailUtils.sendAndReport("Ä£ĞÍ4-Á¬Ğø5ÈÕËõÁ¿,¸öÊı£º"+results.size()+",ÈÕÆÚ:"+today,
+			EmailUtils.sendAndReport("æ¨¡å‹4-è¿ç»­5æ—¥ç¼©é‡,ä¸ªæ•°ï¼š"+results.size()+",æ—¥æœŸ:"+today,
 					getImage("Strategy4_1") + "<br><br>" + getImage("Strategy4_2")
 					+ "<br><br>" +
 					StkUtils.createHtmlTable(today, results));

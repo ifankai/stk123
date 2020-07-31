@@ -9,7 +9,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 import com.stk123.web.StkConstant;
 
 /**
- * 定义css，js版本信息
+ * 瀹氫箟css锛宩s鐗堟湰淇℃伅
  * @author kevin.fan
  *
  */

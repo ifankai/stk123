@@ -5,12 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Ki extends K{
-	
+
 	public List<Cent> values = new ArrayList<Cent>();
 
 	/**
 	 * calculate MACD values
-	 * @param list:Price list to calculate£¬the first at head, the last at tail.
+	 * @param list:Price list to calculate, the first at head, the last at tail.
 	 * @param shortPeriod:the short period value.
 	 * @param longPeriod:the long period value.
 	 * @param midPeriod:the mid period value.
@@ -38,8 +38,8 @@ public class Ki extends K{
 		macdData.put("MACD", (dif - dea) * 2);
 		return macdData;
 	}
-	
-	
+
+
 
 }
 class Cent{

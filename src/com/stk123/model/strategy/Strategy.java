@@ -118,7 +118,7 @@ public abstract class Strategy {
 	
 	public void sendAndReport(String title, int cnt, String date, String body) {
 		if(!this.sendMail)return;
-		EmailUtils.sendAndReport(title + (dataSourceName==null?"":" ["+dataSourceName+"]")+",个数:"+cnt+",日期:"+date, body);
+		EmailUtils.sendAndReport(title + (dataSourceName==null?"":" ["+dataSourceName+"]")+",涓暟:"+cnt+",鏃ユ湡:"+date, body);
 	}
 	
 	public List<String> getResultCode(){

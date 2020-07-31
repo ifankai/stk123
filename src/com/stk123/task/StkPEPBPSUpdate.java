@@ -34,9 +34,9 @@ public class StkPEPBPSUpdate {
 					Map<String, String> requestHeaders = new HashMap<String, String>();
 					//requestHeaders.put("Cookie", "__cfduid=d163814fe168b4b389c1fd15a4c94de401497098007; PHPSESSID=62eodgkj5517n12b6cd2hnbq82; cGS5_2132_saltkey=uk8MsT0h; cGS5_2132_lastvisit=1497094393; cGS5_2132_sendmail=1; cGS5_2132_seccode=499.b8a6639db5df8a6a93; cGS5_2132_ulastactivity=ad7dyz3l7awX%2FcYYF5UTNvG0Boa9Q%2BN5f%2Blht3Go2h0YQ%2B00g8Fe; cGS5_2132_auth=7994SgqS%2BzlDSEcVopLmTCP0n4R5j1NfhLqNI6RprUpEs4iDzfgZ9Bx%2FZ%2BZhIFAwgKKInJ%2FVAVeWbXc8mOl5cwx1; cGS5_2132_security_cookiereport=d650XxxdgUDa4dO7rug1bJxWnZdQ3phToTrBpT%2BGef8ouFxXl8mg; cGS5_2132_home_readfeed=1497098081; cGS5_2132_sid=IZ55pS; Hm_lvt_210e7fd46c913658d1ca5581797c34e3=1497097996; Hm_lpvt_210e7fd46c913658d1ca5581797c34e3=1497098113; cGS5_2132_lastact=1497098123%09historical_valuation_data.php%09");
 					requestHeaders.put("X-Requested-With", "XMLHttpRequest");
-					//¹ûÈÊÍø
+					//æœä»ç½‘
 					String page = HttpUtils.post("https://guorn.com/stock/query", null,
-							"{\"ticker\":[[\""+index.getCode()+"\",\"0.M.¹ÉÆ±Ã¿ÈÕÖ¸±ê_ÊĞÓ¯ÂÊ.0\"]],\"index\":[],\"sector\":[],\"pool\":[],\"strategy\":[]}"
+							"{\"ticker\":[[\""+index.getCode()+"\",\"0.M.è‚¡ç¥¨æ¯æ—¥æŒ‡æ ‡_å¸‚ç›ˆç‡.0\"]],\"index\":[],\"sector\":[],\"pool\":[],\"strategy\":[]}"
 							, requestHeaders, "UTF-8", null);
 					Map map = JsonUtils.testJson(page);
 					Map data = (Map)((Map)map.get("data")).get("sheet_data");
@@ -58,7 +58,7 @@ public class StkPEPBPSUpdate {
 					}
 					
 					page = HttpUtils.post("https://guorn.com/stock/query", null,
-							"{\"ticker\":[[\""+index.getCode()+"\",\"0.M.¹ÉÆ±Ã¿ÈÕÖ¸±ê_ÊĞ¾»ÂÊB.0\"]],\"index\":[],\"sector\":[],\"pool\":[],\"strategy\":[]}"
+							"{\"ticker\":[[\""+index.getCode()+"\",\"0.M.è‚¡ç¥¨æ¯æ—¥æŒ‡æ ‡_å¸‚å‡€ç‡B.0\"]],\"index\":[],\"sector\":[],\"pool\":[],\"strategy\":[]}"
 							, requestHeaders, "UTF-8", null);
 					map = JsonUtils.testJson(page);
 					data = (Map)((Map)map.get("data")).get("sheet_data");
@@ -81,7 +81,7 @@ public class StkPEPBPSUpdate {
 					
 					
 					page = HttpUtils.post("https://guorn.com/stock/query", null,
-							"{\"ticker\":[[\""+index.getCode()+"\",\"0.M.¹ÉÆ±Ã¿ÈÕÖ¸±ê_ÊĞÏúÂÊ.0\"]],\"index\":[],\"sector\":[],\"pool\":[],\"strategy\":[]}"
+							"{\"ticker\":[[\""+index.getCode()+"\",\"0.M.è‚¡ç¥¨æ¯æ—¥æŒ‡æ ‡_å¸‚é”€ç‡.0\"]],\"index\":[],\"sector\":[],\"pool\":[],\"strategy\":[]}"
 							, requestHeaders, "UTF-8", null);
 					map = JsonUtils.testJson(page);
 					data = (Map)((Map)map.get("data")).get("sheet_data");

@@ -35,7 +35,7 @@ import com.stk123.tool.util.ListUtils;
 //14:50 trigger every working day.
 public class KlineVolumeMonitor {
 	
-	//ÊµÊ±¼à¿ØÊı¾İ -- volume
+	//å®æ—¶ç›‘æ§æ•°æ® -- volume
 	public static void main(String[] args) throws Exception {
 		System.out.println(KlineVolumeMonitor.class.getName());
 		ConfigUtils.setPropsFromResource(TableTools.class, "db.properties");
@@ -57,10 +57,10 @@ public class KlineVolumeMonitor {
 					result = parseVolume(index);
 				}
 				if(result != null){
-					addResult(results,index,"[¼à¿Ø¹É]"+result);
+					addResult(results,index,"[ç›‘æ§è‚¡]"+result);
 				}
 				//Ene
-				parseEne(conn,index,"[¼à¿Ø¹É]",resultsEne);
+				parseEne(conn,index,"[ç›‘æ§è‚¡]",resultsEne);
 			}
 			List<Index> indexs = new ArrayList<Index>();
 			List<Stk> careStks = JdbcUtils.list(conn, "select code,name from stk_cn where status=1", Stk.class);
@@ -70,87 +70,87 @@ public class KlineVolumeMonitor {
 			for(Index index : indexs){
 				String result = parseVolume(index);
 				if(result != null){
-					addResult(results,index,"[×ÔÑ¡¹É]"+result);
+					addResult(results,index,"[è‡ªé€‰è‚¡]"+result);
 				}
 				//Ene
-				parseEne(conn,index,"[×ÔÑ¡¹É]",resultsEne);
+				parseEne(conn,index,"[è‡ªé€‰è‚¡]",resultsEne);
 			}
 			results.add("<br>");
 			resultsEne.add("<br>");
-			//Òµ¼¨Ô¤Ôö  >= 50%
+			//ä¸šç»©é¢„å¢  >= 50%
 			indexs = getPerformanceGrow(conn);
 			for(Index index : indexs){
 				String result = parseVolume(index);
 				if(result != null){
-					addResult(results,index,"[Òµ¼¨Ô¤Ôö¹É]"+result);
+					addResult(results,index,"[ä¸šç»©é¢„å¢è‚¡]"+result);
 				}
 				//Ene
-				parseEne(conn,index,"[Òµ¼¨Ô¤Ôö¹É]",resultsEne);
+				parseEne(conn,index,"[ä¸šç»©é¢„å¢è‚¡]",resultsEne);
 			}
 			results.add("<br>");
 			resultsEne.add("<br>");
-			//Ó¯ÀûÔ¤²âÔö³¤´óÓÚ80%
+			//ç›ˆåˆ©é¢„æµ‹å¢é•¿å¤§äº80%
 			indexs = getEarningForeast(conn);
 			for(Index index : indexs){
 				String result = parseVolume(index);
 				if(result != null){
-					addResult(results,index,"[Ó¯ÀûÔ¤²âÔö³¤¹É]"+result);
+					addResult(results,index,"[ç›ˆåˆ©é¢„æµ‹å¢é•¿è‚¡]"+result);
 				}
 				//Ene
-				parseEne(conn,index,"[Ó¯ÀûÔ¤²âÔö³¤¹É]",resultsEne);
+				parseEne(conn,index,"[ç›ˆåˆ©é¢„æµ‹å¢é•¿è‚¡]",resultsEne);
 			}
 			results.add("<br>");
 			resultsEne.add("<br>");
 			
 			
-			//·´×ª¹É
+			//åè½¬è‚¡
 			Industry ind = Industry.getIndustry(conn, "1782");
 			indexs = ind.getIndexs();
 			for(Index index : indexs){
 				String result = parseVolume(index);
 				if(result != null){
-					addResult(results,index,"[·´×ª¹É]"+result);
+					addResult(results,index,"[åè½¬è‚¡]"+result);
 				}
 				//Ene
-				parseEne(conn,index,"[·´×ª¹É]",resultsEne);
+				parseEne(conn,index,"[åè½¬è‚¡]",resultsEne);
 			}
 			results.add("<br>");
 			resultsEne.add("<br>");
 			
-			//³É³¤¹É
+			//æˆé•¿è‚¡
 			ind = Industry.getIndustry(conn, "1783");
 			indexs = ind.getIndexs();
 			for(Index index : indexs){
 				String result = parseVolume(index);
 				if(result != null){
-					addResult(results,index,"[³É³¤¹É]"+result);
+					addResult(results,index,"[æˆé•¿è‚¡]"+result);
 				}
 				//Ene
-				parseEne(conn,index,"[³É³¤¹É]",resultsEne);
+				parseEne(conn,index,"[æˆé•¿è‚¡]",resultsEne);
 			}
 			results.add("<br>");
 			resultsEne.add("<br>");
-			//Ç±Á¦¹É
+			//æ½œåŠ›è‚¡
 			ind = Industry.getIndustry(conn, "1781");
 			indexs = ind.getIndexs();
 			for(Index index : indexs){
 				String result = parseVolume(index);
 				if(result != null){
-					addResult(results,index,"[Ç±Á¦¹É]"+result);
+					addResult(results,index,"[æ½œåŠ›è‚¡]"+result);
 				}
 				//Ene
-				parseEne(conn,index,"[Ç±Á¦¹É]",resultsEne);
+				parseEne(conn,index,"[æ½œåŠ›è‚¡]",resultsEne);
 			}
 			long end = System.currentTimeMillis();
 			System.out.println("time:"+((end-start)/1000D)+"s");
 			if(results.size()-5 > 0){
-				EmailUtils.send("Êı¾İ¼à¿Ø-Á¿ÄÜ£¬×ÜÊı£º"+(results.size()-5), StringUtils.join(results, "<br/>"));
+				EmailUtils.send("æ•°æ®ç›‘æ§-é‡èƒ½ï¼Œæ€»æ•°ï¼š"+(results.size()-5), StringUtils.join(results, "<br/>"));
 			}
 			if(resultsEne.size()-5 > 0){
-				EmailUtils.send("Êı¾İ¼à¿Ø-ENE£¬×ÜÊı£º"+(resultsEne.size()-5), StringUtils.join(resultsEne, "<br/>"));
+				EmailUtils.send("æ•°æ®ç›‘æ§-ENEï¼Œæ€»æ•°ï¼š"+(resultsEne.size()-5), StringUtils.join(resultsEne, "<br/>"));
 			}
 		}catch(Exception e){
-			EmailUtils.send("Á¿ÄÜ¼à¿Ø³ö´í", e);
+			EmailUtils.send("é‡èƒ½ç›‘æ§å‡ºé”™", e);
 			e.printStackTrace();
 		} finally {
 			if (conn != null) conn.close();
@@ -193,7 +193,7 @@ public class KlineVolumeMonitor {
 					//Ene ene = index.getK().getEne(index);
 					StringBuffer sb = new StringBuffer();
 					sb.append(index.getName()+"["+StkUtils.wrapCodeLink(index.getCode())+"]");
-					sb.append("Á¿ÄÜ"+v+"ÔÚ60ÈÕÄÚ×îĞ¡Á¿ÅÅÃûµÚ"+(5-trigger));
+					sb.append("é‡èƒ½"+v+"åœ¨60æ—¥å†…æœ€å°é‡æ’åç¬¬"+(5-trigger));
 					return sb.toString();
 				}
 			}
@@ -201,7 +201,7 @@ public class KlineVolumeMonitor {
 		return null;
 	}
 	
-	//Òµ¼¨Ô¤ÔöÅÅĞĞ
+	//ä¸šç»©é¢„å¢æ’è¡Œ
 	public static List<Index> getPerformanceGrow(Connection conn) throws Exception {
 		String page = HttpUtils.get("http://vip.stock.finance.sina.com.cn/q/go.php/vFinanceAnalyze/kind/performance/index.phtml?num=600&order=xiaxian%7C2", "GB2312");
 		Node table = HtmlUtils.getNodeByAttribute(page, null, "id", "dataTable");
@@ -209,7 +209,7 @@ public class KlineVolumeMonitor {
 		List<Index> results = new ArrayList<Index>();
 		for(List<String> data : datas){
 			double percentige = StkUtils.percentigeGreatThan(data.get(7));
-			boolean jk = "¼õ¿÷".equals(data.get(2));
+			boolean jk = "å‡äº".equals(data.get(2));
 			if(percentige >= 50 && !jk){
 				Index index = new Index(conn,data.get(0));
 				results.add(index);
@@ -218,7 +218,7 @@ public class KlineVolumeMonitor {
 		return results;
 	}
 	
-	//Ó¯ÀûÔ¤²âÅÅĞĞ http://data.eastmoney.com/report/ylyc.html
+	//ç›ˆåˆ©é¢„æµ‹æ’è¡Œ http://data.eastmoney.com/report/ylyc.html
 	public static List<Index> getEarningForeast(Connection conn) throws Exception {
 		//String page = HttpUtils.get("http://data.eastmoney.com/report/data.aspx?style=newylyc&field=IndustryID&bkcode=all&page=1&pageSize=5000&sortType=D&sortRule=-1&jsname=zupPdVyy&rt=46271865", null, "gb2312");
 		String page = HttpUtils.get("http://nufm.dfcfw.com/EM_Finance2014NumericApplication/JS.aspx?type=CT&cmd=C._A&sty=GEMCPF&st=(AllNum)&sr=-1&p=2&ps=5000&cb=&js=&token=3a965a43f705cf1d9ad7e1a3e429d622&rt=47445483", null, "gb2312");
@@ -287,7 +287,7 @@ public class KlineVolumeMonitor {
 	public static void addResult(List results, Index index, String str) throws Exception{
 		K todayK = index.getK(StkUtils.getToday());
 		if(todayK != null && !todayK.isUpLimit()){
-			results.add(str+",[ÊĞÖµ:"+StkUtils.number2String(index.getTotalMarketValue(),2)+"ÒÚ]");
+			results.add(str+",[å¸‚å€¼:"+StkUtils.number2String(index.getTotalMarketValue(),2)+"äº¿]");
 		}
 	}
 

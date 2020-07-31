@@ -21,7 +21,7 @@ public class CacheUtils {
     public final static String KEY_FN_TYPE_DISPLAY = "fnTypeDisplay";
     public final static String KEY_INDUSTRY_TYPE = "industryType";
     public final static String KEY_INDUSTRY_STK = "industry.";
-    public final static String KEY_STKS_COLUMN_NAMES = "stksColumnNames";//¶à¹ÉÍ¬ÁĞÏÔÊ¾µÄÁĞÃûkey
+    public final static String KEY_STKS_COLUMN_NAMES = "stksColumnNames";//å¤šè‚¡åŒåˆ—æ˜¾ç¤ºçš„åˆ—åkey
     public final static String KEY_INDEX_TREE = "indexTree";
 	
     //one day key
@@ -183,7 +183,7 @@ public class CacheUtils {
 	 */
 	public static void main(String[] args) throws Exception {
 		System.out.println(System.getProperty("java.io.tmpdir"));
-		//Ö¸¶¨ehcache.xmlµÄÎ»ÖÃ  
+		//æŒ‡å®šehcache.xmlçš„ä½ç½®  
 		URL url = CacheUtils.class.getClass().getResource("/ehcache.xml");  
 		System.out.println(url.getPath());
 		CacheManager manager = CacheManager.create(url);
@@ -191,9 +191,9 @@ public class CacheUtils {
 			System.out.println(name);
 		}
 	    
-	    CacheUtils.putByCode("000997", "name", "ĞÂ´óÂ½");
+	    CacheUtils.putByCode("000997", "name", "æ–°å¤§é™†");
 	    for(int i=0;i<1000;i++){
-	    	CacheUtils.putByCode("000997"+i, "name", "ĞÂ´óÂ½"+i);
+	    	CacheUtils.putByCode("000997"+i, "name", "æ–°å¤§é™†"+i);
 	    }
 	    System.out.println(CacheUtils.getByCode("000997100", "name"));
 	    manager.shutdown();

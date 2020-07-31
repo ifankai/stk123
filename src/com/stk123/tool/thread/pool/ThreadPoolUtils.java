@@ -59,28 +59,28 @@ public class ThreadPoolUtils {
 	}
 	
 	public static List<Object> run(List<Callable> tasks, int poolSize) throws InterruptedException, ExecutionException {
-		// ´´½¨Ò»¸öÏß³Ì³Ø
+		// åˆ›å»ºä¸€ä¸ªçº¿ç¨‹æ± 
 		ExecutorService exec = Executors.newFixedThreadPool(poolSize);
-		// µ÷ÓÃCompletionServiceµÄtake·½·¨ÊÇ£¬»á·µ»Ø°´Íê³ÉË³Ğò·Å»ØÈÎÎñµÄ½á¹û
+		// è°ƒç”¨CompletionServiceçš„takeæ–¹æ³•æ˜¯ï¼Œä¼šè¿”å›æŒ‰å®Œæˆé¡ºåºæ”¾å›ä»»åŠ¡çš„ç»“æœ
 		CompletionService pool = new ExecutorCompletionService(exec);
-		// ´´½¨¶à¸öÓĞ·µ»ØÖµµÄÈÎÎñ
+		// åˆ›å»ºå¤šä¸ªæœ‰è¿”å›å€¼çš„ä»»åŠ¡
 		//List<Future> list = new ArrayList<Future>();
 		for (int i = 0; i < tasks.size(); i++) {
 			Callable c = tasks.get(i);
-			// Ö´ĞĞÈÎÎñ²¢»ñÈ¡Future¶ÔÏó
+			// æ‰§è¡Œä»»åŠ¡å¹¶è·å–Futureå¯¹è±¡
 			Future f = pool.submit(c);
 			//list.add(f);
 		}
 		List<Object> results = new ArrayList<Object>();
-		// »ñÈ¡ËùÓĞ²¢·¢ÈÎÎñµÄÔËĞĞ½á¹û
+		// è·å–æ‰€æœ‰å¹¶å‘ä»»åŠ¡çš„è¿è¡Œç»“æœ
 		for (int i = 0; i < tasks.size(); i++) {
-			//´ÓFuture¶ÔÏóÉÏ»ñÈ¡ÈÎÎñµÄ·µ»ØÖµ£¬²¢Êä³öµ½¿ØÖÆÌ¨
+			//ä»Futureå¯¹è±¡ä¸Šè·å–ä»»åŠ¡çš„è¿”å›å€¼ï¼Œå¹¶è¾“å‡ºåˆ°æ§åˆ¶å°
 			//System.out.println(">>>" + pool.take().get().toString());
 			Future f = pool.take();
 			results.add(f.get());
 		}
 		System.out.println("..................");
-		// ¹Ø±ÕÏß³Ì³Ø
+		// å…³é—­çº¿ç¨‹æ± 
 		exec.shutdown();
 		return results;
 	}
@@ -147,7 +147,7 @@ public class ThreadPoolUtils {
 									/*String date = parseStkAccountInfo(conn, search);
 									if(date != null){
 										updateSearch(conn, date, search);
-										EmailUtils.send("¡¾¹ÉÆ±ÕË»§Êı¾İ,ÈÕÆÚ:"+date+"¡¿", createStkAccountInfoTable(conn, 50));
+										EmailUtils.send("ã€è‚¡ç¥¨è´¦æˆ·æ•°æ®,æ—¥æœŸ:"+date+"ã€‘", createStkAccountInfoTable(conn, 50));
 									}*/
 									return null;
 								case 11 :
@@ -183,7 +183,7 @@ public class ThreadPoolUtils {
 					}
 				}
 				System.out.println(sb.toString());
-				//EmailUtils.send("¡¾¹Ø×¢¶ÔÏó×îĞÂ¶¯Ì¬,ÈÕÆÚ:"+StkUtils.getToday()+"¡¿", sb.toString());
+				//EmailUtils.send("ã€å…³æ³¨å¯¹è±¡æœ€æ–°åŠ¨æ€,æ—¥æœŸ:"+StkUtils.getToday()+"ã€‘", sb.toString());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

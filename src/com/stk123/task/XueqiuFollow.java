@@ -34,7 +34,7 @@ public class XueqiuFollow {
 				try{
 					Index index = new Index(conn,stk.getCode(),stk.getName());
 					System.out.println("xueqiu followers:"+index.getCode());
-					//updateÑ©Çò¹Ø×¢ÈËÊı
+					//updateé›ªçƒå…³æ³¨äººæ•°
 					updateStkFollows(conn,index,cookies);
 				}catch(Exception e){
 					e.printStackTrace();

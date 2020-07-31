@@ -57,7 +57,7 @@ public class WebUtils {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		System.out.println(display("¹«Ë¾ÊÇ×¨ÒµµÄÎŞÏßÍ¨ĞÅÖÕ¶ËÌìÏßÉú²úÆóÒµ¡£Ö÷ÓªÒµÎñÎªÎŞÏßÍ¨ĞÅÖÕ¶ËÌìÏßµÄÑĞ·¢¡¢Éú²úºÍÏúÊÛ¡£¹«Ë¾ÖÂÁ¦ÓÚÔËÓÃtesterĞÂÒ»´úÒÆ¶¯Í¨ĞÅ¡¢ÎŞÏß»¥ÁªÍøºÍÎïÁªÍøµÈ¼¼Êõ£¬¿ª·¢¸ßÆ·ÖÊ¡¢¶àÆ·ÖÖµÄÎŞÏßÍ¨ĞÅÖÕ¶ËÌìÏß²úÆ·£¬ÎªÊÖ»ú¡¢±Ê¼Ç±¾µçÄÔ¡¢AP¡¢ÒÆ¶¯µçÊÓÖÕ¶Ë¡¢ÎÀĞÇ¶¨Î»ÖÕ¶ËµÈ¶àÖÖÎŞÏßÍ¨ĞÅÖÕ¶Ë³§ÉÌÌá¹©Ò»À¿×ÓµÄÌìÏß½â¾ö·½°¸¡£¹«Ë¾¡°¶àÖÆÊ½¸ßĞÔÄÜÊÖ»úÌìÏßÏîÄ¿¡±ÁĞÈë¹ú¼Ò·¢¸ÄÎ¯ºÍ¹¤ĞÅ²¿¡°µç×ÓĞÅÏ¢²úÒµÕñĞËÓë¼¼Êõ¸ÄÔìÏîÄ¿2011ÄêµÚÒ»ÅúÖĞÑëÔ¤ËãÄÚÍ¶×Ê¼Æ»®¡±¡£¹«Ë¾ÊÇ¹ú¼Ò¼¶¸ßĞÂ¼¼ÊõÆóÒµ¡¢¹ú¼Ò»ğ¾æ¼Æ»®ÖØµã¸ßĞÂ¼¼ÊõÆóÒµ¡¢¹ã¶«Ê¡´´ĞÂĞÍÊÔµãÆóÒµ¡£",320));
+		System.out.println(display("å…¬å¸æ˜¯ä¸“ä¸šçš„æ— çº¿é€šä¿¡ç»ˆç«¯å¤©çº¿ç”Ÿäº§ä¼ä¸šã€‚ä¸»è¥ä¸šåŠ¡ä¸ºæ— çº¿é€šä¿¡ç»ˆç«¯å¤©çº¿çš„ç ”å‘ã€ç”Ÿäº§å’Œé”€å”®ã€‚å…¬å¸è‡´åŠ›äºè¿ç”¨testeræ–°ä¸€ä»£ç§»åŠ¨é€šä¿¡ã€æ— çº¿äº’è”ç½‘å’Œç‰©è”ç½‘ç­‰æŠ€æœ¯ï¼Œå¼€å‘é«˜å“è´¨ã€å¤šå“ç§çš„æ— çº¿é€šä¿¡ç»ˆç«¯å¤©çº¿äº§å“ï¼Œä¸ºæ‰‹æœºã€ç¬”è®°æœ¬ç”µè„‘ã€APã€ç§»åŠ¨ç”µè§†ç»ˆç«¯ã€å«æ˜Ÿå®šä½ç»ˆç«¯ç­‰å¤šç§æ— çº¿é€šä¿¡ç»ˆç«¯å‚å•†æä¾›ä¸€æ½å­çš„å¤©çº¿è§£å†³æ–¹æ¡ˆã€‚å…¬å¸â€œå¤šåˆ¶å¼é«˜æ€§èƒ½æ‰‹æœºå¤©çº¿é¡¹ç›®â€åˆ—å…¥å›½å®¶å‘æ”¹å§”å’Œå·¥ä¿¡éƒ¨â€œç”µå­ä¿¡æ¯äº§ä¸šæŒ¯å…´ä¸æŠ€æœ¯æ”¹é€ é¡¹ç›®2011å¹´ç¬¬ä¸€æ‰¹ä¸­å¤®é¢„ç®—å†…æŠ•èµ„è®¡åˆ’â€ã€‚å…¬å¸æ˜¯å›½å®¶çº§é«˜æ–°æŠ€æœ¯ä¼ä¸šã€å›½å®¶ç«ç‚¬è®¡åˆ’é‡ç‚¹é«˜æ–°æŠ€æœ¯ä¼ä¸šã€å¹¿ä¸œçœåˆ›æ–°å‹è¯•ç‚¹ä¼ä¸šã€‚",320));
 	}
 	
 	public static String REPORT_DATE = WebUtils.class+"REPORT_DATE";
@@ -108,11 +108,11 @@ public class WebUtils {
 		StringBuffer sb = new StringBuffer();
 		sb.append("<div class=\"content-summary\">");
 		sb.append(summary);
-		sb.append("<span style=\"cursor:pointer; color:#0055a2;\" onclick=\"expand(this)\">...[Õ¹¿ª]</span>");
+		sb.append("<span style=\"cursor:pointer; color:#0055a2;\" onclick=\"expand(this)\">...[å±•å¼€]</span>");
 		sb.append("</div>");
 		sb.append("<div class=\"content-detail\" style=\"display: none;\"><div class=\"content-detail-inner\">");
 		sb.append(html);
-		sb.append("</div><span style=\"cursor:pointer; color:#0055a2;\" onclick=\"expand(this)\">[ÊÕÆğ]</span>");
+		sb.append("</div><span style=\"cursor:pointer; color:#0055a2;\" onclick=\"expand(this)\">[æ”¶èµ·]</span>");
 		sb.append("</div>");
 		return sb.toString();
 	}
@@ -126,8 +126,8 @@ public class WebUtils {
 	private final static String CONTENT_DETAIL_INNER = "<div class=\"content-detail-inner\">";
 	private final static String CONTENT_SUMMARY = "<div class=\"content-summary\">";
 	private final static String SHOW_ALL = "<div class=\"show-all\" onclick=\"expand(this)\">";
-	private final static String SHOW_TEXT_1 = "<span class=\"show-text\" onclick=\"expand(this)\">[Õ¹¿ª]</span>";
-	private final static String SHOW_TEXT_2 = "<span class=\"show-text\" onclick=\"expand(this)\">[ÊÕÆğ]</span>";
+	private final static String SHOW_TEXT_1 = "<span class=\"show-text\" onclick=\"expand(this)\">[å±•å¼€]</span>";
+	private final static String SHOW_TEXT_2 = "<span class=\"show-text\" onclick=\"expand(this)\">[æ”¶èµ·]</span>";
 	
 	public static String display(String html,int len,boolean br){
 		return display(html,len,br,true);
@@ -268,11 +268,11 @@ public class WebUtils {
 	
 	public static String createTableOfStkMonitor(Index index, List<StkMonitor> ms, String item) throws Exception {
 		List<HtmlTd> titles = new ArrayList<HtmlTd>();
-		titles.add(HtmlTd.getInstanceAlignMiddle("Ô±¹¤³Ö¹É¼Û"));
-		titles.add(HtmlTd.getInstanceAlignMiddle("Ç°¸´È¨¼Û"));
-		titles.add(HtmlTd.getInstanceAlignMiddle("¹«¸æÈÕ"));
-		titles.add(HtmlTd.getInstanceAlignMiddle("ÕÛ¼ÛÂÊ"));
-		titles.add(HtmlTd.getInstanceAlignMiddle("À´Ô´"));
+		titles.add(HtmlTd.getInstanceAlignMiddle("å‘˜å·¥æŒè‚¡ä»·"));
+		titles.add(HtmlTd.getInstanceAlignMiddle("å‰å¤æƒä»·"));
+		titles.add(HtmlTd.getInstanceAlignMiddle("å…¬å‘Šæ—¥"));
+		titles.add(HtmlTd.getInstanceAlignMiddle("æŠ˜ä»·ç‡"));
+		titles.add(HtmlTd.getInstanceAlignMiddle("æ¥æº"));
 		
 		List<List<HtmlTd>> datas = new ArrayList<List<HtmlTd>>();
 		for(StkMonitor m : ms){
@@ -286,7 +286,7 @@ public class WebUtils {
 					td.attributes.put("style", "color:red");
 				}
 				row.add(td);
-				row.add(HtmlTd.getInstanceAlignRight("<a target='_blank' href='"+m.getResult1()+"'>À´Ô´</a>"));
+				row.add(HtmlTd.getInstanceAlignRight("<a target='_blank' href='"+m.getResult1()+"'>æ¥æº</a>"));
 				datas.add(row);
 			}
 		}
@@ -296,8 +296,8 @@ public class WebUtils {
 	public static String createTableOfStkImportInfo(Connection conn, Index index, int type) throws Exception {
 		List<StkImportInfo> infos = index.getImportInfo(3);
 		List<HtmlTd> titles = new ArrayList<HtmlTd>();
-		titles.add(HtmlTd.getInstanceAlignMiddle("Ãû³Æ"));
-		titles.add(HtmlTd.getInstanceAlignMiddle("¹«¸æÈÕ"));
+		titles.add(HtmlTd.getInstanceAlignMiddle("åç§°"));
+		titles.add(HtmlTd.getInstanceAlignMiddle("å…¬å‘Šæ—¥"));
 		
 		List<List<HtmlTd>> datas = new ArrayList<List<HtmlTd>>();
 		for(StkImportInfo m : infos){

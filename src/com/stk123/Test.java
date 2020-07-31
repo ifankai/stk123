@@ -14,15 +14,15 @@ public class Test {
 	
 	private static Logger logger = Logger.getLogger(Test.class);
 
-	private static String str = "ABCDE";// ×Ö·û´®
-	   private static int n = 3;// Ñ¡ÔñµÄ¸öÊı
-	   private static int count = 0;//×éºÏµÄ¸öÊı
+	private static String str = "ABCDE";// å­—ç¬¦ä¸²
+	   private static int n = 3;// é€‰æ‹©çš„ä¸ªæ•°
+	   private static int count = 0;//ç»„åˆçš„ä¸ªæ•°
 
 	   public static void main(String[] args) throws Exception {
 	       //new Test();
-		   //System.out.println(String.format("%sÇëÊäÈëÒªÑ¡ÔñµÄ¸öÊı%s", str, str));
-		   System.out.println(StringUtils.leftPad("Áø ¹¤", 4, "\t"));
-		   System.out.println(ChineseUtils.length("Áø ¹¤"));
+		   //System.out.println(String.format("%sè¯·è¾“å…¥è¦é€‰æ‹©çš„ä¸ªæ•°%s", str, str));
+		   System.out.println(StringUtils.leftPad("æŸ³ å·¥", 4, "\t"));
+		   System.out.println(ChineseUtils.length("æŸ³ å·¥"));
 		   System.out.println(StringUtils.leftPad("1", 4, "0"));
 		  //logger.error("ddddddddddddddd");
 		   
@@ -40,19 +40,19 @@ public class Test {
 
 	   public Test() {
 	       Scanner input = new Scanner(System.in);
-	       System.out.println("ÇëÊäÈëÒªÑ¡ÔñµÄ¸öÊı£¨ÒªÉÙÓÚ" + str.length() + "¸ö£©");
+	       System.out.println("è¯·è¾“å…¥è¦é€‰æ‹©çš„ä¸ªæ•°ï¼ˆè¦å°‘äº" + str.length() + "ä¸ªï¼‰");
 	       n = Integer.parseInt(input.nextLine());
 	       find("", 0);
-	       System.out.println("¹²ÓĞ"+count+"ÖÖ×éºÏ");
+	       System.out.println("å…±æœ‰"+count+"ç§ç»„åˆ");
 	       
 	   }
 	   /**
-	    *µÚÒ»¸ö²ÎÊıÊÇ´ú±íµÚÒ»¸ö×Ö·û£¬µÚ¶ş¸ö²ÎÊı´ú±í¿ªÊ¼Ñ°ÕÒµãµÄÎ»ÖÃ
+	    *ç¬¬ä¸€ä¸ªå‚æ•°æ˜¯ä»£è¡¨ç¬¬ä¸€ä¸ªå­—ç¬¦ï¼Œç¬¬äºŒä¸ªå‚æ•°ä»£è¡¨å¼€å§‹å¯»æ‰¾ç‚¹çš„ä½ç½®
 	    */
 	   public static void find(String s, int i) {
-	       // ±£´æÉÏÒ»´ÎµÄ×Ö·û´®
+	       // ä¿å­˜ä¸Šä¸€æ¬¡çš„å­—ç¬¦ä¸²
 	       String temp = s;
-	       //ÅĞ¶ÏÊÇ·ñ·ûºÏÒªÇó
+	       //åˆ¤æ–­æ˜¯å¦ç¬¦åˆè¦æ±‚
 	       if (s.length() == n) {
 	           count++;
 
@@ -61,7 +61,7 @@ public class Test {
 	               System.out.println();
 	           return;
 	       }
-	       //´ÓÑ°ÕÒµã¿ªÊ¼Ñ­»·£¬·çÖ®¾³µØ
+	       //ä»å¯»æ‰¾ç‚¹å¼€å§‹å¾ªç¯ï¼Œé£ä¹‹å¢ƒåœ°
 	       for (int k =i; k < str.length(); k++) {
 	           s = temp;
 	           s += str.charAt(k);

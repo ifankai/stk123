@@ -52,7 +52,7 @@ public class XmlUtils {
 <?xml version="1.0" encoding="utf-8"?>
 <ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://WebXml.com.cn/">
   <string>sz002570</string>
-  <string>±´ÒòÃÀ</string>
+  <string>è´å› ç¾</string>
   <string>2013-08-13 15:05:49</string>
   <string>33.98</string>
   <string>34.37</string>

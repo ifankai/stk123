@@ -141,7 +141,7 @@ public class TextAction implements StkConstant {
 					//IKUtils.updateDocument(stext);
 				}
 			}
-			if(NUMBER_ZERO.equals(type)){//只对收藏文章
+			if(NUMBER_ZERO.equals(type)){//鍙鏀惰棌鏂囩珷
 				String slabels = request.getParameter(PARAMETER_LABEL);
 				/*Set<String> labels = StkUtils.getLabels(title);
 				labels.addAll(StkUtils.getLabels(text));*/
@@ -191,7 +191,7 @@ public class TextAction implements StkConstant {
 			Pattern pat = Pattern.compile(pattern);  
 	        Matcher matcher = pat.matcher(sb); 
 	        List<Name2Value<String, Name2Value<Integer,Integer>>> pos = new ArrayList<Name2Value<String, Name2Value<Integer,Integer>>>();
-	        while (matcher.find())//查找符合pattern的字符串  
+	        while (matcher.find())//鏌ユ壘绗﹀悎pattern鐨勫瓧绗︿覆  
 	        {  
 	        	pos.add(new Name2Value(matcher.group(),new Name2Value(matcher.start(),matcher.end())));
 	        }
@@ -288,7 +288,7 @@ public class TextAction implements StkConstant {
 		int perPage = 10;//StkConstant.SYS_ARTICLE_LIST_PER_PAGE;
 		
 		List<StkText> texts = new ArrayList<StkText>();
-		//查询文章
+		//鏌ヨ鏂囩珷
 		Index index = new Index(conn, code);
 		List<String> kws = Keyword.listKeywords(conn, code, Keyword.CODETYPE_STK,Keyword.LINKTYPE_MANUAL);
 		String keyword = code+MARK_COMMA+index.getNameByTrim()+MARK_COMMA+StringUtils.join(kws, MARK_COMMA);

@@ -11,7 +11,7 @@ import com.stk123.tool.util.EmailUtils;
 
 public class Strategy7 extends Strategy {
 	/**
-	 * Í¨²ßÒ½ÁÆ600763£¬20160530
+	 * é€šç­–åŒ»ç–—600763ï¼Œ20160530
 	 */
 	@Override
 	public void run(Connection conn, String today) throws Exception {
@@ -28,8 +28,8 @@ public class Strategy7 extends Strategy {
 			
 		}
 		if(results.size() > 0){
-			super.logStrategy(conn, today, "Ä£ĞÍ7-Á¬Ğø5ÈÕÏÂµøÁ¿ÄÜÈ´·Å´ó", results);
-			EmailUtils.sendAndReport("Ä£ĞÍ7-Á¬Ğø5ÈÕÏÂµøÁ¿ÄÜÈ´·Å´ó,¸öÊı£º"+results.size()+",ÈÕÆÚ:"+today,
+			super.logStrategy(conn, today, "æ¨¡å‹7-è¿ç»­5æ—¥ä¸‹è·Œé‡èƒ½å´æ”¾å¤§", results);
+			EmailUtils.sendAndReport("æ¨¡å‹7-è¿ç»­5æ—¥ä¸‹è·Œé‡èƒ½å´æ”¾å¤§,ä¸ªæ•°ï¼š"+results.size()+",æ—¥æœŸ:"+today,
 				StkUtils.createHtmlTable(today, results));
 		}
 	}

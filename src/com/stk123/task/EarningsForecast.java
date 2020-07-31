@@ -43,7 +43,7 @@ public class EarningsForecast {
 				System.out.println(stk.getCode());
 				try{
 					String page = HttpUtils.get("http://data.eastmoney.com/bbsj/"+stk.getCode()+".html", "GBK");
-					TableTag node = HtmlUtils.getTableNodeByText(page, null, "Òµ¼¨±ä¶¯·ù¶È");
+					TableTag node = HtmlUtils.getTableNodeByText(page, null, "ä¸šç»©å˜åŠ¨å¹…åº¦");
 					if(node == null)continue;
 					List<List<String>> datas = HtmlUtils.getListFromTable(node);
 					//System.out.println(datas);
@@ -101,11 +101,11 @@ public class EarningsForecast {
 							params.add(data.get(5));
 							String amount = "-".equals(data.get(6))?null:data.get(6);
 							int n = 1;
-							if(StringUtils.contains(amount, "ÒÚ")){
+							if(StringUtils.contains(amount, "äº¿")){
 								n = 10000;
-								amount = StringUtils.replace(amount, "ÒÚ", "");
+								amount = StringUtils.replace(amount, "äº¿", "");
 							}
-							amount = StringUtils.replace(amount, "Íò", "");
+							amount = StringUtils.replace(amount, "ä¸‡", "");
 							params.add(amount==null?null:Double.parseDouble(amount) * n);
 							params.add(StringUtils.replace(data.get(7), "-", ""));
 							
@@ -172,13 +172,13 @@ public class EarningsForecast {
 					sb.append(stk.getName()+"["+stk.getCode()+"]"+stk.getNextQuarterEarning()).append("<br>");
 					List<String> ef = index.getEarningsForecastAsList();
 					if(ef != null && ef.size() >=3){
-						Text.insert(conn, stk.getCode(), "[Ó¯ÀûÔ¤ÆÚ] ["+
+						Text.insert(conn, stk.getCode(), "[ç›ˆåˆ©é¢„æœŸ] ["+
 								StkUtils.numberFormat(index.getFnDataLastestByType(StkConstant.FN_TYPE_CN_JLRZZL).getFnValue(), 2) + "] " +
 								ef.get(0)+", "+ef.get(2)+", "+ef.get(1), Text.SUB_TYPE_EARNING_FORECAST);
 					}
 					indexs.add(index);
 				}
-				EmailUtils.send("ÏÂ¸ö¼¾¶ÈÓ¯ÀûÔ¤ÆÚÊı¾İ£¬´óÓÚ100%",StkUtils.createHtmlTable(StkUtils.getToday(), indexs));
+				EmailUtils.send("ä¸‹ä¸ªå­£åº¦ç›ˆåˆ©é¢„æœŸæ•°æ®ï¼Œå¤§äº100%",StkUtils.createHtmlTable(StkUtils.getToday(), indexs));
 			}*/
 		} finally {
 			if (conn != null) conn.close();
@@ -216,17 +216,17 @@ public class EarningsForecast {
 			Double dnp = StkUtils.numberFormat(Double.parseDouble(String.valueOf(m.get("d_np"))),2);
 			Double dpe = StkUtils.numberFormat(Double.parseDouble(String.valueOf(m.get("d_pe"))),2);
 			
-			/*//È¥Äê
+			/*//å»å¹´
 			l.add(String.valueOf(anp));
 			l.add(String.valueOf(ape));
-			//È¥ÄêPEG(2Äê¸´ºÏÔö³¤ÂÊ)
+			//å»å¹´PEG(2å¹´å¤åˆå¢é•¿ç‡)
 			double cagr = StkUtils.calcCAGR(anp, cnp, 2);
 			if(cagr == 0){
 				l.add(StkConstant.MARK_HYPHEN);
 			}else{
 				l.add(format(ape/cagr));
 			}
-			//È¥ÄêPEG(3Äê¸´ºÏÔö³¤ÂÊ)
+			//å»å¹´PEG(3å¹´å¤åˆå¢é•¿ç‡)
 			cagr = StkUtils.calcCAGR(anp, dnp, 3);
 			if(cagr == 0){
 				l.add(StkConstant.MARK_HYPHEN);
@@ -234,7 +234,7 @@ public class EarningsForecast {
 				l.add(format(ape/cagr));
 			}
 			
-			//½ñÄê
+			//ä»Šå¹´
 			l.add(String.valueOf(bnp));
 			l.add(String.valueOf(bpe));
 			if(anp == 0){
@@ -242,7 +242,7 @@ public class EarningsForecast {
 				l.add(StkConstant.MARK_HYPHEN);
 			}else{
 				l.add(format((bnp-anp)/anp*100)+"%");
-				//½ñÄêPEG(2Äê¸´ºÏÔö³¤ÂÊ)
+				//ä»Šå¹´PEG(2å¹´å¤åˆå¢é•¿ç‡)
 				cagr = StkUtils.calcCAGR(bnp, dnp, 2);
 				if(cagr == 0){
 					l.add(StkConstant.MARK_HYPHEN);
@@ -251,7 +251,7 @@ public class EarningsForecast {
 				}
 			}
 			
-			//Ã÷Äê
+			//æ˜å¹´
 			l.add(String.valueOf(cnp));
 			if(bnp == 0){
 				l.add(StkConstant.MARK_HYPHEN);
@@ -259,7 +259,7 @@ public class EarningsForecast {
 				l.add(format((cnp-bnp)/bnp*100)+"%");
 			}
 			
-			//ºóÄê
+			//åå¹´
 			l.add(String.valueOf(dnp));
 			if(cnp == 0){
 				l.add(StkConstant.MARK_HYPHEN);
@@ -267,7 +267,7 @@ public class EarningsForecast {
 				l.add(format((dnp-cnp)/cnp*100)+"%");
 			}
 			
-			//Ã÷ºóÄêÔöËÙ
+			//æ˜åå¹´å¢é€Ÿ
 			if(cnp == 0 || bnp == 0){
 				l.add(StkConstant.MARK_HYPHEN);
 			}else{
@@ -281,17 +281,17 @@ public class EarningsForecast {
 	
 	public static List<String> calculation(List<String> l, Double anp, Double ape,
 			Double bnp, Double bpe, Double cnp, Double cpe, Double dnp, Double dpe){
-		//È¥Äê
+		//å»å¹´
 		l.add(String.valueOf(anp));
 		l.add(String.valueOf(ape));
-		//È¥ÄêPEG(2Äê¸´ºÏÔö³¤ÂÊ)
+		//å»å¹´PEG(2å¹´å¤åˆå¢é•¿ç‡)
 		double cagr = StkUtils.calcCAGR(anp, cnp, 2);
 		if(cagr == 0){
 			l.add(StkConstant.MARK_HYPHEN);
 		}else{
 			l.add(format(ape/cagr));
 		}
-		//È¥ÄêPEG(3Äê¸´ºÏÔö³¤ÂÊ)
+		//å»å¹´PEG(3å¹´å¤åˆå¢é•¿ç‡)
 		cagr = StkUtils.calcCAGR(anp, dnp, 3);
 		if(cagr == 0){
 			l.add(StkConstant.MARK_HYPHEN);
@@ -299,7 +299,7 @@ public class EarningsForecast {
 			l.add(format(ape/cagr));
 		}
 		
-		//½ñÄê
+		//ä»Šå¹´
 		l.add(String.valueOf(bnp));
 		l.add(String.valueOf(bpe));
 		if(anp == 0){
@@ -307,7 +307,7 @@ public class EarningsForecast {
 			l.add(StkConstant.MARK_HYPHEN);
 		}else{
 			l.add(format((bnp-anp)/anp*100)+"%");
-			//½ñÄêPEG(2Äê¸´ºÏÔö³¤ÂÊ)
+			//ä»Šå¹´PEG(2å¹´å¤åˆå¢é•¿ç‡)
 			cagr = StkUtils.calcCAGR(bnp, dnp, 2);
 			if(cagr == 0){
 				l.add(StkConstant.MARK_HYPHEN);
@@ -316,7 +316,7 @@ public class EarningsForecast {
 			}
 		}
 		
-		//Ã÷Äê
+		//æ˜å¹´
 		l.add(String.valueOf(cnp));
 		if(bnp == 0){
 			l.add(StkConstant.MARK_HYPHEN);
@@ -324,7 +324,7 @@ public class EarningsForecast {
 			l.add(format((cnp-bnp)/bnp*100)+"%");
 		}
 		
-		//ºóÄê
+		//åå¹´
 		l.add(String.valueOf(dnp));
 		if(cnp == 0){
 			l.add(StkConstant.MARK_HYPHEN);
@@ -332,7 +332,7 @@ public class EarningsForecast {
 			l.add(format((dnp-cnp)/cnp*100)+"%");
 		}
 		
-		//Ã÷ºóÄêÔöËÙ
+		//æ˜åå¹´å¢é€Ÿ
 		if(cnp == 0 || bnp == 0){
 			l.add(StkConstant.MARK_HYPHEN);
 		}else{

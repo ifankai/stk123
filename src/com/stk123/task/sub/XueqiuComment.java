@@ -25,7 +25,7 @@ import com.stk123.tool.util.JsonUtils;
 import com.stk123.web.StkDict;
 
 /**
- * 雪球个股评论
+ * 闆悆涓偂璇勮
  *
  */
 public class XueqiuComment {
@@ -60,7 +60,7 @@ public class XueqiuComment {
 							if(stk == null)continue;
 							params.clear();
 							params.add(code);
-							String title = "雪球[<a target='_blank' href='http://xueqiu.com/"+dict.getKey()+"'>"+dict.getValue().getText()+"</a>]";
+							String title = "闆悆[<a target='_blank' href='http://xueqiu.com/"+dict.getKey()+"'>"+dict.getValue().getText()+"</a>]";
 							params.add(title);
 							//StkText st = JdbcUtils.load(conn, "select * from (select * from stk_text where type=2 and code=? and title=? order by insert_time desc) a limit 0,1", params, StkText.class);
 							StkText st = JdbcUtils.load(conn, "select * from (select * from stk_text where type=2 and code=? and title=? order by insert_time desc) where rownum <= 1", params, StkText.class);
@@ -109,7 +109,7 @@ public class XueqiuComment {
 									Stk stk = JdbcUtils.load(conn, "select code,name from stk where code=?", params, Stk.class);
 									if(stk == null)continue;
 									
-									String title = "雪球-[<a target='_blank' href='http://xueqiu.com/"+dict.getKey()+"'>"+dict.getValue().getText()+"</a>]";
+									String title = "闆悆-[<a target='_blank' href='http://xueqiu.com/"+dict.getKey()+"'>"+dict.getValue().getText()+"</a>]";
 									params.clear();
 									params.add(code);
 									params.add(title);
@@ -134,7 +134,7 @@ public class XueqiuComment {
 			}
 			
 			/*if(results.size() > 0){
-				EmailUtils.send("雪球名人个股评论", StringUtils.join(results, "<br>"));
+				EmailUtils.send("闆悆鍚嶄汉涓偂璇勮", StringUtils.join(results, "<br>"));
 			}*/
 		} finally {
 			if (conn != null) conn.close();

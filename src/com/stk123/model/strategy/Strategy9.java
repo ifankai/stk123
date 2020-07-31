@@ -37,7 +37,7 @@ public class Strategy9 extends Strategy {
 			System.out.println(index.getCode()+","+index.getName()+",change="+index.changePercent);
 		}*/
 		if(results.size() > 0){
-			EmailUtils.sendAndReport("Ä£ĞÍ9-×î½ü5±¶¾ŞÁ¿,¸öÊı£º"+results.size()+",ÈÕÆÚ:"+today,
+			EmailUtils.sendAndReport("æ¨¡å‹9-æœ€è¿‘5å€å·¨é‡,ä¸ªæ•°ï¼š"+results.size()+",æ—¥æœŸ:"+today,
 				StkUtils.createHtmlTable(today, results));
 		}
 

@@ -57,10 +57,10 @@ public class Strategy6 extends Strategy {
 				System.out.println(index.getCode()+","+index.getName()+",change="+index.changePercent);
 			}
 			System.out.println(StkUtils.join(results, ","));*/
-			EmailUtils.sendAndReport("Ä£ĞÍ6-·ÅÁ¿ºóÁ¬Ğø3ÈÕËõÁ¿,¸öÊı£º"+results.size()+",ÈÕÆÚ:"+today,
-					"1.·ÅÁ¿ºóËõÁ¿3ÈÕ<br>"+
-					"2.½üÆÚ·ÅµÄ´óÁ¿ºÍÇ°Ãæ100ÈÕÄÚ·ÅµÄ´óÁ¿»ù±¾³ÖÆ½»ò´óÓÚ<br>"+
-					"3.20ÈÕ¾ùÏß³ÖÆ½»òÉÏÉı£¬60ÈÕ¾ùÏßÏÂ½µ»ò³ÖÆ½<br>"+
+			EmailUtils.sendAndReport("æ¨¡å‹6-æ”¾é‡åè¿ç»­3æ—¥ç¼©é‡,ä¸ªæ•°ï¼š"+results.size()+",æ—¥æœŸ:"+today,
+					"1.æ”¾é‡åç¼©é‡3æ—¥<br>"+
+					"2.è¿‘æœŸæ”¾çš„å¤§é‡å’Œå‰é¢100æ—¥å†…æ”¾çš„å¤§é‡åŸºæœ¬æŒå¹³æˆ–å¤§äº<br>"+
+					"3.20æ—¥å‡çº¿æŒå¹³æˆ–ä¸Šå‡ï¼Œ60æ—¥å‡çº¿ä¸‹é™æˆ–æŒå¹³<br>"+
 					StkUtils.getImgBase64(img)
 					+ "<br><br>" +
 					StkUtils.createHtmlTable(today, results));

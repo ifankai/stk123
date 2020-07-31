@@ -60,7 +60,7 @@ import com.stk123.web.WebUtils;
 import com.stk123.web.bs.IndexService;
 
 public class Search {
-	
+
 	public static DocumentField[] SEARCHFIELDS_DEFAULT = new DocumentField[]{DocumentField.TITLE,DocumentField.CONTENT};
 	public static DocumentField[] SEARCHFIELDS_STK_RELATED = new DocumentField[]{DocumentField.F9ZHUYIN,DocumentField.KEYWORD,DocumentField.COMPANYPROFILE};
 	public static DocumentField[] SEARCHFIELDS_ALL = new DocumentField[]{DocumentField.TITLE,DocumentField.F9,DocumentField.KEYWORD,DocumentField.COMPANYPROFILE,DocumentField.CONTENT};
@@ -71,24 +71,22 @@ public class Search {
 	private int userId;
 	private Directory directoryUser;
 	private static Directory directoryStkAndIndustry;
-	
+
 	public Search(int userId) throws IOException{
 		this.userId = userId;
 		this.directoryUser = FSDirectory.open(new File(INDEX_PATH + File.separator + userId));
 	}
-	
+
 	public static void initStkAndIndustryAndIndex() throws Exception{
 		System.out.println("Search.initStkAndIndustryAndIndex");
 		Connection conn = null;
 		try{
 			conn = Pool.getPool().getConnection();
-			// �����ڴ���������
 			directoryStkAndIndustry = new RAMDirectory();
-			// ����IndexWriterConfig
 			IndexWriterConfig iwConfig = IKUtils.getConfig();
 			iwConfig.setOpenMode(OpenMode.CREATE);
 			IndexWriter iwriter = new IndexWriter(directoryStkAndIndustry, iwConfig);
-			
+
 			//stk
 			List<Stk> stks = JdbcUtils.list(conn, "select code,name from stk_cn order by code", Stk.class);
 			for(Stk stk : stks){
@@ -97,7 +95,7 @@ public class Search {
 				doc.add(new Field(DocumentField.ID.value(), index.getCode(), Field.Store.YES, Field.Index.NOT_ANALYZED));
 				doc.add(new Field(DocumentField.TYPE.value(), DocumentType.STK.value(), Field.Store.YES, Field.Index.NOT_ANALYZED));
 				doc.add(new TextField(DocumentField.TITLE.value(), index.getName()+" ["+index.getCode()+"]", Field.Store.YES));
-				
+
 				List<Name2Value> f9 = index.getF9();
 				List<Name2Value> zhuyin = Name2Value.containName(f9, "Ӫ");
 				String sZhuyin = null;
@@ -119,7 +117,7 @@ public class Search {
 				doc.add(new TextField(DocumentField.CONTENT.value(), StringUtils.join(index.getKeywordAll(),",")+"<br/><br/>"+sf9+"<br/><br/>"+profile, Field.Store.YES));
 				iwriter.addDocument(doc);
 			}
-			
+
 			//industry
 			List<StkIndustryType> inds = JdbcUtils.list(conn, "select * from stk_industry_type a,stk_dictionary b where a.source=b.key and b.type="+StkDict.INDUSTRY_SOURCE, StkIndustryType.class);
 			for(StkIndustryType ind : inds){
@@ -129,7 +127,7 @@ public class Search {
 				doc.add(new TextField(DocumentField.TITLE.value(), ind.getName()+" ["+StkDict.getDict(StkDict.INDUSTRY_SOURCE, ind.getSource())+"]", Field.Store.YES));
 				iwriter.addDocument(doc);
 			}
-			
+
 			//index data
 			IndexService is = new IndexService();
 			Tree tree = is.getTree();
@@ -148,23 +146,22 @@ public class Search {
 					iwriter.addDocument(doc);
 				}
 			}
-			
+
 			iwriter.commit();
 			iwriter.close();
 		}finally{
 			Pool.getPool().free(conn);
 		}
 	}
-	
+
 	public void initUserText() throws Exception{
 		System.out.println("Search.initUserText,userId="+this.userId+",dir="+(INDEX_PATH + File.separator + userId));
 		Connection conn = null;
 		try{
-			// ����IndexWriterConfig
 			IndexWriterConfig iwConfig = IKUtils.getConfig();
 			iwConfig.setOpenMode(OpenMode.CREATE);
 			IndexWriter iwriter = new IndexWriter(this.directoryUser, iwConfig);
-			
+
 			conn = Pool.getPool().getConnection();
 			List params = new ArrayList();
 			params.add(this.userId);
@@ -179,24 +176,24 @@ public class Search {
 			Pool.getPool().free(conn);
 		}
 	}
-	
+
 	public List<Document> searchRelatedText(String keyword, String code,boolean sortByTime, int start, int end) throws Exception {
 		return Search.search(keyword, DocumentType.TEXT, sortByTime, SEARCHFIELDS_DEFAULT, start,end, null, null, false, code,null, directoryUser);
 	}
-	
+
 	public List<Document> searchAll(String keyword,boolean sortByTime,TotalCount totalCount, int start, int end) throws Exception {
 		return Search.search(keyword, null, sortByTime, SEARCHFIELDS_ALL, start, end, null, null, true, null,totalCount, directoryUser, directoryStkAndIndustry);
 	}
-	
+
 	public static List<Document> searchRelatedStk(String keyword, List<Name2Value> searchWordsWeight, Set<String> defaultExcludes, int start, int end) throws Exception {
 		return Search.search(keyword, DocumentType.STK, false, SEARCHFIELDS_STK_RELATED,start, end, searchWordsWeight, defaultExcludes, false, null,null, directoryStkAndIndustry);
 	}
-	
+
 	public static List<Document> search(String keyword, DocumentType type, boolean sortByTime, DocumentField[] searchFields, int start, int end, List<Name2Value> searchWordsWeight,Set<String> defaultExcludes, boolean highLight, String code,TotalCount totalCount, Directory... directorys) throws Exception {
 		//System.out.println("search=="+keyword);
 		BooleanQuery query = new BooleanQuery();
 		BooleanQuery.setMaxClauseCount(Integer.MAX_VALUE);
-		//query.setMinimumNumberShouldMatch(1);//����should����������һ��wordƥ��
+		//query.setMinimumNumberShouldMatch(1);
 		if(type != null){
 			TermQuery tq = new TermQuery(new Term(DocumentField.TYPE.value(), type.value()));
 			query.add(tq, BooleanClause.Occur.MUST);
@@ -215,13 +212,11 @@ public class Search {
 			Lexeme le = null;
 			while((le = se.next()) != null){
 				String tKeyWord = le.getLexemeText();
-				//���ò�ѯ�ų��ʻ�
 				if(defaultExcludes != null && defaultExcludes.contains(tKeyWord)){
 					continue;
 				}
 				//System.out.print(tKeyWord+",");
 				TermQuery tq = new TermQuery(new Term(searchFields[i].value(),tKeyWord));
-				//����Ȩ��
 				if(searchWordsWeight != null){
 					List<Name2Value> weights = Name2Value.containName(searchWordsWeight, tKeyWord);
 					if(searchWordsWeight != null && weights.size() > 0){
@@ -234,7 +229,7 @@ public class Search {
 			}
 		}
 		query.add(query2, BooleanClause.Occur.MUST);
-		
+
 		List<IndexReader> readers = new ArrayList<IndexReader>();
 		for(Directory directory : directorys){
 			readers.add(DirectoryReader.open(directory));
@@ -242,9 +237,9 @@ public class Search {
 		IndexReader[] ireaders = new IndexReader[]{};
 		ireaders = readers.toArray(ireaders);
 		MultiReader reader = new MultiReader(ireaders);
-		
+
 		IndexSearcher isearcher = new IndexSearcher(reader);
-		
+
 		TopDocs topDocs = null;
 		if(type == DocumentType.TEXT && sortByTime){
 			Sort sort = new Sort(new SortField[]{new SortField(DocumentField.TIME.value(), SortField.Type.LONG, true)});
@@ -271,7 +266,7 @@ public class Search {
 						SimpleHTMLFormatter simpleHTMLFormatter = new SimpleHTMLFormatter(HIGH_LIGHT_BEGIN, HIGH_LIGHT_END);
 						Highlighter highlighter = new Highlighter(simpleHTMLFormatter,new QueryScorer(query));
 						highlighter.setTextFragmenter(new SimpleFragmenter(200));
-						
+
 						String rText = HtmlUtils.removeHTML(text);
 						TokenStream tokenStream = analyzer.tokenStream(field.value(), new StringReader(rText));
 						String highLightText = highlighter.getBestFragment(tokenStream,rText);
@@ -301,7 +296,7 @@ public class Search {
 		}
 		return results;
 	}
-	
+
 	public void addDocument(StkText text) throws Exception{
 		IndexWriterConfig iwConfig = IKUtils.getConfig();
 		iwConfig.setOpenMode(OpenMode.APPEND);
@@ -309,7 +304,7 @@ public class Search {
 		iwriter.addDocument(IKUtils.getDocument(text));
 		iwriter.close();
 	}
-	
+
 	public void updateDocument(StkText text) throws Exception{
 		Document doc = IKUtils.getDocument(text);
 		IndexWriterConfig iwConfig = IKUtils.getConfig();
@@ -318,21 +313,21 @@ public class Search {
 		iwriter.updateDocument(new Term(DocumentField.ID.value(), text.getId().toString()), doc);
 		iwriter.close();
 	}
-	
+
 	public void deleteDocument(String id) throws Exception{
 		IndexWriterConfig iwConfig = IKUtils.getConfig();
 		IndexWriter iwriter = new IndexWriter(directoryUser, iwConfig);
 		iwriter.deleteDocuments(new Term(DocumentField.ID.value(), id));
 		iwriter.close();
 	}
-	
+
 	public void close() throws Exception{
 		if(this.directoryUser != null)this.directoryUser.close();
 	}
 
 	private final static String HIGH_LIGHT_BEGIN = "<font color='red'>";
 	private final static String HIGH_LIGHT_END = "</font>";
-	
+
 	public static class TotalCount{
 		public int totalCount;
 	}
