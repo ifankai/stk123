@@ -103,10 +103,10 @@ public interface StkConstant {
 	public final static String ATTRIBUTE_ARTICLES = "articles";
 	public final static String ATTRIBUTE_LABELS = "labels";
 	public final static String ATTRIBUTE_INDUSTRY_SELECT = "industry_select";
-	public final static String ATTRIBUTE_DAILY_STK_UP_DOWN = "daily_up_down";//Ã¿ÈÕÕÇµø·ù
+	public final static String ATTRIBUTE_DAILY_STK_UP_DOWN = "daily_up_down";//æ¯æ—¥æ¶¨è·Œå¹…
 	public final static String ATTRIBUTE_LOGIN_ERROR = "login_error";
 	
-	//----sql ²¿·Ö³£ÓÃsql-----//
+	//----sql éƒ¨åˆ†å¸¸ç”¨sql-----//
 	public final static String SQL_SELECT_TEXT_BY_ID = "select * from stk_text where id=? and user_id=?";
 	public final static String SQL_SELECT_TITLE_TEXT_BY_TYPE_ORDERBY_ORDER = "select id,title,disp_order from stk_text where type=? and user_id=? order by disp_order desc,insert_time desc";
 	public final static String SQL_COUNT_TITLE_TEXT_BY_TYPE_ORDERBY_ORDER = "select count(1) from stk_text where type=? and user_id=?";
@@ -137,7 +137,7 @@ public interface StkConstant {
 	public final static String HTML_TAG_B_END = "</b>";
 	public final static String HTML_TAG_BR = "<br/>";
 	
-	//----json key name---- ´Ë´¦ĞŞ¸ÄÒªºÍstk_dictionary±íÀïtype=1000Í¬²½//
+	//----json key name---- æ­¤å¤„ä¿®æ”¹è¦å’Œstk_dictionaryè¡¨é‡Œtype=1000åŒæ­¥//
 	public final static String JSON_NAME = "name";
 	public final static String JSON_CODE = "code";
 	public final static String JSON_PERCENTAGE_UPDOWN = "up";

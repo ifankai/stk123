@@ -46,20 +46,20 @@ public class IndexAction {
 			int id = Integer.parseInt(sid);
 			System.out.println(id);
 			List<Map> list = null;
-			if(id > 1000 && id < 2000){//×Ô¶¨ÒåÖ¸±ê
+			if(id > 1000 && id < 2000){//è‡ªå®šä¹‰æŒ‡æ ‡
 				
-			}else if(id > 2000 && id < 3000){//ºê¹Û¾­¼ÃÖ¸±ê
+			}else if(id > 2000 && id < 3000){//å®è§‚ç»æµæŒ‡æ ‡
 				
-			}else if(id > 3000 && id < 4000){//Ğ¡ÖÇ»ÛÖ¸±ê
+			}else if(id > 3000 && id < 4000){//å°æ™ºæ…§æŒ‡æ ‡
 				if(id == 3001){
 					list = indexService.bias(id);
 				}
 				
-			}else if(id > 4000 && id < 5000){//¸ö¹ÉKÏßÖ¸±ê
+			}else if(id > 4000 && id < 5000){//ä¸ªè‚¡Kçº¿æŒ‡æ ‡
 				
-			}else if(id > 5000 && id < 6000){//¸ö¹É²ÆÎñÖ¸±ê
+			}else if(id > 5000 && id < 6000){//ä¸ªè‚¡è´¢åŠ¡æŒ‡æ ‡
 				
-			}else if(id > 60000 && id < 70000){//ĞĞÒµÆ½¾ùPE
+			}else if(id > 60000 && id < 70000){//è¡Œä¸šå¹³å‡PE
 				template = tree.getNode(IndexService.ID_INDUSTRY_PE).getStkIndexNode().getChartTemplate();
 				template = StringUtils.replace(template, "\"", "\\\"");
 				list = indexService.industryPE(id - IndexService.ID_INDUSTRY_PE);

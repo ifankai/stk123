@@ -39,9 +39,9 @@ public class Strategy18 extends Strategy {
 		}
 		
 		if(results.size() > 0){
-			super.logStrategy(conn, today,"ģ��18-k�ߵ�λʮ����", results);
-			super.sendAndReport("ģ��18-k�ߵ�λʮ����", results.size(), today,
-					"������Դ������ͨ��[300299]-2017/07/19<br><br><br>"+
+			super.logStrategy(conn, today,"???18-k???λ?????", results);
+			super.sendAndReport("???18-k???λ?????", results.size(), today,
+					"????????????????[300299]-2017/07/19<br><br><br>"+
 					StkUtils.createHtmlTable(today, results));
 		}
 	}

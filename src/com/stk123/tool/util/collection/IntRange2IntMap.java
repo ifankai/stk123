@@ -47,7 +47,7 @@ public class IntRange2IntMap {
 		System.out.println("("+entry.getKey().getLower()+","+entry.getKey().getUpper()+")"+entry.getValue());
 	}
 	
-	//µÚÒ»¸öÂú×ãlower <= value <= upper
+	//ç¬¬ä¸€ä¸ªæ»¡è¶³lower <= value <= upper
 	public Map.Entry<IntRange, Integer> getEntry(int value){
 		Set<Map.Entry<IntRange, Integer>> set = map.entrySet();
 		for(Map.Entry<IntRange, Integer> entry : set){
@@ -58,7 +58,7 @@ public class IntRange2IntMap {
 		return null;
 	}
 	
-	//ËùÓĞÂú×ãlower <= value <= upper
+	//æ‰€æœ‰æ»¡è¶³lower <= value <= upper
 	public List<Map.Entry<IntRange, Integer>> getEntries(int value){
 		List<Map.Entry<IntRange, Integer>> entries = new ArrayList<Map.Entry<IntRange, Integer>>();
 		Set<Map.Entry<IntRange, Integer>> set = map.entrySet();

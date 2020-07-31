@@ -14,10 +14,10 @@ import com.stk123.task.StkUtils;
 
 public class SetXueqiuCookieToProperties {
 	
-	//ÊôĞÔÎÄ¼şµÄÂ·¾¶
+	//å±æ€§æ–‡ä»¶çš„è·¯å¾„
     static String profilepath="D:\\share\\workspace\\stk123\\xueqiu.cookie.properties";
     
-    //²ÉÓÃ¾²Ì¬·½·¨
+    //é‡‡ç”¨é™æ€æ–¹æ³•
     private static Properties props = new Properties();
 
 	public static void main(String[] args) {
@@ -27,7 +27,7 @@ public class SetXueqiuCookieToProperties {
 
 		readValue("xueqiu.cookie");
 		updateProperties("xueqiu.cookie", cookies[cookies.length-1]);       
-	    System.out.println("²Ù×÷Íê³É");
+	    System.out.println("æ“ä½œå®Œæˆ");
 	}
 	
 	public static String readValue(String key) {
@@ -36,7 +36,7 @@ public class SetXueqiuCookieToProperties {
             InputStream in = new BufferedInputStream(new FileInputStream(profilepath));
             props.load(in);
             String value = props.getProperty(key);
-            System.out.println(key +"¼üµÄÖµÊÇ£º"+ value);
+            System.out.println(key +"é”®çš„å€¼æ˜¯ï¼š"+ value);
             return value;
         } catch (Exception e) {
             e.printStackTrace();
@@ -47,15 +47,15 @@ public class SetXueqiuCookieToProperties {
 	public static void updateProperties(String keyname,String keyvalue) {
         try {
             props.load(new FileInputStream(profilepath));
-            // µ÷ÓÃ Hashtable µÄ·½·¨ put£¬Ê¹ÓÃ getProperty ·½·¨Ìá¹©²¢ĞĞĞÔ¡£
-            // Ç¿ÖÆÒªÇóÎªÊôĞÔµÄ¼üºÍÖµÊ¹ÓÃ×Ö·û´®¡£·µ»ØÖµÊÇ Hashtable µ÷ÓÃ put µÄ½á¹û¡£
+            // è°ƒç”¨ Hashtable çš„æ–¹æ³• putï¼Œä½¿ç”¨ getProperty æ–¹æ³•æä¾›å¹¶è¡Œæ€§ã€‚
+            // å¼ºåˆ¶è¦æ±‚ä¸ºå±æ€§çš„é”®å’Œå€¼ä½¿ç”¨å­—ç¬¦ä¸²ã€‚è¿”å›å€¼æ˜¯ Hashtable è°ƒç”¨ put çš„ç»“æœã€‚
             OutputStream fos = new FileOutputStream(profilepath);           
             props.setProperty(keyname, keyvalue);
-            // ÒÔÊÊºÏÊ¹ÓÃ load ·½·¨¼ÓÔØµ½ Properties ±íÖĞµÄ¸ñÊ½£¬
-            // ½«´Ë Properties ±íÖĞµÄÊôĞÔÁĞ±í£¨¼üºÍÔªËØ¶Ô£©Ğ´ÈëÊä³öÁ÷
+            // ä»¥é€‚åˆä½¿ç”¨ load æ–¹æ³•åŠ è½½åˆ° Properties è¡¨ä¸­çš„æ ¼å¼ï¼Œ
+            // å°†æ­¤ Properties è¡¨ä¸­çš„å±æ€§åˆ—è¡¨ï¼ˆé”®å’Œå…ƒç´ å¯¹ï¼‰å†™å…¥è¾“å‡ºæµ
             props.store(fos, "Update '" + keyname + "' value:" + keyvalue);
         } catch (IOException e) {
-            System.err.println("ÊôĞÔÎÄ¼ş¸üĞÂ´íÎó");
+            System.err.println("å±æ€§æ–‡ä»¶æ›´æ–°é”™è¯¯");
         }
     }
 

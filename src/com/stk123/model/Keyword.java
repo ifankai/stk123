@@ -85,7 +85,7 @@ public class Keyword implements Serializable {
 				keyword = JdbcUtils.load(conn, SQL_SELECT_KEYWORD_BY_ID, params, StkKeyword.class);
 			}
 		}
-		//status=-1 表示已经删除
+		//status=-1 琛ㄧず宸茬粡鍒犻櫎
 		if(keyword.getStatus().intValue() == -1){
 			return -1;
 		}

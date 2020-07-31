@@ -84,9 +84,9 @@ public class InternetSearch {
 				}
 				//System.out.println(sb.toString());
 				String content = sb.toString();
-				EmailUtils.send("¡¾ĞÂÀË²©¿Í×îĞÂ¶¯Ì¬,ÈÕÆÚ:"+StkUtils.getToday()+"¡¿", content);
-				if(content.contains("Ê®½ø¹¬")){
-					//EmailUtils.send("kai.fan@suncorp.com.au", "Ê®½ø¹¬", content);
+				EmailUtils.send("ã€æ–°æµªåšå®¢æœ€æ–°åŠ¨æ€,æ—¥æœŸ:"+StkUtils.getToday()+"ã€‘", content);
+				if(content.contains("åè¿›å®«")){
+					//EmailUtils.send("kai.fan@suncorp.com.au", "åè¿›å®«", content);
 				}
 			}
 		} catch (Exception e) {
@@ -119,7 +119,7 @@ public class InternetSearch {
 		return null;
 	}
 	
-	//·¢¸ÄÎ¯ - ĞÂÎÅ·¢²¼
+	//å‘æ”¹å§” - æ–°é—»å‘å¸ƒ
 	public static Map<String, Object> parseGovNdrc(Connection conn, StkInternetSearch search) throws Exception {
 		List<String> results = new ArrayList<String>();
 		int i = 0;
@@ -179,8 +179,8 @@ public class InternetSearch {
 		//List<StkTransAccount> list = JdbcUtils.list(conn, "select * from stk_trans_account order by week_start_date desc limit 0,"+cnt, StkTransAccount.class);
 		List<StkTransAccount> list = JdbcUtils.list(conn, "select * from stk_trans_account order by week_start_date desc", StkTransAccount.class);
 		List<String> titles = new ArrayList<String>();
-		titles.add("ÈÕÆÚ(ÌìÊı)");titles.add("ÓĞĞ§ÕË»§");titles.add("ĞÂÔö¹ÉÆ±ÕË»§");titles.add("³Ö²ÖA¹ÉÕË»§");titles.add("½»Ò×A¹ÉÕË»§");
-		titles.add("³Ö²Ö½»Ò×»îÔ¾¶È");titles.add("ÓĞĞ§½»Ò×»îÔ¾¶È");titles.add("ĞÂÔö½»Ò×»îÔ¾¶È");titles.add("½á¹û1");titles.add("½á¹û2");
+		titles.add("æ—¥æœŸ(å¤©æ•°)");titles.add("æœ‰æ•ˆè´¦æˆ·");titles.add("æ–°å¢è‚¡ç¥¨è´¦æˆ·");titles.add("æŒä»“Aè‚¡è´¦æˆ·");titles.add("äº¤æ˜“Aè‚¡è´¦æˆ·");
+		titles.add("æŒä»“äº¤æ˜“æ´»è·ƒåº¦");titles.add("æœ‰æ•ˆäº¤æ˜“æ´»è·ƒåº¦");titles.add("æ–°å¢äº¤æ˜“æ´»è·ƒåº¦");titles.add("ç»“æœ1");titles.add("ç»“æœ2");
 		List<List<String>> datas = new ArrayList<List<String>>();
 		for(StkTransAccount data : list){
 			List<String> row = new ArrayList<String>();
@@ -204,7 +204,7 @@ public class InternetSearch {
 				row.add(StkUtils.setHtmlFontColor(StkUtils.number2String(data.getHoldTransActivity()*100,2)+"%","green"));
 				if(data.getHoldTransActivity() >= 0.80){
 					try{
-					//EmailUtils.send("¡¾·çÏÕ¡¿¡¾¹ÉÊĞÕË»§Í³¼Æ¡¿½»Ò×»îÔ¾¶È´óÓÚ45£¡£¡£¡", "½»Ò×»îÔ¾¶È:"+data.getHoldTransActivity());
+					//EmailUtils.send("ã€é£é™©ã€‘ã€è‚¡å¸‚è´¦æˆ·ç»Ÿè®¡ã€‘äº¤æ˜“æ´»è·ƒåº¦å¤§äº45ï¼ï¼ï¼", "äº¤æ˜“æ´»è·ƒåº¦:"+data.getHoldTransActivity());
 					}catch(Exception e){}
 				}
 			}else if(data.getHoldTransActivity() < 0.20){
@@ -237,7 +237,7 @@ public class InternetSearch {
 				row.add(StkUtils.setHtmlFontColor(StkUtils.number2String(data.getResult2(),2),"green"));
 				if(data.getResult2() <= 5){
 					try{
-					//EmailUtils.send("¡¾·çÏÕ¡¿¡¾¹ÉÊĞÕË»§Í³¼Æ¡¿Result2 < 12 £¡£¡£¡", "Result2:"+data.getResult2());
+					//EmailUtils.send("ã€é£é™©ã€‘ã€è‚¡å¸‚è´¦æˆ·ç»Ÿè®¡ã€‘Result2 < 12 ï¼ï¼ï¼", "Result2:"+data.getResult2());
 					}catch(Exception e){}
 				}
 			}else if(data.getResult2() >= 100){
@@ -260,7 +260,7 @@ public class InternetSearch {
 		String endDate = null;
 		List<Node> nodeDate = HtmlUtils.getNodeListByTagName(page, null, "h2");
 		if(nodeDate != null && nodeDate.size() > 0){
-			date = StringUtils.substringBetween(nodeDate.get(0).toPlainTextString(), "£¨", "£©");
+			date = StringUtils.substringBetween(nodeDate.get(0).toPlainTextString(), "ï¼ˆ", "ï¼‰");
 			if(date.equals(search.getLastSearchText())){
 				return null;
 			}
@@ -276,16 +276,16 @@ public class InternetSearch {
 		String transAAccount = null;
 		Map<String,Map<String, String>> datas = HtmlUtils.getListFromTable((TableTag)node, 0, 0);
 		for(Map.Entry<String, Map<String, String>> data : datas.entrySet()){
-			if(StringUtils.contains(data.getKey(), "Í¶×ÊÕßÊı£¨Íò£©")){
+			if(StringUtils.contains(data.getKey(), "æŠ•èµ„è€…æ•°ï¼ˆä¸‡ï¼‰")){
 				for(Map.Entry<String, String> value : data.getValue().entrySet()){
-					if(StringUtils.contains(value.getKey(), "¶ş¡¢ÆÚÄ©Í¶×ÊÕßÊıÁ¿")){
+					if(StringUtils.contains(value.getKey(), "äºŒã€æœŸæœ«æŠ•èµ„è€…æ•°é‡")){
 						validAccount = StringUtils.replace(StringUtils.replace(StringUtils.trim(value.getValue()), ",", ""), "&nbsp;", "");
-					}else if(StringUtils.contains(value.getKey(), "Ò»¡¢ĞÂÔöÍ¶×ÊÕßÊıÁ¿")){
+					}else if(StringUtils.contains(value.getKey(), "ä¸€ã€æ–°å¢æŠ•èµ„è€…æ•°é‡")){
 						newAccount = StringUtils.replace(StringUtils.replace(StringUtils.trim(value.getValue()), ",", ""), "&nbsp;", "");
 						newAccount = String.valueOf(Double.parseDouble(newAccount)*10000);
-					}else if(StringUtils.contains(value.getKey(), "³ÖÓĞA¹ÉµÄÍ¶×ÊÕß")){
+					}else if(StringUtils.contains(value.getKey(), "æŒæœ‰Aè‚¡çš„æŠ•èµ„è€…")){
 						holdAAccount = StringUtils.replace(StringUtils.replace(StringUtils.trim(value.getValue()), ",", ""), "&nbsp;", "");
-					}else if(StringUtils.contains(value.getKey(), "½»Ò×A¹ÉµÄÍ¶×ÊÕß")){
+					}else if(StringUtils.contains(value.getKey(), "äº¤æ˜“Aè‚¡çš„æŠ•èµ„è€…")){
 						transAAccount = StringUtils.replace(StringUtils.replace(StringUtils.trim(value.getValue()), ",", ""), "&nbsp;", "");
 					}
 				}
@@ -322,7 +322,7 @@ public class InternetSearch {
 		
 		if(date != null){
 			updateSearch(conn, date, search);
-			EmailUtils.send("¡¾¹ÉÆ±ÕË»§Êı¾İ,ÈÕÆÚ:"+date+"¡¿", createStkAccountInfoTable(conn, 50));
+			EmailUtils.send("ã€è‚¡ç¥¨è´¦æˆ·æ•°æ®,æ—¥æœŸ:"+date+"ã€‘", createStkAccountInfoTable(conn, 50));
 		}
 		return null;
 	}

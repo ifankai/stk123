@@ -56,14 +56,14 @@ public class StkSearch {
 	public static synchronized StkSearch getInstance() throws Exception{
 		if(ks != null)return ks;
 		Connection conn = Pool.getPool().getConnection();
-		// ½¨Á¢ÄÚ´æË÷Òı¶ÔÏó
+		// å»ºç«‹å†…å­˜ç´¢å¼•å¯¹è±¡
 		Directory directory = new RAMDirectory();
 		
-		// ÅäÖÃIndexWriterConfig
+		// é…ç½®IndexWriterConfig
 		IndexWriterConfig iwConfig = IKUtils.getConfig();
 		iwConfig.setOpenMode(OpenMode.CREATE_OR_APPEND);
 		IndexWriter iwriter = new IndexWriter(directory, iwConfig);
-		// Ğ´ÈëË÷Òı
+		// å†™å…¥ç´¢å¼•
 		List<Stk> stks = JdbcUtils.list(conn, "select code,name from stk_cn order by code", Stk.class);
 		for(Stk stk : stks){
 			Index index =  new Index(conn,stk.getCode(),stk.getName());
@@ -72,7 +72,7 @@ public class StkSearch {
 			doc.add(new Field(DocumentField.TYPE.value(), DocumentType.STK.value(), Field.Store.YES, Field.Index.NOT_ANALYZED));
 			//content included: main business, keyword, company profile
 			List<Name2Value> f9 = index.getF9();
-			List<Name2Value> zhuyin = Name2Value.containName(f9, "Óª");
+			List<Name2Value> zhuyin = Name2Value.containName(f9, "è¥");
 			String sZhuyin = null;
 			for(Name2Value pair : zhuyin){
 				sZhuyin += pair.getValue();
@@ -91,8 +91,8 @@ public class StkSearch {
 		
 		Pool.getPool().free(conn);
 		
-		// ËÑË÷¹ı³Ì**********************************
-		// ÊµÀı»¯ËÑË÷Æ÷
+		// æœç´¢è¿‡ç¨‹**********************************
+		// å®ä¾‹åŒ–æœç´¢å™¨
 		/*ireader = DirectoryReader.open(directory);
 		IndexSearcher isearcher = new IndexSearcher(ireader);*/
 		ks = new StkSearch(directory);
@@ -132,7 +132,7 @@ public class StkSearch {
 		BooleanQuery query = new BooleanQuery();
 		/*BooleanClause.Occur[] flags = { 
 				BooleanClause.Occur.SHOULD,
-				BooleanClause.Occur.SHOULD //»ò
+				BooleanClause.Occur.SHOULD //æˆ–
 		};*/
 		
 		/*QueryParser qp = new QueryParser(Version.LUCENE_45,fields, analyzer);
@@ -143,7 +143,7 @@ public class StkSearch {
 		if(type != null){
 			TermQuery tq = new TermQuery(new Term(DocumentField.TYPE.value(), type.value()));
 			query.add(tq, BooleanClause.Occur.MUST);
-			query.setMinimumNumberShouldMatch(1);//ÏÂÃæshould±ØĞëÓĞÖÁÉÙÒ»¸öwordÆ¥Åä
+			query.setMinimumNumberShouldMatch(1);//ä¸‹é¢shouldå¿…é¡»æœ‰è‡³å°‘ä¸€ä¸ªwordåŒ¹é…
 		}
 		System.out.println();
 		for(int i=0;i<fields.length;i++){
@@ -151,13 +151,13 @@ public class StkSearch {
 			Lexeme le = null;
 			while((le = se.next()) != null){
 				String tKeyWord = le.getLexemeText();
-				//ÉèÖÃ²éÑ¯ÅÅ³ı´Ê»ã
+				//è®¾ç½®æŸ¥è¯¢æ’é™¤è¯æ±‡
 				if(defaultExcludes != null && defaultExcludes.contains(tKeyWord)){
 					continue;
 				}
 				System.out.print(tKeyWord+",");
 				TermQuery tq = new TermQuery(new Term(fields[i],tKeyWord));
-				//ÉèÖÃÈ¨ÖØ
+				//è®¾ç½®æƒé‡
 				if(highWeightWords != null && highWeightWords.contains(tKeyWord)){
 					tq.setBoost(5F);
 				}
@@ -174,7 +174,7 @@ public class StkSearch {
 			if(i >= cnt)break;
 			ScoreDoc score = scoreDocs[i];
 			Document targetDoc = isearcher.doc(scoreDocs[i].doc);
-			//System.out.println("score="+score.score+",ÄÚÈİ£º" + targetDoc.toString());
+			//System.out.println("score="+score.score+",å†…å®¹ï¼š" + targetDoc.toString());
 			String t = targetDoc.get(DocumentField.TYPE.value());
 			results.add(targetDoc);
 		}
@@ -185,7 +185,7 @@ public class StkSearch {
 	public static void main(String[] args) throws Exception {
 		ConfigUtils.setPropsFromResource(TableTools.class, "db.properties");
 		StkSearch ks = StkSearch.getInstance();
-		List<Document> stks = ks.search("Õş¸®µÄ½ğÈÚÄÜÔ´ÔËÓªÉÌÆäËû°²È«²úÆ·¼°µÚÈı·½²úÆ·°²È«·şÎñ",DocumentType.STK, 10, null);
+		List<Document> stks = ks.search("æ”¿åºœçš„é‡‘èèƒ½æºè¿è¥å•†å…¶ä»–å®‰å…¨äº§å“åŠç¬¬ä¸‰æ–¹äº§å“å®‰å…¨æœåŠ¡",DocumentType.STK, 10, null);
 		System.out.println(stks);
 
 	}

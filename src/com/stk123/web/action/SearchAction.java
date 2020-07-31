@@ -69,7 +69,7 @@ public class SearchAction {
 				map.put(DocumentField.CONTENT.value(), WebUtils.display(doc.get(DocumentField.CONTENT.value()), doc.get(DocumentField.SUMMARY.value()), 330));
 				codeExisting.add(index.getCode());
 			}else if(DocumentType.INDUSTRY.value().equals(type)){
-				String title = "[––“µ] <a target=\"_blank\" href=\"/industry?id="+id+"\">"+doc.get(DocumentField.TITLE.value())+"</a>";
+				String title = "[Ë°å‰∏ö] <a target=\"_blank\" href=\"/industry?id="+id+"\">"+doc.get(DocumentField.TITLE.value())+"</a>";
 				map.put(DocumentField.TITLE.value(), title);
 				set.addIfNotExist(DocumentType.INDUSTRY.value(), title);
 			}else if(DocumentType.TEXT.value().equals(type)){
@@ -84,13 +84,13 @@ public class SearchAction {
 					title = "<a target=\"_blank\" href=\"/stk?s="+index.getCode()+"\">"+index.getName()+"["+index.getCode()+"]</a>&nbsp;"+title;
 					codeExisting.add(index.getCode());
 				}else{
-					title = "[Œƒµµ] <a target=\"_blank\" href=\"/article?id="+id+"\">"+title+"</a>";
+					title = "[ÊñáÊ°£] <a target=\"_blank\" href=\"/article?id="+id+"\">"+title+"</a>";
 					set.addIfNotExist(DocumentType.TEXT.value(), title);
 				}
 				map.put(DocumentField.TITLE.value(), title);
 				map.put(DocumentField.CONTENT.value(), WebUtils.display(doc.get(DocumentField.CONTENT.value()), doc.get(DocumentField.SUMMARY.value()), 330));
 			}else if(DocumentType.INDEX.value().equals(type)){
-				String title = "[÷∏±Í] <a target=\"_blank\" href=\"/data?id="+id+"\">"+doc.get(DocumentField.TITLE.value())+"</a>";
+				String title = "[ÊåáÊ†á] <a target=\"_blank\" href=\"/data?id="+id+"\">"+doc.get(DocumentField.TITLE.value())+"</a>";
 				map.put(DocumentField.TITLE.value(), title);
 				set.addIfNotExist(DocumentType.INDEX.value(), title);
 			}
@@ -101,13 +101,13 @@ public class SearchAction {
 			}
 			results.add(map);
 		}
-		//≥ˆœ÷N¥Œµƒπ…∆±∫Û√Êº”…œ°∞N¥Œ°±
+		//Âá∫Áé∞NÊ¨°ÁöÑËÇ°Á•®ÂêéÈù¢Âä†‰∏ä‚ÄúNÊ¨°‚Äù
 		List<String> stkTitles = new ArrayList<String>();
 		for(String code : codeExisting){
 			int cnt = Collections.frequency(codeExisting, code);
 			Index index = new Index(conn, code);
 			if(cnt > 1){
-				stkTitles.add(StkUtils.wrapCodeAndNameAsHtml(index) + cnt + "¥Œ");
+				stkTitles.add(StkUtils.wrapCodeAndNameAsHtml(index) + cnt + "Ê¨°");
 			}else{
 				stkTitles.add(StkUtils.wrapCodeAndNameAsHtml(index));
 			}

@@ -23,9 +23,9 @@ public class Text {
 	public final static int SUB_TYPE_FIND_REVERSION = 40;
 	public final static int SUB_TYPE_FIND_GROWTH = 45;
 	public final static int SUB_TYPE_STK_HOLDER_REDUCE = 50;
-	public final static int SUB_TYPE_COMPANY_RESEARCH = 100; //公司调研
-	public final static int SUB_TYPE_INDUSTRY_RESEARCH = 110; //行业分析
-	public final static int SUB_TYPE_STK_REPORT = 200; //年报季报
+	public final static int SUB_TYPE_COMPANY_RESEARCH = 100; //鍏徃璋冪爺
+	public final static int SUB_TYPE_INDUSTRY_RESEARCH = 110; //琛屼笟鍒嗘瀽
+	public final static int SUB_TYPE_STK_REPORT = 200; //骞存姤瀛ｆ姤
 
 	public static void insert(Connection conn, String code,String content) throws Exception{
 		List params = new ArrayList();

@@ -70,20 +70,20 @@ public class ConfigUtils {
 	}
 	
 	/**
-µÚÒ»£ºÇ°ÃæÓĞ ¡°/¡±
+ç¬¬ä¸€ï¼šå‰é¢æœ‰ â€œ/â€
 
-¡° / ¡±´ú±íÁË¹¤³ÌµÄ¸ùÄ¿Â¼£¬ÀıÈç¹¤³ÌÃû½Ğ×ömyproject£¬¡° / ¡±´ú±íÁËmyproject
+â€œ / â€ä»£è¡¨äº†å·¥ç¨‹çš„æ ¹ç›®å½•ï¼Œä¾‹å¦‚å·¥ç¨‹åå«åšmyprojectï¼Œâ€œ / â€ä»£è¡¨äº†myproject
 
 me.class.getResourceAsStream("/com/x/file/myfile.xml");
 
-µÚ¶ş£ºÇ°ÃæÃ»ÓĞ ¡°   / ¡±
+ç¬¬äºŒï¼šå‰é¢æ²¡æœ‰ â€œ   / â€
 
-´ú±íµ±Ç°ÀàµÄÄ¿Â¼
+ä»£è¡¨å½“å‰ç±»çš„ç›®å½•
 
 me.class.getResourceAsStream("myfile.xml");
 
 me.class.getResourceAsStream("file/myfile.xml");
-	 * @param resName Ç°Ãæ¼Ó/ËµÃ÷ÊÇÒÔsrcÎª¸ùÄ¿Â¼£¬²»¼ÓµÄ»°ÊÇÒÔConfigUtils.classËùÔÚÄ¿Â¼Îª¸ùÄ¿Â¼
+	 * @param resName å‰é¢åŠ /è¯´æ˜æ˜¯ä»¥srcä¸ºæ ¹ç›®å½•ï¼Œä¸åŠ çš„è¯æ˜¯ä»¥ConfigUtils.classæ‰€åœ¨ç›®å½•ä¸ºæ ¹ç›®å½•
 	 * @throws Exception
 	 */
 	public static void setPropsFromResource(String resName) throws Exception {

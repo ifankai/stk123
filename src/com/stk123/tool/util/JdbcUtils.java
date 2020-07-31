@@ -154,7 +154,7 @@ public final class JdbcUtils {
 	}
 
 	/**
-	 * key¼üĞ¡Ğ´
+	 * keyé”®å°å†™
 	 * @param resultClass 
 	 * @return
 	 */
@@ -205,7 +205,7 @@ public final class JdbcUtils {
 		return load(sql,null,resultClass,null);
 	}
 	
-	//¶ÔÖ»ÓĞÒ»¸ö²ÎÊı
+	//å¯¹åªæœ‰ä¸€ä¸ªå‚æ•°
 	public static <T> T load(Connection conn,String sql,String param1,Class resultClass) {
 		List params = new ArrayList();
 		params.add(param1);
@@ -353,7 +353,7 @@ public final class JdbcUtils {
 
     /**
      * @param conn
-     * @param obj  PO¶ÔÏó class StkPO extends Stk, Ôö¼ÓÓÃÓÚsqlµÄ×Ö¶Î£º private String insertTimeSql = null;
+     * @param obj  POå¯¹è±¡ class StkPO extends Stk, å¢åŠ ç”¨äºsqlçš„å­—æ®µï¼š private String insertTimeSql = null;
      *             Stk stk = new StkPO();
      *             stk.setCode("999999");
      *             stk.setInsertTimeSql("sysdate");
@@ -598,7 +598,7 @@ public final class JdbcUtils {
                 if(po.getInsertColumns() != null && po.getInsertColumns().get(column.name()) != null){
                     String value = String.valueOf(po.getInsertColumns().get(column.name()));
                     sb.append(value).append(",");
-                    if(value.indexOf("?") >= 0){//¶ÔÓÚÀàËÆÕâÖÖÇé¿ö£º to_char(?)
+                    if(value.indexOf("?") >= 0){//å¯¹äºç±»ä¼¼è¿™ç§æƒ…å†µï¼š to_char(?)
                         params.add(pojoWrapper.getValue(obj, column.name()));
                     }
                 }else {
@@ -623,7 +623,7 @@ public final class JdbcUtils {
         	for(Map.Entry<String, Object> entry : po.getUpdateColumns().entrySet()){
 	            String value = String.valueOf(entry.getValue());
 	            sb.append(entry.getKey()).append("=").append(value).append(",");
-	            if(value.indexOf("?") >= 0){//¶ÔÓÚÀàËÆÕâÖÖÇé¿ö£º to_char(?)
+	            if(value.indexOf("?") >= 0){//å¯¹äºç±»ä¼¼è¿™ç§æƒ…å†µï¼š to_char(?)
 	                params.add(pojoWrapper.getValue(obj, entry.getKey()));
 	            }
         	}
@@ -640,7 +640,7 @@ public final class JdbcUtils {
     		for(Map.Entry<String, Object> entry : po.getConditionColumns().entrySet()){
 		        String value = String.valueOf(entry.getValue());
     			sb.append(entry.getKey()).append("=").append(value).append(" and ");
-		        if(value.indexOf("?") >= 0){//¶ÔÓÚÀàËÆÕâÖÖÇé¿ö£º to_char(?)
+		        if(value.indexOf("?") >= 0){//å¯¹äºç±»ä¼¼è¿™ç§æƒ…å†µï¼š to_char(?)
                     params.add(pojoWrapper.getValue(obj, entry.getKey()));
                 }
         	}
@@ -680,8 +680,8 @@ public final class JdbcUtils {
 		}
 	}
 	
-	public static int SYNC_TASK_ID = 0;//Ö¸¶¨Ä³´ÎtaskËùÓĞsql(¿ÉÄÜÓĞ¶à¸ö±í)µÄÒ»¸ötask id
-	public static boolean SYNC_SWITCH = false; //Òª²»Òª°Ñsql²åÈëstk_sync±íµÄ×Ü¿ª¹Ø
+	public static int SYNC_TASK_ID = 0;//æŒ‡å®šæŸæ¬¡taskæ‰€æœ‰sql(å¯èƒ½æœ‰å¤šä¸ªè¡¨)çš„ä¸€ä¸ªtask id
+	public static boolean SYNC_SWITCH = false; //è¦ä¸è¦æŠŠsqlæ’å…¥stk_syncè¡¨çš„æ€»å¼€å…³
 	
 	public static void main(String[] args) throws Exception {
 	}

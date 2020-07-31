@@ -17,7 +17,7 @@ public abstract class Strategy<T> {
 	public void sendMessage(Share share, String message){
 		K k = share.getK();
 		String leftPad = StringUtils.repeat("&nbsp;", 8-ChineseUtils.length(share.getName()));
-		TradeUtils.info(leftPad+share.getName()+"["+share.getCode()+"]"+this.getName() + message +" K["+StkUtils.formatDate(k.getTime(), StkUtils.sf_ymd9)+"] ¼Û¸ñ:"+k.getClose());
+		TradeUtils.info(leftPad+share.getName()+"["+share.getCode()+"]"+this.getName() + message +" K["+StkUtils.formatDate(k.getTime(), StkUtils.sf_ymd9)+"] ä»·æ ¼:"+k.getClose());
 	}
 	
 	public void sendMessage(Share share){

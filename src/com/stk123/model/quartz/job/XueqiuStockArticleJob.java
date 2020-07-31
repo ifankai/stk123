@@ -27,7 +27,7 @@ import com.stk123.tool.util.HttpUtils;
 import com.stk123.tool.util.JdbcUtils;
 import com.stk123.tool.util.JsonUtils;
 /**
- * Ñ©Çò¸ö¹ÉÒ³Ãæ³¤ÎÄ
+ * é›ªçƒä¸ªè‚¡é¡µé¢é•¿æ–‡
  */
 public class XueqiuStockArticleJob implements Job {
 	
@@ -65,7 +65,7 @@ public class XueqiuStockArticleJob implements Job {
 				if(list.size() > 0){
 					results.addAll(list);
 					if(results.size() >= 20){
-						EmailUtils.send("Ñ©Çò¸ö¹É³¤ÎÄ", StringUtils.join(results, "<br><br>"));
+						EmailUtils.send("é›ªçƒä¸ªè‚¡é•¿æ–‡", StringUtils.join(results, "<br><br>"));
 						results.clear();
 					}
 				}
@@ -74,7 +74,7 @@ public class XueqiuStockArticleJob implements Job {
 			}
 			if(codeIndex >= stks.size()){
 				if(results.size() > 0){
-					EmailUtils.send("Ñ©Çò¸ö¹É³¤ÎÄ2", StringUtils.join(results, "<br><br>"));
+					EmailUtils.send("é›ªçƒä¸ªè‚¡é•¿æ–‡2", StringUtils.join(results, "<br><br>"));
 					results.clear();
 				}
 				return;
@@ -85,7 +85,7 @@ public class XueqiuStockArticleJob implements Job {
 			CloseUtil.close(conn);
 			if(codeIndex >= stocks.size()){
 				if(results.size() > 0){
-					EmailUtils.send("Ñ©Çò¸ö¹É³¤ÎÄend", StringUtils.join(results, "<br><br>"));
+					EmailUtils.send("é›ªçƒä¸ªè‚¡é•¿æ–‡end", StringUtils.join(results, "<br><br>"));
 				}
 			}
 		}
@@ -121,7 +121,7 @@ public class XueqiuStockArticleJob implements Job {
 				//Map retweeted_status = (Map)art.get("retweeted_status");
 				if(StringUtils.isEmpty(title)){
 					title = (String)art.get("text");
-					if(ChineseUtils.length(title) < 100){//ÄÚÈİ³¤¶È¿ØÖÆ£¬Ì«¶ÌµÄÅÅ³ıµô£¬100=50¸öÖĞÎÄ
+					if(ChineseUtils.length(title) < 100){//å†…å®¹é•¿åº¦æ§åˆ¶ï¼Œå¤ªçŸ­çš„æ’é™¤æ‰ï¼Œ100=50ä¸ªä¸­æ–‡
 						continue;
 					}
 				}
@@ -180,7 +180,7 @@ public class XueqiuStockArticleJob implements Job {
 		List<XueqiuArticle> results = getArticles(code, 120, 10);
 		
 		if(results.size() > 0){
-			EmailUtils.sendAndReport(code+" - Ñ©Çò³¤ÎÄ", StringUtils.join(results, "<br><br>"));
+			EmailUtils.sendAndReport(code+" - é›ªçƒé•¿æ–‡", StringUtils.join(results, "<br><br>"));
 		}*/
 		
 		Connection conn = null;
@@ -193,7 +193,7 @@ public class XueqiuStockArticleJob implements Job {
 		}
 	}
 	
-	//Ñ©Çò¸ö¹ÉÒ³Ãæ£¨°´Ê±¼äÅÅĞò£©
+	//é›ªçƒä¸ªè‚¡é¡µé¢ï¼ˆæŒ‰æ—¶é—´æ’åºï¼‰
 	public static List<XueqiuArticle> getArticles(String code, int days, int replyCnt) throws Exception {
 		int p = 1;
 		List<XueqiuArticle> results = new ArrayList<XueqiuArticle>();

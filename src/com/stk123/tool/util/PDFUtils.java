@@ -139,7 +139,7 @@ public class PDFUtils {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		try {
-			/*String sc = getText("D:/share/Í¶×Ê/ÉÏÊĞ¹«Ë¾±¨±í/000997/63861351.PDF");
+			/*String sc = getText("D:/share/æŠ•èµ„/ä¸Šå¸‚å…¬å¸æŠ¥è¡¨/000997/63861351.PDF");
 			// System.out.print(sc);*/
 			/*toTextFile("D:/1200682312.PDF",
 					"D:/solution.txt");
@@ -147,8 +147,8 @@ public class PDFUtils {
 			toHtmlFile("D:/1200682312.PDF",
 					"D:/solution.html");*/
 			
-			String spdf = PDFUtils.getText("D:/share/Í¶×Ê/ÑĞ±¨/1200987692.PDF");
-			Set<String> sets = StkUtils.getMatchStrings(spdf, "(Îª¹«Ë¾´øÀ´)( ?)[0-9]*(,)?[0-9]*( ?)(ÍòÔªµÄ¾»ÀûÈó)");
+			String spdf = PDFUtils.getText("D:/share/æŠ•èµ„/ç ”æŠ¥/1200987692.PDF");
+			Set<String> sets = StkUtils.getMatchStrings(spdf, "(ä¸ºå…¬å¸å¸¦æ¥)( ?)[0-9]*(,)?[0-9]*( ?)(ä¸‡å…ƒçš„å‡€åˆ©æ¶¦)");
 			System.out.print(sets);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

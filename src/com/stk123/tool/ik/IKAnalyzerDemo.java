@@ -64,28 +64,28 @@ import com.stk123.tool.util.ChineseUtils;
 
 
 /*
-* Field.Store.COMPRESS:Ñ¹Ëõ±£´æ,ÓÃÓÚ³¤ÎÄ±¾»ò¶ş½øÖÆÊı¾İ 
-* Field.Store.YES:±£´æ
-* Field.Store.NO:²»±£´æ
+* Field.Store.COMPRESS:å‹ç¼©ä¿å­˜,ç”¨äºé•¿æ–‡æœ¬æˆ–äºŒè¿›åˆ¶æ•°æ® 
+* Field.Store.YES:ä¿å­˜
+* Field.Store.NO:ä¸ä¿å­˜
 * 
-* ÎªÁËÌå»áField.Store.YESÓëField.Store.NOµÄÇø±ğ£º
-* ¿ÉÒÔ¿´µ½Ö»ÒªANALYZED¾Í»á½¨Ë÷Òı£¬½¨ÁËË÷Òı¾ÍÄÜ²é¡£
-* StoreµÄÄ¿µÄÊÇÍ¨¹ıÈ«ÎÄ¼ì²é¾ÍÄÜ·µ»Ø¶ÔÓ¦µÄÄÚÈİ¡£Õâ¾ÍÊÇStoreÔÚË÷ÒıÖĞµÄÄ¿µÄ¡£¶ø²»±ØÔÚÍ¨¹ıidÈ¥DBÖĞ¼ÓÔØ¡£
+* ä¸ºäº†ä½“ä¼šField.Store.YESä¸Field.Store.NOçš„åŒºåˆ«ï¼š
+* å¯ä»¥çœ‹åˆ°åªè¦ANALYZEDå°±ä¼šå»ºç´¢å¼•ï¼Œå»ºäº†ç´¢å¼•å°±èƒ½æŸ¥ã€‚
+* Storeçš„ç›®çš„æ˜¯é€šè¿‡å…¨æ–‡æ£€æŸ¥å°±èƒ½è¿”å›å¯¹åº”çš„å†…å®¹ã€‚è¿™å°±æ˜¯Storeåœ¨ç´¢å¼•ä¸­çš„ç›®çš„ã€‚è€Œä¸å¿…åœ¨é€šè¿‡idå»DBä¸­åŠ è½½ã€‚
 * 
-* Index.NO ²»½¨Á¢Ë÷Òı
-* Index.ANALYZED ·Ö´Êºó½¨Á¢Ë÷Òı
-* Index.NOT_ANALYZED ²»·Ö´Ê£¬°ÑÕû¸öÄÚÈİ×÷ÎªÒ»¸ö´Ê½¨Á¢Ë÷Òı
+* Index.NO ä¸å»ºç«‹ç´¢å¼•
+* Index.ANALYZED åˆ†è¯åå»ºç«‹ç´¢å¼•
+* Index.NOT_ANALYZED ä¸åˆ†è¯ï¼ŒæŠŠæ•´ä¸ªå†…å®¹ä½œä¸ºä¸€ä¸ªè¯å»ºç«‹ç´¢å¼•
 * 
-* Field.Index.NO:²»½¨Á¢Ë÷Òı 
-* Field.Index.TOKENIZED:·Ö´Ê,½¨Ë÷Òı
-* Field.Index.UN_TOKENIZED:²»·Ö´Ê,½¨Ë÷Òı
-* Field.Index.NO_NORMS:²»·Ö´Ê,½¨Ë÷Òı.µ«ÊÇFieldµÄÖµ²»ÏñÍ¨³£ÄÇÑù±»±£´æ£¬¶øÊÇÖ»È¡Ò»¸öbyte£¬ÕâÑù½ÚÔ¼´æ´¢¿Õ¼ä
+* Field.Index.NO:ä¸å»ºç«‹ç´¢å¼• 
+* Field.Index.TOKENIZED:åˆ†è¯,å»ºç´¢å¼•
+* Field.Index.UN_TOKENIZED:ä¸åˆ†è¯,å»ºç´¢å¼•
+* Field.Index.NO_NORMS:ä¸åˆ†è¯,å»ºç´¢å¼•.ä½†æ˜¯Fieldçš„å€¼ä¸åƒé€šå¸¸é‚£æ ·è¢«ä¿å­˜ï¼Œè€Œæ˜¯åªå–ä¸€ä¸ªbyteï¼Œè¿™æ ·èŠ‚çº¦å­˜å‚¨ç©ºé—´
 * 
-* Field.TermVector.NO:²»±£´æterm vectors 
-* Field.TermVector.YES:±£´æterm vectors
-* Field.TermVector.WITH_POSITIONS:±£´æterm vectors.(±£´æÖµºÍtokenÎ»ÖÃĞÅÏ¢) 
-* Field.TermVector.WITH_OFFSETS:±£´æterm vectors.(±£´æÖµºÍTokenµÄoffset)
-* Field.TermVector.WITH_POSITIONS_OFFSETS:±£´æterm vectors.(±£´æÖµºÍtokenÎ»ÖÃĞÅÏ¢ºÍTokenµÄoffset)
+* Field.TermVector.NO:ä¸ä¿å­˜term vectors 
+* Field.TermVector.YES:ä¿å­˜term vectors
+* Field.TermVector.WITH_POSITIONS:ä¿å­˜term vectors.(ä¿å­˜å€¼å’Œtokenä½ç½®ä¿¡æ¯) 
+* Field.TermVector.WITH_OFFSETS:ä¿å­˜term vectors.(ä¿å­˜å€¼å’ŒTokençš„offset)
+* Field.TermVector.WITH_POSITIONS_OFFSETS:ä¿å­˜term vectors.(ä¿å­˜å€¼å’Œtokenä½ç½®ä¿¡æ¯å’ŒTokençš„offset)
 * 
 * BooleanClause.Occur.MUST  Use this operator for clauses that must appear in the matching documents. 
 * BooleanClause.Occur.MUST_NOT  Use this operator for clauses that must not appear in the matching documents. 
@@ -93,49 +93,49 @@ import com.stk123.tool.util.ChineseUtils;
 */
 
 public class IKAnalyzerDemo {
-	static String text2="ÖÆ¹ÜÀàÖÜÎå";
-	static String text="ÎÒwith love È«¾°Íø10ÔÂ11ÈÕÑ¶¹«¸æ ÍøËŞ¿Æ¼¼£¨300017£©¹ğÁÖÈı½ğÖÜÎåÍí¼ä·¢²¼µÄÒµ¼¨Ô¤Ôö¹«¸æ£¬¹«Ë¾Ô¤¼ÆÇ°Èı¼¾¶ÈÓ¯Àû1.24ÒÚÔª-1.41ÒÚÔª£¬Í¬±ÈÔö³¤130%-160%¡£È¥ÄêÍ¬ÆÚ¹«Ë¾Ó¯Àû5404.7ÍòÔª¡£¹«¸æÏÔÊ¾£¬2013ÄêÇ°Èı¼¾¶È, ¹«Ë¾·Ç¾­³£ĞÔËğÒæ¶Ô¾»ÀûÈóÓ°Ïì½ğ¶îÎª1388.98ÍòÔª.";
+	static String text2="åˆ¶ç®¡ç±»å‘¨äº”";
+	static String text="æˆ‘with love å…¨æ™¯ç½‘10æœˆ11æ—¥è®¯å…¬å‘Š ç½‘å®¿ç§‘æŠ€ï¼ˆ300017ï¼‰æ¡‚æ—ä¸‰é‡‘å‘¨äº”æ™šé—´å‘å¸ƒçš„ä¸šç»©é¢„å¢å…¬å‘Šï¼Œå…¬å¸é¢„è®¡å‰ä¸‰å­£åº¦ç›ˆåˆ©1.24äº¿å…ƒ-1.41äº¿å…ƒï¼ŒåŒæ¯”å¢é•¿130%-160%ã€‚å»å¹´åŒæœŸå…¬å¸ç›ˆåˆ©5404.7ä¸‡å…ƒã€‚å…¬å‘Šæ˜¾ç¤ºï¼Œ2013å¹´å‰ä¸‰å­£åº¦, å…¬å¸éç»å¸¸æ€§æŸç›Šå¯¹å‡€åˆ©æ¶¦å½±å“é‡‘é¢ä¸º1388.98ä¸‡å…ƒ.";
 	
 	public static void main(String[] args) throws Exception {
-		Configuration cfg = DefaultConfig.getInstance();  //¼ÓÔØ´Ê¿â
-        cfg.setUseSmart(true); //ÉèÖÃÖÇÄÜ·Ö´Ê
+		Configuration cfg = DefaultConfig.getInstance();  //åŠ è½½è¯åº“
+        cfg.setUseSmart(true); //è®¾ç½®æ™ºèƒ½åˆ†è¯
         Dictionary.initial(cfg);
         
         Dictionary dictionary = Dictionary.getSingleton();
         List<String> words = new ArrayList<String>();
-        words.add("ÍøËŞ¿Æ¼¼");
-        words.add("¹ğÁÖÈı½ğ");
-        dictionary.addWords(words);  //×Ô¶¯Ìí¼Ó×Ô¶¨Òå´Ê
+        words.add("ç½‘å®¿ç§‘æŠ€");
+        words.add("æ¡‚æ—ä¸‰é‡‘");
+        dictionary.addWords(words);  //è‡ªåŠ¨æ·»åŠ è‡ªå®šä¹‰è¯
         List<String> stopwords = new ArrayList<String>();
         
-        /*stopwords.add("¹«Ë¾");
-        stopwords.add("¹«");
-        stopwords.add("Ë¾");*/
+        /*stopwords.add("å…¬å¸");
+        stopwords.add("å…¬");
+        stopwords.add("å¸");*/
         dictionary.disableWords(stopwords);
         
         System.out.println(cfg.getExtDictionarys());
         System.out.println(cfg.getExtStopWordDictionarys());
-        System.out.println(cfg.getMainDictionary()); // »ñÈ¡Ö÷´ÊµäÂ·¾¶
-        System.out.println(cfg.getQuantifierDicionary());//»ñÈ¡Á¿´Ê´ÊµäÂ·¾¶
+        System.out.println(cfg.getMainDictionary()); // è·å–ä¸»è¯å…¸è·¯å¾„
+        System.out.println(cfg.getQuantifierDicionary());//è·å–é‡è¯è¯å…¸è·¯å¾„
 
-        /*Hit hit = dictionary.matchInMainDict("»ù´¡°à".toCharArray());
+        /*Hit hit = dictionary.matchInMainDict("åŸºç¡€ç­".toCharArray());
         System.out.println(hit.isMatch());*/
 		
 		//split();
 		System.out.println();
-		split2("ITÖ§³ÖÓëÎ¬»¤");
+		split2("ITæ”¯æŒä¸ç»´æŠ¤");
 		
 		search();
 		System.out.println();
 		
 		index();
 		
-		//System.out.println(highlight(text,"¹ğÁÖÈı½ğ"));
+		//System.out.println(highlight(text,"æ¡‚æ—ä¸‰é‡‘"));
 	}
 	
 	public static void split() throws IOException{
         StringReader sr=new StringReader(text);  
-        IKSegmenter ik=new IKSegmenter(sr, true);  // trueÓÃÖÇÄÜ·Ö´Ê¡¡£¬falseÏ¸Á£¶È
+        IKSegmenter ik=new IKSegmenter(sr, true);  // trueç”¨æ™ºèƒ½åˆ†è¯ã€€ï¼Œfalseç»†ç²’åº¦
         Lexeme lex=null;  
         while((lex=ik.next())!=null){  
             System.out.print(lex.getLexemeText()+"|");  
@@ -143,14 +143,14 @@ public class IKAnalyzerDemo {
 	}
 	
 	public static void split2(String text) throws IOException{
-        //´´½¨·Ö´Ê¶ÔÏó  
+        //åˆ›å»ºåˆ†è¯å¯¹è±¡  
         Analyzer anal=new IKAnalyzer(true);       
 
         StringReader reader=new StringReader(text);
-        //·Ö´Ê  
+        //åˆ†è¯  
         TokenStream ts=anal.tokenStream(null, reader);
         CharTermAttribute term=ts.getAttribute(CharTermAttribute.class);  
-        //±éÀú·Ö´ÊÊı¾İ  
+        //éå†åˆ†è¯æ•°æ®  
         while(ts.incrementToken()){
         	TermQuery tq = new TermQuery(new Term(null, term.toString()));
         	tq.setBoost(3F);
@@ -161,23 +161,23 @@ public class IKAnalyzerDemo {
 	}
 
 	public static void search() throws Exception {
-		// ÊµÀı»¯IKAnalyzer·Ö´ÊÆ÷
+		// å®ä¾‹åŒ–IKAnalyzeråˆ†è¯å™¨
 		Analyzer analyzer = new IKAnalyzer(true);
 		Directory directory = null;
 		IndexWriter iwriter = null;
 		IndexReader ireader = null;
 		IndexSearcher isearcher = null;
 		try {
-			// ½¨Á¢ÄÚ´æË÷Òı¶ÔÏó
+			// å»ºç«‹å†…å­˜ç´¢å¼•å¯¹è±¡
 			directory = new RAMDirectory();
 			//To store an index on disk, use this instead:
 		    //directory = FSDirectory.open("/tmp/testindex");
 			
-			// ÅäÖÃIndexWriterConfig
+			// é…ç½®IndexWriterConfig
 			IndexWriterConfig iwConfig = new IndexWriterConfig(Version.LUCENE_45, analyzer);
 			iwConfig.setOpenMode(OpenMode.CREATE_OR_APPEND);
 			iwriter = new IndexWriter(directory, iwConfig);
-			// Ğ´ÈëË÷Òı
+			// å†™å…¥ç´¢å¼•
 			Document doc = new Document();
 			doc.add(new Field("ID", "10000", Field.Store.YES, Field.Index.NOT_ANALYZED));
 			doc.add(new TextField("content", text, Field.Store.YES));
@@ -186,8 +186,8 @@ public class IKAnalyzerDemo {
 			
 			doc = new Document();
 			doc.add(new Field("ID", "10001", Field.Store.YES, Field.Index.NOT_ANALYZED));
-			Field title = new Field("title", "ÍøËŞ¿Æ¼¼_title", Field.Store.YES,Field.Index.ANALYZED);
-			title.setBoost(2F);//¶ÔFieldÉèÖÃÈ¨ÖØ
+			Field title = new Field("title", "ç½‘å®¿ç§‘æŠ€_title", Field.Store.YES,Field.Index.ANALYZED);
+			title.setBoost(2F);//å¯¹Fieldè®¾ç½®æƒé‡
 			doc.add(title);
 			doc.add(new Field("time",DateTools.dateToString(new Date(), DateTools.Resolution.SECOND),Field.Store.YES,Field.Index.ANALYZED));
 			doc.add(new TextField("content", text2, Field.Store.YES));
@@ -197,18 +197,18 @@ public class IKAnalyzerDemo {
 			iwriter.close();
 			
 			
-			// ËÑË÷¹ı³Ì**********************************
-			// ÊµÀı»¯ËÑË÷Æ÷
+			// æœç´¢è¿‡ç¨‹**********************************
+			// å®ä¾‹åŒ–æœç´¢å™¨
 			ireader = DirectoryReader.open(directory);
 
 			isearcher = new IndexSearcher(ireader);
-			String keyword = "ÍøËŞ¿Æ¼¼,¾»ÀûÈóÔö³¤¹ğÁÖÈı½ğ1388.98,ÖÆ¹ÜÀà";
+			String keyword = "ç½‘å®¿ç§‘æŠ€,å‡€åˆ©æ¶¦å¢é•¿æ¡‚æ—ä¸‰é‡‘1388.98,åˆ¶ç®¡ç±»";
 			System.out.println(keyword);
 			split2(keyword);
 			String[] fields = { "title", "content" };
 			BooleanClause.Occur[] flags = { 
 					BooleanClause.Occur.SHOULD,
-					BooleanClause.Occur.SHOULD //»ò
+					BooleanClause.Occur.SHOULD //æˆ–
 			};
 			//Query query = MultiFieldQueryParser.parse(Version.LUCENE_45, keyword, fields, flags, analyzer);// new QueryParser(Version.LUCENE_45, fieldName,analyzer);
 			//QueryParser qp = new QueryParser(Version.LUCENE_34,fieldName, analyzer);
@@ -216,7 +216,7 @@ public class IKAnalyzerDemo {
 			//Query query = qp.parse(keyword);
 			
 			
-			//¶Ô²éÑ¯´ÊÉèÖÃÈ¨ÖØ
+			//å¯¹æŸ¥è¯¢è¯è®¾ç½®æƒé‡
 			BooleanQuery query = new BooleanQuery();
 			for(int i=0;i<fields.length;i++){
 				IKSegmenter se = new IKSegmenter(new StringReader(keyword),true);
@@ -224,7 +224,7 @@ public class IKAnalyzerDemo {
 				while((le=se.next()) != null){
 					String tKeyWord = le.getLexemeText();
 					TermQuery tq = new TermQuery(new Term(fields[i],tKeyWord));
-					if("¹ğÁÖÈı½ğ".equals(tKeyWord)){
+					if("æ¡‚æ—ä¸‰é‡‘".equals(tKeyWord)){
 						tq.setBoost(10F);
 					}
 					query.add(tq, BooleanClause.Occur.SHOULD);
@@ -235,44 +235,44 @@ public class IKAnalyzerDemo {
 			query.extractTerms(terms);
 			System.out.println("terms="+terms);
 
-			/*****  ÅÅĞò  *****/
+			/*****  æ’åº  *****/
 			   /*
-			    * 1.±»ÅÅĞòµÄ×Ö¶Î±ØĞë±»Ë÷Òı¹ı(Indexecd)£¬ÔÚË÷ÒıÊ±²»ÄÜ ÓÃ Field.Index.TOKENIZED
-			    *   (ÓÃUN_TOKENIZED¿ÉÒÔÕı³£ÊµÏÖ.ÓÃNOÊ±²éÑ¯Õı³££¬µ«ÅÅĞò²»ÄÜÕı³£ÉèÖÃÉı½µĞò)
-			    * 2.SortFieldÀàĞÍ
-			    *   SCORE¡¢DOC¡¢AUTO¡¢STRING¡¢INT¡¢FLOAT¡¢CUSTOM ´ËÀàĞÍÖ÷ÒªÊÇ¸ù¾İ×Ö¶ÎµÄÀàĞÍÑ¡Ôñ
-			    * 3.SortFieldµÄµÚÈı¸ö²ÎÊı´ú±íÊÇ·ñÊÇ½µĞòtrue:½µĞò  false:ÉıĞò
+			    * 1.è¢«æ’åºçš„å­—æ®µå¿…é¡»è¢«ç´¢å¼•è¿‡(Indexecd)ï¼Œåœ¨ç´¢å¼•æ—¶ä¸èƒ½ ç”¨ Field.Index.TOKENIZED
+			    *   (ç”¨UN_TOKENIZEDå¯ä»¥æ­£å¸¸å®ç°.ç”¨NOæ—¶æŸ¥è¯¢æ­£å¸¸ï¼Œä½†æ’åºä¸èƒ½æ­£å¸¸è®¾ç½®å‡é™åº)
+			    * 2.SortFieldç±»å‹
+			    *   SCOREã€DOCã€AUTOã€STRINGã€INTã€FLOATã€CUSTOM æ­¤ç±»å‹ä¸»è¦æ˜¯æ ¹æ®å­—æ®µçš„ç±»å‹é€‰æ‹©
+			    * 3.SortFieldçš„ç¬¬ä¸‰ä¸ªå‚æ•°ä»£è¡¨æ˜¯å¦æ˜¯é™åºtrue:é™åº  false:å‡åº
 			    */
 			   Sort sort = new Sort(new SortField[]{new SortField("time", SortField.Type.INT, true)});
 			  //TopDocs topDocs = isearcher.search(query,3,sort);
 			   
-			   //ÏÈ°´¼ÇÂ¼µÃ·ÖÅÅĞò£¬È»ºóÔÙ°´¼ÇÂ¼·¢²¼Ê±¼äµ¹Ğò
+			   //å…ˆæŒ‰è®°å½•å¾—åˆ†æ’åºï¼Œç„¶åå†æŒ‰è®°å½•å‘å¸ƒæ—¶é—´å€’åº
 			   sort = new Sort(new SortField[]{new SortField(null, SortField.Type.SCORE, true),new SortField("time", SortField.Type.INT, true)});
-			   /* Ğè²»ĞèÒªÕâ¶ÎÄØ£¿
+			   /* éœ€ä¸éœ€è¦è¿™æ®µå‘¢ï¼Ÿ
 			   TopFieldCollector collector = TopFieldCollector.create(sort, 10, false, true, false, false); 
 			   isearcher.search(query, collector);
 			   TopDocs topDocs = collector.topDocs();*/
 			   
 					   
-			// ËÑË÷ÏàËÆ¶È×î¸ßµÄ5Ìõ¼ÇÂ¼
+			// æœç´¢ç›¸ä¼¼åº¦æœ€é«˜çš„5æ¡è®°å½•
 			TopDocs topDocs = isearcher.search(query, 5);
 			
-			//Í³¼Æ¹Ø¼ü´ÊÆ¥Åä´ÎÊı begin
-			long cnt = ireader.totalTermFreq(new Term("content","¹«¸æ"));
-			System.out.println("count======"+cnt);//5´Î
-			//Í³¼Æ¹Ø¼ü´ÊÆ¥Åä´ÎÊı end
+			//ç»Ÿè®¡å…³é”®è¯åŒ¹é…æ¬¡æ•° begin
+			long cnt = ireader.totalTermFreq(new Term("content","å…¬å‘Š"));
+			System.out.println("count======"+cnt);//5æ¬¡
+			//ç»Ÿè®¡å…³é”®è¯åŒ¹é…æ¬¡æ•° end
 
-			System.out.println("ÃüÖĞ£º" + topDocs.totalHits+", ×î´óµÄÆÀ·Ö:"+topDocs.getMaxScore());
-			// Êä³ö½á¹û
+			System.out.println("å‘½ä¸­ï¼š" + topDocs.totalHits+", æœ€å¤§çš„è¯„åˆ†:"+topDocs.getMaxScore());
+			// è¾“å‡ºç»“æœ
 			ScoreDoc[] scoreDocs = topDocs.scoreDocs;
 			for (int i = 0; i < topDocs.totalHits; i++) {
 				ScoreDoc score = scoreDocs[i];
 				Document targetDoc = isearcher.doc(scoreDocs[i].doc);
 				
-				System.out.println("score="+score.score+",ÄÚÈİ£º" + targetDoc.toString());
+				System.out.println("score="+score.score+",å†…å®¹ï¼š" + targetDoc.toString());
 				//System.out.println(isearcher.explain(query, scoreDocs[i].doc).getValue());
 				
-				//-----------------------keyword¸ßÁÁÏÔÊ¾-------------------//
+				//-----------------------keywordé«˜äº®æ˜¾ç¤º-------------------//
 				String text = targetDoc.get("content");
 				if (text != null) {
 					SimpleHTMLFormatter simpleHTMLFormatter = new SimpleHTMLFormatter("<font color='red'>", "</font>");
@@ -281,7 +281,7 @@ public class IKAnalyzerDemo {
 				
 					TokenStream tokenStream = analyzer.tokenStream("content", new StringReader(text));
 					String highLightText = highlighter.getBestFragment(tokenStream,text);
-					System.out.println("¡ï¸ßÁÁÏÔÊ¾µÚ " + (i + 1) + " Ìõ¼ìË÷½á¹ûÈçÏÂËùÊ¾£º");
+					System.out.println("â˜…é«˜äº®æ˜¾ç¤ºç¬¬ " + (i + 1) + " æ¡æ£€ç´¢ç»“æœå¦‚ä¸‹æ‰€ç¤ºï¼š");
 					System.out.println(highLightText);
 				}
 				System.out.println();
@@ -359,28 +359,28 @@ public class IKAnalyzerDemo {
 	
 	/*public static void printIndex(IndexReader reader) throws Exception {
 
-		// ÏÔÊ¾documentÊı
+		// æ˜¾ç¤ºdocumentæ•°
 		System.out.println(new Date());
-		System.out.println(reader + "\t¸ÃË÷Òı¹²º¬ " + reader.numDocs() + "ÆªÎÄµµ\n");
+		System.out.println(reader + "\tè¯¥ç´¢å¼•å…±å« " + reader.numDocs() + "ç¯‡æ–‡æ¡£\n");
 
 		for (int i = 0; i < reader.numDocs(); i++) {
-			System.out.println("ÎÄµµ" + i + "£º" + reader.document(i) + "\n");
+			System.out.println("æ–‡æ¡£" + i + "ï¼š" + reader.document(i) + "\n");
 		}
 
-		// Ã¶¾Ùterm£¬»ñµÃ<document, term freq, position* >ĞÅÏ¢
+		// æšä¸¾termï¼Œè·å¾—<document, term freq, position* >ä¿¡æ¯
 		TermsEnum termEnum = reader.terms();
 		while (termEnum.next()) {
-			System.out.println(termEnum.term().field() + "ÓòÖĞ³öÏÖµÄ´ÊÓï£º"
+			System.out.println(termEnum.term().field() + "åŸŸä¸­å‡ºç°çš„è¯è¯­ï¼š"
 					+ termEnum.term().text());
-			System.out.println(" ³öÏÖ¸Ä´ÊµÄÎÄµµÊı=" + termEnum.docFreq());
+			System.out.println(" å‡ºç°æ”¹è¯çš„æ–‡æ¡£æ•°=" + termEnum.docFreq());
 
 			TermPositions termPositions = reader.termPositions(termEnum.term());
 			int i = 0;
 			int j = 0;
 			while (termPositions.next()) {
-				System.out.println((i++) + "->" + "    ÎÄÕÂ±àºÅ:"
-						+ termPositions.doc() + ", ³öÏÖ´ÎÊı:"
-						+ termPositions.freq() + "    ³öÏÖÎ»ÖÃ£º");
+				System.out.println((i++) + "->" + "    æ–‡ç« ç¼–å·:"
+						+ termPositions.doc() + ", å‡ºç°æ¬¡æ•°:"
+						+ termPositions.freq() + "    å‡ºç°ä½ç½®ï¼š");
 				for (j = 0; j < termPositions.freq(); j++)
 					System.out.print("[" + termPositions.nextPosition() + "]");
 				System.out.println("\n");

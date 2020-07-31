@@ -64,44 +64,44 @@ public class BaiduSearch {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		//System.out.println(BaiduSearch.getKeywordsTotalWeight("ÖĞÓ±µç×Ó"));
-		//System.out.println(BaiduSearch.getKeywordsTotalWeight("µ¤°î¿Æ¼¼"));
+		//System.out.println(BaiduSearch.getKeywordsTotalWeight("ä¸­é¢–ç”µå­"));
+		//System.out.println(BaiduSearch.getKeywordsTotalWeight("ä¸¹é‚¦ç§‘æŠ€"));
 		/*Date date = StkUtils.addDay(new Date(), -90);
-		System.out.println(getBaiduNewsCount(date, "µ¤°î¿Æ¼¼ ĞÂ²úÆ·", false));*/
+		System.out.println(getBaiduNewsCount(date, "ä¸¹é‚¦ç§‘æŠ€ æ–°äº§å“", false));*/
 		
-		//(ĞĞÒµ | ÊÕÈë | ÓªÊÕ) Á¬Ğø (ÏÂ½µ | ÏÂµø)
-		List<String> results = getBaiduNews(StkUtils.addDay(new Date(), -10), "(ĞĞÒµ | ÊÕÈë | ÓªÊÕ) Á¬Ğø (ÏÂ½µ | ÏÂµø)", true);
+		//(è¡Œä¸š | æ”¶å…¥ | è¥æ”¶) è¿ç»­ (ä¸‹é™ | ä¸‹è·Œ)
+		List<String> results = getBaiduNews(StkUtils.addDay(new Date(), -10), "(è¡Œä¸š | æ”¶å…¥ | è¥æ”¶) è¿ç»­ (ä¸‹é™ | ä¸‹è·Œ)", true);
 		System.out.println(results);
 		EmailUtils.send("test", StringUtils.join(results, ""));
 	}
 	
 	private static List<SearchKeyword> getKeywords() {
 		List<SearchKeyword> BAIDU_NEWS_KEYWORDS = new ArrayList<SearchKeyword>();
-		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("³¬Ô¤ÆÚ/±¬·¢", "{stk} ³¬Ô¤ÆÚ | {stk} ±¬·¢", true, 2));
-		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("¸ßÔö³¤/¸ß³É³¤", "{stk} ¸ßÔö³¤ | {stk} ¸ß³É³¤", true));
-		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("Ìá¼Û", "{stk} Ìá¼Û", true));
-		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("Ç¿ÁÒÍÆ¼ö/ÀûºÃ", "{stk} Ç¿ÁÒÍÆ¼ö | {stk} ÀûºÃ", true, 2));
-		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("ĞĞÒµ/²úÒµ", "{stk} ĞĞÒµ | {stk} ²úÒµ", true));
-		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("¾°Æø", "{stk} ¾°Æø", true));
-		//BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("¾ºÕù¶ÔÊÖ", "{stk} ¾ºÕù¶ÔÊÖ", false));
-		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("ÉÏÓÎ/ÏÂÓÎ", "{stk} ÉÏÓÎ | {stk} ÏÂÓÎ", true));
-		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("ÁúÍ·", "{stk} ÁúÍ·", true, 2));
-		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("ĞÂ²úÆ·/ĞÂÒµÎñ", "{stk} ĞÂ²úÆ· | {stk} ĞÂÒµÎñ", true, 2));
-		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("²úÄÜÊÍ·Å/¹©²»Ó¦Çó", "{stk} ²úÄÜÊÍ·Å | {stk} ¹©²»Ó¦Çó", true, 2));
-		//BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("×ªĞÍ", "{stk} ×ªĞÍ", true));
-		//BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("¹ÜÀí²ã", "{stk} ¹ÜÀí²ã", false));
-		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("³ö»õÁ¿/¿ª¹¤ÂÊ", "{stk} ³ö»õÁ¿ | {stk} ¿ª¹¤ÂÊ", false, 2));
-		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("¶©µ¥/ÖĞ±ê/ºÏÍ¬", "{stk} ¶©µ¥ | {stk} ÖĞ±ê | {stk} ºÏÍ¬", true));
-		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("ÊĞ³¡Õ¼ÓĞÂÊ", "{stk} ÊĞ³¡Õ¼ÓĞÂÊ", false, 2));
-		//BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("ºËĞÄ¼¼Êõ", "{stk} ºËĞÄ¼¼Êõ", true));
-		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("ÖØ×é/²¢¹º/ÊÕ¹º", "{stk} ÖØ×é | {stk} ²¢¹º | {stk} ÊÕ¹º", true));
-		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("¹ÉÈ¨¼¤Àø", "{stk} ¹ÉÈ¨¼¤Àø", true, 2));
-		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("»Ø¹º/Ôö³Ö", "{stk} »Ø¹º | {stk} Ôö³Ö", true, 2));
-		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("Ôö·¢", "{stk} Ôö·¢", true));
-		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("·Ç¹«¿ª·¢ĞĞ", "{stk} ·Ç¹«¿ª·¢ĞĞ", true));
-		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("¾ÙÅÆ", "{stk} ¾ÙÅÆ", true));
-		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("¹Õµã", "{stk} ¹Õµã", true, 2));
-		//Â¢¶Ï
+		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("è¶…é¢„æœŸ/çˆ†å‘", "{stk} è¶…é¢„æœŸ | {stk} çˆ†å‘", true, 2));
+		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("é«˜å¢é•¿/é«˜æˆé•¿", "{stk} é«˜å¢é•¿ | {stk} é«˜æˆé•¿", true));
+		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("æä»·", "{stk} æä»·", true));
+		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("å¼ºçƒˆæ¨è/åˆ©å¥½", "{stk} å¼ºçƒˆæ¨è | {stk} åˆ©å¥½", true, 2));
+		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("è¡Œä¸š/äº§ä¸š", "{stk} è¡Œä¸š | {stk} äº§ä¸š", true));
+		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("æ™¯æ°”", "{stk} æ™¯æ°”", true));
+		//BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("ç«äº‰å¯¹æ‰‹", "{stk} ç«äº‰å¯¹æ‰‹", false));
+		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("ä¸Šæ¸¸/ä¸‹æ¸¸", "{stk} ä¸Šæ¸¸ | {stk} ä¸‹æ¸¸", true));
+		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("é¾™å¤´", "{stk} é¾™å¤´", true, 2));
+		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("æ–°äº§å“/æ–°ä¸šåŠ¡", "{stk} æ–°äº§å“ | {stk} æ–°ä¸šåŠ¡", true, 2));
+		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("äº§èƒ½é‡Šæ”¾/ä¾›ä¸åº”æ±‚", "{stk} äº§èƒ½é‡Šæ”¾ | {stk} ä¾›ä¸åº”æ±‚", true, 2));
+		//BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("è½¬å‹", "{stk} è½¬å‹", true));
+		//BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("ç®¡ç†å±‚", "{stk} ç®¡ç†å±‚", false));
+		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("å‡ºè´§é‡/å¼€å·¥ç‡", "{stk} å‡ºè´§é‡ | {stk} å¼€å·¥ç‡", false, 2));
+		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("è®¢å•/ä¸­æ ‡/åˆåŒ", "{stk} è®¢å• | {stk} ä¸­æ ‡ | {stk} åˆåŒ", true));
+		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("å¸‚åœºå æœ‰ç‡", "{stk} å¸‚åœºå æœ‰ç‡", false, 2));
+		//BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("æ ¸å¿ƒæŠ€æœ¯", "{stk} æ ¸å¿ƒæŠ€æœ¯", true));
+		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("é‡ç»„/å¹¶è´­/æ”¶è´­", "{stk} é‡ç»„ | {stk} å¹¶è´­ | {stk} æ”¶è´­", true));
+		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("è‚¡æƒæ¿€åŠ±", "{stk} è‚¡æƒæ¿€åŠ±", true, 2));
+		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("å›è´­/å¢æŒ", "{stk} å›è´­ | {stk} å¢æŒ", true, 2));
+		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("å¢å‘", "{stk} å¢å‘", true));
+		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("éå…¬å¼€å‘è¡Œ", "{stk} éå…¬å¼€å‘è¡Œ", true));
+		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("ä¸¾ç‰Œ", "{stk} ä¸¾ç‰Œ", true));
+		BAIDU_NEWS_KEYWORDS.add(new SearchKeyword("æ‹ç‚¹", "{stk} æ‹ç‚¹", true, 2));
+		//å„æ–­
 		return BAIDU_NEWS_KEYWORDS;
 	}
 	
@@ -156,7 +156,7 @@ public class BaiduSearch {
 	}
 	
 	/**
-	 * @return 0:Ã»ÓĞÏà¹ØĞÂÎÅ; 1:ÓĞÏà¹ØĞÂÎÅ; 2:dateÈÕÖ®ºóÓĞĞÂÎÅ
+	 * @return 0:æ²¡æœ‰ç›¸å…³æ–°é—»; 1:æœ‰ç›¸å…³æ–°é—»; 2:dateæ—¥ä¹‹åæœ‰æ–°é—»
 	 */
 	public static int getBaiduNewsCount(Date date,String searchword,boolean searchInTitle) throws Exception {
 		String url = WebUtils.getBaiduNewsUrl(URLEncoder.encode(searchword, StkConstant.ENCODING_UTF_8), searchInTitle);
@@ -168,7 +168,7 @@ public class BaiduSearch {
         }
         String div = node.toPlainTextString();
         //System.out.println(searchword+"="+searchword+"="+StkUtils.getNumberFromString(div));
-        if(div.indexOf("ÕÒµ½Ïà¹ØĞÂÎÅ0Æª") >= 0){
+        if(div.indexOf("æ‰¾åˆ°ç›¸å…³æ–°é—»0ç¯‡") >= 0){
             return 0;
         }else{
         	Node left = HtmlUtils.getNodeByAttribute(page, null, "id", "content_left");
@@ -181,7 +181,7 @@ public class BaiduSearch {
             		String text = span.toPlainTextString();
             		//System.out.println(text);
             		String str = StkUtils.getMatchString(text, StkUtils.PATTERN_YYYYMMDD_HHMM_CHINESE);
-            		if(str == null && StringUtils.contains(str, "Ğ¡Ê±Ç°")){
+            		if(str == null && StringUtils.contains(str, "å°æ—¶å‰")){
             			return 2;
             		}
             		if(str != null && str.length() > 0){
@@ -208,7 +208,7 @@ public class BaiduSearch {
         }
         String div = node.toPlainTextString();
         //System.out.println(searchword+"="+searchword+"="+StkUtils.getNumberFromString(div));
-        if(div.indexOf("ÕÒµ½Ïà¹ØĞÂÎÅ0Æª") >= 0){
+        if(div.indexOf("æ‰¾åˆ°ç›¸å…³æ–°é—»0ç¯‡") >= 0){
             return results;
         }else{
         	Node left = HtmlUtils.getNodeByAttribute(page, null, "id", "content_left");
@@ -220,7 +220,7 @@ public class BaiduSearch {
             	Node span = HtmlUtils.getNodeByAttribute(li.toHtml(), null, "class", searchInTitle?"c-title-author":"c-author");
             	if(span != null){
             		String text = span.toPlainTextString();
-            		if(StringUtils.contains(text, "Ç°")){
+            		if(StringUtils.contains(text, "å‰")){
             			results.add(li.toHtml());
             		}else{
 	            		String str = StkUtils.getMatchString(text, StkUtils.PATTERN_YYYYMMDD_HHMM_CHINESE);

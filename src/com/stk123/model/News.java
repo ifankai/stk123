@@ -13,12 +13,12 @@ import com.stk123.tool.util.JdbcUtils;
 public class News {
 	
 	//select * from stk_import_info_type where type < 100 order by type;
-	public final static int TYPE_1 = 1; //¶©µ¥|ÖÐ±ê|ºÏÍ¬
-	public final static int TYPE_3 = 3; //Å£É¢
-	public final static int TYPE_4 = 4; //Ôö·¢|¶¨Ôö|·Ç¹«
-	public final static int TYPE_5 = 5; //¹ÉÈ¨¼¤Àø
-	public final static int TYPE_20 = 20; //Ö÷ÓªÔ¶´óÓÚÀûÈó
-	public final static int TYPE_21 = 21; //Ä¼¼¯×Ê½ðÊ¹ÓÃ´óÓÚ80%
+	public final static int TYPE_1 = 1; //è®¢å•|ä¸­æ ‡|åˆåŒ
+	public final static int TYPE_3 = 3; //ç‰›æ•£
+	public final static int TYPE_4 = 4; //å¢žå‘|å®šå¢ž|éžå…¬
+	public final static int TYPE_5 = 5; //è‚¡æƒæ¿€åŠ±
+	public final static int TYPE_20 = 20; //ä¸»è¥è¿œå¤§äºŽåˆ©æ¶¦
+	public final static int TYPE_21 = 21; //å‹Ÿé›†èµ„é‡‘ä½¿ç”¨å¤§äºŽ80%
 	
 	private static List<StkImportInfoType> newsTypes = null;
 	private static List<StkImportInfoType> sytemTypes = null;

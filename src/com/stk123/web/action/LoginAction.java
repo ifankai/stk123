@@ -37,7 +37,7 @@ public class LoginAction {
 			}
             return StkConstant.ACTION_SUCC;
 		}else{
-			//ÓÃ»§ÃûÃÜÂë´íÎó
+			//ç”¨æˆ·åå¯†ç é”™è¯¯
 			sc.put(StkConstant.ATTRIBUTE_LOGIN_ERROR, true);
 			return StkConstant.ACTION_FAIL;
 		}

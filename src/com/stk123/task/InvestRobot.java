@@ -98,14 +98,14 @@ public class InvestRobot {
 				Index index =  new Index(conn,inv.getCode());
 				s.add(StkUtils.wrapCodeAndNameAsHtml(index)+" "+StkUtils.wrapLink(inv.getTitle(), inv.getSourceUrl()) + " ["+inv.getInvestigatorCount()+"]");
 			}
-			EmailUtils.send("Í¶×ÊÕß¹ØÏµ", StringUtils.join(s, "<br>"));
+			EmailUtils.send("æŠ•èµ„è€…å…³ç³»", StringUtils.join(s, "<br>"));
 		} finally {
 			if (conn != null) conn.close();
 		}
 	}
 
 	/**
-	 * Í¶×ÊÕß¹ØÏµ PDF
+	 * æŠ•èµ„è€…å…³ç³» PDF
 	 * http://irm.cninfo.com.cn/ircs/index/search
 	 */
 	public static List<Map> parse3() throws Exception {
@@ -190,7 +190,7 @@ public class InvestRobot {
 		if("doc".equalsIgnoreCase(sourceType)){
 			Table tb = WordUtils.getTable(downloadFilePath + fileName,0);
 			if(tb != null){
-				String investigator = WordUtils.getCellWhenColumnContain(tb, 0, "²ÎÓëµ¥Î»", 1);
+				String investigator = WordUtils.getCellWhenColumnContain(tb, 0, "å‚ä¸å•ä½", 1);
 				if(investigator != null){
 					investigator = StringUtils.replace(investigator, "               ", "");
 					if(investigator.length() >= 1500){
@@ -199,7 +199,7 @@ public class InvestRobot {
 					map.put("investigator", investigator);
 					map.put("investigatorCount", investigator.length());
 				}
-				String text = WordUtils.getCellWhenColumnContain(tb, 0, "Ö÷ÒªÄÚÈİ", 1);
+				String text = WordUtils.getCellWhenColumnContain(tb, 0, "ä¸»è¦å†…å®¹", 1);
 				if(text != null){
 					map.put("text", text);
 					map.put("textCount", text.length());
@@ -208,12 +208,12 @@ public class InvestRobot {
 		}else if("docx".equalsIgnoreCase(sourceType)){
 			XWPFTable tb = WordUtils.getTableX(downloadFilePath + fileName,0);
 			if(tb != null){
-				String investigator = WordUtils.getCellXWhenColumnContain(tb, 0, "²ÎÓëµ¥Î»", 1);
+				String investigator = WordUtils.getCellXWhenColumnContain(tb, 0, "å‚ä¸å•ä½", 1);
 				if(investigator != null){
 					map.put("investigator", investigator);
 					map.put("investigatorCount", investigator.length());
 				}
-				String text = WordUtils.getCellXWhenColumnContain(tb, 0, "Ö÷ÒªÄÚÈİ", 1);
+				String text = WordUtils.getCellXWhenColumnContain(tb, 0, "ä¸»è¦å†…å®¹", 1);
 				if(text != null){
 					map.put("text", text);
 					map.put("textCount", text.length());
@@ -269,7 +269,7 @@ public class InvestRobot {
 			if("doc".equalsIgnoreCase(sourceType)){
 				Table tb = WordUtils.getTable(downloadFilePath + fileName,0);
 				if(tb != null){
-					String investigator = WordUtils.getCellWhenColumnContain(tb, 0, "²ÎÓëµ¥Î»", 1);
+					String investigator = WordUtils.getCellWhenColumnContain(tb, 0, "å‚ä¸å•ä½", 1);
 					if(investigator != null){
 						investigator = StringUtils.replace(investigator, "               ", "");
 						if(investigator.length() >= 1500){
@@ -278,7 +278,7 @@ public class InvestRobot {
 						map.put("investigator", investigator);
 						map.put("investigatorCount", investigator.length());
 					}
-					String text = WordUtils.getCellWhenColumnContain(tb, 0, "Ö÷ÒªÄÚÈİ", 1);
+					String text = WordUtils.getCellWhenColumnContain(tb, 0, "ä¸»è¦å†…å®¹", 1);
 					if(text != null){
 						map.put("text", text);
 						map.put("textCount", text.length());
@@ -287,12 +287,12 @@ public class InvestRobot {
 			}else if("docx".equalsIgnoreCase(sourceType)){
 				XWPFTable tb = WordUtils.getTableX(downloadFilePath + fileName,0);
 				if(tb != null){
-					String investigator = WordUtils.getCellXWhenColumnContain(tb, 0, "²ÎÓëµ¥Î»", 1);
+					String investigator = WordUtils.getCellXWhenColumnContain(tb, 0, "å‚ä¸å•ä½", 1);
 					if(investigator != null){
 						map.put("investigator", investigator);
 						map.put("investigatorCount", investigator.length());
 					}
-					String text = WordUtils.getCellXWhenColumnContain(tb, 0, "Ö÷ÒªÄÚÈİ", 1);
+					String text = WordUtils.getCellXWhenColumnContain(tb, 0, "ä¸»è¦å†…å®¹", 1);
 					if(text != null){
 						map.put("text", text);
 						map.put("textCount", text.length());

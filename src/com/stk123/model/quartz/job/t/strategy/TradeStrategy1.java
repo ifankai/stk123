@@ -13,7 +13,7 @@ import com.stk123.tool.util.ChineseUtils;
 import com.stk123.tool.util.collection.Name2Value;
 
 /**
- * Æ½Ì¨Í»ÆÆ
+ * å¹³å°çªç ´
  */
 
 public class TradeStrategy1 extends Strategy<Output> {
@@ -71,7 +71,7 @@ public class TradeStrategy1 extends Strategy<Output> {
 	}
 	
 	public TradeStrategy1(){
-		this.name = "Æ½Ì¨Í»ÆÆ";
+		this.name = "å¹³å°çªç ´";
 	}
 
 	@Override
@@ -79,7 +79,7 @@ public class TradeStrategy1 extends Strategy<Output> {
 		Output output = share.getOutput();
 		Input tmp = null;
 		for(Input input : inputs){
-			//if(output.contain(input))continue;//·¢Éú¹ı
+			//if(output.contain(input))continue;//å‘ç”Ÿè¿‡
 			if(input.getRank() <= output.getMaxRank()) continue;//
 			K k = share.getK();
 			int at = input.getAmountTime();
@@ -88,11 +88,11 @@ public class TradeStrategy1 extends Strategy<Output> {
 			double hours = input.getHours();
 			K cmaxk = kb.getKCH((int)hours*3600);
 			
-			if(k.getClose() < cmaxk.getClose()){//Ã»ÓĞ´´ĞÂ¸ß
+			if(k.getClose() < cmaxk.getClose()){//æ²¡æœ‰åˆ›æ–°é«˜
 				continue;
 			}
 			K cmink = kb.getKCL((int)hours*3600);
-			if(input.getPercent() > 0 && cmaxk.getClose()/cmink.getClose() > input.getPercent()){//ÓĞÆ½Ì¨¸ß¶ÈÏŞÖÆ
+			if(input.getPercent() > 0 && cmaxk.getClose()/cmink.getClose() > input.getPercent()){//æœ‰å¹³å°é«˜åº¦é™åˆ¶
 				continue;
 			}
 			/*if(k.getTime().getHours() == 14 && k.getTime().getMinutes() == 12){
@@ -117,14 +117,14 @@ public class TradeStrategy1 extends Strategy<Output> {
 			output.add(tmp);
 			/*String leftPad = StringUtils.repeat("&nbsp;", 8-ChineseUtils.length(share.getName()));
 			String message = leftPad+share.getName()+"["+share.getCode()+"]"+this.getName()+" Rank:"+tmp.getRank()+ " -"
-					+"ÔÚ"+tmp.getHours()+"Ğ¡Ê±ÄÚ,"+(tmp.getAmountTime()/60==0?tmp.getAmountTime()+"Ãë":tmp.getAmountTime()/60+"·ÖÖÓ")+"·ÅÁ¿"+StkUtils.numberFormat2Digits(tmp.getMultiple())+"±¶."
-					+" K["+StkUtils.formatDate(tmp.getK().getTime(), StkUtils.sf_ymd9)+"] ¼Û¸ñ:"+ tmp.getK().getClose();
+					+"åœ¨"+tmp.getHours()+"å°æ—¶å†…,"+(tmp.getAmountTime()/60==0?tmp.getAmountTime()+"ç§’":tmp.getAmountTime()/60+"åˆ†é’Ÿ")+"æ”¾é‡"+StkUtils.numberFormat2Digits(tmp.getMultiple())+"å€."
+					+" K["+StkUtils.formatDate(tmp.getK().getTime(), StkUtils.sf_ymd9)+"] ä»·æ ¼:"+ tmp.getK().getClose();
 			//System.out.println(message);
 			Utils.info(message);*/
 			
-			String message = " Rank:"+tmp.getRank()+ " ÔÚ"+tmp.getHours()+"Ğ¡Ê±ÄÚ,"
-					+(tmp.getAmountTime()/60==0?tmp.getAmountTime()+"Ãë":tmp.getAmountTime()/60+"·ÖÖÓ")
-					+"·ÅÁ¿"+StkUtils.numberFormat2Digits(tmp.getMultiple())+"±¶.";
+			String message = " Rank:"+tmp.getRank()+ " åœ¨"+tmp.getHours()+"å°æ—¶å†…,"
+					+(tmp.getAmountTime()/60==0?tmp.getAmountTime()+"ç§’":tmp.getAmountTime()/60+"åˆ†é’Ÿ")
+					+"æ”¾é‡"+StkUtils.numberFormat2Digits(tmp.getMultiple())+"å€.";
 			sendMessage(share, message);
 		}
 		return output;

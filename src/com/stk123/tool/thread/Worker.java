@@ -21,7 +21,7 @@ public class Worker extends Thread {
 						terminated = true;
 					}
 				} catch (Exception e) {
-					Log.error(e,"¹¤ÈË³öÏÖÒì³££º");
+					Log.error(e,"å·¥äººå‡ºç°å¼‚å¸¸ï¼š");
 					e.printStackTrace();
 					terminated = true;
 				}

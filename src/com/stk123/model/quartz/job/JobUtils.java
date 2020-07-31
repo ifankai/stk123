@@ -17,7 +17,7 @@ public class JobUtils {
 		String spage = StringUtils.substringBetween(page, "(", ")");
 		//System.out.println(spage);
 		List<String> list = JsonUtils.testJsonArray(spage);
-		StringBuffer sb = new StringBuffer("<a href=\"http://data.eastmoney.com/bkzj/gn.html\">×Ê½ğÁ÷Èë°å¿é[¾»Õ¼±ÈÅÅĞò]£º</a><br>");
+		StringBuffer sb = new StringBuffer("<a href=\"http://data.eastmoney.com/bkzj/gn.html\">èµ„é‡‘æµå…¥æ¿å—[å‡€å æ¯”æ’åº]ï¼š</a><br>");
 		List<List<String>> datas = new ArrayList<List<String>>();
 		for(int i=0;i<15;i++){
 			String s = list.get(i);
@@ -25,7 +25,7 @@ public class JobUtils {
 			List<String> row = new ArrayList<String>();
 			row.add(ss[2]);
 			row.add(ss[5]+"%");
-			row.add(StkUtils.numberFormat2Digits(Double.parseDouble(ss[4])/10000)+"ÒÚ");
+			row.add(StkUtils.numberFormat2Digits(Double.parseDouble(ss[4])/10000)+"äº¿");
 			row.add(ss[14]);
 			datas.add(row);
 		}

@@ -71,7 +71,7 @@ public class InitialKLine {
 	private static boolean analyse = false;
 	
 	public static String today = StkUtils.getToday();//"20160923";
-	public static final int US_STK_HOT = 200; //ÃÀ¹ÉÑ©Çò¹Ø×¢ÈËÊıÏÂÏŞ
+	public static final int US_STK_HOT = 200; //ç¾è‚¡é›ªçƒå…³æ³¨äººæ•°ä¸‹é™
 	
 	public static boolean addToCareStks = true;
 	public static Set<String> careStks = new HashSet<String>();
@@ -113,7 +113,7 @@ public class InitialKLine {
 					initAStock(conn);
 					JdbcUtils.delete(conn, "delete from stk_kline where kline_date>to_char(sysdate,'yyyymmdd')",null);
 					
-					//ÏÂÔØ»¦Éî300ÊĞÓ¯ÂÊxlsÊı¾İ
+					//ä¸‹è½½æ²ªæ·±300å¸‚ç›ˆç‡xlsæ•°æ®
 					String url = "http://www.csindex.com.cn/sseportal/ps/zhs/hqjt/csi/Csi300Perf.xls";
 					HttpUtils.download(url,null, ConfigUtils.getProp("initial_csi300")/*"d:\\share\\download\\"*/, "Csi300Perf_"+StkUtils.getToday()+".xls");
 				}catch(Exception e){
@@ -186,7 +186,7 @@ public class InitialKLine {
 			}
 			
 			Double avgPE = 0.0;
-			//ÖĞ¸Å¹Épe
+			//ä¸­æ¦‚è‚¡pe
 			List params = new ArrayList();
 			/*params.clear();
 			params.add(today);
@@ -203,7 +203,7 @@ public class InitialKLine {
 			params.add(today);
 			JdbcUtils.update(conn, "update stk_daily_report_us set result_1=? where report_date=?", params);*/
 			
-			//ÃÀ¹Épe
+			//ç¾è‚¡pe
 			params.clear();
 			params.add(today);
 			Double avgPE2 = JdbcUtils.load("select avg(pe_ttm) from stk_kline_us where kline_date=? and pe_ttm is not null and pe_ttm>3 and pe_ttm<200", params, Double.class);
@@ -213,7 +213,7 @@ public class InitialKLine {
 			params.add(avgPE2);
 			params.add(today);
 			JdbcUtils.update(conn, "update stk_daily_report_us set result_2=? where report_date=?", params);
-			EmailUtils.send("[ÃÀ¹É]Æ½¾ùPE,ÈÕÆÚ:"+today+",ÖĞ¸Å:"+avgPE+",Æ½¾ù:"+avgPE2, "ÖĞ¸ÅÆ½¾ùPE:"+avgPE+"<br>ÃÀ¹ÉÆ½¾ùPE:"+avgPE2);
+			EmailUtils.send("[ç¾è‚¡]å¹³å‡PE,æ—¥æœŸ:"+today+",ä¸­æ¦‚:"+avgPE+",å¹³å‡:"+avgPE2, "ä¸­æ¦‚å¹³å‡PE:"+avgPE+"<br>ç¾è‚¡å¹³å‡PE:"+avgPE2);
 			
 			System.out.println(".............. US ...................");
 			List<Index> indexs = new ArrayList<Index>();
@@ -225,7 +225,7 @@ public class InitialKLine {
 				indexs.add(index);
 			}
 			
-			System.out.println("1.´´ĞÂ¸ßÑ¡¹É·¨");
+			System.out.println("1.åˆ›æ–°é«˜é€‰è‚¡æ³•");
 			List<Index> newHighs = IndexUtils.getNewHighs(indexs, today, DAYS_OF_NEWHIGHT_250);
 			/*if(newHighs.size() > 0){
 				Collections.sort(newHighs, new Comparator<Index>(){
@@ -233,7 +233,7 @@ public class InitialKLine {
 					public int compare(Index o1, Index o2) {
 						return (o2.getStk().getHot() - o1.getStk().getHot());
 					}});
-				EmailUtils.send("[ÃÀ¹É]´´"+DAYS_OF_NEWHIGHT_250+"ÈÕĞÂ¸ß¹É,×Ü¼Æ:"+newHighs.size()+",ÈÕÆÚ:"+today, StkUtils.createHtmlTable(today, newHighs));
+				EmailUtils.send("[ç¾è‚¡]åˆ›"+DAYS_OF_NEWHIGHT_250+"æ—¥æ–°é«˜è‚¡,æ€»è®¡:"+newHighs.size()+",æ—¥æœŸ:"+today, StkUtils.createHtmlTable(today, newHighs));
 			}*/
 			
 			newHighs = IndexUtils.getNewHighs(indexs, today, DAYS_OF_NEWHIGHT_120);
@@ -243,40 +243,40 @@ public class InitialKLine {
 					public int compare(Index o1, Index o2) {
 						return (o2.getStk().getHot() - o1.getStk().getHot());
 					}});
-				EmailUtils.send("[ÃÀ¹É]´´"+DAYS_OF_NEWHIGHT_120+"ÈÕĞÂ¸ß¹É,×Ü¼Æ:"+newHighs.size()+",ÈÕÆÚ:"+today, StkUtils.createHtmlTable(today, newHighs));
+				EmailUtils.send("[ç¾è‚¡]åˆ›"+DAYS_OF_NEWHIGHT_120+"æ—¥æ–°é«˜è‚¡,æ€»è®¡:"+newHighs.size()+",æ—¥æœŸ:"+today, StkUtils.createHtmlTable(today, newHighs));
 			}*/
 			
-			System.out.println("2.»Æ½ğÈı½ÇÑ¡¹É·¨");
+			System.out.println("2.é»„é‡‘ä¸‰è§’é€‰è‚¡æ³•");
 			//checkUSGoldTriangle(today, indexs);
 			
-			System.out.println("3.KÏß²øÈÆÑ¡¹É·¨");
+			System.out.println("3.Kçº¿ç¼ ç»•é€‰è‚¡æ³•");
 			//checkUSKIntersect(today, indexs);
 			
-			System.out.println("4.Í»ÆÆÏÂ½µÇ÷ÊÆÑ¡¹É·¨");
+			System.out.println("4.çªç ´ä¸‹é™è¶‹åŠ¿é€‰è‚¡æ³•");
 			//checkUSKUpTrendLine(today, indexs);
 			
-			System.out.println("4.[ÖÜÏß]Ç÷ÊÆÏßÍ»ÆÆ");
+			System.out.println("4.[å‘¨çº¿]è¶‹åŠ¿çº¿çªç ´");
 			//checkWeeklyTrandLine(today, indexs);
 			
-			System.out.println("10.[ÔÂÏß]Ç÷ÊÆÏßÍ»ÆÆ");
+			System.out.println("10.[æœˆçº¿]è¶‹åŠ¿çº¿çªç ´");
 			//checkMonthlyTrandLine(today, indexs);
 			
-			System.out.println("5.ÌìÁ¿ºóËõÁ¿");
+			System.out.println("5.å¤©é‡åç¼©é‡");
 			//checkHugeVolumeLittleVolume(indexs, today, 2);
 			
-			System.out.println("6.MACDÒ»Æ·³­µ×");
+			System.out.println("6.MACDä¸€å“æŠ„åº•");
 			//checkYiPinChaoDiMACD(conn, today, indexs, 2);
 			
-			System.out.println("7.¶şÆ·³­µ×-ÂòÈëÊ±»ú");
+			System.out.println("7.äºŒå“æŠ„åº•-ä¹°å…¥æ—¶æœº");
 			//checkErPinChaoDi(conn, today, indexs, 2, true, false);
 			
-			System.out.println("7.[ÖÜÏß]¶şÆ·³­µ×-ÂòÈëÊ±»ú");
+			System.out.println("7.[å‘¨çº¿]äºŒå“æŠ„åº•-ä¹°å…¥æ—¶æœº");
 			//checkErPinChaoDi(conn, today, indexs, 2, true, true);
 			
-			System.out.println("8.[ÖÜÏß]MACDÕ³ºÏ");
+			System.out.println("8.[å‘¨çº¿]MACDç²˜åˆ");
 			//checkMACDWeekly(today, indexs);
 			
-			System.out.println("10.ÖÜÏß6Á¬Òõºómacd±³Àë");
+			System.out.println("10.å‘¨çº¿6è¿é˜´åmacdèƒŒç¦»");
 			
 		}catch(Exception e){
 			EmailUtils.send("Initial US Stock K Line Error", e);
@@ -305,7 +305,7 @@ public class InitialKLine {
 					}
 				}
 			}catch(Exception e){
-				EmailUtils.send("[InitialKLine³ö´í]´óÅÌÖ¸ÊıKÏßÏÂÔØ³ö´í stk="+sk.getCode(), e);
+				EmailUtils.send("[InitialKLineå‡ºé”™]å¤§ç›˜æŒ‡æ•°Kçº¿ä¸‹è½½å‡ºé”™ stk="+sk.getCode(), e);
 			}
 			Index index1000 = new Index(conn, "01000852");
 			final String todayK = index1000.getK(0).getDate();
@@ -328,7 +328,7 @@ public class InitialKLine {
 				});
 				
 			}catch(Exception e){
-				EmailUtils.send("[InitialKLine³ö´í]Í¬»¨Ë³¸ÅÄîÖ¸ÊıKÏßÏÂÔØ³ö´í stk="+sk.getCode(), e);
+				EmailUtils.send("[InitialKLineå‡ºé”™]åŒèŠ±é¡ºæ¦‚å¿µæŒ‡æ•°Kçº¿ä¸‹è½½å‡ºé”™ stk="+sk.getCode(), e);
 			}
 		}
 		
@@ -339,7 +339,7 @@ public class InitialKLine {
 				initKLines(stks, flag, 4);
 				System.out.println("initKLines..........end");
 				if(!flag){
-					EmailUtils.send("ÖÜÁùÊı¾İÍ¬²½Íê³É£¡£¡£¡","...");
+					EmailUtils.send("å‘¨å…­æ•°æ®åŒæ­¥å®Œæˆï¼ï¼ï¼","...");
 					return;
 				}
 				
@@ -349,7 +349,7 @@ public class InitialKLine {
 						Index tmpIndex = new Index(conn, code);
 						tmpIndex.initKLine();
 					}catch(Exception e){
-						EmailUtils.send("[InitialKLine³ö´í]ĞŞ²¹KÏßÊı¾İ³ö´í stk="+ code, e);
+						EmailUtils.send("[InitialKLineå‡ºé”™]ä¿®è¡¥Kçº¿æ•°æ®å‡ºé”™ stk="+ code, e);
 					}
 				}
 				
@@ -404,57 +404,57 @@ public class InitialKLine {
 				Index index = new Index(conn,stk.getCode(),stk.getName());
 				context.indexs.add(index);
 				contextYesterday.indexs.add(index);
-				//¸üĞÂ·Ç¹«¿ª·¢ĞĞ£¬Ô±¹¤³Ö¹É¼Û¸ñÒç¼ÛÂÊ
+				//æ›´æ–°éå…¬å¼€å‘è¡Œï¼Œå‘˜å·¥æŒè‚¡ä»·æ ¼æº¢ä»·ç‡
 				NoticeRobot.updateRate(conn, index);
 				
-				//¸úĞÂpe/pb ntile
+				//è·Ÿæ–°pe/pb ntile
 				index.updateNtile();
 			}
 			
-			System.out.println("²ßÂÔ at:"+new Date());
+			System.out.println("ç­–ç•¥ at:"+new Date());
 			strategy(conn,false);
 			
-			System.out.println("Ê±¼ä´°¿Ú at:"+new Date());
+			System.out.println("æ—¶é—´çª—å£ at:"+new Date());
 			timeWindow(conn, today);
 			
-			System.out.println("ĞĞÒµ·ÖÎö");
+			System.out.println("è¡Œä¸šåˆ†æ");
 			checkIndustry(conn, today, "10jqka_gn");
 			checkIndustry(conn, today, "10jqka_thshy");
 			
-			//²ßÂÔÄ£ĞÍÑ¡¹É
+			//ç­–ç•¥æ¨¡å‹é€‰è‚¡
 			/*StrategyManager mgr = new StrategyManager(conn, today);
 			mgr.init(context.indexs);
 			mgr.execute();*/
 			
 			//List<Index> newHighs = new ArrayList<Index>();
-			System.out.println("1.check¹ÉÆ±ÓĞÃ»ÓĞ´´600ÈÕĞÂ¸ß");
-			//1.check¹ÉÆ±ÓĞÃ»ÓĞ´´600ÈÕÀúÊ·ĞÂ¸ß
+			System.out.println("1.checkè‚¡ç¥¨æœ‰æ²¡æœ‰åˆ›600æ—¥æ–°é«˜");
+			//1.checkè‚¡ç¥¨æœ‰æ²¡æœ‰åˆ›600æ—¥å†å²æ–°é«˜
 			List<Index> newHighs = IndexUtils.getNewHighs(context.indexs, today, DAYS_OF_NEWHIGHT_600);
 			/*if(newHighs.size() > 0){
-				EmailUtils.sendAndReport("´´"+DAYS_OF_NEWHIGHT_600+"ÈÕĞÂ¸ß¹É,×Ü¼Æ:"+newHighs.size()+",ÈÕÆÚ:"+today, StkUtils.createHtmlTable(today, newHighs));
+				EmailUtils.sendAndReport("åˆ›"+DAYS_OF_NEWHIGHT_600+"æ—¥æ–°é«˜è‚¡,æ€»è®¡:"+newHighs.size()+",æ—¥æœŸ:"+today, StkUtils.createHtmlTable(today, newHighs));
 			}*/
 			
 			newHighs = IndexUtils.getNewHighs(context.indexs, today, DAYS_OF_NEWHIGHT_120);
 			/*if(newHighs.size() > 0){
-				EmailUtils.sendAndReport("´´"+DAYS_OF_NEWHIGHT_120+"ÈÕĞÂ¸ß¹É,×Ü¼Æ:"+newHighs.size()+",ÈÕÆÚ:"+today, StkUtils.createHtmlTable(today, newHighs));
+				EmailUtils.sendAndReport("åˆ›"+DAYS_OF_NEWHIGHT_120+"æ—¥æ–°é«˜è‚¡,æ€»è®¡:"+newHighs.size()+",æ—¥æœŸ:"+today, StkUtils.createHtmlTable(today, newHighs));
 			}*/
-			System.out.println("1.1.½Ó½ü600ÈÕĞÂ¸ß");
+			System.out.println("1.1.æ¥è¿‘600æ—¥æ–°é«˜");
 			/*List<Index> closeNewHighs = IndexUtils.getCloseNewHighs(context.indexs, today, DAYS_OF_NEWHIGHT_600);
 			if(closeNewHighs.size() > 0){
-				EmailUtils.sendAndReport("½Ó½ü"+DAYS_OF_NEWHIGHT_600+"ÈÕĞÂ¸ß¹É,×Ü¼Æ:"+closeNewHighs.size()+",ÈÕÆÚ:"+today, StkUtils.createHtmlTable(today, closeNewHighs));
+				EmailUtils.sendAndReport("æ¥è¿‘"+DAYS_OF_NEWHIGHT_600+"æ—¥æ–°é«˜è‚¡,æ€»è®¡:"+closeNewHighs.size()+",æ—¥æœŸ:"+today, StkUtils.createHtmlTable(today, closeNewHighs));
 			}*/
-			System.out.println("1.2.½Ó½ü120ÈÕĞÂ¸ß");
+			System.out.println("1.2.æ¥è¿‘120æ—¥æ–°é«˜");
 			/*closeNewHighs = IndexUtils.getCloseNewHighs(context.indexs, today, DAYS_OF_NEWHIGHT_120);
 			if(closeNewHighs.size() > 0){
-				EmailUtils.sendAndReport("½Ó½ü"+DAYS_OF_NEWHIGHT_120+"ÈÕĞÂ¸ß¹É,×Ü¼Æ:"+closeNewHighs.size()+",ÈÕÆÚ:"+today, StkUtils.createHtmlTable(today, closeNewHighs));
+				EmailUtils.sendAndReport("æ¥è¿‘"+DAYS_OF_NEWHIGHT_120+"æ—¥æ–°é«˜è‚¡,æ€»è®¡:"+closeNewHighs.size()+",æ—¥æœŸ:"+today, StkUtils.createHtmlTable(today, closeNewHighs));
 			}*/
-			System.out.println("1.3.½Ó½ü600ÈÕĞÂ¸ßÇÒKÏß²øÈÆ");
+			System.out.println("1.3.æ¥è¿‘600æ—¥æ–°é«˜ä¸”Kçº¿ç¼ ç»•");
 			/*closeNewHighs = IndexUtils.getCloseNewHighsAndInteract(context.indexs, today, DAYS_OF_NEWHIGHT_600);
 			if(closeNewHighs.size() > 0){
-				EmailUtils.sendAndReport("½Ó½ü"+DAYS_OF_NEWHIGHT_600+"ÈÕĞÂ¸ßÇÒKÏß²øÈÆ¹É,×Ü¼Æ:"+closeNewHighs.size()+",ÈÕÆÚ:"+today, StkUtils.createHtmlTable(today, closeNewHighs));
+				EmailUtils.sendAndReport("æ¥è¿‘"+DAYS_OF_NEWHIGHT_600+"æ—¥æ–°é«˜ä¸”Kçº¿ç¼ ç»•è‚¡,æ€»è®¡:"+closeNewHighs.size()+",æ—¥æœŸ:"+today, StkUtils.createHtmlTable(today, closeNewHighs));
 			}*/
 			
-			//3.search TODO Ôö¼ÓºÍ×òÌì±È½ÏºóĞÂ¼ÓµÄ
+			//3.search TODO å¢åŠ å’Œæ˜¨å¤©æ¯”è¾ƒåæ–°åŠ çš„
 			/*datas = IndexUtils.search(context.indexs, today, 3, 120, false);
 			for(List data : datas){
 				Index index = (Index)data.get(0);
@@ -463,11 +463,11 @@ public class InitialKLine {
 			}
 			if(datas.size() > 0){
 				List<String> addtitle = new ArrayList<String>();
-				addtitle.add("120ÈÕÕÇµø·ù");
-				addtitle.add("ĞĞÒµ");
-				addtitle.add("ÖÜÏßÍ¼");
-				addtitle.add("ÈÕÏßÍ¼");
-				EmailUtils.send("ËõÁ¿´´120ÈÕĞÂ¸ß¹É,×Ü¼Æ£º"+datas.size()+",ÈÕÆÚ:"+today, StkUtils.createHtmlTable(today, datas, addtitle));
+				addtitle.add("120æ—¥æ¶¨è·Œå¹…");
+				addtitle.add("è¡Œä¸š");
+				addtitle.add("å‘¨çº¿å›¾");
+				addtitle.add("æ—¥çº¿å›¾");
+				EmailUtils.send("ç¼©é‡åˆ›120æ—¥æ–°é«˜è‚¡,æ€»è®¡ï¼š"+datas.size()+",æ—¥æœŸ:"+today, StkUtils.createHtmlTable(today, datas, addtitle));
 			}*/
 			
 			//4.check RS and Net Profit
@@ -503,65 +503,65 @@ public class InitialKLine {
 				data.add(index.getCanslim().getCloseChangeRank()+","+index.getCanslim().getNetProfitGrowthRank());
 				datasYesterday.add(data);
 			}
-			List<List> added = notContain(datas,datasYesterday);//Èë°ñ
-			List<List> deleted = notContain(datasYesterday,datas);//³ö°ñ
+			List<List> added = notContain(datas,datasYesterday);//å…¥æ¦œ
+			List<List> deleted = notContain(datasYesterday,datas);//å‡ºæ¦œ
 			if(datas.size() > 0){
 				List<String> addtitle = new ArrayList<String>();
-				addtitle.add("250ÈÕÕÇµø·ù");
-				addtitle.add("ÅÅĞĞ[ÕÇµø·ù,¾»ÀûÈóÔö³¤]");
-				EmailUtils.send("250ÈÕRSÇ¿¶ÈÒµ¼¨ÅÅĞĞ,×Ü¼Æ£º"+datas.size()+",ÈÕÆÚ:"+today, 
-						"Èë°ñ£º<br>"+StkUtils.createHtmlTable(today, added, addtitle) + "<br>" +
-						"³ö°ñ£º<br>"+StkUtils.createHtmlTable(today, deleted, addtitle) + "<br>" +
+				addtitle.add("250æ—¥æ¶¨è·Œå¹…");
+				addtitle.add("æ’è¡Œ[æ¶¨è·Œå¹…,å‡€åˆ©æ¶¦å¢é•¿]");
+				EmailUtils.send("250æ—¥RSå¼ºåº¦ä¸šç»©æ’è¡Œ,æ€»è®¡ï¼š"+datas.size()+",æ—¥æœŸ:"+today, 
+						"å…¥æ¦œï¼š<br>"+StkUtils.createHtmlTable(today, added, addtitle) + "<br>" +
+						"å‡ºæ¦œï¼š<br>"+StkUtils.createHtmlTable(today, deleted, addtitle) + "<br>" +
 						StkUtils.createHtmlTable(today, datas, addtitle));
 			}
 			*/
 			System.gc();
-			//System.out.println("5.²×ÖİÀÏÕÅÑ¡¹É·¨");
+			//System.out.println("5.æ²§å·è€å¼ é€‰è‚¡æ³•");
 			//checkStkByLaoZhang(conn, context, contextYesterday, newHighs);
 			
-			//System.out.println("6.250ÈÕµ×²¿ÏäÌåÍ»ÆÆ¹ÉÆ±£¬ÏäÌå×îµÍµ½Í»ÆÆ(×î¸ß)ÕÇ·ù²»³¬¹ı60%");
+			//System.out.println("6.250æ—¥åº•éƒ¨ç®±ä½“çªç ´è‚¡ç¥¨ï¼Œç®±ä½“æœ€ä½åˆ°çªç ´(æœ€é«˜)æ¶¨å¹…ä¸è¶…è¿‡60%");
 			//checkStkCreate250DaysBoxHigh(conn, context);
 			
-			//System.out.println("7.¶ÌÏß60ÈÕ¹ÉÆ±Ç¿¶ÈÅÅĞĞ");
+			//System.out.println("7.çŸ­çº¿60æ—¥è‚¡ç¥¨å¼ºåº¦æ’è¡Œ");
 			//check60DaysRS(conn, context, contextYesterday);
 			
 			//8.rank k line
 			//K today = sh.getK();
 			//rankIndustryByK(conn, today.getDate(), "cnindex");
 			
-			//System.out.println("9.»Ø²¹Ç°ÆÚÌø¿ÕÈ±¿Ú");
+			//System.out.println("9.å›è¡¥å‰æœŸè·³ç©ºç¼ºå£");
 			/*List<Index> gaps = IndexUtils.getUpGaps(context.indexs,today , 250, 30);
 			if(gaps.size() > 0){
 				StringBuffer sb = new StringBuffer();
 				for(Index gap : gaps){
 					sb.append(gap.toHtml()).append("<br>");
 				}
-				EmailUtils.sendAndReport("»Ø²¹Ç°ÆÚÌø¿ÕÈ±¿Ú£¬×Ü¹²£º"+gaps.size()+",ÈÕÆÚ:"+today, StkUtils.createHtmlTable(today, gaps));
+				EmailUtils.sendAndReport("å›è¡¥å‰æœŸè·³ç©ºç¼ºå£ï¼Œæ€»å…±ï¼š"+gaps.size()+",æ—¥æœŸ:"+today, StkUtils.createHtmlTable(today, gaps));
 			}*/
 			
-			System.out.println("10.KÏß²øÈÆ");
+			System.out.println("10.Kçº¿ç¼ ç»•");
 			//checkKIntersect(today, context);
 			
-			//System.out.println("12.ÄÏ¾©¸ßÈËÕ½·¨");
+			//System.out.println("12.å—äº¬é«˜äººæˆ˜æ³•");
 			//checkCreateHighStk(context);
 			
-			System.out.println("13.Í»ÆÆ600ÈÕÌìÁ¿");
+			System.out.println("13.çªç ´600æ—¥å¤©é‡");
 			//checkHighHugeVolume(context);
 			
-			//System.out.println("14.ÌìÁ¿ºóËõÁ¿");
+			//System.out.println("14.å¤©é‡åç¼©é‡");
 			//checkHugeVolumeLittleVolume(context.indexs, today, 1);
 			
-			//15.ÍõÅóÑ¡¹É
+			//15.ç‹æœ‹é€‰è‚¡
 			//checkWangPeng(context);
 			
-			System.out.println("16.ÍõÅóÑ¡¹ÉÓÅ»¯");
+			System.out.println("16.ç‹æœ‹é€‰è‚¡ä¼˜åŒ–");
 			//checkWangPeng1(context);
 			//checkWangPeng2(context);
 			
-			System.out.println("17.¼Û¸ñµÍÓÚÇ°¸ß£¬Á¿³¬Ç°Á¿");
+			System.out.println("17.ä»·æ ¼ä½äºå‰é«˜ï¼Œé‡è¶…å‰é‡");
 			//checkVolumeGreaterThanLastVolume(today, context, 0.8);
 			
-			System.out.println("18.Ò»Æ·³­µ×-MACD");
+			System.out.println("18.ä¸€å“æŠ„åº•-MACD");
 			int cnt = checkYiPinChaoDiMACD(conn, today, context.indexs, 1);
 			if(i >= 1){
 				params.clear();
@@ -570,7 +570,7 @@ public class InitialKLine {
 				JdbcUtils.update(conn, "update stk_pe set result_4=? where report_date=?", params);
 			}
 			
-			System.out.println("18.Ò»Æ·³­µ×-µ×²¿");
+			System.out.println("18.ä¸€å“æŠ„åº•-åº•éƒ¨");
 			cnt = checkYpcdDiBu(conn, today, context.indexs, 1);
 			if(i >= 1){
 				params.clear();
@@ -579,7 +579,7 @@ public class InitialKLine {
 				JdbcUtils.update(conn, "update stk_pe set result_3=? where report_date=?", params);
 			}
 			
-			System.out.println("19.¶şÆ·³­µ×-ÂòÈëÊ±»ú");
+			System.out.println("19.äºŒå“æŠ„åº•-ä¹°å…¥æ—¶æœº");
 			try{
 				List<Index> rslts = checkErPinChaoDi(conn, today, context.indexs, 1, true, false);
 				if(i >= 1){
@@ -589,26 +589,26 @@ public class InitialKLine {
 					JdbcUtils.update(conn, "update stk_pe set result_5=? where report_date=?", params);
 				}
 			}catch(Exception e){
-				EmailUtils.send("¶şÆ·³­µ×-ÂòÈëÊ±»ú - eror", e);
+				EmailUtils.send("äºŒå“æŠ„åº•-ä¹°å…¥æ—¶æœº - eror", e);
 			}
 			
-			System.out.println("20.Ò»Æ·³­µ×-´óÊÆÒÑÈ¥");
+			System.out.println("20.ä¸€å“æŠ„åº•-å¤§åŠ¿å·²å»");
 			//checkYiPinChaoDiDaShiYiQu(conn, today, context.indexs);
 			
-			System.out.println("21.Á¬ĞøÕÇÍ£ºó¿ª°å");
+			System.out.println("21.è¿ç»­æ¶¨åœåå¼€æ¿");
 			//checkKaiBan(today, context.indexs);
 			
-			System.out.println("22.Á¬ĞøÕÇÍ£ºóÂíÉÏ¿ª°å¹É");
+			System.out.println("22.è¿ç»­æ¶¨åœåé©¬ä¸Šå¼€æ¿è‚¡");
 			//checkMaybeKaiBan(today, context.indexs);
 			
-			System.out.println("23.Á¬ĞøÕÇÍ££¬¿ª°åºó£¬ĞÂ¸ß¹É");
+			System.out.println("23.è¿ç»­æ¶¨åœï¼Œå¼€æ¿åï¼Œæ–°é«˜è‚¡");
 			//checkKaiBanXinGao(today, context.indexs);
 			
-			System.out.println("24.×Ê½ğÁ÷ÈëÇÒÀëµ×²¿²»Ô¶");
+			System.out.println("24.èµ„é‡‘æµå…¥ä¸”ç¦»åº•éƒ¨ä¸è¿œ");
 			//checkChaoDiAndFlow(conn, today);
 			
 			
-			//Í³¼Æ×ÔÑ¡¹ÉÈëÑ¡¹ÉÆ±
+			//ç»Ÿè®¡è‡ªé€‰è‚¡å…¥é€‰è‚¡ç¥¨
 			if(addToCareStks){
 				addToCareStks = false;
 				List<Index> results = new ArrayList<Index>();
@@ -616,14 +616,14 @@ public class InitialKLine {
 					results.add(new Index(conn, careStk));
 				}
 				if(results.size() > 0){
-					//Strategy.logToDB(conn, today, "×ÔÑ¡¹ÉC", results);
-					EmailUtils.sendAndReport("×ÔÑ¡¹ÉC, ¸öÊı£º"+results.size()+" ÈÕÆÚ:"+today, 
+					//Strategy.logToDB(conn, today, "è‡ªé€‰è‚¡C", results);
+					EmailUtils.sendAndReport("è‡ªé€‰è‚¡C, ä¸ªæ•°ï¼š"+results.size()+" æ—¥æœŸ:"+today, 
 						StkUtils.createHtmlTable(today, results));
 				}
 				addToCareStks = true;
 			}
 			
-			//Í³¼Æ×Ê½ğÁ¬ĞøÁ÷Èë¹ÉÆ±
+			//ç»Ÿè®¡èµ„é‡‘è¿ç»­æµå…¥è‚¡ç¥¨
 			/*if(addToFlowStks){
 				addToFlowStks = false;
 				List<Index> results = new ArrayList<Index>(flowStks);
@@ -634,7 +634,7 @@ public class InitialKLine {
 						return i;
 					}});
 				if(results.size() > 0)
-				EmailUtils.sendAndReport("×Ê½ğ³ÖĞøÁ÷Èë, ¸öÊı£º"+results.size()+" ÈÕÆÚ:"+today, 
+				EmailUtils.sendAndReport("èµ„é‡‘æŒç»­æµå…¥, ä¸ªæ•°ï¼š"+results.size()+" æ—¥æœŸ:"+today, 
 						StkUtils.createHtmlTable(today, results));
 				addToFlowStks = true;
 			}*/
@@ -696,34 +696,34 @@ public class InitialKLine {
 			String htmlMsg = StkUtils.createHtmlTable(today, context.indexsGrowth);
 			
 			
-			String peAndpeg = "ÊĞ³¡ÕûÌåÖĞÎ»PBµÍµã´óÔ¼ÊÇ2PB£º<br>" +
-							  "2008Äê×îµÍµãÔ¼1700µã¸½½ü£¬ÖĞÎ»ÊıÊĞ¾»ÂÊÔ¼2±¶¡£<br>" +
-							  "2012ÄêÇ°ºó×îµÍµã´óÔ¼2000µã£¬ÖĞÎ»ÊıÊĞ¾»ÂÊÔ¼2±¶¡£<br>" +
-							  "2016-2017ÄêÇ°ºó£¬´óÔ¼2366µã¶ÔÓ¦ÖĞÎ»Êı2±¶ÊĞ¾»ÂÊ¡£<br><br>" +
-					"³É³¤¹É×î¼ÑPEÍ¶×ÊÇø¼äÊÇ20PE-50PE¡£<br>" +
-					"µÍÓÚ20PE¶øÆäÒµ¼¨È´³¬¹ı30%Ôö³¤µÄ»°£¬ÒªĞ¡ĞÄÒµ¼¨ÏİÚå¡£<br>" +
-					"¸ßÓÚ50PEÒª×¢ÒâÅİÄ­·çÏÕ£¬¾Í²»ÒªÃ¤Ä¿É±ÈëÁË¡£<br>"
+			String peAndpeg = "å¸‚åœºæ•´ä½“ä¸­ä½PBä½ç‚¹å¤§çº¦æ˜¯2PBï¼š<br>" +
+							  "2008å¹´æœ€ä½ç‚¹çº¦1700ç‚¹é™„è¿‘ï¼Œä¸­ä½æ•°å¸‚å‡€ç‡çº¦2å€ã€‚<br>" +
+							  "2012å¹´å‰åæœ€ä½ç‚¹å¤§çº¦2000ç‚¹ï¼Œä¸­ä½æ•°å¸‚å‡€ç‡çº¦2å€ã€‚<br>" +
+							  "2016-2017å¹´å‰åï¼Œå¤§çº¦2366ç‚¹å¯¹åº”ä¸­ä½æ•°2å€å¸‚å‡€ç‡ã€‚<br><br>" +
+					"æˆé•¿è‚¡æœ€ä½³PEæŠ•èµ„åŒºé—´æ˜¯20PE-50PEã€‚<br>" +
+					"ä½äº20PEè€Œå…¶ä¸šç»©å´è¶…è¿‡30%å¢é•¿çš„è¯ï¼Œè¦å°å¿ƒä¸šç»©é™·é˜±ã€‚<br>" +
+					"é«˜äº50PEè¦æ³¨æ„æ³¡æ²«é£é™©ï¼Œå°±ä¸è¦ç›²ç›®æ€å…¥äº†ã€‚<br>"
 					+ StkUtils.createPEAndPEG()+"<br>";
 			List<List<String>> pe = new ArrayList<List<String>>();
 			List<String> pe1 = new ArrayList<String>();
-			pe1.add("");pe1.add("Æ½¾ùPE");pe1.add("ÖĞÎ»PE");pe1.add("Æ½¾ùPB");pe1.add("ÖĞÎ»PB");pe1.add("Í³¼ÆÊı");
+			pe1.add("");pe1.add("å¹³å‡PE");pe1.add("ä¸­ä½PE");pe1.add("å¹³å‡PB");pe1.add("ä¸­ä½PB");pe1.add("ç»Ÿè®¡æ•°");
 			pe.add(pe1);
 			List<String> pe2 = new ArrayList<String>();
-			pe2.add("³É³¤¹É");pe2.add(context.averagePE);pe2.add("");pe2.add(context.averagePB);pe2.add("");pe2.add(String.valueOf(context.indexsGrowth.size()));
+			pe2.add("æˆé•¿è‚¡");pe2.add(context.averagePE);pe2.add("");pe2.add(context.averagePB);pe2.add("");pe2.add(String.valueOf(context.indexsGrowth.size()));
 			pe.add(pe2);
 			List<String> pe3 = new ArrayList<String>();
-			pe3.add("È«ÊĞ³¡");pe3.add(String.valueOf(totalPE));pe3.add(String.valueOf(midPE));pe3.add(String.valueOf(totalPB));pe3.add(String.valueOf(midPB));pe3.add("");
+			pe3.add("å…¨å¸‚åœº");pe3.add(String.valueOf(totalPE));pe3.add(String.valueOf(midPE));pe3.add(String.valueOf(totalPB));pe3.add(String.valueOf(midPB));pe3.add("");
 			pe.add(pe3);
-			EmailUtils.sendAndReport("³É³¤¹ÉÆ½¾ùPE£º"+context.averagePE+",PB£º"+context.averagePB+
-					"£»ÊĞ³¡ÕûÌåPE£º"+totalPE+",ÖĞÎ»PE£º"+midPE+",ÕûÌåPB£º"+totalPB+",ÖĞÎ»PB£º"+midPB+",ÈÕÆÚ:"+today, 
+			EmailUtils.sendAndReport("æˆé•¿è‚¡å¹³å‡PEï¼š"+context.averagePE+",PBï¼š"+context.averagePB+
+					"ï¼›å¸‚åœºæ•´ä½“PEï¼š"+totalPE+",ä¸­ä½PEï¼š"+midPE+",æ•´ä½“PBï¼š"+totalPB+",ä¸­ä½PBï¼š"+midPB+",æ—¥æœŸ:"+today, 
 					StkUtils.createHtmlTable(null, pe) + "<br>" + peAndpeg + htmlMsg);
 			
-			System.out.println("¸üĞÂ·Ç¹«¿ª·¢ĞĞ£¬Ô±¹¤³Ö¹É¼Û¸ñÒç¼ÛÂÊ");
+			System.out.println("æ›´æ–°éå…¬å¼€å‘è¡Œï¼Œå‘˜å·¥æŒè‚¡ä»·æ ¼æº¢ä»·ç‡");
 			for(Index index : context.indexs){
-				//¸üĞÂ·Ç¹«¿ª·¢ĞĞ£¬Ô±¹¤³Ö¹É¼Û¸ñÒç¼ÛÂÊ
+				//æ›´æ–°éå…¬å¼€å‘è¡Œï¼Œå‘˜å·¥æŒè‚¡ä»·æ ¼æº¢ä»·ç‡
 				NoticeRobot.updateRate(conn, index);
 				
-				//Ó¯ÀûÔ¤ÆÚPE
+				//ç›ˆåˆ©é¢„æœŸPE
 				index.updateEarningsForecastPE();
 			}
 			System.out.println("Initial A Stock K Line End.");
@@ -762,14 +762,14 @@ public class InitialKLine {
 			params.add(eneLowerCnt/total * 100);
 			params.add(date);
 			JdbcUtils.update(conn, "update stk_pe set ene_upper_cnt=?,ene_lower_cnt=?,ene_upper=?,ene_lower=? where report_date=?", params);
-			EmailUtils.send("ENEÍ³¼Æ,lower:"+(int)eneLowerCnt+"£¬upper:"+(int)eneUpperCnt+",ÈÕÆÚ:"+date, ".");
+			EmailUtils.send("ENEç»Ÿè®¡,lower:"+(int)eneLowerCnt+"ï¼Œupper:"+(int)eneUpperCnt+",æ—¥æœŸ:"+date, ".");
 		}
 		if(eneUpperCnt >= eneLowerCnt){
 			params.clear();
 			params.add(date);
 			StkPe pe = JdbcUtils.load("select * from (select * from stk_pe where report_date<>? order by report_date desc) a where rownum=1",params, StkPe.class);
 			if(pe != null && pe.getEneUpper() < pe.getEneLower()){
-				EmailUtils.send(EmailUtils.IMPORTANT+"ENEÍ³¼Æ:Upper´óÓÚLower,ÈÕÆÚ:"+date, ".");
+				EmailUtils.send(EmailUtils.IMPORTANT+"ENEç»Ÿè®¡:Upperå¤§äºLower,æ—¥æœŸ:"+date, ".");
 			}
 		}
 		
@@ -882,7 +882,7 @@ public class InitialKLine {
 	
 	
 	
-	//¶àÏß³Ì workers
+	//å¤šçº¿ç¨‹ workers
 	public static void initKLines(List<Stk> stks, final boolean flag,int numberOfWorker) throws Exception {
 		ConnectionPool pool = null;
 		try {
@@ -957,7 +957,7 @@ public class InitialKLine {
 	
 	public static void checkStkByLaoZhang(Connection conn,IndexContext context, IndexContext contextYesterday, List<Index> newHighs) throws Exception {
 		List params = new ArrayList();
-		//¹É¼ÛÅÅÃûÇ°200
+		//è‚¡ä»·æ’åå‰200
 		IndexUtils.sortByClose(context.indexs, today);
 		IndexUtils.sortByClose(contextYesterday.indexs, yesterday);
 		int cnt = 200;
@@ -973,7 +973,7 @@ public class InitialKLine {
 			rsYesterday.add(index);
 		}
 		
-		//Ã¿ÔÂRSÅÅÃûÇ°200
+		//æ¯æœˆRSæ’åå‰200
 		
 		IndexUtils.sortByCloseChange(context.indexs, today, 20);
 		IndexUtils.sortByCloseChange(contextYesterday.indexs, yesterday, 20);
@@ -1007,7 +1007,7 @@ public class InitialKLine {
 			List data = new ArrayList();
 			data.add(index);
 			if(newHighs.contains(index)){
-				data.add("ĞÂ¸ß");
+				data.add("æ–°é«˜");
 			}else{
 				data.add("&nbsp;");
 			}
@@ -1017,26 +1017,26 @@ public class InitialKLine {
 			List data = new ArrayList();
 			data.add(index);
 			if(newHighs.contains(index)){
-				data.add("ĞÂ¸ß");
+				data.add("æ–°é«˜");
 			}else{
 				data.add("&nbsp;");
 			}
 			datasYesterday.add(data);
 		}
-		List<List> added = notContain(datas,datasYesterday);//Èë°ñ
-		List<List> deleted = notContain(datasYesterday,datas);//³ö°ñ
+		List<List> added = notContain(datas,datasYesterday);//å…¥æ¦œ
+		List<List> deleted = notContain(datasYesterday,datas);//å‡ºæ¦œ
 		
 		List<String> addtitle = new ArrayList<String>();
-		addtitle.add("´´"+DAYS_OF_NEWHIGHT_600+"ÈÕĞÂ¸ß");
+		addtitle.add("åˆ›"+DAYS_OF_NEWHIGHT_600+"æ—¥æ–°é«˜");
 		
-		String czlz = "1¡¢´´ÀúÊ·ĞÂ¸ßµÄ¹ÉÆ±£¬ÕâÒ»µã£¨ĞÜÊĞÄ©ÆÚ£©·Ç³£ÖØÒª¡£<br>"+
-				      "2¡¢Ã¿ÔÂÕÇ·ùÇ°200Ãû£¬Ã¿Á½ÖÜ·­Ò»±é¡£<br>"+
-				      "3¡¢Ã¿ÌìÕÇ·ù°ñÇ°100ÃûµÄ¹ÉÆ±¡£<br>"+
-				      "4¡¢¹É¼ÛÅÅÃûÇ°200£¬Ã¿Á½ÖÜ·­Ò»±é¡£<br>"+
-				      "ÔÙ½áºÏ»ù±¾Ãæ¼°¼¼ÊõÃæÕÒ³ö×îÇ¿µÄ10Ö»¼°´ÎÇ¿µÄ10Ö»×÷Îª×ÔÑ¡¹É¹Û²ì£¬²»¶¨ÆÚµÄÔÙÉ¸Ñ¡ĞÂÇ¿¼ÓÈë£¬Èõ¹ÉÌŞ³ı¡£<br>";
-		EmailUtils.send("²×ÖİÀÏÕÅÑ¡¹É·¨,×Ü¼Æ£º"+datas.size()+",ÈÕÆÚ:"+today, czlz + 
-				"Èë°ñ£º<br>"+StkUtils.createHtmlTable(today, added, addtitle) + "<br>" +
-				"³ö°ñ£º<br>"+StkUtils.createHtmlTable(today, deleted, addtitle) + "<br>" +
+		String czlz = "1ã€åˆ›å†å²æ–°é«˜çš„è‚¡ç¥¨ï¼Œè¿™ä¸€ç‚¹ï¼ˆç†Šå¸‚æœ«æœŸï¼‰éå¸¸é‡è¦ã€‚<br>"+
+				      "2ã€æ¯æœˆæ¶¨å¹…å‰200åï¼Œæ¯ä¸¤å‘¨ç¿»ä¸€éã€‚<br>"+
+				      "3ã€æ¯å¤©æ¶¨å¹…æ¦œå‰100åçš„è‚¡ç¥¨ã€‚<br>"+
+				      "4ã€è‚¡ä»·æ’åå‰200ï¼Œæ¯ä¸¤å‘¨ç¿»ä¸€éã€‚<br>"+
+				      "å†ç»“åˆåŸºæœ¬é¢åŠæŠ€æœ¯é¢æ‰¾å‡ºæœ€å¼ºçš„10åªåŠæ¬¡å¼ºçš„10åªä½œä¸ºè‡ªé€‰è‚¡è§‚å¯Ÿï¼Œä¸å®šæœŸçš„å†ç­›é€‰æ–°å¼ºåŠ å…¥ï¼Œå¼±è‚¡å‰”é™¤ã€‚<br>";
+		EmailUtils.send("æ²§å·è€å¼ é€‰è‚¡æ³•,æ€»è®¡ï¼š"+datas.size()+",æ—¥æœŸ:"+today, czlz + 
+				"å…¥æ¦œï¼š<br>"+StkUtils.createHtmlTable(today, added, addtitle) + "<br>" +
+				"å‡ºæ¦œï¼š<br>"+StkUtils.createHtmlTable(today, deleted, addtitle) + "<br>" +
 				StkUtils.createHtmlTable(today, datas, addtitle));
 	}
 	
@@ -1051,7 +1051,7 @@ public class InitialKLine {
 				K last20dayK = index.getK(20);
 				K highK = index.getKByHHV(startK.getDate(), yesterdayK.getDate());
 				
-				//Èç¹û×î¸ßµã¾ÍÊÇ¿ªÊ¼ÄÇÌì£¬Ôò°Ñ¿ªÊ¼ÄÇÌìÒÆºó10ÌìÔÙËã
+				//å¦‚æœæœ€é«˜ç‚¹å°±æ˜¯å¼€å§‹é‚£å¤©ï¼Œåˆ™æŠŠå¼€å§‹é‚£å¤©ç§»å10å¤©å†ç®—
 				if(highK.getDate().equals(startK.getDate())){
 					startK = startK.after(10);
 					highK = index.getKByHHV(startK.getDate(), yesterdayK.getDate());
@@ -1059,9 +1059,9 @@ public class InitialKLine {
 
 				if(highK.getDate().compareTo(last20dayK.getDate()) <= 0
 						&& todayK.getClose() * 1.05 >= highK.getClose() 
-						&& yesterdayK.getClose() * 1.08 <= highK.getClose()){//´´ĞÂ¸ß
+						&& yesterdayK.getClose() * 1.08 <= highK.getClose()){//åˆ›æ–°é«˜
 					K lowK = index.getKByLLV(startK.getDate(), today);
-					if(lowK.getClose() * 1.8 >= highK.getClose()){//ÏäÌå
+					if(lowK.getClose() * 1.8 >= highK.getClose()){//ç®±ä½“
 						results.add(index);
 					}
 				}
@@ -1084,9 +1084,9 @@ public class InitialKLine {
 		}
 		if(results.size() > 0){
 			List<String> addtitle = new ArrayList<String>();
-			addtitle.add("ÖÜÏßÍ¼");
-			String czlz = "ÖØµã£ºÍ»ÆÆÊ±ºòÁ¿ÄÜ²»ÄÜ³¬¹ıÇ°ÆÚ¸ßµãµÄÁ¿ÄÜ£¬ÇÒÃ¿´Îµ÷Õû¶¼ÊÇËõÁ¿µÄ£¬¶øÉÏÕÇÔòÊÇÎÂºÍ·ÅÁ¿µÄ¡£<br>";
-			EmailUtils.sendAndReport("Í»ÆÆ300ÈÕ¡¢Õñ·ù80%ÒÔÄÚÏäÌåµÄ¹ÉÆ±,×Ü¼Æ:"+results.size()+",ÈÕÆÚ:"+today, czlz + StkUtils.createHtmlTable(today, datas, addtitle)  );
+			addtitle.add("å‘¨çº¿å›¾");
+			String czlz = "é‡ç‚¹ï¼šçªç ´æ—¶å€™é‡èƒ½ä¸èƒ½è¶…è¿‡å‰æœŸé«˜ç‚¹çš„é‡èƒ½ï¼Œä¸”æ¯æ¬¡è°ƒæ•´éƒ½æ˜¯ç¼©é‡çš„ï¼Œè€Œä¸Šæ¶¨åˆ™æ˜¯æ¸©å’Œæ”¾é‡çš„ã€‚<br>";
+			EmailUtils.sendAndReport("çªç ´300æ—¥ã€æŒ¯å¹…80%ä»¥å†…ç®±ä½“çš„è‚¡ç¥¨,æ€»è®¡:"+results.size()+",æ—¥æœŸ:"+today, czlz + StkUtils.createHtmlTable(today, datas, addtitle)  );
 		}
 	}
 	
@@ -1096,7 +1096,7 @@ public class InitialKLine {
 		K k60 = dp.getK(today, 60);
 		K kLow = dp.getKByLLV(k60.getDate(),today);
 		if(kLow.getDate().equals(today)){
-			EmailUtils.send("´óÅÌ´´60ÈÕĞÂµÍ"+",ÈÕÆÚ:"+today,"");
+			EmailUtils.send("å¤§ç›˜åˆ›60æ—¥æ–°ä½"+",æ—¥æœŸ:"+today,"");
 		}
 		K k60Yesterday = dp.getK(yesterday, 60);
 		K kLowYesterday = dp.getKByLLV(k60Yesterday.getDate(),yesterday);
@@ -1137,19 +1137,19 @@ public class InitialKLine {
 			data.add(StkUtils.createDailyKLine(index));
 			datasYesterday.add(data);
 		}
-		List<List> added = notContain(datas,datasYesterday);//Èë°ñ
-		List<List> deleted = notContain(datasYesterday,datas);//³ö°ñ
+		List<List> added = notContain(datas,datasYesterday);//å…¥æ¦œ
+		List<List> deleted = notContain(datasYesterday,datas);//å‡ºæ¦œ
 		if(results.size() > 0){
 			List<String> addtitle = new ArrayList<String>();
-			addtitle.add("ÈÕÏßÍ¼");
-			EmailUtils.send("¹É¼Û60ÈÕ×îÇ¿£¬´Ó´óÅÌ"+kLow.getLow()+"["+kLow.getDate()+"]¿ªÊ¼¼ÆËã"+",ÈÕÆÚ:"+today, 
-					"Èë°ñ£º<br>"+StkUtils.createHtmlTable(today, added, addtitle) + "<br>" +
-					"³ö°ñ£º<br>"+StkUtils.createHtmlTable(today, deleted, addtitle) + "<br>" +
+			addtitle.add("æ—¥çº¿å›¾");
+			EmailUtils.send("è‚¡ä»·60æ—¥æœ€å¼ºï¼Œä»å¤§ç›˜"+kLow.getLow()+"["+kLow.getDate()+"]å¼€å§‹è®¡ç®—"+",æ—¥æœŸ:"+today, 
+					"å…¥æ¦œï¼š<br>"+StkUtils.createHtmlTable(today, added, addtitle) + "<br>" +
+					"å‡ºæ¦œï¼š<br>"+StkUtils.createHtmlTable(today, deleted, addtitle) + "<br>" +
 					StkUtils.createHtmlTable(today, datas, addtitle));
 		}
 	}
 	
-	//·µ»ØsrcÓĞdestÃ»ÓĞµÄelement
+	//è¿”å›srcæœ‰destæ²¡æœ‰çš„element
 	public static List<List> notContain(List<List> src, List<List> dest){
 		List<List> results = new ArrayList<List>();
 		for(List data : src){
@@ -1184,7 +1184,7 @@ public class InitialKLine {
 				double yk120 = yk.getMA(K.Close, 120);
 				double yk250 = yk.getMA(K.Close, 250);
 				
-				//120ÈÕ»ò250ÈÕ¾ùÏß×ßÆ½»òÉÏÉı²ÅÑĞ¾¿¾ùÏßÕ³ºÏ
+				//120æ—¥æˆ–250æ—¥å‡çº¿èµ°å¹³æˆ–ä¸Šå‡æ‰ç ”ç©¶å‡çº¿ç²˜åˆ
 				if(yk120 <= todayk120 || yk250 <= todayk250){
 					if(index.isKIntersect1(today,0)){
 						results.add(index);
@@ -1231,13 +1231,13 @@ public class InitialKLine {
 			}});
 		int cnt = results.size()+results2.size()+results3.size()+results4.size()+results5.size();
 		if(cnt > 0){
-			EmailUtils.sendAndReport("KÏß²øÈÆ,¸öÊı£º" + cnt
-					+ ",ÈÕÆÚ:" + today, "<b>ÇĞ¼Ç×îºÃµÈ¾ùÏß×ß³ö¶àÍ·ÅÅÁĞºóÔÙÈë£¬¶ÌÆÚ¾ùÏß½ğ²æ³¤ÆÚ¾ùÏß</b>"
-					+ "<br>10,20,30,60,120ÈÕKÏß²øÈÆ<br>"	+ StkUtils.createHtmlTable(today, results2)  
-					+ "<br><br>10,20,30,60,250ÈÕKÏß²øÈÆ<br>" + StkUtils.createHtmlTable(today, results3) 
-					+ "<br><br>10,20,30,60ÈÕKÏß²øÈÆ<br>" + StkUtils.createHtmlTable(today, results4) 
+			EmailUtils.sendAndReport("Kçº¿ç¼ ç»•,ä¸ªæ•°ï¼š" + cnt
+					+ ",æ—¥æœŸ:" + today, "<b>åˆ‡è®°æœ€å¥½ç­‰å‡çº¿èµ°å‡ºå¤šå¤´æ’åˆ—åå†å…¥ï¼ŒçŸ­æœŸå‡çº¿é‡‘å‰é•¿æœŸå‡çº¿</b>"
+					+ "<br>10,20,30,60,120æ—¥Kçº¿ç¼ ç»•<br>"	+ StkUtils.createHtmlTable(today, results2)  
+					+ "<br><br>10,20,30,60,250æ—¥Kçº¿ç¼ ç»•<br>" + StkUtils.createHtmlTable(today, results3) 
+					+ "<br><br>10,20,30,60æ—¥Kçº¿ç¼ ç»•<br>" + StkUtils.createHtmlTable(today, results4) 
 					+ "<br><br>" + StkUtils.createHtmlTable(today, results) 
-					+ "<br><br>10,20,30ÈÕKÏß²øÈÆ<br>" + StkUtils.createHtmlTable(today, results5) 
+					+ "<br><br>10,20,30æ—¥Kçº¿ç¼ ç»•<br>" + StkUtils.createHtmlTable(today, results5) 
 					);
 		}
 	}
@@ -1250,7 +1250,7 @@ public class InitialKLine {
 				if(endK.getClose() < endK.getOpen()){
 					K startK = endK.before(5);
 					K highK = index.getKByHHV(startK.getDate(), endK.getDate());
-					if((highK.getOpen()-highK.getClose())/highK.getClose() <= 0.08){//×î¸ßµãÄÇÌì²»ÄÜÊÇ´óÒõÏß
+					if((highK.getOpen()-highK.getClose())/highK.getClose() <= 0.08){//æœ€é«˜ç‚¹é‚£å¤©ä¸èƒ½æ˜¯å¤§é˜´çº¿
 						K startK2 = endK.before(120);
 						K highK2 = index.getKByHHV(startK2.getDate(), endK.getDate());
 						//System.out.println("highK="+highK.getDate());
@@ -1272,7 +1272,7 @@ public class InitialKLine {
 			}
 		}
 		if(results.size() > 0){
-			EmailUtils.sendAndReport("ÄÏ¾©¸ßÈËÕ½·¨,¸öÊı£º"+results.size()+",ÈÕÆÚ:"+today,StkUtils.createHtmlTable(today, results));
+			EmailUtils.sendAndReport("å—äº¬é«˜äººæˆ˜æ³•,ä¸ªæ•°ï¼š"+results.size()+",æ—¥æœŸ:"+today,StkUtils.createHtmlTable(today, results));
 		}
 	}
 	
@@ -1297,9 +1297,9 @@ public class InitialKLine {
 			}
 		}
 		if((results.size()+results2.size()) > 0){
-			EmailUtils.sendAndReport("Í»ÆÆÌìÁ¿,¸öÊı£º"+results.size()+",ÈÕÆÚ:"+today,
-					"Í»ÆÆÀúÊ·ÌìÁ¿£º<br>"+StkUtils.createHtmlTable(today, results2)   + "<br><br>" +
-					"Í»ÆÆ600ÈÕÌìÁ¿£º<br>" + StkUtils.createHtmlTable(today, results)  );
+			EmailUtils.sendAndReport("çªç ´å¤©é‡,ä¸ªæ•°ï¼š"+results.size()+",æ—¥æœŸ:"+today,
+					"çªç ´å†å²å¤©é‡ï¼š<br>"+StkUtils.createHtmlTable(today, results2)   + "<br><br>" +
+					"çªç ´600æ—¥å¤©é‡ï¼š<br>" + StkUtils.createHtmlTable(today, results)  );
 		}
 	}
 	
@@ -1313,7 +1313,7 @@ public class InitialKLine {
 			K todayK = index.getK(today);
 			if(todayK != null && !index.isStop(today) && !todayK.isUpLimit()){
 				String yesterday = todayK.before(1).getDate();
-				//ËõÁ¿1/8
+				//ç¼©é‡1/8
 				if(isHugeVolumeLittleVolume2(index, today)){
 					if(!isHugeVolumeLittleVolume2(index, yesterday)){
 						index.isNew = true;
@@ -1323,7 +1323,7 @@ public class InitialKLine {
 					index.isDeleted = true;
 					results.add(index);
 				}
-				//ËõÁ¿1/5
+				//ç¼©é‡1/5
 				if(isHugeVolumeLittleVolume3(index, today,5)){
 					if(!isHugeVolumeLittleVolume3(index, yesterday,5)){
 						index.isNew = true;
@@ -1350,10 +1350,10 @@ public class InitialKLine {
 						int i = (int)((o2.changePercent - o1.changePercent)*10000);
 						return i;
 					}});
-				EmailUtils.sendAndReport("ÌìÁ¿ºóËõÁ¿,¸öÊı£º"+cnt+",ÈÕÆÚ:"
-		                   +today,"Í»ÆÆÏÂ½µÇ÷ÊÆÏßºó »ò Åöµ½120/250¾ùÏß ²ÅÄÜÂòÈë,»òÔ½¶à¾ùÏßÕ³ºÏÊ±Ô½ºÃ"
-		                   +"<br><br>³¤ÆÚËõÁ¿1/8Æ±<br>"+StkUtils.createHtmlTable(today, results)  
-		                   +"<br><br>¶ÌÆÚ60ÈÕËõÁ¿1/5Æ±<br>"+StkUtils.createHtmlTable(today, results2)  
+				EmailUtils.sendAndReport("å¤©é‡åç¼©é‡,ä¸ªæ•°ï¼š"+cnt+",æ—¥æœŸ:"
+		                   +today,"çªç ´ä¸‹é™è¶‹åŠ¿çº¿å æˆ– ç¢°åˆ°120/250å‡çº¿ æ‰èƒ½ä¹°å…¥,æˆ–è¶Šå¤šå‡çº¿ç²˜åˆæ—¶è¶Šå¥½"
+		                   +"<br><br>é•¿æœŸç¼©é‡1/8ç¥¨<br>"+StkUtils.createHtmlTable(today, results)  
+		                   +"<br><br>çŸ­æœŸ60æ—¥ç¼©é‡1/5ç¥¨<br>"+StkUtils.createHtmlTable(today, results2)  
 		                   );
 			}else if(market == 2){
 				Collections.sort(results, new Comparator<Index>(){
@@ -1364,9 +1364,9 @@ public class InitialKLine {
 					public int compare(Index o1, Index o2) {
 						return (o2.getStk().getHot() - o1.getStk().getHot());
 					}});
-				EmailUtils.send("[ÃÀ¹É]ÌìÁ¿ºóËõÁ¿,¸öÊı£º"+cnt+",ÈÕÆÚ:"+today,
-						"³¤ÆÚËõÁ¿1/8Æ±<br>"+ StkUtils.createHtmlTable(today, results)
-						+"<br><br>¶ÌÆÚ60ÈÕËõÁ¿1/5Æ±<br>"+StkUtils.createHtmlTable(today, results2)
+				EmailUtils.send("[ç¾è‚¡]å¤©é‡åç¼©é‡,ä¸ªæ•°ï¼š"+cnt+",æ—¥æœŸ:"+today,
+						"é•¿æœŸç¼©é‡1/8ç¥¨<br>"+ StkUtils.createHtmlTable(today, results)
+						+"<br><br>çŸ­æœŸ60æ—¥ç¼©é‡1/5ç¥¨<br>"+StkUtils.createHtmlTable(today, results2)
 						);
 			}
 		}
@@ -1380,7 +1380,7 @@ public class InitialKLine {
 			K lowK = index.getKByLLV(startK.getDate(), todayK.getDate());
 			
 			//System.out.println((lowK.getClose() * 3)+","+highK.getClose());
-			if(lowK.getClose() * 3 >= highK.getClose()){//ÏäÌå
+			if(lowK.getClose() * 3 >= highK.getClose()){//ç®±ä½“
 				K k = index.getKByHVV(todayK.getDate(), 500);
 				//System.out.println("highK="+k.getDate());
 				int betweenDays = index.getDaysBetween(k.getDate(), today);
@@ -1408,7 +1408,7 @@ public class InitialKLine {
 			K lowK = index.getKByLLV(startK.getDate(), todayK.getDate());
 			
 			//System.out.println((lowK.getClose() * 2.5)+","+highK.getClose());
-			if(lowK.getClose() * 2.5 >= highK.getClose()){//ÏäÌå
+			if(lowK.getClose() * 2.5 >= highK.getClose()){//ç®±ä½“
 				K k = index.getKByHVV(todayK.getDate(), 120);
 				//System.out.println("highK="+k.getDate());
 				int betweenDays = index.getDaysBetween(k.getDate(), today);
@@ -1436,7 +1436,7 @@ public class InitialKLine {
 			K lowK = index.getKByLLV(startK.getDate(), todayK.getDate());
 			
 			//System.out.println((lowK.getClose() * 2.5)+","+highK.getClose());
-			if(lowK.getClose() * 2 >= highK.getClose()){//ÏäÌå
+			if(lowK.getClose() * 2 >= highK.getClose()){//ç®±ä½“
 				K k = index.getKByHVV(todayK.getDate(), 30);
 				//System.out.println("highK="+k.getDate());
 				int betweenDays = index.getDaysBetween(k.getDate(), today);
@@ -1460,10 +1460,10 @@ public class InitialKLine {
 	
 	public static void checkWangPeng(IndexContext context) throws Exception {
 		/**
-		 * 1. 10ÈÕÄÚÓĞ9.5%ÒÔÉÏÕÇ·ùµÄ
-		 * 2. ½ñÌìÁ¿ÄÜËõµ½Ç°ÃæÒ»°ëÒÔÏÂ
-		 * 3. ½ñÌìÊÕÅÌÔÚ10ÈÕÏßÉÏµÄ
-		 * 4. ½ñÈÕÊÕÅÌÀë250ÈÕÏßÅÅĞò
+		 * 1. 10æ—¥å†…æœ‰9.5%ä»¥ä¸Šæ¶¨å¹…çš„
+		 * 2. ä»Šå¤©é‡èƒ½ç¼©åˆ°å‰é¢ä¸€åŠä»¥ä¸‹
+		 * 3. ä»Šå¤©æ”¶ç›˜åœ¨10æ—¥çº¿ä¸Šçš„
+		 * 4. ä»Šæ—¥æ”¶ç›˜ç¦»250æ—¥çº¿æ’åº
 		 */
 		List<Index> indexs = new ArrayList<Index>();
 		//today = "20150403";
@@ -1503,8 +1503,8 @@ public class InitialKLine {
 				return i;
 			}});
 		if(indexs.size() > 0){
-			EmailUtils.sendAndReport("ÍõÅóÑ¡¹É,¸öÊı£º"+indexs.size()+",ÈÕÆÚ:"+today,StkUtils.createHtmlTable(today, indexs));
-			//EmailUtils.send(new String[]{"66933859@qq.com","327226952@qq.com"}, "Ñ¡¹É,¸öÊı£º"+indexs.size()+",ÈÕÆÚ:"+today,StkUtils.createHtmlTable2(today, indexs));
+			EmailUtils.sendAndReport("ç‹æœ‹é€‰è‚¡,ä¸ªæ•°ï¼š"+indexs.size()+",æ—¥æœŸ:"+today,StkUtils.createHtmlTable(today, indexs));
+			//EmailUtils.send(new String[]{"66933859@qq.com","327226952@qq.com"}, "é€‰è‚¡,ä¸ªæ•°ï¼š"+indexs.size()+",æ—¥æœŸ:"+today,StkUtils.createHtmlTable2(today, indexs));
 		}
 	}
 	
@@ -1562,7 +1562,7 @@ public class InitialKLine {
 				return i;
 			}});
 		if(indexs.size() > 0){
-			EmailUtils.sendAndReport("ÍõÅóÑ¡¹ÉÓÅ»¯-1,¸öÊı£º"+indexs.size()+",ÈÕÆÚ:"+today,StkUtils.createHtmlTable(today, indexs));
+			EmailUtils.sendAndReport("ç‹æœ‹é€‰è‚¡ä¼˜åŒ–-1,ä¸ªæ•°ï¼š"+indexs.size()+",æ—¥æœŸ:"+today,StkUtils.createHtmlTable(today, indexs));
 		}
 	}
 	
@@ -1583,7 +1583,7 @@ public class InitialKLine {
 			});
 			//System.out.println(k);
 			if(k != null){
-				//ÅĞ¶ÏÓĞÃ»ÓĞ³¤ÉÏÓ°Ïß£¬ÓĞÔòÅÅ³ı
+				//åˆ¤æ–­æœ‰æ²¡æœ‰é•¿ä¸Šå½±çº¿ï¼Œæœ‰åˆ™æ’é™¤
 				int ds = index.getDaysBetween(k.getDate(), today);
 				K k3 = index.getKWithCondition(today, ds, new K.Condition(){
 					public boolean pass(K k) {
@@ -1600,7 +1600,7 @@ public class InitialKLine {
 					double ma10 = todayK.getMA(K.Close, 10);
 					//System.out.println(ma10+","+todayK.getClose());
 					K kv = index.getKByHVV(k.after(3).getDate(), 6);
-					//×î´óÁ¿±ØĞëÊÇÑôÏß
+					//æœ€å¤§é‡å¿…é¡»æ˜¯é˜³çº¿
 					if(kv.getOpen() > kv.getClose())continue;
 					
 					if(todayK.getVolumn() <= kv.getVolumn() * 0.6
@@ -1615,7 +1615,7 @@ public class InitialKLine {
 							ds = index.getDaysBetween(k4.getDate(), k.getDate());
 							if(ds >= 10)continue;
 							
-							//Ò»×ÖÕÇÍ£Ì«¶à²»ÔÚ¿¼ÂÇ·¶Î§
+							//ä¸€å­—æ¶¨åœå¤ªå¤šä¸åœ¨è€ƒè™‘èŒƒå›´
 							ds = index.getKCountWithCondition(k2.before(3).getDate(), today, new K.Condition(){
 								public boolean pass(K k) {
 									if(k.isUpLimit()){
@@ -1651,11 +1651,11 @@ public class InitialKLine {
 				return i;
 			}});
 		if(indexs.size() > 0){
-			EmailUtils.sendAndReport("ÍõÅóÑ¡¹ÉÓÅ»¯-2,¸öÊı£º"+indexs.size()+",ÈÕÆÚ:"+today,StkUtils.createHtmlTable(today, indexs));
+			EmailUtils.sendAndReport("ç‹æœ‹é€‰è‚¡ä¼˜åŒ–-2,ä¸ªæ•°ï¼š"+indexs.size()+",æ—¥æœŸ:"+today,StkUtils.createHtmlTable(today, indexs));
 		}
 	}
 	
-	//µ×²¿·ÅÁ¿£¬²©Ñå¿Æ¼¼£¬¿ËÃ÷ÃæÒµ
+	//åº•éƒ¨æ”¾é‡ï¼Œåšå½¦ç§‘æŠ€ï¼Œå…‹æ˜é¢ä¸š
 	public static void checkVolumeGreaterThanLastVolume(String today,IndexContext context, double flag)  throws Exception  {
 		List<Index> indexs = new ArrayList<Index>();
 		List<Index> indexs2 = new ArrayList<Index>();
@@ -1683,9 +1683,9 @@ public class InitialKLine {
 					int i = (int)((o1.changePercent - o2.changePercent)*10000);
 					return i;
 				}});
-			EmailUtils.sendAndReport("¼Û¸ñµÍÓÚÇ°¸ß£¬Á¿³¬Ç°Á¿,¸öÊı£º"+ cnt +",ÈÕÆÚ:"+today,
-					"³¤ÆÚÆ±<br>" + StkUtils.createHtmlTable(today, indexs) +
-					"<br><br>¶ÌÆÚÆ±<br>" + StkUtils.createHtmlTable(today, indexs2)
+			EmailUtils.sendAndReport("ä»·æ ¼ä½äºå‰é«˜ï¼Œé‡è¶…å‰é‡,ä¸ªæ•°ï¼š"+ cnt +",æ—¥æœŸ:"+today,
+					"é•¿æœŸç¥¨<br>" + StkUtils.createHtmlTable(today, indexs) +
+					"<br><br>çŸ­æœŸç¥¨<br>" + StkUtils.createHtmlTable(today, indexs2)
 					);
 		}
 
@@ -1718,7 +1718,7 @@ public class InitialKLine {
 		return false;
 	}
 	
-	//»Æ½ğÈı½Ç£º10ÈÕ¾ùÏßÉÏ´©20ÈÕ¾ùÏß£¬20ÈÕ¾ùÏßÉÏ´©30ÈÕ¾ùÏß
+	//é»„é‡‘ä¸‰è§’ï¼š10æ—¥å‡çº¿ä¸Šç©¿20æ—¥å‡çº¿ï¼Œ20æ—¥å‡çº¿ä¸Šç©¿30æ—¥å‡çº¿
 	public static void checkUSGoldTriangle(String today, List<Index> indexs) throws Exception {
 		List<Index> results = new ArrayList<Index>();
 		for(Index index : indexs){
@@ -1760,7 +1760,7 @@ public class InitialKLine {
 				public int compare(Index o1, Index o2) {
 					return (o2.getStk().getHot() - o1.getStk().getHot());
 				}});
-			EmailUtils.send("[ÃÀ¹É]»Æ½ğÈı½Ç,×Ü¼Æ:"+results.size()+",ÈÕÆÚ:"+today, StkUtils.createHtmlTable(today, results));
+			EmailUtils.send("[ç¾è‚¡]é»„é‡‘ä¸‰è§’,æ€»è®¡:"+results.size()+",æ—¥æœŸ:"+today, StkUtils.createHtmlTable(today, results));
 		}
 	}
 	
@@ -1832,11 +1832,11 @@ public class InitialKLine {
 				public int compare(Index o1, Index o2) {
 					return (o2.getStk().getHot() - o1.getStk().getHot());
 				}});
-			EmailUtils.send("[ÃÀ¹É]KÏß²øÈÆ,¸öÊı£º" + cnt
-					+ ",ÈÕÆÚ:" + today, "<b>ÇĞ¼Ç×îºÃµÈ¾ùÏß×ß³ö¶àÍ·ÅÅÁĞºóÔÙÈë</b>"
-					+ "<br>10,20,30,60,250ÈÕKÏß²øÈÆ<br>" + StkUtils.createHtmlTable(today, results3)
-					+ "<br><br>10,20,30,60,120ÈÕKÏß²øÈÆ<br>" + StkUtils.createHtmlTable(today, results2)
-					+ "<br><br>10,20,30,60ÈÕKÏß²øÈÆ<br>" + StkUtils.createHtmlTable(today, results4)
+			EmailUtils.send("[ç¾è‚¡]Kçº¿ç¼ ç»•,ä¸ªæ•°ï¼š" + cnt
+					+ ",æ—¥æœŸ:" + today, "<b>åˆ‡è®°æœ€å¥½ç­‰å‡çº¿èµ°å‡ºå¤šå¤´æ’åˆ—åå†å…¥</b>"
+					+ "<br>10,20,30,60,250æ—¥Kçº¿ç¼ ç»•<br>" + StkUtils.createHtmlTable(today, results3)
+					+ "<br><br>10,20,30,60,120æ—¥Kçº¿ç¼ ç»•<br>" + StkUtils.createHtmlTable(today, results2)
+					+ "<br><br>10,20,30,60æ—¥Kçº¿ç¼ ç»•<br>" + StkUtils.createHtmlTable(today, results4)
 					+ "<br><br>" + StkUtils.createHtmlTable(today, results));
 		}
 	}
@@ -1856,11 +1856,11 @@ public class InitialKLine {
 				public int compare(Index o1, Index o2) {
 					return (o2.getStk().getHot() - o1.getStk().getHot());
 				}});
-			EmailUtils.send("[ÃÀ¹É]KÏßÍ»ÆÆÏÂ½µÇ÷ÊÆÏß,¸öÊı£º"+results.size()+",ÈÕÆÚ:"+today,StkUtils.createHtmlTable(today, results));
+			EmailUtils.send("[ç¾è‚¡]Kçº¿çªç ´ä¸‹é™è¶‹åŠ¿çº¿,ä¸ªæ•°ï¼š"+results.size()+",æ—¥æœŸ:"+today,StkUtils.createHtmlTable(today, results));
 		}
 	}
 	
-	//Ò»Æ·³­µ×-µ×²¿
+	//ä¸€å“æŠ„åº•-åº•éƒ¨
 	public static int checkYpcdDiBu(Connection conn, String today, List<Index> indexs, int market) throws Exception {
 		List<Index> results = new ArrayList<Index>();
 		for(Index index : indexs){
@@ -1877,15 +1877,15 @@ public class InitialKLine {
 		}
 		if(results.size() > 0){
 			if(market == 1){
-				Strategy.logToDB(conn, today, "Ò»Æ·³­µ×-µ×²¿", results);
-				EmailUtils.sendAndReport("Ò»Æ·³­µ×-µ×²¿,¸öÊı£º"+results.size()+",ÈÕÆÚ:"+today,"Ò»Æ·³­µ×Òªµã£ºÈı¸ùÏßÒªÌù½ü0Öá£¬MACDÒ²ÒªÌù½ü0Öá<br>"+
+				Strategy.logToDB(conn, today, "ä¸€å“æŠ„åº•-åº•éƒ¨", results);
+				EmailUtils.sendAndReport("ä¸€å“æŠ„åº•-åº•éƒ¨,ä¸ªæ•°ï¼š"+results.size()+",æ—¥æœŸ:"+today,"ä¸€å“æŠ„åº•è¦ç‚¹ï¼šä¸‰æ ¹çº¿è¦è´´è¿‘0è½´ï¼ŒMACDä¹Ÿè¦è´´è¿‘0è½´<br>"+
 						StkUtils.createHtmlTable(today, results)  );
 			}
 		}
 		return results.size();
 	}
 	
-	//Ò»Æ·³­µ×-MACD
+	//ä¸€å“æŠ„åº•-MACD
 	public static int checkYiPinChaoDiMACD(Connection conn, String today, List<Index> indexs, int market) throws Exception {
 		List<Index> results = new ArrayList<Index>();
 		for(Index index : indexs){
@@ -1958,21 +1958,21 @@ public class InitialKLine {
 		
 		if(results.size() > 0){
 			if(market == 1){
-				Strategy.logToDB(conn, today, "Ò»Æ·³­µ×-MACD", results);
-				EmailUtils.sendAndReport("Ò»Æ·³­µ×-MACD,¸öÊı£º"+results.size()+",ÈÕÆÚ:"+today,"Ò»Æ·³­µ×Òªµã£ºÈı¸ùÏßÒªÌù½ü0Öá£¬MACDÒ²ÒªÌù½ü0Öá<br>"+
+				Strategy.logToDB(conn, today, "ä¸€å“æŠ„åº•-MACD", results);
+				EmailUtils.sendAndReport("ä¸€å“æŠ„åº•-MACD,ä¸ªæ•°ï¼š"+results.size()+",æ—¥æœŸ:"+today,"ä¸€å“æŠ„åº•è¦ç‚¹ï¼šä¸‰æ ¹çº¿è¦è´´è¿‘0è½´ï¼ŒMACDä¹Ÿè¦è´´è¿‘0è½´<br>"+
 						StkUtils.createHtmlTable(today, results)  );
 			}else if(market == 2){
 				Collections.sort(results, new Comparator<Index>(){
 					public int compare(Index o1, Index o2) {
 						return (o2.getStk().getHot() - o1.getStk().getHot());
 					}});
-				EmailUtils.send("[ÃÀ¹É]Ò»Æ·³­µ×-MACD,¸öÊı£º"+results.size()+",ÈÕÆÚ:"+today,StkUtils.createHtmlTable(today, results));
+				EmailUtils.send("[ç¾è‚¡]ä¸€å“æŠ„åº•-MACD,ä¸ªæ•°ï¼š"+results.size()+",æ—¥æœŸ:"+today,StkUtils.createHtmlTable(today, results));
 			}
 		}
 		return results.size();
 	}
 	
-	//Ò»Æ·³­µ×-Ç÷ÊÆÏß
+	//ä¸€å“æŠ„åº•-è¶‹åŠ¿çº¿
 	public static double getTrend(K k) throws Exception {
 		double trend = k.getMA(2, new K.Calculator() {
 			@Override
@@ -2005,7 +2005,7 @@ public class InitialKLine {
 		});
 		return trend;
 	}
-	//Ò»Æ·³­µ×-ºÚÂíÏß
+	//ä¸€å“æŠ„åº•-é»‘é©¬çº¿
 	public static double getHorse(K k) throws Exception {
 		double horse = k.getEMA(5, 2, new K.Calculator() {
 			@Override
@@ -2021,7 +2021,7 @@ public class InitialKLine {
 		});
 		return horse;
 	}
-	//Ò»Æ·³­µ×-MACD
+	//ä¸€å“æŠ„åº•-MACD
 	public static double getMACD(K k) throws Exception {
 		double horse = getHorse(k);
 		double trend = getTrend(k);
@@ -2029,7 +2029,7 @@ public class InitialKLine {
 		return macd;
 	}
 	
-	//Ò»Æ·³­µ×-´óÊÆÒÑÈ¥
+	//ä¸€å“æŠ„åº•-å¤§åŠ¿å·²å»
 	public static void checkYiPinChaoDiDaShiYiQu(Connection conn, String today, List<Index> indexs) throws Exception {
 		List<Index> results = new ArrayList<Index>();
 		for(Index index : indexs){
@@ -2050,7 +2050,7 @@ public class InitialKLine {
 			}
 		}
 		if(results.size() > 0){
-			String title = "Ò»Æ·³­µ×-´óÊÆÒÑÈ¥,¸öÊı£º"+results.size()+",ÈÕÆÚ:"+today;
+			String title = "ä¸€å“æŠ„åº•-å¤§åŠ¿å·²å»,ä¸ªæ•°ï¼š"+results.size()+",æ—¥æœŸ:"+today;
 			if(results.size() > 100){
 				title = EmailUtils.IMPORTANT + title;
 			}
@@ -2062,7 +2062,7 @@ public class InitialKLine {
 		}
 	}
 	
-	//¶şÆ·³­µ×-ÂòÈëÊ±»ú
+	//äºŒå“æŠ„åº•-ä¹°å…¥æ—¶æœº
 	public static List<Index> checkErPinChaoDi(Connection conn, String today, List<Index> indexs, int market, boolean sendMail, boolean weekly) throws Exception {
 		List<Index> results = new ArrayList<Index>();
 		for(Index index : indexs){
@@ -2088,12 +2088,12 @@ public class InitialKLine {
 		}
 		if(results.size() > 0 && sendMail){
 			if(market == 1){
-				Strategy.logToDB(conn, today, "¶şÆ·³­µ×-ÂòÈëÊ±»ú", results);
-				String title = "¶şÆ·³­µ×-ÂòÈëÊ±»ú,¸öÊı£º"+results.size()+",ÈÕÆÚ:"+	today;
+				Strategy.logToDB(conn, today, "äºŒå“æŠ„åº•-ä¹°å…¥æ—¶æœº", results);
+				String title = "äºŒå“æŠ„åº•-ä¹°å…¥æ—¶æœº,ä¸ªæ•°ï¼š"+results.size()+",æ—¥æœŸ:"+	today;
 				if(results.size() >= 150){
 					title = EmailUtils.IMPORTANT + title;
 				}
-				EmailUtils.sendAndReport(title,"ÖØµã¹Û²ì£ºÒ»Æ·³­µ× Ç÷ÊÆÏß ¹ÕÍ·ÏòÉÏ »ò ÒÑ¾­ÉÏ²æºÚÂíÏßÔÚÉÏ·½ÔËĞĞ£»Í¬Ê±ENE Upper¿ì´óÓÚLowerÊı<br>" +
+				EmailUtils.sendAndReport(title,"é‡ç‚¹è§‚å¯Ÿï¼šä¸€å“æŠ„åº• è¶‹åŠ¿çº¿ æ‹å¤´å‘ä¸Š æˆ– å·²ç»ä¸Šå‰é»‘é©¬çº¿åœ¨ä¸Šæ–¹è¿è¡Œï¼›åŒæ—¶ENE Upperå¿«å¤§äºLoweræ•°<br>" +
 						StkUtils.createHtmlTable(today, results)  );
 				List params = new ArrayList();
 				params.add(results.size());
@@ -2107,13 +2107,13 @@ public class InitialKLine {
 				/*for(Index index : results){
 					System.out.println(index.getCode()+","+index.getName()+",change="+index.changePercent);
 				}*/
-				EmailUtils.send("[ÃÀ¹É]"+(weekly?"[ÖÜÏß]":"")+"¶şÆ·³­µ×-ÂòÈëÊ±»ú,¸öÊı£º"+results.size()+",ÈÕÆÚ:"+today,StkUtils.createHtmlTable(today, results));
+				EmailUtils.send("[ç¾è‚¡]"+(weekly?"[å‘¨çº¿]":"")+"äºŒå“æŠ„åº•-ä¹°å…¥æ—¶æœº,ä¸ªæ•°ï¼š"+results.size()+",æ—¥æœŸ:"+today,StkUtils.createHtmlTable(today, results));
 			}
 		}
 		return results;
 	}
 	
-	//¶şÆ·³­µ×-ÂòÈëÊ±»ú
+	//äºŒå“æŠ„åº•-ä¹°å…¥æ—¶æœº
 	public static double maiRuShiJi(K k) throws Exception {
 		if(k != null){
 			//K:=SMA(RSV,3,1);
@@ -2152,7 +2152,7 @@ public class InitialKLine {
 		return maiRuShiJi(k);
 	}
 	
-	//Á¬ĞøÕÇÍ£ºó¿ª°å
+	//è¿ç»­æ¶¨åœåå¼€æ¿
 	public static void checkKaiBan(String today, List<Index> indexs) throws Exception {
 		List<Index> results = new ArrayList<Index>();
 		for(Index index : indexs){
@@ -2170,7 +2170,7 @@ public class InitialKLine {
 			}
 		}
 		if(results.size() > 0){
-			EmailUtils.sendAndReport("Á¬ĞøÕÇÍ£ºó¿ª°å,¸öÊı£º"+results.size()+",ÈÕÆÚ:"+today,StkUtils.createHtmlTable(today, results));
+			EmailUtils.sendAndReport("è¿ç»­æ¶¨åœåå¼€æ¿,ä¸ªæ•°ï¼š"+results.size()+",æ—¥æœŸ:"+today,StkUtils.createHtmlTable(today, results));
 		}
 	}
 	
@@ -2190,7 +2190,7 @@ public class InitialKLine {
 			}
 		}
 		if(results.size() > 0){
-			EmailUtils.send("Á¬ĞøÕÇÍ£ºóÂíÉÏ¿ª°å¹É,¸öÊı£º"+results.size()+",ÈÕÆÚ:"+today,StkUtils.createHtmlTable(today, results));
+			EmailUtils.send("è¿ç»­æ¶¨åœåé©¬ä¸Šå¼€æ¿è‚¡,ä¸ªæ•°ï¼š"+results.size()+",æ—¥æœŸ:"+today,StkUtils.createHtmlTable(today, results));
 		}
 	}
 	
@@ -2219,7 +2219,7 @@ public class InitialKLine {
 			/*for(Index index : results){
 				System.out.println(index.getCode()+","+index.getName()+",change="+index.changePercent);
 			}*/
-			EmailUtils.send("[ÃÀ¹É][ÖÜÏß]Ç÷ÊÆÏßÍ»ÆÆ,¸öÊı£º"+results.size()+",ÈÕÆÚ:"+today,StkUtils.createHtmlTable(today, results));
+			EmailUtils.send("[ç¾è‚¡][å‘¨çº¿]è¶‹åŠ¿çº¿çªç ´,ä¸ªæ•°ï¼š"+results.size()+",æ—¥æœŸ:"+today,StkUtils.createHtmlTable(today, results));
 		}
 	}
 	
@@ -2248,7 +2248,7 @@ public class InitialKLine {
 			/*for(Index index : results){
 				System.out.println(index.getCode()+","+index.getName()+",change="+index.changePercent);
 			}*/
-			EmailUtils.send("[ÃÀ¹É][ÔÂÏß]Ç÷ÊÆÏßÍ»ÆÆ,¸öÊı£º"+results.size()+",ÈÕÆÚ:"+today,StkUtils.createHtmlTable(today, results));
+			EmailUtils.send("[ç¾è‚¡][æœˆçº¿]è¶‹åŠ¿çº¿çªç ´,ä¸ªæ•°ï¼š"+results.size()+",æ—¥æœŸ:"+today,StkUtils.createHtmlTable(today, results));
 		}
 	}
 	
@@ -2281,11 +2281,11 @@ public class InitialKLine {
 				public int compare(Index o1, Index o2) {
 					return (int)((o2.changePercent - o1.changePercent)*10000);
 				}});
-			EmailUtils.send("[ÃÀ¹É][ÖÜÏß]MACDÕ³ºÏÑ¡¹É,¸öÊı£º"+results.size()+",ÈÕÆÚ:"+today,StkUtils.createHtmlTable(today, results));
+			EmailUtils.send("[ç¾è‚¡][å‘¨çº¿]MACDç²˜åˆé€‰è‚¡,ä¸ªæ•°ï¼š"+results.size()+",æ—¥æœŸ:"+today,StkUtils.createHtmlTable(today, results));
 		}
 	}
 	
-	//¿ª°åĞÂ¸ß¹É
+	//å¼€æ¿æ–°é«˜è‚¡
 	public static void checkKaiBanXinGao(String today, List<Index> indexs) throws Exception {
 		List<Index> results = new ArrayList<Index>();
 		for(Index index : indexs){
@@ -2310,7 +2310,7 @@ public class InitialKLine {
 			}
 		}
 		if(results.size() > 0){
-			EmailUtils.send("Á¬ĞøÕÇÍ££¬¿ª°åºó£¬ĞÂ¸ß¹É,¸öÊı£º"+results.size()+",ÈÕÆÚ:"+today,StkUtils.createHtmlTable(today, results));
+			EmailUtils.send("è¿ç»­æ¶¨åœï¼Œå¼€æ¿åï¼Œæ–°é«˜è‚¡,ä¸ªæ•°ï¼š"+results.size()+",æ—¥æœŸ:"+today,StkUtils.createHtmlTable(today, results));
 		}
 	}
 	
@@ -2369,13 +2369,13 @@ public class InitialKLine {
 			}
 		}
 		if(results.size() > 0){
-			EmailUtils.sendAndReport("×Ê½ğÁ÷ÈëÇÒÀëµ×²¿²»Ô¶,¸öÊı£º"+results.size()+",ÈÕÆÚ:"+today,"³­µ×Òªµã£ºÒ»Æ·³­µ×Èı¸ùÏßÒªÌù½ü0Öá£¬MACDÒ²ÒªÌù½ü0Öá<br>"+
+			EmailUtils.sendAndReport("èµ„é‡‘æµå…¥ä¸”ç¦»åº•éƒ¨ä¸è¿œ,ä¸ªæ•°ï¼š"+results.size()+",æ—¥æœŸ:"+today,"æŠ„åº•è¦ç‚¹ï¼šä¸€å“æŠ„åº•ä¸‰æ ¹çº¿è¦è´´è¿‘0è½´ï¼ŒMACDä¹Ÿè¦è´´è¿‘0è½´<br>"+
 					StkUtils.createHtmlTable(today, results)  );
 		}
 	}
 	
 	public static void strategy(Connection conn, boolean realtime) throws Exception {
-		Index idx =  new Index(conn,"399300","»¦Éî300");
+		Index idx =  new Index(conn,"399300","æ²ªæ·±300");
 		K k = idx.getK(0);
 		if(realtime){
 			//idx.getKsRealTimeOnDay();
@@ -2385,7 +2385,7 @@ public class InitialKLine {
 		K k20 = k.before(20);
 		double bias1 = k.getBIAS4(6, 33);
 		
-		Index idx2 =  new Index(conn,"01000852","ÖĞÖ¤1000");
+		Index idx2 =  new Index(conn,"01000852","ä¸­è¯1000");
 		K kk = idx2.getK(0);
 		if(realtime){
 			//idx2.getKsRealTimeOnDay();
@@ -2399,32 +2399,32 @@ public class InitialKLine {
 		
 		List<List<String>> pe = new ArrayList<List<String>>();
 		List<String> pe1 = new ArrayList<String>();
-		pe1.add("");pe1.add("20ÈÕÕÇ·ù");
+		pe1.add("");pe1.add("20æ—¥æ¶¨å¹…");
 		pe.add(pe1);
 		List<String> pe2 = new ArrayList<String>();
-		pe2.add("»¦Éî300");pe2.add(StkUtils.numberFormat2Digits((k.getClose()/k20.getClose()-1)*100)+"%");
+		pe2.add("æ²ªæ·±300");pe2.add(StkUtils.numberFormat2Digits((k.getClose()/k20.getClose()-1)*100)+"%");
 		pe.add(pe2);
 		List<String> pe3 = new ArrayList<String>();
-		pe3.add("ÖĞÖ¤1000");pe3.add(StkUtils.numberFormat2Digits((kk.getClose()/kk20.getClose()-1)*100)+"%");
+		pe3.add("ä¸­è¯1000");pe3.add(StkUtils.numberFormat2Digits((kk.getClose()/kk20.getClose()-1)*100)+"%");
 		pe.add(pe3);
 		
 		
 		/////////////////////////////////
-		//bias4.0²ßÂÔ
+		//bias4.0ç­–ç•¥
 		List<List<String>> bb = new ArrayList<List<String>>();
 		List<String> b1 = new ArrayList<String>();
-		b1.add("");b1.add("Bias");b1.add("ÓÅ»¯²ÎÊı");
+		b1.add("");b1.add("Bias");b1.add("ä¼˜åŒ–å‚æ•°");
 		bb.add(b1);
 		List<String> b2 = new ArrayList<String>();
-		b2.add("»¦Éî300");b2.add(StkUtils.numberFormat2Digits(bias1));b2.add("(17,0,-12)");
+		b2.add("æ²ªæ·±300");b2.add(StkUtils.numberFormat2Digits(bias1));b2.add("(17,0,-12)");
 		bb.add(b2);
 		List<String> b3 = new ArrayList<String>();
-		b3.add("ÖĞÖ¤1000");b3.add(StkUtils.numberFormat2Digits(bias2));b3.add("(18,3,-8)");
+		b3.add("ä¸­è¯1000");b3.add(StkUtils.numberFormat2Digits(bias2));b3.add("(18,3,-8)");
 		bb.add(b3);
 		
 		
 		/////////////////////////////////
-		//×î´ó×îĞ¡ÊĞÖµÇ¿Èõ
+		//æœ€å¤§æœ€å°å¸‚å€¼å¼ºå¼±
 		String date = today;
 		if(realtime){
 			date = JdbcUtils.load("select kline_date from (select kline_date from stk_kline where code='999999' order by kline_date desc) where rownum=1", String.class);;
@@ -2479,20 +2479,20 @@ public class InitialKLine {
 		}
 		List<List<String>> list = new ArrayList<List<String>>();
 		List<String> pe21 = new ArrayList<String>();
-		pe21.add("");pe21.add("ÔÚ20ÈÕ¾ùÏßÉÏ¸öÊı");
+		pe21.add("");pe21.add("åœ¨20æ—¥å‡çº¿ä¸Šä¸ªæ•°");
 		list.add(pe21);
 		List<String> pe22 = new ArrayList<String>();
-		pe22.add("×îĞ¡ÊĞÖµ100¹É");pe22.add(x+"");
+		pe22.add("æœ€å°å¸‚å€¼100è‚¡");pe22.add(x+"");
 		list.add(pe22);
 		List<String> pe23 = new ArrayList<String>();
-		pe23.add("×î´óÊĞÖµ100¹É");pe23.add(y+"");
+		pe23.add("æœ€å¤§å¸‚å€¼100è‚¡");pe23.add(y+"");
 		list.add(pe23);
 		
 		x = 0;
 		List<List<String>> gnList = new ArrayList<List<String>>();
 		if(!realtime){
 			/////////////////////////////////
-			//Í¬»¨Ë³¸ÅÄîÖ¸ÊıÅÅĞĞ
+			//åŒèŠ±é¡ºæ¦‚å¿µæŒ‡æ•°æ’è¡Œ
 			List<Index> indexs1 = new ArrayList<Index>();
 			stks = JdbcUtils.list(conn, "select code,name from stk where market=1 and cate=4 order by code", Stk.class);
 			
@@ -2542,7 +2542,7 @@ public class InitialKLine {
 					return i;
 				}});
 			
-			//60ÈÕĞĞÒµÕÇ·ùÅÅĞĞ - 20ÈÕĞĞÒµÕÇ·ùÅÅĞĞ Ô½´óÅÅÔÚÔ½Ç°
+			//60æ—¥è¡Œä¸šæ¶¨å¹…æ’è¡Œ - 20æ—¥è¡Œä¸šæ¶¨å¹…æ’è¡Œ è¶Šå¤§æ’åœ¨è¶Šå‰
 			List<Index> indexs4 = new ArrayList<Index>();
 			for(int i=0;i<indexs1.size();i++){
 				Index index = indexs1.get(i);
@@ -2558,8 +2558,8 @@ public class InitialKLine {
 				}});
 			
 			List<String> gn = new ArrayList<String>();
-			gn.add("ÕÇ·ù°ñ");gn.add("20ÈÕÅÅĞĞ");gn.add("20ÈÕÕÇ·ù");gn.add("40ÈÕÅÅĞĞ");gn.add("40ÈÕÕÇ·ù");gn.add("60ÈÕÅÅĞĞ");gn.add("60ÈÕÕÇ·ù");
-			gn.add("60ÈÕ-20ÈÕÅÅĞĞ");gn.add("60ÈÕ-20ÈÕ");
+			gn.add("æ¶¨å¹…æ¦œ");gn.add("20æ—¥æ’è¡Œ");gn.add("20æ—¥æ¶¨å¹…");gn.add("40æ—¥æ’è¡Œ");gn.add("40æ—¥æ¶¨å¹…");gn.add("60æ—¥æ’è¡Œ");gn.add("60æ—¥æ¶¨å¹…");
+			gn.add("60æ—¥-20æ—¥æ’è¡Œ");gn.add("60æ—¥-20æ—¥");
 			gnList.add(gn);
 			for(int i=0;i<x;i++){
 				gn = new ArrayList<String>();
@@ -2573,16 +2573,16 @@ public class InitialKLine {
 		}
 		
 		if(realtime){
-			EmailUtils.sendImport("¡¾²ßÂÔ¡¿",StkUtils.createHtmlTable(null, pe)
+			EmailUtils.sendImport("ã€ç­–ç•¥ã€‘",StkUtils.createHtmlTable(null, pe)
 					+ "<br>"+StkUtils.createHtmlTable(null, list)
 					+ "<br>"+StkUtils.createHtmlTable(null, bb)
 					);
 		}else{
-			EmailUtils.sendAndReport("¡¾²ßÂÔ¡¿",StkUtils.createHtmlTable(null, pe)  
+			EmailUtils.sendAndReport("ã€ç­–ç•¥ã€‘",StkUtils.createHtmlTable(null, pe)  
 					+ "<br>"+  StkUtils.createHtmlTable(null, list)
 					+ "<br>"+  StkUtils.createHtmlTable(null, bb)
-					+ "<br><a href='http://q.10jqka.com.cn/stock/gn/' target='_blank'>Í¬»¨Ë³¸ÅÄî°å¿é</a>"
-					+ "<br>"+ "20ÈÕÕıÊÕÒæĞĞÒµ¸öÊı£º"+ x //+ " (³­µ×ÕÒ60ÈÕÅÅÃû²î£¬40ÈÕÆä´Î£¬20ÈÕÅÅÃûºÃÇÒ¿ªÊ¼±äÕıÖµµÄĞĞÒµ)"
+					+ "<br><a href='http://q.10jqka.com.cn/stock/gn/' target='_blank'>åŒèŠ±é¡ºæ¦‚å¿µæ¿å—</a>"
+					+ "<br>"+ "20æ—¥æ­£æ”¶ç›Šè¡Œä¸šä¸ªæ•°ï¼š"+ x //+ " (æŠ„åº•æ‰¾60æ—¥æ’åå·®ï¼Œ40æ—¥å…¶æ¬¡ï¼Œ20æ—¥æ’åå¥½ä¸”å¼€å§‹å˜æ­£å€¼çš„è¡Œä¸š)"
 					+ "<br>"+StkUtils.createHtmlTable(null, gnList)
 					);
 		}
@@ -2623,7 +2623,7 @@ public class InitialKLine {
 			List<String> addtitle = new ArrayList<String>();
 			addtitle.add("PEG");
 			addtitle.add("PE(TTM)");
-			EmailUtils.sendAndReport("PEGÅÅĞò,¸öÊı£º"+results.size()+",ÈÕÆÚ:"+today, StkUtils.createHtmlTable(today, datas, addtitle) );
+			EmailUtils.sendAndReport("PEGæ’åº,ä¸ªæ•°ï¼š"+results.size()+",æ—¥æœŸ:"+today, StkUtils.createHtmlTable(today, datas, addtitle) );
 		}
 	}
 	
@@ -2653,7 +2653,7 @@ public class InitialKLine {
 		}
 		Index idx = new Index(conn, "01000905");
 		String date10 = idx.getK(0).before(10).getDate();
-		//Í»ÆÆ20ÈÕ¾ùÏß
+		//çªç ´20æ—¥å‡çº¿
 		List<List<String>> table1 = buildIndustryTable(results, date10);
 
 		results.clear();
@@ -2671,7 +2671,7 @@ public class InitialKLine {
 				}
 			}
 		}
-		//´´120ÈÕĞÂ¸ßºó»Ø³é20ÈÕ¾ùÏß
+		//åˆ›120æ—¥æ–°é«˜åå›æŠ½20æ—¥å‡çº¿
 		List<List<String>> table2 = buildIndustryTable(results, date10);
 		/*for(Index index : results){
 			System.out.println(index.getName());
@@ -2729,7 +2729,7 @@ public class InitialKLine {
 			table5 = buildIndustryTable(indexs.subList(0, 10), k2.getDate());
 		}
 		
-		//¹ıÈ¥10ÕÇ·ùÅÅĞĞ
+		//è¿‡å»10æ¶¨å¹…æ’è¡Œ
 		List<List<String>> table6 = null;
 		for(Index index : indexs){
 			K k = index.getK(today);
@@ -2745,20 +2745,20 @@ public class InitialKLine {
 			}});
 		table6 = buildIndustryTable(indexs.subList(0, 10), date10);
 		
-		EmailUtils.sendAndReport("ĞĞÒµ·ÖÎö - "+category+",ÈÕÆÚ:"+today, "<a href='http://q.10jqka.com.cn/gn/' target='_blank'>Í¬»¨Ë³¸ÅÄî°å¿é</a><br><a href='http://q.10jqka.com.cn/thshy/' target='_blank'>Í¬»¨Ë³ĞĞÒµ</a><br><br>"
-				+ (k1 != null ? StkUtils.formatDate(k1.getDate())+"ÒÔÀ´ÕÇ·ù:<br>"+StkUtils.createHtmlTable(null, table4) : "") + "<br>"
-				+ (k2 != null ? StkUtils.formatDate(k2.getDate())+"ÒÔÀ´ÕÇ·ù:<br>"+StkUtils.createHtmlTable(null, table5) : "") + "<br>"
-				+ "10ÈÕÕÇ·ù:<br>" + StkUtils.createHtmlTable(null, table6) + "<br>"
-				+ "Í»ÆÆÏÂ½µÇ÷ÊÆÏß:<br>" + StkUtils.createHtmlTable(null, table3) + "<br>"
-				+ "Í»ÆÆ20ÈÕ¾ùÏß:<br>" + StkUtils.createHtmlTable(null, table1) + "<br>"
-				+ "´´60ÈÕĞÂ¸ßºó»Ø³é20ÈÕ¾ùÏß:<br>" + StkUtils.createHtmlTable(null, table2) + "<br>"
+		EmailUtils.sendAndReport("è¡Œä¸šåˆ†æ - "+category+",æ—¥æœŸ:"+today, "<a href='http://q.10jqka.com.cn/gn/' target='_blank'>åŒèŠ±é¡ºæ¦‚å¿µæ¿å—</a><br><a href='http://q.10jqka.com.cn/thshy/' target='_blank'>åŒèŠ±é¡ºè¡Œä¸š</a><br><br>"
+				+ (k1 != null ? StkUtils.formatDate(k1.getDate())+"ä»¥æ¥æ¶¨å¹…:<br>"+StkUtils.createHtmlTable(null, table4) : "") + "<br>"
+				+ (k2 != null ? StkUtils.formatDate(k2.getDate())+"ä»¥æ¥æ¶¨å¹…:<br>"+StkUtils.createHtmlTable(null, table5) : "") + "<br>"
+				+ "10æ—¥æ¶¨å¹…:<br>" + StkUtils.createHtmlTable(null, table6) + "<br>"
+				+ "çªç ´ä¸‹é™è¶‹åŠ¿çº¿:<br>" + StkUtils.createHtmlTable(null, table3) + "<br>"
+				+ "çªç ´20æ—¥å‡çº¿:<br>" + StkUtils.createHtmlTable(null, table1) + "<br>"
+				+ "åˆ›60æ—¥æ–°é«˜åå›æŠ½20æ—¥å‡çº¿:<br>" + StkUtils.createHtmlTable(null, table2) + "<br>"
 				);
 	}
 	
 	private static List<List<String>> buildIndustryTable(List<Index> results, String date) throws Exception{
 		List<List<String>> table = new ArrayList<List<String>>();
 		List<String> row = new ArrayList<String>();
-		row.add("");row.add("ĞĞÒµ");row.add("ÕÇ·ù");row.add("×Ê½ğÁ÷Èë");row.add("60ÈÕÏß");row.add("120ÈÕÏß");row.add("250ÈÕÏß");
+		row.add("");row.add("è¡Œä¸š");row.add("æ¶¨å¹…");row.add("èµ„é‡‘æµå…¥");row.add("60æ—¥çº¿");row.add("120æ—¥çº¿");row.add("250æ—¥çº¿");
 		table.add(row);
 		int i = 1;
 		for(Index index : results){
@@ -2775,9 +2775,9 @@ public class InitialKLine {
 			double yma60 = yk.getMA(K.Close, 60);
 			double yma120 = yk.getMA(K.Close, 120);
 			double yma250 = yk.getMA(K.Close, 250);
-			if(ma60 > yma60){row.add("ÉÏÉı");}else{row.add("");}
-			if(ma120 > yma120){row.add("ÉÏÉı");	}else{row.add("");}
-			if(ma250 > yma250){row.add("ÉÏÉı");	}else{row.add("");}
+			if(ma60 > yma60){row.add("ä¸Šå‡");}else{row.add("");}
+			if(ma120 > yma120){row.add("ä¸Šå‡");	}else{row.add("");}
+			if(ma250 > yma250){row.add("ä¸Šå‡");	}else{row.add("");}
 			table.add(row);
 			i++;
 		}
@@ -2785,7 +2785,7 @@ public class InitialKLine {
 	}
 	
 	/**
-	 * ì³²¨ÄÇÆõÊıÁĞ Ê±¼ä´°¿Ú ÔñÊ±
+	 * æ–æ³¢é‚£å¥‘æ•°åˆ— æ—¶é—´çª—å£ æ‹©æ—¶
 	 */
 	public static void timeWindow(Connection conn, String today) throws Exception { 
 		Index index =  new Index(conn,"01000905");
@@ -2900,8 +2900,8 @@ public class InitialKLine {
 				}
 			}
 			
-			EmailUtils.sendAndReport("Ê±¼ä´°¿Ú ì³²¨ÄÇÆõÊıÁĞ ÔñÊ±,ÈÕÆÚ:"+today, 
-					"ì³²¨ÄÇÆõÊıÁĞ ÔñÊ±: result>=2Ê±¿ªÆôÊ±¼ä´°¿Ú<br/>"+StringUtils.join(results, "<br/>"));
+			EmailUtils.sendAndReport("æ—¶é—´çª—å£ æ–æ³¢é‚£å¥‘æ•°åˆ— æ‹©æ—¶,æ—¥æœŸ:"+today, 
+					"æ–æ³¢é‚£å¥‘æ•°åˆ— æ‹©æ—¶: result>=2æ—¶å¼€å¯æ—¶é—´çª—å£<br/>"+StringUtils.join(results, "<br/>"));
 		}
 	}
 	
@@ -2914,7 +2914,7 @@ public class InitialKLine {
 		int result;
 		
 		public String toString(){
-			return date+",c1="+count1+",d1="+diff1+",c2="+count2+",d2="+diff2+", result="+(result>=2?result+" ¡¶===":result);
+			return date+",c1="+count1+",d1="+diff1+",c2="+count2+",d2="+diff2+", result="+(result>=2?result+" ã€Š===":result);
 		}
 	}
 	

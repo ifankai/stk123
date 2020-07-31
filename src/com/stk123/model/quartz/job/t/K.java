@@ -57,14 +57,14 @@ public class K {
 	}
 	
 	/**
-	 * @return ·µ»ØµÄKÏß°üº¬ÔÚsecÃëÄÚ£¬ÊÇsecÃëÄÚµÚÒ»¸ùKÏß
+	 * @return è¿”å›çš„Kçº¿åŒ…å«åœ¨secç§’å†…ï¼Œæ˜¯secç§’å†…ç¬¬ä¸€æ ¹Kçº¿
 	 */
 	public K getK(int sec) {
 		return this.getValue(sec, null);
 	}
 	
 	/**
-	 * @return ·µ»ØsecÃëÄÚcloseÖµ×î´óµÄKÏß
+	 * @return è¿”å›secç§’å†…closeå€¼æœ€å¤§çš„Kçº¿
 	 */
 	public K getKCH(int sec){
 		return this.getValue(sec, new Calc<K>(){
@@ -91,7 +91,7 @@ public class K {
 	}
 	
 	/**
-	 * @return ·µ»ØsecÃëÄÚamountµÄºÍ
+	 * @return è¿”å›secç§’å†…amountçš„å’Œ
 	 */
 	public double getASum(int sec){
 		Double result = this.getValue(sec, new Calc<Double>(){
@@ -105,7 +105,7 @@ public class K {
 	}
 	
 	/**
-	 * @return ·µ»ØsecÃëÄÚ£¬ÈÎÒâstepÃëÄÚamountÖ®ºÍ×î´óµÄkÏß
+	 * @return è¿”å›secç§’å†…ï¼Œä»»æ„stepç§’å†…amountä¹‹å’Œæœ€å¤§çš„kçº¿
 	 */
 	public K getKAMax(final int sec, final int step){//get end k
 		return this.getValue(sec, new Calc<K>(){

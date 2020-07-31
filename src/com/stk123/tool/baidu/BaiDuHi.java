@@ -14,13 +14,13 @@ public class BaiDuHi {
 	
 	public static void main(final String[] args) {
 		/*String url = "http://web.im.baidu.com/";  
-        //ÊµÀı»¯ä¯ÀÀÆ÷¶ÔÏó  
+        //å®ä¾‹åŒ–æµè§ˆå™¨å¯¹è±¡  
         WebSpec spec = new WebSpec().ie();  
-        //Òş²Øä¯ÀÀÆ÷´°Ìå  
+        //éšè—æµè§ˆå™¨çª—ä½“  
         //spec.hide();  
-        //´ò¿ªÄ¿±êÒ³Ãæ  
+        //æ‰“å¼€ç›®æ ‡é¡µé¢  
         spec.open(url);  
-        //´òÓ¡ÍøÒ³Ô´*  
+        //æ‰“å°ç½‘é¡µæº*  
         //System.out.println(spec.source());  
         
         //login in
@@ -34,16 +34,16 @@ public class BaiDuHi {
         spec.find.textArea().with.id("userInputArea").set("");
         spec.find.div().with.id("sendButton").click();
         
-        //¹Ø±ÕËùÓĞ´°¿Ú  
+        //å…³é—­æ‰€æœ‰çª—å£  
         spec.closeAll();*/
-		System.out.println(HtmlUtils.removeHTML("»Ø¸´<a href=\"http://xueqiu.com/n/»îÔÚµ±ÏÂ_123\"  target=\"_blank\">@»îÔÚµ±ÏÂ_123</a>: ¡¾±äÓë²»±ä¡¿ºï×Ó¶¼±»´µÕÍµÃ±äÖíÁË£¬ÄÄ»¹ÓĞÁ¦ÆøÌø×ÅÈ¥´óÄÖÌì¹¬£¿Öí¶¼Êİ³ÉºïÑù£¬¶ö¼«ÁËÒ²ÊÇ»áÔì·´µÄ¡£±äµÄÊÇĞÎÌ¬£¬²»±äµÄÊÇ¶Ô°²È«µÄ°ÑÎÕ¡£<img src=\"http://js.xueqiu.com/images/face/20smile-smile.png\" title=\"[Ğ¦]\" alt=\"[Ğ¦]\"   height=\"24\" />"));
-		sendSMS(HtmlUtils.removeHTML("»Ø¸´<a href=\"http://xueqiu.com/n/»îÔÚµ±ÏÂ_123\"  target=\"_blank\">@»îÔÚµ±ÏÂ_123</a>: ¡¾±äÓë²»±ä¡¿ºï×Ó¶¼±»´µÕÍµÃ±äÖíÁË£¬ÄÄ»¹ÓĞÁ¦ÆøÌø×ÅÈ¥´óÄÖÌì¹¬£¿Öí¶¼Êİ³ÉºïÑù£¬¶ö¼«ÁËÒ²ÊÇ»áÔì·´µÄ¡£±äµÄÊÇĞÎÌ¬£¬²»±äµÄÊÇ¶Ô°²È«µÄ°ÑÎÕ¡£<img src=\"http://js.xueqiu.com/images/face/20smile-smile.png\" title=\"[Ğ¦]\" alt=\"[Ğ¦]\"   height=\"24\" />"));
+		System.out.println(HtmlUtils.removeHTML("å›å¤<a href=\"http://xueqiu.com/n/æ´»åœ¨å½“ä¸‹_123\"  target=\"_blank\">@æ´»åœ¨å½“ä¸‹_123</a>: ã€å˜ä¸ä¸å˜ã€‘çŒ´å­éƒ½è¢«å¹èƒ€å¾—å˜çŒªäº†ï¼Œå“ªè¿˜æœ‰åŠ›æ°”è·³ç€å»å¤§é—¹å¤©å®«ï¼ŸçŒªéƒ½ç˜¦æˆçŒ´æ ·ï¼Œé¥¿æäº†ä¹Ÿæ˜¯ä¼šé€ åçš„ã€‚å˜çš„æ˜¯å½¢æ€ï¼Œä¸å˜çš„æ˜¯å¯¹å®‰å…¨çš„æŠŠæ¡ã€‚<img src=\"http://js.xueqiu.com/images/face/20smile-smile.png\" title=\"[ç¬‘]\" alt=\"[ç¬‘]\"   height=\"24\" />"));
+		sendSMS(HtmlUtils.removeHTML("å›å¤<a href=\"http://xueqiu.com/n/æ´»åœ¨å½“ä¸‹_123\"  target=\"_blank\">@æ´»åœ¨å½“ä¸‹_123</a>: ã€å˜ä¸ä¸å˜ã€‘çŒ´å­éƒ½è¢«å¹èƒ€å¾—å˜çŒªäº†ï¼Œå“ªè¿˜æœ‰åŠ›æ°”è·³ç€å»å¤§é—¹å¤©å®«ï¼ŸçŒªéƒ½ç˜¦æˆçŒ´æ ·ï¼Œé¥¿æäº†ä¹Ÿæ˜¯ä¼šé€ åçš„ã€‚å˜çš„æ˜¯å½¢æ€ï¼Œä¸å˜çš„æ˜¯å¯¹å®‰å…¨çš„æŠŠæ¡ã€‚<img src=\"http://js.xueqiu.com/images/face/20smile-smile.png\" title=\"[ç¬‘]\" alt=\"[ç¬‘]\"   height=\"24\" />"));
 	}
 	
 	private final static String BaiDuHi = "http://web.im.baidu.com/";
 	
 	public static void sendSMS(List<String> msgs){
-		if(true)return;//ÔİÊ±ÆÁ±Î´Ë¹¦ÄÜ
+		if(true)return;//æš‚æ—¶å±è”½æ­¤åŠŸèƒ½
         WebSpec spec = null;
         try{
         	spec = new WebSpec().ie();  

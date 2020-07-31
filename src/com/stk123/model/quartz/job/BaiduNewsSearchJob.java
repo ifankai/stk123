@@ -19,18 +19,18 @@ public class BaiduNewsSearchJob implements Job {
 	
 	private static List<Name2Value<String, Boolean>> NEWS_LIST = new ArrayList<Name2Value<String,Boolean>>();
 	static {
-		NEWS_LIST.add(new Name2Value("ÐÐÒµ ¾°Æø »ØÉý", false));
-		NEWS_LIST.add(new Name2Value("ÐÐÒµ Å¤¿÷", false));
-		NEWS_LIST.add(new Name2Value("ÐÐÒµ ¹Õµã", false));
-		NEWS_LIST.add(new Name2Value("È«Çò ¹ÉÊÐ ¹ÀÖµ", false));
-		NEWS_LIST.add(new Name2Value("È«ÐÐÒµ ¿÷Ëð", false));
-		NEWS_LIST.add(new Name2Value("´´ÀúÊ·ÐÂµÍ Á¬Ðø±©µø", false));
-		NEWS_LIST.add(new Name2Value("´´ÄêÄÚÐÂ¸ß ÐÐÒµ¸´ËÕ", false));
-		NEWS_LIST.add(new Name2Value("²úÒµÐèÇó", false));
-		NEWS_LIST.add(new Name2Value("³ÖÐøÕÇ¼Û", true));
-		NEWS_LIST.add(new Name2Value("¼Û¸ñ µ¹¹Ò -¹É¼Û", true));
-		NEWS_LIST.add(new Name2Value("ÐÐÒµ »ØÅ¯", true));
-		NEWS_LIST.add(new Name2Value("(ÐÐÒµ | ÊÕÈë | ÓªÊÕ) Á¬Ðø (ÏÂ½µ | ÏÂµø)", true));
+		NEWS_LIST.add(new Name2Value("è¡Œä¸š æ™¯æ°” å›žå‡", false));
+		NEWS_LIST.add(new Name2Value("è¡Œä¸š æ‰­äº", false));
+		NEWS_LIST.add(new Name2Value("è¡Œä¸š æ‹ç‚¹", false));
+		NEWS_LIST.add(new Name2Value("å…¨çƒ è‚¡å¸‚ ä¼°å€¼", false));
+		NEWS_LIST.add(new Name2Value("å…¨è¡Œä¸š äºæŸ", false));
+		NEWS_LIST.add(new Name2Value("åˆ›åŽ†å²æ–°ä½Ž è¿žç»­æš´è·Œ", false));
+		NEWS_LIST.add(new Name2Value("åˆ›å¹´å†…æ–°é«˜ è¡Œä¸šå¤è‹", false));
+		NEWS_LIST.add(new Name2Value("äº§ä¸šéœ€æ±‚", false));
+		NEWS_LIST.add(new Name2Value("æŒç»­æ¶¨ä»·", true));
+		NEWS_LIST.add(new Name2Value("ä»·æ ¼ å€’æŒ‚ -è‚¡ä»·", true));
+		NEWS_LIST.add(new Name2Value("è¡Œä¸š å›žæš–", true));
+		NEWS_LIST.add(new Name2Value("(è¡Œä¸š | æ”¶å…¥ | è¥æ”¶) è¿žç»­ (ä¸‹é™ | ä¸‹è·Œ)", true));
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public class BaiduNewsSearchJob implements Job {
 			try {
 				results = BaiduSearch.getBaiduNews(StkUtils.addDay(new Date(), -1), nv.getName(), nv.getValue());
 				if(results.size() > 0){
-					EmailUtils.send("°Ù¶ÈÐÂÎÅ -- "+nv.getName(), wrap(StringUtils.join(results, "<br>")));
+					EmailUtils.send("ç™¾åº¦æ–°é—» -- "+nv.getName(), wrap(StringUtils.join(results, "<br>")));
 				}
 				Thread.sleep(1000*2);
 			} catch (Exception e) {

@@ -33,18 +33,18 @@ public class WordUtils {
 		    String text = doc.getRange().text();
 		    System.out.println(text);*/
 			
-			getTables("E:\\stock\\000050_ÉîÌìÂí£Á\\invest\\1200431862.DOC");
+			getTables("E:\\stock\\000050_æ·±å¤©é©¬ï¼¡\\invest\\1200431862.DOC");
 			
 			//getTables("d:\\63671749.doc");
 			//String text = getCellAsText("d:\\63671749.doc",0,5,1);
-			Table tb = getTable("E:\\stock\\000050_ÉîÌìÂí£Á\\invest\\1200431862.DOC",0);
+			Table tb = getTable("E:\\stock\\000050_æ·±å¤©é©¬ï¼¡\\invest\\1200431862.DOC",0);
 			//System.out.println(tb.text());
-			String text = getCellWhenColumnContain(tb, 0, "Ö÷ÒªÄÚÈİ", 1);
+			String text = getCellWhenColumnContain(tb, 0, "ä¸»è¦å†…å®¹", 1);
 			System.out.println(text);
 			
 			/*System.setProperty("javax.xml.parsers.DocumentBuilderFactory","com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl"); 
 			XWPFTable tbx = getTableX("d:\\1200372807.DOCX",0);
-			text = getCellXWhenColumnContain(tbx, 0, "Ö÷ÒªÄÚÈİ", 1);
+			text = getCellXWhenColumnContain(tbx, 0, "ä¸»è¦å†…å®¹", 1);
 			System.out.println(text);*/
 		} catch (Exception e) {
 		    e.printStackTrace();
@@ -60,14 +60,14 @@ public class WordUtils {
         return tbs.get(i);
 	}
 	
-	//È¡columnÁĞ°üº¬contentµÄĞĞµÄµÚcolumn2ÁĞÄÚÈİ
+	//å–columnåˆ—åŒ…å«contentçš„è¡Œçš„ç¬¬column2åˆ—å†…å®¹
 	public static String getCellXWhenColumnContain(XWPFTable tb, int column, String content, int column2) throws Exception {
 		for (int i = 0; i < tb.getNumberOfRows(); i++) {
 			XWPFTableRow tr = tb.getRow(i);
-	        // µü´úÁĞ£¬Ä¬ÈÏ´Ó0¿ªÊ¼  
+	        // è¿­ä»£åˆ—ï¼Œé»˜è®¤ä»0å¼€å§‹  
 	        if(tr != null){
-	        	XWPFTableCell td = tr.getCell(column);// È¡µÃµ¥Ôª¸ñ  
-		        // È¡µÃµ¥Ôª¸ñµÄÄÚÈİ
+	        	XWPFTableCell td = tr.getCell(column);// å–å¾—å•å…ƒæ ¼  
+		        // å–å¾—å•å…ƒæ ¼çš„å†…å®¹
 		        String text = td.getText();
 		        
 		        if(StringUtils.containsIgnoreCase(text.toString(), content)){
@@ -93,7 +93,7 @@ public class WordUtils {
 	public static Table getTable(String sourceFile, int i) throws Exception {
 		FileInputStream in = new FileInputStream(sourceFile);  
         HWPFDocument hwpf = new HWPFDocument(in);  
-        Range range = hwpf.getRange();// µÃµ½ÎÄµµµÄ¶ÁÈ¡·¶Î§  
+        Range range = hwpf.getRange();// å¾—åˆ°æ–‡æ¡£çš„è¯»å–èŒƒå›´  
         TableIterator it = new TableIterator(range);
         Table tb = null;
         for(int j=0;it.hasNext() && j<=i;j++){
@@ -104,10 +104,10 @@ public class WordUtils {
 	
 	public static String getCellAsText(Table tb, int row, int column){
         TableRow tr = tb.getRow(row);  
-        // µü´úÁĞ£¬Ä¬ÈÏ´Ó0¿ªÊ¼  
+        // è¿­ä»£åˆ—ï¼Œé»˜è®¤ä»0å¼€å§‹  
         if(tr != null){
-	        TableCell td = tr.getCell(column);// È¡µÃµ¥Ôª¸ñ  
-	        // È¡µÃµ¥Ôª¸ñµÄÄÚÈİ
+	        TableCell td = tr.getCell(column);// å–å¾—å•å…ƒæ ¼  
+	        // å–å¾—å•å…ƒæ ¼çš„å†…å®¹
 	        StringBuffer text = new StringBuffer();
 	        for (int k = 0; k < td.numParagraphs(); k++) {  
 	            Paragraph para = td.getParagraph(k);  
@@ -124,16 +124,16 @@ public class WordUtils {
 		return getCellAsText(tb, row, column);
 	}
 	
-	//È¡columnÁĞ°üº¬contentµÄĞĞµÄµÚcolumn2ÁĞÄÚÈİ
+	//å–columnåˆ—åŒ…å«contentçš„è¡Œçš„ç¬¬column2åˆ—å†…å®¹
 	public static String getCellWhenColumnContain(Table tb, int column, String content, int column2) throws Exception {
 		for (int i = 0; i < tb.numRows(); i++) {
 			TableRow tr = tb.getRow(i);  
-	        // µü´úÁĞ£¬Ä¬ÈÏ´Ó0¿ªÊ¼  
+	        // è¿­ä»£åˆ—ï¼Œé»˜è®¤ä»0å¼€å§‹  
 	        if(tr != null){
 	        	if(tr.numCells() <= column)
 	        		continue;
-		        TableCell td = tr.getCell(column);// È¡µÃµ¥Ôª¸ñ  
-		        // È¡µÃµ¥Ôª¸ñµÄÄÚÈİ
+		        TableCell td = tr.getCell(column);// å–å¾—å•å…ƒæ ¼  
+		        // å–å¾—å•å…ƒæ ¼çš„å†…å®¹
 		        StringBuffer text = new StringBuffer();
 		        for (int k = 0; k < td.numParagraphs(); k++) {  
 		            Paragraph para = td.getParagraph(k);  
@@ -170,18 +170,18 @@ public class WordUtils {
 	public static void getTables(String sourceFile) throws Exception {  
         FileInputStream in = new FileInputStream(sourceFile);  
         HWPFDocument hwpf = new HWPFDocument(in);  
-        Range range = hwpf.getRange();// µÃµ½ÎÄµµµÄ¶ÁÈ¡·¶Î§  
+        Range range = hwpf.getRange();// å¾—åˆ°æ–‡æ¡£çš„è¯»å–èŒƒå›´  
         TableIterator it = new TableIterator(range);  
-        // µü´úÎÄµµÖĞµÄ±í¸ñ  
+        // è¿­ä»£æ–‡æ¡£ä¸­çš„è¡¨æ ¼  
         while (it.hasNext()) {  
             Table tb = (Table) it.next();  
-            // µü´úĞĞ£¬Ä¬ÈÏ´Ó0¿ªÊ¼  
+            // è¿­ä»£è¡Œï¼Œé»˜è®¤ä»0å¼€å§‹  
             for (int i = 0; i < tb.numRows(); i++) {  
                 TableRow tr = tb.getRow(i);  
-                // µü´úÁĞ£¬Ä¬ÈÏ´Ó0¿ªÊ¼  
+                // è¿­ä»£åˆ—ï¼Œé»˜è®¤ä»0å¼€å§‹  
                 for (int j = 0; j < tr.numCells(); j++) {  
-                    TableCell td = tr.getCell(j);// È¡µÃµ¥Ôª¸ñ  
-                    // È¡µÃµ¥Ôª¸ñµÄÄÚÈİ  
+                    TableCell td = tr.getCell(j);// å–å¾—å•å…ƒæ ¼  
+                    // å–å¾—å•å…ƒæ ¼çš„å†…å®¹  
                     for (int k = 0; k < td.numParagraphs(); k++) {  
                         Paragraph para = td.getParagraph(k);  
                         String s = para.text();  

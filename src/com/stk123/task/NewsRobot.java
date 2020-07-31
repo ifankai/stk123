@@ -132,12 +132,12 @@ public class NewsRobot {
 						params.add(new Timestamp(((Date)map.get("date")).getTime()));
 						JdbcUtils.insert(conn, "insert into stk_import_info(id,code,type,insert_time,info,title,url_source,url_target,info_create_time) values (s_import_info_id.nextval,?,?,sysdate,null,?,?,?,?)", params);
 						
-						//¶ÔºÏÍ¬¡¢¶©µ¥´¦Àí
+						//å¯¹åˆåŒã€è®¢å•å¤„ç†
 						if(type.getType() == 200){
 							boolean flag = checkContactSumGreaterThanMainIncome(conn, index, title, (Date)map.get("date"));
 							Industry ind = index.getIndustryDefault();
 							if(ind != null){
-								if(ind.getType().getName().contains("·¿µØ²ú")){
+								if(ind.getType().getName().contains("æˆ¿åœ°äº§")){
 									flag = false;
 								}
 							}
@@ -146,27 +146,27 @@ public class NewsRobot {
 								params.add(index.getCode());
 								params.add(News.TYPE_1);
 								double percent = StkUtils.numberFormat(index.changePercent * 100, 2);
-								params.add("["+type.getName()+"] °ëÄêÀ´×Ü¶îÊÇÖ÷ÓªÊÕÈë(TTM)µÄ "+ percent +"%");
+								params.add("["+type.getName()+"] åŠå¹´æ¥æ€»é¢æ˜¯ä¸»è¥æ”¶å…¥(TTM)çš„ "+ percent +"%");
 								JdbcUtils.insert(conn, "insert into stk_import_info(id,code,type,insert_time,info) values (s_import_info_id.nextval,?,?,sysdate,?)", params);
 								
 								if(percent >= 300){
-									//EmailUtils.send("¡¾¶©µ¥×Ü¶î¡¿°ëÄêÀ´¶©µ¥×Ü¶îÊÇÖ÷ÓªÊÕÈë3±¶ÒÔÉÏ: "+ index.getName() + " - "+ percent +"%","¾­µä°¸Àı£º¶«·½Ô°ÁÖ(SZ:002310)<br><br>"+ StkUtils.wrapCodeAndNameAsHtml(index)+ " - "+ percent +"%");
+									//EmailUtils.send("ã€è®¢å•æ€»é¢ã€‘åŠå¹´æ¥è®¢å•æ€»é¢æ˜¯ä¸»è¥æ”¶å…¥3å€ä»¥ä¸Š: "+ index.getName() + " - "+ percent +"%","ç»å…¸æ¡ˆä¾‹ï¼šä¸œæ–¹å›­æ—(SZ:002310)<br><br>"+ StkUtils.wrapCodeAndNameAsHtml(index)+ " - "+ percent +"%");
 								}
 							}
 						}
-						//¶Ô¶¨Ôö¡¢·Ç¹«´¦Àí
+						//å¯¹å®šå¢ã€éå…¬å¤„ç†
 						if(type.getType() == 150){
 							boolean flag = checkContactGreaterThanTotalMarketValue(index, title, 0.1);
 							if(flag){
 								params.clear();
 								params.add(index.getCode());
 								params.add(News.TYPE_4);
-								params.add("["+type.getName()+"] ½ğ¶îÊÇ×ÜÊĞÖµ["+StkUtils.number2String(index.getTotalMarketValue(),2)+"ÒÚ]µÄ "+StkUtils.numberFormat(index.changePercent * 100, 2)+"%. - " + title);
+								params.add("["+type.getName()+"] é‡‘é¢æ˜¯æ€»å¸‚å€¼["+StkUtils.number2String(index.getTotalMarketValue(),2)+"äº¿]çš„ "+StkUtils.numberFormat(index.changePercent * 100, 2)+"%. - " + title);
 								JdbcUtils.insert(conn, "insert into stk_import_info(id,code,type,insert_time,info) values (s_import_info_id.nextval,?,?,sysdate,?)", params);
 							}
 						}
 						
-						//·Ç¹«¿ª·¢ĞĞ¡¢Ô±¹¤³Ö¹É,¹ÉÈ¨¼¤Àø ¼à¿Ø
+						//éå…¬å¼€å‘è¡Œã€å‘˜å·¥æŒè‚¡,è‚¡æƒæ¿€åŠ± ç›‘æ§
 						if(type.getType() == 120 || type.getType() == 150 || type.getType() == 130){
 							//NoticeRobot.updateNotice(conn, index);
 						}
@@ -182,11 +182,11 @@ public class NewsRobot {
 		String amount = StkUtils.getMatchString(title, StkUtils.PATTERN_1);
 		if(amount != null){
 			double total = 0;
-			if(amount.contains("Íò")){
-				total += Double.parseDouble(StringUtils.replace(amount, "Íò", "")) / 10000;
+			if(amount.contains("ä¸‡")){
+				total += Double.parseDouble(StringUtils.replace(amount, "ä¸‡", "")) / 10000;
 			}
-			if(amount.contains("ÒÚ")){
-				total += Double.parseDouble(StringUtils.replace(amount, "ÒÚ", ""));
+			if(amount.contains("äº¿")){
+				total += Double.parseDouble(StringUtils.replace(amount, "äº¿", ""));
 			}
 			double mv = index.getTotalMarketValue();
 			if(mv > 0 && total >= mv * percent){
@@ -208,14 +208,14 @@ public class NewsRobot {
 			double total = 0.0;
 			for(StkImportInfo info : infos){
 				String t = info.getTitle();
-				if(t.contains("Í¬±È") || t.contains("»·±È"))continue;
+				if(t.contains("åŒæ¯”") || t.contains("ç¯æ¯”"))continue;
 				amount = StkUtils.getMatchString(t, StkUtils.PATTERN_1);
 				if(amount != null){
-					if(amount.contains("Íò")){
-						total += Double.parseDouble(StringUtils.replace(amount, "Íò", "")) / 10000;
+					if(amount.contains("ä¸‡")){
+						total += Double.parseDouble(StringUtils.replace(amount, "ä¸‡", "")) / 10000;
 					}
-					if(amount.contains("ÒÚ")){
-						total += Double.parseDouble(StringUtils.replace(amount, "ÒÚ", ""));
+					if(amount.contains("äº¿")){
+						total += Double.parseDouble(StringUtils.replace(amount, "äº¿", ""));
 					}
 				}
 			}
@@ -344,7 +344,7 @@ public class NewsRobot {
 		List<Map> news = new ArrayList<Map>();
 		
 		while(true){
-			//wind¹«Ë¾ĞÂÎÅ
+			//windå…¬å¸æ–°é—»
 			String url = "http://www.windin.com/Tools/NewsDetail.aspx?windcode="+index.getCode()+"."+loc+"&start=&end=&pid="+pid+"&ajax=";
 			String page = HttpUtils.get(url,null,"GBK");
 			Node node = HtmlUtils.getNodeByAttribute(HtmlUtils.unescape(page),"","id","lblData");

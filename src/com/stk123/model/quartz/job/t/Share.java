@@ -29,7 +29,7 @@ public class Share {
 	private Output output = new Output();
 	
 	public List<K> topNAmountK = null;
-	public boolean close20ChangeGreaterThan0 = false; //¹É¼Û20Ìì>=0 
+	public boolean close20ChangeGreaterThan0 = false; //è‚¡ä»·20å¤©>=0 
 	
 	public Share(String code, String name){
 		this.code = code;

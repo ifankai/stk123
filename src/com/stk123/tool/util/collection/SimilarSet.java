@@ -46,13 +46,13 @@ public class SimilarSet<E> extends HashSet<String> {
 
 	public static void main(String[] args) throws Exception {
 		SimilarSet ss = new SimilarSet();
-		ss.add("Á½¹«Ë¾ÍÆ¹ÉÈ¨¼¤Àø Ë¶±´µÂÒªÇó4Äêºó¾»ÀûÔö³¤Á½±¶_²Æ¾­ÆµµÀ_Ö¤È¯Ö®ÐÇ");
-		ss.add("Á½¹«Ë¾ÍÆ¹ÉÈ¨¼¤Àø Ë¶±´µÂÒªÇó4Äêºó¾»ÀûÔö³¤Á½±¶_ÖÐ¹ú½­ËÕÍø");
-		ss.add("È¦×Ó- Á½¹«Ë¾ÍÆ¹ÉÈ¨¼¤Àø Ë¶±´µÂÒªÇó4Äêºó¾»ÀûÔö³¤Á½±¶");
-		ss.add("Á½¹«Ë¾ÍÆ¹ÉÈ¨¼¤Àø Ë¶±´µÂÒªÇó4Äêºó¾»ÀûÔö³¤Á½±¶ - ¹ö¶¯ÐÂÎÅ - ...");
-		ss.add("Ë¶±´µÂ:ÄâÍÆ950Íò·Ý¹ÉÈ¨¼¤Àø¼Æ»®-¹ÉÆ±ÆµµÀ-½ðÈÚ½ç");
-		ss.add("Ë¶±´µÂÍÆ¹ÉÈ¨¼¤Àø_ÉÏÖ¤ÔçÖªµÀ_¹ÉÆ±ÄÚ²Î_ÔÆ²Æ¾­¹ÉÊÐÇé±¨Íø");
-		ss.add("Ë¶±´µÂÍÆ¹ÉÈ¨¼¤Àø·½°¸ Î´À´ËÄÄê¾»Àû»òÔö200%-Ë¶±´µÂ(300322)-¹ÉÆ±...");
+		ss.add("ä¸¤å…¬å¸æŽ¨è‚¡æƒæ¿€åŠ± ç¡•è´å¾·è¦æ±‚4å¹´åŽå‡€åˆ©å¢žé•¿ä¸¤å€_è´¢ç»é¢‘é“_è¯åˆ¸ä¹‹æ˜Ÿ");
+		ss.add("ä¸¤å…¬å¸æŽ¨è‚¡æƒæ¿€åŠ± ç¡•è´å¾·è¦æ±‚4å¹´åŽå‡€åˆ©å¢žé•¿ä¸¤å€_ä¸­å›½æ±Ÿè‹ç½‘");
+		ss.add("åœˆå­- ä¸¤å…¬å¸æŽ¨è‚¡æƒæ¿€åŠ± ç¡•è´å¾·è¦æ±‚4å¹´åŽå‡€åˆ©å¢žé•¿ä¸¤å€");
+		ss.add("ä¸¤å…¬å¸æŽ¨è‚¡æƒæ¿€åŠ± ç¡•è´å¾·è¦æ±‚4å¹´åŽå‡€åˆ©å¢žé•¿ä¸¤å€ - æ»šåŠ¨æ–°é—» - ...");
+		ss.add("ç¡•è´å¾·:æ‹ŸæŽ¨950ä¸‡ä»½è‚¡æƒæ¿€åŠ±è®¡åˆ’-è‚¡ç¥¨é¢‘é“-é‡‘èžç•Œ");
+		ss.add("ç¡•è´å¾·æŽ¨è‚¡æƒæ¿€åŠ±_ä¸Šè¯æ—©çŸ¥é“_è‚¡ç¥¨å†…å‚_äº‘è´¢ç»è‚¡å¸‚æƒ…æŠ¥ç½‘");
+		ss.add("ç¡•è´å¾·æŽ¨è‚¡æƒæ¿€åŠ±æ–¹æ¡ˆ æœªæ¥å››å¹´å‡€åˆ©æˆ–å¢ž200%-ç¡•è´å¾·(300322)-è‚¡ç¥¨...");
 		System.out.println(ss);
 	}
 	

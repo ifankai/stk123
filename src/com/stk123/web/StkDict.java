@@ -24,16 +24,16 @@ public class StkDict {
 	
 	public final static Integer XUEQIU_COMMENT = new Integer(3);
 	public final static Integer XUEQIU_ARTICLE = new Integer(4);
-	public final static Integer XUEQIU_ZHUTIE = new Integer(5);//Ñ©ÇòÖ÷Ìù
+	public final static Integer XUEQIU_ZHUTIE = new Integer(5);//é›ªçƒä¸»è´´
 	
-	public final static Integer NIUSAN = new Integer(20);//Å£É¢
-	public final static Integer FAMOUS_FUNDS = new Integer(21);//ÖøÃû»ù½ğ  insert into stk_dictionary select 21,1,'»ªÏÄ´óÅÌ¾«Ñ¡',null,1,null,null,null,null from dual;
+	public final static Integer NIUSAN = new Integer(20);//ç‰›æ•£
+	public final static Integer FAMOUS_FUNDS = new Integer(21);//è‘—ååŸºé‡‘  insert into stk_dictionary select 21,1,'åå¤å¤§ç›˜ç²¾é€‰',null,1,null,null,null,null from dual;
 	
 	public final static Integer INTERNET_SEARCH_TYPE = new Integer(10);//internet search type
 	
-	public final static Integer STKS_COLUMN_NAMES = new Integer(1000);//¶à¹ÉÍ¬ÁĞÏÂÏÔÊ¾µÄÁĞÃû
-	public final static Integer INDUSTRY_SOURCE = new Integer(300);//ĞĞÒµ·ÖÀàÀ´Ô´
-	public final static Integer TEXT_SUB_TYPE = new Integer(400);//ÎÄµµ×ÓÀàĞÍ
+	public final static Integer STKS_COLUMN_NAMES = new Integer(1000);//å¤šè‚¡åŒåˆ—ä¸‹æ˜¾ç¤ºçš„åˆ—å
+	public final static Integer INDUSTRY_SOURCE = new Integer(300);//è¡Œä¸šåˆ†ç±»æ¥æº
+	public final static Integer TEXT_SUB_TYPE = new Integer(400);//æ–‡æ¡£å­ç±»å‹
 	
 	private static Map<Integer, Map<String, StkDictionary>> dict = new HashMap<Integer, Map<String, StkDictionary>>();
 	

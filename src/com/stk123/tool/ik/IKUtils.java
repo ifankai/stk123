@@ -86,19 +86,19 @@ public class IKUtils {
 			init();
 			conn = DBUtil.getConnection();
 			//createIndex(conn);
-			//search("Æ÷Ğµ ÌåÄ¤½¨ Ä¤²¹Æ¬");
-			//System.out.println(intersection("²İ¸Êì¢","¹«Ë¾ÊÇÎÒ¹ú×î´óµÄ³ı²İ¼Á²İ¸Êì¢Éú²úÆóÒµ£¬Í¬Ê±¹«Ë¾»¹Éú²úÒÔÓĞ»ú¹èµ¥ÌåÎªÖ÷µÄÓĞ»ú¹èÏµÁĞ²úÆ·£¬ÊÇ¹úÄÚÓĞ»ú¹è²úÆ·µÄÁ½´óÁúÍ·ÆóÒµÖ®Ò»¡£¹«Ë¾Ö÷ÓªÅ©Ò©¡¢ÓĞ»ú¹è²ÄÁÏ¼°¾«Ï¸»¯¹¤£¬Ö÷Òª²úÆ·ÓĞÒÔ³ı²İ¼Á²İ¸Êì¢ÎªÖ÷µÄÅ©Ò©Ô­Ò©¼°ÖÆ¼Á£¬ÒÔ¸ßÆ·ÖÊÁ×ËáÎªÖ÷µÄÁ×»¯¹¤ÏµÁĞ²úÆ·£¬ÒÔ¼°ÒÔÓĞ»ú¹èµ¥ÌåÎªÖ÷µÄÓĞ»ú¹èÏµÁĞ²úÆ·¡£¹«Ë¾ÓµÓĞ30ÓàÏî¾ßÓĞ×ÔÖ÷ÖªÊ¶²úÈ¨µÄ×¨Àû¼¼Êõ£¬²¢ÓĞ20ÓàÏî¿Æ¼¼³É¹û»ñµÃ¹ú¼ÒºÍÊ¡¼¶½±Àø¡£¹«Ë¾ÓµÓĞ×ÔÓª½ø³ö¿ÚÈ¨£¬²úÆ·³©ÏúÅ·ÃÀ¡¢°ÄÖŞ¡¢¶«ÄÏÑÇµÈº£Íâ¼¸Ê®¸ö¹ú¼ÒºÍµØÇø¡£"));
-			//System.out.println(split("ĞĞÒµÓÃ»§2010Äê10ÔÂ11ºÅ¿ªÊ¼ITÉêÇëQQ¿í´ø4Mµ½10M"));
-			//System.out.println(split("#ĞĞÒµ#"));
-			System.out.println(split("ÖĞĞÅÖ¤È¯-¸»ÈğÌØ×°-300228-¸ú×Ù±¨¸æ£ºLNGÖØ¿¨¾­¼ÃĞÔÍ¹ÏÔ£¬ÁúÍ·¹«Ë¾ÏÔÖø»ØÅ¯-170310"));
+			//search("å™¨æ¢° ä½“è†œå»º è†œè¡¥ç‰‡");
+			//System.out.println(intersection("è‰ç”˜è†¦","å…¬å¸æ˜¯æˆ‘å›½æœ€å¤§çš„é™¤è‰å‰‚è‰ç”˜è†¦ç”Ÿäº§ä¼ä¸šï¼ŒåŒæ—¶å…¬å¸è¿˜ç”Ÿäº§ä»¥æœ‰æœºç¡…å•ä½“ä¸ºä¸»çš„æœ‰æœºç¡…ç³»åˆ—äº§å“ï¼Œæ˜¯å›½å†…æœ‰æœºç¡…äº§å“çš„ä¸¤å¤§é¾™å¤´ä¼ä¸šä¹‹ä¸€ã€‚å…¬å¸ä¸»è¥å†œè¯ã€æœ‰æœºç¡…ææ–™åŠç²¾ç»†åŒ–å·¥ï¼Œä¸»è¦äº§å“æœ‰ä»¥é™¤è‰å‰‚è‰ç”˜è†¦ä¸ºä¸»çš„å†œè¯åŸè¯åŠåˆ¶å‰‚ï¼Œä»¥é«˜å“è´¨ç£·é…¸ä¸ºä¸»çš„ç£·åŒ–å·¥ç³»åˆ—äº§å“ï¼Œä»¥åŠä»¥æœ‰æœºç¡…å•ä½“ä¸ºä¸»çš„æœ‰æœºç¡…ç³»åˆ—äº§å“ã€‚å…¬å¸æ‹¥æœ‰30ä½™é¡¹å…·æœ‰è‡ªä¸»çŸ¥è¯†äº§æƒçš„ä¸“åˆ©æŠ€æœ¯ï¼Œå¹¶æœ‰20ä½™é¡¹ç§‘æŠ€æˆæœè·å¾—å›½å®¶å’Œçœçº§å¥–åŠ±ã€‚å…¬å¸æ‹¥æœ‰è‡ªè¥è¿›å‡ºå£æƒï¼Œäº§å“ç•…é”€æ¬§ç¾ã€æ¾³æ´²ã€ä¸œå—äºšç­‰æµ·å¤–å‡ åä¸ªå›½å®¶å’Œåœ°åŒºã€‚"));
+			//System.out.println(split("è¡Œä¸šç”¨æˆ·2010å¹´10æœˆ11å·å¼€å§‹ITç”³è¯·QQå®½å¸¦4Måˆ°10M"));
+			//System.out.println(split("#è¡Œä¸š#"));
+			System.out.println(split("ä¸­ä¿¡è¯åˆ¸-å¯Œç‘ç‰¹è£…-300228-è·Ÿè¸ªæŠ¥å‘Šï¼šLNGé‡å¡ç»æµæ€§å‡¸æ˜¾ï¼Œé¾™å¤´å…¬å¸æ˜¾è‘—å›æš–-170310"));
 		} finally {
 			if (conn != null) conn.close();
 		}
 	}
 	
 	public static void init() throws Exception {
-		Configuration cfg = DefaultConfig.getInstance();  //¼ÓÔØ´Ê¿â
-        cfg.setUseSmart(true); //ÉèÖÃÖÇÄÜ·Ö´Ê
+		Configuration cfg = DefaultConfig.getInstance();  //åŠ è½½è¯åº“
+        cfg.setUseSmart(true); //è®¾ç½®æ™ºèƒ½åˆ†è¯
         Dictionary.initial(cfg);
         Dictionary dict = Dictionary.getSingleton();
         Connection conn = null;
@@ -111,21 +111,21 @@ public class IKUtils {
 			dict.disableWords(stopWords);
 			//System.out.println("stop words:"+stopWords);
 			
-			//¼Ó¹Ø¼ü×Ö
-			//É¾³ıµÄ¹Ø¼ü×Ö
+			//åŠ å…³é”®å­—
+			//åˆ é™¤çš„å…³é”®å­—
 			List<String> keyword = JdbcUtils.list(conn, "select name from stk_keyword where status=-1", String.class);
 			stopWords.addAll(keyword);
 			default_excludes.addAll(keyword);
 			//System.out.println("add stop query words:"+keywordDeleted);
 			
-			//Ö÷ÓªÒµÎñ¹Ø¼ü×Ö
+			//ä¸»è¥ä¸šåŠ¡å…³é”®å­—
 			List<String> mainBusinessWords = JdbcUtils.list(conn, "select distinct b.name name from stk_keyword_link a, stk_keyword b where b.status=0 and a.link_type=1 and a.keyword_id=b.id and a.code_type=1", String.class);
 			keyword.addAll(mainBusinessWords);
-			//ÊÖ¶¯¼ÓµÄ¹Ø¼ü×Ö
+			//æ‰‹åŠ¨åŠ çš„å…³é”®å­—
 			List<String> words = JdbcUtils.list(conn, "select distinct sk.name from stk_keyword sk,stk_keyword_link skl where sk.status=0 and sk.id=skl.keyword_id and skl.link_type=0", String.class);
 			//System.out.println("add words:"+words);
 			keyword.addAll(words);
-			//¼Ó¹ÉÆ±Ãû³Æ
+			//åŠ è‚¡ç¥¨åç§°
 			List<Stk> stks = JdbcUtils.list(conn, "select code,name from stk order by code", Stk.class);
 			for(Stk stk : stks){
 				keyword.add(stk.getCode());
@@ -189,7 +189,7 @@ public class IKUtils {
 	}
 	
 	/**
-	 * ½»¼¯
+	 * äº¤é›†
 	 */
 	public static Set<String> intersection(String src, String des) throws Exception {
 		return IKUtils.intersection(src, des, null);
@@ -197,9 +197,9 @@ public class IKUtils {
 	
 	public static Set<String> intersection(String src, String des, List<String> excludes) throws Exception {
 		List<String> s1 = IKUtils.split(src);
-		//System.out.println("¹Ø¼ü×Ö£º"+s1);
+		//System.out.println("å…³é”®å­—ï¼š"+s1);
 		List<String> s2 = IKUtils.split(des);
-		//System.out.println("¹Ø¼ü×Ö£º"+s2);
+		//System.out.println("å…³é”®å­—ï¼š"+s2);
 		Set<String> set1 = new HashSet<String>();
 		set1.addAll(s1);
 		Set<String> set2 = new HashSet<String>();
@@ -219,10 +219,10 @@ public class IKUtils {
 		List<String> result = new ArrayList<String>();
 		Analyzer anal = new IKAnalyzer(true);       
         StringReader reader = new StringReader(text);
-        //·Ö´Ê  
+        //åˆ†è¯  
         TokenStream ts = anal.tokenStream(null, reader);
         CharTermAttribute term = ts.getAttribute(CharTermAttribute.class);  
-        //±éÀú·Ö´ÊÊı¾İ  
+        //éå†åˆ†è¯æ•°æ®  
         while(ts.incrementToken()){
         	//TermQuery tq = new TermQuery(new Term(null, term.toString()));
             result.add(term.toString()); 
@@ -239,7 +239,7 @@ public class IKUtils {
 		IndexWriterConfig iwConfig = new IndexWriterConfig(Version.LUCENE_45, analyzer);
 		iwConfig.setOpenMode(OpenMode.CREATE_OR_APPEND);
 		iwriter = new IndexWriter(directory, iwConfig);
-		// Ğ´ÈëË÷Òı
+		// å†™å…¥ç´¢å¼•
 		Document doc = null;
 		List<Stk> stks = JdbcUtils.list(conn, "select code,name,company_profile from stk_cn order by code", Stk.class);
 
@@ -257,7 +257,7 @@ public class IKUtils {
 	}
 	
 	public static void search(String keyword){
-		// ÊµÀı»¯IKAnalyzer·Ö´ÊÆ÷
+		// å®ä¾‹åŒ–IKAnalyzeråˆ†è¯å™¨
 		Analyzer analyzer = new IKAnalyzer(true);
 		Directory directory = null;
 		IndexReader ireader = null;
@@ -272,10 +272,10 @@ public class IKUtils {
 			qp.setDefaultOperator(QueryParser.OR_OPERATOR);
 			Query query = qp.parse(keyword);
 			
-			// ËÑË÷ÏàËÆ¶È×î¸ßµÄ5Ìõ¼ÇÂ¼
+			// æœç´¢ç›¸ä¼¼åº¦æœ€é«˜çš„5æ¡è®°å½•
 			TopDocs topDocs = isearcher.search(query, 3);
-			System.out.println("ÃüÖĞ£º" + topDocs.totalHits+", ×î´óµÄÆÀ·Ö:"+topDocs.getMaxScore());
-			// Êä³ö½á¹û
+			System.out.println("å‘½ä¸­ï¼š" + topDocs.totalHits+", æœ€å¤§çš„è¯„åˆ†:"+topDocs.getMaxScore());
+			// è¾“å‡ºç»“æœ
 			ScoreDoc[] scoreDocs = topDocs.scoreDocs;
 	         
 		    for(ScoreDoc score:scoreDocs){
@@ -283,10 +283,10 @@ public class IKUtils {
 				//ScoreDoc score = scoreDocs[i];
 				System.out.println("kkkkk===="+score.doc+",,"+score.doc);
 				Document targetDoc = isearcher.doc(score.doc);
-				System.out.println("score="+score.score+",id£º" + targetDoc.get("id"));
+				System.out.println("score="+score.score+",idï¼š" + targetDoc.get("id"));
 				//System.out.println(isearcher.explain(query, scoreDocs[i].doc).getValue());
 				
-				//-----------------------keyword¸ßÁÁÏÔÊ¾-------------------//
+				//-----------------------keywordé«˜äº®æ˜¾ç¤º-------------------//
 				String text = targetDoc.get("content");
 				if (text != null) {
 					SimpleHTMLFormatter simpleHTMLFormatter = new SimpleHTMLFormatter("<font color='red'>", "</font>");
@@ -295,7 +295,7 @@ public class IKUtils {
 				
 					TokenStream tokenStream = analyzer.tokenStream("content", new StringReader(text));
 					String highLightText = highlighter.getBestFragment(tokenStream,text);
-					System.out.println("¡ï¸ßÁÁÏÔÊ¾µÚ " + (score.doc) + " Ìõ¼ìË÷½á¹ûÈçÏÂËùÊ¾£º");
+					System.out.println("â˜…é«˜äº®æ˜¾ç¤ºç¬¬ " + (score.doc) + " æ¡æ£€ç´¢ç»“æœå¦‚ä¸‹æ‰€ç¤ºï¼š");
 					System.out.println(highLightText);
 				}
 				System.out.println();

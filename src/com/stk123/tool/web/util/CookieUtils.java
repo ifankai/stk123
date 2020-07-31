@@ -11,7 +11,7 @@ public class CookieUtils {
 	public static void addCookie(HttpServletResponse response, String name, String value, int age) {
 		Cookie cookies = new Cookie(name, value);
 		cookies.setPath(String.valueOf(StkConstant.MARK_SLASH));
-		//cookies.setMaxAge(-1);//ÉèÖÃcookie¾­¹ı¶à³¤Ãëºó±»É¾³ı¡£Èç¹û0£¬¾ÍËµÃ÷Á¢¼´É¾³ı¡£Èç¹ûÊÇ¸ºÊı¾Í±íÃ÷µ±ä¯ÀÀÆ÷¹Ø±ÕÊ±×Ô¶¯É¾³ı¡£
+		//cookies.setMaxAge(-1);//è®¾ç½®cookieç»è¿‡å¤šé•¿ç§’åè¢«åˆ é™¤ã€‚å¦‚æœ0ï¼Œå°±è¯´æ˜ç«‹å³åˆ é™¤ã€‚å¦‚æœæ˜¯è´Ÿæ•°å°±è¡¨æ˜å½“æµè§ˆå™¨å…³é—­æ—¶è‡ªåŠ¨åˆ é™¤ã€‚
 		cookies.setMaxAge(age);
 		response.addCookie(cookies);
 	}
@@ -48,8 +48,8 @@ public class CookieUtils {
 		if (cookieName != null) {
 			Cookie cookie = getCookie(request, cookieName);
 			if (cookie != null) {
-				cookie.setMaxAge(0);// Èç¹û0£¬¾ÍËµÃ÷Á¢¼´É¾³ı
-				cookie.setPath(String.valueOf(StkConstant.MARK_SLASH));// ²»ÒªÂ©µô
+				cookie.setMaxAge(0);// å¦‚æœ0ï¼Œå°±è¯´æ˜ç«‹å³åˆ é™¤
+				cookie.setPath(String.valueOf(StkConstant.MARK_SLASH));// ä¸è¦æ¼æ‰
 				response.addCookie(cookie);
 				return true;
 			}

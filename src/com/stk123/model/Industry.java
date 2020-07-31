@@ -137,7 +137,7 @@ public class Industry implements Serializable {
 				params.add(source);
 				int n = JdbcUtils.insert(conn, "insert into stk_industry_type(id,name,source) values(s_industry_type_id.nextval,?,?)", params);
 				if(n > 0){
-					EmailUtils.send("ÐÂÐÐÒµ - "+ parentName, "insertOrLoadIndustryType - 1");
+					EmailUtils.send("æ–°è¡Œä¸š - "+ parentName, "insertOrLoadIndustryType - 1");
 				}
 				params.clear();
 				params.add(parentName);
@@ -161,7 +161,7 @@ public class Industry implements Serializable {
 			}
 			int n = JdbcUtils.insert(conn, "insert into stk_industry_type(id,name,source,parent_id) values(s_industry_type_id.nextval,?,?,?)", params);
 			if(n > 0){
-				EmailUtils.send("ÐÂÐÐÒµ - "+ parentName, "insertOrLoadIndustryType - 2");
+				EmailUtils.send("æ–°è¡Œä¸š - "+ parentName, "insertOrLoadIndustryType - 2");
 			}
 			params.clear();
 			params.add(industryName);

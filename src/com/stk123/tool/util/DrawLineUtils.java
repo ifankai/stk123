@@ -11,7 +11,7 @@ import java.util.List;
 
 public class DrawLineUtils {
 	
-	//µãµÄÎ»ÖÃ£¬ÔÚÏßÖĞ£¬ÏßÉÏ£¬»¹ÊÇÏßÏÂ
+	//ç‚¹çš„ä½ç½®ï¼Œåœ¨çº¿ä¸­ï¼Œçº¿ä¸Šï¼Œè¿˜æ˜¯çº¿ä¸‹
 	public enum POINT_POSITION {
 		EQUALS_WITH_LINE,
 		HIGHER_THAN_LINE,
@@ -52,14 +52,14 @@ public class DrawLineUtils {
 		return POINT_POSITION.EQUALS_WITH_LINE;
 	}
 	/**
-	 * ¼ÙÉèÓĞa£¬bÁ½µã£¬¿´cµãÊÇ²»ÊÇÔÚa£¬bÁ½µãÁ¬ÏßÉÏ£¬ÓÉÓÚ²»ÖªµÀÔõÃ´¼ÆËãa£¬bÁ½µãµÄÑÓ³¤Ïß£¬
-	 * ËùÒÔ£¬¾Í¿´a£¬cÁ½µãµÄÁ¬ÏßÊÇ²»ÊÇ¾­¹ıbµã
-	 * @param highX1 aµãxÖá
-	 * @param highY1 aµãyÖá
-	 * @param todayX cµãxÖá
-	 * @param todayY cµãyÖá
-	 * @param highX2 bµãxÖá
-	 * @return bµãyÖáµÄ¼¯ºÏ
+	 * å‡è®¾æœ‰aï¼Œbä¸¤ç‚¹ï¼Œçœ‹cç‚¹æ˜¯ä¸æ˜¯åœ¨aï¼Œbä¸¤ç‚¹è¿çº¿ä¸Šï¼Œç”±äºä¸çŸ¥é“æ€ä¹ˆè®¡ç®—aï¼Œbä¸¤ç‚¹çš„å»¶é•¿çº¿ï¼Œ
+	 * æ‰€ä»¥ï¼Œå°±çœ‹aï¼Œcä¸¤ç‚¹çš„è¿çº¿æ˜¯ä¸æ˜¯ç»è¿‡bç‚¹
+	 * @param highX1 aç‚¹xè½´
+	 * @param highY1 aç‚¹yè½´
+	 * @param todayX cç‚¹xè½´
+	 * @param todayY cç‚¹yè½´
+	 * @param highX2 bç‚¹xè½´
+	 * @return bç‚¹yè½´çš„é›†åˆ
 	 */
 	public static List<Point> getPointsByX(int highX1,int highY1,int todayX,int todayY, int highX2){
 		List<Point> points = DrawLineUtils.getPoints(highX1, highY1, todayX, todayY);

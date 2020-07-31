@@ -44,7 +44,7 @@ public class AuthorizationServletFilter implements Filter {
         	}
             //ActionHelper.initializeOasisUser(request);
         	String requestURI = request.getRequestURI().substring(request.getRequestURI().lastIndexOf("/", request.getRequestURI().length()));   
-            //登陆页就不需要进行验证了   
+            //鐧婚檰椤靛氨涓嶉渶瑕佽繘琛岄獙璇佷簡   
             if(!PATH_INDEX.equals(requestURI)){   
                 HttpSession session = request.getSession(false);   
                 if(session == null || session.getAttribute(StkConstant.SESSION_CURRENT_USER) == null ){

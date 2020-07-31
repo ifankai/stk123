@@ -8,8 +8,8 @@ import java.util.List;
 public class AlgorithmUtils {
 
 	public static void main(String[] args) throws Exception {
-		int[] a = { 0, 1, 2, 3, 8 }; // ÕûÊıÊı×é
-		int m = 2; // ´ıÈ¡³ö×éºÏµÄ¸öÊı
+		int[] a = { 0, 1, 2, 3, 8 }; // æ•´æ•°æ•°ç»„
+		int m = 2; // å¾…å–å‡ºç»„åˆçš„ä¸ªæ•°
 		//Test zuhe = new Test();
 		List list = AlgorithmUtils.zuhe(a, m);
 		print(list);
@@ -68,7 +68,7 @@ public class AlgorithmUtils {
     public static void testPermutation() throws Exception {  
         int[] arr = {1, 2, 3, 4, 5, 6, 7, 8};  
         List<int[]> result = new ArrayList<int[]>();
-        permutation(result, arr, 0, 2);//´ÓarrÖĞÈ¡Á½¸öÔªËØÅÅÁĞ(¼´N=8,M=2)  
+        permutation(result, arr, 0, 2);//ä»arrä¸­å–ä¸¤ä¸ªå…ƒç´ æ’åˆ—(å³N=8,M=2)  
         System.out.println(result.size());  
         for (int[] is : result) {  
             System.out.println(Arrays.toString(is));  
@@ -86,9 +86,9 @@ public class AlgorithmUtils {
 	}
 	
 	/**
-	 * @param a:×éºÏÊı×é
-	 * @param k:Éú³É×éºÏ¸öÊı
-	 * @return :ËùÓĞ¿ÉÄÜµÄ×éºÏÊı×éÁĞ±í
+	 * @param a:ç»„åˆæ•°ç»„
+	 * @param k:ç”Ÿæˆç»„åˆä¸ªæ•°
+	 * @return :æ‰€æœ‰å¯èƒ½çš„ç»„åˆæ•°ç»„åˆ—è¡¨
 	 */
 	public static List zuhe(int[] a, int m) {
 		List list = new ArrayList();
@@ -96,7 +96,7 @@ public class AlgorithmUtils {
 		return list;
 	}
 
-	// ¸ù¾İ¸¨ÖúÊı×éºÍÔ­Ê¼Êı×éÉú³É ½á¹ûÊı×é
+	// æ ¹æ®è¾…åŠ©æ•°ç»„å’ŒåŸå§‹æ•°ç»„ç”Ÿæˆ ç»“æœæ•°ç»„
 	public static int[] createResult(int[] a, int[] temp, int m) {
 		int[] result = new int[m];
 		int j = 0;

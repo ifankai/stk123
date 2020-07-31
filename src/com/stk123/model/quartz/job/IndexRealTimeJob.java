@@ -24,11 +24,11 @@ public class IndexRealTimeJob implements Job {
 	public static List<Name2Value<String,String>> CODES = new ArrayList<Name2Value<String,String>>();
 	static{
 		//http://quote.hexun.com/default.html
-		CODES.add(new Name2Value("´´Òµ°å","szse399006"));
-		CODES.add(new Name2Value("ÖĞÖ¤1000","sse000852"));
-		CODES.add(new Name2Value("ÖĞÖ¤500","sse000905"));
-		CODES.add(new Name2Value("ÉÏÖ¤50","sse000016"));
-		CODES.add(new Name2Value("ÖĞĞ¡°åÖ¸","szse399005"));
+		CODES.add(new Name2Value("åˆ›ä¸šæ¿","szse399006"));
+		CODES.add(new Name2Value("ä¸­è¯1000","sse000852"));
+		CODES.add(new Name2Value("ä¸­è¯500","sse000905"));
+		CODES.add(new Name2Value("ä¸Šè¯50","sse000016"));
+		CODES.add(new Name2Value("ä¸­å°æ¿æŒ‡","szse399005"));
 	}
 
 	public static void run() throws Exception {
@@ -43,36 +43,36 @@ public class IndexRealTimeJob implements Job {
 				boolean b = idx.isBreakOutTrendLine2(k.getDate(),60, 6, 0);
 				if(b){
 					System.out.println("60="+k.getDate()+"="+b);
-					sb.append(pair.getName()+"["+code+"]"+" Í»ÆÆ(60,6)ÏÂ½µÇ÷ÊÆÏß.").append("<br>");
+					sb.append(pair.getName()+"["+code+"]"+" çªç ´(60,6)ä¸‹é™è¶‹åŠ¿çº¿.").append("<br>");
 				}
 				boolean c = idx.isBreakOutTrendLine2(k.getDate(),120, 12, 0);
 				if(c){
 					System.out.println("120="+k.getDate()+"="+b);
-					sb.append(pair.getName()+"["+code+"]"+" Í»ÆÆ(120,12)ÏÂ½µÇ÷ÊÆÏß.").append("<br>");
+					sb.append(pair.getName()+"["+code+"]"+" çªç ´(120,12)ä¸‹é™è¶‹åŠ¿çº¿.").append("<br>");
 				}
 				if(b || c){
 					idx.getKsRealTimeOnDay();
 					k = idx.getK();
 					double ma20 = k.getMA(K.Close, 20);
-					sb.append(pair.getName()+"["+code+"]"+"20ÈÕÆ½¾ùÏß£º"+ma20).append("<br><br>");
+					sb.append(pair.getName()+"["+code+"]"+"20æ—¥å¹³å‡çº¿ï¼š"+ma20).append("<br><br>");
 				}
 				
-				//TODO MACD ¶¥±³Àë
+				//TODO MACD é¡¶èƒŒç¦»
 				if("szse399006".equals(idx.getCode())){
 					K yk = k.before(1);
 					MACD macd = k.getMACD();
 					MACD ymacd = yk.getMACD();
 					if(macd.dif <= macd.dea && ymacd.dif > ymacd.dea){
-						EmailUtils.send(EmailUtils.IMPORTANT + "[¾¯¸æ]"+pair.getName()+"["+code+"]"+"MACD 30·ÖÖÓ±³Àë","");
+						EmailUtils.send(EmailUtils.IMPORTANT + "[è­¦å‘Š]"+pair.getName()+"["+code+"]"+"MACD 30åˆ†é’ŸèƒŒç¦»","");
 					}
 				}
 
 			}
 			if(sb.length() > 0){
-				EmailUtils.send(EmailUtils.IMPORTANT + "Ö¸ÊıÍ»ÆÆÏÂ½µÇ÷ÊÆÏß", sb.toString()+"<br>"+JobUtils.getMoneyFlow());					
+				EmailUtils.send(EmailUtils.IMPORTANT + "æŒ‡æ•°çªç ´ä¸‹é™è¶‹åŠ¿çº¿", sb.toString()+"<br>"+JobUtils.getMoneyFlow());					
 			}
 		}catch(Exception e){
-			EmailUtils.send("IndexMonitor¼Û¸ñ¼à¿Ø³ö´í", e);
+			EmailUtils.send("IndexMonitorä»·æ ¼ç›‘æ§å‡ºé”™", e);
 			e.printStackTrace();
 		}
 
@@ -84,7 +84,7 @@ public class IndexRealTimeJob implements Job {
 	
 	@Override
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {
-		System.out.println(arg0.getJobDetail().getKey().getName()+"["+returnstr+"]¡ïIndexMonitor");
+		System.out.println(arg0.getJobDetail().getKey().getName()+"["+returnstr+"]â˜…IndexMonitor");
 		try {
 			run();
 		} catch (Exception e) {

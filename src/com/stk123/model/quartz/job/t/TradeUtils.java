@@ -119,9 +119,9 @@ public class TradeUtils {
 	
 	public static void sendMessage(String message) throws UnsupportedEncodingException {
 		String m = "[{name:"+ new Date().getTime() +",value:\""+ message +"\"}]";
-		System.out.println("底部放量 - " + message);
+		System.out.println("搴曢儴鏀鹃噺 - " + message);
 		if(!ShortTrade.isTest){
-			EmailUtils.send("底部放量 - "+message, message);
+			EmailUtils.send("搴曢儴鏀鹃噺 - "+message, message);
 		}
 		//HttpUtils.post("http://"+getUrl()+"/sync?method=add", "m="+URLEncoder.encode(m, "utf-8"), "utf-8");
 	}
@@ -135,7 +135,7 @@ public class TradeUtils {
 		/*List<Share> shares = new ArrayList<Share>();
 		shares.add(new Share("sh000001"));
 		Utils.updateSinaData(shares);*/
-		//Utils.sendMessage("隆华节能[300263]平台突破-Input [id=7, hous=2.5, timeAmountMultiple=name:180,value:name:1.5,value:2.5, rank=4, k= \\r K [id=3914, close=7.66, change=-0.06, time=2017-07-28 14:57:04, amount=1382912.0, a=0.0, volume=1790, v=0, flag=M, before=1]]");
+		//Utils.sendMessage("闅嗗崕鑺傝兘[300263]骞冲彴绐佺牬-Input [id=7, hous=2.5, timeAmountMultiple=name:180,value:name:1.5,value:2.5, rank=4, k= \\r K [id=3914, close=7.66, change=-0.06, time=2017-07-28 14:57:04, amount=1382912.0, a=0.0, volume=1790, v=0, flag=M, before=1]]");
 		TradeUtils.clearMessage();
 	}
 }

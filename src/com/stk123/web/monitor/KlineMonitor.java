@@ -35,7 +35,7 @@ public class KlineMonitor extends Monitor {
 			param1 = index.getK().getLow();
 		}else if("4".equals(sm.getParam1())){
 			param1 = index.getK().getOpen();
-		}else if("-1".equals(sm.getParam1())){//ÊÕÅÌºó -1 µÄ¼Û¸ñµÈÓÚcloseµÄ¼Û¸ñ
+		}else if("-1".equals(sm.getParam1())){//æ”¶ç›˜å -1 çš„ä»·æ ¼ç­‰äºcloseçš„ä»·æ ¼
 			String page = HttpUtils.get("http://hq.sinajs.cn/list="+(index.getLoc()==1?"sh":"sz")+index.getCode(), null, "");
 			//System.out.println(page);
 			String str = StringUtils.substringBetween(page, "=\"", "\";");
@@ -43,7 +43,7 @@ public class KlineMonitor extends Monitor {
 				String[] ss = str.split(",");
 				if(ss.length < 3)return null;
 				param1 = Double.parseDouble(ss[3]);
-                sm.setParam4(String.valueOf(param1));//param4 ÁÙÊ±´æÖücurrent price
+                sm.setParam4(String.valueOf(param1));//param4 ä¸´æ—¶å­˜è´®current price
 				if(param1 == 0)return null;
 			}else{
 				return null;
@@ -67,7 +67,7 @@ public class KlineMonitor extends Monitor {
 		}else if("6".equals(sm.getParam2())){
 			if(param1 != param3)trigger = true;
 		}
-		String sb = translate(sm,conn)+",ÈÕÆÚ"+StkUtils.getToday();
+		String sb = translate(sm,conn)+",æ—¥æœŸ"+StkUtils.getToday();
 		//System.out.println(sb);
 		if(trigger){
 			if(updateResult){
@@ -107,7 +107,7 @@ public class KlineMonitor extends Monitor {
         //System.out.println(map.get("portfolios"));
         for(Object obj : map.get("portfolios")){
             Map care = (Map)obj;
-            if("¹Ø×¢C".equals(care.get("name"))){
+            if("å…³æ³¨C".equals(care.get("name"))){
                 for(String s : StringUtils.split((String)care.get("stocks"),",")){
                 	careA.add(s.substring(2));
                 };
@@ -117,7 +117,7 @@ public class KlineMonitor extends Monitor {
 
     private static Set<String> careA = Collections.synchronizedSet(new HashSet<String>());
 	
-	//ÊµÊ±¼à¿ØÊı¾İ k 
+	//å®æ—¶ç›‘æ§æ•°æ® k 
 	public static void main(String[] args) throws Exception {
 		ConfigUtils.setPropsFromResource(TableTools.class, "db.properties");
 		Connection conn = null;
@@ -125,7 +125,7 @@ public class KlineMonitor extends Monitor {
             getCareAFromXueQiu(careA);
         }catch(Exception e){
         	e.printStackTrace();
-            EmailUtils.send("ÊµÊ±KÏß¼Û¸ñ¼à¿Ø³ö´í", e);
+            EmailUtils.send("å®æ—¶Kçº¿ä»·æ ¼ç›‘æ§å‡ºé”™", e);
         }
         System.out.println("care A:"+careA);
 		try {
@@ -153,20 +153,20 @@ public class KlineMonitor extends Monitor {
 										sm.setParam1("-1");
 										result = Monitor.getInstance(sm).execute(sm,conn,false);
 									}
-                                    //checkÊµÊ±¼Û¸ñÊÇ·ñ³¬¹ıÁËene upper
+                                    //checkå®æ—¶ä»·æ ¼æ˜¯å¦è¶…è¿‡äº†ene upper
 									boolean eneTrigger = false;
                                     boolean sell = false;
 									if(careA.contains(index.getCode())){
                                         Ene ene = index.getK().getEne(index);
                                         if(Double.parseDouble(sm.getParam4()) >= ene.getUpper()){
-                                            result = (result==null?"":result+"<br/>") + index.getName()+"["+index.getCode()+"]"+"ÊµÊ±¼Û¸ñ:"+sm.getParam4()+" >= ene upper ";
+                                            result = (result==null?"":result+"<br/>") + index.getName()+"["+index.getCode()+"]"+"å®æ—¶ä»·æ ¼:"+sm.getParam4()+" >= ene upper ";
                                             sell = true;
                                             eneTrigger = true;
                                             careA.remove(index.getCode());
                                             //EmailUtils.send("kai.fan@suncorp.com.au", result, result);
                                         }
                                         else if(0 < Double.parseDouble(sm.getParam4()) && Double.parseDouble(sm.getParam4()) <= ene.getLower()){
-                                            result = (result==null?"":result+"<br/>") + index.getName()+"["+index.getCode()+"]"+"ÊµÊ±¼Û¸ñ:"+sm.getParam4()+" <= ene lower ";
+                                            result = (result==null?"":result+"<br/>") + index.getName()+"["+index.getCode()+"]"+"å®æ—¶ä»·æ ¼:"+sm.getParam4()+" <= ene lower ";
                                             sell = false;
                                             eneTrigger = true;
                                             careA.remove(index.getCode());
@@ -177,7 +177,7 @@ public class KlineMonitor extends Monitor {
 										Ene ene = index.getK().getEne(index);
 										result = result+"; "+ene;
 										if(result != null){
-											EmailUtils.send("ÊµÊ±KÏß¼Û¸ñ¼à¿Ø"+(eneTrigger?(sell?"¡¾ENEÂô³ö¡¿":"¡¾ENEÂòÈë¡¿"):""), result);
+											EmailUtils.send("å®æ—¶Kçº¿ä»·æ ¼ç›‘æ§"+(eneTrigger?(sell?"ã€ENEå–å‡ºã€‘":"ã€ENEä¹°å…¥ã€‘"):""), result);
 										}
 										try{
 											BaiDuHi.sendSMS(result);
@@ -198,7 +198,7 @@ public class KlineMonitor extends Monitor {
 					
 				}catch(Exception e){
 					noOfError ++;
-					EmailUtils.send("ÊµÊ±KÏß¼Û¸ñ¼à¿Ø³ö´í", e);
+					EmailUtils.send("å®æ—¶Kçº¿ä»·æ ¼ç›‘æ§å‡ºé”™", e);
 					e.printStackTrace();
 					//if(noOfError > 5)break;
 				}

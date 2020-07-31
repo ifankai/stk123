@@ -95,7 +95,7 @@ public class JsonUtils {
 
     
     /** *//**
-     * ½«java¶ÔÏó×ª»»³Éjson×Ö·û´®,²¢Éè¶¨ÈÕÆÚ¸ñÊ½
+     * å°†javaå¯¹è±¡è½¬æ¢æˆjsonå­—ç¬¦ä¸²,å¹¶è®¾å®šæ—¥æœŸæ ¼å¼
      * @param javaObj
      * @param dataFormat
      * @return
@@ -126,7 +126,7 @@ public class JsonUtils {
     
 	
 	/**
-	 * ÆÕÍ¨´¿List×ªÎªJson
+	 * æ™®é€šçº¯Listè½¬ä¸ºJson
 	 * @param params
 	 * @return [{"name":100,"value":"java.lang.Integer"},{"name":"test","value":"java.lang.String"},{"name":1501404622450,"value":"java.sql.Timestamp"}]
 	 */
@@ -345,7 +345,7 @@ public class JsonUtils {
 }
 
 class TimestampMorpher extends AbstractObjectMorpher {
-    /*** ÈÕÆÚ×Ö·û´®¸ñÊ½ */
+    /*** æ—¥æœŸå­—ç¬¦ä¸²æ ¼å¼ */
     private String[] formats;
 
     public TimestampMorpher(String[] formats) {
@@ -360,7 +360,7 @@ class TimestampMorpher extends AbstractObjectMorpher {
             return (Timestamp) value;
         }
         if (!supports(value.getClass())) {
-            throw new MorphException(value.getClass() + " ÊÇ²»Ö§³ÖµÄÀàĞÍ");
+            throw new MorphException(value.getClass() + " æ˜¯ä¸æ”¯æŒçš„ç±»å‹");
         }
         String strValue = (String) value;
         SimpleDateFormat dateParser = null;
@@ -418,9 +418,9 @@ class DateJsonValueProcessor implements JsonValueProcessor {
     private DateFormat dateFormat;   
 
     /** *//**  
-     * ¹¹Ôì·½·¨.  
+     * æ„é€ æ–¹æ³•.  
      *  
-     * @param datePattern ÈÕÆÚ¸ñÊ½  
+     * @param datePattern æ—¥æœŸæ ¼å¼  
      */  
     public DateJsonValueProcessor(String datePattern) {   
         if( null == datePattern )
@@ -430,14 +430,14 @@ class DateJsonValueProcessor implements JsonValueProcessor {
         
     }   
     
-    /**//* £¨·Ç Javadoc£©
+    /**//* ï¼ˆé Javadocï¼‰
      * @see net.sf.json.processors.JsonValueProcessor#processArrayValue(java.lang.Object, net.sf.json.JsonConfig)
      */
     public Object processArrayValue(Object arg0, JsonConfig arg1) {
         return process(arg0);   
     }
 
-    /**//* £¨·Ç Javadoc£©
+    /**//* ï¼ˆé Javadocï¼‰
      * @see net.sf.json.processors.JsonValueProcessor#processObjectValue(java.lang.String, java.lang.Object, net.sf.json.JsonConfig)
      */
     public Object processObjectValue(String arg0, Object arg1, JsonConfig arg2) {

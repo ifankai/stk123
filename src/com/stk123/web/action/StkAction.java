@@ -142,7 +142,7 @@ public class StkAction {
 		List<Map<String,Object>> cares = JdbcUtils.list(conn, "select a.code,a.fn_date,count(a.num_change_rate) cnt,"
 				+ "listagg(c.name,'<br>') within group (order by a.num_change_rate) name "
 				+ "from stk_ownership a,stk_cn b, stk_organization c "
-				+ "where a.code=b.CODE and length(c.name)>3 /*ÅÅ³ı¸öÈËÍ¶×ÊÕß*/ and a.org_id=c.id and b.listing_date < to_char(add_months(sysdate, -12),'yyyymmdd') "
+				+ "where a.code=b.CODE and length(c.name)>3 /*æ’é™¤ä¸ªäººæŠ•èµ„è€…*/ and a.org_id=c.id and b.listing_date < to_char(add_months(sysdate, -12),'yyyymmdd') "
 				+ "and a.fn_date > to_char(add_months(sysdate, -5),'yyyymmdd') and a.num_change_rate>0 "
 				+ "group by a.code,a.fn_date having count(a.num_change_rate) >= 8 order by a.fn_date desc", IngoreCaseHashMap.class);
 		for(Map<String,Object> care : cares){
@@ -182,7 +182,7 @@ public class StkAction {
 		sc.setResponse("{\"data\":" + json + "}");
 	}
 	
-	//¼Ó¹Ø×¢
+	//åŠ å…³æ³¨
 	public void care() throws Exception {
 		StkContext sc = StkContext.getContext();
 		HttpServletRequest request = sc.getRequest();
@@ -212,7 +212,7 @@ public class StkAction {
 		}
 	}
 	
-	//È¡Ïû¹Ø×¢
+	//å–æ¶ˆå…³æ³¨
 	public void uncare() throws Exception {
 		StkContext sc = StkContext.getContext();
 		HttpServletRequest request = sc.getRequest();
@@ -253,7 +253,7 @@ public class StkAction {
 		sc.setResponse(json);
 	}
 	
-	//ÀúÊ·PE
+	//å†å²PE
 	public void stkValueHistory() throws Exception{
 		StkContext sc = StkContext.getContext();
 		HttpServletRequest request = sc.getRequest();
@@ -289,7 +289,7 @@ public class StkAction {
 		sc.setResponse(json.toString());
 	}
 	
-	private final static String F9_KEY = "Óª";
+	private final static String F9_KEY = "è¥";
 	
 	public List<Map> getRelatedStk(Connection conn, String code, boolean includeCompanyInfo) throws Exception{
 		Index index = new Index(conn, code);
@@ -515,11 +515,11 @@ public class StkAction {
 			if(dnp <= cnp * 1.2)continue;
 			Double dpe = StkUtils.numberFormat(Double.parseDouble(String.valueOf(m.get("d_pe"))),2);
 			
-			/*//È¥Äê
+			/*//å»å¹´
 			l.add(anp);
 			l.add(ape);
 			
-			//½ñÄê
+			//ä»Šå¹´
 			l.add(bnp);
 			if(anp == 0){
 				l.add(StkConstant.MARK_HYPHEN);
@@ -527,14 +527,14 @@ public class StkAction {
 			}else{
 				l.add(EarningsForecast.format((bnp-anp)/anp*100)+"%");
 				if(bnp == anp){
-					l.add("³ÖÆ½");
+					l.add("æŒå¹³");
 				}else{
 					Double d = bpe/((bnp-anp)/anp)/100;
 					l.add(EarningsForecast.format(d));
 				}
 			}
 			
-			//Ã÷Äê
+			//æ˜å¹´
 			l.add(cnp);
 			if(bnp == 0){
 				l.add(StkConstant.MARK_HYPHEN);
@@ -542,14 +542,14 @@ public class StkAction {
 			}else{
 				l.add(EarningsForecast.format((cnp-bnp)/bnp*100)+"%");
 				if(cnp == bnp){
-					l.add("³ÖÆ½");
+					l.add("æŒå¹³");
 				}else{
 					Double d = cpe/((cnp-bnp)/bnp)/100;
 					l.add(EarningsForecast.format(d));
 				}
 			}
 			
-			//ºóÄê
+			//åå¹´
 			l.add(dnp);
 			if(cnp == 0){
 				l.add(StkConstant.MARK_HYPHEN);
@@ -557,7 +557,7 @@ public class StkAction {
 			}else{
 				l.add(EarningsForecast.format((dnp-cnp)/cnp*100)+"%");
 				if(cnp == dnp){
-					l.add("³ÖÆ½");
+					l.add("æŒå¹³");
 				}else{
 					Double d = cpe/((dnp-cnp)/cnp)/100;
 					l.add(EarningsForecast.format(d));

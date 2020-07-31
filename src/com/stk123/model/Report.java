@@ -54,22 +54,22 @@ public class Report {
 			long start = System.currentTimeMillis();
 			String today = StkUtils.getToday();
 			
-			//¹ÉÆ±³Ø(³É³¤³Ø)²ÆÎñ·ÖÎö
+			//è‚¡ç¥¨æ± (æˆé•¿æ± )è´¢åŠ¡åˆ†æ
 			//financeReport(conn, false);
 			
-			//³É³¤¹ÉÆ½¾ùPE
+			//æˆé•¿è‚¡å¹³å‡PE
 			//reportGrowthPE(conn, today);
 			
-			//ĞĞÒµ¾°Æø¶È·ÖÎö
+			//è¡Œä¸šæ™¯æ°”åº¦åˆ†æ
 			//industryReport(conn);
 
-			//2013 ¼¾¶ÈÒµ¼¨Ô¤²â  http://data.cfi.cn/cfidata.aspx
+			//2013 å­£åº¦ä¸šç»©é¢„æµ‹  http://data.cfi.cn/cfidata.aspx
 			//financeForecast(conn, "A0A1934A1939A1940A4553A4554");
 			
-			//2013 ¼¾¶ÈÒµ¼¨
+			//2013 å­£åº¦ä¸šç»©
 			//financeActual(conn,"20130331");
 			
-			//ÕË»§Í³¼Æ
+			//è´¦æˆ·ç»Ÿè®¡
 			//chinaclear();
 			
 			//testRS(conn);
@@ -186,7 +186,7 @@ public class Report {
 		}
 	}
 	
-	//ĞŞ¸´Ä³ÌìKÏßÍ¬²½Ê§°Ü
+	//ä¿®å¤æŸå¤©Kçº¿åŒæ­¥å¤±è´¥
 	public static void updateKfromXueQiu(Connection conn) throws Exception{
 		List<Stk> stks = JdbcUtils.list(conn, "select code,name from stk_cn order by code", Stk.class);
 		for(Stk stk : stks){
@@ -230,9 +230,9 @@ public class Report {
 					K last20dayK = index.getK(20);
 					if(highK.getDate().compareTo(last20dayK.getDate()) <= 0
 							&& todayK.getClose() >= highK.getClose() 
-							&& yesterdayK.getClose() < highK.getClose()){//´´ĞÂ¸ß
+							&& yesterdayK.getClose() < highK.getClose()){//åˆ›æ–°é«˜
 						K lowK = index.getKByLLV(startK.getDate(), StkUtils.getToday());
-						if(lowK.getClose()*1.6 >= highK.getClose()){//ÏäÌå
+						if(lowK.getClose()*1.6 >= highK.getClose()){//ç®±ä½“
 							results.add(index);
 						}
 					}
@@ -301,7 +301,7 @@ public class Report {
 			Node table = HtmlUtils.getNodeByAttribute(page, "", "class", "table_data");
 			List<List<String>> tmp = HtmlUtils.getListFromTable((TableTag)table, 0);
 			for(List data:tmp){
-				if("Ô¤¿÷".equals(data.get(3))){
+				if("é¢„äº".equals(data.get(3))){
 					flag = false;
 					break;
 				}
@@ -314,18 +314,18 @@ public class Report {
 			String desc = String.valueOf(data.get(4));
 			desc = desc.replaceAll(",", "");
 			data.set(4, desc);
-			if(StringUtils.indexOf(desc, "ÍòÔª") > 0){
-				data.add(StringUtils.substringBetween(desc, "¾»ÀûÈó", "Íò").replaceAll("Ô¼", "").replaceAll(",", "") );
-			}else if(StringUtils.indexOf(desc, "ÍòÔª") <= 0 && StringUtils.indexOf(desc, "ÒÚ") > 0){
-				String value = StringUtils.substringBetween(desc, "¾»ÀûÈó", "ÒÚ").replaceAll("Ô¼", "").replaceAll(",", "");
+			if(StringUtils.indexOf(desc, "ä¸‡å…ƒ") > 0){
+				data.add(StringUtils.substringBetween(desc, "å‡€åˆ©æ¶¦", "ä¸‡").replaceAll("çº¦", "").replaceAll(",", "") );
+			}else if(StringUtils.indexOf(desc, "ä¸‡å…ƒ") <= 0 && StringUtils.indexOf(desc, "äº¿") > 0){
+				String value = StringUtils.substringBetween(desc, "å‡€åˆ©æ¶¦", "äº¿").replaceAll("çº¦", "").replaceAll(",", "");
 				data.add( Double.parseDouble(value)*10000 );
-			}else if(StringUtils.indexOf(desc, "ÍòÔª") <= 0 && StringUtils.indexOf(desc, "Ôª") > 0){
-				String value = StringUtils.substringBetween(desc, "¾»ÀûÈó", "Ôª").replaceAll("Ô¼", "").replaceAll(",", "");
+			}else if(StringUtils.indexOf(desc, "ä¸‡å…ƒ") <= 0 && StringUtils.indexOf(desc, "å…ƒ") > 0){
+				String value = StringUtils.substringBetween(desc, "å‡€åˆ©æ¶¦", "å…ƒ").replaceAll("çº¦", "").replaceAll(",", "");
 				data.add( Double.parseDouble(value)/10000 );
 			}else{
-				String percent = StringUtils.substringBetween(desc, "Í¬±ÈÔö³¤", "%");
+				String percent = StringUtils.substringBetween(desc, "åŒæ¯”å¢é•¿", "%");
 				if(percent != null){
-					percent = percent.replaceAll("Ô¼", "");
+					percent = percent.replaceAll("çº¦", "");
 				}
 				data.add("0");
 			}
@@ -398,7 +398,7 @@ public class Report {
 			List<Node> links = HtmlUtils.getNodeListByTagName(table, "a");
 			for(Node link:links){
 				page = HttpUtils.get("http://www.chinaclear.cn"+((Tag)link).getAttribute("href"), null, "GBK");
-				String date = StringUtils.substringBetween(page, "Ò»ÖÜ¹ÉÆ±ÕË»§Çé¿öÍ³¼Æ±í£¨","-");
+				String date = StringUtils.substringBetween(page, "ä¸€å‘¨è‚¡ç¥¨è´¦æˆ·æƒ…å†µç»Ÿè®¡è¡¨ï¼ˆ","-");
 				Node tab = HtmlUtils.getNodeByAttribute(page, null, "class", "MsoNormalTable");
 				List<List<String>> datas = HtmlUtils.getListFromTable((TableTag)tab, 0);
 				System.out.println(StringUtils.replace(date, ".", "/")+","+trim(datas.get(0).get(3))+","+trim(datas.get(2).get(3))+","+trim(datas.get(10).get(3))+","+trim(datas.get(11).get(3)));
@@ -411,7 +411,7 @@ public class Report {
 	}
 	
 	/**
-	 * @param onlyGrowing Èç¹ûÊÇtrue£¬Ö»²é³É³¤ĞÔ¹ÉÆ±£¬Èç¹ûÊÇfalse£¬ÔòÊÇÈ«²¿
+	 * @param onlyGrowing å¦‚æœæ˜¯trueï¼ŒåªæŸ¥æˆé•¿æ€§è‚¡ç¥¨ï¼Œå¦‚æœæ˜¯falseï¼Œåˆ™æ˜¯å…¨éƒ¨
 	 */
 	public static void financeReport(Connection conn, boolean onlyGrowing) throws Exception{
 		List<Stk> stks = JdbcUtils.list(conn, "select s.code,s.name from stk_cn s,stk_industry i,stk_industry_type t where s.market=1 and s.code=i.code and i.industry=t.id and t.source='wind' order by t.id,s.code", Stk.class);

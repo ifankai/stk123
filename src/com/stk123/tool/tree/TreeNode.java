@@ -15,43 +15,42 @@ import com.stk123.bo.StkIndexNode;
 public class TreeNode implements Serializable
 {
     private static final long serialVersionUID = 0L;
-    
+
     private int nodeId = 0;
-    private int level = 0;    
+    private int level = 0;
     private String name = "";
     private int parentId = 0;
-    
+
     private TreeNode parent;
     private List children;
-    
+
     private StkIndexNode data = null;
-    
+
     public TreeNode()
     {
     	this.nodeId = 0;
         this.level = 0;
         this.parentId = 0;
-        
+
         children = new ArrayList();
         parent = null;
     }
-    
+
 	public TreeNode(int nodeId,int level,int parentId, StkIndexNode data)
 	{
         this.nodeId = nodeId;
         this.level = level;
         this.parentId = parentId;
-        
+
         children = new ArrayList();
         parent = null;
         this.data = data;
         this.name = data.getName();
     }
-	
+
 	/**
-	 * 锟斤拷锟届方锟斤�?
-	 * @param nodeId int 锟斤拷锟�?
-	 * @param parent Node 锟斤拷锟斤拷锟�
+	 * @param nodeId int
+	 * @param parent Node
 	 */
 	public TreeNode(int nodeId, TreeNode parent)
 	{
@@ -63,8 +62,8 @@ public class TreeNode implements Serializable
 	      this.level = parent.getLevel() + 1;
 	    }
 	}
-    
-    
+
+
     public int getNodeId()
     {
         return nodeId;
@@ -73,7 +72,7 @@ public class TreeNode implements Serializable
     {
         this.nodeId = nodeId;
     }
-	
+
 	public int getLevel()
 	{
 		return level;
@@ -82,7 +81,7 @@ public class TreeNode implements Serializable
     {
         this.level = level;
     }
-    
+
     public String getName()
     {
         return name;
@@ -91,9 +90,8 @@ public class TreeNode implements Serializable
     {
         this.name = name;
     }
-    
+
     /*
-     * 锟斤拷锟节碉拷ID
      */
     public int getParentId()
     {
@@ -103,7 +101,7 @@ public class TreeNode implements Serializable
     {
         this.parentId = parentId;
     }
-    
+
     public List getChildren()
     {
         return children;
@@ -115,7 +113,7 @@ public class TreeNode implements Serializable
     public void addChild(TreeNode node){
         this.children.add(node);
     }
-    
+
     public TreeNode getParent()
     {
         return parent;
@@ -124,7 +122,7 @@ public class TreeNode implements Serializable
     {
         this.parent = parent;
     }
-    
+
 	public StkIndexNode getStkIndexNode() {
 		return data;
 	}
@@ -134,8 +132,7 @@ public class TreeNode implements Serializable
 	}
 
 	/**
-	 * 锟矫碉拷锟接斤拷锟斤拷锟�?.
-	 * @return int 锟接斤拷锟斤拷锟�?
+	 * @return int
 	 */
 	final public int getChildsNumber()
 	{
@@ -149,21 +146,19 @@ public class TreeNode implements Serializable
             return getParent().getChildsNumber();
         }
     }
-	
+
 	/**
-	 * 锟角凤拷锟斤拷锟接斤拷锟�?
-	 * @return boolean 锟斤拷锟接斤拷惴碉拷锟絫rue
+	 * @return boolean
 	 */
 	final public boolean hasChildren()
 	{
 	    return children.size() > 0;
 	}
 
-	
+
 	/**
-	 * 锟矫碉拷锟斤拷level锟斤拷锟斤拷锟斤拷锟�?
-	 * @param level int 锟斤拷锟斤拷锟侥诧拷锟�(level锟斤拷锟节碉拷锟斤拷0锟斤拷小锟节此斤拷锟侥诧拷锟�?
-	 * @return Node 锟斤拷level锟斤拷锟斤拷锟斤拷锟�?
+	 * @param level int
+	 * @return Node
 	 */
 	final public TreeNode getParent(int level)
 	{
@@ -179,23 +174,22 @@ public class TreeNode implements Serializable
 	    }
 	    return n;
 	}
-    //锟矫碉拷锟斤拷诘锟�
+
     final public TreeNode getRoot()
     {
-        TreeNode node = getParent();        
+        TreeNode node = getParent();
         if(node == null)return node;
         else{
             do{
                 node = getParent();
-            }while(node.getParent() != null);    
+            }while(node.getParent() != null);
         }
         return node;
     }
-    
+
 
 	/**
-	 * 锟矫碉拷锟斤拷锟斤拷锟酵拷锟斤拷锟斤拷锟斤拷锟斤拷位锟斤拷.
-	 * @return int 锟斤拷锟斤拷锟酵拷锟斤拷锟斤拷锟斤拷锟斤拷位锟斤拷
+	 * @return int
 	 */
 	final public int getPosition()
 	{
@@ -207,8 +201,7 @@ public class TreeNode implements Serializable
 	}
 
 	/**
-	 * 锟斤拷锟斤拷欠锟斤拷锟酵拷锟斤拷锟斤拷锟斤拷锟斤拷�?��斤拷.
-	 * @return boolean 锟角凤拷锟斤拷true
+	 * @return boolean
 	 */
 	final public boolean isLast()
 	{
@@ -220,18 +213,15 @@ public class TreeNode implements Serializable
 	}
 
 	/**
-	 * 锟斤拷锟斤拷欠锟酵拷锟斤拷锟斤拷牡锟揭伙拷锟�.
-	 * @return boolean 锟角凤拷锟斤拷true
+	 * @return boolean
 	 */
 	final public boolean isFirst()
 	{
 	    return getPosition() == 0;
 	}
-	
+
 	/**
-	 * 锟矫碉拷目录锟斤拷锟斤拷锟斤拷一锟斤拷锟斤拷.
-	 * 锟斤拷锟剿斤拷锟斤拷锟侥柯硷拷锟斤拷锟斤拷一锟斤拷锟斤拷锟津返伙拷null
-	 * @return Node 锟斤拷一锟斤拷锟斤拷
+	 * @return Node
 	 */
 	final public TreeNode getNext()
 	{
@@ -251,11 +241,9 @@ public class TreeNode implements Serializable
 	    }
 	    return null;
 	}
-	
+
 	/**
-	 * 锟矫碉拷锟斤拷一锟斤拷同锟斤拷锟斤拷锟�.
-	 * 没锟斤拷锟斤拷一锟斤拷同锟斤拷锟斤拷惴碉拷锟絥ull
-	 * @return Node 锟斤拷一锟斤拷同锟斤拷锟斤拷锟�
+	 * @return Node
 	 */
 	final public TreeNode getNextSibling()
 	{
@@ -270,11 +258,9 @@ public class TreeNode implements Serializable
 	    }
 	    return (TreeNode) parent.children.get(k + 1);
 	}
-	
+
 	/**
-	 * 锟矫碉拷前一锟斤拷同锟斤拷锟斤拷锟�.
-	 * 没锟斤拷前一锟斤拷同锟斤拷锟斤拷惴碉拷锟絥ull
-	 * @return Node 前一锟斤拷同锟斤拷锟斤拷锟�
+	 * @return Node
 	 */
 	final public TreeNode getPreviousSibling()
 	{
@@ -287,9 +273,7 @@ public class TreeNode implements Serializable
 	}
 
 	/**
-	 * 锟矫碉拷前一锟斤拷锟斤拷.
-	 * 锟斤拷锟斤拷锟角耙伙拷锟斤拷锟轿猲ull
-	 * @return Node 前一锟斤拷锟斤拷
+	 * @return Node
 	 */
 	final public TreeNode getPrevious()
 	{
@@ -300,7 +284,7 @@ public class TreeNode implements Serializable
 	    }
 	    return parent;
 	}
-	
+
 	public String toString()
 	{
 		String str = " ";

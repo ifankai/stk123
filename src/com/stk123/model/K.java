@@ -93,7 +93,7 @@ public class K implements Serializable, Cloneable {
 		public boolean pass(K k) throws Exception;
 	}
 	
-	//n=0ÊÇµ±Ìì
+	//n=0æ˜¯å½“å¤©
 	public K before(int n){
 		K tmp = this;
 		while(n-- > 0 && tmp != null && tmp.before != null){
@@ -138,7 +138,7 @@ public class K implements Serializable, Cloneable {
 	/**
 	 * @param type open/close/high/low/amount/volumn/hsl
 	 * @param type2 ma/sum
-	 * @param days2 type2¶àÉÙdays2µÄma/sum
+	 * @param days2 type2å¤šå°‘days2çš„ma/sum
 	 * @return
 	 * @throws Exception
 	 */
@@ -234,7 +234,7 @@ public class K implements Serializable, Cloneable {
 		return ret;
 	}
 	
-	//lowµÄµÍµã
+	//lowçš„ä½ç‚¹
 	public double getLLV(int n){
 		double value = 0.0;
 		K k = this;
@@ -248,7 +248,7 @@ public class K implements Serializable, Cloneable {
 		return value;
 	}
 	
-	//lowµÄµÍµã
+	//lowçš„ä½ç‚¹
 	public K getKByLLV(int n){
 		double value = 0.0;
 		K ret = this;
@@ -263,7 +263,7 @@ public class K implements Serializable, Cloneable {
 		}
 		return ret;
 	}
-	//volumeµÄµÍµã
+	//volumeçš„ä½ç‚¹
 	public K getKByLVV(int n){
 		double value = 0.0;
 		K ret = this;
@@ -279,7 +279,7 @@ public class K implements Serializable, Cloneable {
 		return ret;
 	}
 	
-	//highµÄ¸ßµã
+	//highçš„é«˜ç‚¹
 	public double getHHV(int n){
 		double value = 0.0;
 		K k = this;
@@ -292,7 +292,7 @@ public class K implements Serializable, Cloneable {
 		}
 		return value;
 	}
-	//highµÄ¸ßµã
+	//highçš„é«˜ç‚¹
 	public K getKByHHV(int n){
 		double value = 0.0;
 		K k = this;
@@ -307,7 +307,7 @@ public class K implements Serializable, Cloneable {
 		}
 		return ret;
 	}
-	//closeµÄ¸ßµã
+	//closeçš„é«˜ç‚¹
 	public double getHCV(int n) throws Exception {
 		double value = 0.0;
 		K k = this;
@@ -320,7 +320,7 @@ public class K implements Serializable, Cloneable {
 		}
 		return value;
 	}
-	//volumeµÄ¸ßµã
+	//volumeçš„é«˜ç‚¹
 	public double getHVV(int n) throws Exception {
 		double value = 0.0;
 		K k = this;
@@ -333,7 +333,7 @@ public class K implements Serializable, Cloneable {
 		}
 		return value;
 	}
-	//volumeµÄ¸ßµã
+	//volumeçš„é«˜ç‚¹
 	public K getKByHVV(int n) throws Exception {
 		double value = 0.0;
 		K k = this;
@@ -427,16 +427,16 @@ public class K implements Serializable, Cloneable {
 		List<Double> list = new ArrayList<Double>();
 		int j = 0;
 		K k = this;
-		int total = n * 10;//TODO¡¡¾ßÌåÔõÃ´¶¨Õâ¸öÊı×Ö²»Çå³ş
+		int total = n * 10;//TODOã€€å…·ä½“æ€ä¹ˆå®šè¿™ä¸ªæ•°å­—ä¸æ¸…æ¥š
 		while(true){
 			list.add(k.getValue(type));
 			if(j++ > total)break;
 			k = k.before(1);
 		}
-		Double x = m / (n + 1.0);// ¼ÆËã³öĞòÊı
-		Double ema = list.get(list.size()-1);// µÚÒ»ÌìemaµÈÓÚµ±ÌìÊÕÅÌ¼Û
+		Double x = m / (n + 1.0);// è®¡ç®—å‡ºåºæ•°
+		Double ema = list.get(list.size()-1);// ç¬¬ä¸€å¤©emaç­‰äºå½“å¤©æ”¶ç›˜ä»·
 		for (int i = list.size()-1; i >= 0 ; i--) {
-			// µÚ¶şÌìÒÔºó£¬µ±ÌìÊÕÅÌ ÊÕÅÌ¼Û³ËÒÔÏµÊıÔÙ¼ÓÉÏ×òÌìEMA³ËÒÔÏµÊı-1
+			// ç¬¬äºŒå¤©ä»¥åï¼Œå½“å¤©æ”¶ç›˜ æ”¶ç›˜ä»·ä¹˜ä»¥ç³»æ•°å†åŠ ä¸Šæ˜¨å¤©EMAä¹˜ä»¥ç³»æ•°-1
 			ema = list.get(i) * x + ema * (1 - x);
 		}
 		return ema;
@@ -446,16 +446,16 @@ public class K implements Serializable, Cloneable {
 		List<Double> list = new ArrayList<Double>();
 		int j = 0;
 		K k = this;
-		int total = n * 10;//TODO¡¡¾ßÌåÔõÃ´¶¨Õâ¸öÊı×Ö²»Çå³ş
+		int total = n * 10;//TODOã€€å…·ä½“æ€ä¹ˆå®šè¿™ä¸ªæ•°å­—ä¸æ¸…æ¥š
 		while(true){
 			list.add(func.calc(k));
 			if(j++ > total)break;
 			k = k.before(1);
 		}
-		Double x = m / (n + 1.0);// ¼ÆËã³öĞòÊı
-		Double ema = list.get(list.size()-1);// µÚÒ»ÌìemaµÈÓÚµ±ÌìÊÕÅÌ¼Û
+		Double x = m / (n + 1.0);// è®¡ç®—å‡ºåºæ•°
+		Double ema = list.get(list.size()-1);// ç¬¬ä¸€å¤©emaç­‰äºå½“å¤©æ”¶ç›˜ä»·
 		for (int i = list.size()-1; i >= 0 ; i--) {
-			// µÚ¶şÌìÒÔºó£¬µ±ÌìÊÕÅÌ ÊÕÅÌ¼Û³ËÒÔÏµÊıÔÙ¼ÓÉÏ×òÌìEMA³ËÒÔÏµÊı-1
+			// ç¬¬äºŒå¤©ä»¥åï¼Œå½“å¤©æ”¶ç›˜ æ”¶ç›˜ä»·ä¹˜ä»¥ç³»æ•°å†åŠ ä¸Šæ˜¨å¤©EMAä¹˜ä»¥ç³»æ•°-1
 			ema = list.get(i) * x + ema * (1 - x);
 		}
 		return ema;
@@ -475,26 +475,26 @@ public class K implements Serializable, Cloneable {
 	
 	/**
 	 * Calculate EMA/EXPMA
-	 * @param list:Price list to calculate£¬the first at head, the last at tail.
+	 * @param list:Price list to calculateï¼Œthe first at head, the last at tail.
 	 * @return
 	 */
 	public static final Double getEMA(final List<Double> list, final int number) {
-		// ¿ªÊ¼¼ÆËãEMAÖµ£¬
-		Double k = 2.0 / (number + 1.0);// ¼ÆËã³öĞòÊı
-		Double ema = list.get(0);// µÚÒ»ÌìemaµÈÓÚµ±ÌìÊÕÅÌ¼Û
+		// å¼€å§‹è®¡ç®—EMAå€¼ï¼Œ
+		Double k = 2.0 / (number + 1.0);// è®¡ç®—å‡ºåºæ•°
+		Double ema = list.get(0);// ç¬¬ä¸€å¤©emaç­‰äºå½“å¤©æ”¶ç›˜ä»·
 		for (int i = 1; i < list.size(); i++) {
-			// µÚ¶şÌìÒÔºó£¬µ±ÌìÊÕÅÌ ÊÕÅÌ¼Û³ËÒÔÏµÊıÔÙ¼ÓÉÏ×òÌìEMA³ËÒÔÏµÊı-1
+			// ç¬¬äºŒå¤©ä»¥åï¼Œå½“å¤©æ”¶ç›˜ æ”¶ç›˜ä»·ä¹˜ä»¥ç³»æ•°å†åŠ ä¸Šæ˜¨å¤©EMAä¹˜ä»¥ç³»æ•°-1
 			ema = list.get(i) * k + ema * (1 - k);
 		}
 		return ema;
 	}
 	
 	public static final Double getEMA(final List<Double> list, final int n, final int m) {
-		// ¿ªÊ¼¼ÆËãEMAÖµ£¬
-		Double k = m / (n + 1.0);// ¼ÆËã³öĞòÊı
-		Double ema = list.get(0);// µÚÒ»ÌìemaµÈÓÚµ±ÌìÊÕÅÌ¼Û
+		// å¼€å§‹è®¡ç®—EMAå€¼ï¼Œ
+		Double k = m / (n + 1.0);// è®¡ç®—å‡ºåºæ•°
+		Double ema = list.get(0);// ç¬¬ä¸€å¤©emaç­‰äºå½“å¤©æ”¶ç›˜ä»·
 		for (int i = 1; i < list.size(); i++) {
-			// µÚ¶şÌìÒÔºó£¬µ±ÌìÊÕÅÌ ÊÕÅÌ¼Û³ËÒÔÏµÊıÔÙ¼ÓÉÏ×òÌìEMA³ËÒÔÏµÊı-1
+			// ç¬¬äºŒå¤©ä»¥åï¼Œå½“å¤©æ”¶ç›˜ æ”¶ç›˜ä»·ä¹˜ä»¥ç³»æ•°å†åŠ ä¸Šæ˜¨å¤©EMAä¹˜ä»¥ç³»æ•°-1
 			ema = list.get(i) * k + ema * (1 - k);
 		}
 		return ema;
@@ -532,7 +532,7 @@ public class K implements Serializable, Cloneable {
 	
 	/**
 	 * @param days
-	 * @param indent µ±Âú×ãÌõ¼şÊ±£¬kÏßÍùÇ°½øµÄÌìÊı
+	 * @param indent å½“æ»¡è¶³æ¡ä»¶æ—¶ï¼Œkçº¿å¾€å‰è¿›çš„å¤©æ•°
 	 * @param condition
 	 * @return
 	 * @throws Exception
@@ -554,7 +554,7 @@ public class K implements Serializable, Cloneable {
 	}
 	
 	/**
-	 * ÊÇ·ñÕÇÍ£
+	 * æ˜¯å¦æ¶¨åœ
 	 */
 	public boolean isUpLimit(){
 		if(open != 0 && open == close && open == high && open == low){
@@ -621,7 +621,7 @@ public class K implements Serializable, Cloneable {
 		return lowPoints;
 	}
 	
-	//Ò»Æ·³­µ×-Ç÷ÊÆÏß
+	//ä¸€å“æŠ„åº•-è¶‹åŠ¿çº¿
 	public double getTrend() throws Exception {
 		double trend = this.getMA(2, new K.Calculator() {
 			@Override
@@ -654,7 +654,7 @@ public class K implements Serializable, Cloneable {
 		});
 		return trend;
 	}
-	//Ò»Æ·³­µ×-ºÚÂíÏß
+	//ä¸€å“æŠ„åº•-é»‘é©¬çº¿
 	public double getHorse() throws Exception {
 		double horse = this.getEMA(5, 2, new K.Calculator() {
 			@Override
@@ -670,14 +670,14 @@ public class K implements Serializable, Cloneable {
 		});
 		return horse;
 	}
-	//Ò»Æ·³­µ×-MACD
+	//ä¸€å“æŠ„åº•-MACD
 	public double getYpcdMACD() throws Exception {
 		double horse = this.getHorse();
 		double trend = this.getTrend();
 		double macd = trend - horse;
 		return macd;
 	}
-	//Ò»Æ·³­µ×-µ×²¿
+	//ä¸€å“æŠ„åº•-åº•éƒ¨
 	public boolean getYpcd() throws Exception {
 		K yk = this.before(1);
 		double a2 = (this.getHorse() - yk.getHorse())/yk.getHorse() * 100;
@@ -755,7 +755,7 @@ public class K implements Serializable, Cloneable {
 		return false;
 	}
 	
-	//¶şÆ·³­µ×-ÂòÈëÊ±»ú
+	//äºŒå“æŠ„åº•-ä¹°å…¥æ—¶æœº
 	public double getEpcd_Mrsj() throws Exception{
 		double y = this.getEMA(3, 1, new K.Calculator(){
 			public double calc(K k) throws Exception {
@@ -783,7 +783,7 @@ public class K implements Serializable, Cloneable {
 	}
 	
 	/**
-	 * ¶şÆ·³­µ×
+	 * äºŒå“æŠ„åº•
 	 */
 	public boolean getEpcd() throws Exception{
 		double d = this.getEpcd_Mrsj();
@@ -795,11 +795,11 @@ public class K implements Serializable, Cloneable {
 	}
 	
 	/**
-	 * ¶şÆ·³­µ×-ºìÏßÉÏ´©Âò
+	 * äºŒå“æŠ„åº•-çº¢çº¿ä¸Šç©¿ä¹°
 	 * VA:=(2*C+H+L)/4;
 	 * VB:=LLV(L,5);
 	 * VC:=HHV(H,5);
-	 * ºìÏßÉÏ´©Âò:EMA((VA-VB)/(VC-VB)*100,5),COLORRED;
+	 * çº¢çº¿ä¸Šç©¿ä¹°:EMA((VA-VB)/(VC-VB)*100,5),COLORRED;
 	 * @return
 	 * @throws Exception
 	 */
@@ -816,8 +816,8 @@ public class K implements Serializable, Cloneable {
 	}
 	
 	/**
-	 * ¶şÆ·³­µ×-ºìÏßÏÂ´©Âô
-	 * EMA(ºìÏßÉÏ´©Âò,3),COLORFFFF00;
+	 * äºŒå“æŠ„åº•-çº¢çº¿ä¸‹ç©¿å–
+	 * EMA(çº¢çº¿ä¸Šç©¿ä¹°,3),COLORFFFF00;
 	 */
 	public double getEpcd_Hxxcm() throws Exception{
 		double z = this.getEMA(3, new K.Calculator(){
@@ -829,7 +829,7 @@ public class K implements Serializable, Cloneable {
 	}
 	
 	/**
-	 * ¶şÆ·³­µ×-Ç÷ÊÆ
+	 * äºŒå“æŠ„åº•-è¶‹åŠ¿
 	 * 3*SMA((CLOSE-LLV(LOW,27))/(HHV(HIGH,27)-LLV(LOW,27))*100,5,1)-2*SMA(SMA((CLOSE-LLV(LOW,27))/(HHV(HIGH,27)-LLV(LOW,27))*100,5,1),3,1),COLOR00FFFF;
 	 */
 	public double getEpcd_Qs() throws Exception{
@@ -855,7 +855,7 @@ public class K implements Serializable, Cloneable {
 		return StkUtils.numberFormat(3*x - 2*y, 2);
 	}
 	
-	//10¾ùÁ¿Á¬ĞøÉÏÉı»òÏÂ½µ´ÎÊı
+	//10å‡é‡è¿ç»­ä¸Šå‡æˆ–ä¸‹é™æ¬¡æ•°
 	public boolean hasHighVolumn(double d) throws Exception{
 		IntRange2IntMap range = new IntRange2IntMap();
 		//range.define(0, 5);
@@ -882,7 +882,7 @@ public class K implements Serializable, Cloneable {
 				isUp = true;
 				//range.addCount(downCount);
 				downCount = 0;
-				tmp = ykv;//Ç°ÆÚÁ¿ÄÜµÍµã
+				tmp = ykv;//å‰æœŸé‡èƒ½ä½ç‚¹
 			}
 			if(kv < ykv && isUp && upCount > 0){
 				isUp = false;
@@ -909,7 +909,7 @@ public class K implements Serializable, Cloneable {
 	}
 	
 	/**
-	 * ÊÇ²»ÊÇÁ¬ĞønÌì´´ĞÂµÍ
+	 * æ˜¯ä¸æ˜¯è¿ç»­nå¤©åˆ›æ–°ä½
 	 */
 	public boolean isDecrementLow(int n){
 		boolean flag = true;
@@ -925,7 +925,7 @@ public class K implements Serializable, Cloneable {
 	}
 	
 	/**
-	 * ÊÇ²»ÊÇÁ¬ĞønÌìÔöÁ¿
+	 * æ˜¯ä¸æ˜¯è¿ç»­nå¤©å¢é‡
 	 */
 	public boolean isIncrementVolume(int n){
 		boolean flag = true;
@@ -941,7 +941,7 @@ public class K implements Serializable, Cloneable {
 	}
 	
 	/**
-	 * ÊÇ²»ÊÇÁ¬ĞønÌìËõÁ¿
+	 * æ˜¯ä¸æ˜¯è¿ç»­nå¤©ç¼©é‡
 	 */
 	public boolean isDecrementVolume(int n){
 		boolean flag = true;
@@ -957,7 +957,7 @@ public class K implements Serializable, Cloneable {
 	}
 	
 	/**
-	 * ·µ»Ø ½ñÌìµÄnÌì¾ùÁ¿±ÈnÌìÇ°µÄnÌì¾ùÁ¿µÄ±¶Êı
+	 * è¿”å› ä»Šå¤©çš„nå¤©å‡é‡æ¯”nå¤©å‰çš„nå¤©å‡é‡çš„å€æ•°
 	 */
 	public double getVolumeMA(int n) throws Exception {
 		K kn = this.before(n);
@@ -967,13 +967,13 @@ public class K implements Serializable, Cloneable {
 	}
 	
 	public int getDayOnMaxOfVolumeMA(int n, int days) throws Exception{
-		//Í¨³£±¶Êı(times)ÉèÎª1£¬Ö¸Ö»Òª´óÓÚÇ°ÃæµÄÁ¿¾ÍĞĞ
+		//é€šå¸¸å€æ•°(times)è®¾ä¸º1ï¼ŒæŒ‡åªè¦å¤§äºå‰é¢çš„é‡å°±è¡Œ
 		return this.getDayOnMaxOfVolumeMA(n, days, 1);
 	}
 	/**
-	 * ·µ»Ø  daysÄÚ  ½ñÌìµÄnÌì¾ùÁ¿  ´óÓÚ(»òÕß´ótimes±¶ÓÚ) Ç°ÃæÃ¿ÌìkÏßµÄnÌì¾ùÁ¿  µÄÁ¬ĞøÌìÊı
+	 * è¿”å›  dayså†…  ä»Šå¤©çš„nå¤©å‡é‡  å¤§äº(æˆ–è€…å¤§timeså€äº) å‰é¢æ¯å¤©kçº¿çš„nå¤©å‡é‡  çš„è¿ç»­å¤©æ•°
 	 * 
-	 * ¼´£ºnÈÕÆ½¾ùÁ¿ÄÜÁ¬Ğø×î¸ß(»òÕß´óÓÚtimes±¶)±£³ÖÌìÊı
+	 * å³ï¼šnæ—¥å¹³å‡é‡èƒ½è¿ç»­æœ€é«˜(æˆ–è€…å¤§äºtimeså€)ä¿æŒå¤©æ•°
 	 */
 	public int getDayOnMaxOfVolumeMA(int n, int days, double times) throws Exception{
 		K kvh = this.getMax(K.Volumn, 5, K.MA, 5);
@@ -993,7 +993,7 @@ public class K implements Serializable, Cloneable {
 	}
 	
 	/**
-	 * µÃµ½nÈÕ¾ùÏßÔÚdaysÄÚµÄĞ±ÂÊ(ÕÇ/µø·ù)
+	 * å¾—åˆ°næ—¥å‡çº¿åœ¨dayså†…çš„æ–œç‡(æ¶¨/è·Œå¹…)
 	 */
 	public double getSlopeOfMA(int n, int days) throws Exception {
 		double ma = this.getMA(K.Close, n);
@@ -1023,7 +1023,7 @@ public class K implements Serializable, Cloneable {
 	}
 	
 	/**
-	 * ÊÇ²»ÊÇÇ°ºónÌìµÄ×î¸ßµã
+	 * æ˜¯ä¸æ˜¯å‰ånå¤©çš„æœ€é«˜ç‚¹
 	 * @param n
 	 * @return
 	 */
@@ -1046,7 +1046,7 @@ public class K implements Serializable, Cloneable {
 	}
 	
 	/**
-	 * ÊÇ²»ÊÇÇ°ºónÌìµÄ×îµÍµã
+	 * æ˜¯ä¸æ˜¯å‰ånå¤©çš„æœ€ä½ç‚¹
 	 * @param n
 	 * @return
 	 */

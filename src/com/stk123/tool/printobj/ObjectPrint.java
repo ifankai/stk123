@@ -17,7 +17,7 @@ public class ObjectPrint {
 	
 	static {
 		try {
-			// ×¼±¸Êä³öÎÄ¼ş
+			// å‡†å¤‡è¾“å‡ºæ–‡ä»¶
 			// pw = new PrintWriter(outputFile);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -40,11 +40,11 @@ public class ObjectPrint {
 	}
 
 	/**
-	 * µ÷ÊÔ, ´òÓ¡³ö¸ø¶¨ Bean µÄËùÓĞÊôĞÔµÄÈ¡Öµ.
+	 * è°ƒè¯•, æ‰“å°å‡ºç»™å®š Bean çš„æ‰€æœ‰å±æ€§çš„å–å€¼.
 	 * 
 	 * @param bean
 	 * @param proArray
-	 *            ĞèÒª´òÓ¡µÄ¶ÔÏó
+	 *            éœ€è¦æ‰“å°çš„å¯¹è±¡
 	 */
 	public static void dump(Object bean, String[] proArray) {
 		if (bean instanceof Collection) {
@@ -72,7 +72,7 @@ public class ObjectPrint {
 			println("print Map end!");
 		} else {
 			if (isImmutableObjects(bean)) {
-				// ²»¿É±äÀà
+				// ä¸å¯å˜ç±»
 				println("[" + bean.getClass().getName() + "]="
 						+ bean.toString());
 			} else {
@@ -82,7 +82,7 @@ public class ObjectPrint {
 	}
 
 	/**
-	 * ÅĞ¶ÏÊÇ·ñÊÇ²»¿É±äÀà
+	 * åˆ¤æ–­æ˜¯å¦æ˜¯ä¸å¯å˜ç±»
 	 * 
 	 * @param bean
 	 * @return
@@ -99,15 +99,15 @@ public class ObjectPrint {
 	}
 
 	/**
-	 * ´Ó bean ÖĞ¶ÁÈ¡ÓĞĞ§µÄÊôĞÔÃèÊö·û. NOTE: Ãû³ÆÎª class µÄ PropertyDescriptor ±»ÅÅ³ıÔÚÍâ.
+	 * ä» bean ä¸­è¯»å–æœ‰æ•ˆçš„å±æ€§æè¿°ç¬¦. NOTE: åç§°ä¸º class çš„ PropertyDescriptor è¢«æ’é™¤åœ¨å¤–.
 	 * 
-	 * @param bean Object - ĞèÒª¶ÁÈ¡µÄ Bean
-	 * @return PropertyDescriptor[] - ÊôĞÔÁĞ±í
+	 * @param bean Object - éœ€è¦è¯»å–çš„ Bean
+	 * @return PropertyDescriptor[] - å±æ€§åˆ—è¡¨
 	 */
 	public static java.beans.PropertyDescriptor[] getAvailablePropertyDescriptors(
 			Object bean) {
 		try {
-			// ´Ó Bean ÖĞ½âÎöÊôĞÔĞÅÏ¢²¢²éÕÒÏà¹ØµÄ write ·½·¨
+			// ä» Bean ä¸­è§£æå±æ€§ä¿¡æ¯å¹¶æŸ¥æ‰¾ç›¸å…³çš„ write æ–¹æ³•
 			java.beans.BeanInfo info = java.beans.Introspector.getBeanInfo(bean.getClass());
 			if (info != null) {
 				java.beans.PropertyDescriptor pd[] = info
@@ -159,7 +159,7 @@ public class ObjectPrint {
 	}
 
 	/**
-	 * ÅĞ¶ÏproNameÊÇ·ñÔÚproArrayÀïÃæ
+	 * åˆ¤æ–­proNameæ˜¯å¦åœ¨proArrayé‡Œé¢
 	 * 
 	 * @param proName
 	 * @param proArray

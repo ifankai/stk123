@@ -49,12 +49,12 @@ public class Job1450 implements Job {
 			
 			/*List<Index> results = InitialKLine.checkKUpTrendLine(conn,today, context, false);
 			if(results.size() >= 80){
-				EmailUtils.sendImport("KÏßÍ»ÆÆÏÂ½µÇ÷ÊÆ¸öÊı£º"+results.size()+",ÈÕÆÚ:"+ today, "");
+				EmailUtils.sendImport("Kçº¿çªç ´ä¸‹é™è¶‹åŠ¿ä¸ªæ•°ï¼š"+results.size()+",æ—¥æœŸ:"+ today, "");
 			}*/
 			
 			List<Index> results = InitialKLine.checkErPinChaoDi(conn, today, context.indexs, 1, false, false);
 			if(results.size() >= 150){
-				EmailUtils.sendImport("¶şÆ·³­µ×-ÂòÈëÊ±»ú,¸öÊı£º"+results.size()+",ÈÕÆÚ:"+ today, "");
+				EmailUtils.sendImport("äºŒå“æŠ„åº•-ä¹°å…¥æ—¶æœº,ä¸ªæ•°ï¼š"+results.size()+",æ—¥æœŸ:"+ today, "");
 			}
 			
 			InitialKLine.strategy(conn, true);

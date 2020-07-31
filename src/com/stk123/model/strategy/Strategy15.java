@@ -32,11 +32,11 @@ public class Strategy15 extends Strategy {
 			System.out.println(index.getCode()+","+index.getName()+",change="+index.changePercent);
 		}*/
 		if(results.size() > 0){
-			super.logStrategy(conn, today, "Ä£ĞÍ15-¾ŞÁ¿ºókÏßÕñ·ùËõĞ¡ÇÒÃ»ÓĞµ÷ÕûÌ«Éî", results);
-			EmailUtils.sendAndReport("Ä£ĞÍ15-¾ŞÁ¿ºókÏßÕñ·ùËõĞ¡ÇÒÃ»ÓĞµ÷ÕûÌ«Éî,¸öÊı£º"+results.size()+",ÈÕÆÚ:"+today,
-					"²ßÂÔÀ´Ô´£º³¤´ºÒ»¶«[600148]-2017/01/03<br>" +
-							"²ßÂÔ¹Ø¼üµã£º<br>" +
-							"kÏßÈç¹ûËõÁ¿ÇÒÕñ·ù±äĞ¡£¬ÇÒÔÚ·ÅÁ¿ÈÕ×îµÍ¼ÛÎ»Ö®ÉÏ£¬Ôò¿¼ÂÇÂòÈë" +
+			super.logStrategy(conn, today, "æ¨¡å‹15-å·¨é‡åkçº¿æŒ¯å¹…ç¼©å°ä¸”æ²¡æœ‰è°ƒæ•´å¤ªæ·±", results);
+			EmailUtils.sendAndReport("æ¨¡å‹15-å·¨é‡åkçº¿æŒ¯å¹…ç¼©å°ä¸”æ²¡æœ‰è°ƒæ•´å¤ªæ·±,ä¸ªæ•°ï¼š"+results.size()+",æ—¥æœŸ:"+today,
+					"ç­–ç•¥æ¥æºï¼šé•¿æ˜¥ä¸€ä¸œ[600148]-2017/01/03<br>" +
+							"ç­–ç•¥å…³é”®ç‚¹ï¼š<br>" +
+							"kçº¿å¦‚æœç¼©é‡ä¸”æŒ¯å¹…å˜å°ï¼Œä¸”åœ¨æ”¾é‡æ—¥æœ€ä½ä»·ä½ä¹‹ä¸Šï¼Œåˆ™è€ƒè™‘ä¹°å…¥" +
 							"<br><br>"+
 					StkUtils.createHtmlTable(today, results));
 		}

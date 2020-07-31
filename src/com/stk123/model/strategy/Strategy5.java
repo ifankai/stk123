@@ -88,20 +88,20 @@ public class Strategy5 extends Strategy {
 				System.out.println(index.getCode()+","+index.getName()+",change="+index.changePercent);
 			}*/
 			if(results1.size()+results2.size() > 0){
-				//super.logStrategy(conn, today, "Ä£ĞÍ5-Í»ÆÆ³¤ÆÚÇ÷ÊÆÏß", results2);
-				//super.logStrategy(conn, today, "Ä£ĞÍ5-Í»ÆÆ¶ÌÆÚÇ÷ÊÆÏß", results1);
+				//super.logStrategy(conn, today, "æ¨¡å‹5-çªç ´é•¿æœŸè¶‹åŠ¿çº¿", results2);
+				//super.logStrategy(conn, today, "æ¨¡å‹5-çªç ´çŸ­æœŸè¶‹åŠ¿çº¿", results1);
 				List<String> addtitle = new ArrayList<String>();
 				addtitle.add("MACD(Diff)");
-				EmailUtils.sendAndReport("Ä£ĞÍ5-Í»ÆÆÇ÷ÊÆÏß,¸öÊı£º"+(results1.size()+results2.size())+",ÈÕÆÚ:"+today,
-						"Í»ÆÆ³¤ÆÚÇ÷ÊÆÏß:<br>"+StkUtils.createHtmlTable(today, datas2, addtitle)
+				EmailUtils.sendAndReport("æ¨¡å‹5-çªç ´è¶‹åŠ¿çº¿,ä¸ªæ•°ï¼š"+(results1.size()+results2.size())+",æ—¥æœŸ:"+today,
+						"çªç ´é•¿æœŸè¶‹åŠ¿çº¿:<br>"+StkUtils.createHtmlTable(today, datas2, addtitle)
 						+ "<br><br>" +
-						"Í»ÆÆ¶ÌÆÚÇ÷ÊÆÏß:<br>"+StkUtils.createHtmlTable(today, datas1, addtitle)
+						"çªç ´çŸ­æœŸè¶‹åŠ¿çº¿:<br>"+StkUtils.createHtmlTable(today, datas1, addtitle)
 						);
 			}
 		}
 		
 		
-		//---×ÔÑ¡¹É-¹Ø×¢C
+		//---è‡ªé€‰è‚¡-å…³æ³¨C
 		/*results1.clear();
 		results2.clear();
 		List<Index> list = followIndexs;
@@ -119,8 +119,8 @@ public class Strategy5 extends Strategy {
 		}
 		
 		if(results1.size()+results2.size() > 0){
-			super.logStrategy(conn, today, "Ä£ĞÍ5-¹Ø×¢C-Í»ÆÆ³¤ÆÚÇ÷ÊÆÏß", results2);
-			super.logStrategy(conn, today, "Ä£ĞÍ5-¹Ø×¢C-Í»ÆÆ¶ÌÆÚÇ÷ÊÆÏß", results1);
+			super.logStrategy(conn, today, "æ¨¡å‹5-å…³æ³¨C-çªç ´é•¿æœŸè¶‹åŠ¿çº¿", results2);
+			super.logStrategy(conn, today, "æ¨¡å‹5-å…³æ³¨C-çªç ´çŸ­æœŸè¶‹åŠ¿çº¿", results1);
 		}*/
 	}
 	

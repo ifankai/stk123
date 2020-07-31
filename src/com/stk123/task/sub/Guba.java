@@ -53,9 +53,9 @@ public class Guba {
 			String page = HttpUtils.get("http://guba.eastmoney.com/list,"+code+"_"+pageNum+".html", "utf-8");
 			//System.out.println(page);
 			if(pageNum == 1){
-				Node total = HtmlUtils.getNodeByText(page, null, "¹²ÓĞÌû×ÓÊı");
+				Node total = HtmlUtils.getNodeByText(page, null, "å…±æœ‰å¸–å­æ•°");
 				//System.out.println("total==="+total.toPlainTextString());
-				numTotal = Integer.parseInt(StringUtils.trim(StringUtils.substringBetween(total.toPlainTextString(), "¹²ÓĞÌû×ÓÊı", "Æª")));
+				numTotal = Integer.parseInt(StringUtils.trim(StringUtils.substringBetween(total.toPlainTextString(), "å…±æœ‰å¸–å­æ•°", "ç¯‡")));
 			}
 			Node node = HtmlUtils.getNodeByAttribute(page, null, "id", "articlelistnew");
 			//System.out.println(node.toHtml());

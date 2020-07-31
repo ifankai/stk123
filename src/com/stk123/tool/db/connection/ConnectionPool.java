@@ -12,21 +12,21 @@ public class ConnectionPool {
 	private Vector<Connection> pool;
 
 	/**
-	 * Á¬½Ó³ØµÄ´óĞ¡£¬Ò²¾ÍÊÇÁ¬½Ó³ØÖĞÓĞ¶àÉÙ¸öÊı¾İ¿âÁ¬½Ó¡£
+	 * è¿æ¥æ± çš„å¤§å°ï¼Œä¹Ÿå°±æ˜¯è¿æ¥æ± ä¸­æœ‰å¤šå°‘ä¸ªæ•°æ®åº“è¿æ¥ã€‚
 	 */
 	private static int poolSize = 1;
 
 	private static ConnectionPool instance = null;
 
 	/**
-	 * Ë½ÓĞµÄ¹¹Ôì·½·¨£¬½ûÖ¹Íâ²¿´´½¨±¾ÀàµÄ¶ÔÏó£¬ÒªÏë»ñµÃ±¾ÀàµÄ¶ÔÏó£¬Í¨¹ı<code>getIstance</code>·½·¨¡£ Ê¹ÓÃÁËÉè¼ÆÄ£Ê½ÖĞµÄµ¥×ÓÄ£Ê½¡£
+	 * ç§æœ‰çš„æ„é€ æ–¹æ³•ï¼Œç¦æ­¢å¤–éƒ¨åˆ›å»ºæœ¬ç±»çš„å¯¹è±¡ï¼Œè¦æƒ³è·å¾—æœ¬ç±»çš„å¯¹è±¡ï¼Œé€šè¿‡<code>getIstance</code>æ–¹æ³•ã€‚ ä½¿ç”¨äº†è®¾è®¡æ¨¡å¼ä¸­çš„å•å­æ¨¡å¼ã€‚
 	 */
 	private ConnectionPool() {
 		init();
 	}
 
 	/**
-	 * Á¬½Ó³Ø³õÊ¼»¯·½·¨£¬¶ÁÈ¡ÊôĞÔÎÄ¼şµÄÄÚÈİ ½¨Á¢Á¬½Ó³ØÖĞµÄ³õÊ¼Á¬½Ó
+	 * è¿æ¥æ± åˆå§‹åŒ–æ–¹æ³•ï¼Œè¯»å–å±æ€§æ–‡ä»¶çš„å†…å®¹ å»ºç«‹è¿æ¥æ± ä¸­çš„åˆå§‹è¿æ¥
 	 */
 	private void init() {
 		pool = new Vector<Connection>(poolSize);
@@ -34,14 +34,14 @@ public class ConnectionPool {
 	}
 
 	/**
-	 * ·µ»ØÁ¬½Óµ½Á¬½Ó³ØÖĞ
+	 * è¿”å›è¿æ¥åˆ°è¿æ¥æ± ä¸­
 	 */
 	public synchronized void release(Connection conn) {
 		pool.add(conn);
 	}
 
 	/**
-	 * ¹Ø±ÕÁ¬½Ó³ØÖĞµÄËùÓĞÊı¾İ¿âÁ¬½Ó
+	 * å…³é—­è¿æ¥æ± ä¸­çš„æ‰€æœ‰æ•°æ®åº“è¿æ¥
 	 */
 	public synchronized void closePool() {
 		for (int i = 0; i < pool.size(); i++) {
@@ -55,7 +55,7 @@ public class ConnectionPool {
 	}
 
 	/**
-	 * ·µ»Øµ±Ç°Á¬½Ó³ØµÄÒ»¸ö¶ÔÏó
+	 * è¿”å›å½“å‰è¿æ¥æ± çš„ä¸€ä¸ªå¯¹è±¡
 	 */
 	public static synchronized ConnectionPool getInstance() {
 		if (instance == null) {
@@ -65,7 +65,7 @@ public class ConnectionPool {
 	}
 
 	/**
-	 * ·µ»ØÁ¬½Ó³ØÖĞµÄÒ»¸öÊı¾İ¿âÁ¬½Ó
+	 * è¿”å›è¿æ¥æ± ä¸­çš„ä¸€ä¸ªæ•°æ®åº“è¿æ¥
 	 */
 	public synchronized Connection getConnection() {
 		if (pool.size() > 0) {
@@ -79,7 +79,7 @@ public class ConnectionPool {
 	}
 
 	/**
-	 * ÔÚÁ¬½Ó³ØÖĞ´´½¨³õÊ¼ÉèÖÃµÄµÄÊı¾İ¿âÁ¬½Ó
+	 * åœ¨è¿æ¥æ± ä¸­åˆ›å»ºåˆå§‹è®¾ç½®çš„çš„æ•°æ®åº“è¿æ¥
 	 */
 	private synchronized void addConnection() {
 		Connection conn = null;

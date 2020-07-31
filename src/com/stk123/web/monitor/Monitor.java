@@ -29,7 +29,7 @@ public abstract class Monitor {
 			}
 		}
 		if(results.size() > 0){
-			EmailUtils.send("Êı¾İ¼à¿Ø", StringUtils.join(results, "<br/>"));
+			EmailUtils.send("æ•°æ®ç›‘æ§", StringUtils.join(results, "<br/>"));
 		}
 	}
 	

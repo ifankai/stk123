@@ -33,9 +33,9 @@ public class Strategy16 extends Strategy {
 					return i;
 				}});
 			//System.out.println(results);
-			super.logStrategy(conn, today, "Ä£ĞÍ16-ÑôÏß·ÅÁ¿ÒõÏßËõÁ¿", results);
-			EmailUtils.sendAndReport("Ä£ĞÍ16-ÑôÏß·ÅÁ¿ÒõÏßËõÁ¿,¸öÊı£º"+results.size()+",ÈÕÆÚ:"+today,
-					"²ßÂÔÀ´Ô´£º·½´óÌ¼ËØ[600516]-2017/05/22Ö®Ç°<br>" +
+			super.logStrategy(conn, today, "æ¨¡å‹16-é˜³çº¿æ”¾é‡é˜´çº¿ç¼©é‡", results);
+			EmailUtils.sendAndReport("æ¨¡å‹16-é˜³çº¿æ”¾é‡é˜´çº¿ç¼©é‡,ä¸ªæ•°ï¼š"+results.size()+",æ—¥æœŸ:"+today,
+					"ç­–ç•¥æ¥æºï¼šæ–¹å¤§ç¢³ç´ [600516]-2017/05/22ä¹‹å‰<br>" +
 							"<br><br>"+
 					StkUtils.createHtmlTable(today, results));
 		}

@@ -65,7 +65,7 @@ public class Strategy1 extends Strategy {
 											System.out.println("aaa="+(cnt>=5));
 										}
 										if(cnt >= 5){
-											//Á¬Ğø²¨¶ÎĞÔ
+											//è¿ç»­æ³¢æ®µæ€§
 											if(k.hasHighVolumn(1.4)){
 												cnt = k.getKCountWithCondition(5, new K.Condition() {
 													public boolean pass(K k) throws Exception {
@@ -104,7 +104,7 @@ public class Strategy1 extends Strategy {
 			/*for(Index index : results){
 				System.out.println(index.getCode()+","+index.getName()+",change="+index.changePercent);
 			}*/
-			EmailUtils.sendAndReport("Ä£ĞÍ1-60ÈÕ¾ùÏßÉÏÉıÇÒ»îÔ¾·ÅÁ¿,¸öÊı£º"+results.size()+",ÈÕÆÚ:"+today,StkUtils.createHtmlTable(today, results));
+			EmailUtils.sendAndReport("æ¨¡å‹1-60æ—¥å‡çº¿ä¸Šå‡ä¸”æ´»è·ƒæ”¾é‡,ä¸ªæ•°ï¼š"+results.size()+",æ—¥æœŸ:"+today,StkUtils.createHtmlTable(today, results));
 		}
 	 
 

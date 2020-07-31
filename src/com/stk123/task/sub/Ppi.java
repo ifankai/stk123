@@ -23,7 +23,7 @@ import com.stk123.tool.util.JsonUtils;
 
 
 /**
- * ÉúÒâÉç http://www.100ppi.com/
+ * ç”Ÿæ„ç¤¾ http://www.100ppi.com/
  */
 public class Ppi {
 
@@ -114,9 +114,9 @@ public class Ppi {
 						}
 					}
 					
-					//³õÊ¼»¯ÓÃ£¬Ò»´ÎĞÔµÄ
+					//åˆå§‹åŒ–ç”¨ï¼Œä¸€æ¬¡æ€§çš„
 					if(false){
-						Node kNode = HtmlUtils.getNodeByText(page, null, "²é¿´ÖÜKÏß");
+						Node kNode = HtmlUtils.getNodeByText(page, null, "æŸ¥çœ‹å‘¨Kçº¿");
 						//System.out.println(kNode.toHtml());
 						if(kNode != null){
 							page = HttpUtils.get("http://www.100ppi.com/cindex/?welcome=no&f=graph&func="+((Tag)child).getAttribute("id"), "utf-8");
@@ -141,7 +141,7 @@ public class Ppi {
 				//break;
 			}
 		}catch(Exception e){
-			EmailUtils.send("ÉúÒâÉç³ö´í", e);
+			EmailUtils.send("ç”Ÿæ„ç¤¾å‡ºé”™", e);
 		} finally {
 			if (conn != null) conn.close();
 		}
