@@ -2679,3 +2679,10 @@ group by a.code,s.name having count(*)=5 order by a.code asc;
 江山欧派(SH:603208)
 小熊电器(SZ:002959)
 密尔克卫(SH:603713)
+
+select * from stk_import_info order by id desc;
+select * from stk_import_info where code='000009' order by id desc;
+select * from stk_import_info where code='01610' order by id desc;
+select * from stk_text where code='00853';
+
+select * from stk_text where insert_time > sysdate -365 and text like '%困境反转%' order by id desc

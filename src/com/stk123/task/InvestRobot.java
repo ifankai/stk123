@@ -47,10 +47,11 @@ public class InvestRobot {
 
 	public static void main(String[] args) throws Exception {
 		try{
+			//docx解析时指定正确的解析类
 			System.setProperty("javax.xml.parsers.DocumentBuilderFactory","com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
 			run(InitialDate);
 
-			//parse2();
+			//parse3();
 
 		}catch(Exception e){
 			StringWriter aWriter = new StringWriter();
@@ -106,11 +107,11 @@ public class InvestRobot {
 
 	/**
 	 * 投资者关系 PDF
-	 * http://irm.cninfo.com.cn/ircs/index/search
+	 * http://irm.cninfo.com.cn
 	 */
 	public static List<Map> parse3() throws Exception {
 		List<Map> list = new ArrayList<Map>();
-		String page = HttpUtils.post("http://irm.cninfo.com.cn/ircs/index/search", "pageNo=1&pageSize=10&searchTypes=4%2C&market=&industry=&stockCode=", "utf-8");
+		String page = HttpUtils.post("http://irm.cninfo.com.cn/ircs/index/search", "pageNo=1&pageSize=50&searchTypes=4%2C&market=&industry=&stockCode=", "utf-8");
 		ObjectMapper mapper = new ObjectMapper();
 		InvestJson json = mapper.readValue(page, InvestJson.class);
 		if(json != null) {
@@ -120,7 +121,7 @@ public class InvestRobot {
 				String title = result.getMainContent();
 				String investDate = StkUtils.formatDate(new Date(Long.parseLong(result.getPubDate())));
 				System.out.println(code+", "+title+", "+downloadUrl);
-				Map map = download(code, downloadUrl, title, investDate);
+				Map map = download(code, "http://static.cninfo.com.cn/"+downloadUrl, title, investDate);
 				list.add(map);
 			}
 		}
@@ -186,6 +187,7 @@ public class InvestRobot {
 		map.put("sourceType", sourceType);
 		map.put("title", title);
 		map.put("investDate", StkUtils.sf_ymd.parse(investDate));
+		map.put("code", code);
 
 		if("doc".equalsIgnoreCase(sourceType)){
 			Table tb = WordUtils.getTable(downloadFilePath + fileName,0);

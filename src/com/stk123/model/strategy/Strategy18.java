@@ -16,7 +16,6 @@ import com.stk123.tool.db.util.CloseUtil;
 import com.stk123.tool.db.util.DBUtil;
 import com.stk123.tool.util.EmailUtils;
 
-import junit.framework.Assert;
 
 public class Strategy18 extends Strategy {
 	

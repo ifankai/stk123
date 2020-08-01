@@ -1,10 +1,10 @@
-<project name="Stk123" default="deploy" basedir="../">
+<project name="Stk123" default="jar" basedir="../">
 	
 	<property name="dist_name" value="./stk.zip" />
 	<property name="tomcat_home" value="E:/apache-tomcat/webapps/ROOT" />
 
 	<target name="jar">
-		<jar destfile="./stk.jar" basedir="./bin" includes="**" />
+		<jar destfile="./stk.jar" basedir="./web/WEB-INF/classes" includes="**" />
 	</target>
 	
 	<target name="deploy" depends="jar">

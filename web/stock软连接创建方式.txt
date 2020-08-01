@@ -1,0 +1,1 @@
+mklink /D D:\share\workspace\stk123\web\stock G:\stk123\stock
