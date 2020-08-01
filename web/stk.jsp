@@ -806,16 +806,16 @@ $(function() {
 		<script type="text/javascript">$("#text_code").val($('#scode').val());</script>
 		<div class="pagination pagination-right" id="pager2_tmp"></div>
 	  </div>
-   </div>
-      <!-- 临时把“相关文档”一下都查询出来 -->
-      <div class="tab-pane" id="info-related">
-      	<div id="text_list" style="height:100%;overflow:auto;text-align:left;">
-      	<p style="text-align:center;"><span class="loading red" data-original-title="加载中，请等待…">加载…</span></p>
-      	</div> 
-		<script type="text/javascript">$("#text_code").val($('#scode').val());</script>
-		<div class="pagination pagination-right" id="pager2"></div>
-	  </div>
-  </div>
+      </div><h3>相关文档：</h3>
+        <!-- 临时把“相关文档”一下都查询出来 -->
+        <div class="tab-pane" id="info-related">
+          <div id="text_list" style="height:100%;overflow:auto;text-align:left;">
+            <p style="text-align:center;"><span class="loading red" data-original-title="加载中，请等待…">加载…</span></p>
+            </div>
+            <script type="text/javascript">$("#text_code").val($('#scode').val());</script>
+          <div class="pagination pagination-right" id="pager2"></div>
+        </div>
+      </div>
 </div>
 
 
