@@ -234,8 +234,8 @@ public class TextAction implements StkConstant {
 		return 0;
 	}
 	
-	private final static String SQL_SELECT_TEXT_BY_USER_ID = "select id,type,code,code_type,title,text,nvl(update_time,insert_time) update_time,disp_order,sub_type from stk_text where user_id=? and code=? and code_type=? order by nvl(update_time,insert_time) desc";
-	private final static String SQL_COUNT_TEXT_BY_USER_ID = "select count(1) from stk_text where user_id=? and code=? and code_type=?";
+	private final static String SQL_SELECT_TEXT_BY_USER_ID = "select id,type,code,code_type,title,text,nvl(update_time,insert_time) update_time,disp_order,sub_type from stk_text where user_id=? and code=? and code_type=? and type!=3 order by nvl(update_time,insert_time) desc";
+	private final static String SQL_COUNT_TEXT_BY_USER_ID = "select count(1) from stk_text where user_id=? and code=? and code_type=? and type!=3";
 	
 	public void listStkText() throws Exception {
 		StkContext sc = StkContext.getContext();
