@@ -20,8 +20,7 @@ import com.stk123.tool.util.EmailUtils;
 import com.stk123.tool.util.ExceptionUtils;
 import com.stk123.tool.util.JdbcUtils;
 import com.stk123.tool.util.collection.Name2Value;
-
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public abstract class Strategy {
 	

@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.watij.webspec.dsl.Tag;
-import org.watij.webspec.dsl.WebSpec;
+/*import org.watij.webspec.dsl.Tag;
+import org.watij.webspec.dsl.WebSpec;*/
 
 import com.stk123.tool.util.HtmlUtils;
 
@@ -44,7 +44,7 @@ public class BaiDuHi {
 	
 	public static void sendSMS(List<String> msgs){
 		if(true)return;//暂时屏蔽此功能
-        WebSpec spec = null;
+        /*WebSpec spec = null;
         try{
         	spec = new WebSpec().ie();  
 	        spec.hide();  
@@ -64,7 +64,7 @@ public class BaiDuHi {
 	        }
         }finally{
         	if(spec != null)spec.closeAll();
-        }
+        }*/
 	}
 	
 	public static void sendSMS(String msg){

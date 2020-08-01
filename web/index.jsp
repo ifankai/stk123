@@ -571,7 +571,7 @@ $(document).ready(function() {
 <div class="content">
   <div class="page-header" >
     <div style="float: left;">
-      <h3><span class="icon-tasks"></span> 投资者关系</h3>
+      <h3><span class="icon-tasks"></span> 投资者关系</h3> [<a target="_blank" href="http://irm.cninfo.com.cn/ircs/index">互动易</a>, <a target="_blank" href="http://irm.cninfo.com.cn/ircs/search?keyword=5G">5G</a>]
     </div>
     <div class="controls" style="float:right;">
 		<div class="input-append">
