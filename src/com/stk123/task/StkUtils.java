@@ -1186,7 +1186,7 @@ public class StkUtils {
     }
 
     public static String wrapCodeAndNameAsHtml(Index index) throws Exception {
-        return "<a class=\"stk-code\" target=\"_blank\" href=\"http://localhost/stk?s="+index.getCode()+"\">"+index.getName()+"["+index.getCode()+"]</a>["+StkUtils.number2String(index.getTotalMarketValue(),2)+"亿]";
+        return "<a class=\"stk-code\" target=\"_blank\" href=\"/stk?s="+index.getCode()+"\">"+index.getName()+"["+index.getCode()+"]</a>["+StkUtils.number2String(index.getTotalMarketValue(),2)+"亿]";
     }
 
     public static String wrapIndustryAsHtml(Integer id,String name){
