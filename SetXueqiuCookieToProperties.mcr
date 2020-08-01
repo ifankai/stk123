@@ -1,5 +1,8 @@
 OPEN FILE : C:\Users\fankai\AppData\Local\360Chrome\Chrome\Application\360chrome.exe :  : 0
 DELAY : 3000
+SWITCH TO WINDOW : 百度一下，你就知道 - 360极速浏览器 11.0 : 0
+DELAY : 1000
+Mouse : 848 : 48 : Click : 0 : 0 : 0
 Mouse : 848 : 48 : Click : 0 : 0 : 0
 Mouse : 848 : 48 : Click : 0 : 0 : 0
 DELAY : 1000
