@@ -652,7 +652,7 @@ $(function() {
   </div>
 </div>
 <pre>
-   查询关键字：高成长,行业龙头，反转
+   查询关键字：高成长,行业龙头，反转, 供不应求
 </pre>
 <script type="text/javascript">
 $(function() {

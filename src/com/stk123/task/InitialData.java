@@ -570,6 +570,8 @@ public class InitialData {
 			}
 		}
 	}
+
+	//http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zz1&date=2020-08-05
 	
 	//巨潮 pe
 	public static void initialIndustryFromCnIndex(Connection conn, int n) throws Exception {
@@ -985,9 +987,10 @@ public class InitialData {
 	public static void initAwesomeFund() throws Exception {
 		//一年期牛基排行前20
 		//http://vip.stock.finance.sina.com.cn/fund_center/index.html#hbphgpx
+		//http://vip.stock.finance.sina.com.cn/fund_center/data/jsonp.php/IO.XSRV2.CallbackList['hLfu5s99aaIUp7D4']/NetValueReturn_Service.NetValueReturnOpen?page=1&num=40&sort=form_year&asc=0&ccode=&type2=2&type3=
 		String page = HttpUtils.get("http://vip.stock.finance.sina.com.cn/fund_center/api/jsonp.php/IO.XSRV2.CallbackList"+URLEncoder.encode("['DcBGhAVnTMWhR1GU']","utf-8")+"/NetValueReturn_Service.NetValueReturnOpen?page=1&num=40&sort=one_year&asc=0&ccode=&type2=2&type3=&%5Bobject%20HTMLDivElement%5D=nkyl2","gb2312");
 		//System.out.println(page);
-		String json = StringUtils.substringBetween(page, "((", "))");
+		String json = StringUtils.substringBetween(page, "(", ")");
 		Map<String, Class> m = new HashMap<String, Class>();
         m.put("data", Map.class);
 		Object obj = JsonUtils.getObject4Json(json, Map.class, m);
@@ -1001,7 +1004,7 @@ public class InitialData {
 		//成立以来牛基排行前20
 		page = HttpUtils.get("http://vip.stock.finance.sina.com.cn/fund_center/api/jsonp.php/IO.XSRV2.CallbackList"+URLEncoder.encode("['MH8C82zCRTRcBOjM']","utf-8")+"/NetValueReturn_Service.NetValueReturnOpen?page=1&num=40&sort=form_start&asc=0&ccode=&type2=2&type3=&%5Bobject%20HTMLDivElement%5D=yywui","gb2312");
 		//System.out.println(page);
-		json = StringUtils.substringBetween(page, "((", "))");
+		json = StringUtils.substringBetween(page, "(", ")");
 		m = new HashMap<String, Class>();
         m.put("data", Map.class);
 		obj = JsonUtils.getObject4Json(json, Map.class, m);
@@ -1380,6 +1383,7 @@ public class InitialData {
 											&& fn1.getFnValue() > 0 && fn1.getFnValue() - fn2.getFnValue() >= 40){
 										fn1 = fn1.getBefore();
 										fn2 = fn2.getBefore();
+										String fd = fn1.getFnDate();
 										if(fn1 != null && fn2 != null && fn1.getFnValue() != null && fn2.getFnValue() != null
 												&&  fn1.getFnValue() > 40
 												&& fn1.getFnValue() > 0 && fn1.getFnValue() - fn2.getFnValue() >= 30){
@@ -1391,7 +1395,7 @@ public class InitialData {
 												params.clear();
 												params.add(index.getCode());
 												params.add(News.TYPE_20);
-												params.add("[主营远大于利润] 主营收入增长率连续3个季度大于净利润增加率40个点");
+												params.add("[主营远大于利润]["+fd+"] 主营收入增长率连续3个季度大于净利润增加率40个点");
 												JdbcUtils.insert(conn, "insert into stk_import_info(id,code,type,insert_time,info) values (s_import_info_id.nextval,?,?,sysdate,?)", params);
 												//EmailUtils.send("发现 - 主营远大于利润", index.getCode()+","+index.getName());
 											}

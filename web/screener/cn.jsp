@@ -61,7 +61,7 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
     <div style="float: left;">
     <!-- h4><span class="icon-tasks"></span> A股筛选器</h4 -->
     <div>
-    	<select multiple="multiple" id="conditionSelect" size="8" style="width:180px;margin-bottom:0px;" onchange="select()">	
+    	<select multiple="multiple" id="conditionSelect" size="7" style="width:180px;margin-bottom:0px;" onchange="select()">
     	</select>
     </div>
     </div>
@@ -195,7 +195,7 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
   <!-- Page container -->
   <div class="page-container">
     <div class="tab-content" >
-      <div style="position: absolute;left:200px;top:210px;">
+      <div style="position: absolute;left:350px;top:215px;">
       	<div style="position:relative;float:left;" id="mv_refresh_time"></div>
       	<div style="position:relative;float:left;top:-5px;left:10px;">
       		<button type="button" id="mvRefreshBtn" class="btn" onclick="mvRefresh();">刷新物化视图</button>
