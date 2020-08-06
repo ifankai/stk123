@@ -1,4 +1,6 @@
 <%@page import="com.stk123.tool.util.JdbcUtils"%>
+<%@ page import="java.util.List" %>
+<%@ page import="com.stk123.task.StkUtils" %>
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@include file="/common/import.jsp" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -530,7 +532,7 @@ if(index.getMarket()==1){
 <strong>数据统计 观察要点：</strong>
   1.原则上 PEG<0.8 才能买入（陌上花香）。
 </pre>
-
+<%} %>
 
 
 
@@ -539,6 +541,7 @@ if(index.getMarket()==1){
     <h3 style="line-height: 59px;"><span class="icon-tasks"></span> 
     	<a target="_blank" href="http://stockpage.10jqka.com.cn/<%=index.getCode() %>/holder/">十大流通股东</a>
     </h3>
+    <%if(index.getMarket() == 3){%> <a target="_blank" href="https://di.hkex.com.hk/di/NSSrchCorpList.aspx?sa1=cl&scsd=<%=StkUtils.formatDate(StkUtils.addDay(new java.util.Date(),-365), StkUtils.sf_ymd11)%>&sced=<%=StkUtils.formatDate(new java.util.Date(), StkUtils.sf_ymd11)%>&sc=<%=index.getCode()%>&src=MAIN&lang=ZH">港股股权持仓</a> (打开后点击：大股東完整名單) <%}%>
     <div style="position: absolute;left:175px;top:9px;" >
     <ul class="nav nav-tabs" role="tablist">
 <%
@@ -580,11 +583,11 @@ if(index.getMarket()==1){
 </div>
 <script type="text/javascript">
 $(function() {
-  listOnwer('<%=onwerDates.get(0)%>');
+  listOnwer('<%=onwerDates!=null&&onwerDates.size()>0?onwerDates.get(0):""%>');
   $("a[id^='onwer-tab-']").one('click', function(){listOnwer($(this).attr('data'));});
 });
 </script>
-<%} %>
+
 
 <%if(index.getMarket() == 1 || index.getMarket() == 3){ %>
 <div class="content">

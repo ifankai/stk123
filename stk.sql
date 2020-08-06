@@ -1571,7 +1571,8 @@ select * from stk_dictionary where type=1000 for update;
 select * from stk_index_node for update;
 select * from stk_data_industry_pe
 
-select * from stk_pe;
+select * from stk where code='002572';
+select * from stk_organization where name like '景顺长城精选蓝筹%';
 select * from stk_pe order by report_date desc for update;
 
 select * from stk_industry_type where id=1767;
@@ -2569,8 +2570,9 @@ select * from stk_dictionary where type=1006 for update;
 
 select * from stk_ownership where code='000559' order by fn_date desc for update;
 select * from stk_investigation where invest_date = (select max(invest_date) from stk_investigation) order by investigator_count desc;
+select * from stk_investigation order by insert_date desc;
 
-select * from stk_text order by insert_time desc;
+select * from stk_text where code='002214' order by insert_time desc;
 select * from stk_user;
 
 select * from stk_earnings_notice order by notice_date desc;
@@ -2685,4 +2687,28 @@ select * from stk_import_info where code='000009' order by id desc;
 select * from stk_import_info where code='01610' order by id desc;
 select * from stk_text where code='00853';
 
-select * from stk_text where insert_time > sysdate -365 and text like '%困境反转%' order by id desc
+select * from stk_text where insert_time > sysdate -365 and text like '%困境反转%' order by id desc;
+
+select distinct source from stk_industry_type;
+
+--20200331 季度十大机构对行业配置的增仓比例
+select sum(rate), name, count(*), sum(rate)/count(*)*100 from (
+select a.code,b.rate, c.name from stk_industry a, stk_industry_type c,
+(select code,(case when sum(num_change)>0 then 1 else -1 end) rate from stk_ownership where fn_date='20200331' group by code) b 
+where a.code=b.code and a.industry=c.id and c.source='cnindex'
+) group by name having count(*)>50 
+order by sum(rate)/count(*) desc;
+
+select sum(rate), name, count(*), sum(rate)/count(*)*100 from (
+select a.code,b.rate, c.name from stk_industry a, stk_industry_type c,
+(select code,(case when sum(num_change)>0 then 1 else -1 end) rate from stk_ownership where fn_date='20191231' group by code) b 
+where a.code=b.code and a.industry=c.id and c.source='cnindex'
+) group by name having count(*)>50 
+order by sum(rate)/count(*) desc;
+
+select sum(rate), name, count(*), sum(rate)/count(*)*100 from (
+select a.code,b.rate, c.name from stk_industry a, stk_industry_type c,
+(select code,(case when sum(num_change)>0 then 1 else -1 end) rate from stk_ownership where fn_date='20190630' group by code) b 
+where a.code=b.code and a.industry=c.id and c.source='cnindex'
+) group by name having count(*)>50 
+order by sum(rate)/count(*) desc;

@@ -905,8 +905,8 @@ public class InitialKLine {
 								index.initKLines(30);
 							}
 						}catch(Exception e){
-							//e.printStackTrace();
 							ExceptionUtils.insertLog(conn, index.getCode(), e);
+                            e.printStackTrace();
 						}finally{
 							ConnectionPool.getInstance().release(conn);
 							countDownLatch.countDown();
