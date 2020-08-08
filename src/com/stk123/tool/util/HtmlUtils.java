@@ -348,6 +348,10 @@ public class HtmlUtils {
 		return null;
 	}
 
+	/**
+	 *  <table class="table table-bg p_table table-border">
+	 *  @example getNodeByAttributeContain(page, null, "class", "p_table") or getNodeByAttributeContain(page, null, "class", "table-bg")
+	 */
 	public static Node getNodeByAttributeContain(String page, String charset, final String attribute, final String value) throws Exception {
 		NodeFilter tableFilter = new RegexFilter("");
 		NodeList nodeList = null;
