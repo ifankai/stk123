@@ -19,15 +19,8 @@ import org.apache.commons.httpclient.Header;
 import org.apache.commons.lang.StringUtils;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.XPatherException;
-import org.htmlparser.Node;
-import org.htmlparser.NodeFilter;
-import org.htmlparser.Parser;
-import org.htmlparser.Tag;
-import org.htmlparser.filters.AndFilter;
-import org.htmlparser.filters.HasAttributeFilter;
-import org.htmlparser.filters.NodeClassFilter;
-import org.htmlparser.filters.StringFilter;
-import org.htmlparser.filters.TagNameFilter;
+import org.htmlparser.*;
+import org.htmlparser.filters.*;
 import org.htmlparser.nodes.TagNode;
 import org.htmlparser.tags.ImageTag;
 import org.htmlparser.tags.LinkTag;
@@ -50,88 +43,88 @@ import com.stk123.web.StkConstant;
 
 public class HtmlUtils {
 
-	public final static String RegxpForImgTag = "<\\s*(img|IMG)\\s+([^>]*)\\s*>"; // 找出IMG标签   
-    
-    public final static String RegxpForImaTagSrcAttr = "src\\s*=\\s*\"([^\"]+)\""; // 找出IMG标签的SRC属性   
-    
-	public final static byte[] val = { 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,        
-        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,        
-        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,        
-        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,        
-        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x00, 0x01,        
-        0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x3F, 0x3F, 0x3F,        
-        0x3F, 0x3F, 0x3F, 0x3F, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x3F,        
-        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,        
-        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,        
-        0x3F, 0x3F, 0x3F, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x3F, 0x3F,        
-        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,        
-        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,        
-        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,        
-        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,        
-        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,        
-        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,        
-        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,        
-        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,        
-        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,        
-        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,        
-        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,        
-        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,        
-        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,        
-        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F };    
-   
-   
-	public static String unescape(String s) {        
-        StringBuffer sbuf = new StringBuffer();        
-        int i = 0;        
-        int len = s.length();        
-        while (i < len) {        
-        int ch = s.charAt(i);        
-        if ('A' <= ch && ch <= 'Z') {    
-        sbuf.append((char) ch);        
-        } else if ('a' <= ch && ch <= 'z') {         
-        sbuf.append((char) ch);        
-        } else if ('0' <= ch && ch <= '9') {     
-            sbuf.append((char) ch);        
-        } else if (ch == '-' || ch == '_'|| ch == '.' || ch == '!' || ch == '~' || ch == '*'|| ch == '\'' || ch == '(' || ch == ')') {        
-        sbuf.append((char) ch);        
-        } else if (ch == '%') {    
-            int cint = 0;        
-            if ('u' != s.charAt(i + 1)) {        
-            cint = (cint << 4) | val[s.charAt(i + 1)];        
-            cint = (cint << 4) | val[s.charAt(i + 2)];        
-            i += 2;        
-            } else {        
-                cint = (cint << 4) | val[s.charAt(i + 2)];        
-                cint = (cint << 4) | val[s.charAt(i + 3)];        
-                cint = (cint << 4) | val[s.charAt(i + 4)];        
-                cint = (cint << 4) | val[s.charAt(i + 5)];        
-                i += 5;        
-            }        
-            sbuf.append((char) cint);    
-        } else {        
-            sbuf.append((char) ch);        
-        }        
-        i++;        
-        }        
-        return sbuf.toString();        
+	public final static String RegxpForImgTag = "<\\s*(img|IMG)\\s+([^>]*)\\s*>"; // 找出IMG标签
+
+    public final static String RegxpForImaTagSrcAttr = "src\\s*=\\s*\"([^\"]+)\""; // 找出IMG标签的SRC属性
+
+	public final static byte[] val = { 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,
+        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,
+        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,
+        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,
+        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x00, 0x01,
+        0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x3F, 0x3F, 0x3F,
+        0x3F, 0x3F, 0x3F, 0x3F, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x3F,
+        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,
+        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,
+        0x3F, 0x3F, 0x3F, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x3F, 0x3F,
+        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,
+        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,
+        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,
+        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,
+        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,
+        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,
+        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,
+        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,
+        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,
+        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,
+        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,
+        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,
+        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F,
+        0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F, 0x3F };
+
+
+	public static String unescape(String s) {
+        StringBuffer sbuf = new StringBuffer();
+        int i = 0;
+        int len = s.length();
+        while (i < len) {
+        int ch = s.charAt(i);
+        if ('A' <= ch && ch <= 'Z') {
+        sbuf.append((char) ch);
+        } else if ('a' <= ch && ch <= 'z') {
+        sbuf.append((char) ch);
+        } else if ('0' <= ch && ch <= '9') {
+            sbuf.append((char) ch);
+        } else if (ch == '-' || ch == '_'|| ch == '.' || ch == '!' || ch == '~' || ch == '*'|| ch == '\'' || ch == '(' || ch == ')') {
+        sbuf.append((char) ch);
+        } else if (ch == '%') {
+            int cint = 0;
+            if ('u' != s.charAt(i + 1)) {
+            cint = (cint << 4) | val[s.charAt(i + 1)];
+            cint = (cint << 4) | val[s.charAt(i + 2)];
+            i += 2;
+            } else {
+                cint = (cint << 4) | val[s.charAt(i + 2)];
+                cint = (cint << 4) | val[s.charAt(i + 3)];
+                cint = (cint << 4) | val[s.charAt(i + 4)];
+                cint = (cint << 4) | val[s.charAt(i + 5)];
+                i += 5;
+            }
+            sbuf.append((char) cint);
+        } else {
+            sbuf.append((char) ch);
+        }
+        i++;
+        }
+        return sbuf.toString();
     }
-	
-	public static String removeHTML(String str) { 
+
+	public static String removeHTML(String str) {
 		if(str == null)return null;
-        str = stringReplace(str, "\\s", "");// 去掉页面上看不到的字符  
-        str = stringReplace(str, "<br ?/?>", "\n");// 去<br><br />  
-        str = stringReplace(str, "<([^<>]+)>", "");// 去掉<>内的字符  
-        str = stringReplace(str, "&nbsp;", " ");// 替换空格  
-        str = stringReplace(str, "&(\\S)(\\S?)(\\S?)(\\S?);", "");// 去<br><br />  
-        return str;  
+        str = stringReplace(str, "\\s", "");// 去掉页面上看不到的字符
+        str = stringReplace(str, "<br ?/?>", "\n");// 去<br><br />
+        str = stringReplace(str, "<([^<>]+)>", "");// 去掉<>内的字符
+        str = stringReplace(str, "&nbsp;", " ");// 替换空格
+        str = stringReplace(str, "&(\\S)(\\S?)(\\S?)(\\S?);", "");// 去<br><br />
+        return str;
     }
-	
-	public static String stringReplace(String str, String sr, String sd) {  
-        String regEx = sr;  
-        Pattern p = Pattern.compile(regEx, Pattern.CASE_INSENSITIVE);  
-        Matcher m = p.matcher(str);  
-        str = m.replaceAll(sd);  
-        return str;  
+
+	public static String stringReplace(String str, String sr, String sd) {
+        String regEx = sr;
+        Pattern p = Pattern.compile(regEx, Pattern.CASE_INSENSITIVE);
+        Matcher m = p.matcher(str);
+        str = m.replaceAll(sd);
+        return str;
     }
 
 	/**
@@ -145,8 +138,8 @@ public class HtmlUtils {
 	public static Map<String,Map<String, String>> getListFromTable(TableTag tab,int thead,int keyColumn) throws Exception {
 		Map<String,Map<String, String>> result = new HashMap<String,Map<String, String>>();
 		TableRow[] rows = tab.getRows();
-		for (int j = thead+1; j < rows.length; j++) {   
-			TableRow tr = (TableRow) rows[j];   
+		for (int j = thead+1; j < rows.length; j++) {
+			TableRow tr = (TableRow) rows[j];
 			TableColumn[] td = tr.getColumns();
 			TableRow theadRow = rows[thead];
 			Map<String, String> map = null;
@@ -155,7 +148,7 @@ public class HtmlUtils {
 					continue;
 				}
 				String k = null;
-				
+
 				if(theadRow.getColumnCount() > 0){
 					k = theadRow.getColumns()[i].toPlainTextString();
 				}else{
@@ -177,20 +170,20 @@ public class HtmlUtils {
 				if(result.get(k) == null){
 					result.put(k,map);
 				}
-			} 
-			
+			}
+
 		}
 		return result;
 	}
-	
+
 	/**
 	 * @param thead 指示head是第几行，这行会忽略，从0开始
 	 */
 	public static List<List<String>> getListFromTable(TableTag tab,int thead){
 		List<List<String>> result = new ArrayList<List<String>>();
 		TableRow[] rows = tab.getRows();
-		for (int j = thead+1; j < rows.length; j++) {   
-			TableRow tr = (TableRow) rows[j];   
+		for (int j = thead+1; j < rows.length; j++) {
+			TableRow tr = (TableRow) rows[j];
 			TableColumn[] td = tr.getColumns();
 			List<String> row = new ArrayList<String>();
 			for (int i = 0; i < td.length; i++) {
@@ -201,12 +194,12 @@ public class HtmlUtils {
 		}
 		return result;
 	}
-	
+
 	public static List<List<String>> getListFromTable2(TableTag tab,int thead){
 		List<List<String>> result = new ArrayList<List<String>>();
 		TableRow[] rows = tab.getRows();
-		for (int j = thead+1; j < rows.length; j++) {   
-			TableRow tr = (TableRow) rows[j];   
+		for (int j = thead+1; j < rows.length; j++) {
+			TableRow tr = (TableRow) rows[j];
 			TableColumn[] td = tr.getColumns();
 			TableHeader[] th = tr.getHeaders();
 			List<String> row = new ArrayList<String>();
@@ -222,21 +215,21 @@ public class HtmlUtils {
 		}
 		return result;
 	}
-	
+
 	public static List<List<String>> getListFromTable(TableTag tab){
 		return getListFromTable(tab,-1);//-1为没有标题行
 	}
-	
+
 	public static Map<String,Map<String, String>> getListFromTable(String page,String charset,String tableId,int thead,int keyColumn) throws Exception {
 		return getListFromTable(getTable(page,charset,tableId),thead,keyColumn);
 	}
-	
+
 	public static TableTag getTable(String page,String charset,String tableId) throws Exception {
 		NodeFilter tableFilter = new NodeClassFilter(TableTag.class);
 		NodeList nodeList = null;
-		nodeList = getParser(page,charset).parse(tableFilter);         
-		for (int i = 0; i <= nodeList.size(); i++) {           
-			if (nodeList.elementAt(i) instanceof TableTag) {             
+		nodeList = getParser(page,charset).parse(tableFilter);
+		for (int i = 0; i <= nodeList.size(); i++) {
+			if (nodeList.elementAt(i) instanceof TableTag) {
 				TableTag tag = (TableTag) nodeList.elementAt(i);
 				if(tableId.equalsIgnoreCase(tag.getAttribute("id"))){
 					return tag;
@@ -245,15 +238,15 @@ public class HtmlUtils {
 		}
 		return null;
 	}
-	
+
 	private static Parser getParser(String page,String charset) throws Exception {
 		return Parser.createParser(page,charset);
 	}
-	
+
 	public static List<String> getText(Node node,final String tagName) {
 		final List<String> result = new ArrayList<String>();
 		node.accept(new NodeVisitor(){
-			public void visitTag(Tag tag) {   
+			public void visitTag(Tag tag) {
 		        if(tagName.equalsIgnoreCase(tag.getTagName())){
 		        	result.add(tag.toPlainTextString());
 		        }
@@ -261,11 +254,11 @@ public class HtmlUtils {
 		});
 		return result;
 	}
-	
+
 	public static Node getNodeByText(String page,String charset,String text) throws Exception {
 		NodeFilter tableFilter = new StringFilter(text);
 		NodeList nodeList = null;
-		nodeList = getParser(page,charset).extractAllNodesThatMatch(tableFilter); 
+		nodeList = getParser(page,charset).extractAllNodesThatMatch(tableFilter);
 		for (int i = 0; i < nodeList.size(); i++) {
 			Node node = nodeList.elementAt(i);
 			if(node != null){
@@ -274,11 +267,11 @@ public class HtmlUtils {
 		}
 		return null;
 	}
-	
+
 	public static List<Node> getNodesByText(String page,String charset,String text) throws Exception {
 		NodeFilter tableFilter = new StringFilter(text);
 		NodeList nodeList = null;
-		nodeList = getParser(page,charset).extractAllNodesThatMatch(tableFilter); 
+		nodeList = getParser(page,charset).extractAllNodesThatMatch(tableFilter);
 		List<Node> nodes = new ArrayList<Node>();
 		for (int i = 0; i < nodeList.size(); i++) {
 			Node node = nodeList.elementAt(i);
@@ -288,11 +281,11 @@ public class HtmlUtils {
 		}
 		return nodes;
 	}
-	
+
 	public static TableTag getTableNodeByText(String page, String charset, String text) throws Exception {
 		NodeFilter tableFilter = new StringFilter(text);
 		NodeList nodeList = null;
-		nodeList = getParser(page,charset).extractAllNodesThatMatch(tableFilter); 
+		nodeList = getParser(page,charset).extractAllNodesThatMatch(tableFilter);
 		for (int i = 0; i <= nodeList.size(); i++) {
 			Node node = nodeList.elementAt(i);
 			if(node != null){
@@ -308,11 +301,11 @@ public class HtmlUtils {
 		}
 		return null;
 	}
-	
+
 	public static List<TableTag> getTableNodesByText(String page, String charset, String text) throws Exception {
 		NodeFilter tableFilter = new StringFilter(text);
 		NodeList nodeList = null;
-		nodeList = getParser(page,charset).extractAllNodesThatMatch(tableFilter); 
+		nodeList = getParser(page,charset).extractAllNodesThatMatch(tableFilter);
 		List<TableTag> tabs = new ArrayList<TableTag>();
 		for (int i = 0; i <= nodeList.size(); i++) {
 			Node node = nodeList.elementAt(i);
@@ -330,7 +323,7 @@ public class HtmlUtils {
 		}
 		return tabs;
 	}
-	
+
 	public static Node getNodeByAttribute(Node node,String charset,String attribute,String value) throws Exception {
 		NodeList nodeList = new NodeList();
 		NodeFilter tableFilter = new HasAttributeFilter(attribute,value);
@@ -341,11 +334,11 @@ public class HtmlUtils {
 		}
 		return null;
 	}
-	
+
 	public static Node getNodeByAttribute(String page,String charset,String attribute,String value) throws Exception {
 		NodeFilter tableFilter = new HasAttributeFilter(attribute,value);
 		NodeList nodeList = null;
-		nodeList = getParser(page,charset).parse(tableFilter); 
+		nodeList = getParser(page,charset).parse(tableFilter);
 		for (int i = 0; i < nodeList.size(); i++) {
 			Node node = nodeList.elementAt(i);
 			if(node != null){
@@ -354,11 +347,36 @@ public class HtmlUtils {
 		}
 		return null;
 	}
-	
+
+	public static Node getNodeByAttributeContain(String page, String charset, final String attribute, final String value) throws Exception {
+		NodeFilter tableFilter = new RegexFilter("");
+		NodeList nodeList = null;
+		nodeList = getParser(page,charset).parse(new NodeFilter() {
+			@Override
+			public boolean accept(Node node) {
+				if (node instanceof Tag) {
+					Tag tag = (Tag)node;
+					Attribute attr = tag.getAttributeEx(StringUtils.upperCase(attribute));
+					if (attr != null && StringUtils.containsIgnoreCase(attr.getValue(), value)) {
+						return true;
+					}
+				}
+				return false;
+			}
+		});
+		for (int i = 0; i < nodeList.size(); i++) {
+			Node node = nodeList.elementAt(i);
+			if(node != null){
+				return node;
+			}
+		}
+		return null;
+	}
+
 	public static List<Node> getNodesByAttribute(String page,String charset,String attribute,String value) throws Exception {
 		NodeFilter tableFilter = new HasAttributeFilter(attribute,value);
 		NodeList nodeList = null;
-		nodeList = getParser(page,charset).parse(tableFilter); 
+		nodeList = getParser(page,charset).parse(tableFilter);
 		List<Node> result = new ArrayList<Node>();
 		for (int i = 0; i < nodeList.size(); i++) {
 			Node node = nodeList.elementAt(i);
@@ -368,11 +386,11 @@ public class HtmlUtils {
 		}
 		return result;
 	}
-	
+
 	public static Node getNodeByAttribute(String page,String charset,String attribute,String value,int k) throws Exception {
 		NodeFilter tableFilter = new HasAttributeFilter(attribute,value);
 		NodeList nodeList = null;
-		nodeList = getParser(page,charset).parse(tableFilter); 
+		nodeList = getParser(page,charset).parse(tableFilter);
 		int j = 0;
 		for (int i = 0; i < nodeList.size(); i++) {
 			Node node = nodeList.elementAt(i);
@@ -382,12 +400,12 @@ public class HtmlUtils {
 				}else{
 					j ++;
 				}
-				
+
 			}
 		}
 		return null;
 	}
-	
+
 	public static Node getNodeByAttributes(String page,String charset,Map<String,String> attributes) throws Exception {
 		List<NodeFilter> filters = new ArrayList<NodeFilter>(attributes.size());
 		Set<Map.Entry<String, String>> set = attributes.entrySet();
@@ -397,9 +415,9 @@ public class HtmlUtils {
 		NodeFilter[] arrays = new HasAttributeFilter[attributes.size()];
 		filters.toArray(arrays);
 		AndFilter andFilter = new AndFilter(arrays);
-		
+
 		NodeList nodeList = null;
-		nodeList = getParser(page,charset).parse(andFilter); 
+		nodeList = getParser(page,charset).parse(andFilter);
 		for (int i = 0; i < nodeList.size(); i++) {
 			Node node = nodeList.elementAt(i);
 			if(node != null){
@@ -408,7 +426,7 @@ public class HtmlUtils {
 		}
 		return null;
 	}
-	
+
 	public static Node getNodeByTagName(Node node,String tagName) throws Exception {
 		NodeList nodeList = new NodeList();
 		NodeFilter nodefilter = new org.htmlparser.filters.TagNameFilter(tagName);
@@ -429,7 +447,7 @@ public class HtmlUtils {
 		}
 		return null;
 	}
-	
+
 	public static List<Node> getNodeListByTagName(Node node,String tagName) throws Exception {
 		List<Node> result = new ArrayList<Node>();
 		NodeList nodeList = new NodeList();
@@ -442,7 +460,7 @@ public class HtmlUtils {
 		}
 		return result;
 	}
-	
+
 	public static List<Node> getNodeListByTagName(String page,String charset,String tagName) throws Exception {
 		List<Node> result = new ArrayList<Node>();
 		NodeList nodeList = null;
@@ -455,7 +473,7 @@ public class HtmlUtils {
 		}
 		return result;
 	}
-	
+
 	public static List<Node> getNodeListByTagNameAndAttribute(Node node,String tagName,String attribute,String value) throws Exception {
 		List<Node> result = new ArrayList<Node>();
 		NodeList nodeList = new NodeList();
@@ -470,7 +488,7 @@ public class HtmlUtils {
 		}
 		return result;
 	}
-	
+
 	public static List<Node> getNodeListByTagNameAndAttribute(String page,String charset,String tagName,String attribute,String value) throws Exception {
 		List<Node> result = new ArrayList<Node>();
 		NodeList nodeList = null;
@@ -485,26 +503,26 @@ public class HtmlUtils {
 		}
 		return result;
 	}
-	
+
 	public static String getTextFromTable(TableTag tab,int x,int y) throws Exception {
 		TableRow row = tab.getRow(y);
 		TableColumn[] td = row.getColumns();
 		return td[x].toPlainTextString();
-	}	
-	
+	}
+
 	/**
 	 * 通过xpath获取node (TagNode)
 	 * @param contents
 	 * @param xpath
 	 * @return element:org.htmlcleaner.TagNode
-	 * @throws XPatherException 
+	 * @throws XPatherException
 	 */
 	public static Object[] getNodesByXpath(String page, String xpath) throws XPatherException{
-		HtmlCleaner hc = new HtmlCleaner();  
+		HtmlCleaner hc = new HtmlCleaner();
         org.htmlcleaner.TagNode tn = hc.clean(page);
         return tn.evaluateXPath(xpath);
 	}
-	
+
 	public static String unicodeToCn(String unicode) {
 	    /* 以 \ u 分割，因为java注释也能识别unicode，因此中间加了一个空格*/
 	    String[] strs = unicode.split("\\\\u");
@@ -519,7 +537,7 @@ public class HtmlUtils {
 	public static String getAttribute(Node node, String attribute){
 		return ((TagNode)node).getAttribute(attribute);
 	}
-	
+
 	/**
 	 * @param args
 	 */
@@ -527,18 +545,18 @@ public class HtmlUtils {
 		/*String page = HttpUtils.get("http://money.finance.sina.com.cn/corp/go.php/vFD_FinancialGuideLine/stockid/002275/ctrl/2012/displaytype/4.phtml", null, "gb2312");
 		Node n = getNode(page,"","历年数据");
 		System.out.println(getText(n,"a"));*/
-		
+
 
 		/*String page = HttpUtils.get("http://stockdata.stock.hexun.com/2009_gsgk_002275.shtml", null, "GBK");
 		Node n = getNodeByAttribute(page, "","id", "zaiyaocontent");
 		System.out.println(n.getChildren().elementAt(1).toHtml());
 		System.out.println(getTextFromTable((TableTag)n.getChildren().elementAt(1), 5, 2));*/
-		
+
 		/*String page = HttpUtils.get("http://hq.sinajs.cn/list=sh600960,sh600952", null, "");
 		System.out.println(page);
 		page = HttpUtils.get("http://hq.sinajs.cn/list=sz000802", null, "");
 		System.out.println(page);*/
-		
+
 		/*String page = HttpUtils.get("http://ggzx.stock.hexun.com/more.jsp?t=0&k=600588&s=0",null,"GBK");
 		Node node = getNodeByAttribute(page,"","class","temp01");
 		List<Node> nl = getNodeListByTagName(node,"a");
@@ -546,7 +564,7 @@ public class HtmlUtils {
 		Node n = nl.get(0);
 		System.out.println(n.toPlainTextString());
 		System.out.println(((LinkTag)n).getAttribute("href"));*/
-		
+
 		/*String page = HttpUtils.get("http://wwtnews.windin.com/home/FinNews/newslist.aspx?columnid=30802000&windCode=002450.SZ&t=1",null,"GBK");
 		Node node = HtmlUtils.getNodeByAttribute(page,"","id","tbNewsList",1);
 		List<Node> nodes =HtmlUtils.getNodeListByTagNameAndAttribute(node, "td", "class", "NewsList");
@@ -554,7 +572,7 @@ public class HtmlUtils {
 			TableColumn td = (TableColumn)n;
 			System.out.println(td.getStringText().replaceAll("NewsDetail", "http://wwtnews.windin.com/home/FinNews/NewsDetail"));
 		}*/
-		
+
 		/*String page = HttpUtils.get("http://www.windin.com/Tools/NewsDetail.aspx?windcode=600577.SH", null, "gbk");
 		//System.out.println(unescape(page));
 		Node node = HtmlUtils.getNodeByAttribute(unescape(page),"","id","lblData");
@@ -566,7 +584,7 @@ public class HtmlUtils {
 			String target = StringUtils.substringBetween(s, "\"target\":\"", "\"");
 			System.out.println(target);
 		}*/
-		
+
 		/*String url = "http://114.80.159.18/CorpEventsWeb/NewsEventAlert.aspx?windcode=002275.SZ&t=1";
 		String page = HttpUtils.get(url,null,"GBK");
 		Node node = HtmlUtils.getNodeByAttribute(page,"","id","TABLE2");
@@ -577,59 +595,59 @@ public class HtmlUtils {
 		for(Node n:m){
 			System.out.println(n.toPlainTextString());
 		}*/
-		
+
 		/*String page = HttpUtils.get("http://www.windin.com/home/stock/html_wind/002275.SZ.shtml", null, "utf8");
 		//Node industryCompare = HtmlUtils.getNodeByAttribute(page, "", "id", "industryCompare");
 		//System.out.println(industryCompare.getChildren().elementAt(2).toPlainTextString());
 		Node redstar = HtmlUtils.getNodeByAttribute(page, "", "src", "http://i1.windin.com/imgserver/common/redstar.gif");
 		//System.out.println(redstar.toHtml());
 		//System.out.println(((TagNode)redstar.getParent().getNextSibling()).getAttribute("onmouseover"));
-		
+
 		List<Node> redstars = HtmlUtils.getNodesByAttribute(page, "", "src", "http://i1.windin.com/imgserver/common/redstar.gif");
 		for(Node star : redstars){
 			System.out.println(StringUtils.trim(star.getParent().getNextSibling().toPlainTextString())+":"+StringUtils.substringBetween(((TagNode)star.getParent().getNextSibling()).getAttribute("onmouseover"), "event,'", "')"));
 			System.out.println(((TagNode)star.getParent().getNextSibling()).getAttribute("onmouseover"));
 		}*/
-		
+
 		/*Node n = HtmlUtils.getNodeByText(page, "", "限售股份解禁时间表");
 		System.out.println(getListFromTable((TableTag)n.getParent().getParent(),1));
 		System.out.println(JsonUtils.getJsonString4JavaPOJO(getListFromTable((TableTag)n.getParent().getParent(),1)));
-		
-		
+
+
 		/*Node fn = HtmlUtils.getNodeByAttribute(page, null, "id", "browseByReport");
 		System.out.println(fn.toHtml());
 		Map<String,Map<String, String>> map = HtmlUtils.getListFromTable((TableTag)fn.getFirstChild(), 0, 0);
 		System.out.println(map);*/
-		
+
 		/*String page = HttpUtils.get("http://money.finance.sina.com.cn/corp/view/vFD_FinancialGuideLineHistory.php?stockid=600315&typecode=financialratios42", null, "GBK");
 		Map<String,Map<String, String>> tab = HtmlUtils.getListFromTable(page, "", "Table1", 0, 0);
 		System.out.println(tab.get(""));*/
-		
+
 		/*Node n = HtmlUtils.getNodeByText(page, "", "公司简介");
 		System.out.println(n.getParent().getNextSibling().getFirstChild().toHtml());
 		*/
-		
+
 		/*Node holder = HtmlUtils.getNodeByText(page, "", "A股股东户数");
 		System.out.println(holder.getParent().getParent().toHtml());
 		Map<String,Map<String, String>> map = HtmlUtils.getListFromTable((TableTag)holder.getParent().getParent(), 0, 0);
 		System.out.println(map);*/
-		
+
 		/*String page = HttpUtils.get("http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodes", null, "gb2312");
 		System.out.println(page);
 		System.out.println(new String(page.getBytes(),"GBK"));*/
-		
+
 		/*String page = HttpUtils.get("http://flashquote.stock.hexun.com/Quotejs/DA/2_399005_DA.html?", null, "gbk");
 		List<List> datas = JsonUtils.getList4Json("[["+StringUtils.substringBetween(page, "[[", "]]")+"]]", ArrayList.class );
 		for(List data:datas){
 			System.out.println(data);
 		}
-		
+
 		page = HttpUtils.get("http://finance.sina.com.cn/realstock/company/sz002571/qianfuquan.js", null, "gbk");
 		System.out.println(page);
 		SinaQianFuQuan sina = (SinaQianFuQuan)JsonUtils.getObject4JsonString(StringUtils.substringBetween(page, "[", "]"), SinaQianFuQuan.class, null);
 		System.out.println(sina.getTotal());
 		System.out.println(sina.getData());*/
-		
+
 		/*String page = HttpUtils.get("http://data.cfi.cn/cfidata.aspx?sortfd=%e9%a2%84%e5%91%8a%e7%b1%bb%e5%9e%8b&sortway=desc&fr=content&ndk=A0A1934A1939A1940A4431A4432&xztj=&mystock=&curpage=1", null, "utf-8");
 		//System.out.println(page);
 		Node table = HtmlUtils.getNodeByAttribute(page, "", "class", "table_data");
@@ -638,14 +656,14 @@ public class HtmlUtils {
 		for(List data:datas){
 			System.out.println(data);
 		}*/
-		
+
 		/*String page = HttpUtils.get("http://quote.hexun.com/js/conception.ashx", null, "GBK");
 		//System.out.println(page);
 		List<HexunIndustryConception> inds = JsonUtils.getList4Json(StringUtils.substringBetween(page, "conceptionData=", ";"), HexunIndustryConception.class);
 		for(HexunIndustryConception ind:inds){
 			System.out.println(ind.getType_code());
 		}*/
-		
+
 		/*page = HttpUtils.get("http://quote.tool.hexun.com/hqzx/stocktype.aspx?columnid=5522&type_code=gn_rzrq&sorttype=3&updown=up&page=1&count=5000", null, "GBK");
 		System.out.println(page);
 		List<List> stks = JsonUtils.getList4Json(StringUtils.substringBetween(page, "dataArr = ", ";"), ArrayList.class);
@@ -654,7 +672,7 @@ public class HtmlUtils {
 		}*/
 		/*String page = HttpUtils.get("http://www.chinaclear.cn/main/03/0303/030305/030305_15.html", null, "GBK");
 		System.out.println(page);*/
-		
+
 		/*String page = HttpUtils.get("http://xueqiu.com/S/SZ300124", null, "utf-8");
 		Node node = HtmlUtils.getNodeByAttribute(page, "", "class", "stockQuote");
 		String str = node.toHtml();
@@ -679,19 +697,19 @@ public class HtmlUtils {
 		Node table = HtmlUtils.getNodeByAttribute(page, "", "id", "GeneralDataTable");
 		Map<String,Map<String, String>> datas = HtmlUtils.getListFromTable((TableTag)table, 0, 0);
 		System.out.println(datas);*/
-				
-		
+
+
 		/*String page = HttpUtils.get("http://q.stock.sohu.com/app2/history.up?method=history&code=cn_600278&sd=2012-08-29&ed=2013-09-06&t=d&res=js&r=", null, "utf-8");
 		page = StringUtils.replace(page, "\n", "");
 		System.out.println(page);
-		
+
 		System.out.println(StringUtils.substringBetween(page, "[[", "]]"));
 		List<List> list = JsonUtils.getList4Json("[["+StringUtils.substringBetween(page, "[[", "]]")+"]]", ArrayList.class);
 		System.out.println(list.size());
 		for(List stk:list){
 			System.out.println(stk);
 		}*/
-		
+
 		/*String page = HttpUtils.get("http://xueqiu.com/stock/forchartk/stocklist.json?period=1day&symbol=SH600140&type=before&access_token=a17OeMQ9Fk11u7Dnp1y3em&_="+new Date().getTime(), null, "GBK");
 		System.out.println(page);
 		Map<String, Class> m = new HashMap<String, Class>();
@@ -703,7 +721,7 @@ public class HtmlUtils {
 			map.put("time", time);
 		}
 		System.out.println(xq.getChartlist());*/
-		
+
 		/*String page = HttpUtils.get("http://data.eastmoney.com/report/447yb.html", null, "GBK");
 		Node node = HtmlUtils.getNodeByAttribute(page, null, "id", "s1-cont1");
 		//System.out.println(node.toHtml());
@@ -735,14 +753,14 @@ public class HtmlUtils {
 			i++;
 		}
 		System.out.println(i);*/
-		
+
 		/*String page = HttpUtils.get("http://stock.finance.sina.com.cn/usstock/api/json.php/US_MinKService.getDailyK?symbol=carh&___qn=3", null, "GBK");
 		System.out.println(page);
 		List<Map> ks = JsonUtils.getList4Json(page, Map.class);
 		for(Map k : ks){
 			System.out.println(k);
 		}*/
-		
+
 		/*String page = HttpUtils.get("http://www.chinaclear.cn/cms-webapp/wcm/getManuscriptByTitle_mzkb.action?weekflag=meiyou&dateStr=2013.09.09", null, "GBK");
 		//System.out.println(page);
 		List<Node> nodeDate = HtmlUtils.getNodeListByTagName(page, null, "h2");
@@ -751,7 +769,7 @@ public class HtmlUtils {
 		//System.out.println(node.toHtml());
 		if(node == null)return;
 		Map<String,Map<String, String>> datas = HtmlUtils.getListFromTable((TableTag)node, 0, 0);
-		//System.out.println(datas);	
+		//System.out.println(datas);
 		for(Map.Entry<String, Map<String, String>> data : datas.entrySet()){
 			if(StringUtils.contains(data.getKey(), "合计")){
 				for(Map.Entry<String, String> value : data.getValue().entrySet()){
@@ -779,12 +797,12 @@ public class HtmlUtils {
 		for(List data:datas){
 			System.out.println(data);
 		}*/
-		
+
 		//http://data.gtimg.cn/flashdata/hushen/latest/daily/sh600837.js?maxage=43201
 		//http://data.gtimg.cn/flashdata/us/latest/daily/usA.N.js?maxage=43201
 		/*String page = HttpUtils.get("http://data.gtimg.cn/flashdata/us/latest/daily/usHIMX.OQ.js?maxage=43201", "GBK");
 		System.out.println(page);*/
-		
+
 		/*String page = HttpUtils.get("http://xueqiu.com/hq/US", "GBK");
 		String text = "{"+StringUtils.substringBetween(page, "stockList.searchResult={", "};")+"}";
 		System.out.println(text);
@@ -795,7 +813,7 @@ public class HtmlUtils {
 		for(Map industry : list){
 			System.out.println(industry);
 		}*/
-		
+
 		/*String page = HttpUtils.get("http://xueqiu.com/hq/US/"+URLEncoder.encode("明星股","utf-8"), "GBK");
 		//System.out.println(page);
 		String text = "{"+StringUtils.substringBetween(page, "stockList.searchResult={", "};")+"}";
@@ -829,7 +847,7 @@ public class HtmlUtils {
 			System.out.println(code+","+name+","+totalCapital+","+profile);
 			//break;
 		}*/
-		
+
 		//http://vip.stock.finance.sina.com.cn/usstock/balance.php?s=IBM&t=quarter
 		//http://vip.stock.finance.sina.com.cn/usstock/cash.php?s=IBM&t=quarter
 		/*String page = HttpUtils.get("http://vip.stock.finance.sina.com.cn/usstock/income.php?s=IBM&t=quarter", "GBK");
@@ -837,13 +855,13 @@ public class HtmlUtils {
 		Node node = HtmlUtils.getNodeByAttribute(page, "", "class", "data_tbl os_tbl", 1);
 		Map<String,Map<String, String>> datas = HtmlUtils.getListFromTable((TableTag)node, 0, 0);
 		System.out.println(datas);*/
-		
+
 		/*String page = HttpUtils.get("http://hq.sinajs.cn/rn="+Math.random()+"&list=gb_dji", null, "GBK");
 		System.out.println(page.split(",")[25]);
 		String dateTmp = page.split(",")[25];
 		String[] tmp = dateTmp.split(" ");
 		System.out.println(StkUtils.sf_ymd2.format(StkUtils.sf_ymd7.parse(tmp[0]+" "+tmp[1]+" "+StkUtils.YEAR)));
-*/	
+*/
 		/*String page = HttpUtils.get("http://finance.yahoo.com/q/ks?s=NTES+Key+Statistics", "utf-8");
 		//System.out.println(page);
 		TableTag table = HtmlUtils.getTableNodeByText(page, "", "Fiscal Year Ends:");
@@ -856,7 +874,7 @@ public class HtmlUtils {
 		table = HtmlUtils.getTableNodeByText(page, "", "Management Effectiveness");
 		datas = HtmlUtils.getListFromTable(table);
 		System.out.println(datas);*/
-		
+
 		/*String page = HttpUtils.get("http://www.windin.com/home/stock/stock-ho/600315.SH.shtml", "UTF-8");
 		Node report = HtmlUtils.getNodeByAttribute(page, null, "id", "report1");
 		System.out.println(report.toPlainTextString());
@@ -868,14 +886,14 @@ public class HtmlUtils {
 			List<List<String>> list = HtmlUtils.getListFromTable(table, 0);
 			System.out.println(list);
 		}*/
-		
+
 		/*String page = HttpUtils.get("http://money.finance.sina.com.cn/corp/go.php/vFD_CashFlow/stockid/000001/ctrl/part/displaytype/4.phtml", "GBK");
 		System.out.println(page);
 		Node table = HtmlUtils.getNodeByAttribute(page, null, "id", "BalanceSheetNewTable0");
 		System.out.println(table.toHtml());
 		Map<String,Map<String, String>> datas = HtmlUtils.getListFromTable((TableTag)table, 1, 0);
 		System.out.println(datas);*/
-		
+
 		/*String page = HttpUtils.get("http://www.cnindex.com.cn/syl/2013-10-25/cninfo_hsls.html", "utf-8");
 		List<Node> nodes = HtmlUtils.getNodesByText(page, null, "查看");
 		for(Node node : nodes){
@@ -889,7 +907,7 @@ public class HtmlUtils {
 			//System.out.println(list);
 			for(List<String> stk : list){
 				//System.out.println(StringUtils.replace(stk.get(10), "&nbsp;", "")+","+StringUtils.replace(stk.get(1), "&nbsp;", ""));
-				
+
 			}
 			break;
 		}
@@ -903,7 +921,7 @@ public class HtmlUtils {
 				System.out.println(data);
 			}
 		}*/
-		
+
 		//盈利预测排行
 		/*String page = HttpUtils.get("http://nufm.dfcfw.com/EM_Finance2014NumericApplication/JS.aspx?type=CT&cmd=C._A&sty=GEMCPF&st=(AllNum)&sr=-1&p=2&ps=5000&cb=&js=&token=3a965a43f705cf1d9ad7e1a3e429d622&rt=47445483", null, "gb2312");
 		System.out.println(page);
@@ -932,24 +950,24 @@ public class HtmlUtils {
 				double d2 = (Double.parseDouble(s2[14])-Double.parseDouble(s2[12]))/Double.parseDouble(s2[12]);
 				return (int)((d2-d1)*100);
 			}
-			
+
 		});
 		for(String[] s : sd){
 			System.out.println(s[3]+","+s[1]+","+s[12]+","+s[14]+",,"+(Double.parseDouble(s[14])-Double.parseDouble(s[12]))/Double.parseDouble(s[12])*100);
 		}*/
-		
+
 		/*String page = HttpUtils.get("http://xueqiu.com/hq#exchange=US&firstName=美国股市&secondName=美股一览", "GBK");
 		String text = "{"+StringUtils.substringBetween(page, "stockList.searchResult={", "};")+"}";
 		System.out.println(text);*/
-		
+
 		/*String page = HttpUtils.get("http://vip.stock.finance.sina.com.cn/q/go.php/vFinanceAnalyze/kind/performance/index.phtml?num=600&order=xiaxian%7C2", "GB2312");
 		Node table = HtmlUtils.getNodeByAttribute(page, null, "id", "dataTable");
 		List<List<String>> datas = HtmlUtils.getListFromTable((TableTag)table,0);
 		for(List<String> data : datas){
 			System.out.println(data+","+StkUtils.percentigeGreatThan(data.get(7)));
 		}*/
-		
-		
+
+
 		//getMethod.setRequestHeader("Cookie", "Hm_lpvt_1db88642e346389874251b5a1eded6e3=1401870866; Hm_lvt_1db88642e346389874251b5a1eded6e3=1399279853,1399456116,1399600423,1401761324; xq_a_token=bBfpd2WIHkEiOXxCZuvJKz; xq_r_token=HoJplnghTo9TdCtmaYhQ9C; bid=26948a7b701285b58366203fbc172ea6_hvykico0; xq_im_active=false; __utma=1.1861748176.1401870866.1401870866.1401870866.1; __utmb=1.2.9.1401870869035; __utmc=1; __utmz=1.1401870866.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)");
         /*String page = HttpUtils.get("http://xueqiu.com/stock/portfolio/stocks.json?size=1000&pid=7&tuid=6237744859&showAll=false", "GBK");
         //System.out.println(page);
@@ -963,10 +981,10 @@ public class HtmlUtils {
                 System.out.println(care.get("stocks"));
             }
         }*/
-        
+
 		//String page = HttpUtils.get("http://news.baidu.com/ns?ct=0&rn=20&ie=utf-8&bs=%E6%96%B0%E5%A4%A7%E9%99%86+%E5%A2%9E%E6%8C%81&rsv_bp=1&sr=0&cl=2&f=8&prevct=0&word=%E6%96%B0%E5%A4%A7%E9%99%86+%E5%A2%9E%E6%8C%81&tn=newstitle&inputT=0","utf-8");
 		/*String page = HttpUtils.get("http://news.baidu.com/ns?ct=0&rn=20&ie=utf-8&bs=%E5%8F%8C%E9%B9%AD%E8%8D%AF%E4%B8%9A%20%E5%87%BA%E8%B4%A7%E9%87%8F%20|%20%E5%8F%8C%E9%B9%AD%E8%8D%AF%E4%B8%9A%20%E5%BC%80%E5%B7%A5%E7%8E%87&rsv_bp=1&sr=0&cl=2&f=8&prevct=0&word=%E5%8F%8C%E9%B9%AD%E8%8D%AF%E4%B8%9A%20%E5%87%BA%E8%B4%A7%E9%87%8F%20|%20%E5%8F%8C%E9%B9%AD%E8%8D%AF%E4%B8%9A%20%E5%BC%80%E5%B7%A5%E7%8E%87&tn=news&inputT=0","utf-8");
-        
+
         System.out.println(page);
         Node node = HtmlUtils.getNodeByAttribute(page, null, "id", "header_top_bar");
         String div = node.toPlainTextString();
@@ -984,13 +1002,13 @@ public class HtmlUtils {
             		String time = StringUtils.substringAfterLast(text, ";");
             		Date date = StkUtils.sf_ymd9.parse(time);
             		if(date.after(new Date())){
-            			
+
             		}
             	}
             }
         }*/
-        
-		
+
+
 		/*String page = HttpUtils.get("http://stock.jrj.com.cn/share,000997,zyyw.shtml","gbk");
         List<Node> nodes = HtmlUtils.getNodeListByTagNameAndAttribute(page, null, "table", "class", "tab1");
         Node table = nodes.get(1);
@@ -1011,7 +1029,7 @@ public class HtmlUtils {
         for(TableColumn column : columns){
         	System.out.println(column.toHtml());
         }*/
-		
+
 		/*String page = HttpUtils.get("http://vip.stock.finance.sina.com.cn/fund_center/api/jsonp.php/IO.XSRV2.CallbackList"+URLEncoder.encode("['DcBGhAVnTMWhR1GU']","utf-8")+"/NetValueReturn_Service.NetValueReturnOpen?page=1&num=40&sort=one_year&asc=0&ccode=&type2=2&type3=&%5Bobject%20HTMLDivElement%5D=nkyl2","gb2312");
 		System.out.println(page);
 		String json = StringUtils.substringBetween(page, "((", "))");
@@ -1022,7 +1040,7 @@ public class HtmlUtils {
 		for(Map data : (List<Map>)datas.get("data")){
 			System.out.println(data.get("sname"));
 		}*/
-		
+
 		/*String page = HttpUtils.get("http://www.ndrc.gov.cn/xwzx/xwfb/", "utf-8");
 		System.out.println(page);
 		Node node = HtmlUtils.getNodeByAttribute(page, null, "class", "list_02 clearfix");
@@ -1034,7 +1052,7 @@ public class HtmlUtils {
 				System.out.println(StringUtils.replace(a.toHtml(), "./", "http://www.ndrc.gov.cn/xwzx/xwfb/")+"["+date+"]");
 			}
 		}*/
-		
+
 		/*String page = HttpUtils.get("http://www.cninfo.com.cn//disclosure/tzzgxxx/stocks/zxxx1y/cninfo/002666.js?ver=", "gb2312");
 		System.out.println(page);
 		String json = StringUtils.substringBetween(page, "=", ";");
@@ -1046,7 +1064,7 @@ public class HtmlUtils {
 			String fileName = StringUtils.substringAfterLast(filePath, "/");
 			HttpUtils.download(downloadUrl,null, "d:\\", fileName);
 		}*/
-		
+
 		String page = HttpUtils.get("http://hq.sinajs.cn/list=sz000710", null, "");
 		System.out.println(page);
 		//page = HttpUtils.get("http://hq.sinajs.cn/list=s_sz399617", null, "");
@@ -1058,20 +1076,20 @@ public class HtmlUtils {
 		String page = HttpUtils.post("http://www.chinaclear.cn/cms-webapp/wcm/getManuscriptByTitle_mzkb.action?weekflag=meiyou", parameters, "");
 		Node node = HtmlUtils.getNodeByAttribute(page, null, "style", "WIDTH: 100%; BORDER-COLLAPSE: collapse");
 		Map<String,Map<String, String>> datas = HtmlUtils.getListFromTable((TableTag)node, 0, 0);
-		
+
 		System.out.println(datas);*/
-		
+
 		/*String page = HttpUtils.get("http://www.hibor.com.cn/elitelist_1_0.html", "GBK");
 		System.out.println(page);
 		List<Node> nodes = HtmlUtils.getNodeListByTagNameAndAttribute(page, null, "div", "class", "classbaogao_sousuo_list");
 		for(Node node : nodes){
 			System.out.println(HtmlUtils.getNodeByTagName(node, "img").toHtml());
 		}*/
-		
-		
-		
+
+
+
 		//String page = HttpUtils.post("http://xueqiu.com/service/comments?filtered=true&id=58844969","", "GBK");
-		
+
 		/*List params = new ArrayList();
 		String page = HttpUtils.get("http://q.10jqka.com.cn/stock/gn/", null, "");
 		List<Node> cates = HtmlUtils.getNodeListByTagNameAndAttribute(page, null, "div", "class", "cate_items");
@@ -1081,14 +1099,14 @@ public class HtmlUtils {
 				System.out.println(((LinkTag)item).getAttribute("href"));
 			}
 		}
-		
+
 		page = HttpUtils.get("http://q.10jqka.com.cn/stock/gn/tbf/", null, "");
 		Node table = HtmlUtils.getNodeByAttribute(page, null, "class", "m_table");
 		List<List<String>> lists = HtmlUtils.getListFromTable((TableTag)table,0);
 		for(List<String> list : lists){
 			System.out.println(list);
 		}*/
-		
+
 		/*String page = HttpUtils.get("http://d.10jqka.com.cn/v2/line/bk_885611/01/last.js", null, "gbk");
 		String data = StringUtils.substringBetween(page, "data\":\"", "\"})");
 		String[] ks = StringUtils.split(data, ";");
@@ -1098,7 +1116,7 @@ public class HtmlUtils {
 		/*String page = HttpUtils.get("http://stockpage.10jqka.com.cn/600088/holder/", null, "gbk");
 		Node div = HtmlUtils.getNodeByAttribute(page, null, "id", "bd_list1");
 		//System.out.println(div.toHtml());
-		
+
 		for(int i=1;i<=5;i++){
 			Node n1 = HtmlUtils.getNodeByAttribute(div, null, "targ", "fher_"+i);
 			System.out.println(n1.toHtml());
@@ -1108,14 +1126,14 @@ public class HtmlUtils {
 			List<List<String>> list = HtmlUtils.getListFromTable2((TableTag)tab, 0);
 			System.out.println(list);
 		}*/
-		
+
 		/*Map<String, String> requestHeaders = new HashMap<String, String>();
     	requestHeaders.put("Cookie", "cna=/+KKDJfijAECAWUsw7c3ZJ4U; x=__ll%3D-1%26_ato%3D0; otherx=e%3D1%26p%3D*%26s%3D0%26c%3D0%26f%3D0%26g%3D0%26t%3D0; _med=dw:1364&dh:768&pw:1364&ph:768&ist:0; tracknick=kevincomcn; t=19935f2ccae6f9ec5eb97e82ec378fc9; _tb_token_=yEDgBWpaVJpA; cookie2=489cc1e1519d4225bb844b5f13978265; pnm_cku822=061UW5TcyMNYQwiAiwQRHhBfEF8QXtHcklnMWc%3D%7CUm5Ockt%2BRH9He0J6RH9BeS8%3D%7CU2xMHDJ7G2AHYg8hAS8XKgQkClY3UT1aJF5wJnA%3D%7CVGhXd1llXGlTaFBsVW1TaFZuWWRGe0Z%2FRXBNeEd9QHlBdEx5RHtBbzk%3D%7CVWldfS0TMwgwDi4SLg4gW3cXZlZyTz4AbVh2IHY%3D%7CVmhIGCUFOBgkGyAePgYzCzMTLxAlGDgEOQY%2FHyMcKRQ0ADUMWgw%3D%7CV25Tbk5zU2xMcEl1VWtTaUlwJg%3D%3D; res=scroll%3A1263*5855-client%3A1263*898-offset%3A1263*5855-screen%3A1280*1024; cq=ccp%3D1; l=As3NECFj8rLUE5QN1cChP4CrXeNNGAFp; isg=AtPTAQCmj1HSUUy65bRon8GUYlfRSeWG4JEBvIX6nfI8BPemDFg0m5QSSPvU");
 		String page = HttpUtils.get("https://list.tmall.com/search_product.htm?spm=a220m.1000858.1000724.4.btun1J&q=%C7%E9%C8%A4%D6%C6%B7%FE&sort=d&style=g&from=rs_1_key-top-s", null, requestHeaders, "GBK");
-		
+
 		Node list = HtmlUtils.getNodeByAttribute(page, null, "id", "J_ItemList");
 		List<Node> items = HtmlUtils.getNodeListByTagNameAndAttribute(list, "div", "class", "product-iWrap");
-		
+
 		for(Node item : items){
 			System.out.println(item.toHtml());
 			Node imgNode = HtmlUtils.getNodeByAttribute(item, null, "class", "productImg-wrap");
@@ -1130,10 +1148,10 @@ public class HtmlUtils {
 			System.out.println("shop="+shopNode.toPlainTextString());
 			break;
 		}*/
-		
-	
-		
+
+
+
 	}
-	
+
 
 }

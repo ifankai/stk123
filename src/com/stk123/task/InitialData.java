@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.htmlparser.Node;
 import org.htmlparser.nodes.TagNode;
@@ -52,11 +53,11 @@ import com.stk123.web.StkDict;
  */
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class InitialData {
-	
+
 	private static int fnYearFrom = StkUtils.YEAR - 3;
 	private static List<String> infos = new ArrayList<String>();
 	private static List<Name2Value> awesomefunds = new ArrayList<Name2Value>();
-	
+
 	private static List<Name2Value> awesomePersons = new ArrayList<Name2Value>();
 
 	public static void main(String[] args) throws Exception {
@@ -74,18 +75,18 @@ public class InitialData {
 			}
 			if(market == 1){
 				initialAStock(conn);
-				
+
 				initialHKStock(conn);
 			}else if(market == 2){
 				initialUStock(conn);
 			}
-			
+
 		}finally{
 			if(conn != null)conn.close();
 			CacheUtils.close();
 		}
 	}
-	
+
 	public static void initialUStock(Connection conn) throws Exception {
 		try{
 			infos.clear();
@@ -112,8 +113,8 @@ public class InitialData {
 				System.out.println(stk.getCode());
 				try{
 					//update stk status
-					initialUStkStatus(conn,index.getCode()); 
-					
+					initialUStkStatus(conn,index.getCode());
+
 				}catch(Exception e){
 					ExceptionUtils.insertLog(conn, stk.getCode(), e);
 					e.printStackTrace();
@@ -131,8 +132,8 @@ public class InitialData {
 			e.printStackTrace();
 		}
 	}
-	
-	
+
+
 	public static void initialAStock(Connection conn) throws Exception {
 		try{
 			infos.clear();
@@ -141,15 +142,17 @@ public class InitialData {
 			EmailUtils.send("Initial A Stock initial Data Error", e);
 			e.printStackTrace();
 		}
-		
+
 		try{
-			InitialData.initialIndustryFromCnIndex(conn, 14);
+			//InitialData.initialIndustryFromCnIndex(conn, 14);
+			InitialData.initialIndustryFromCsindex_zjh(conn);
+			InitialData.initialIndustryFromCsindex_zz1(conn);
 			InitialData.updateIndustryFromHexun(conn);
 		}catch(Exception e){
 			EmailUtils.send("Initial A Stock Industry Data Error", e);
 			e.printStackTrace();
 		}
-		
+
 		try{
 			InitialData.initialIndustryFrom10jqka(conn,"gn");
 			InitialData.initialIndustryFrom10jqka(conn,"thshy");
@@ -157,7 +160,7 @@ public class InitialData {
 			EmailUtils.send("Initial A Stock Industry Data Error", e);
 			e.printStackTrace();
 		}
-		
+
 		try{
 			//牛基列表
 			InitialData.initAwesomeFund();
@@ -170,7 +173,7 @@ public class InitialData {
 			EmailUtils.send("Initial A Stock Awesome Fund Data Error", e);
 			e.printStackTrace();
 		}
-		
+
 		try{
 			List<Stk> stks = JdbcUtils.list(conn, "select code,name from stk_cn order by code", Stk.class);
 			List<StkFnType> fnTypes = JdbcUtils.list(conn, "select * from stk_fn_type where market=1 and status=1", StkFnType.class);
@@ -192,20 +195,20 @@ public class InitialData {
 					//index.initEarningsForecast();
 					//盈利预测
 					index.initEarningsForecast();
-					
+
 					//成长股，潜力股，反转股
 					upateStkFnType(conn, index);
-					
+
 					//主力持仓
 					//InitialData.initOwnership(conn, index, "mh");
 					//十大流通股东
 					InitialData.initOwnership(conn, index);
-					
+
 				}catch(Exception e){
 					ExceptionUtils.insertLog(conn, stk.getCode(), e);
 					e.printStackTrace();
 				}
-				
+
 				try{
 					//股东人数
 					initHolderFrom10jqka(conn, index);
@@ -213,7 +216,7 @@ public class InitialData {
 					ExceptionUtils.insertLog(conn, stk.getCode(), e);
 					e.printStackTrace();
 				}
-				
+
 				try{
 					//主营业务
 					index.initKeywordOnMainBusiness();
@@ -221,7 +224,7 @@ public class InitialData {
 					ExceptionUtils.insertLog(conn, stk.getCode(), e);
 					e.printStackTrace();
 				}
-				
+
 				try{
 					updateStkF9(conn, index);
 				}catch(Exception e){
@@ -231,7 +234,7 @@ public class InitialData {
 					ExceptionUtils.insertLog(conn, stk.getCode(), e);
 					e.printStackTrace();
 				}
-				
+
 				/*try{
 					//所属板块
 					updateIndustryFromQQ(conn, index);
@@ -239,8 +242,8 @@ public class InitialData {
 					ExceptionUtils.insertLog(conn, stk.getCode(), e);
 					e.printStackTrace();
 				}*/
-				
-				
+
+
 				try{
 					//限售解禁
 					InitialData.updateRestricted(conn, index);
@@ -249,7 +252,7 @@ public class InitialData {
 					e.printStackTrace();
 				}
 			}
-			
+
 			String msg = "";
 			if(infos.size() > 0){
 				msg += StringUtils.join(infos, "<br>");
@@ -264,10 +267,10 @@ public class InitialData {
 	}
 
 
-	
+
 	/***************************************** HK Stock *****************************************/
 	/**
-	 *	初始化港股 
+	 *	初始化港股
 	 */
 	public static void initialHKStock(Connection conn) throws Exception {
 		int pageCnt = 1;
@@ -294,13 +297,13 @@ public class InitialData {
 			}
 			pageCnt++;
 		}
-		
+
 		int cnt = 1;
 		List<Stk> stks = JdbcUtils.list(conn, "select code,name from stk_hk order by code", Stk.class);
 		for(Stk stk : stks){
 			//Index index =  new Index(conn,stk.getCode(),stk.getName());
 			System.out.println("code:"+stk.getCode());
-			
+
 			//update company profile
 			try{
 				String page = HttpUtils.get("http://hkf10.eastmoney.com/F9HKStock/GetCompanyInfoList.do?securityCode="+stk.getCode()+".HK&yearList=undefined,undefined&dateSearchType=3&rotate=0&seperate=0&order=asc&cashType=0&exchangeValue=0&customSelect=0&CurrencySelect=0", null);
@@ -314,7 +317,7 @@ public class InitialData {
 				ExceptionUtils.insertLog(conn, e);
 				Thread.sleep(1000 * 60 * 5);
 			}
-			
+
 			//update f9
 			try{
 				String page = HttpUtils.get("http://web.ifzq.gtimg.cn/appstock/hk/HkInfo/getReview?c="+stk.getCode()+"&_callback=jQuery1124010398680807140925_1502022259119&_=", "utf-8");
@@ -326,7 +329,7 @@ public class InitialData {
 					if("{}".equals(String.valueOf(map.get("data")))){
 						continue;
 					}
-					
+
 					List params = new ArrayList();
 					params.add(String.valueOf(map.get("data")));
 					params.add(stk.getCode());
@@ -335,15 +338,15 @@ public class InitialData {
 			}catch(Exception e){
 				ExceptionUtils.insertLog(conn, e);
 			}
-			
+
 			if(cnt++ % 100 == 0){
 				Thread.sleep(1000 * 60);
 			}
 		}
 	}
-	
+
 	/***************************************** US Stock *****************************************/
-	
+
 	public static void initialUStkStatus(Connection conn, String code) throws Exception{
 		String page = HttpUtils.get("http://qt.gtimg.cn/&q=us"+code, "GBK");
 		if(page.contains("pv_none_match")){
@@ -352,10 +355,10 @@ public class InitialData {
 			JdbcUtils.update(conn, "update stk set status=1 where code=?", params);
 		}
 	}
-	
-	
+
+
 	/***************************************** A Stock *****************************************/
-	
+
 	public static void initialStk(Connection conn,Date now) throws Exception {
 		String[] ss = InitialData.getAllStocksCode().split(",");
 		List params = new ArrayList();
@@ -374,7 +377,7 @@ public class InitialData {
 						String name = StringUtils.substringBetween(s, "=\"", ",");
 						System.out.println("code="+code+", name="+name);
 						if(code.length() != 6 && !StkUtils.isAllNumeric(code))continue;
-						
+
 						params.clear();
 						params.add(code);
 						String sql = "select code from stk where code=?";
@@ -405,7 +408,7 @@ public class InitialData {
 			}
 		}
 	}
-	
+
 	public static void updateIndustryFromQQ(Connection conn, Index index) throws Exception {
 		String page = HttpUtils.get("http://stock.finance.qq.com/corp1/profile.php?zqdm="+index.getCode(), null, "GBK");
 		Node node = HtmlUtils.getNodeByText(page, null, "所属板块");
@@ -429,14 +432,14 @@ public class InitialData {
 				params.add(indName);
 				type = JdbcUtils.load(conn, "select * from stk_industry_type where name=? and source='qq_conception'",params, StkIndustryType.class);
 			}
-			
+
 			if(!clear){
 				params.clear();
 				params.add(index.getCode());
 				JdbcUtils.update(conn, "delete from stk_industry where code=? and industry in (select id from stk_industry_type where source='qq_conception')", params);
 				clear = true;
 			}
-			
+
 			params.clear();
 			params.add(index.getCode());
 			params.add(type.getId());
@@ -445,7 +448,7 @@ public class InitialData {
 			JdbcUtils.insert(conn, "insert into stk_industry(code,industry) select ?,? from dual where not exists (select 1 from stk_industry where code=? and industry=?)", params);
 		}
 	}
-	
+
 	public static void updateIndustryFromHexun(Connection conn) throws Exception {
 		List params = new ArrayList();
 		String page = HttpUtils.get("http://quote.hexun.com/js/conception.ashx", null, "GBK");
@@ -465,14 +468,14 @@ public class InitialData {
 				params.add(ind.getType_name());
 				type = JdbcUtils.load(conn, "select * from stk_industry_type where name=? and source='hexun_conception'",params, StkIndustryType.class);
 			}
-			
+
 			params.clear();
 			params.add(type.getId());
 			JdbcUtils.update(conn, "delete from stk_industry where industry=?", params);
-			
+
 			page = HttpUtils.get("http://quote.tool.hexun.com/hqzx/stocktype.aspx?columnid=5522&type_code="+ind.getType_code()+"&sorttype=3&updown=up&page=1&count=5000", null, "GBK");
 			List<List> stks = JsonUtils.getList4Json(StringUtils.substringBetween(page, "dataArr = ", ";"), ArrayList.class);
-			
+
 			for(List stk:stks){
 				if(StringUtils.startsWith(String.valueOf(stk.get(0)), "200")
 						||StringUtils.startsWith(String.valueOf(stk.get(0)), "900")){//B股
@@ -491,7 +494,7 @@ public class InitialData {
 			}
 		}
 	}
-	
+
 	//同花顺概念板块
 	public static void initialIndustryFrom10jqka(Connection conn, String category) throws Exception {
 		System.out.println("initialIndustryFrom10jqka");
@@ -510,14 +513,14 @@ public class InitialData {
 				String link = ((LinkTag)item).getAttribute("href");
 				//link: http://q.10jqka.com.cn/gn/detail/code/300646/
 				page = HttpUtils.get(link, null, "");
-				
+
 				if(type == null){
 					Node na = HtmlUtils.getNodeByAttribute(page, null, "class", "board-hq");
 					if(na == null)continue;
 					Node name = HtmlUtils.getNodeByTagName(na, "h3");
 					Node codeNode = HtmlUtils.getNodeByTagName(name, "span");
 					String code = codeNode.toPlainTextString();
-					
+
 					params.clear();
 					params.add(code);
 					type = JdbcUtils.load(conn, "select * from stk_industry_type where id=? and source='"+source+"'",params, StkIndustryType.class);
@@ -532,23 +535,23 @@ public class InitialData {
 						params.add(code);
 						params.add(indName);
 						int n = JdbcUtils.insert(conn, "insert into stk_industry_type(id,name,source) values(?,?,'"+source+"')", params);
-						
+
 						params.clear();
 						params.add(indName);
 						type = JdbcUtils.load(conn, "select * from stk_industry_type where name=? and source='"+source+"'",params, StkIndustryType.class);
-						
+
 						params.clear();
 						params.add(code);
 						params.add(indName);
 						JdbcUtils.insert(conn, "insert into stk(code,name,insert_time,market,cate,address) values(?,?,sysdate,1,4,'"+source+"')", params);
 					}
 				}
-				
+
 				params.clear();
 				params.add(type.getId());
 				System.out.println(type.getId()+","+type.getName());
 				JdbcUtils.update(conn, "delete from stk_industry where industry=?", params);
-				
+
 				int p = 1;
 				while(true){
 					page = HttpUtils.get(link + "order/desc/page/"+p+"/ajax/1", null);
@@ -571,8 +574,108 @@ public class InitialData {
 		}
 	}
 
+	//证监会行业-个股，市盈率
+	//http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zjh1&date=2020-08-07
 	//http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zz1&date=2020-08-05
-	
+	public static void initialIndustryFromCsindex_zjh(Connection conn) throws Exception {
+		String page = HttpUtils.get("http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zjh1&date="+StkUtils.formatDate(StkUtils.addDayOfWorking(StkUtils.now, -1), StkUtils.sf_ymd), "utf-8");
+		//System.out.println(page);
+		List<Node> tables = HtmlUtils.getNodeListByTagNameAndAttribute(page, null, "table", "class", "list-div-table");
+		String parentCode = null;
+		List params = new ArrayList();
+		for(Node table : tables){
+			System.out.println(table.toHtml());
+			//List<List<String>> list = HtmlUtils.getListFromTable((TableTag)table);
+			//System.out.println(list);
+			List<Node> tds = HtmlUtils.getNodeListByTagName(table, "td");
+			//for(Node td : tds){
+				//System.out.println(td.toHtml());
+			//}
+			if(tds != null && tds.size() > 4) {
+				String code = StringUtils.trim(tds.get(0).toPlainTextString());
+				if(StringUtils.length(code) == 1) parentCode = code;
+				String parent = StringUtils.length(code)==1?"":parentCode;
+				String name = StringUtils.trim(tds.get(1).toPlainTextString());
+				Node a = HtmlUtils.getNodeByTagName(tds.get(3), "a");
+
+				//===============
+				System.out.println("parentCode:"+parent+",code:"+code+",name:"+name);
+				StkIndustryType indType = Industry.insertOrLoadIndustryType(conn, name, null, "csindex_zjh");
+				//TODO stk_data_industry_pe
+
+				String href = HtmlUtils.getAttribute(a, "href");
+				System.out.println(StringEscapeUtils.unescapeHtml(href));
+				page = HttpUtils.get(StringEscapeUtils.unescapeHtml(href),"utf-8");
+				Node tab = HtmlUtils.getNodeByAttributeContain(page, null, "class", "p_table");
+				List<List<String>> list = HtmlUtils.getListFromTable((TableTag) tab, 0);
+				System.out.println(list);
+				for(List<String> row : list){
+					if(row != null && row.size() > 2) {
+						String scode = row.get(1);
+						params.clear();
+						params.add(scode);
+						params.add(indType.getId());
+						params.add(scode);
+						params.add(indType.getId());
+						JdbcUtils.insert(conn, "insert into stk_industry(code,industry) select ?,? from dual where not exists (select 1 from stk_industry where code=? and industry=?)", params);
+					}
+				}
+			}
+		}
+	}
+
+	//中证行业-个股，市盈率
+	public static void initialIndustryFromCsindex_zz1(Connection conn) throws Exception {
+		String page = HttpUtils.get("http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zz1&date="+StkUtils.formatDate(StkUtils.addDayOfWorking(StkUtils.now, -1), StkUtils.sf_ymd), "utf-8");
+		//System.out.println(page);
+		List<Node> tables = HtmlUtils.getNodeListByTagNameAndAttribute(page, null, "table", "class", "list-div-table");
+		String parentCode = null;
+		List params = new ArrayList();
+		for(Node table : tables){
+			//System.out.println(table.toHtml());
+			//List<List<String>> list = HtmlUtils.getListFromTable((TableTag)table);
+			//System.out.println(list);
+			List<Node> tds = HtmlUtils.getNodeListByTagName(table, "td");
+			for(Node td : tds){
+				System.out.println(StringUtils.trim(td.toPlainTextString()));
+			}
+			if(tds != null && tds.size() > 4) {
+				String code = StringUtils.trim(tds.get(0).toPlainTextString());
+				if(parentCode == null || StringUtils.length(code) == 2) {
+					parentCode = "";
+				}else{
+					parentCode = StringUtils.substring(code, 0, StringUtils.length(code) -2);
+				}
+				String name = StringUtils.trim(tds.get(1).toPlainTextString());
+				Node a = HtmlUtils.getNodeByTagName(tds.get(3), "a");
+
+				//===============
+				System.out.println("parentCode:"+parentCode+",code:"+code+",name:"+name);
+				StkIndustryType indType = Industry.insertOrLoadIndustryType(conn, name, null, "csindex_zz");
+				//TODO stk_data_industry_pe
+
+				String href = HtmlUtils.getAttribute(a, "href");
+				System.out.println(StringEscapeUtils.unescapeHtml(href));
+				page = HttpUtils.get(StringEscapeUtils.unescapeHtml(href),"utf-8");
+				Node tab = HtmlUtils.getNodeByAttributeContain(page, null, "class", "p_table");
+				List<List<String>> list = HtmlUtils.getListFromTable((TableTag) tab, 0);
+				System.out.println(list);
+				for(List<String> row : list){
+					if(row != null && row.size() > 2) {
+						String scode = row.get(1);
+						params.clear();
+						params.add(scode);
+						params.add(indType.getId());
+						params.add(scode);
+						params.add(indType.getId());
+						JdbcUtils.insert(conn, "insert into stk_industry(code,industry) select ?,? from dual where not exists (select 1 from stk_industry where code=? and industry=?)", params);
+					}
+				}
+
+			}
+		}
+	}
+
 	//巨潮 pe
 	public static void initialIndustryFromCnIndex(Connection conn, int n) throws Exception {
 		List params = new ArrayList();
@@ -672,7 +775,7 @@ public class InitialData {
 					}
 				}
 			}
-			
+
 			//中小板
 			page = HttpUtils.get("http://www.cnindex.com.cn/syl/"+sdate+"/cninfo_zxb.html", "utf-8");
 			if(!"404".equals(page)){
@@ -701,7 +804,7 @@ public class InitialData {
 			}
 		}
 	}
-	
+
 	private static Map<Integer,Integer> industryTypeMap = new HashMap<Integer,Integer>();
 	/**
 	 * 归类：成长，潜力，反转
@@ -755,7 +858,7 @@ public class InitialData {
 			}
 		}
 	}
-	
+
 	private static void updateStkStaticInfo(Connection conn,String code) throws Exception {
 		List params = new ArrayList();
 		String page = HttpUtils.get("http://stockdata.stock.hexun.com/2009_gsgk_"+code+".shtml", null, "GBK");
@@ -769,7 +872,7 @@ public class InitialData {
 			JdbcUtils.update(conn, "update stk set listing_date=?,total_capital=? where code=?", params);
 		}
 	}
-	
+
 	public static void updateStkF9(Connection conn, Index index) throws Exception {
 		String page = HttpUtils.get("http://emweb.securities.eastmoney.com/PC_HSF10/CoreConception/CoreConceptionAjax?code="+(index.getLoc()==1?Index.SH_LOWER:Index.SZ_LOWER+index.getCode()), null, "utf-8");
 		//System.out.println(page);
@@ -795,7 +898,7 @@ public class InitialData {
 			}
 		}
 	}
-	
+
 	//http://www.windin.com/home/stock/html_wind/000002.SH.shtml
 	public static void updateStkInfoFromWind(Connection conn,Index index,Date now,List<StkFnType> fnTypes) throws Exception {
 		String code = index.getCode();
@@ -803,7 +906,7 @@ public class InitialData {
 		String loc = StkUtils.getStkLocation(code);
 		String page = HttpUtils.get("http://www.windin.com/home/stock/html_wind/"+code+"."+loc+".shtml", null, "utf8");
 		List params = new ArrayList();
-		
+
 		//行业
 		Node industryCompare = HtmlUtils.getNodeByAttribute(page, "", "id", "industryCompare");
 		if(industryCompare != null && industryCompare.getChildren() != null && industryCompare.getChildren().elementAt(2) != null){
@@ -824,7 +927,7 @@ public class InitialData {
 			/*params.clear();
 			params.add(code);
 			JdbcUtils.update(conn, "delete from stk_industry where code=? and industry in (select id from stk_industry_type where source='wind')", params);
-*/			
+*/
 			params.clear();
 			params.add(code);
 			params.add(type.getId());
@@ -832,7 +935,7 @@ public class InitialData {
 			params.add(type.getId());
 			JdbcUtils.insert(conn, "insert into stk_industry(code,industry) select ?,? from dual where not exists (select 1 from stk_industry where code=? and industry=?)", params);
 		}
-		
+
 		//盈利预期
 		List<Node> redstars = HtmlUtils.getNodesByAttribute(page, "", "src", "http://i1.windin.com/imgserver/common/redstar.gif");
 		if(redstars != null && redstars.size() > 0){
@@ -848,7 +951,7 @@ public class InitialData {
 			params.add(text);
 			JdbcUtils.update(conn, "update stk set earning_expect=?,earning_expect_date=? where code=? and (earning_expect!=? or earning_expect is null)", params);
 		}
-		
+
 		//限售股份解禁
 		Node saleLimit = HtmlUtils.getNodeByText(page, "", "限售股份解禁时间表");
 		if(saleLimit != null){
@@ -866,7 +969,7 @@ public class InitialData {
 			params.add(code);
 			JdbcUtils.update(conn, "update stk set sale_limit=? where code=?", params);
 		}
-		
+
 		//公司简介
 		Node profile = HtmlUtils.getNodeByText(page, "", "公司简介");
 		if(profile != null){
@@ -876,7 +979,7 @@ public class InitialData {
 			params.add(code);
 			JdbcUtils.update(conn, "update stk set company_profile=? where code=?", params);
 		}
-		
+
 		//股东人数
 		Node nodeHoder = HtmlUtils.getNodeByText(page, "", "A股股东户数");
 		if(nodeHoder != null){
@@ -895,7 +998,7 @@ public class InitialData {
 					params.add(fnDate);
 					params.add(holderNum);
 					JdbcUtils.insert(conn, "insert into stk_holder(code,fn_date,holder) select ?,?,? from dual", params);
-					
+
 					params.clear();
 					params.add(code);
 					List<StkHolder> holders = JdbcUtils.list(conn, "select * from stk_holder where code=? order by fn_date desc", params, StkHolder.class);
@@ -911,7 +1014,7 @@ public class InitialData {
 							params.add(info);
 							JdbcUtils.insert(conn, "insert into stk_import_info(id,code,type,insert_time,care_flag,info) select s_import_info_id.nextval,?,1,sysdate,1,? from dual", params);
 							infos.add("[股东人数减少]"+code+","+name+","+info);*/
-							
+
 							params.clear();
 							params.add(SequenceUtils.getSequenceNextValue(SequenceUtils.SEQ_TEXT_ID));
 							params.add(index.getCode());
@@ -923,7 +1026,7 @@ public class InitialData {
 				}
 			}
 		}
-		
+
 		//wind财务数据
 		Node fn = HtmlUtils.getNodeByAttribute(page, null, "id", "browseByReport");
 		if(fn != null){
@@ -937,14 +1040,14 @@ public class InitialData {
 						if("--".equals(fnValue)){
 							fnValue = "0.0";
 						}
-						
+
 						params.clear();
 						params.add(fnValue);
 						params.add(code);
 						params.add(fnType.getType());
 						params.add(fnDate);
 						int n = index.updateFnData(params);
-						
+
 						if(n == 0){
 							params.clear();
 							params.add(code);
@@ -955,7 +1058,7 @@ public class InitialData {
 							params.add(fnType.getType());
 							params.add(fnDate);
 							index.insertFnData(params);
-							
+
 							//对于成长股jlr>=45,要注意
 							if(index.FN_JLR.equals(String.valueOf(fnType.getType()))){
 								if(index.getNetProfitGrowthAverageValue(12, 5) >= 5
@@ -963,13 +1066,13 @@ public class InitialData {
 									infos.add("[成长股季度净利润增长]"+code+","+index.getName()+","+"季度"+fnDate+"净利润增长"+StkUtils.number2String(index.getNetProfitGrowthAsNumber(fnDate), 2));
 								}
 							}
-							
+
 						}
 					}
 				}
 			}
 		}
-		
+
 		//相关地域板块
 		Node address = HtmlUtils.getNodeByText(page, "", "相关地域板块");
 		if(address != null){
@@ -982,7 +1085,7 @@ public class InitialData {
 			}
 		}
 	}
-	
+
 	//牛基
 	public static void initAwesomeFund() throws Exception {
 		//一年期牛基排行前20
@@ -998,9 +1101,9 @@ public class InitialData {
 		int i = 1;
 		for(Map data : (List<Map>)datas.get("data")){
 			awesomefunds.add(new Name2Value(data.get("sname"),1));
-			if(++i > 20) break; 
+			if(++i > 20) break;
 		}
-		
+
 		//成立以来牛基排行前20
 		page = HttpUtils.get("http://vip.stock.finance.sina.com.cn/fund_center/api/jsonp.php/IO.XSRV2.CallbackList"+URLEncoder.encode("['MH8C82zCRTRcBOjM']","utf-8")+"/NetValueReturn_Service.NetValueReturnOpen?page=1&num=40&sort=form_start&asc=0&ccode=&type2=2&type3=&%5Bobject%20HTMLDivElement%5D=yywui","gb2312");
 		//System.out.println(page);
@@ -1012,10 +1115,10 @@ public class InitialData {
 		i = 1;
 		for(Map data : (List<Map>)datas.get("data")){
 			awesomefunds.add(new Name2Value(data.get("sname"),2));
-			if(++i > 20) break; 
+			if(++i > 20) break;
 		}
 	}
-	
+
 	public static void initHolderFrom10jqka(Connection conn, Index index)  throws Exception {
 		String code = index.getCode();
 		List params = new ArrayList();
@@ -1026,7 +1129,7 @@ public class InitialData {
 			String holderStr = gdrsFlashData.toPlainTextString();
 			//System.out.println(holderStr);
 			List<List> holderList = JsonUtils.testJsonArray(holderStr);
-			
+
 			for(List holder : holderList){
 				//System.out.println(holder);
 				String holderNum = String.valueOf(holder.get(1));
@@ -1043,7 +1146,7 @@ public class InitialData {
 					params.add(fnDate);
 					params.add(holderNum);
 					JdbcUtils.insert(conn, "insert into stk_holder(code,fn_date,holder) select ?,?,? from dual", params);
-					
+
 					params.clear();
 					params.add(code);
 					List<StkHolder> holders = JdbcUtils.list(conn, "select * from stk_holder where code=? order by fn_date desc", params, StkHolder.class);
@@ -1059,7 +1162,7 @@ public class InitialData {
 							params.add(info);
 							JdbcUtils.insert(conn, "insert into stk_import_info(id,code,type,insert_time,care_flag,info) select s_import_info_id.nextval,?,1,sysdate,1,? from dual", params);
 							infos.add("[股东人数减少]"+code+","+name+","+info);*/
-							
+
 							params.clear();
 							params.add(SequenceUtils.getSequenceNextValue(SequenceUtils.SEQ_TEXT_ID));
 							params.add(index.getCode());
@@ -1071,9 +1174,9 @@ public class InitialData {
 				}
 			}
 		}
-		
+
 	}
-	
+
 	/**
 	 * http://basic.10jqka.com.cn/000001/holder.html
 	 */
@@ -1101,11 +1204,11 @@ public class InitialData {
 			if(StringUtils.contains(tab.toHtml(), "机构成本估算")){
 				机构成本估算 = 1;
 			}
-			
+
 			List<List<String>> list = HtmlUtils.getListFromTable2((TableTag)tab, 0);
 			//System.out.println(list);
 			String date = StringUtils.replace(n1.toPlainTextString(), "-", "");
-			
+
 			for(List<String> data : list){
 				if(data.size() < 6)continue;
 				//System.out.println(data);
@@ -1119,12 +1222,12 @@ public class InitialData {
 					params.add(seq);
 					params.add(orgName);
 					JdbcUtils.insert(conn, "insert into stk_organization(id,name) select ?,? from dual", params);
-					
+
 					params.clear();
 					params.add(seq);
 					org = JdbcUtils.load(conn, "select * from stk_organization where id=?",params, StkOrganization.class);
 				}
-				
+
 				if(org != null){
 					double holdcount = StkUtils.getAmount万(StringUtils.replace(data.get(1), "股", ""));
 					params.clear();
@@ -1132,7 +1235,7 @@ public class InitialData {
 					params.add(date);
 					params.add(org.getId());
 					params.add(holdcount);
-					
+
 					params.add(StringUtils.replace(data.get(3), "%", ""));
 					String change = data.get(2);
 					if("退出".equals(change)) continue;
@@ -1179,7 +1282,7 @@ public class InitialData {
 							params.add(pairs.get(0).getValue().equals(1)?Text.SUB_TYPE_NIU_FUND_ONE_YEAR:Text.SUB_TYPE_NIU_FUND_ALL_TIME);
 							JdbcUtils.insert(conn, "insert into stk_text(id,type,code,code_type,title,text,insert_time,update_time,sub_type) values (?,1,?,1,null,?,sysdate,null,?)", params);
 						}
-						
+
 						List<Name2Value> ap = Name2Value.containName(awesomePersons, org.getName());
 						if(ap.size() > 0){
 							params.clear();
@@ -1196,8 +1299,8 @@ public class InitialData {
 			}
 		}
 	}
-	
-	
+
+
 	//初始化fn data,包括2005年后所有数据
 	public static void initFnData(Connection conn,Date now,Index index,List<StkFnType> fnTypes) throws Exception {
 		List params = new ArrayList();
@@ -1221,7 +1324,7 @@ public class InitialData {
 						}
 					}
 				}
-				
+
 				for(Map.Entry<String, List<StkFnType>> fnEntry: map.entrySet()){
 					int year = StkUtils.YEAR;
 					String id = null;
@@ -1269,7 +1372,7 @@ public class InitialData {
 								params.add(fnType.getType());
 								params.add(fnDate);
 								int n = index.updateFnData(params);
-								
+
 								if(n == 0){
 									params.clear();
 									params.add(code);
@@ -1290,11 +1393,11 @@ public class InitialData {
 			}
 		}
 	}
-	
+
 	public static void initFnDataTTM(Connection conn,Date now,Index index,List<StkFnType> fnTypes) throws Exception {
 		InitialData.initFnDataTTM(conn, now, index, fnTypes, "quarter");
 	}
-	
+
 	//update最近4个季度fn data
 	public static void initFnDataTTM(Connection conn,Date now,Index index,List<StkFnType> fnTypes, String type) throws Exception {
 		List params = new ArrayList();
@@ -1318,7 +1421,7 @@ public class InitialData {
 						}
 					}
 				}
-				
+
 				for(Map.Entry<String, List<StkFnType>> fnEntry: map.entrySet()){
 					String id = null;
 					if("1".equals(fnEntry.getKey()) || "2".equals(fnEntry.getKey())){
@@ -1362,7 +1465,7 @@ public class InitialData {
 							params.add(fnType.getType());
 							params.add(fnDate);
 							int n = index.updateFnData(params);
-							
+
 							if(n == 0){
 								params.clear();
 								params.add(code);
@@ -1373,7 +1476,7 @@ public class InitialData {
 								params.add(fnType.getType());
 								params.add(fnDate);
 								index.insertFnData(params);
-								
+
 								//主营收入增长率连续3个季度大于净利润增加率40个点
 								if(StkConstant.FN_TYPE_CN_ZYSRZZL.equals(fnType.getType().toString())){
 									StkFnDataCust fn1 = index.getFnDataLastestByType(StkConstant.FN_TYPE_CN_ZYSRZZL);
@@ -1446,7 +1549,7 @@ public class InitialData {
 						if("截止日期".equals(key)){
 							fnDates = row;
 							break;
-						}						
+						}
 					}
 				}
 				for(List<String> row : list){
@@ -1468,19 +1571,19 @@ public class InitialData {
 								JdbcUtils.update(conn, "update stk set fn_currency=? where code=?", params);
 								break;
 							}
-						}						
+						}
 					}
 				}
 				if(fnDates == null)continue;
-				
+
 				for(List<String> row : list){
 					if(row.size() > 0){
 						String key = row.get(0);
-						key = StringUtils.replace(key, "&nbsp;", "");						
+						key = StringUtils.replace(key, "&nbsp;", "");
 						if(fnEntry.getValue().get(key) != null){
 							for(int j=1;j<row.size();j++){
 								Integer fnType = fnEntry.getValue().get(key).getType();
-								String fnDate = StringUtils.replace(fnDates.get(j), "-", "");								
+								String fnDate = StringUtils.replace(fnDates.get(j), "-", "");
 								String fnValue = StringUtils.replace(row.get(j), ",", "");
 								if("-".equals(fnValue)){
 									fnValue = null;
@@ -1491,7 +1594,7 @@ public class InitialData {
 								params.add(fnType);
 								params.add(fnDate);
 								int n = index.updateFnData(params);
-								
+
 								if(n == 0){
 									params.clear();
 									params.add(code);
@@ -1507,8 +1610,8 @@ public class InitialData {
 						}
 					}
 				}
-				
-				
+
+
 				/*
 				for(StkFnType fnType : fnEntry.getValue()){
 					for(Map.Entry<String, Map<String, String>> fn: datas.entrySet()){
@@ -1520,7 +1623,7 @@ public class InitialData {
 						params.add(fnType.getType());
 						params.add(fnDate);
 						int n = index.updateFnData(params);
-						
+
 						if(n == 0){
 							params.clear();
 							params.add(code);
@@ -1536,7 +1639,7 @@ public class InitialData {
 				}*/
 			}
 			if("annual".equals(type))return;
-			
+
 			//https://query1.finance.yahoo.com/v10/finance/quoteSummary/IRBT?formatted=true&lang=en-US&region=US&modules=defaultKeyStatistics%2CfinancialData%2CsummaryDetail%2CcalendarEvents&corsDomain=finance.yahoo.com
 			String page = HttpUtils.get("https://query1.finance.yahoo.com/v10/finance/quoteSummary/"+index.getCode()+"?formatted=true&lang=en-US&region=US&modules=defaultKeyStatistics%2CfinancialData%2CsummaryDetail%2CcalendarEvents&corsDomain=finance.yahoo.com", null, "utf-8");
 			//{"quoteSummary":{"result":[{"summaryDetail":{"maxAge":1,"priceHint":{"raw":2,"fmt":"2","longFmt":"2"},"previousClose":{"raw":99.23,"fmt":"99.23"},"open":{"raw":98.98,"fmt":"98.98"},"dayLow":{"raw":97.8201,"fmt":"97.82"},"dayHigh":{"raw":100.48,"fmt":"100.48"},"regularMarketPreviousClose":{"raw":99.23,"fmt":"99.23"},"regularMarketOpen":{"raw":98.98,"fmt":"98.98"},"regularMarketDayLow":{"raw":97.8201,"fmt":"97.82"},"regularMarketDayHigh":{"raw":100.48,"fmt":"100.48"},"dividendRate":{},"dividendYield":{},"exDividendDate":{},"payoutRatio":{},"fiveYearAvgDividendYield":{},"beta":{"raw":0.999804,"fmt":"1.00"},"trailingPE":{"raw":51.37789,"fmt":"51.38"},"forwardPE":{"raw":39.035156,"fmt":"39.04"},"volume":{"raw":598443,"fmt":"598.44k","longFmt":"598,443"},"regularMarketVolume":{"raw":598443,"fmt":"598.44k","longFmt":"598,443"},"averageVolume":{"raw":629137,"fmt":"629.14k","longFmt":"629,137"},"averageVolume10days":{"raw":834914,"fmt":"834.91k","longFmt":"834,914"},"averageDailyVolume10Day":{"raw":834914,"fmt":"834.91k","longFmt":"834,914"},"bid":{"raw":96.81,"fmt":"96.81"},"ask":{"raw":0.0,"fmt":"0.00"},"bidSize":{"raw":200,"fmt":"200","longFmt":"200"},"askSize":{"raw":0,"fmt":null,"longFmt":"0"},"marketCap":{"raw":2739790848,"fmt":"2.74B","longFmt":"2,739,790,848"},"yield":{},"ytdReturn":{},"totalAssets":{},"expireDate":{},"strikePrice":{},"openInterest":{},"fiftyTwoWeekLow":{"raw":33.9,"fmt":"33.90"},"fiftyTwoWeekHigh":{"raw":100.48,"fmt":"100.48"},"priceToSalesTrailing12Months":{"raw":3.9237008,"fmt":"3.92"},"fiftyDayAverage":{"raw":87.47857,"fmt":"87.48"},"twoHundredDayAverage":{"raw":66.70993,"fmt":"66.71"},"trailingAnnualDividendRate":{},"trailingAnnualDividendYield":{},"navPrice":{}},"defaultKeyStatistics":{"maxAge":1,"enterpriseValue":{},"forwardPE":{"raw":39.035156,"fmt":"39.04"},"profitMargins":{"raw":0.07786,"fmt":"7.79%"},"floatShares":{"raw":26641453,"fmt":"26.64M","longFmt":"26,641,453"},"sharesOutstanding":{"raw":27417100,"fmt":"27.42M","longFmt":"27,417,100"},"sharesShort":{"raw":4101930,"fmt":"4.1M","longFmt":"4,101,930"},"sharesShortPriorMonth":{"raw":3965860,"fmt":"3.97M","longFmt":"3,965,860"},"heldPercentInsiders":{"raw":0.0322,"fmt":"3.22%"},"heldPercentInstitutions":{"raw":0.71199995,"fmt":"71.20%"},"shortRatio":{"raw":10.44,"fmt":"10.44"},"shortPercentOfFloat":{"raw":0.141524,"fmt":"14.15%"},"beta":{"raw":0.999804,"fmt":"1"},"morningStarOverallRating":{},"morningStarRiskRating":{},"category":null,"bookValue":{"raw":14.902,"fmt":"14.90"},"priceToBook":{"raw":6.705811,"fmt":"6.71"},"annualReportExpenseRatio":{},"ytdReturn":{},"beta3Year":{},"totalAssets":{},"yield":{},"fundFamily":null,"fundInceptionDate":{},"legalType":null,"threeYearAverageReturn":{},"fiveYearAverageReturn":{},"priceToSalesTrailing12Months":{},"lastFiscalYearEnd":{"raw":1483142400,"fmt":"2016-12-31"},"nextFiscalYearEnd":{"raw":1546214400,"fmt":"2018-12-31"},"mostRecentQuarter":{"raw":1491004800,"fmt":"2017-04-01"},"earningsQuarterlyGrowth":{"raw":3.16,"fmt":"316.00%"},"revenueQuarterlyGrowth":{},"netIncomeToCommon":{"raw":54366000,"fmt":"54.37M","longFmt":"54,366,000"},"trailingEps":{"raw":1.945,"fmt":"1.95"},"forwardEps":{"raw":2.56,"fmt":"2.56"},"pegRatio":{"raw":3.19,"fmt":"3.19"},"lastSplitFactor":null,"lastSplitDate":{},"enterpriseToRevenue":{},"enterpriseToEbitda":{},"52WeekChange":{"raw":1.6376929,"fmt":"163.77%"},"SandP52WeekChange":{"raw":0.16081035,"fmt":"16.08%"},"lastDividendValue":{},"lastCapGain":{},"annualHoldingsTurnover":{}},"calendarEvents":{"maxAge":1,"earnings":{"earningsDate":[{"raw":1500940800,"fmt":"2017-07-25"}],"earningsAverage":{"raw":-0.28,"fmt":"-0.28"},"earningsLow":{"raw":-0.35,"fmt":"-0.35"},"earningsHigh":{"raw":0.0,"fmt":"0.00"},"revenueAverage":{"raw":174660000,"fmt":"174.66M","longFmt":"174,660,000"},"revenueLow":{"raw":165480000,"fmt":"165.48M","longFmt":"165,480,000"},"revenueHigh":{"raw":185000000,"fmt":"185M","longFmt":"185,000,000"}},"exDividendDate":{},"dividendDate":{}},"financialData":{"maxAge":86400,"currentPrice":{"raw":99.93,"fmt":"99.93"},"targetHighPrice":{"raw":90.0,"fmt":"90.00"},"targetLowPrice":{"raw":57.0,"fmt":"57.00"},"targetMeanPrice":{"raw":74.4,"fmt":"74.40"},"targetMedianPrice":{"raw":72.0,"fmt":"72.00"},"recommendationMean":{"raw":2.8,"fmt":"2.80"},"recommendationKey":"hold","numberOfAnalystOpinions":{"raw":5,"fmt":"5","longFmt":"5"},"totalCash":{"raw":275670016,"fmt":"275.67M","longFmt":"275,670,016"},"totalCashPerShare":{"raw":10.055,"fmt":"10.06"},"ebitda":{"raw":86783000,"fmt":"86.78M","longFmt":"86,783,000"},"totalDebt":{"raw":0,"fmt":null,"longFmt":"0"},"quickRatio":{"raw":3.233,"fmt":"3.23"},"currentRatio":{"raw":3.877,"fmt":"3.88"},"totalRevenue":{"raw":698267008,"fmt":"698.27M","longFmt":"698,267,008"},"debtToEquity":{},"revenuePerShare":{"raw":25.603,"fmt":"25.60"},"returnOnAssets":{"raw":0.09137,"fmt":"9.14%"},"returnOnEquity":{"raw":0.13234,"fmt":"13.23%"},"grossProfits":{"raw":319315000,"fmt":"319.31M","longFmt":"319,315,000"},"freeCashflow":{"raw":94818752,"fmt":"94.82M","longFmt":"94,818,752"},"operatingCashflow":{"raw":94560000,"fmt":"94.56M","longFmt":"94,560,000"},"earningsGrowth":{"raw":3.462,"fmt":"346.20%"},"revenueGrowth":{"raw":0.288,"fmt":"28.80%"},"grossMargins":{"raw":0.49365002,"fmt":"49.37%"},"ebitdaMargins":{"raw":0.124280006,"fmt":"12.43%"},"operatingMargins":{"raw":0.10521,"fmt":"10.52%"},"profitMargins":{"raw":0.07786,"fmt":"7.79%"}}}],"error":null}}
@@ -1545,32 +1648,32 @@ public class InitialData {
 			Map summary = JsonUtils.testJson(page);
 			Map quote = (Map)summary.get("quoteSummary");
 			Map result = (Map)((List)quote.get("result")).get(0);
-			
+
 			Map defaultKeyStatistics = (Map)result.get("defaultKeyStatistics");
 			if(defaultKeyStatistics != null && defaultKeyStatistics.get("lastFiscalYearEnd") != null){
 				String lastFiscalYearEnd = String.valueOf(((Map)defaultKeyStatistics.get("lastFiscalYearEnd")).get("fmt"));
 				String mostRecentQuarter = String.valueOf(((Map)defaultKeyStatistics.get("mostRecentQuarter")).get("fmt"));
 				String yearEnd = StringUtils.replace(lastFiscalYearEnd, "-", "");
-				params.clear();			
+				params.clear();
 				params.add(index.getCode());
 				params.add(yearEnd);
 				JdbcUtils.update(conn, "update stk_fn_data_us set fiscal_year_ends=1 where code=? and fn_date=?", params);
-				
+
 				//跟新总股本
 				/*String sharesOutstanding = String.valueOf(((Map)defaultKeyStatistics.get("sharesOutstanding")).get("raw"));
-				params.clear();	
-				params.add(Double.parseDouble(sharesOutstanding)/10000);		
+				params.clear();
+				params.add(Double.parseDouble(sharesOutstanding)/10000);
 				params.add(index.getCode());
 				JdbcUtils.update(conn, "update stk set total_capital=? where code=?", params);*/
-				
+
 				String fnDate = StringUtils.replace(mostRecentQuarter, "-", "");
-				
+
 				for(StkFnType fnType : fnTypes){
 					if(fnType.getMarket() == 2){
 						int isource = fnType.getSource().intValue();
 						if(isource == 100){
 							Map category = (Map)result.get(fnType.getNameAlias());
-							
+
 							Object fnValueObj = ((Map)category.get(fnType.getName())).get("fmt");
 							if(fnValueObj == null)continue;
 							String fnValue = String.valueOf(fnValueObj);
@@ -1585,14 +1688,14 @@ public class InitialData {
 								fnValue = StringUtils.replace(fnValue, "k", "");
 								fnValue = String.valueOf(Double.parseDouble(fnValue)/1000);
 							}
-							
+
 							params.clear();
 							params.add(fnValue);
 							params.add(code);
 							params.add(fnType.getType());
 							params.add(fnDate);
 							int n = index.updateFnData(params);
-							
+
 							if(n == 0){
 								params.clear();
 								params.add(code);
@@ -1608,12 +1711,12 @@ public class InitialData {
 					}
 				}
 			}
-			
-			
-			
+
+
+
 		}
 	}
-	
+
 	private static String getAllStocksCode(){
 		StringBuffer sb = new StringBuffer(1024);
 		for(int i=0;i<=999;i++){
@@ -1642,8 +1745,8 @@ public class InitialData {
 		}
 		return sb.toString();
 	}
-	
-	
+
+
 	public static void initUStkFromSina(Connection conn, boolean flag) throws Exception {
 		int pageNum = 1;
 		List params = new ArrayList();
@@ -1669,7 +1772,7 @@ public class InitialData {
 					params.add(indType);
 					parentType = JdbcUtils.load(conn, "select * from stk_industry_type where name=? and source='sina_meigu'",params, StkIndustryType.class);
 				}
-				
+
 				List<Map> children = (List)map2.get("child");
 				for(Map child : children){
 					//System.out.println(child.get("id")+","+child.get("category_cn")+","+child.get("category"));
@@ -1731,10 +1834,10 @@ public class InitialData {
 					}
 				}
 			}
-			
-			
+
+
 		}else{
-		
+
 			while(true){
 				//System.out.println("page num:"+pageNum);
 				String page = HttpUtils.get("http://stock.finance.sina.com.cn/usstock/api/jsonp.php/IO.XSRV2.CallbackList"+URLEncoder.encode("['f0j3ltzVzdo2Fo4p']","utf-8")+"/US_CategoryService.getList?page="+pageNum+"&num=60&sort=&asc=0&market=&id=", null, "GBK");
@@ -1771,8 +1874,8 @@ public class InitialData {
 							params.clear();
 							params.add(indType);
 							type = JdbcUtils.load(conn, "select * from stk_industry_type where name=? and source='sina_meigu'",params, StkIndustryType.class);
-						}						
-						
+						}
+
 						if(type != null){
 							params.clear();
 							params.add(code);
@@ -1787,7 +1890,7 @@ public class InitialData {
 			}
 		}
 	}
-	
+
 	private static void initUStkFromXueQiu(Connection conn) throws Exception {
 		String page = HttpUtils.get("http://xueqiu.com/hq/US", "GBK");
 		String text = "{"+StringUtils.substringBetween(page, "stockList.searchResult={", "};")+"}";
@@ -1800,7 +1903,7 @@ public class InitialData {
 		int flag = 0;
 		for(Map industry : list){
 			System.out.println(industry);
-			
+
 			StkIndustryType parentIndustry = null;
 			String parentIndustryName = String.valueOf(industry.get("plate"));
 			if(parentIndustryName != null && parentIndustryName.length() > 0){
@@ -1812,11 +1915,11 @@ public class InitialData {
 			if(flag == 0){
 				continue;
 			}*/
-			
+
 			String industryName = String.valueOf(industry.get("industry"));
 			String industryParentName = parentIndustry==null?null:parentIndustry.getName();
 			StkIndustryType type = Industry.insertOrLoadIndustryType(conn, industryName, industryParentName, "xueqiu_meigu");
-			
+
 			page = HttpUtils.get("http://xueqiu.com/hq/US/"+URLEncoder.encode(industryName,"utf-8"), "GBK");
 			//System.out.println(page);
 			text = "{"+StringUtils.substringBetween(page, "stockList.searchResult={", "};")+"}";
@@ -1854,7 +1957,7 @@ public class InitialData {
 				double totalCapital = Double.parseDouble(totalCap)*n;
 				System.out.println(code+","+name+","+totalCapital+","+profile);
 				InitialData.createStk(conn, code, name, String.valueOf(totalCapital), profile);
-				
+
 				params.clear();
 				params.add(code);
 				params.add(type.getId());
@@ -1870,12 +1973,12 @@ public class InitialData {
 			}
 		}
 	}
-	
+
 	public static void initUStkFromEasymoney(Connection conn) throws Exception {
 		String page = HttpUtils.get("http://nufm.dfcfw.com/EM_Finance2014NumericApplication/JS.aspx?type=CT&cmd=C.__28CHINA&sty=MPICTTA&sortType=C&sortRule=-1&page=1&pageSize=200&js=var%20quote_123%3d"+URLEncoder.encode("{rank:[(x)],pages:(pc)}","utf-8")+"&token=44c9d251add88e27b65ed86506f6e5da&jsName=quote_123&_g=0.051958891308406585", null);
 		String strStks = StringUtils.substringBetween(page, "{rank:", ",pages:");
 		List<String> stks = JsonUtils.testJsonArray(strStks);
-		
+
 		StkIndustryType type = Industry.insertOrLoadIndustryType(conn,"中国概念股", null, Industry.INDUSTRY_EASYMONEY_MEIGU);
 		Industry.deleteAllStks(conn, type);
 		for(String stk : stks){
@@ -1884,8 +1987,8 @@ public class InitialData {
 			Industry.addStk(conn, type, stkCode);
 		}
 	}
-	
-	
+
+
 	public static void createStk(Connection conn,String code,String name,String totalCapital,String companyProfile) {
 		List params = new ArrayList();
 		params.clear();
@@ -1920,7 +2023,7 @@ public class InitialData {
 			JdbcUtils.update(conn, sql, params);
 		}
 	}
-	
+
 	public static void updateRestricted(Connection conn, Index index) throws Exception{
 		String page = HttpUtils.get("http://vip.stock.finance.sina.com.cn/q/go.php/vInvestConsult/kind/xsjj/index.phtml?symbol="+(index.getLoc()==1?Index.SH_LOWER:Index.SZ_LOWER+index.getCode()), "gbk");
 		//System.out.println(page);
@@ -1943,8 +2046,8 @@ public class InitialData {
 			JdbcUtils.insert(conn, "insert into stk_restricted(code,report_date,listing_date,ban_amount,ban_market_value) select ?,?,?,?,? from dual where not exists (select 1 from stk_restricted where code=? and report_date=? and listing_date=?)", params);
 		}
 	}
-	
-	
+
+
 	public static void initUStkFromFinviz(Connection conn) throws Exception {
 		int r = 1;
 		List params = new ArrayList();
@@ -1981,11 +2084,11 @@ public class InitialData {
 					}
 				}
 			}
-			
+
 			if(trs.size() < 20) break;
 			r += 20;
 			//break;
 		}
 	}
-	
+
 }

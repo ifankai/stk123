@@ -36,11 +36,11 @@ public class AStkTools {
 
 	/**
 	 * @param args
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
 		//EmailUtils.SEND_MAIL = false;
-		
+
 		Connection conn = null;
 		List<String> errors = new ArrayList<String>();
 		try {
@@ -52,7 +52,9 @@ public class AStkTools {
 			//InitialKLine.checkIndustry(conn, "20160817");
 			//InitialKLine.checkIndustry(conn, "20160712");
 			//Industry.updateCapitalFlow(conn, "20170303", "gnzjl");
-			
+
+
+
 			List<String> result = new ArrayList<String>();
 			String codes = "000001";
 			String sql = null;
@@ -66,7 +68,7 @@ public class AStkTools {
 			List<StkFnType> fnTypes = JdbcUtils.list(conn, "select * from stk_fn_type where market=1 and type=209", StkFnType.class);
 			List<Index> indexs = new ArrayList<Index>();
 			int i = 0;
-			
+
 			//HttpUtils.setUseProxy(true,"xueqiu.com");
 			String today = StkUtils.getToday();
 			//today = "20170522";
@@ -75,14 +77,16 @@ public class AStkTools {
 			JdbcUtils.delete(conn, "delete from stk_kline where kline_date>to_char(sysdate,'yyyymmdd')",null);
 			System.out.println("dddddddddddddddddd");*/
 			//InitialData.initialStk(conn, new Date());
-			
+
+
+
 			for(Stk stk : stks){
 				try{
 					Index index =  new Index(conn,stk.getCode(),stk.getName());
 					context.indexs.add(index);
 					System.out.println(stk.getCode());
 					//InitialData.initOwnership(conn, index);
-					InitialData.initHolderFrom10jqka(conn, index);
+					//InitialData.initHolderFrom10jqka(conn, index);
 					//InitialData.updateStkF9(conn, index);
 
 					//K k = index.getK("20160530");
@@ -103,7 +107,7 @@ public class AStkTools {
 								}
 							}
 						}
-						
+
 					}*/
 					/*K k = index.getK(0);
 					if(k==null)continue;
@@ -111,12 +115,12 @@ public class AStkTools {
 					if(k.getClose()*1.02 >= ma20 && k.getClose() <= ma20*1.06){
 						System.out.println(index.getCode());
 					}*/
-					
+
 					//InitialData.initOwnership(conn, index);
 					//index.initEarningsForecast();
 					//index.updateNtile();
-					
-					
+
+
 					/*K k = index.getK(today);
 					double d = 0.0;
 					int count = 0;
@@ -146,12 +150,12 @@ public class AStkTools {
 					index.changePercent = count * d;
 					indexs.add(index);
 					System.out.println(stk.getCode()+","+count+","+d);*/
-					
+
 					//K k = index.getK(0);
-					
-					
+
+
 					//InitialData.initFnDataTTM(conn, StkUtils.now, index, fnTypes);
-					
+
 				}catch(Exception e){
 					e.printStackTrace();
 					errors.add(stk.getCode());
@@ -159,79 +163,79 @@ public class AStkTools {
 					throw e;
 				}
 			}
-			
-			
+
+
 			Collections.sort(indexs, new Comparator<Index>(){
 				@Override
 				public int compare(Index o1, Index o2) {
 					int i = (int)((o1.changePercent - o2.changePercent)*10000);
 					return i;
 				}});
-			
+
 			/*result = IndexUtils.getUpGaps(indexs, "20140723", 250, 30);*/
 			//indexs = IndexUtils.getCloseNewHighsAndInteract(context.indexs,"20150521",600);
 			for(Index index : indexs){
 				//System.out.println(index.getCode()+","+index.getName());
 				System.out.println(index.getCode()+","+index.getName()+",change="+index.changePercent);
 			}
-			
+
 			//Strategy.log = true;
-			
+
 			/*Strategy1 strategy1 = new Strategy1();
 			strategy1.run(null, "20160722", context.indexs);*/
-			
+
 			/*Strategy2 strategy2 = new Strategy2();
 			strategy2.run(null, "20160308", context.indexs);*/
-			
+
 			/*Strategy3 strategy3 = new Strategy3();
 			strategy3.run(null, "20160722", context.indexs);*/
-			
+
 			/*Strategy4 strategy4 = new Strategy4();
 			strategy4.run(null, "20160719", context.indexs);*/
-			
+
 			/*Strategy5 strategy5 = new Strategy5();
 			strategy5.run(null, "20160722", context.indexs);*/
-			
+
 			/*Strategy6 strategy6 = new Strategy6();
 			strategy6.run(null, "20160715", context.indexs);*/
-			
+
 			/*Strategy9 strategy = new Strategy9();
 			strategy.run(null, "20160826", context.indexs);
 			*/
 			//InitialKLine.shortLineChooseStock("20160602", context.indexs);
 			//InitialKLine.checkYiPinChaoDiDaShiYiQu(conn, today, context.indexs);
-			
+
 			/*Strategy16 strategy = new Strategy16();
 			strategy.run(conn, "20170804", context.indexs);*/
-			
+
 			/*
 			Map params = new HashMap();
 			params.put("1",100);
 			params.put("2","test");
 			params.put("3",new Timestamp(new Date().getTime()));
 			System.out.println(params);
-			
+
 			String json = JsonUtils.getJsonString4JavaPOJO(params);
 			System.out.println("json="+json);
 			//json = "{\"0\":100,\"1\":\"test\",\"time\":\"2017-07-30 14:47:47\"}";
-			
+
 			Map<String, Class> m = new HashMap<String, Class>();
 			m.put("3", Date.class);
-			
+
 			JsonConfig jsonConfig = JsonUtils.configJson();
 			jsonConfig.setRootClass(Map.class);
 			jsonConfig.setClassMap(m);
 			JSONObject jsonObject = JSONObject.fromObject( json );
 			Map map = (Map)JSONObject.toBean(jsonObject, new HashMap(), jsonConfig);
-			
+
 			Map map = (Map)JsonUtils.getObject4Json(json, Map.class, m);
-			
+
 			System.out.println(map);
 			System.out.println(map.get("1").getClass());
 			System.out.println(map.get("2").getClass());
 			System.out.println(map.get("3").getClass());
 			System.out.println("------------------------------");
-			
+
 			List ps = new ArrayList();
 			ps.add(100);
 			ps.add("test");
@@ -239,14 +243,14 @@ public class AStkTools {
 			System.out.println(ps);
 			json = SyncAction.parseParamsFromObject(ps);
 			System.out.println(json);
-			
+
 			List p = SyncAction.parseParamsFromJson(json);
 			System.out.println(p);*/
 			//InitialData.initialIndustryFrom10jqka(conn, "gn");
-			
-			
-			
-			
+
+
+
+
 		} finally {
 			if (conn != null) conn.close();
 		}
@@ -254,7 +258,7 @@ public class AStkTools {
 			System.out.println("errors:"+errors);
 
 	}
-	
+
 	public static boolean condition(K k) throws Exception{
 		final K kv = k.getKByHVV(200);
 		int cnt = k.getKCountWithCondition(80,5, new K.Condition() {
@@ -262,18 +266,18 @@ public class AStkTools {
 				/*if(k.getDate().equals("20170224")){
 					System.out.println(k.getLow() +","+k.getMA(K.Close, 30));
 				}*/
-				return k.getClose() >= k.getOpen() && k.getVolumn() >= kv.getVolumn()/2 
+				return k.getClose() >= k.getOpen() && k.getVolumn() >= kv.getVolumn()/2
 						&& k.getVolumn()/k.getMA(K.Volumn, 10) >= 2;
 			}
 		});
 		if(cnt >= 2){
-			
+
 			if(k.getVolumn() < k.getMA(K.Volumn, 10)
 					&& (k.getLow() < k.getMA(K.Close, 30) || k.getLow() < k.getMA(K.Close, 20))){
 				K ky = k.before(1);
 				K ky30 = k.before(30);
 				K ky31 = k.before(31);
-				if(k.getMA(K.Close, 60) >= ky.getMA(K.Close, 60) 
+				if(k.getMA(K.Close, 60) >= ky.getMA(K.Close, 60)
 						|| ky30.getMA(K.Close, 60) >= ky31.getMA(K.Close, 60)){
 					//System.out.println(index.getCode()+","+index.getName()+",change="+index.changePercent);
 					K kh = k.getKByHHV(200);
@@ -286,7 +290,7 @@ public class AStkTools {
 		}
 		return false;
 	}
-	
+
 	public static List<String> kws = new ArrayList<String>();
 	static{
 		kws.add("释放产能");
@@ -297,7 +301,7 @@ public class AStkTools {
 		kws.add("高增长");
 		kws.add("市场前景可观");
 	}
-	
+
 	public static void test(Index index) throws Exception {
 		String page = HttpUtils.get("http://www.cninfo.com.cn//disclosure/fulltext/stocks/fulltext1y/cninfo/"+index.getCode()+".js?ver="+StkUtils.formatDate(new Date(), StkUtils.sf_ymd12), "gb2312");
 		if("404".equals(page)){
@@ -327,8 +331,8 @@ public class AStkTools {
 			}
 		}
 	}
-	
-	
+
+
 	//二品抄底
 	public static double erpinchaodi(Index index, String today) throws Exception {
 		//String today = "20150508";
@@ -337,7 +341,7 @@ public class AStkTools {
 			//趋势:3*SMA((CLOSE-LLV(LOW,27))/(HHV(HIGH,27)-LLV(LOW,27))*100,5,1)
 			//      -2*SMA(SMA((CLOSE-LLV(LOW,27))/(HHV(HIGH,27)-LLV(LOW,27))*100,5,1),3,1),COLOR00FFFF;
 		    //机构建仓: IF(趋势<5,40,0),COLORFFFFFF,LINETHICK3;
-			
+
 			double x = k.getEMA(3, 1, new K.Calculator(){
 				public double calc(K k) throws Exception {
 					double llv = k.getLLV(27);
@@ -345,7 +349,7 @@ public class AStkTools {
 					return (k.getClose() - llv) / (hhv - llv) * 100;
 				}}
 			);
-			
+
 			double y = k.getEMA(3, 1, new K.Calculator(){
 				public double calc(K k) throws Exception {
 					double y = k.getEMA(5, 1, new K.Calculator(){
@@ -364,6 +368,6 @@ public class AStkTools {
 		}
 		return 10000;
 	}
-	
+
 
 }
