@@ -2,6 +2,7 @@ package com.stk123.bo;
 
 import com.stk123.tool.util.JdbcUtils.Column;
 import java.io.Serializable;
+import java.util.List;
 import com.stk123.tool.util.JdbcUtils.Table;
 
 @SuppressWarnings("serial")
@@ -25,6 +26,18 @@ public class StkIndustryType implements Serializable {
 
     @Column(name="US_NAME")
     private String usName;
+
+    @Column(name="CODE")
+    private String code;
+
+    @Column(name="PARENT_CODE")
+    private String parentCode;
+
+    private List<StkIndustry> stkIndustry;
+
+    private List<StkIndustryRank> stkIndustryRank;
+
+    private StkKlineRankIndustry stkKlineRankIndustry;
 
 
     public Integer getId(){
@@ -69,9 +82,44 @@ public class StkIndustryType implements Serializable {
         this.usName = usName;
     }
 
+    public String getCode(){
+        return this.code;
+    }
+    public void setCode(String code){
+        this.code = code;
+    }
+
+    public String getParentCode(){
+        return this.parentCode;
+    }
+    public void setParentCode(String parentCode){
+        this.parentCode = parentCode;
+    }
+
+    public List<StkIndustry> getStkIndustry(){
+        return this.stkIndustry;
+    }
+    public void setStkIndustry(List<StkIndustry> stkIndustry){
+        this.stkIndustry = stkIndustry;
+    }
+
+    public List<StkIndustryRank> getStkIndustryRank(){
+        return this.stkIndustryRank;
+    }
+    public void setStkIndustryRank(List<StkIndustryRank> stkIndustryRank){
+        this.stkIndustryRank = stkIndustryRank;
+    }
+
+    public StkKlineRankIndustry getStkKlineRankIndustry(){
+        return this.stkKlineRankIndustry;
+    }
+    public void setStkKlineRankIndustry(StkKlineRankIndustry stkKlineRankIndustry){
+        this.stkKlineRankIndustry = stkKlineRankIndustry;
+    }
+
 
     public String toString(){
-        return "id="+id+",name="+name+",source="+source+",careFlag="+careFlag+",parentId="+parentId+",usName="+usName;
+        return "id="+id+",name="+name+",source="+source+",careFlag="+careFlag+",parentId="+parentId+",usName="+usName+",code="+code+",parentCode="+parentCode+",stkIndustry="+stkIndustry+",stkIndustryRank="+stkIndustryRank+",stkKlineRankIndustry="+stkKlineRankIndustry;
     }
 
 }

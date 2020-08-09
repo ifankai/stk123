@@ -228,7 +228,7 @@ public class TableTools {
 		t.codePOJOBean("./src", PACKAGE_BO,true,true,true);
 		
 		t = Table.getInstance("stk_xueqiu_user");
-		t.codePOJOBean("./src", PACKAGE_BO,true,true,true);*/
+		t.codePOJOBean("./src", PACKAGE_BO,true,true,true);
 		
 		
 		t = Table.getInstance("stk_us_search_view");
@@ -241,7 +241,10 @@ public class TableTools {
 		t.codePOJOBean("./src", PACKAGE_BO,true,true,true);
 		
 		t = Table.getInstance("stk_strategy");
-		t.codePOJOBean("./src", PACKAGE_BO,true,true,true);
+		t.codePOJOBean("./src", PACKAGE_BO,true,true,true);*/
+
+        t = Table.getInstance("stk_industry_type");
+        t.codePOJOBean("./src", PACKAGE_BO,true,true,true);
 		
 	}
 	

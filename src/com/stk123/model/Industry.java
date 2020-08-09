@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.stk123.tool.util.*;
 import org.apache.commons.lang.StringUtils;
 import org.htmlparser.Node;
 import org.htmlparser.tags.TableTag;
@@ -17,11 +18,6 @@ import com.stk123.bo.StkIndustry;
 import com.stk123.bo.StkIndustryType;
 import com.stk123.bo.StkKlineRankIndustry;
 import com.stk123.tool.db.connection.Pool;
-import com.stk123.tool.util.CacheUtils;
-import com.stk123.tool.util.EmailUtils;
-import com.stk123.tool.util.HtmlUtils;
-import com.stk123.tool.util.HttpUtils;
-import com.stk123.tool.util.JdbcUtils;
 import com.stk123.tool.web.ActionContext;
 import com.stk123.web.StkConstant;
 
@@ -48,7 +44,7 @@ public class Industry implements Serializable {
 	public static Map<String,StkIndustryType> getIndustryType(Connection conn){
 		Map<String,StkIndustryType> industryTypes = (Map<String,StkIndustryType>)CacheUtils.getForever(CacheUtils.KEY_INDUSTRY_TYPE);
 		if(industryTypes != null){
-			return industryTypes;
+			//return industryTypes;
 		}
 		//if(industryTypes.size() > 0)return industryTypes;
 		industryTypes = new HashMap<String,StkIndustryType>();
@@ -170,6 +166,47 @@ public class Industry implements Serializable {
 		}
 		return type;
 	}
+
+    public static StkIndustryType insertOrLoadIndustryType(Connection conn, String industryName, String code, String parentCode, String source) throws Exception{
+        List params = new ArrayList();
+        StkIndustryType parentType = null;
+        if(parentCode != null && parentCode.length() > 0){
+            params.clear();
+            params.add(parentCode);
+            params.add(source);
+            parentType = JdbcUtils.load(conn, "select * from stk_industry_type where code=? and source=?",params, StkIndustryType.class);
+            if(parentType == null){
+                //throw new Exception("Please insert parent code/name firstly:"+parentCode);
+                ExceptionUtils.insertLog(conn, "000000", new Exception("Please insert parent code/name firstly:"+parentCode));
+                return null;
+            }
+        }
+
+        params.clear();
+        params.add(code);
+        params.add(source);
+        StkIndustryType type = JdbcUtils.load(conn, "select * from stk_industry_type where code=? and source=?",params, StkIndustryType.class);
+        if(type == null){
+            params.clear();
+            params.add(industryName);
+            params.add(source);
+            params.add(code);
+            if(parentType != null){
+                params.add(parentType.getCode());
+            }else{
+                params.add(null);
+            }
+            int n = JdbcUtils.insert(conn, "insert into stk_industry_type(id,name,source,code,parent_code) values(s_industry_type_id.nextval,?,?,?,?)", params);
+            if(n > 0){
+                //EmailUtils.send("新行业 - "+ industryName, "insertOrLoadIndustryType - 2");
+            }
+            params.clear();
+            params.add(code);
+            params.add(source);
+            type = JdbcUtils.load(conn, "select * from stk_industry_type where code=? and source=?",params, StkIndustryType.class);
+        }
+        return type;
+    }
 	
 	public static int addStk(Connection conn, StkIndustryType type, String stkCode){
 		List params = new ArrayList();

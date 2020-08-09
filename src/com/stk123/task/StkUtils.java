@@ -196,7 +196,7 @@ public class StkUtils {
 
         //System.out.println(StkUtils.getSysClipboardText());
 
-        InitialData.initialIndustryFromCsindex_zz1(null);
+        InitialData.initialIndustryFromCsindex_zz1(DBUtil.getConnection());
     }
 
     public static void printStackTrace(){
