@@ -143,10 +143,16 @@ public class InitialData {
 			e.printStackTrace();
 		}
 
+        try{
+            //InitialData.initialIndustryFromCnIndex(conn, 14);
+            InitialData.initialIndustryFromCsindex_zjh(conn);
+            InitialData.initialIndustryFromCsindex_zz1(conn);
+        }catch(Exception e){
+            EmailUtils.send("Initial A Stock Industry csindex Data Error", e);
+            e.printStackTrace();
+        }
+
 		try{
-			//InitialData.initialIndustryFromCnIndex(conn, 14);
-			InitialData.initialIndustryFromCsindex_zjh(conn);
-			InitialData.initialIndustryFromCsindex_zz1(conn);
 			InitialData.updateIndustryFromHexun(conn);
 		}catch(Exception e){
 			EmailUtils.send("Initial A Stock Industry Data Error", e);
@@ -600,7 +606,7 @@ public class InitialData {
 
 				//===============
 				System.out.println("parentCode:"+parent+",code:"+code+",name:"+name);
-				StkIndustryType indType = Industry.insertOrLoadIndustryType(conn, name, null, "csindex_zjh");
+				StkIndustryType indType = Industry.insertOrLoadIndustryType(conn, name, code, parent, "csindex_zjh");
 				//TODO stk_data_industry_pe
 
 				String href = HtmlUtils.getAttribute(a, "href");
@@ -632,47 +638,51 @@ public class InitialData {
 		String parentCode = null;
 		List params = new ArrayList();
 		for(Node table : tables){
-			//System.out.println(table.toHtml());
-			//List<List<String>> list = HtmlUtils.getListFromTable((TableTag)table);
-			//System.out.println(list);
-			List<Node> tds = HtmlUtils.getNodeListByTagName(table, "td");
-			for(Node td : tds){
-				System.out.println(StringUtils.trim(td.toPlainTextString()));
-			}
-			if(tds != null && tds.size() > 4) {
-				String code = StringUtils.trim(tds.get(0).toPlainTextString());
-				if(parentCode == null || StringUtils.length(code) == 2) {
-					parentCode = "";
-				}else{
-					parentCode = StringUtils.substring(code, 0, StringUtils.length(code) -2);
-				}
-				String name = StringUtils.trim(tds.get(1).toPlainTextString());
-				Node a = HtmlUtils.getNodeByTagName(tds.get(3), "a");
+		    try {
+                //System.out.println(table.toHtml());
+                //List<List<String>> list = HtmlUtils.getListFromTable((TableTag)table);
+                //System.out.println(list);
+                List<Node> tds = HtmlUtils.getNodeListByTagName(table, "td");
+                for (Node td : tds) {
+                    System.out.println(StringUtils.trim(td.toPlainTextString()));
+                }
+                if (tds != null && tds.size() > 4) {
+                    String code = StringUtils.trim(tds.get(0).toPlainTextString());
+                    if (parentCode == null || StringUtils.length(code) == 2) {
+                        parentCode = "";
+                    } else {
+                        parentCode = StringUtils.substring(code, 0, StringUtils.length(code) - 2);
+                    }
+                    String name = StringUtils.trim(tds.get(1).toPlainTextString());
+                    Node a = HtmlUtils.getNodeByTagName(tds.get(3), "a");
 
-				//===============
-				System.out.println("parentCode:"+parentCode+",code:"+code+",name:"+name);
-				StkIndustryType indType = Industry.insertOrLoadIndustryType(conn, name, null, "csindex_zz");
-				//TODO stk_data_industry_pe
+                    //===============
+                    System.out.println("parentCode:" + parentCode + ",code:" + code + ",name:" + name);
+                    StkIndustryType indType = Industry.insertOrLoadIndustryType(conn, name, code, parentCode, "csindex_zz");
+                    //TODO stk_data_industry_pe
 
-				String href = HtmlUtils.getAttribute(a, "href");
-				System.out.println(StringEscapeUtils.unescapeHtml(href));
-				page = HttpUtils.get(StringEscapeUtils.unescapeHtml(href),"utf-8");
-				Node tab = HtmlUtils.getNodeByAttributeContain(page, null, "class", "p_table");
-				List<List<String>> list = HtmlUtils.getListFromTable((TableTag) tab, 0);
-				System.out.println(list);
-				for(List<String> row : list){
-					if(row != null && row.size() > 2) {
-						String scode = row.get(1);
-						params.clear();
-						params.add(scode);
-						params.add(indType.getId());
-						params.add(scode);
-						params.add(indType.getId());
-						JdbcUtils.insert(conn, "insert into stk_industry(code,industry) select ?,? from dual where not exists (select 1 from stk_industry where code=? and industry=?)", params);
-					}
-				}
+                    String href = HtmlUtils.getAttribute(a, "href");
+                    System.out.println(StringEscapeUtils.unescapeHtml(href));
+                    page = HttpUtils.get(StringEscapeUtils.unescapeHtml(href), "utf-8");
+                    Node tab = HtmlUtils.getNodeByAttributeContain(page, null, "class", "p_table");
+                    List<List<String>> list = HtmlUtils.getListFromTable((TableTag) tab, 0);
+                    //System.out.println(list);
+                    for (List<String> row : list) {
+                        if (row != null && row.size() > 2) {
+                            String scode = row.get(1);
+                            params.clear();
+                            params.add(scode);
+                            params.add(indType.getId());
+                            params.add(scode);
+                            params.add(indType.getId());
+                            JdbcUtils.insert(conn, "insert into stk_industry(code,industry) select ?,? from dual where not exists (select 1 from stk_industry where code=? and industry=?)", params);
+                        }
+                    }
 
-			}
+                }
+            }catch (Exception e){
+		        ExceptionUtils.insertLog(conn, "000000", e);
+            }
 		}
 	}
 
@@ -859,6 +869,7 @@ public class InitialData {
 		}
 	}
 
+	//TODO http://quote.eastmoney.com/sz002572.html?from=beta
 	private static void updateStkStaticInfo(Connection conn,String code) throws Exception {
 		List params = new ArrayList();
 		String page = HttpUtils.get("http://stockdata.stock.hexun.com/2009_gsgk_"+code+".shtml", null, "GBK");

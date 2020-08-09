@@ -201,6 +201,8 @@ alter table stk_industry_type add care_flag number(2) default 0;
 alter table stk_industry_type add constraint pk_id primary key (id);
 alter table stk_industry_type add parent_id number(6);
 alter table stk_industry_type add us_name varchar2(200);
+alter table stk_industry_type add code varchar2(20);
+alter table stk_industry_type add parent_code varchar2(20);
 create index idx_industry_type_name on stk_industry_type (name);
 
 create sequence s_industry_type_id
@@ -1304,7 +1306,7 @@ select flow_date,sum(main_amount+super_large_amount+large_amount+middle_amount+s
 select * from stk_capital_flow where flow_date='20131118' and main_percent>=15 and super_large_percent>=15 order by main_percent asc;
 
 select * from stk_monitor for update;
-select * from stk_dictionary where type=5 for update;
+select * from stk_dictionary where type=300 for update;
 insert into stk_dictionary select 5,5964068708,'小小辛巴',null from dual;
 insert into stk_dictionary select 5,3875738003,'可燃冰',null from dual;
 insert into stk_dictionary select 5,8510627167,'利弗莫尔一平',null from dual;
@@ -1373,7 +1375,7 @@ shutdown immediate;
     from v$session a, v$sqlarea b
     where a.sql_address =b.address order by cpu_time/executions desc;
 
-select * from stk_industry_type t where t.id=1723;
+select * from stk_industry_type where source='csindex_zjh';
 select * from stk_data_industry_pe t where t.industry_id=1723 order by pe_date desc;
 select * from stk_data_industry_pe order by pe_date desc;
 
@@ -2000,7 +2002,6 @@ select * from stk_fn_type where market=1 and disp_order <> 1000 order by disp_or
 
 select * from (select * from stk_import_info where code='002119' and type>=100 and id<168228 order by info_create_time desc) where rownum=1;
 
-truncate table stk_organization
 
 select * from stk_ownership order by code, fn_date desc, rate desc;
 select * from stk_organization order by name;
@@ -2689,26 +2690,59 @@ select * from stk_text where code='00853';
 
 select * from stk_text where insert_time > sysdate -365 and text like '%困境反转%' order by id desc;
 
-select distinct source from stk_industry_type;
+select * from stk_industry_type;
 
 --20200331 季度十大机构对行业配置的增仓比例
+--TODO 排除新上市一年的公司
 select sum(rate), name, count(*), sum(rate)/count(*)*100 from (
 select a.code,b.rate, c.name from stk_industry a, stk_industry_type c,
 (select code,(case when sum(num_change)>0 then 1 else -1 end) rate from stk_ownership where fn_date='20200331' group by code) b 
-where a.code=b.code and a.industry=c.id and c.source='cnindex'
+where a.code=b.code and a.industry=c.id and c.source='csindex_zjh'
 ) group by name having count(*)>50 
 order by sum(rate)/count(*) desc;
 
 select sum(rate), name, count(*), sum(rate)/count(*)*100 from (
 select a.code,b.rate, c.name from stk_industry a, stk_industry_type c,
 (select code,(case when sum(num_change)>0 then 1 else -1 end) rate from stk_ownership where fn_date='20191231' group by code) b 
-where a.code=b.code and a.industry=c.id and c.source='cnindex'
+where a.code=b.code and a.industry=c.id and c.source='csindex_zjh'
 ) group by name having count(*)>50 
 order by sum(rate)/count(*) desc;
 
 select sum(rate), name, count(*), sum(rate)/count(*)*100 from (
 select a.code,b.rate, c.name from stk_industry a, stk_industry_type c,
 (select code,(case when sum(num_change)>0 then 1 else -1 end) rate from stk_ownership where fn_date='20190630' group by code) b 
-where a.code=b.code and a.industry=c.id and c.source='cnindex'
+where a.code=b.code and a.industry=c.id and c.source='csindex_zjh'
 ) group by name having count(*)>50 
 order by sum(rate)/count(*) desc;
+
+-------------
+
+select sum(rate), name, count(*), sum(rate)/count(*)*100 from (
+select a.code,b.rate, c.name from stk_industry a, stk_industry_type c,
+(select code,(case when sum(num_change)>0 then 1 else -1 end) rate from stk_ownership where fn_date='20200331' group by code) b 
+where a.code=b.code and a.industry=c.id and c.source='csindex_zz'
+) group by name having count(*)>50 
+order by sum(rate)/count(*) desc;
+
+select sum(rate), name, count(*), sum(rate)/count(*)*100 from (
+select a.code,b.rate, c.name from stk_industry a, stk_industry_type c,
+(select code,(case when sum(num_change)>0 then 1 else -1 end) rate from stk_ownership where fn_date='20191231' group by code) b 
+where a.code=b.code and a.industry=c.id and c.source='csindex_zz'
+) group by name having count(*)>50 
+order by sum(rate)/count(*) desc;
+
+select sum(rate), name, count(*), sum(rate)/count(*)*100 from (
+select a.code,b.rate, c.name from stk_industry a, stk_industry_type c,
+(select code,(case when sum(num_change)>0 then 1 else -1 end) rate from stk_ownership where fn_date='20190630' group by code) b 
+where a.code=b.code and a.industry=c.id and c.source='csindex_zz'
+) group by name having count(*)>50 
+order by sum(rate)/count(*) desc;
+
+
+select * from stk_industry_type where source='csindex_zz';
+
+select s.code,s.name from stk s,stk_industry i,stk_industry_type t 
+where s.code=i.code and i.industry=t.id and t.source='csindex_zjh' and t.code='07'
+order by t.id,s.code;
+
+select * from stk_industry_type order by name asc
