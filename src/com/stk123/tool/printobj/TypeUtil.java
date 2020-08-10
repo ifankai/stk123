@@ -27,19 +27,19 @@ public class TypeUtil {
 	public static void main(String[] args) {
 		/*TreeNode node = new TreeNode();
 		node.setName("dddd");*/
-		
+
 		TreeNode node = new TreeNode();
 		node.setName("dddd");
-		TreeNode node1 = new TreeNode(1,2,123, new StkIndexNode());
-		node1.setName("xxxxxxx");
-		node1.setParent(node1);
-		node.getChildren().add(node1);
-		System.out.println(TypeUtil.typeToString("node", node)); 
+		//TreeNode node1 = new TreeNode(1,2,123, new StkIndexNode());
+		//node1.setName("xxxxxxx");
+		//node1.setParent(node1);
+		//node.getChildren().add(node1);
+		System.out.println(TypeUtil.typeToString("node", node));
 	}
 
 	/**
 	 * Returns a string holding the contents of the passed object,
-	 * 
+	 *
 	 * @param scope
 	 *            String
 	 * @param parentObject
@@ -74,7 +74,7 @@ public class TypeUtil {
 
 	/**
 	 * Method processFields
-	 * 
+	 *
 	 * @param fields
 	 *            Field[]
 	 * @param scope
@@ -121,7 +121,7 @@ public class TypeUtil {
 
 	/**
 	 * Method isCollectionType
-	 * 
+	 *
 	 * @param obj
 	 *            Object
 	 * @return boolean
@@ -135,7 +135,7 @@ public class TypeUtil {
 
 	/**
 	 * Method isComplexType
-	 * 
+	 *
 	 * @param obj
 	 *            Object
 	 * @return boolean
@@ -174,7 +174,7 @@ public class TypeUtil {
 
 	/**
 	 * Returns a string holding the contents of the passed object,
-	 * 
+	 *
 	 * @param scope
 	 *            String
 	 * @param obj
@@ -183,79 +183,79 @@ public class TypeUtil {
 	 *            List
 	 * @return String
 	 */
-	private static String collectionTypeToString(String scope, Object obj, List visitedObjs) {  
-	    StringBuffer buffer = new StringBuffer("");  
-	    if (obj.getClass().isArray()) {  
-	        if (Array.getLength(obj) > 0) {  
-	            for (int j = 0; j < Array.getLength(obj); j++) {  
-	                Object x = Array.get(obj, j);  
-	                buffer.append(typeToString(scope + "[" + j + "]", x, visitedObjs));  
-	            }  
-	        } else {  
-	            buffer.append(scope + "[]: empty\n");  
-	        }  
-	    } else {  
-	        boolean isCollection = (obj instanceof Collection);  
-	        boolean isHashTable = (obj instanceof Hashtable);  
-	        boolean isHashMap = (obj instanceof HashMap);  
-	        boolean isHashSet = (obj instanceof HashSet);  
-	        boolean isAbstractMap = (obj instanceof AbstractMap);  
-	        boolean isMap = isAbstractMap || isHashMap || isHashTable;  
-	        if (isMap) {  
-	            Set keySet = ((Map) obj).keySet();  
-	            Iterator iterator = keySet.iterator();  
-	            int size = keySet.size();  
-	            if (size > 0) {  
-	                for (int j = 0; iterator.hasNext(); j++) {  
-	                    Object key = iterator.next();  
-	                    Object x = ((Map) obj).get(key);  
-	                    buffer.append(typeToString(scope + "[\"" + key + "\"]", x, visitedObjs));  
-	                }  
-	            } else {  
-	                buffer.append(scope + "[]: empty\n");  
-	            }  
-	        } else  
-	            if (/*isHashTable || */  
-	                isCollection || isHashSet /* || isHashMap */  
-	                ) {  
-	                Iterator iterator = null;  
-	                int size = 0;  
-	                if (obj != null) {  
-	                    if (isCollection) {  
-	                        iterator = ((Collection) obj).iterator();  
-	                        size = ((Collection) obj).size();  
-	                    } else  
-	                        if (isHashTable) {  
-	                            iterator = ((Hashtable) obj).values().iterator();  
-	                            size = ((Hashtable) obj).size();  
-	                        } else  
-	                            if (isHashSet) {  
-	                                iterator = ((HashSet) obj).iterator();  
-	                                size = ((HashSet) obj).size();  
-	                            } else  
-	                                if (isHashMap) {  
-	                                    iterator = ((HashMap) obj).values().iterator();  
-	                                    size = ((HashMap) obj).size();  
-	                                }  
-	                    if (size > 0) {  
-	                        for (int j = 0; iterator.hasNext(); j++) {  
-	                            Object x = iterator.next();  
-	                            buffer.append(typeToString(scope + "[" + j + "]", x, visitedObjs));  
-	                        }  
-	                    } else {  
-	                        buffer.append(scope + "[]: empty\n");  
-	                    }  
-	                } else {  
-	                    // theObject is null  
-	                    buffer.append(scope + "[]: null\n");  
-	                }  
-	            }  
-	    }  
-	    return (buffer.toString());  
+	private static String collectionTypeToString(String scope, Object obj, List visitedObjs) {
+	    StringBuffer buffer = new StringBuffer("");
+	    if (obj.getClass().isArray()) {
+	        if (Array.getLength(obj) > 0) {
+	            for (int j = 0; j < Array.getLength(obj); j++) {
+	                Object x = Array.get(obj, j);
+	                buffer.append(typeToString(scope + "[" + j + "]", x, visitedObjs));
+	            }
+	        } else {
+	            buffer.append(scope + "[]: empty\n");
+	        }
+	    } else {
+	        boolean isCollection = (obj instanceof Collection);
+	        boolean isHashTable = (obj instanceof Hashtable);
+	        boolean isHashMap = (obj instanceof HashMap);
+	        boolean isHashSet = (obj instanceof HashSet);
+	        boolean isAbstractMap = (obj instanceof AbstractMap);
+	        boolean isMap = isAbstractMap || isHashMap || isHashTable;
+	        if (isMap) {
+	            Set keySet = ((Map) obj).keySet();
+	            Iterator iterator = keySet.iterator();
+	            int size = keySet.size();
+	            if (size > 0) {
+	                for (int j = 0; iterator.hasNext(); j++) {
+	                    Object key = iterator.next();
+	                    Object x = ((Map) obj).get(key);
+	                    buffer.append(typeToString(scope + "[\"" + key + "\"]", x, visitedObjs));
+	                }
+	            } else {
+	                buffer.append(scope + "[]: empty\n");
+	            }
+	        } else
+	            if (/*isHashTable || */
+	                isCollection || isHashSet /* || isHashMap */
+	                ) {
+	                Iterator iterator = null;
+	                int size = 0;
+	                if (obj != null) {
+	                    if (isCollection) {
+	                        iterator = ((Collection) obj).iterator();
+	                        size = ((Collection) obj).size();
+	                    } else
+	                        if (isHashTable) {
+	                            iterator = ((Hashtable) obj).values().iterator();
+	                            size = ((Hashtable) obj).size();
+	                        } else
+	                            if (isHashSet) {
+	                                iterator = ((HashSet) obj).iterator();
+	                                size = ((HashSet) obj).size();
+	                            } else
+	                                if (isHashMap) {
+	                                    iterator = ((HashMap) obj).values().iterator();
+	                                    size = ((HashMap) obj).size();
+	                                }
+	                    if (size > 0) {
+	                        for (int j = 0; iterator.hasNext(); j++) {
+	                            Object x = iterator.next();
+	                            buffer.append(typeToString(scope + "[" + j + "]", x, visitedObjs));
+	                        }
+	                    } else {
+	                        buffer.append(scope + "[]: empty\n");
+	                    }
+	                } else {
+	                    // theObject is null
+	                    buffer.append(scope + "[]: null\n");
+	                }
+	            }
+	    }
+	    return (buffer.toString());
 	}
 	/**
 	 * Method typeToString
-	 * 
+	 *
 	 * @param scope
 	 *            String
 	 * @param obj
@@ -286,12 +286,12 @@ public class TypeUtil {
 	 * The typeToString() method is used to dump the contents of a passed object
 	 * of any type (or collection) to a String. This can be very useful for
 	 * debugging code that manipulates complex structures.
-	 * 
+	 *
 	 * @param scope
 	 * @param obj
-	 * 
+	 *
 	 * @return String
-	 * 
+	 *
 	 */
 
 	public static String typeToString(String scope, Object obj) {
