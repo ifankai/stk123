@@ -28,6 +28,7 @@ import java.util.Set;
 
 import javax.net.ssl.SSLSession;
 
+import com.stk123.tool.db.util.DBUtil;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
@@ -55,27 +56,27 @@ import com.sun.enterprise.util.FileUtil;
 import com.sun.net.ssl.HostnameVerifier;
 import com.sun.net.ssl.HttpsURLConnection;
 
-  
-public class HttpUtils {   
-	
-	public static int NO_OF_RETRY = 3;   
-	
+
+public class HttpUtils {
+
+	public static int NO_OF_RETRY = 3;
+
 	public static final String POST = "POST";
-	
+
 	private static boolean useProxy = false;
 	private static String useProxyURL = null;
-	
+
 	private static List<Proxy> proxys = Collections.synchronizedList(new ArrayList<Proxy>());
-  
+
 	static class Proxy{
 		public String ip = null;
-		public int port = 0; 
+		public int port = 0;
 		public Proxy(String ip, int port){
 			this.ip = ip;
 			this.port = port;
 		}
 	}
-	
+
 	static{
 		//http://pachong.org/area/short/name/cn.html
 		proxys.add(null);
@@ -91,60 +92,60 @@ public class HttpUtils {
 		proxys.add(new HttpUtils.Proxy("117.167.202.106",8123));
 		proxys.add(new HttpUtils.Proxy("183.207.237.11", 83));
 		///
-		
+
 	}
-    /**  
-     * 定义编码格式 UTF-8  
-     */  
-    public static final String URL_PARAM_DECODECHARSET_UTF8 = "UTF-8";   
-       
-    /**  
-     * 定义编码格式 GBK  
-     */  
-    public static final String URL_PARAM_DECODECHARSET_GBK = "GBK";   
-       
-    private static final String URL_PARAM_CONNECT_FLAG = "&";  
-    private static final String NAME_VALUE_SEPARATOR = "=";  
-       
-    private static final String EMPTY = "";   
-  
-    private static MultiThreadedHttpConnectionManager connectionManager = null;  
+    /**
+     * 定义编码格式 UTF-8
+     */
+    public static final String URL_PARAM_DECODECHARSET_UTF8 = "UTF-8";
+
+    /**
+     * 定义编码格式 GBK
+     */
+    public static final String URL_PARAM_DECODECHARSET_GBK = "GBK";
+
+    private static final String URL_PARAM_CONNECT_FLAG = "&";
+    private static final String NAME_VALUE_SEPARATOR = "=";
+
+    private static final String EMPTY = "";
+
+    private static MultiThreadedHttpConnectionManager connectionManager = null;
     private static SimpleHttpConnectionManager simpleConnectionManager = null;
-  
+
     private static int connectionTimeOut = 60000;   //1分钟
-    private static int socketTimeOut = 60000;   
-    private static int maxConnectionPerHost = 20;   
-    private static int maxTotalConnections = 20;   
-  
-    private static HttpClient client;   
-    
+    private static int socketTimeOut = 60000;
+    private static int maxConnectionPerHost = 20;
+    private static int maxTotalConnections = 20;
+
+    private static HttpClient client;
+
     private static String userName = System.getProperty("user.name");
-    
-  
-    static{   
-        connectionManager = new MultiThreadedHttpConnectionManager();   
+
+
+    static{
+        connectionManager = new MultiThreadedHttpConnectionManager();
         //simpleConnectionManager = new SimpleHttpConnectionManager();
-        connectionManager.getParams().setConnectionTimeout(connectionTimeOut);   
-        connectionManager.getParams().setSoTimeout(socketTimeOut);   
-        connectionManager.getParams().setDefaultMaxConnectionsPerHost(maxConnectionPerHost);   
-        connectionManager.getParams().setMaxTotalConnections(maxTotalConnections); 
-        
-        ProtocolSocketFactory fcty = new MySecureProtocolSocketFactory();  
+        connectionManager.getParams().setConnectionTimeout(connectionTimeOut);
+        connectionManager.getParams().setSoTimeout(socketTimeOut);
+        connectionManager.getParams().setDefaultMaxConnectionsPerHost(maxConnectionPerHost);
+        connectionManager.getParams().setMaxTotalConnections(maxTotalConnections);
+
+        ProtocolSocketFactory fcty = new MySecureProtocolSocketFactory();
         Protocol.registerProtocol("https", new Protocol("https", fcty, 443));
-		
-        client = new HttpClient(connectionManager);  
+
+        client = new HttpClient(connectionManager);
         //client = new HttpClient(simpleConnectionManager);
-        
+
         System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
         System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
         //System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire", "error");
         System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "error");
-    }   
-    
+    }
+
     public static HttpClient getHttpClient(){
     	return client;
     }
-    
+
     public static void setUseProxy(boolean useProxy, String useProxyURL){
     	HttpUtils.useProxy = useProxy;
     	HttpUtils.useProxyURL = useProxyURL;
@@ -153,7 +154,7 @@ public class HttpUtils {
     		//NO_OF_RETRY = 4;
     	}
     }
-    
+
     private static int i = 0;
     private static synchronized Proxy useProxy(HttpState httpState,String url){
     	/*if("kevin.fan.bak".equalsIgnoreCase(userName)){
@@ -173,45 +174,45 @@ public class HttpUtils {
     	}
     	return proxy;
     }
-       
-    /**  
-     * POST方式提交数据  
-     * @param url   待请求的URL  
-     * @param params   要提交的数据  
-     * @param enc   编码  
-     * @return   响应结果  
-     */  
-    public static String post(String url, Map<String, String> params, String enc){   
+
+    /**
+     * POST方式提交数据
+     * @param url   待请求的URL
+     * @param params   要提交的数据
+     * @param enc   编码
+     * @return   响应结果
+     */
+    public static String post(String url, Map<String, String> params, String enc){
     	return HttpUtils.post(url, params, null,null, enc, null);
-    } 
-    
-    public static String post(String url, String body, String enc){   
+    }
+
+    public static String post(String url, String body, String enc){
     	return HttpUtils.post(url, null, body,null, enc, null);
     }
-    
+
     public static String post(String url, Map<String, String> params, String enc, List<Header> respHeaders){
     	return HttpUtils.post(url, params, null, null, enc, respHeaders);
     }
-    
+
     public static String post(String url, Map<String, String> params, String body, String enc, List<Header> respHeaders){
     	return HttpUtils.post(url, params, body, null, enc, respHeaders);
     }
-    
+
     public static String post(String url, Map<String, String> params, Map<String, String> requestHeaders, String enc, List<Header> respHeaders){
     	return HttpUtils.post(url, params, null, requestHeaders, enc, respHeaders);
     }
-    
+
     public static String post(String url, Map<String, String> params,String body, Map<String, String> requestHeaders, String enc, List<Header> respHeaders){
-    	String response = EMPTY;           
-        PostMethod postMethod = null;   
-        
+    	String response = EMPTY;
+        PostMethod postMethod = null;
+
         HttpState httpState = new HttpState();
         client.setState(httpState);
         useProxy(httpState,url);
-        
-        try {   
-            postMethod = new PostMethod(url);   
-            postMethod.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;charset=" + enc); 
+
+        try {
+            postMethod = new PostMethod(url);
+            postMethod.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;charset=" + enc);
             postMethod.setRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.122 Safari/537.36");
             postMethod.setRequestHeader("Cache-Control","no-cache");
             if(requestHeaders != null){
@@ -220,28 +221,28 @@ public class HttpUtils {
             	}
             }
             //postMethod.getParams().setParameter("http.protocol.cookie-policy",CookiePolicy.BROWSER_COMPATIBILITY);
-            //将表单的值放入postMethod中  
+            //将表单的值放入postMethod中
             /*if(params != null){
-	            Set<String> keySet = params.keySet();   
-	            for(String key : keySet){   
-	                String value = params.get(key);   
-	                postMethod.addParameter(key, value);   
-	            }              
+	            Set<String> keySet = params.keySet();
+	            for(String key : keySet){
+	                String value = params.get(key);
+	                postMethod.addParameter(key, value);
+	            }
             }*/
             if(params != null){
-	            List<NameValuePair> nvps = new ArrayList <NameValuePair>();  
-	            
-	            Set<String> keySet = params.keySet();  
-	            for(String key : keySet) {  
-	                nvps.add(new NameValuePair(key, params.get(key)));  
+	            List<NameValuePair> nvps = new ArrayList <NameValuePair>();
+
+	            Set<String> keySet = params.keySet();
+	            for(String key : keySet) {
+	                nvps.add(new NameValuePair(key, params.get(key)));
 	            }
 	            postMethod.setRequestBody(nvps.toArray(new NameValuePair[nvps.size()]));
             }
             if(body != null){
             	postMethod.setRequestBody(body);
             }
-            //执行postMethod   
-            int statusCode = client.executeMethod(postMethod);   
+            //执行postMethod
+            int statusCode = client.executeMethod(postMethod);
             if(statusCode == HttpStatus.SC_OK) {
             	if(respHeaders != null){
             		Header[] hds = postMethod.getResponseHeaders();
@@ -249,35 +250,35 @@ public class HttpUtils {
             			respHeaders.add(hd);
             		}
             	}
-                response = postMethod.getResponseBodyAsString();   
-            }else{   
-            	System.err.println("响应状态码 = " + postMethod.getStatusCode());   
-            }   
-        }catch(HttpException e){   
-        	System.err.println("发生致命的异常，可能是协议不对或者返回的内容有问题");   
+                response = postMethod.getResponseBodyAsString();
+            }else{
+            	System.err.println("响应状态码 = " + postMethod.getStatusCode());
+            }
+        }catch(HttpException e){
+        	System.err.println("发生致命的异常，可能是协议不对或者返回的内容有问题");
         	e.printStackTrace();
-        }catch(IOException e){   
-        	System.err.println("发生网络异常");  
+        }catch(IOException e){
+        	System.err.println("发生网络异常");
         	e.printStackTrace();
         	if(useProxy){
-        		
+
         	}
-        }finally{   
-            if(postMethod != null){   
-                postMethod.releaseConnection();   
-                postMethod = null;   
-            }   
-        }   
-           
+        }finally{
+            if(postMethod != null){
+                postMethod.releaseConnection();
+                postMethod = null;
+            }
+        }
+
         return response;
     }
-    
-    /**  
-     * GET方式提交数据  
-     * @param url  待请求的URL  
-     * @param params  要提交的数据  
-     * @param enc  编码  
-     * @return  响应结果  
+
+    /**
+     * GET方式提交数据
+     * @param url  待请求的URL
+     * @param params  要提交的数据
+     * @param enc  编码
+     * @return  响应结果
      */
     public static String get(String url, Map<String, String> params, String enc) throws Exception {
     	return HttpUtils.get(url, params,null, enc, NO_OF_RETRY);
@@ -288,8 +289,8 @@ public class HttpUtils {
     public static String get(String url, String enc) throws Exception {
     	return HttpUtils.get(url, null, enc);
     }
-    
-    public static String get(String url, Map<String, String> reqParams, Map<String, String> requestHeaders, String enc, int tryTimes) throws Exception { 
+
+    public static String get(String url, Map<String, String> reqParams, Map<String, String> requestHeaders, String enc, int tryTimes) throws Exception {
     	String exceptionMsg = null;
     	while(tryTimes > 0){
     		try{
@@ -304,38 +305,38 @@ public class HttpUtils {
     	}
     	throw new Exception("http get try n times error."+url+"\n"+exceptionMsg);
     }
-    
+
     private final static String ContentType = "Content-Type";
     private final static String ContentTypeValue = "application/x-www-form-urlencoded;charset=";
-    
+
     private final static String UserAgent = "User-Agent";
     private final static String UserAgentValue = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.122 Safari/537.36";
-    
+
     private final static String CacheControl = "Cache-Control";
     private final static String CacheControlValue = "no-cache";
-    
+
     private final static String ProtocolCookiePolicy = "http.protocol.cookie-policy";
-       
-    private static String get0(String url, Map<String, String> reqParams, Map<String, String> requestHeaders, String enc) throws Exception {   
-        String response = EMPTY;   
-        GetMethod getMethod = null;        
-        StringBuffer strtTotalURL = new StringBuffer(url);   
-           
+
+    private static String get0(String url, Map<String, String> reqParams, Map<String, String> requestHeaders, String enc) throws Exception {
+        String response = EMPTY;
+        GetMethod getMethod = null;
+        StringBuffer strtTotalURL = new StringBuffer(url);
+
         if (reqParams != null && reqParams.keySet().size() > 0){
 	        if(strtTotalURL.indexOf("?") == -1) {
-	        		strtTotalURL.append("?").append(getUrl(reqParams, enc));   
-	        } else { 
-	        		strtTotalURL.append("&").append(getUrl(reqParams, enc));   
-	        }   
+	        		strtTotalURL.append("?").append(getUrl(reqParams, enc));
+	        } else {
+	        		strtTotalURL.append("&").append(getUrl(reqParams, enc));
+	        }
         }
-        //System.out.println("GET URL =" + strtTotalURL.toString());   
-        
+        //System.out.println("GET URL =" + strtTotalURL.toString());
+
         HttpState httpState = new HttpState();
         client.setState(httpState);
         Proxy proxy = useProxy(httpState,url);
-        
-        try {   
-            getMethod = new GetMethod(strtTotalURL.toString());  
+
+        try {
+            getMethod = new GetMethod(strtTotalURL.toString());
             client.getParams().setParameter(HttpClientParams.HTTP_CONTENT_CHARSET, enc);
             getMethod.setRequestHeader(ContentType, ContentTypeValue + enc);
             //getMethod.setRequestHeader("Accept","image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, application/x-shockwave-flash, application/vnd.ms-excel, application/vnd.ms-powerpoint, application/msword, application/x-ms-application, application/x-ms-xbap, application/vnd.ms-xpsdocument, application/xaml+xml, */*");
@@ -354,59 +355,60 @@ public class HttpUtils {
             /*if(getMethod.getRequestHeaders("Cookie").length > 0)
                 System.out.println(getMethod.getRequestHeaders("Cookie")[0]);*/
             client.getParams().setParameter(ProtocolCookiePolicy, CookiePolicy.BROWSER_COMPATIBILITY);
-            //执行getMethod   
-            int statusCode = client.executeMethod(getMethod);   
-            if(statusCode == HttpStatus.SC_OK) {   
-                //response = getMethod.getResponseBodyAsString();   
+            //执行getMethod
+            int statusCode = client.executeMethod(getMethod);
+            if(statusCode == HttpStatus.SC_OK) {
+                //response = getMethod.getResponseBodyAsString();
             	BufferedReader br = new BufferedReader(new InputStreamReader(getMethod.getResponseBodyAsStream(),getMethod.getResponseCharSet()));
-            	StringBuffer sb = new StringBuffer();  
-                String str= "";  
-                while((str = br.readLine()) != null){  
-                	sb.append(str);  
+            	StringBuffer sb = new StringBuffer();
+                String str= "";
+                while((str = br.readLine()) != null){
+                	sb.append(str);
                 }
                 response = sb.toString();
-            }else{   
+            }else{
             	response = String.valueOf(getMethod.getStatusCode());
-            }  
+            }
             /*for(Header header : getMethod.getResponseHeaders()){
             	System.out.println(header.getName()+"="+header.getValue());
             }*/
             if("400".equals(response) || "404".equals(response)){
             	System.out.println(response+"="+url);
             	StkUtils.printStackTrace();
+            	ExceptionUtils.insertLog(DBUtil.getConnection(), new Exception("url:"+url));
             }
             /*if("502".equals(response)){
             	EmailUtils.send("HTTP代理异常【502】,stop...", url);
             	System.err.println("HTTP代理异常【502】"+url);
             	Thread.currentThread().stop();
             }*/
-        }catch(HttpException e){   
+        }catch(HttpException e){
         	System.err.println("发生致命的异常，可能是协议不对或者返回的内容有问题:"+url);
         	//e.printStackTrace();
         	throw e;
-        }catch(IOException e){   
-        	System.err.println("发生网络异常:"+(proxy!=null?(" proxy:"+proxy.ip+":"+proxy.port+", "):"")+url); 
+        }catch(IOException e){
+        	System.err.println("发生网络异常:"+(proxy!=null?(" proxy:"+proxy.ip+":"+proxy.port+", "):"")+url);
         	//e.printStackTrace();
         	throw e;
-        }catch(Exception e){   
-        	System.err.println("发生异常:"+url); 
+        }catch(Exception e){
+        	System.err.println("发生异常:"+url);
         	//e.printStackTrace();
         	throw e;
-        }finally{   
-            if(getMethod != null){   
-                getMethod.releaseConnection();   
-                getMethod = null;   
-            }   
-        }   
-        return response;   
-    }      
-  
-    /**  
-     * 据Map生成URL字符串  
-     * @param map   Map  
-     * @param valueEnc  URL编码  
-     * @return   URL  
-     */  
+        }finally{
+            if(getMethod != null){
+                getMethod.releaseConnection();
+                getMethod = null;
+            }
+        }
+        return response;
+    }
+
+    /**
+     * 据Map生成URL字符串
+     * @param map   Map
+     * @param valueEnc  URL编码
+     * @return   URL
+     */
     private static String getUrl(Map<String, String> map, String valueEnc) {
         if (null == map || map.keySet().size() == 0) {
             return (EMPTY);
@@ -417,25 +419,25 @@ public class HttpUtils {
             String key = it.next();
             if (map.containsKey(key)) {
                 String val = map.get(key);
-                String str = val != null ? val : EMPTY;   
+                String str = val != null ? val : EMPTY;
                 try {
-                    str = URLEncoder.encode(str, valueEnc);   
-                } catch (UnsupportedEncodingException e) {   
-                    e.printStackTrace();   
+                    str = URLEncoder.encode(str, valueEnc);
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
                 }
-                url.append(key).append(NAME_VALUE_SEPARATOR).append(str).append(URL_PARAM_CONNECT_FLAG);   
+                url.append(key).append(NAME_VALUE_SEPARATOR).append(str).append(URL_PARAM_CONNECT_FLAG);
             }
         }
-        String strURL = EMPTY;   
-        strURL = url.toString();   
-        if (URL_PARAM_CONNECT_FLAG.equals(EMPTY + strURL.charAt(strURL.length() - 1))) {   
-            strURL = strURL.substring(0, strURL.length() - 1);   
-        }   
-        return (strURL);   
-    }  
-    
+        String strURL = EMPTY;
+        strURL = url.toString();
+        if (URL_PARAM_CONNECT_FLAG.equals(EMPTY + strURL.charAt(strURL.length() - 1))) {
+            strURL = strURL.substring(0, strURL.length() - 1);
+        }
+        return (strURL);
+    }
+
     /**
-     * @param url 
+     * @param url
      * @param parameterName 下载文件名是parameter的值
      * @param path 下载文件存放路径
      * @param fileName 指定下载文件名，会忽略parameterName这个参数，不指定则为null
@@ -444,7 +446,7 @@ public class HttpUtils {
 		HttpState httpState = new HttpState();
         client.setState(httpState);
         useProxy(httpState,url);
-        
+
         GetMethod httpGet = null;
 		try {
 			httpGet = new GetMethod(url);
@@ -476,20 +478,20 @@ public class HttpUtils {
 			httpGet.releaseConnection();
 		}
 	}
-	
+
 	public static void download(String url, String path) throws Exception {
 		HttpUtils.download(url, null, path, null);
 	}
-	
+
 	public static String getFileNameByUrl(String url,String encoding) throws Exception {
 		return HttpUtils.getFileNameByUrl(url, encoding, null, null);
 	}
-	
+
 	public static String getFileNameByUrl(String url,String encoding, String type, String parameterName) throws Exception {
 		if(StringUtils.indexOfIgnoreCase(url,"http") >= 0)
 			url = url.substring(7);
 		url = url.substring(url.lastIndexOf("/")+1);
-		
+
 		//String type = contentType.substring(contentType.lastIndexOf("/") + 1);
 		if(parameterName != null){
 			String value = HttpUtils.getParameter(url, encoding, parameterName);
@@ -518,112 +520,112 @@ public class HttpUtils {
 			}
 		}
 	}
-	
-    /* 
-     * assume each name is unique 
-     */  
+
+    /*
+     * assume each name is unique
+     */
     public static String getParameter(final String url, final String encoding,final String name) throws URISyntaxException {
         Map<String, String> mapparams = new HashMap<String, String>();
         List<NameValuePair> params = parse(new URI(url), encoding);
         for (NameValuePair param : params) {
             mapparams.put(param.getName(), param.getValue());
         }
-        return mapparams.get(name);  
-    }  
-  
-    private static List<NameValuePair> parse(final URI uri, final String encoding) {  
-        List<NameValuePair> result = Collections.emptyList();  
-        final String query = uri.getRawQuery();  
-        if (query != null && query.length() > 0) {  
-            result = new ArrayList<NameValuePair>();  
-            parse(result, new Scanner(query), encoding);  
-        }  
-        return result;  
-    }  
-  
-    private static void parse(final List<NameValuePair> parameters, final Scanner scanner, final String encoding) {  
-        scanner.useDelimiter(URL_PARAM_CONNECT_FLAG);  
-        while (scanner.hasNext()) {  
-            final String[] nameValue = scanner.next().split(  
-                    NAME_VALUE_SEPARATOR);  
-            if (nameValue.length == 0 || nameValue.length > 2)  
-                throw new IllegalArgumentException("bad parameter");  
-  
-            final String name = decode(nameValue[0], encoding);  
-            String value = null;  
-            if (nameValue.length == 2)  
-                value = decode(nameValue[1], encoding);  
-            parameters.add(new NameValuePair(name, value));  
-        }  
-    }  
-  
-    private static String decode(final String content, final String encoding) {  
-        try {  
-            return URLDecoder.decode(content, encoding != null ? encoding : URL_PARAM_DECODECHARSET_UTF8);  
-        } catch (UnsupportedEncodingException problem) {  
-            throw new IllegalArgumentException(problem);  
-        }  
+        return mapparams.get(name);
     }
-    
-    public static HostnameVerifier hv = new HostnameVerifier() {  
-        public boolean verify(String urlHostName, SSLSession session) {  
-            System.out.println("Warning: URL Host: " + urlHostName + " vs. "  
-                               + session.getPeerHost());  
-            return true;  
+
+    private static List<NameValuePair> parse(final URI uri, final String encoding) {
+        List<NameValuePair> result = Collections.emptyList();
+        final String query = uri.getRawQuery();
+        if (query != null && query.length() > 0) {
+            result = new ArrayList<NameValuePair>();
+            parse(result, new Scanner(query), encoding);
+        }
+        return result;
+    }
+
+    private static void parse(final List<NameValuePair> parameters, final Scanner scanner, final String encoding) {
+        scanner.useDelimiter(URL_PARAM_CONNECT_FLAG);
+        while (scanner.hasNext()) {
+            final String[] nameValue = scanner.next().split(
+                    NAME_VALUE_SEPARATOR);
+            if (nameValue.length == 0 || nameValue.length > 2)
+                throw new IllegalArgumentException("bad parameter");
+
+            final String name = decode(nameValue[0], encoding);
+            String value = null;
+            if (nameValue.length == 2)
+                value = decode(nameValue[1], encoding);
+            parameters.add(new NameValuePair(name, value));
+        }
+    }
+
+    private static String decode(final String content, final String encoding) {
+        try {
+            return URLDecoder.decode(content, encoding != null ? encoding : URL_PARAM_DECODECHARSET_UTF8);
+        } catch (UnsupportedEncodingException problem) {
+            throw new IllegalArgumentException(problem);
+        }
+    }
+
+    public static HostnameVerifier hv = new HostnameVerifier() {
+        public boolean verify(String urlHostName, SSLSession session) {
+            System.out.println("Warning: URL Host: " + urlHostName + " vs. "
+                               + session.getPeerHost());
+            return true;
         }
 
 		@Override
 		public boolean verify(String arg0, String arg1) {
 			return true;
-		}  
-    };  
-      
-    public static void trustAllHttpsCertificates(){  
-        javax.net.ssl.TrustManager[] trustAllCerts = new javax.net.ssl.TrustManager[1];  
-        javax.net.ssl.TrustManager tm = new miTM();  
-        trustAllCerts[0] = tm;  
+		}
+    };
+
+    public static void trustAllHttpsCertificates(){
+        javax.net.ssl.TrustManager[] trustAllCerts = new javax.net.ssl.TrustManager[1];
+        javax.net.ssl.TrustManager tm = new miTM();
+        trustAllCerts[0] = tm;
         javax.net.ssl.SSLContext sc;
 		try {
-			sc = javax.net.ssl.SSLContext  
+			sc = javax.net.ssl.SSLContext
 			        .getInstance("SSL");
-			sc.init(null, trustAllCerts, null);  
-			javax.net.ssl.HttpsURLConnection.setDefaultSSLSocketFactory(sc  
-	                .getSocketFactory());  
+			sc.init(null, trustAllCerts, null);
+			javax.net.ssl.HttpsURLConnection.setDefaultSSLSocketFactory(sc
+	                .getSocketFactory());
 		} catch (Exception e) {
 			e.printStackTrace();
-		}  
-    }  
-  
-    static class miTM implements javax.net.ssl.TrustManager,  
-            javax.net.ssl.X509TrustManager {  
-        public java.security.cert.X509Certificate[] getAcceptedIssuers() {  
-            return null;  
-        }  
-  
-        public boolean isServerTrusted(  
-                java.security.cert.X509Certificate[] certs) {  
-            return true;  
-        }  
-  
-        public boolean isClientTrusted(  
-                java.security.cert.X509Certificate[] certs) {  
-            return true;  
-        }  
-  
-        public void checkServerTrusted(  
-                java.security.cert.X509Certificate[] certs, String authType)  
-                throws java.security.cert.CertificateException {  
-            return;  
-        }  
-  
-        public void checkClientTrusted(  
-                java.security.cert.X509Certificate[] certs, String authType)  
-                throws java.security.cert.CertificateException {  
-            return;  
-        }  
-    } 
+		}
+    }
 
-    
+    static class miTM implements javax.net.ssl.TrustManager,
+            javax.net.ssl.X509TrustManager {
+        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+            return null;
+        }
+
+        public boolean isServerTrusted(
+                java.security.cert.X509Certificate[] certs) {
+            return true;
+        }
+
+        public boolean isClientTrusted(
+                java.security.cert.X509Certificate[] certs) {
+            return true;
+        }
+
+        public void checkServerTrusted(
+                java.security.cert.X509Certificate[] certs, String authType)
+                throws java.security.cert.CertificateException {
+            return;
+        }
+
+        public void checkClientTrusted(
+                java.security.cert.X509Certificate[] certs, String authType)
+                throws java.security.cert.CertificateException {
+            return;
+        }
+    }
+
+
 	public static void main(String[] arg) throws Exception {
 		/*URL DIR = WebUtils.class.getResource("/");
 		System.out.println(DIR.getPath());
@@ -640,48 +642,48 @@ public class HttpUtils {
 			//http://stock.gtimg.cn/data/hk_sector_rank.php?sector=FNS9&metric=price&pageSize=20&reqPage=1&order=0&var_name=list_data
 		}
 		System.out.println(page);*/
-		
+
 		//copy /b  E:\downloads\mv\file_name\*.ts  E:\downloads\mv\zzz\file_name.ts
 		//mediaCoder ts转码mp4
-		
+
 		downloadMV("https://play.bo159159.com/20190909/hc2noKd0/700kb/hls/i5Nh5tGR3651001.ts", "清纯可爱的小姐姐非常优秀", 1);
 		downloadMV("https://play.cdmbo.com/20180729/cd6pExyh/800kb/hls/2uVx8zqh2033000.ts", "两个不错的气质大学生妹子合租房里捞外快担心有人在门外不时要去看看", 0);
 		downloadMV("https://play.168168bo.com/20190111/bu2hrbwx/700kb/hls/QAgHE4683002.ts", "漂亮小姐姐情趣网装直播小秀 看着很清纯的", 2);
 
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
 
 		//HttpUtils.download("http://bp.pep.com.cn/jc/yjcz/czsxjc/202001/P020200210126052860555.pdf", "d:\\share\\义务教育教科书\\");
 	}
-	
+
 	public static void downloadMV(String ds, final String toDir, int start) throws Exception{
 		System.out.println(toDir);
 		//int start = 0;
 		String replace = "00"+start+".ts";
 		int end = 500;
-		
+
 		final String target = "E:\\downloads\\mv\\"+toDir+"\\";
 		File targetDir = new File(target);
 		if(!targetDir.exists()){
 			targetDir.mkdirs();
 		}
-		
+
 		for(int i = start;i <= end;i++){
 			String fileName = StringUtils.replace(StringUtils.substringAfterLast(ds, "/"), replace, StringUtils.leftPad(String.valueOf(i), 3, "0")+".ts"); // "3M91ZO6546"+StringUtils.leftPad(String.valueOf(i), 3, "0")+".ts";
 			final String url = StringUtils.substringBeforeLast(ds, "/")+ "/" + fileName;
 			//System.out.println(url);
-			
+
 			RetryUtils.retryIfException(3, 30*1000, new Retry(){
 				@Override
 				public void run() throws Exception {
 					HttpUtils.download2(url, target);
 				}
 			});
-			
+
 			File file = new File(target + fileName + ".mp2t");
 			if(file.exists()){
 				file.renameTo(new File(target + fileName));
@@ -694,7 +696,7 @@ public class HttpUtils {
 		}
 		run(toDir);
 	}
-	
+
 	public static void run(String fileName){
 		try {
 			String command = "copy /b E:\\downloads\\mv\\\""+fileName+"\\\"*.ts  E:\\downloads\\mv\\zzz\\\""+fileName+"\".ts \n";
@@ -717,18 +719,18 @@ public class HttpUtils {
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } 
+        }
 	}
-	
+
 	public static void download2(String url, String path) throws Exception {
 		HttpUtils.download2(url, null, path, null);
 	}
-	
+
 	public static void download2(String url, String parameterName, String path, String fileName) throws Exception {
 		HttpState httpState = new HttpState();
         client.setState(httpState);
         useProxy(httpState,url);
-        
+
         GetMethod httpGet = null;
 		try {
 			httpGet = new GetMethod(url);
@@ -756,5 +758,5 @@ public class HttpUtils {
 			httpGet.releaseConnection();
 		}
 	}
-    
+
 }

@@ -20,11 +20,11 @@ import com.stk123.web.pojo.MetaData;
 import com.stk123.web.pojo.Node;
 
 public class IndexService {
-	
+
 	public final static String ID_XZH = "3000";
 	public final static int ID_INDUSTRY_PE = 60000;
 	public final static int ID_PPI = 700000;
-	
+
 	//private static Tree tree = null;
 
 	public Tree getTree() throws Exception {
@@ -42,7 +42,7 @@ public class IndexService {
 				treeNodes.add(tn);
 			}
 			tree = Tree.getTree(treeNodes, 1);
-			
+
 			//行业平均PE
 			TreeNode industryPENode = tree.getNode(ID_INDUSTRY_PE);
 			List<Industry> industryTypes = Industry.getIndsutriesBySource(conn, Industry.INDUSTRY_CNINDEX);
@@ -69,18 +69,18 @@ public class IndexService {
 				tn.setParent(ppiNode);
 				ppiNode.addChild(tn);
 			}
-			
+
 			CacheUtils.putForever(CacheUtils.KEY_INDEX_TREE, tree);
 			return tree;
 		}finally{
 			Pool.getPool().free(conn);
 		}
 	}
-	
+
 	public String getTreeJson() throws Exception {
 		return JsonUtils.getJsonString4JavaPOJO(convertToNode(this.getTree().getChildren()));
 	}
-	
+
 	private List<Node> convertToNode(List<TreeNode> list){
 		List<Node> rs = new ArrayList<Node>();
 		for(TreeNode node : list){
@@ -94,7 +94,7 @@ public class IndexService {
 		}
 		return rs;
 	}
-	
+
 	private Node indexNodeToNode(StkIndexNode indexNode){
 		Node node = new Node();
 		node.setData(indexNode.getName());
@@ -107,7 +107,7 @@ public class IndexService {
 		}
 		return node;
 	}
-	
+
 	public List<Map> bias(int id) throws Exception {
 		Connection conn = null;
 		try{
@@ -118,7 +118,7 @@ public class IndexService {
 			Pool.getPool().free(conn);
 		}
 	}
-	
+
 	public List<Map> getPPI(int id) throws Exception {
 		Connection conn = null;
 		try{
@@ -129,14 +129,14 @@ public class IndexService {
 			Pool.getPool().free(conn);
 		}
 	}
-	
+
 	public final static String SQL_INDEX_INDUSTRY_PE = "with " +
 		"t1 as (select pe_date,pe_ttm from stk_data_industry_pe where industry_id=? and type=1)," +
 		"t2 as (select pe_date,pe_ttm from stk_data_industry_pe where industry_id=? and type=2)," +
 		"t3 as (select pe_date,pe_ttm from stk_data_industry_pe where industry_id=? and type=3)," +
 		"t4 as (select avg(pe_ttm) pe_ttm,pe_date from stk_data_industry_pe where industry_id=? group by pe_date) " +
-		"select t1.pe_date d,t1.pe_ttm a,t2.pe_ttm b,t3.pe_ttm c,trunc(t4.pe_ttm,2) v from t1,t2,t3,t4 where t1.pe_date=t2.pe_date and t2.pe_date=t3.pe_date and t3.pe_date=t4.pe_date order by t1.pe_date asc"; 
-	
+		"select t1.pe_date d,t1.pe_ttm a,t2.pe_ttm b,t3.pe_ttm c,trunc(t4.pe_ttm,2) v from t1,t2,t3,t4 where t1.pe_date=t2.pe_date and t2.pe_date=t3.pe_date and t3.pe_date=t4.pe_date order by t1.pe_date asc";
+
 	public List<Map> industryPE(int id) throws Exception {
 		Connection conn = null;
 		try{
@@ -152,7 +152,7 @@ public class IndexService {
 			Pool.getPool().free(conn);
 		}
 	}
-	
+
 	public static void main(String[] args) throws Exception {
 		IndexService is = new IndexService();
 		String json = is.getTreeJson();

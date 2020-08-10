@@ -9,9 +9,19 @@ import org.apache.log4j.Logger;
 
 import com.stk123.tool.util.ChineseUtils;
 
+/*****
+ * idea shortcut: https://blog.csdn.net/fmwind/article/details/80930840
+ * F11:bookmark
+ * shift+F11:view bookmark
+ * ctrl+F12:file structure/find method
+ * ctrl+shift+c: copy path
+ * ctrl + q: view javadoc(查看说明)
+ * Ctrl + E: 显示最近打开的文件记录列表
+ * ctrl + alt + l:格式化
+ */
 
 public class Test {
-	
+
 	private static Logger logger = Logger.getLogger(Test.class);
 
 	private static String str = "ABCDE";// 字符串
@@ -25,14 +35,14 @@ public class Test {
 		   System.out.println(ChineseUtils.length("柳 工"));
 		   System.out.println(StringUtils.leftPad("1", 4, "0"));
 		  //logger.error("ddddddddddddddd");
-		   
+
 		   StackTraceElement[] temp=Thread.currentThread().getStackTrace();
 		   StackTraceElement a=(StackTraceElement)temp[1];
 		   System.out.println("----from--"+a.getMethodName()+"--");
-		   
-		   
+
+
 	   }
-	   
+
 	   public static String formatLeftS(String str, int min_length) {
 	        String format = "%-" + (min_length < 1 ? 1 : min_length) + "s";
 	        return String.format(format, str);
@@ -44,7 +54,7 @@ public class Test {
 	       n = Integer.parseInt(input.nextLine());
 	       find("", 0);
 	       System.out.println("共有"+count+"种组合");
-	       
+
 	   }
 	   /**
 	    *第一个参数是代表第一个字符，第二个参数代表开始寻找点的位置
@@ -66,7 +76,7 @@ public class Test {
 	           s = temp;
 	           s += str.charAt(k);
 	           find(s, k);
-	       }     
+	       }
 	   }
 
 }
