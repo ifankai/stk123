@@ -2694,49 +2694,55 @@ select * from stk_industry_type;
 
 --20200331 季度十大机构对行业配置的增仓比例
 --TODO 排除新上市一年的公司
-select sum(rate), name, count(*), sum(rate)/count(*)*100 from (
-select a.code,b.rate, c.name from stk_industry a, stk_industry_type c,
-(select code,(case when sum(num_change)>0 then 1 else -1 end) rate from stk_ownership where fn_date='20200331' group by code) b 
-where a.code=b.code and a.industry=c.id and c.source='csindex_zjh'
-) group by name having count(*)>50 
-order by sum(rate)/count(*) desc;
+select fn_date, sum(rate), name, count(*), sum(rate) / count(*) * 100
+  from (select a.code, b.rate, c.name, fn_date
+          from stk_industry a, stk_industry_type c, stk_cn d,
+               (select code, (case when sum(num_change) > 0 then 1 else -1 end) rate, fn_date from stk_ownership where fn_date = '20200331' group by code,fn_date) b
+         where a.code = b.code and a.code = d.code and a.industry = c.id
+           and d.LISTING_DATE < to_char(add_months(sysdate, -12),'yyyymmdd') and c.source = 'csindex_zjh')
+ group by name,fn_date having count(*) > 50 order by sum(rate) / count(*) desc;
 
-select sum(rate), name, count(*), sum(rate)/count(*)*100 from (
-select a.code,b.rate, c.name from stk_industry a, stk_industry_type c,
-(select code,(case when sum(num_change)>0 then 1 else -1 end) rate from stk_ownership where fn_date='20191231' group by code) b 
-where a.code=b.code and a.industry=c.id and c.source='csindex_zjh'
-) group by name having count(*)>50 
-order by sum(rate)/count(*) desc;
+select fn_date, sum(rate), name, count(*), sum(rate) / count(*) * 100
+  from (select a.code, b.rate, c.name, fn_date
+          from stk_industry a, stk_industry_type c, stk_cn d,
+               (select code, (case when sum(num_change) > 0 then 1 else -1 end) rate, fn_date from stk_ownership where fn_date = '20191231' group by code,fn_date) b
+         where a.code = b.code and a.code = d.code and a.industry = c.id
+           and d.LISTING_DATE < to_char(add_months(sysdate, -12),'yyyymmdd') and c.source = 'csindex_zjh')
+ group by name,fn_date having count(*) > 50 order by sum(rate) / count(*) desc;
 
-select sum(rate), name, count(*), sum(rate)/count(*)*100 from (
-select a.code,b.rate, c.name from stk_industry a, stk_industry_type c,
-(select code,(case when sum(num_change)>0 then 1 else -1 end) rate from stk_ownership where fn_date='20190630' group by code) b 
-where a.code=b.code and a.industry=c.id and c.source='csindex_zjh'
-) group by name having count(*)>50 
-order by sum(rate)/count(*) desc;
+select fn_date, sum(rate), name, count(*), sum(rate) / count(*) * 100
+  from (select a.code, b.rate, c.name, fn_date
+          from stk_industry a, stk_industry_type c, stk_cn d,
+               (select code, (case when sum(num_change) > 0 then 1 else -1 end) rate, fn_date from stk_ownership where fn_date = '20190630' group by code,fn_date) b
+         where a.code = b.code and a.code = d.code and a.industry = c.id
+           and d.LISTING_DATE < to_char(add_months(sysdate, -12),'yyyymmdd') and c.source = 'csindex_zjh')
+ group by name,fn_date having count(*) > 50 order by sum(rate) / count(*) desc;  
 
 -------------
 
-select sum(rate), name, count(*), sum(rate)/count(*)*100 from (
-select a.code,b.rate, c.name from stk_industry a, stk_industry_type c,
-(select code,(case when sum(num_change)>0 then 1 else -1 end) rate from stk_ownership where fn_date='20200331' group by code) b 
-where a.code=b.code and a.industry=c.id and c.source='csindex_zz'
-) group by name having count(*)>50 
-order by sum(rate)/count(*) desc;
+select fn_date, sum(rate), name, count(*), sum(rate) / count(*) * 100
+  from (select a.code, b.rate, c.name, fn_date
+          from stk_industry a, stk_industry_type c, stk_cn d,
+               (select code, (case when sum(num_change) > 0 then 1 else -1 end) rate, fn_date from stk_ownership where fn_date = '20200331' group by code,fn_date) b
+         where a.code = b.code and a.code = d.code and a.industry = c.id
+           and d.LISTING_DATE < to_char(add_months(sysdate, -12),'yyyymmdd') and c.source = 'csindex_zz')
+ group by name,fn_date having count(*) > 50 order by sum(rate) / count(*) desc;
 
-select sum(rate), name, count(*), sum(rate)/count(*)*100 from (
-select a.code,b.rate, c.name from stk_industry a, stk_industry_type c,
-(select code,(case when sum(num_change)>0 then 1 else -1 end) rate from stk_ownership where fn_date='20191231' group by code) b 
-where a.code=b.code and a.industry=c.id and c.source='csindex_zz'
-) group by name having count(*)>50 
-order by sum(rate)/count(*) desc;
+select fn_date, sum(rate), name, count(*), sum(rate) / count(*) * 100
+  from (select a.code, b.rate, c.name, fn_date
+          from stk_industry a, stk_industry_type c, stk_cn d,
+               (select code, (case when sum(num_change) > 0 then 1 else -1 end) rate, fn_date from stk_ownership where fn_date = '20191231' group by code,fn_date) b
+         where a.code = b.code and a.code = d.code and a.industry = c.id
+           and d.LISTING_DATE < to_char(add_months(sysdate, -12),'yyyymmdd') and c.source = 'csindex_zz')
+ group by name,fn_date having count(*) > 50 order by sum(rate) / count(*) desc;
 
-select sum(rate), name, count(*), sum(rate)/count(*)*100 from (
-select a.code,b.rate, c.name from stk_industry a, stk_industry_type c,
-(select code,(case when sum(num_change)>0 then 1 else -1 end) rate from stk_ownership where fn_date='20190630' group by code) b 
-where a.code=b.code and a.industry=c.id and c.source='csindex_zz'
-) group by name having count(*)>50 
-order by sum(rate)/count(*) desc;
+select fn_date, sum(rate), name, count(*), sum(rate) / count(*) * 100
+  from (select a.code, b.rate, c.name, fn_date
+          from stk_industry a, stk_industry_type c, stk_cn d,
+               (select code, (case when sum(num_change) > 0 then 1 else -1 end) rate, fn_date from stk_ownership where fn_date = '20190630' group by code,fn_date) b
+         where a.code = b.code and a.code = d.code and a.industry = c.id
+           and d.LISTING_DATE < to_char(add_months(sysdate, -12),'yyyymmdd') and c.source = 'csindex_zz')
+ group by name,fn_date having count(*) > 50 order by sum(rate) / count(*) desc;
 
 
 select * from stk_industry_type where source='csindex_zz';
@@ -2746,3 +2752,11 @@ where s.code=i.code and i.industry=t.id and t.source='csindex_zjh' and t.code='0
 order by t.id,s.code;
 
 select * from stk_industry_type order by name asc
+
+select sum(rate), name, count(*), sum(rate) / count(*) * 100
+  from (select a.code, b.rate, c.name, fn_date
+          from stk_industry a, stk_industry_type c, stk_cn d,
+               (select code, (case when sum(num_change) > 0 then 1 else -1 end) rate, fn_date from stk_ownership where fn_date = '20200331' group by code,fn_date) b
+         where a.code = b.code and a.code = d.code and a.industry = c.id
+           and d.LISTING_DATE < to_char(add_months(sysdate, -12),'yyyymmdd') and c.source = 'csindex_zjh')
+ group by name having count(*) > 50 order by sum(rate) / count(*) desc;

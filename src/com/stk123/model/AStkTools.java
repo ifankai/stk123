@@ -56,7 +56,7 @@ public class AStkTools {
 
 
 			List<String> result = new ArrayList<String>();
-			String codes = "000001";
+			String codes = "";
 			String sql = null;
 			if(codes != null && codes.length() > 0){
 				sql = "select code,name from stk where market=1 and code in ("+codes+") order by code";
@@ -88,6 +88,7 @@ public class AStkTools {
 					//InitialData.initOwnership(conn, index);
 					//InitialData.initHolderFrom10jqka(conn, index);
 					//InitialData.updateStkF9(conn, index);
+                    InitialData.updateStkStaticInfo(conn, stk.getCode());
 
 					//K k = index.getK("20160530");
 					/*if(k!=null ){

@@ -881,6 +881,7 @@ public class InitialData {
 	public static void updateStkStaticInfo(Connection conn,String code) throws Exception {
 		List params = new ArrayList();
 		String page = HttpUtils.get("http://push2.eastmoney.com/api/qt/stock/get?ut=&invt=2&fltt=2&fields=f84,f189&secid="+(Index.getLocation(code)==Index.SZ?"0.":"1.")+code+"&cb=jQuery&_="+new Date().getTime(), null, "GBK");
+        //System.out.println(page);
 		String json = StringUtils.substringBetween(page, "(", ")");
 		ObjectMapper mapper = new ObjectMapper();
 		Map map = mapper.readValue(json, HashMap.class);
@@ -891,11 +892,13 @@ public class InitialData {
 			Object f84 = data.get("f84");
 			if(f84 instanceof Double) {
 				params.add(((Double) data.get("f84")) / 10000);
-			}else if(f84 instanceof String && StringUtils.isNotEmpty((String)data.get("f84"))){
+			}else if(f84 instanceof String && StringUtils.isNotEmpty((String)data.get("f84")) && !StringUtils.equals((String)data.get("f84"), "-")){
 				params.add(Double.parseDouble((String)data.get("f84")) / 10000);
-			}
+			}else{
+			    params.add(null);
+            }
 			params.add(code);
-			//System.out.println(params);
+			System.out.println(params);
 			JdbcUtils.update(conn, "update stk set listing_date=?,total_capital=? where code=?", params);
 		}
 	}
