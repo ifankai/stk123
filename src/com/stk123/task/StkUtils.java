@@ -26,6 +26,7 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.stk123.tool.db.sql.DBUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.time.FastDateFormat;
@@ -196,7 +197,7 @@ public class StkUtils {
 
         //System.out.println(StkUtils.getSysClipboardText());
 
-        InitialData.updateStkStaticInfo(null, "002572");
+        InitialData.updateStkStaticInfo(DBUtil.getConnection(), "002038");
     }
 
     public static void printStackTrace(){
