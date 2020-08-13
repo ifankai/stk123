@@ -14,7 +14,6 @@ import org.quartz.JobExecutionException;
 
 import com.stk123.bo.StkXueqiuUser;
 import com.stk123.model.IndexUtils;
-import com.stk123.task.StkUtils;
 import com.stk123.task.XueqiuUtils;
 import com.stk123.tool.db.util.DBUtil;
 import com.stk123.tool.util.EmailUtils;
@@ -26,7 +25,7 @@ import com.stk123.tool.util.JsonUtils;
 /**
  * 雪球用户页面长文
  */
-public class XueqiuLongArticleJob implements Job {
+public class XueqiuUserLongArticleJob implements Job {
 	
 	private static List<XueqiuUser> MEMBERS = new ArrayList<XueqiuUser>();
 	
@@ -48,7 +47,7 @@ public class XueqiuLongArticleJob implements Job {
 
 	@Override
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {
-		System.out.println("XueqiuLongArticleJob executing...");
+		System.out.println("XueqiuUserLongArticleJob executing...");
 		List<XueqiuArticle> arts = new ArrayList<XueqiuArticle>();
 		Random r = new Random();
 		try {
@@ -56,7 +55,7 @@ public class XueqiuLongArticleJob implements Job {
 				try{
 					//initUsers();
 				}catch(Exception e){
-					EmailUtils.send("XueqiuLongArticleJob initUsers Error", ExceptionUtils.getException(e));
+					EmailUtils.send("XueqiuUserLongArticleJob initUsers Error", ExceptionUtils.getException(e));
 				}
 			}
 			System.out.println("MEMBERS.size="+MEMBERS.size());
@@ -109,7 +108,7 @@ public class XueqiuLongArticleJob implements Job {
 			}*/
 			
 		} catch (Exception e) {
-			EmailUtils.send("XueqiuLongArticleJob Error", ExceptionUtils.getException(e));
+			EmailUtils.send("XueqiuUserLongArticleJob Error", ExceptionUtils.getException(e));
 		}
 	}
 	
@@ -201,7 +200,7 @@ public class XueqiuLongArticleJob implements Job {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		XueqiuLongArticleJob job = new XueqiuLongArticleJob();
+		XueqiuUserLongArticleJob job = new XueqiuUserLongArticleJob();
 		job.execute(null);
 		/*Map<String, String> requestHeaders = XueqiuUtils.getCookies();
 		System.out.println(requestHeaders.get("Cookie"));

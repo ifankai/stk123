@@ -344,7 +344,7 @@ public class StkAction {
 		
 		if(stkCodes.size() == 0){
 			//stkCodes = JdbcUtils.list2Map(conn, "SELECT case when market = 1 then name||', '||F_TRANS_PINYIN_CAPITAL(name)||', '||code when market = 2 then code||', '||name end activity,code val, market FROM stk order by code asc", null);
-			stkCodes = JdbcUtils.list2Map(conn, "SELECT case when market = 1 then name||', '||F_TRANS_PINYIN_CAPITAL(name)||', '||code when market = 2 then code||', '||name end n,code v from stk_cn order by code asc", null);
+			stkCodes = JdbcUtils.list2Map(conn, "SELECT case when market=1 or market=3 then name||', '||F_TRANS_PINYIN_CAPITAL(name)||', '||code when market = 2 then code||', '||name end n,code v from stk where cate=1 order by code asc", null);
 		}
 		List<Map> results = new ArrayList<Map>();
 		int i = 0;
@@ -587,9 +587,13 @@ public class StkAction {
 		List<StkText> texts = JdbcUtils.list(conn,"select * from stk_text where code=? and type=3 order by insert_time desc" ,params, StkText.class);
 		for(StkText article : texts){
 			List l = new ArrayList();
-			l.add(article.getTitle());
-			l.add(article.getText());
-			l.add("");
+			String text = article.getText();
+			String title = StringUtils.substring(text, 0, StringUtils.indexOf(text,"]")+1);
+            String reply = StringUtils.substring(text, StringUtils.lastIndexOf(text,"[")-1, text.length());
+            text = StringUtils.substring(text, StringUtils.indexOf(text,"]")+2, StringUtils.lastIndexOf(text,"["));
+			l.add(title);
+			l.add(text);
+			l.add(reply);
 			l.add(StkUtils.sf_ymd9.format(article.getInsertTime()));
 			list.add(l);
 		}

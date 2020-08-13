@@ -3,11 +3,10 @@ package com.stk123.model.quartz;
 import com.stk123.model.quartz.job.BaiduNewsSearchJob;
 import com.stk123.model.quartz.job.BreakoutTrendLineJob;
 import com.stk123.model.quartz.job.Job1450;
-import com.stk123.model.quartz.job.OneMinuteJob;
 import com.stk123.model.quartz.job.PPIIndexNewHighJob;
 import com.stk123.model.quartz.job.ResearchReportJob;
 import com.stk123.model.quartz.job.ShutdownJob;
-import com.stk123.model.quartz.job.XueqiuLongArticleJob;
+import com.stk123.model.quartz.job.XueqiuUserLongArticleJob;
 import com.stk123.model.quartz.job.XueqiuStockArticleJob;
 import com.stk123.model.quartz.job.XueqiuUserJob;
 import com.stk123.model.quartz.job.t.ShortTrade;
@@ -45,8 +44,8 @@ public class QuartzRobot {
 		BaiduNewsSearchJob baiduNewSearchJob = new BaiduNewsSearchJob();
 		QuartzManager.addJob("BaiduNewsSearchJob",baiduNewSearchJob,"0 0 9 ? * * *");
 		
-		XueqiuLongArticleJob xueqiuLongArticleJob = new XueqiuLongArticleJob();
-		//QuartzManager.addJob("XueqiuLongArticleJob",xueqiuLongArticleJob,"0 0 4 ? * * *");
+		XueqiuUserLongArticleJob xueqiuUserLongArticleJob = new XueqiuUserLongArticleJob();
+		//QuartzManager.addJob("XueqiuUserLongArticleJob",xueqiuUserLongArticleJob,"0 0 4 ? * * *");
 		
 		XueqiuUserJob xueqiuUserJob = new XueqiuUserJob();
 		QuartzManager.addJob("XueqiuUserJob",xueqiuUserJob,"0 0 3 ? * SAT *");
