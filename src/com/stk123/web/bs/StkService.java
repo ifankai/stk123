@@ -30,10 +30,10 @@ public class StkService {
 	public static List<StkDictionary> getColumnNames(int type){
 		List<StkDictionary> list = null;
 		list = (List<StkDictionary>)CacheUtils.getForever(CacheUtils.KEY_STKS_COLUMN_NAMES+type);
-		if(list == null){
+		//if(list == null){
 			list = StkDict.getDictionaryOrderByParam(type);
 			CacheUtils.putForever(CacheUtils.KEY_STKS_COLUMN_NAMES+type, list);
-		}
+		//}
 		return list;
 	}
 	
