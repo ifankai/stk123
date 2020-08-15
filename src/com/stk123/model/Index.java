@@ -3745,7 +3745,15 @@ public class Index {
 		params.add(StringUtils.replace(date, "-", ""));
 		return JdbcUtils.list(this.getConnection(), "select b.name,a.stk_num,a.rate,a.num_change,a.num_change_rate from stk_ownership a, stk_organization b where a.org_id=b.id and a.code=? and a.fn_date=? order by a.fn_date desc,a.stk_num desc", params, ArrayList.class);
 	}
-	
+
+	public String getXueqiuLinkByCode(){
+	    String scode = (market == 1?StkUtils.getStkLocation(code):code);
+	    return StkUtils.wrapLink(code, "http://xueqiu.com/S/"+scode);
+    }
+    public String getXueqiuLinkByName(){
+        String scode = (market == 1?StkUtils.getStkLocation(code):code);
+        return StkUtils.wrapLink(name, "http://xueqiu.com/S/"+scode);
+    }
 	
 	public String getCode() {
 		return code;
