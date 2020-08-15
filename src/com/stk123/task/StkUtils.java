@@ -793,7 +793,7 @@ public class StkUtils {
             market = index.getMarket();
         }
         List<String> titles = new ArrayList<String>();
-        titles.add("股票");
+        titles.add("股票(红色为雪球自选股)");
         titles.add("热度");
         if(market == 1){
             titles.add("毛利率");
@@ -838,12 +838,12 @@ public class StkUtils {
                     indexs.add(index);
 
                     if(market == 1){
-                        boolean xqFollowStk = false;//XueqiuUtils.existingXueqiuFollowStk("关注C", index.getCode());
+                        boolean xqFollowStk = XueqiuUtils.existingXueqiuFollowStk("全部", index.getCode());
                         if(xqFollowStk && InitialKLine.addToCareStks){
                             InitialKLine.careStks.add(index.getCode());
                         }
                         String cd = xqFollowStk ? "<span style=\"color:red\">"+index.getCode()+"</span>" : index.getCode();
-                        row.add(HtmlTd.getInstance(index.getName()+"[<a target='_blank' href='http://"+StkConstant.HOST_PORT+"/stk.do?s="+index.getCode()+"'>"+ cd +"</a>]"+"["+StkUtils.number2String(index.getTotalMarketValue(),2)+"亿]"+index.isGrowthOrPotentialOrReversionName().substring(0, 1)));
+                        row.add(HtmlTd.getInstance(index.getName()+"[<a target='_blank' href='http://"+StkConstant.HOST_PORT+"/stk?s="+index.getCode()+"'>"+ cd +"</a>]"+"["+StkUtils.number2String(index.getTotalMarketValue(),2)+"亿]"+index.isGrowthOrPotentialOrReversionName().substring(0, 1)));
                     }else{
                         row.add(HtmlTd.getInstance("["+StkUtils.wrapCodeLink(index.getCode())+"]"+index.getName()));
                     }
