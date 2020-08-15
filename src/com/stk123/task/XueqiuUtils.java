@@ -3,14 +3,7 @@ package com.stk123.task;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.httpclient.Header;
@@ -99,14 +92,14 @@ public class XueqiuUtils {
 		//headerRequests.put("Content-Type", "application/json;charset=UTF-8");
     	String page = HttpUtils.get("https://xueqiu.com/stock/portfolio/stocks.json?size=1000&pid=10&tuid=6237744859", null, headerRequests, "GBK");
     	//System.out.println(page);
-    	Set<String> careA = new HashSet<String>();
+    	Set<String> careA = new LinkedHashSet<String>();
         Map<String, List> map = (Map) JsonUtils.testJson(page);
         //System.out.println(map.get("portfolios"));
         for(Object obj : map.get("portfolios")){
             Map care = (Map)obj;
             if(tabName.equals(care.get("name"))){
                 for(String s : StringUtils.split((String)care.get("stocks"),",")){
-                	careA.add(s.substring(2));
+                	careA.add(StringUtils.startsWithAny(s,new String[]{"SH","SZ"})?s.substring(2):s);
                 };
             }
         }
@@ -145,16 +138,11 @@ public class XueqiuUtils {
 	private static Map<String,Set<String>> Follows = new HashMap<String, Set<String>>();
 	
 	public static boolean existingXueqiuFollowStk(String tabName, String code) {
-		Set<String> set = null;
 		try {
-			if(set == null){
-				set = getFollowStks(tabName);
-			}
+			return getFollowStks(tabName).contains(code);
 		} catch (Exception e) {
-			set = new HashSet();
 			return false;
 		}
-		return set.contains(code);
 	}
 	
 	public static void clearCookie(){
@@ -181,8 +169,8 @@ public class XueqiuUtils {
 		/*followStks.addAll(XueqiuUtils.getFollowStks("备选"));
 		IOUtils.writeLines(followStks, null, new FileOutputStream(new File("d:\\care.txt")));*/
 		//System.out.println(ConfigUtils.getProp("xueqiu.cookie"));
-		//System.out.println(XueqiuUtils.getFollowStks("关注C"));
-		XueqiuUtils.getCookies();
+		System.out.println(XueqiuUtils.getFollowStks("全部"));
+		//XueqiuUtils.getCookies();
 		//XueqiuUtils.getFollowStks();
 	}
 

@@ -1758,6 +1758,9 @@ public class InitialData {
 		for(int i=0;i<=999;i++){
 			sb.append("sh603"+StringUtils.leftPad(""+i, 3, '0')+",");
 		}
+        for(int i=0;i<=999;i++){
+            sb.append("sh605"+StringUtils.leftPad(""+i, 3, '0')+",");
+        }
 		for(int i=0;i<=999;i++){
 			sb.append("sh688"+StringUtils.leftPad(""+i, 3, '0')+",");
 		}

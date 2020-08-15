@@ -590,7 +590,7 @@ public class StkAction {
 			String text = article.getText();
 			String title = StringUtils.substring(text, 0, StringUtils.indexOf(text,"]")+1);
             String reply = StringUtils.substring(text, StringUtils.lastIndexOf(text,"[")-1, text.length());
-            text = StringUtils.substring(text, StringUtils.indexOf(text,"]")+2, StringUtils.lastIndexOf(text,"["));
+            text = StringUtils.substring(text, StringUtils.indexOf(text,"]")+2, text.length());
 			l.add(title);
 			l.add(text);
 			l.add(reply);
