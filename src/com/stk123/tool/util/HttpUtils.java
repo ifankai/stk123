@@ -375,7 +375,7 @@ public class HttpUtils {
             if("400".equals(response) || "404".equals(response)){
             	System.out.println(response+"="+url);
             	StkUtils.printStackTrace();
-            	ExceptionUtils.insertLog(DBUtil.getConnection(), new Exception("url:"+url));
+            	ExceptionUtils.insertLog(DBUtil.getConnection(), new Exception("url_"+response+":"+url));
             }
             /*if("502".equals(response)){
             	EmailUtils.send("HTTP代理异常【502】,stop...", url);
