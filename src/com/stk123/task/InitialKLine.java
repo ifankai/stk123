@@ -430,11 +430,12 @@ public class InitialKLine {
 			mgr.execute();*/
 			
 			//List<Index> newHighs = new ArrayList<Index>();
-			System.out.println("1.check股票有没有创200日新高");
+			System.out.println("1.0.创200日新高");
 			List<Index> newHighs = IndexUtils.getNewHighs(context.indexs, today, DAYS_OF_NEWHIGHT_200);
 			if(newHighs.size() > 0){
 				EmailUtils.sendAndReport("创"+DAYS_OF_NEWHIGHT_200+"日新高股,总计:"+newHighs.size()+",日期:"+today, StkUtils.createHtmlTable(today, newHighs));
 			}
+            System.out.println("1.0.创100日新高");
 			newHighs = IndexUtils.getNewHighs(context.indexs, today, DAYS_OF_NEWHIGHT_100);
 			if(newHighs.size() > 0){
 				EmailUtils.sendAndReport("创"+DAYS_OF_NEWHIGHT_100+"日新高股,总计:"+newHighs.size()+",日期:"+today, StkUtils.createHtmlTable(today, newHighs));

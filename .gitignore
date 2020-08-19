@@ -11,3 +11,4 @@ stk123.iml
 stk.jar
 web/WEB-INF/classes/**
 SetXueqiuCookieToProperties.exe
+xueqiu.cookie.properties
