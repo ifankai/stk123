@@ -2760,3 +2760,8 @@ select sum(rate), name, count(*), sum(rate) / count(*) * 100
          where a.code = b.code and a.code = d.code and a.industry = c.id
            and d.LISTING_DATE < to_char(add_months(sysdate, -12),'yyyymmdd') and c.source = 'csindex_zjh')
  group by name having count(*) > 50 order by sum(rate) / count(*) desc;
+
+select * from stk_text where code='000671' order by id desc;
+select * from stk where code in ('TSLA','885467');
+select * from stk where cate=4;
+select * from stk_dictionary where type=1006 for update;
