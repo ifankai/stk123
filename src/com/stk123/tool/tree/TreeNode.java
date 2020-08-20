@@ -277,7 +277,7 @@ public class TreeNode<T> implements Serializable {
     /*
      */
     public int getParentId() {
-        return this.getParent().getParentId();
+        return this.getParent()==null?-1:this.getParent().getParentId();
     }
 
     public void setParentId(int parentId) {

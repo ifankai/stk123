@@ -87,12 +87,16 @@ public class XueqiuUtils {
 		if(Follows.get(tabName) != null){
 			return Follows.get(tabName);
 		}
+        Set<String> careA = new LinkedHashSet<String>();
 		Map<String, String> headerRequests = XueqiuUtils.getCookies();
 		//System.out.println(headerRequests);
 		//headerRequests.put("Content-Type", "application/json;charset=UTF-8");
     	String page = HttpUtils.get("https://xueqiu.com/stock/portfolio/stocks.json?size=1000&pid=10&tuid=6237744859", null, headerRequests, "GBK");
-    	//System.out.println(page);
-    	Set<String> careA = new LinkedHashSet<String>();
+    	System.out.println(page);
+    	if("400".equals(page)){
+    	    return Follows.put(tabName, careA);
+        }
+
         Map<String, List> map = (Map) JsonUtils.testJson(page);
         //System.out.println(map.get("portfolios"));
         for(Object obj : map.get("portfolios")){
@@ -170,6 +174,8 @@ public class XueqiuUtils {
 		IOUtils.writeLines(followStks, null, new FileOutputStream(new File("d:\\care.txt")));*/
 		//System.out.println(ConfigUtils.getProp("xueqiu.cookie"));
 		System.out.println(XueqiuUtils.getFollowStks("全部"));
+
+        System.out.println(XueqiuUtils.existingXueqiuFollowStk("全部","002191"));
 		//XueqiuUtils.getCookies();
 		//XueqiuUtils.getFollowStks();
 	}
