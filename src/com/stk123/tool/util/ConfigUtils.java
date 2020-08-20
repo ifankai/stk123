@@ -35,7 +35,11 @@ public class ConfigUtils {
 	public static void setProp(String property, String value) {
 		props.setProperty(property, value);
 	}
-	
+
+	public static Properties getProps(){
+	    return ConfigUtils.props;
+    }
+
 	public static void setConfigFile(String file) {
 		loadProperties(props,new File(file));
 	}

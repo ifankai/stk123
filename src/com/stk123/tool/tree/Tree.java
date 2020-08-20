@@ -20,12 +20,12 @@ public class Tree extends TreeNode {
         super();
     }
 
-    public static Tree getTree(List list, int rootId) {
+    public static Tree getTree(List list, int rootLevel) {
         Tree rs = new Tree();
         Collections.sort(list, new Compare());
         for (int i = 0; i < list.size(); i++) {
             TreeNode tnode = (TreeNode) list.get(i);
-            if (tnode.getLevel() == rootId) {
+            if (tnode.getLevel() == rootLevel) {
                 rs.getChildren().add(tnode);
             } else {
                 TreeNode parent = null;
@@ -37,7 +37,7 @@ public class Tree extends TreeNode {
                         parent = rs.getNode(tnode.getParentId());
                     }
                     if (parent == null) {
-                        throw new NullPointerException("Node " + tnode.getParentId() + " not found.");
+                        //throw new NullPointerException("Node " + tnode.getParentId() + " not found.");
                     } else {
                         tnode.setParent(parent);
                         parent.getChildren().add(tnode);

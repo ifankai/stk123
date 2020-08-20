@@ -34,6 +34,14 @@ public class DBUtil {
 	public static final String DB_H2_PASS = ConfigUtils.getProp("h2."+DB_PASS);
 	
 	private static final String MYSQL_URL = ConfigUtils.getProp(DB_URL);
+
+	private static DruidPoolConnection druidPoolConnection = null;
+
+	static {
+        if(druidPoolConnection == null){
+            druidPoolConnection = DruidPoolConnection.getInstance();
+        }
+    }
 	
 	public static Connection getH2Connection() throws ClassNotFoundException,SQLException {
 		Class.forName(H2_DRIVER);
@@ -84,7 +92,8 @@ public class DBUtil {
 	}
 	
 	public static Connection getConnection() throws ClassNotFoundException,SQLException {
-		return getDBConnection(null).getConnection();
+		//return getDBConnection(null).getConnection();
+        return druidPoolConnection.getConnection();
 	}
 	
 	public static Connection getConnection(String db) throws Exception {
