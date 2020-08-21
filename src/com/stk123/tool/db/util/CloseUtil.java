@@ -105,6 +105,7 @@ public class CloseUtil {
 		if (conn != null) {
             try {
             	conn.close();
+            	conn = null;
             } catch (Exception e) {
                 log.error("error on close java.sql.Connection.", e);
             }

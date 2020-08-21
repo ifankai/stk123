@@ -1543,6 +1543,7 @@ select * from stk_error_log order by insert_time desc;
 select * from stk_monitor where trigger_date is null;
 select * from stk_error_log order by insert_time desc;
 truncate table stk_error_log;
+select * from stk_error_log where code='999999' order by insert_time desc;
 select * from stk_text order by id desc;
 select * from stk_keyword order by insert_time desc;
 select * from stk_text where code='000997';
@@ -2763,5 +2764,11 @@ select sum(rate), name, count(*), sum(rate) / count(*) * 100
 
 select * from stk_text where code='000671' order by id desc;
 select * from stk where code in ('TSLA','885467');
-select * from stk where cate=4;
+select * from stk where hot is null;
 select * from stk_dictionary where type=1006 for update;
+
+select value from v$parameter where name = 'processes';
+select count(*) from v$process;
+alter system set processes = 300 scope = spfile;
+
+select * from stk_index_node where disp_order >= 0 order by node_level asc,disp_order asc

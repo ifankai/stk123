@@ -22,6 +22,7 @@ public class DruidPoolConnection {
         try {
             druidDataSource = (DruidDataSource)DruidDataSourceFactory.createDataSource(properties); //DruidDataSrouce工厂模式
         } catch (Exception e) {
+            e.getStackTrace();
             log.error("获取配置失败");
         }
     }
@@ -43,7 +44,7 @@ public class DruidPoolConnection {
      * @throws SQLException
      */
     public Connection getConnection() throws SQLException {
-        return druidDataSource.getConnection().unwrap(OracleConnection.class);
+        return druidDataSource.getConnection();
     }
 
 }
