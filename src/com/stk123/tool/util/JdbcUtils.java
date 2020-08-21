@@ -33,6 +33,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import oracle.jdbc.OracleConnection;
 import org.apache.commons.lang.StringUtils;
 
 import com.stk123.tool.db.connection.Pool;
@@ -1940,7 +1941,7 @@ public final class JdbcUtils {
 	}
 	
 	public static CLOB createClob(Connection conn, String string) throws Exception{
-		CLOB clob   = oracle.sql.CLOB.createTemporary(conn, false,oracle.sql.CLOB.DURATION_SESSION);
+		CLOB clob   = oracle.sql.CLOB.createTemporary(conn.unwrap(OracleConnection.class), false,oracle.sql.CLOB.DURATION_SESSION);
 		clob.putString(1,  string);
 		return clob;
 	}
