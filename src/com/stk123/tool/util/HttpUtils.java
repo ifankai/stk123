@@ -16,6 +16,7 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -28,6 +29,7 @@ import java.util.Set;
 
 import javax.net.ssl.SSLSession;
 
+import com.stk123.tool.db.util.CloseUtil;
 import com.stk123.tool.db.util.DBUtil;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
@@ -375,7 +377,13 @@ public class HttpUtils {
             if("400".equals(response) || "404".equals(response)){
             	System.out.println(response+"="+url);
             	StkUtils.printStackTrace();
-            	ExceptionUtils.insertLog(DBUtil.getConnection(), new Exception("url_"+response+":"+url));
+                Connection conn = null;
+            	try {
+            	    conn = DBUtil.getConnection();
+                    ExceptionUtils.insertLog(conn, new Exception("url_" + response + ":" + url));
+                }finally {
+                    CloseUtil.close(conn);
+                }
             }
             /*if("502".equals(response)){
             	EmailUtils.send("HTTP代理异常【502】,stop...", url);

@@ -92,7 +92,7 @@ public class XueqiuUtils {
 		//System.out.println(headerRequests);
 		//headerRequests.put("Content-Type", "application/json;charset=UTF-8");
     	String page = HttpUtils.get("https://xueqiu.com/stock/portfolio/stocks.json?size=1000&pid=10&tuid=6237744859", null, headerRequests, "GBK");
-    	System.out.println(page);
+    	//System.out.println(page);
     	if("400".equals(page)){
     	    return Follows.put(tabName, careA);
         }
