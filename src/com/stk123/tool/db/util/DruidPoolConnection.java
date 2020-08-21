@@ -4,8 +4,10 @@ import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.DruidDataSourceFactory;
 import com.alibaba.druid.pool.DruidPooledConnection;
 import com.stk123.tool.util.ConfigUtils;
+import oracle.jdbc.OracleConnection;
 import org.apache.log4j.Logger;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
 
@@ -40,8 +42,8 @@ public class DruidPoolConnection {
      * @return
      * @throws SQLException
      */
-    public DruidPooledConnection getConnection() throws SQLException {
-        return druidDataSource.getConnection();
+    public Connection getConnection() throws SQLException {
+        return druidDataSource.getConnection().unwrap(OracleConnection.class);
     }
 
 }
