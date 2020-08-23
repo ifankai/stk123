@@ -3,7 +3,6 @@ package com.stk123.task;
 import java.io.File;
 import java.net.URLEncoder;
 import java.sql.Connection;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -35,11 +34,9 @@ import com.stk123.model.Industry;
 import com.stk123.model.K;
 import com.stk123.model.News;
 import com.stk123.model.strategy.Strategy;
-import com.stk123.model.strategy.StrategyManager;
 import com.stk123.tool.db.TableTools;
 import com.stk123.tool.db.connection.ConnectionPool;
 import com.stk123.tool.db.util.DBUtil;
-import com.stk123.tool.sync.Sync;
 import com.stk123.tool.util.CacheUtils;
 import com.stk123.tool.util.ConfigUtils;
 import com.stk123.tool.util.EmailUtils;
@@ -52,8 +49,6 @@ import com.stk123.tool.util.Retry;
 import com.stk123.tool.util.RetryUtils;
 import com.stk123.tool.util.collection.IntRange2IntMap;
 import com.stk123.web.StkConstant;
-import com.stk123.web.action.ScreenerAction;
-import com.stk123.web.monitor.Monitor;
 
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -63,12 +58,12 @@ public class InitialKLine {
 	
 	private static final String yesterday = StkUtils.getYesterday();
 	private static final Date now = new Date();
-	private static final int DAYS_OF_NEWHIGHT_600 = 600;
-    private static final int DAYS_OF_NEWHIGHT_500 = 500;
-	private static final int DAYS_OF_NEWHIGHT_250 = 250;
-    private static final int DAYS_OF_NEWHIGHT_200 = 200;
-	private static final int DAYS_OF_NEWHIGHT_120 = 120;
-    private static final int DAYS_OF_NEWHIGHT_100 = 100;
+	private static final int DAYS_OF_600 = 600;
+    private static final int DAYS_OF_500 = 500;
+	private static final int DAYS_OF_250 = 250;
+    private static final int DAYS_OF_200 = 200;
+	private static final int DAYS_OF_120 = 120;
+    private static final int DAYS_OF_100 = 100;
 	
 	private static boolean initonly = false;
 	private static boolean analyse = false;
@@ -229,24 +224,24 @@ public class InitialKLine {
 			}
 			
 			System.out.println("1.创新高选股法");
-			List<Index> newHighs = IndexUtils.getNewHighs(indexs, today, DAYS_OF_NEWHIGHT_250);
+			List<Index> newHighs = IndexUtils.getNewHighs(indexs, today, DAYS_OF_250);
 			/*if(newHighs.size() > 0){
 				Collections.sort(newHighs, new Comparator<Index>(){
 					@Override
 					public int compare(Index o1, Index o2) {
 						return (o2.getStk().getHot() - o1.getStk().getHot());
 					}});
-				EmailUtils.send("[美股]创"+DAYS_OF_NEWHIGHT_250+"日新高股,总计:"+newHighs.size()+",日期:"+today, StkUtils.createHtmlTable(today, newHighs));
+				EmailUtils.send("[美股]创"+DAYS_OF_250+"日新高股,总计:"+newHighs.size()+",日期:"+today, StkUtils.createHtmlTable(today, newHighs));
 			}*/
 			
-			newHighs = IndexUtils.getNewHighs(indexs, today, DAYS_OF_NEWHIGHT_120);
+			newHighs = IndexUtils.getNewHighs(indexs, today, DAYS_OF_120);
 			/*if(newHighs.size() > 0){
 				Collections.sort(newHighs, new Comparator<Index>(){
 					@Override
 					public int compare(Index o1, Index o2) {
 						return (o2.getStk().getHot() - o1.getStk().getHot());
 					}});
-				EmailUtils.send("[美股]创"+DAYS_OF_NEWHIGHT_120+"日新高股,总计:"+newHighs.size()+",日期:"+today, StkUtils.createHtmlTable(today, newHighs));
+				EmailUtils.send("[美股]创"+DAYS_OF_120+"日新高股,总计:"+newHighs.size()+",日期:"+today, StkUtils.createHtmlTable(today, newHighs));
 			}*/
 			
 			System.out.println("2.黄金三角选股法");
@@ -431,32 +426,43 @@ public class InitialKLine {
 			
 			//List<Index> newHighs = new ArrayList<Index>();
 			System.out.println("1.0.创200日新高");
-			List<Index> newHighs = IndexUtils.getNewHighs(context.indexs, today, DAYS_OF_NEWHIGHT_200);
+			List<Index> newHighs = IndexUtils.getNewHighs(context.indexs, today, DAYS_OF_200);
 			if(newHighs.size() > 0){
-				EmailUtils.sendAndReport("创"+DAYS_OF_NEWHIGHT_200+"日新高股,总计:"+newHighs.size()+",日期:"+today, StkUtils.createHtmlTable(today, newHighs));
+				EmailUtils.sendAndReport("创"+ DAYS_OF_200 +"日新高股,总计:"+newHighs.size()+",日期:"+today, StkUtils.createHtmlTable(today, newHighs));
 			}
             System.out.println("1.0.创100日新高");
-			newHighs = IndexUtils.getNewHighs(context.indexs, today, DAYS_OF_NEWHIGHT_100);
+			newHighs = IndexUtils.getNewHighs(context.indexs, today, DAYS_OF_100);
 			if(newHighs.size() > 0){
-				EmailUtils.sendAndReport("创"+DAYS_OF_NEWHIGHT_100+"日新高股,总计:"+newHighs.size()+",日期:"+today, StkUtils.createHtmlTable(today, newHighs));
+				EmailUtils.sendAndReport("创"+ DAYS_OF_100 +"日新高股,总计:"+newHighs.size()+",日期:"+today, StkUtils.createHtmlTable(today, newHighs));
 			}
 
 			System.out.println("1.1.接近200日新高");
-			List<Index> closeNewHighs = IndexUtils.getCloseNewHighs(context.indexs, today, DAYS_OF_NEWHIGHT_200);
+			List<Index> closeNewHighs = IndexUtils.getNearNewHighs(context.indexs, today, DAYS_OF_200);
 			if(closeNewHighs.size() > 0){
-				EmailUtils.sendAndReport("接近"+DAYS_OF_NEWHIGHT_200+"日新高股,总计:"+closeNewHighs.size()+",日期:"+today, StkUtils.createHtmlTable(today, closeNewHighs));
+				EmailUtils.sendAndReport("接近"+ DAYS_OF_200 +"日新高股,总计:"+closeNewHighs.size()+",日期:"+today, StkUtils.createHtmlTable(today, closeNewHighs));
 			}
 			System.out.println("1.2.接近100日新高");
-			closeNewHighs = IndexUtils.getCloseNewHighs(context.indexs, today, DAYS_OF_NEWHIGHT_100);
+			closeNewHighs = IndexUtils.getNearNewHighs(context.indexs, today, DAYS_OF_100);
 			if(closeNewHighs.size() > 0){
-				EmailUtils.sendAndReport("接近"+DAYS_OF_NEWHIGHT_100+"日新高股,总计:"+closeNewHighs.size()+",日期:"+today, StkUtils.createHtmlTable(today, closeNewHighs));
+				EmailUtils.sendAndReport("接近"+ DAYS_OF_100 +"日新高股,总计:"+closeNewHighs.size()+",日期:"+today, StkUtils.createHtmlTable(today, closeNewHighs));
 			}
 
 			System.out.println("1.3.接近500日新高且K线缠绕");
-			closeNewHighs = IndexUtils.getCloseNewHighsAndInteract(context.indexs, today, DAYS_OF_NEWHIGHT_500);
+			closeNewHighs = IndexUtils.getCloseNewHighsAndInteract(context.indexs, today, DAYS_OF_500);
 			if(closeNewHighs.size() > 0){
-				EmailUtils.sendAndReport("接近"+DAYS_OF_NEWHIGHT_500+"日新高且K线缠绕股,总计:"+closeNewHighs.size()+",日期:"+today, StkUtils.createHtmlTable(today, closeNewHighs));
+				EmailUtils.sendAndReport("接近"+ DAYS_OF_500 +"日新高且K线缠绕股,总计:"+closeNewHighs.size()+",日期:"+today, StkUtils.createHtmlTable(today, closeNewHighs));
 			}
+
+            System.out.println("1.4.创250日新低");
+            List<Index> newLows = IndexUtils.getNewLows(context.indexs, today, DAYS_OF_250);
+            if(newLows.size() > 0){
+                EmailUtils.sendAndReport("创"+ DAYS_OF_200 +"日新低股,总计:"+newLows.size()+",日期:"+today, StkUtils.createHtmlTable(today, newLows));
+            }
+            System.out.println("1.4.创600日新低");
+            newLows = IndexUtils.getNewLows(context.indexs, today, DAYS_OF_600);
+            if(newLows.size() > 0){
+                EmailUtils.sendAndReport("创"+ DAYS_OF_100 +"日新低股,总计:"+newLows.size()+",日期:"+today, StkUtils.createHtmlTable(today, newLows));
+            }
 			
 			//3.search TODO 增加和昨天比较后新加的
 			/*datas = IndexUtils.search(context.indexs, today, 3, 120, false);
@@ -1031,7 +1037,7 @@ public class InitialKLine {
 		List<List> deleted = notContain(datasYesterday,datas);//出榜
 		
 		List<String> addtitle = new ArrayList<String>();
-		addtitle.add("创"+DAYS_OF_NEWHIGHT_600+"日新高");
+		addtitle.add("创"+ DAYS_OF_600 +"日新高");
 		
 		String czlz = "1、创历史新高的股票，这一点（熊市末期）非常重要。<br>"+
 				      "2、每月涨幅前200名，每两周翻一遍。<br>"+
