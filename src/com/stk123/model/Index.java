@@ -3751,7 +3751,7 @@ public class Index {
 	    return StkUtils.wrapLink(code, "http://xueqiu.com/S/"+scode);
     }
     public String getXueqiuLinkByName(){
-        String scode = (market == 1?StkUtils.getStkLocation(code):code);
+        String scode = (market == 1?(StkUtils.getStkLocation(code)+code):code);
         return StkUtils.wrapLink(name, "http://xueqiu.com/S/"+scode);
     }
 	

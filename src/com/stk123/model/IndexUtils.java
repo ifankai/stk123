@@ -55,8 +55,26 @@ public class IndexUtils implements StkConstant {
 		}
 		return newHighs;
 	}
+
+	//创days天新低
+    public static List<Index> getNewLows(List<Index> indexs,String yyyyMMdd,int days) throws Exception{
+        List<Index> newHighs = new ArrayList<Index>();
+        String today_1 = StkUtils.formatDate(StkUtils.addDay(yyyyMMdd, -1),StkUtils.sf_ymd2);
+        String today_20 = StkUtils.formatDate(StkUtils.addDay(yyyyMMdd, -20),StkUtils.sf_ymd2);
+        String today_n = StkUtils.formatDate(StkUtils.addDay(yyyyMMdd, -days),StkUtils.sf_ymd2);
+        for(Index index : indexs){
+            if(index.getKs().size() >= days){
+                if(index.getKValueByLCV(today_n, today_20) < index.getK(today_1).getClose()
+                        && index.getKValueByLCV(today_n, yyyyMMdd) == index.getK(yyyyMMdd).getClose()){
+                    newHighs.add(index);
+                }
+            }
+            index.gc();
+        }
+        return newHighs;
+    }
 	
-	public static List<Index> getCloseNewHighs(List<Index> indexs,String yyyyMMdd,int days) throws Exception{
+	public static List<Index> getNearNewHighs(List<Index> indexs, String yyyyMMdd, int days) throws Exception{
 		List<Index> newHighs = new ArrayList<Index>();
 		String today_1 = StkUtils.formatDate(StkUtils.addDay(yyyyMMdd, -1),StkUtils.sf_ymd2);
 		String today_20 = StkUtils.formatDate(StkUtils.addDay(yyyyMMdd, -20),StkUtils.sf_ymd2);
