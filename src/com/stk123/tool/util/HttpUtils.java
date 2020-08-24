@@ -29,6 +29,7 @@ import java.util.Set;
 
 import javax.net.ssl.SSLSession;
 
+import com.stk123.bo.StkErrorLog;
 import com.stk123.tool.db.util.CloseUtil;
 import com.stk123.tool.db.util.DBUtil;
 import org.apache.commons.httpclient.Header;
@@ -380,7 +381,18 @@ public class HttpUtils {
                 Connection conn = null;
             	try {
             	    conn = DBUtil.getConnection();
-                    ExceptionUtils.insertLog(conn, new Exception("url_" + response + ":" + url));
+            	    List<StkErrorLog> errors = ExceptionUtils.queryErrors(conn, "999998");
+            	    Exception exception = new Exception("url_" + response + ":" + url);
+            	    String sException = ExceptionUtils.getException(exception);
+            	    boolean hasSimilar = false;
+            	    for(StkErrorLog error : errors){
+            	        if(StringSimilarUtil.getStringSimilarityRatio(sException, error.getError()) >= 0.95){
+            	            hasSimilar = true;
+            	            break;
+                        }
+                    }
+                    if(!hasSimilar)
+                        ExceptionUtils.insertLog(conn, "999998", exception);
                 }finally {
                     CloseUtil.close(conn);
                 }

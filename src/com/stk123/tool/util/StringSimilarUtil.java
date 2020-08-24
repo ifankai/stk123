@@ -12,7 +12,7 @@ public class StringSimilarUtil {
     private static StringSimilarUtil instance = new StringSimilarUtil();
 
 
-    public static String getColorName(String color) {
+    private static String getColorName(String color) {
         if (color == null || color.trim().length() == 0)
             return null;
         char[] cha = color.toCharArray();
