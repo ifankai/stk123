@@ -1,5 +1,7 @@
 package com.stk123.tool.util;
 
+import com.stk123.bo.StkErrorLog;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.Connection;
@@ -10,11 +12,11 @@ import java.util.List;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class ExceptionUtils {
-	
+
 	public static void insertLog(Connection conn, Exception e){
 		ExceptionUtils.insertLog(conn,"999999", e);
 	}
-	
+
 	public static void insertLog(Connection conn, String code, Exception e){
 		List params = new ArrayList();
 		params.add(code);
@@ -24,7 +26,7 @@ public class ExceptionUtils {
 		params.add(new Timestamp(new Date().getTime()));
 		JdbcUtils.insert(conn, "insert into stk_error_log(code,error,insert_time) values(?,?,?)", params);
 	}
-	
+
 	public static Exception exception(String msg, Exception e){
 		StringWriter aWriter = new StringWriter();
 		e.printStackTrace(new PrintWriter(aWriter));
@@ -35,5 +37,9 @@ public class ExceptionUtils {
 		StringWriter aWriter = new StringWriter();
 		e.printStackTrace(new PrintWriter(aWriter));
 		return aWriter.getBuffer().toString();
+	}
+
+	public static List<StkErrorLog> queryErrors(Connection conn, String code) {
+		return JdbcUtils.list(conn,"select * from stk_error_log where code=? order by insert_time desc", code, StkErrorLog.class);
 	}
 }
