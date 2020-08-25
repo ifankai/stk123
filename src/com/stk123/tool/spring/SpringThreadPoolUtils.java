@@ -4,17 +4,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+
 @Component
 public class SpringThreadPoolUtils {
 
-    @Autowired
-    ThreadPoolTaskExecutor taskExecutor;
+    private static ThreadPoolTaskExecutor taskExecutor;
 
-    public ThreadPoolTaskExecutor getTaskExecutor() {
+    @Autowired
+    public SpringThreadPoolUtils(ThreadPoolTaskExecutor taskExecutor){
+        SpringThreadPoolUtils.taskExecutor = taskExecutor;
+    }
+
+    public static ThreadPoolTaskExecutor getTaskExecutor() {
         return taskExecutor;
     }
 
-    public void setTaskExecutor(ThreadPoolTaskExecutor taskExecutor) {
-        this.taskExecutor = taskExecutor;
-    }
 }
