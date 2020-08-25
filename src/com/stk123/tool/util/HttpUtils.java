@@ -666,9 +666,9 @@ public class HttpUtils {
 		//copy /b  E:\downloads\mv\file_name\*.ts  E:\downloads\mv\zzz\file_name.ts
 		//mediaCoder ts转码mp4
 
-		downloadMV("https://play.bo159159.com/20190909/hc2noKd0/700kb/hls/i5Nh5tGR3651001.ts", "清纯可爱的小姐姐非常优秀", 1);
-		downloadMV("https://play.cdmbo.com/20180729/cd6pExyh/800kb/hls/2uVx8zqh2033000.ts", "两个不错的气质大学生妹子合租房里捞外快担心有人在门外不时要去看看", 0);
-		downloadMV("https://play.168168bo.com/20190111/bu2hrbwx/700kb/hls/QAgHE4683002.ts", "漂亮小姐姐情趣网装直播小秀 看着很清纯的", 2);
+		downloadMV("https://play.520520bo.com/20200821/1Zr6OizJ/700kb/hls/m7zznwv5042001.ts", "极品韩国BJ女主播19禁 性感大奶极品美胸粉红乳头激情直播第一集", 1);
+		downloadMV("https://play.168168bo.com/20190124/91Wtyarf/700kb/hls/kWowyfxU6164000.ts", "棒子国主播大秀 你用来自慰的是香肠吗", 0);
+		downloadMV("https://play.520520bo.com/20200515/qxtME2Cs/700kb/hls/yrfN4Lv3747000.ts", "韩国高颜值美女 酒店深夜大秀 极品靓乳 非常诱人", 0);
 
 
 
