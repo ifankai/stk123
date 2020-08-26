@@ -461,7 +461,7 @@ public class InitialKLine {
             System.out.println("1.4.创600日新低");
             newLows = IndexUtils.getNewLows(context.indexs, today, DAYS_OF_600);
             if(newLows.size() > 0){
-                EmailUtils.sendAndReport("创"+ DAYS_OF_100 +"日新低股,总计:"+newLows.size()+",日期:"+today, StkUtils.createHtmlTable(today, newLows));
+                EmailUtils.sendAndReport("创"+ DAYS_OF_600 +"日新低股,总计:"+newLows.size()+",日期:"+today, StkUtils.createHtmlTable(today, newLows));
             }
 			
 			//3.search TODO 增加和昨天比较后新加的
