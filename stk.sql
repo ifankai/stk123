@@ -38,6 +38,7 @@ alter table stk add total_capital number(12,2);
 alter table stk add status number(4) default 0;
 alter table stk add status_date date;
 alter table stk add earning_expect varchar2(4000);
+alter table stk modify earning_expect varchar2(4000 char);
 alter table stk add earning_expect_date date;
 alter table stk add company_profile clob;
 alter table stk add sale_limit clob;
@@ -45,7 +46,7 @@ alter table stk add market number(1); --1：A股 2：美股 5：外汇  3:港股
 alter table stk modify name varchar2(100);
 alter table stk add year_end varchar2(4);
 alter table stk add next_earning number(10,2);
-alter table stk modify next_quarter_earning varchar2(4000);
+alter table stk modify next_quarter_earning varchar2(4000 char);
 alter table stk add cate number(1) default 1;--1:个股 2:指数  3:基金  4:同花顺板块指数
 alter table stk add f9 clob;
 alter table stk add hot number(8) default 0; -- xueqiu follows
@@ -313,9 +314,10 @@ create table stk_import_info(
   care_flag  number(2) default 1,
   info   varchar2(2000)
 );
-alter table stk_import_info modify info varchar2(4000);
+alter table stk_import_info modify info varchar2(4000 char);
 alter table stk_import_info modify id number(10);
 alter table stk_import_info add title varchar2(1000);
+alter table stk_import_info modify title varchar2(1000 char);
 alter table stk_import_info add url_source varchar2(1000);
 alter table stk_import_info add url_target varchar2(1000);
 alter table stk_import_info add info_create_time date;
@@ -991,6 +993,7 @@ select * from stk_info_log order by code;
 
 select * from stk_error_log order by insert_time desc;
 truncate table stk_error_log;
+select count(1) from stk_error_log;
 
 update stk set status=1,status_date=sysdate where code in (300262) and status <> 1;
 select * from stk where status=1 order by status_date;
@@ -2483,6 +2486,7 @@ select * from stk_capital_flow where code='000001' order by flow_date desc;
 select count(1) from stk_rrrrcapital_flow where code is null;
 
 select * from stk_data_industry_pe order by pe_date desc;
+select * from stk_data_industry_pe order by insert_time desc;
 select distinct source from stk_industry_type;
 select * from stk_industry_type where source in ('10jqka_gn','10jqka_thshy') order by source,name;
 
