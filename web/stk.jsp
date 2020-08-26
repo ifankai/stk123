@@ -331,6 +331,8 @@ if(index.getMarket()==1){
 	      <li><a href="#finance-other" role="tab" data-toggle="tab">系列2</a></li>
 	    </ul>
 	  </div>
+     <div style="position: relative;left: 300px; top:-20px;"><a target="_blank" href="http://f10.eastmoney.com/f10_v2/FinanceAnalysis.aspx?code=<%=index.getLocationAndCode() %>">东方财富</a></div>
+
   </div>
   <div class="page-container">
     <div class="tab-content" >

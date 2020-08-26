@@ -206,6 +206,10 @@ public class Index {
 		if(this.loc == Index.SH)return Index.SH_UPPER;
 		return Index.SZ_UPPER;
 	}
+
+	public String getLocationAndCode(){
+	    return getMarket()==1?(getLocationAsString()+getCode()):getCode();
+    }
 	
 	//----table name----//
 	private final static String STK_KLINE = "stk_kline";
