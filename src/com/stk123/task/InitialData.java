@@ -590,8 +590,10 @@ public class InitialData {
 		List<Node> tables = HtmlUtils.getNodeListByTagNameAndAttribute(page, null, "table", "class", "list-div-table");
 		String parentCode = null;
 		List params = new ArrayList();
+
+		//行业-个股
 		for(Node table : tables){
-			System.out.println(table.toHtml());
+			//System.out.println(table.toHtml());
 			//List<List<String>> list = HtmlUtils.getListFromTable((TableTag)table);
 			//System.out.println(list);
 			List<Node> tds = HtmlUtils.getNodeListByTagName(table, "td");
@@ -629,6 +631,33 @@ public class InitialData {
 				}
 			}
 		}
+
+		//市盈率-pe
+		/*Map<String,Integer> indIdMap = new HashMap<String,Integer>();
+		do{
+			for(Node table : tables){
+				List<Node> tds = HtmlUtils.getNodeListByTagName(table, "td");
+				if(tds != null && tds.size() > 4) {
+					String code = StringUtils.trim(tds.get(0).toPlainTextString());
+					if(StringUtils.isNotEmpty(code)) {
+						params.clear();
+						if(indIdMap.get(code) == null){
+							StkIndustryType indType = Industry.insertOrLoadIndustryType(conn, null,  code, null, "csindex_zjh");
+							indIdMap.put(indType.getCode(), indType.getId());
+						}
+						params.add(indIdMap.get(code));
+						String sdate = StkUtils.formatDate(StkUtils.addDayOfWorking(StkUtils.now, -1), StkUtils.sf_ymd2);
+						params.add(sdate);
+						params.add(data.get(3));
+						params.add(data.get(5));
+						params.add(indIdMap.get(code));
+						params.add(sdate);
+						JdbcUtils.insert(conn, "insert into stk_data_industry_pe (industry_id,pe_date,pe,pe_ttm,insert_time) select ?,?,?,?,sysdate from dual where not exists (select 1 from stk_data_industry_pe where industry_id=? and pe_date=? and type=3)", params);
+
+					}
+				}
+			}
+		}while(true);*/
 	}
 
 	//中证行业-个股，市盈率
