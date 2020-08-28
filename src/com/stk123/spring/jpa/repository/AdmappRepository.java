@@ -6,4 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AdmappRepository extends JpaRepository<Admapp, String> {
+
+    Admapp findByAdapplicationEquals(String adapplication);
+
 }
