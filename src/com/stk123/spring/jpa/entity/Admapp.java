@@ -11,6 +11,7 @@ import java.util.Date;
 public class Admapp implements Serializable {
 
     @Id
+    private String rowid;
     private String adapplication;
     private String adacountry;
     private String adaedesc;
@@ -20,6 +21,14 @@ public class Admapp implements Serializable {
     private String adausrupd;
     private String adausrcre;
     private Date adacre;
+
+    public String getRowid() {
+        return rowid;
+    }
+
+    public void setRowid(String rowid) {
+        this.rowid = rowid;
+    }
 
     public String getAdapplication() {
         return adapplication;

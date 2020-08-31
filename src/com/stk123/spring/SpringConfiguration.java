@@ -1,6 +1,8 @@
 package com.stk123.spring;
 
 import com.alibaba.druid.pool.DruidDataSourceFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -21,12 +23,14 @@ import java.util.Map;
 @EnableJpaRepositories
 public class SpringConfiguration {
 
+    private static final Log logger = LogFactory.getLog(SpringConfiguration.class);
+
     public SpringConfiguration() {
-        System.out.println("SpringConfiguration容器启动初始化。。。");
+        logger.info("SpringConfiguration容器启动初始化。。。");
     }
 
     @Bean
-    public ThreadPoolTaskExecutor getTaskExecutor(){
+    public ThreadPoolTaskExecutor setTaskExecutor(){
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
         taskExecutor.setCorePoolSize(2);
         taskExecutor.setMaxPoolSize(5);
@@ -37,12 +41,12 @@ public class SpringConfiguration {
     @Bean(name = "entityManagerFactory")
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() throws Exception {
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-        vendorAdapter.setGenerateDdl(true);
+        //vendorAdapter.setGenerateDdl(true);
         LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setJpaVendorAdapter(vendorAdapter);
         factory.setPackagesToScan("com.stk123.spring.jpa");
 
-        DefaultPersistenceUnitManager persistenceUnitManager = new DefaultPersistenceUnitManager();
+        //DefaultPersistenceUnitManager persistenceUnitManager = new DefaultPersistenceUnitManager();
         //factory.setPersistenceUnitName("name");
         factory.setDataSource(dataSource());
         return factory;
@@ -55,6 +59,7 @@ public class SpringConfiguration {
         properties.put("url", "jdbc:oracle:thin:@9.197.4.250:1521:TWP4T1");
         properties.put("username", "p4pst2");
         properties.put("password", "carrefour");
+        properties.put("testWhileIdle", "false");
         return DruidDataSourceFactory.createDataSource(properties);
     }
 
@@ -64,4 +69,5 @@ public class SpringConfiguration {
         txManager.setEntityManagerFactory(entityManagerFactory().getObject());
         return txManager;
     }
+
 }
