@@ -3,6 +3,7 @@ package com.stk123.spring;
 import com.alibaba.druid.pool.DruidDataSourceFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +22,7 @@ import java.util.Map;
 @Configuration
 @ComponentScan(basePackages = "com.stk123.spring")
 @EnableJpaRepositories
+//@PropertySource("/META-INF/application.properties")
 public class SpringConfiguration {
 
     private static final Log logger = LogFactory.getLog(SpringConfiguration.class);
@@ -47,8 +49,13 @@ public class SpringConfiguration {
         factory.setPackagesToScan("com.stk123.spring.jpa");
 
         //DefaultPersistenceUnitManager persistenceUnitManager = new DefaultPersistenceUnitManager();
-        //factory.setPersistenceUnitName("name");
+        //persistenceUnitManager.setDefaultPersistenceUnitName("mick");
+        //factory.setPersistenceUnitManager(persistenceUnitManager);
+        //factory.setPersistenceUnitName("mick");
+        //HibernatePersistenceProvider hibernatePersistenceProvider = new HibernatePersistenceProvider();
+        //factory.setPersistenceProvider(hibernatePersistenceProvider);
         factory.setDataSource(dataSource());
+
         return factory;
     }
 

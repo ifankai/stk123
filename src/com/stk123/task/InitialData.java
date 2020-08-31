@@ -633,8 +633,8 @@ public class InitialData {
 		}
 
 		//市盈率-pe
-		/*Map<String,Integer> indIdMap = new HashMap<String,Integer>();
-		do{
+		Map<String,Integer> indIdMap = new HashMap<String,Integer>();
+		/*do{
 			for(Node table : tables){
 				List<Node> tds = HtmlUtils.getNodeListByTagName(table, "td");
 				if(tds != null && tds.size() > 4) {
