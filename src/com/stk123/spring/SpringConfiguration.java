@@ -1,6 +1,8 @@
 package com.stk123.spring;
 
 import com.alibaba.druid.pool.DruidDataSourceFactory;
+import com.stk123.tool.util.ConfigUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +38,10 @@ public class SpringConfiguration {
         log.info("SpringConfiguration容器启动初始化。。。");
     }
 
-    @Value("${driverClassName}")
-    private String driverClassName;
+    static class DBConfig{
+        @Value("${driverClassName}")
+        private static String DriverClassName;
+    }
 
     @Autowired
     private Environment env;
@@ -79,11 +83,15 @@ public class SpringConfiguration {
     public DataSource dataSource() {
         Map properties = new HashMap();
         //properties.put("driverClassName", "oracle.jdbc.driver.OracleDriver");
-        properties.put("driverClassName", driverClassName);
-        properties.put("url", "jdbc:oracle:thin:@9.197.4.250:1521:TWP4T1");
-        properties.put("username", "p4pst2");
-        properties.put("password", "carrefour");
-        properties.put("testWhileIdle", "false");
+        if(StringUtils.equals("KaiFan",System.getProperty("user.name"))) {
+            properties.put("driverClassName", DBConfig.DriverClassName);
+            properties.put("url", "jdbc:oracle:thin:@9.197.4.250:1521:TWP4T1");
+            properties.put("username", "p4pst2");
+            properties.put("password", "carrefour");
+            properties.put("testWhileIdle", "false");
+        }else{
+            properties.putAll(ConfigUtils.getProps());
+        }
 
         DataSource dataSource = null;
         try {
