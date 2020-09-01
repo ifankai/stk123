@@ -3,13 +3,11 @@ package com.stk123.spring;
 import com.alibaba.druid.pool.DruidDataSourceFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -28,10 +26,10 @@ import java.util.Map;
 @PropertySource("stk.properties")
 public class SpringConfiguration {
 
-    private static final Log logger = LogFactory.getLog(SpringConfiguration.class);
+    private static final Log log = LogFactory.getLog(SpringConfiguration.class);
 
     public SpringConfiguration() {
-        logger.info("SpringConfiguration容器启动初始化。。。");
+        log.info("SpringConfiguration容器启动初始化。。。");
     }
 
     @Autowired
