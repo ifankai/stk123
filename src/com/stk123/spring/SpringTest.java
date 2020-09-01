@@ -27,7 +27,6 @@ public class SpringTest {
 
     @Autowired
     public void setEntityManagerFactory(EntityManagerFactory entityManagerFactory){
-        log.info("setEntityManagerFactory");
         SpringTest.entityManagerFactory = entityManagerFactory;
     }
 
@@ -45,7 +44,8 @@ public class SpringTest {
 
         SpringTest test = SpringUtils.getBean(SpringTest.class);
         admapp.setAdaupd(new Date());
-        test.update(admapp);
+        //test.update(admapp);
+        admappRepository.updateTime(admapp);
     }
 
     @Transactional

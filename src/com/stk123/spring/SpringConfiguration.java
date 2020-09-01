@@ -4,12 +4,16 @@ import com.alibaba.druid.pool.DruidDataSourceFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -21,9 +25,9 @@ import java.util.Map;
 
 @Configuration
 @ComponentScan(basePackages = "com.stk123.spring")
+@PropertySource({"stk.properties","classpath:com/stk123/tool/db/db.properties"})
 @EnableJpaRepositories
 @EnableTransactionManagement//(mode = AdviceMode.ASPECTJ)
-@PropertySource("stk.properties")
 public class SpringConfiguration {
 
     private static final Log log = LogFactory.getLog(SpringConfiguration.class);
@@ -31,6 +35,12 @@ public class SpringConfiguration {
     public SpringConfiguration() {
         log.info("SpringConfiguration容器启动初始化。。。");
     }
+
+    @Value("${driverClassName}")
+    private String driverClassName;
+
+    @Autowired
+    private Environment env;
 
     @Autowired
     private EntityManagerFactory entityManagerFactory;
@@ -68,7 +78,8 @@ public class SpringConfiguration {
     @Bean
     public DataSource dataSource() {
         Map properties = new HashMap();
-        properties.put("driverClassName", "oracle.jdbc.driver.OracleDriver");
+        //properties.put("driverClassName", "oracle.jdbc.driver.OracleDriver");
+        properties.put("driverClassName", driverClassName);
         properties.put("url", "jdbc:oracle:thin:@9.197.4.250:1521:TWP4T1");
         properties.put("username", "p4pst2");
         properties.put("password", "carrefour");
@@ -95,4 +106,9 @@ public class SpringConfiguration {
         return entityManagerFactory().createEntityManager();
     }
 
+    //Need this bean due to the error: @PropertySource @Value is not working
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+        return new PropertySourcesPlaceholderConfigurer();
+    }
 }
