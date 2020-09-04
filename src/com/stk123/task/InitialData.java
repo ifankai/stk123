@@ -656,7 +656,9 @@ public class InitialData {
 						String sdate = StkUtils.formatDate(date, StkUtils.sf_ymd2);
 						String pe = StringUtils.trim(tds.get(2).toPlainTextString());
 						if(NumberUtils.isNumber(pe)) {
-							StkDataIndustryPeEntity entity = IndustryService.getStkDataIndustryPeRepository().findOne(new StkDataIndustryPeEntity.CompositeKey(indIdMap.get(code).longValue(), sdate));
+							IndustryService industryService = SpringUtils.getService(IndustryService.class);
+							StkDataIndustryPeRepository stkDataIndustryPeRepository = industryService.getRepository(StkDataIndustryPeEntity.class);
+							StkDataIndustryPeEntity entity = stkDataIndustryPeRepository.findOne(new StkDataIndustryPeEntity.CompositeKey(indIdMap.get(code).longValue(), sdate));
 							if(entity == null){
 								entity = new StkDataIndustryPeEntity();
 								entity.setIndustryId(indIdMap.get(code).longValue());
@@ -666,7 +668,7 @@ public class InitialData {
 							}else{
 								entity.setPe(Double.parseDouble(pe));
 							}
-							IndustryService.save(entity);
+							industryService.save(entity);
 						}
 					}
 				}

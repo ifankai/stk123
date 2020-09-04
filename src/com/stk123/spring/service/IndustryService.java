@@ -16,9 +16,9 @@ import java.util.Calendar;
 public class IndustryService extends BaseService {
 
     @Autowired
-    private static StkDataIndustryPeRepository stkDataIndustryPeRepository;
+    private StkDataIndustryPeRepository stkDataIndustryPeRepository;
 
-    public static StkDataIndustryPeEntity insertOrUpdateIndustryData(Long industryId, String peDate, Double pe, Double peTtm, Double pb, Double adr){
+    public StkDataIndustryPeEntity insertOrUpdateIndustryData(Long industryId, String peDate, Double pe, Double peTtm, Double pb, Double adr){
         if(industryId == null || peDate == null){
             throw new IllegalArgumentException("IndustryId and PeDate cannot be null");
         }
@@ -41,7 +41,7 @@ public class IndustryService extends BaseService {
         return stkDataIndustryPeRepository.save(entity);
     }
 
-    public static StkDataIndustryPeRepository getStkDataIndustryPeRepository() {
+    public StkDataIndustryPeRepository getStkDataIndustryPeRepository() {
         return stkDataIndustryPeRepository;
     }
 
