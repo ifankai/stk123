@@ -5,10 +5,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 public class SpringUtils {
 
-    private static final ApplicationContext context;
-    static{
-        context = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-    }
+    private static final ApplicationContext context = new AnnotationConfigApplicationContext(SpringConfiguration.class);;
 
     public static ApplicationContext getApplicationContext() {
         return context;
