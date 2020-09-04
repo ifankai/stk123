@@ -1,12 +1,18 @@
 package com.stk123.spring;
 
 import com.stk123.spring.jpa.entity.Admapp;
+import com.stk123.spring.jpa.entity.StkDataIndustryPeEntity;
 import com.stk123.spring.jpa.repository.AdmappRepository;
+import com.stk123.spring.jpa.repository.StkDataIndustryPeRepository;
+import com.stk123.spring.service.BaseService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.support.Repositories;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ClassUtils;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
@@ -46,6 +52,8 @@ public class SpringTest {
         admapp.setAdaupd(new Date());
         //test.update(admapp);
         admappRepository.updateTime(admapp);
+
+        repostory();
     }
 
     @Transactional
@@ -55,6 +63,16 @@ public class SpringTest {
         entityManager.merge(admapp);
         entityManager.flush();
         //em.getTransaction().commit();
+    }
+
+    public static void repostory(){
+        //System.out.println((AdmappRepository)BaseService.getRepository(StkDataIndustryPeEntity.class));
+        log.info((StkDataIndustryPeRepository)BaseService.getRepository(StkDataIndustryPeEntity.class));
+        Object object = BaseService.getRepository(StkDataIndustryPeEntity.class);
+        Class[] classes = ClassUtils.getAllInterfaces(object);
+        for(Class clazz : classes){
+            log.info("interface:"+clazz.getName());
+        }
     }
 
 }
