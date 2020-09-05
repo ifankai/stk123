@@ -14,7 +14,7 @@ public class StkDataIndustryPeEntity {
     @Id
     @Basic
     @Column(name = "INDUSTRY_ID", nullable = true, precision = 0)
-    private Long industryId;
+    private Integer industryId;
 
     @Id
     @Column(name = "PE_DATE", nullable = true, length = 8)
@@ -44,11 +44,11 @@ public class StkDataIndustryPeEntity {
     @Column(name = "ADR", nullable = true, precision = 2)
     private Double adr; //股息率
 
-    public Long getIndustryId() {
+    public Integer getIndustryId() {
         return industryId;
     }
 
-    public void setIndustryId(Long industryId) {
+    public void setIndustryId(Integer industryId) {
         this.industryId = industryId;
     }
 
@@ -135,12 +135,12 @@ public class StkDataIndustryPeEntity {
     }
 
     public static class CompositeKey implements Serializable {
-        private Long industryId;
+        private Integer industryId;
         private String peDate;
 
         public CompositeKey(){}
 
-        public CompositeKey(Long industryId, String peDate){
+        public CompositeKey(Integer industryId, String peDate){
             this.industryId = industryId;
             this.peDate = peDate;
         }
