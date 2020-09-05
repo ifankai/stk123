@@ -62,7 +62,7 @@ public class SpringConfiguration {
     @Bean//(name = "entityManagerFactory")
     public EntityManagerFactory entityManagerFactory() {
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-        //vendorAdapter.setShowSql(true);
+        vendorAdapter.setShowSql(true);
         //vendorAdapter.setGenerateDdl(true);
         LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setJpaVendorAdapter(vendorAdapter);
@@ -112,7 +112,7 @@ public class SpringConfiguration {
 
     @Bean
     public EntityManager entityManager(){
-        return entityManagerFactory().createEntityManager();
+        return entityManagerFactory.createEntityManager();
     }
 
     //Need this bean due to the error: @PropertySource @Value is not working

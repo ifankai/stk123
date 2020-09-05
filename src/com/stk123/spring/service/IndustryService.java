@@ -2,7 +2,9 @@ package com.stk123.spring.service;
 
 import com.stk123.spring.SpringUtils;
 import com.stk123.spring.jpa.entity.StkDataIndustryPeEntity;
+import com.stk123.spring.jpa.entity.StkIndustryTypeEntity;
 import com.stk123.spring.jpa.repository.StkDataIndustryPeRepository;
+import com.stk123.spring.jpa.repository.StkIndustryTypRepository;
 import org.springframework.beans.annotation.AnnotationBeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.BeanFactoryAnnotationUtils;
@@ -17,6 +19,9 @@ public class IndustryService extends BaseService {
 
     @Autowired
     private StkDataIndustryPeRepository stkDataIndustryPeRepository;
+
+    @Autowired
+    private StkIndustryTypRepository stkIndustryTypRepository;
 
     public StkDataIndustryPeEntity insertOrUpdateIndustryData(Integer industryId, String peDate, Double pe, Double peTtm, Double pb, Double adr){
         if(industryId == null || peDate == null){
@@ -46,8 +51,12 @@ public class IndustryService extends BaseService {
     }
 
     public StkDataIndustryPeEntity findStkDataIndustryPe(Integer industryId, String peDate){
-        StkDataIndustryPeRepository stkDataIndustryPeRepository = BaseService.getRepository(StkDataIndustryPeEntity.class);
+        //StkDataIndustryPeRepository stkDataIndustryPeRepository = BaseService.getRepository(StkDataIndustryPeEntity.class);
         return stkDataIndustryPeRepository.findOne(new StkDataIndustryPeEntity.CompositeKey(industryId, peDate));
+    }
+
+    public StkIndustryTypeEntity findStkIndustryType(Integer id) {
+        return stkIndustryTypRepository.findOne(id);
     }
 
 }

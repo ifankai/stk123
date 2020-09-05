@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -30,6 +32,8 @@ import com.stk123.tool.util.JsonUtils;
  * 雪球个股页面长文
  */
 public class XueqiuStockArticleJob implements Job {
+
+    private static final Log log = LogFactory.getLog(XueqiuStockArticleJob.class);
 	
 	private static int codeIndex = 0;
 	private static List<Stk> stocks = null;
@@ -100,8 +104,9 @@ public class XueqiuStockArticleJob implements Job {
 		}
 		Map<String, String> requestHeaders = XueqiuUtils.getCookies();
 		//String page = HttpUtils.get("https://xueqiu.com/statuses/search.json?count=10&comment=0&symbol="+scode+"&hl=0&source=all&sort=alpha&page=1&_="+new Date().getTime(),null, requestHeaders, "gb2312");
-		
-		String page = HttpUtils.get("https://xueqiu.com/query/v1/symbol/search/status?count=100&comment=0&symbol="+scode+"&hl=0&source=all&sort=&page=1&q=",null, requestHeaders, "gb2312");
+
+        String url = "https://xueqiu.com/query/v1/symbol/search/status?count=100&comment=0&symbol="+scode+"&hl=0&source=all&sort=&page=1&q=";
+		String page = HttpUtils.get(url,null, requestHeaders, "gb2312");
 		//System.out.println(page);
 		List<XueqiuArticle> results = new ArrayList<XueqiuArticle>();
 		if("400".equals(page)){

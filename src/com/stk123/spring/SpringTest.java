@@ -1,10 +1,14 @@
 package com.stk123.spring;
 
+import com.stk123.bo.StkIndustryType;
 import com.stk123.spring.jpa.entity.Admapp;
 import com.stk123.spring.jpa.entity.StkDataIndustryPeEntity;
+import com.stk123.spring.jpa.entity.StkIndustryTypeEntity;
 import com.stk123.spring.jpa.repository.AdmappRepository;
 import com.stk123.spring.jpa.repository.StkDataIndustryPeRepository;
 import com.stk123.spring.service.BaseService;
+import com.stk123.spring.service.IndustryService;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,20 +44,38 @@ public class SpringTest {
     private EntityManager entityManager;
 
     public static void main(String[] args) {
-        AdmappRepository admappRepository = SpringUtils.getBean(AdmappRepository.class);
-        long count = admappRepository.count();
-        log.info(String.valueOf(count));
-        Admapp admapp = admappRepository.findByAdapplicationEquals("DB");
-        log.info(admapp.getAdalink()+","+admapp.getRowid());
-        admapp.setAdausrcre("SYSTEM");
-        admappRepository.save(admapp);
-
         SpringTest test = SpringUtils.getBean(SpringTest.class);
-        admapp.setAdaupd(new Date());
-        //test.update(admapp);
-        admappRepository.updateTime(admapp);
 
-        repostory();
+        if(StringUtils.equals("KaiFan",System.getProperty("user.name"))) {
+            AdmappRepository admappRepository = SpringUtils.getBean(AdmappRepository.class);
+            long count = admappRepository.count();
+            log.info(String.valueOf(count));
+            Admapp admapp = admappRepository.findByAdapplicationEquals("DB");
+            log.info(admapp.getAdalink() + "," + admapp.getRowid());
+            admapp.setAdausrcre("SYSTEM");
+            admappRepository.save(admapp);
+
+
+            admapp.setAdaupd(new Date());
+            //test.update(admapp);
+            admappRepository.updateTime(admapp);
+
+            repostory();
+        }else {
+            test.home();
+        }
+    }
+
+    @Transactional
+    public void home() {
+        IndustryService industryService = SpringUtils.getBean(IndustryService.class);
+        StkDataIndustryPeEntity industryPeEntity = industryService.findStkDataIndustryPe(124617, "20200904");
+        log.info(industryPeEntity.getPe());
+        log.info(industryPeEntity.getStkIndustryTypeEntity().getName());
+        log.info("---------------------");
+        StkIndustryTypeEntity industryTypeEntity = industryService.findStkIndustryType(124618);
+        log.info(industryTypeEntity.getName());
+        log.info("size:"+industryTypeEntity.getStkDataIndustryPeEntityList().size());
     }
 
     @Transactional

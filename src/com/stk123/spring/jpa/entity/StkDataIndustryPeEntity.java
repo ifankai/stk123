@@ -44,6 +44,10 @@ public class StkDataIndustryPeEntity {
     @Column(name = "ADR", nullable = true, precision = 2)
     private Double adr; //股息率
 
+    @ManyToOne
+    @JoinColumn(name = "INDUSTRY_ID", insertable = false, updatable = false)
+    private StkIndustryTypeEntity stkIndustryTypeEntity;
+
     public Integer getIndustryId() {
         return industryId;
     }
@@ -112,6 +116,14 @@ public class StkDataIndustryPeEntity {
 
     public void setAdr(Double adr) {
         this.adr = adr;
+    }
+
+    public StkIndustryTypeEntity getStkIndustryTypeEntity() {
+        return stkIndustryTypeEntity;
+    }
+
+    public void setStkIndustryTypeEntity(StkIndustryTypeEntity stkIndustryTypeEntity) {
+        this.stkIndustryTypeEntity = stkIndustryTypeEntity;
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.stk123.spring.service;
 
 import com.stk123.spring.SpringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -15,6 +17,8 @@ import java.lang.reflect.Type;
 
 @Service
 public class BaseService implements ApplicationContextAware {
+
+    protected static final Log log = LogFactory.getLog(BaseService.class.getClass());
 
     private static ApplicationContext appContext;
 

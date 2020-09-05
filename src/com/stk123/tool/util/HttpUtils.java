@@ -58,9 +58,13 @@ import com.stk123.web.WebUtils;
 import com.sun.enterprise.util.FileUtil;
 import com.sun.net.ssl.HostnameVerifier;
 import com.sun.net.ssl.HttpsURLConnection;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 
 public class HttpUtils {
+
+    private static final Log log = LogFactory.getLog(HttpUtils.class);
 
 	public static int NO_OF_RETRY = 3;
 
@@ -376,7 +380,7 @@ public class HttpUtils {
             	System.out.println(header.getName()+"="+header.getValue());
             }*/
             if("400".equals(response) || "404".equals(response)){
-            	System.out.println(response+"="+url);
+                log.info(response+"="+url);
             	StkUtils.printStackTrace();
                 Connection conn = null;
             	try {
