@@ -11,29 +11,39 @@ import java.sql.Time;
 @IdClass(StkDataIndustryPeEntity.CompositeKey.class)
 public class StkDataIndustryPeEntity {
 
-    public static class CompositeKey implements Serializable {
-        public CompositeKey(Long industryId, String peDate){
-            this.industryId = industryId;
-            this.peDate = peDate;
-        }
-        private Long industryId;
-        private String peDate;
-    }
-
     @Id
-    private Long industryId;
-    @Id
-    private String peDate;
-
-    private Integer type;
-    private Double pe;
-    private Double peTtm;
-    private Time insertTime;
-    private Double pb;
-    private Double adr; //股息率
-
     @Basic
     @Column(name = "INDUSTRY_ID", nullable = true, precision = 0)
+    private Long industryId;
+
+    @Id
+    @Column(name = "PE_DATE", nullable = true, length = 8)
+    private String peDate;
+
+    @Basic
+    @Column(name = "TYPE", nullable = true, precision = 0)
+    private Integer type;
+
+    @Basic
+    @Column(name = "PE", nullable = true, precision = 2)
+    private Double pe;
+
+    @Basic
+    @Column(name = "PE_TTM", nullable = true, precision = 2)
+    private Double peTtm;
+
+    @Basic
+    @Column(name = "INSERT_TIME", nullable = true)
+    private Time insertTime;
+
+    @Basic
+    @Column(name = "PB", nullable = true, precision = 2)
+    private Double pb;
+
+    @Basic
+    @Column(name = "ADR", nullable = true, precision = 2)
+    private Double adr; //股息率
+
     public Long getIndustryId() {
         return industryId;
     }
@@ -42,8 +52,6 @@ public class StkDataIndustryPeEntity {
         this.industryId = industryId;
     }
 
-    @Basic
-    @Column(name = "PE_DATE", nullable = true, length = 8)
     public String getPeDate() {
         return peDate;
     }
@@ -52,8 +60,7 @@ public class StkDataIndustryPeEntity {
         this.peDate = peDate;
     }
 
-    @Basic
-    @Column(name = "TYPE", nullable = true, precision = 0)
+
     public Integer getType() {
         return type;
     }
@@ -62,8 +69,7 @@ public class StkDataIndustryPeEntity {
         this.type = type;
     }
 
-    @Basic
-    @Column(name = "PE", nullable = true, precision = 2)
+
     public Double getPe() {
         return pe;
     }
@@ -72,8 +78,7 @@ public class StkDataIndustryPeEntity {
         this.pe = pe;
     }
 
-    @Basic
-    @Column(name = "PE_TTM", nullable = true, precision = 2)
+
     public Double getPeTtm() {
         return peTtm;
     }
@@ -82,8 +87,7 @@ public class StkDataIndustryPeEntity {
         this.peTtm = peTtm;
     }
 
-    @Basic
-    @Column(name = "INSERT_TIME", nullable = true)
+
     public Time getInsertTime() {
         return insertTime;
     }
@@ -92,8 +96,7 @@ public class StkDataIndustryPeEntity {
         this.insertTime = insertTime;
     }
 
-    @Basic
-    @Column(name = "PB", nullable = true, precision = 2)
+
     public Double getPb() {
         return pb;
     }
@@ -102,8 +105,7 @@ public class StkDataIndustryPeEntity {
         this.pb = pb;
     }
 
-    @Basic
-    @Column(name = "ADR", nullable = true, precision = 2)
+
     public Double getAdr() {
         return adr;
     }
@@ -130,6 +132,18 @@ public class StkDataIndustryPeEntity {
         int result = industryId != null ? industryId.hashCode() : 0;
         result = 31 * result + (peDate != null ? peDate.hashCode() : 0);
         return result;
+    }
+
+    public static class CompositeKey implements Serializable {
+        private Long industryId;
+        private String peDate;
+
+        public CompositeKey(){}
+
+        public CompositeKey(Long industryId, String peDate){
+            this.industryId = industryId;
+            this.peDate = peDate;
+        }
     }
 }
 
