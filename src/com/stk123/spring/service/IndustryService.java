@@ -18,7 +18,7 @@ public class IndustryService extends BaseService {
     @Autowired
     private StkDataIndustryPeRepository stkDataIndustryPeRepository;
 
-    public StkDataIndustryPeEntity insertOrUpdateIndustryData(Long industryId, String peDate, Double pe, Double peTtm, Double pb, Double adr){
+    public StkDataIndustryPeEntity insertOrUpdateIndustryData(Integer industryId, String peDate, Double pe, Double peTtm, Double pb, Double adr){
         if(industryId == null || peDate == null){
             throw new IllegalArgumentException("IndustryId and PeDate cannot be null");
         }
@@ -43,6 +43,11 @@ public class IndustryService extends BaseService {
 
     public StkDataIndustryPeRepository getStkDataIndustryPeRepository() {
         return stkDataIndustryPeRepository;
+    }
+
+    public StkDataIndustryPeEntity findStkDataIndustryPe(Integer industryId, String peDate){
+        StkDataIndustryPeRepository stkDataIndustryPeRepository = BaseService.getRepository(StkDataIndustryPeEntity.class);
+        return stkDataIndustryPeRepository.findOne(new StkDataIndustryPeEntity.CompositeKey(industryId, peDate));
     }
 
 }

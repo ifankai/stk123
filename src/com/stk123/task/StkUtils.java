@@ -6,6 +6,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.Time;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -425,6 +426,10 @@ public class StkUtils {
             total += Double.parseDouble(number);
         }
         return (total/count) >= percentige;
+    }
+
+    public static Time getTime(){
+        return new java.sql.Time(Calendar.getInstance().getTime().getTime());
     }
 
     public static String getDate(int days, SimpleDateFormat sf){

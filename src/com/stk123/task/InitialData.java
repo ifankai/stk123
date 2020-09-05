@@ -662,15 +662,14 @@ public class InitialData {
 						String sdate = StkUtils.formatDate(date, StkUtils.sf_ymd2);
 						String pe = StringUtils.trim(tds.get(2).toPlainTextString());
 						if(NumberUtils.isNumber(pe)) {
-							IndustryService industryService = SpringUtils.getService(IndustryService.class);
-							StkDataIndustryPeRepository stkDataIndustryPeRepository = industryService.getRepository(StkDataIndustryPeEntity.class);
-							StkDataIndustryPeEntity entity = stkDataIndustryPeRepository.findOne(new StkDataIndustryPeEntity.CompositeKey(indIdMap.get(code).longValue(), sdate));
+							IndustryService industryService = SpringUtils.getBean(IndustryService.class);
+							StkDataIndustryPeEntity entity = industryService.findStkDataIndustryPe(indIdMap.get(code), sdate);
 							if(entity == null){
 								entity = new StkDataIndustryPeEntity();
-								entity.setIndustryId(indIdMap.get(code).longValue());
+								entity.setIndustryId(indIdMap.get(code));
 								entity.setPeDate(sdate);
 								entity.setPe(Double.parseDouble(pe));
-								entity.setInsertTime(new java.sql.Time(Calendar.getInstance().getTime().getTime()));
+								entity.setInsertTime(StkUtils.getTime());
 							}else{
 								entity.setPe(Double.parseDouble(pe));
 							}

@@ -2779,3 +2779,5 @@ select count(*) from v$process;
 alter system set processes = 300 scope = spfile;
 
 select * from stk_index_node where disp_order >= 0 order by node_level asc,disp_order asc
+
+select * from stk_data_industry_pe order by pe_date desc;
