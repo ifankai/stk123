@@ -46,6 +46,7 @@ public class AStkTools {
 		try {
 			conn = DBUtil.getConnection();
 			IndexContext context = new IndexContext();
+			InitialData.initialIndustryFromCsindex_zjh(conn, 7);
 			//InitialData.updateIndustryFromHexun(conn);
 			//InitialData.initialIndustryFrom10jqka(conn,"thshy");
 			//InitialKLine.strategy(conn, false);
@@ -56,7 +57,7 @@ public class AStkTools {
 
 
 			List<String> result = new ArrayList<String>();
-			String codes = "";
+			String codes = "000001";
 			String sql = null;
 			if(codes != null && codes.length() > 0){
 				sql = "select code,name from stk where market=1 and code in ("+codes+") order by code";
@@ -88,7 +89,7 @@ public class AStkTools {
 					//InitialData.initOwnership(conn, index);
 					//InitialData.initHolderFrom10jqka(conn, index);
 					//InitialData.updateStkF9(conn, index);
-                    InitialData.updateStkStaticInfo(conn, stk.getCode());
+                    //InitialData.updateStkStaticInfo(conn, stk.getCode());
 
 					//K k = index.getK("20160530");
 					/*if(k!=null ){

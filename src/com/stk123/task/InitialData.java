@@ -12,6 +12,8 @@ import com.stk123.spring.service.IndustryService;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.htmlparser.Node;
 import org.htmlparser.nodes.TagNode;
@@ -55,6 +57,8 @@ import com.stk123.web.StkDict;
  */
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class InitialData {
+
+    private static final Log log = LogFactory.getLog(InitialData.class);
 
 	private static int fnYearFrom = StkUtils.YEAR - 3;
 	private static List<String> infos = new ArrayList<String>();
@@ -593,7 +597,7 @@ public class InitialData {
 		List params = new ArrayList();
 
 		//行业-个股
-		for(Node table : tables){
+		/*for(Node table : tables){
 			//System.out.println(table.toHtml());
 			//List<List<String>> list = HtmlUtils.getListFromTable((TableTag)table);
 			//System.out.println(list);
@@ -614,7 +618,7 @@ public class InitialData {
 				//TODO stk_data_industry_pe
 
 				String href = HtmlUtils.getAttribute(a, "href");
-				System.out.println(StringEscapeUtils.unescapeHtml(href));
+				//System.out.println(StringEscapeUtils.unescapeHtml(href));
 				page = HttpUtils.get(StringEscapeUtils.unescapeHtml(href),"utf-8");
 				Node tab = HtmlUtils.getNodeByAttributeContain(page, null, "class", "p_table");
 				List<List<String>> list = HtmlUtils.getListFromTable((TableTag) tab, 0);
@@ -631,7 +635,7 @@ public class InitialData {
 					}
 				}
 			}
-		}
+		}*/
 
 		int day = n;
 		//市盈率-pe
@@ -641,7 +645,9 @@ public class InitialData {
 
 			Date date = StkUtils.addDayOfWorking(StkUtils.now, (day--)-n);
 			String d1 = StkUtils.formatDate(date, StkUtils.sf_ymd);
-			page = HttpUtils.get("http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zjh1&date="+d1, "utf-8");
+			String url = "http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zjh1&date="+d1;
+            log.info(url);
+			page = HttpUtils.get(url, "utf-8");
 			tables = HtmlUtils.getNodeListByTagNameAndAttribute(page, null, "table", "class", "list-div-table");
 
 			for(Node table : tables){

@@ -37,7 +37,7 @@ public class BaseService implements ApplicationContextAware {
         repositories = new Repositories(appContext);
     }
 
-    public <T, R extends JpaRepository> R getRepository(Class clazz) {
+    public static <T, R extends JpaRepository> R getRepository(Class clazz) {
         return (R) repositories.getRepositoryFor(clazz);
     }
 
