@@ -3,14 +3,15 @@ package com.stk123.task;
 import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.stk123.spring.SpringUtils;
+import com.stk123.spring.jpa.entity.StkDataIndustryPeEntity;
+import com.stk123.spring.jpa.repository.StkDataIndustryPeRepository;
+import com.stk123.spring.service.IndustryService;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.htmlparser.Node;
 import org.htmlparser.nodes.TagNode;
@@ -146,7 +147,7 @@ public class InitialData {
 
         try{
             //InitialData.initialIndustryFromCnIndex(conn, 14);
-            InitialData.initialIndustryFromCsindex_zjh(conn);
+            InitialData.initialIndustryFromCsindex_zjh(conn, 7);
             InitialData.initialIndustryFromCsindex_zz1(conn);
         }catch(Exception e){
             EmailUtils.send("Initial A Stock Industry csindex Data Error", e);
@@ -584,14 +585,16 @@ public class InitialData {
 	//证监会行业-个股，市盈率
 	//http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zjh1&date=2020-08-07
 	//http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zz1&date=2020-08-05
-	public static void initialIndustryFromCsindex_zjh(Connection conn) throws Exception {
+	public static void initialIndustryFromCsindex_zjh(Connection conn, int n) throws Exception {
 		String page = HttpUtils.get("http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zjh1&date="+StkUtils.formatDate(StkUtils.addDayOfWorking(StkUtils.now, -1), StkUtils.sf_ymd), "utf-8");
 		//System.out.println(page);
 		List<Node> tables = HtmlUtils.getNodeListByTagNameAndAttribute(page, null, "table", "class", "list-div-table");
 		String parentCode = null;
 		List params = new ArrayList();
+
+		//行业-个股
 		for(Node table : tables){
-			System.out.println(table.toHtml());
+			//System.out.println(table.toHtml());
 			//List<List<String>> list = HtmlUtils.getListFromTable((TableTag)table);
 			//System.out.println(list);
 			List<Node> tds = HtmlUtils.getNodeListByTagName(table, "td");
@@ -629,6 +632,48 @@ public class InitialData {
 				}
 			}
 		}
+
+		int day = n;
+		//市盈率-pe
+		Map<String,Integer> indIdMap = new HashMap<String,Integer>();
+		do{
+			if(day <= 0) break;
+
+			Date date = StkUtils.addDayOfWorking(StkUtils.now, (day--)-n);
+			String d1 = StkUtils.formatDate(date, StkUtils.sf_ymd);
+			page = HttpUtils.get("http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zjh1&date="+d1, "utf-8");
+			tables = HtmlUtils.getNodeListByTagNameAndAttribute(page, null, "table", "class", "list-div-table");
+
+			for(Node table : tables){
+				List<Node> tds = HtmlUtils.getNodeListByTagName(table, "td");
+				if(tds != null && tds.size() > 4) {
+					String code = StringUtils.trim(tds.get(0).toPlainTextString());
+					if(StringUtils.isNotEmpty(code)) {
+						if(indIdMap.get(code) == null){
+							StkIndustryType indType = Industry.insertOrLoadIndustryType(conn, null,  code, null, "csindex_zjh");
+							indIdMap.put(indType.getCode(), indType.getId());
+						}
+						String sdate = StkUtils.formatDate(date, StkUtils.sf_ymd2);
+						String pe = StringUtils.trim(tds.get(2).toPlainTextString());
+						if(NumberUtils.isNumber(pe)) {
+							IndustryService industryService = SpringUtils.getService(IndustryService.class);
+							StkDataIndustryPeRepository stkDataIndustryPeRepository = industryService.getRepository(StkDataIndustryPeEntity.class);
+							StkDataIndustryPeEntity entity = stkDataIndustryPeRepository.findOne(new StkDataIndustryPeEntity.CompositeKey(indIdMap.get(code).longValue(), sdate));
+							if(entity == null){
+								entity = new StkDataIndustryPeEntity();
+								entity.setIndustryId(indIdMap.get(code).longValue());
+								entity.setPeDate(sdate);
+								entity.setPe(Double.parseDouble(pe));
+								entity.setInsertTime(new java.sql.Time(Calendar.getInstance().getTime().getTime()));
+							}else{
+								entity.setPe(Double.parseDouble(pe));
+							}
+							industryService.save(entity);
+						}
+					}
+				}
+			}
+		}while(true);
 	}
 
 	//中证行业-个股，市盈率

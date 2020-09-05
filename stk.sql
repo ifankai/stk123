@@ -169,7 +169,7 @@ alter table STK_FN_DATA_HK
 
 create index IDX_FN_DATA_HK__CODE_TYPE on STK_FN_DATA_HK (CODE, TYPE, FN_DATE)
   tablespace STK_TABLESPACE_2;
-  
+
 
 create table stk_info_log(
   code   varchar2(10),
@@ -577,6 +577,9 @@ create table stk_data_industry_pe(
   pe_ttm number(10,2),
   insert_time date
 );
+alter table stk_data_industry_pe add pb number(10,2);
+alter table stk_data_industry_pe add adr number(10,2);
+comment on column stk_data_industry_pe.adr is '股息率';
 create index idx_data_ind_pe_id_date_type on stk_data_industry_pe (industry_id,pe_date,type);
 
 
@@ -2670,12 +2673,12 @@ select * from stk_holder where code='000883' order by fn_date desc;
 
 
 select a.code,name,count(*) cnt from (
-select code,fn_date,holder, 
+select code,fn_date,holder,
 sum(holder) over (order by code,fn_date desc rows between 1 following and 1 following) last_holder /*前面一期人数*/,
 sum(holder) over (order by code,fn_date desc rows between 5 following and 5 following) last5_holder,/*前面第5期人数*/
 row_number() over (partition by code order by fn_date desc) rown
 from stk_holder where fn_date >=20190630 order by code,fn_date desc
-) a,stk_cn s where a.code=s.code and rown <= 5 and holder < last_holder 
+) a,stk_cn s where a.code=s.code and rown <= 5 and holder < last_holder
 and holder/last5_holder<=0.9 /*最近期人数至少比前第5期人数少10%*/
 group by a.code,s.name having count(*)=5 order by a.code asc;
 
@@ -2721,7 +2724,7 @@ select fn_date, sum(rate), name, count(*), sum(rate) / count(*) * 100
                (select code, (case when sum(num_change) > 0 then 1 else -1 end) rate, fn_date from stk_ownership where fn_date = '20190630' group by code,fn_date) b
          where a.code = b.code and a.code = d.code and a.industry = c.id
            and d.LISTING_DATE < to_char(add_months(sysdate, -12),'yyyymmdd') and c.source = 'csindex_zjh')
- group by name,fn_date having count(*) > 50 order by sum(rate) / count(*) desc;  
+ group by name,fn_date having count(*) > 50 order by sum(rate) / count(*) desc;
 
 -------------
 
@@ -2752,7 +2755,7 @@ select fn_date, sum(rate), name, count(*), sum(rate) / count(*) * 100
 
 select * from stk_industry_type where source='csindex_zz';
 
-select s.code,s.name from stk s,stk_industry i,stk_industry_type t 
+select s.code,s.name from stk s,stk_industry i,stk_industry_type t
 where s.code=i.code and i.industry=t.id and t.source='csindex_zjh' and t.code='07'
 order by t.id,s.code;
 
