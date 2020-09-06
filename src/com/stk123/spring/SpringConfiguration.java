@@ -7,18 +7,23 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -27,8 +32,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-@ComponentScan(basePackages = "com.stk123.spring")
-@PropertySource({"stk.properties","classpath:com/stk123/tool/db/db.properties"})
+@ComponentScan(basePackages = "com.stk123.spring",
+        excludeFilters =
+            {
+                //@ComponentScan.Filter(type = FilterType.ANNOTATION, classes = {EnableWebMvc.class}), //排除 @EnableWebMvc，和下面一行效果一样
+                @ComponentScan.Filter(type = FilterType.REGEX, pattern = {"com.stk123.spring.config.*"})
+            })
+@PropertySource({"classpath:stk.properties", "classpath:com/stk123/tool/db/db.properties"})
 @EnableJpaRepositories
 @EnableTransactionManagement//(mode = AdviceMode.ASPECTJ)
 public class SpringConfiguration {
@@ -39,7 +49,7 @@ public class SpringConfiguration {
         log.info("SpringConfiguration容器启动初始化。。。");
     }
 
-    static class DBConfig{
+    static class DBConfig {
         @Value("${driverClassName}")
         private static String DriverClassName;
     }
@@ -51,7 +61,7 @@ public class SpringConfiguration {
     private EntityManagerFactory entityManagerFactory;
 
     @Bean
-    public ThreadPoolTaskExecutor setTaskExecutor(){
+    public ThreadPoolTaskExecutor setTaskExecutor() {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
         taskExecutor.setCorePoolSize(2);
         taskExecutor.setMaxPoolSize(5);
@@ -84,13 +94,13 @@ public class SpringConfiguration {
     public DataSource dataSource() {
         Map properties = new HashMap();
         //properties.put("driverClassName", "oracle.jdbc.driver.OracleDriver");
-        if(StringUtils.equals("KaiFan",System.getProperty("user.name"))) {
+        if (StringUtils.equals("KaiFan", System.getProperty("user.name"))) {
             properties.put("driverClassName", DBConfig.DriverClassName);
             properties.put("url", "jdbc:oracle:thin:@9.197.4.250:1521:TWP4T1");
             properties.put("username", "p4pst2");
             properties.put("password", "carrefour");
             properties.put("testWhileIdle", "false");
-        }else{
+        } else {
             properties.putAll(ConfigUtils.getProps());
         }
 
@@ -111,7 +121,7 @@ public class SpringConfiguration {
     }
 
     @Bean
-    public EntityManager entityManager(){
+    public EntityManager entityManager() {
         return entityManagerFactory.createEntityManager();
     }
 
@@ -121,5 +131,33 @@ public class SpringConfiguration {
         return new PropertySourcesPlaceholderConfigurer();
     }
 
+
+    @Bean
+    public ViewResolver viewResolver() {
+        InternalResourceViewResolver resolver = new InternalResourceViewResolver();
+        resolver.setPrefix("/WEB-INF/views/");
+        resolver.setSuffix(".jsp");
+        //resolver.setViewClass(JstlView.class);
+        //resolver.setExposeContextBeansAsAttributes(true);
+        return resolver;
+    }
+
+    @Bean
+    public MessageSource messageSource() {
+        ReloadableResourceBundleMessageSource messages = new ReloadableResourceBundleMessageSource();
+        //messages.setBasenames("classpath:beanValidation", "classpath:errors");
+        messages.setDefaultEncoding("UTF-8");
+        return messages;
+    }
+
+    @Bean
+    public WebMvcConfigurerAdapter webMvcConfigurerAdapter() {
+        return new WebMvcConfigurerAdapter() {
+            @Override
+            public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
+                configurer.enable();
+            }
+        };
+    }
 
 }

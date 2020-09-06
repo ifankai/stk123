@@ -1,17 +1,17 @@
-package com.stk123.spring;
+package com.stk123.spring.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SpringThreadPoolUtils {
+public class ThreadPoolService {
 
     private static ThreadPoolTaskExecutor taskExecutor;
 
     @Autowired
-    public SpringThreadPoolUtils(ThreadPoolTaskExecutor taskExecutor){
-        SpringThreadPoolUtils.taskExecutor = taskExecutor;
+    public ThreadPoolService(ThreadPoolTaskExecutor taskExecutor){
+        ThreadPoolService.taskExecutor = taskExecutor;
     }
 
     public static ThreadPoolTaskExecutor getTaskExecutor() {

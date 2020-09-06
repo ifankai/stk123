@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.stk123.task.StkUtils;
 import com.stk123.tool.ik.IKUtils;
-import com.stk123.tool.util.ConfigUtils;
 import com.stk123.tool.web.ActionServlet;
 
 
@@ -20,6 +19,7 @@ public class StkActionServlet extends ActionServlet {
     		if(StkUtils.isDev()){
     			IKUtils.init();
     		}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ServletException("stock init error.");
