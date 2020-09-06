@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -35,8 +38,18 @@ import com.stk123.tool.web.config.ForwardConfig;
 import com.stk123.tool.web.config.MvcConfig;
 import com.stk123.tool.web.util.RequestUtils;
 import com.stk123.web.StkConstant;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
+import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 public class ActionServlet extends HttpServlet {
+
+    private static final Log log = LogFactory.getLog(ActionServlet.class);
 
     public static final String INCLUDE_PATH_INFO = "javax.servlet.include.path_info";
     public static final String INCLUDE_SERVLET_PATH = "javax.servlet.include.servlet_path";
@@ -113,6 +126,7 @@ public class ActionServlet extends HttpServlet {
     		//System.out.println("action servlet process...");
 	        processNoCache(request, response);
 	        String path = processPath(request, response);
+            //System.out.println("path="+path);
 	        if (path == null) {
 	            return;
 	        }
@@ -144,6 +158,7 @@ public class ActionServlet extends HttpServlet {
 		        String forward = createActionPerform(request, response, actionConfig, action);
 		        //System.out.println("forward==="+forward);
 		        if(forward == null){
+		            //log.info("forward="+forward);
 		        	return;
 		        }
 		        forwardConfig = actionConfig.getForwardConfig(forward);
@@ -174,8 +189,8 @@ public class ActionServlet extends HttpServlet {
     		ActionContext.clear();
     	}
     }
-    
-    public ActionContext createActionContext(HttpServletRequest request, 
+
+    public ActionContext createActionContext(HttpServletRequest request,
     		HttpServletResponse response, Object form) throws ServletException {
         ActionContext oldContext = ActionContext.getContext();
         if (oldContext != null) {//内部跳转

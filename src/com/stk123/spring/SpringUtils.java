@@ -1,6 +1,7 @@
 package com.stk123.spring;
 
 import com.stk123.spring.service.IndustryService;
+import com.stk123.spring.service.ThreadPoolService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -18,7 +19,7 @@ public class SpringUtils {
 
     public static void main(String[] args) {
         //SpringThreadPoolUtils utils = context.getBean(SpringThreadPoolUtils.class);
-        System.out.println(SpringThreadPoolUtils.getTaskExecutor().getMaxPoolSize());
+        System.out.println(ThreadPoolService.getTaskExecutor().getMaxPoolSize());
         IndustryService industryService = SpringUtils.getBean(IndustryService.class);
     }
 }
