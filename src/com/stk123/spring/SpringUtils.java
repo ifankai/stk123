@@ -2,8 +2,15 @@ package com.stk123.spring;
 
 import com.stk123.spring.service.IndustryService;
 import com.stk123.spring.service.ThreadPoolService;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.core.type.filter.AssignableTypeFilter;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public class SpringUtils {
 
@@ -21,5 +28,19 @@ public class SpringUtils {
         //SpringThreadPoolUtils utils = context.getBean(SpringThreadPoolUtils.class);
         System.out.println(ThreadPoolService.getTaskExecutor().getMaxPoolSize());
         IndustryService industryService = SpringUtils.getBean(IndustryService.class);
+    }
+
+    public static <T> List<Class<T>> getAllSubClasses(Class<T> clazz, String basePackageToScan)
+            throws ClassNotFoundException {
+        ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false);
+        provider.addIncludeFilter(new AssignableTypeFilter(clazz));
+
+        List<Class<T>> classes = new ArrayList<Class<T>>();
+        Set<BeanDefinition> components = provider.findCandidateComponents(basePackageToScan);
+        for (BeanDefinition component : components) {
+            Class cls = Class.forName(component.getBeanClassName());
+            classes.add(cls);
+        }
+        return classes;
     }
 }
