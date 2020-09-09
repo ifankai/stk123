@@ -21,6 +21,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class SpringTest {
@@ -90,7 +91,7 @@ public class SpringTest {
         //System.out.println((AdmappRepository)BaseService.getRepository(StkDataIndustryPeEntity.class));
         log.info((StkDataIndustryPeRepository)BaseService.getRepository(StkDataIndustryPeEntity.class));
         Object object = BaseService.getRepository(StkDataIndustryPeEntity.class);
-        Class[] classes = ClassUtils.getAllInterfaces(object);
+        Set<Class<?>> classes = SpringUtils.getAllInterfaces(object.getClass());
         for(Class clazz : classes){
             log.info("interface:"+clazz.getName());
         }

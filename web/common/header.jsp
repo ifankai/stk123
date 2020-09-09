@@ -14,5 +14,6 @@
 <script type="text/javascript" src="/js/jquery.lazyload.min.js" ></script>
 <script type="text/javascript" src="/js/stk.js"></script>
 <script type="text/javascript" src="/js/common.js"></script>
+<script type="text/javascript" src="/js/mustache.js"></script>
 <link rel="stylesheet" type="text/css" href="/css/common.css" />
 </head>
