@@ -22,10 +22,6 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
-/**
- * //webquoteklinepic.eastmoney.com/GetPic.aspx?token=&nid=1.600000&type=D&unitWidth=-6&ef=&formula=MACD&imageType=KXL&_=1599294174363
- */
-
 @Controller
 @RequestMapping("/k")
 @CommonsLog
@@ -56,6 +52,9 @@ public class KControl {
         return "k";
     }
 
+    /**
+     * http://webquoteklinepic.eastmoney.com/GetPic.aspx?token=&nid=1.600000&type=D&unitWidth=-6&ef=&formula=MACD&imageType=KXL&_=1599294174363
+     */
     @RequestMapping("/show/{codes}")
     @ResponseBody
     public List<StkDto> show(@PathVariable("codes")String codes){
