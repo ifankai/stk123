@@ -3,6 +3,9 @@ package com.stk123.spring.config;
 import com.stk123.spring.SpringConfiguration;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
+/**
+ * 模拟(替代)web.xml
+ */
 public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
 
     @Override

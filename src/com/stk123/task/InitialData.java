@@ -637,8 +637,9 @@ public class InitialData {
 			}
 		}*/
 
-		int day = n;
+
 		//市盈率-pe
+		int day = n;
 		Map<String,Integer> indIdMap = new HashMap<String,Integer>();
 		do{
 			if(day <= 0) break;
@@ -672,6 +673,132 @@ public class InitialData {
 								entity.setInsertTime(StkUtils.getTime());
 							}else{
 								entity.setPe(Double.parseDouble(pe));
+							}
+							industryService.save(entity);
+						}
+					}
+				}
+			}
+		}while(true);
+
+		//Pe-TTM
+		day = n;
+		do{
+			if(day <= 0) break;
+
+			Date date = StkUtils.addDayOfWorking(StkUtils.now, (day--)-n);
+			String d1 = StkUtils.formatDate(date, StkUtils.sf_ymd);
+			String url = "http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zjh2&date="+d1;
+			log.info(url);
+			page = HttpUtils.get(url, "utf-8");
+			tables = HtmlUtils.getNodeListByTagNameAndAttribute(page, null, "table", "class", "list-div-table");
+
+			for(Node table : tables){
+				List<Node> tds = HtmlUtils.getNodeListByTagName(table, "td");
+				if(tds != null && tds.size() > 4) {
+					String code = StringUtils.trim(tds.get(0).toPlainTextString());
+					if(StringUtils.isNotEmpty(code)) {
+						if(indIdMap.get(code) == null){
+							StkIndustryType indType = Industry.insertOrLoadIndustryType(conn, null,  code, null, "csindex_zjh");
+							indIdMap.put(indType.getCode(), indType.getId());
+						}
+						String sdate = StkUtils.formatDate(date, StkUtils.sf_ymd2);
+						String pe = StringUtils.trim(tds.get(2).toPlainTextString());
+						if(NumberUtils.isNumber(pe)) {
+							IndustryService industryService = SpringUtils.getBean(IndustryService.class);
+							StkDataIndustryPeEntity entity = industryService.findStkDataIndustryPe(indIdMap.get(code), sdate);
+							if(entity == null){
+								entity = new StkDataIndustryPeEntity();
+								entity.setIndustryId(indIdMap.get(code));
+								entity.setPeDate(sdate);
+								entity.setPeTtm(Double.parseDouble(pe));
+								entity.setInsertTime(StkUtils.getTime());
+							}else{
+								entity.setPeTtm(Double.parseDouble(pe));
+							}
+							industryService.save(entity);
+						}
+					}
+				}
+			}
+		}while(true);
+
+		//Pb
+		day = n;
+		do{
+			if(day <= 0) break;
+
+			Date date = StkUtils.addDayOfWorking(StkUtils.now, (day--)-n);
+			String d1 = StkUtils.formatDate(date, StkUtils.sf_ymd);
+			String url = "http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zjh3&date="+d1;
+			log.info(url);
+			page = HttpUtils.get(url, "utf-8");
+			tables = HtmlUtils.getNodeListByTagNameAndAttribute(page, null, "table", "class", "list-div-table");
+
+			for(Node table : tables){
+				List<Node> tds = HtmlUtils.getNodeListByTagName(table, "td");
+				if(tds != null && tds.size() > 4) {
+					String code = StringUtils.trim(tds.get(0).toPlainTextString());
+					if(StringUtils.isNotEmpty(code)) {
+						if(indIdMap.get(code) == null){
+							StkIndustryType indType = Industry.insertOrLoadIndustryType(conn, null,  code, null, "csindex_zjh");
+							indIdMap.put(indType.getCode(), indType.getId());
+						}
+						String sdate = StkUtils.formatDate(date, StkUtils.sf_ymd2);
+						String pe = StringUtils.trim(tds.get(2).toPlainTextString());
+						if(NumberUtils.isNumber(pe)) {
+							IndustryService industryService = SpringUtils.getBean(IndustryService.class);
+							StkDataIndustryPeEntity entity = industryService.findStkDataIndustryPe(indIdMap.get(code), sdate);
+							if(entity == null){
+								entity = new StkDataIndustryPeEntity();
+								entity.setIndustryId(indIdMap.get(code));
+								entity.setPeDate(sdate);
+								entity.setPb(Double.parseDouble(pe));
+								entity.setInsertTime(StkUtils.getTime());
+							}else{
+								entity.setPb(Double.parseDouble(pe));
+							}
+							industryService.save(entity);
+						}
+					}
+				}
+			}
+		}while(true);
+
+		//adr
+		day = n;
+		do{
+			if(day <= 0) break;
+
+			Date date = StkUtils.addDayOfWorking(StkUtils.now, (day--)-n);
+			String d1 = StkUtils.formatDate(date, StkUtils.sf_ymd);
+			String url = "http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zjh4&date="+d1;
+			log.info(url);
+			page = HttpUtils.get(url, "utf-8");
+			tables = HtmlUtils.getNodeListByTagNameAndAttribute(page, null, "table", "class", "list-div-table");
+
+			for(Node table : tables){
+				List<Node> tds = HtmlUtils.getNodeListByTagName(table, "td");
+				if(tds != null && tds.size() > 4) {
+					String code = StringUtils.trim(tds.get(0).toPlainTextString());
+					if(StringUtils.isNotEmpty(code)) {
+						if(indIdMap.get(code) == null){
+							StkIndustryType indType = Industry.insertOrLoadIndustryType(conn, null,  code, null, "csindex_zjh");
+							indIdMap.put(indType.getCode(), indType.getId());
+						}
+						String sdate = StkUtils.formatDate(date, StkUtils.sf_ymd2);
+						String pe = StringUtils.trim(tds.get(2).toPlainTextString());
+						if(NumberUtils.isNumber(pe)) {
+							IndustryService industryService = SpringUtils.getBean(IndustryService.class);
+							StkDataIndustryPeEntity entity = industryService.findStkDataIndustryPe(indIdMap.get(code), sdate);
+							if(entity == null){
+								entity = new StkDataIndustryPeEntity();
+								entity.setIndustryId(indIdMap.get(code));
+								entity.setPeDate(sdate);
+								entity.setAdr(Double.parseDouble(pe));
+								entity.setInsertTime(StkUtils.getTime());
+							}else{
+								entity.setAdr(Double.parseDouble(pe));
 							}
 							industryService.save(entity);
 						}
