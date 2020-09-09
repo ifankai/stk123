@@ -1193,6 +1193,14 @@ public class StkUtils {
         return new StringBuffer().append(WRAPCODEASHTML_1).append(code).append("' data-code='"+code+"'>").append(name).append(StkConstant.MARK_BLANK_SPACE).append(StkConstant.MARK_BRACKET_LEFT).append(code).append(StkConstant.MARK_BRACKET_RIGHT).append(WRAPCODEASHTML_3).toString();
     }
 
+    public static String wrapCodeAndName(String code, String name) {
+        String scode = code;
+        if(StringUtils.length(code) > 5){
+            scode = StkUtils.getStkLocation(code)+code;
+        }
+        return StkUtils.wrapLink(name, "http://xueqiu.com/S/"+scode) + "[" + StkUtils.wrapLink(code, "/stk?s="+code) + "]";
+    }
+
     public static String wrapCodeAndNameAsHtml(Index index) throws Exception {
         return "<a class=\"stk-code\" target=\"_blank\" href=\"/stk?s="+index.getCode()+"\">"+index.getName()+"["+index.getCode()+"]</a>["+StkUtils.number2String(index.getTotalMarketValue(),2)+"亿]";
     }

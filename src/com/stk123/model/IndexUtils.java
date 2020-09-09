@@ -29,13 +29,13 @@ import com.stk123.web.StkConstant;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class IndexUtils implements StkConstant {
-	
+
 	public static String STKS_NAME_PATTERN = null;
 
 	public static void main(String[] args) throws Exception {
 		System.out.println(containAnyStksNameWrapByString("#沙钢股份重大资产重组说明会# 投资者们最关心的莫过于重组的进展，能否顺利成功，还有公司何时能复牌等。分享几个投资者的互动，看看有没有你关心的问题 ☛☛❶想具体了解下现在的重组标的情况，是否能够在短期内成功？❷现在目前并购进展是什么情况？❸审计的海外资产是什么啊，还要停牌多长时","<font color='red'>","</font>"));
 	}
-	
+
 	/**
 	 * 计算yyyyMMdd这天，创days天新高的index
 	 */
@@ -73,7 +73,7 @@ public class IndexUtils implements StkConstant {
         }
         return newHighs;
     }
-	
+
 	public static List<Index> getNearNewHighs(List<Index> indexs, String yyyyMMdd, int days) throws Exception{
 		List<Index> newHighs = new ArrayList<Index>();
 		String today_1 = StkUtils.formatDate(StkUtils.addDay(yyyyMMdd, -1),StkUtils.sf_ymd2);
@@ -93,7 +93,7 @@ public class IndexUtils implements StkConstant {
 		}
 		return newHighs;
 	}
-	
+
 	public static List<Index> getCloseNewHighsAndInteract(List<Index> indexs,String yyyyMMdd,int days) throws Exception{
 		List<Index> newHighs = new ArrayList<Index>();
 		String today_1 = StkUtils.formatDate(StkUtils.addDay(yyyyMMdd, -1),StkUtils.sf_ymd2);
@@ -116,7 +116,7 @@ public class IndexUtils implements StkConstant {
 		}
 		return newHighs;
 	}
-	
+
 	/**创days日新高不超过百分之percent% */
 	public static List<Index> getNewHighs(List<Index> indexs,String yyyyMMdd,int days,double percent) throws Exception{
 		List<Index> newHighs = new ArrayList<Index>();
@@ -126,7 +126,7 @@ public class IndexUtils implements StkConstant {
 				//String today_1 = today.before(1).getDate();
 				K k_n = k.before(days/10*2);
 				String k_nn = k.before(days).getDate();
-				if(index.getKValueByHCV(k_nn, yyyyMMdd) == k.getClose() 
+				if(index.getKValueByHCV(k_nn, yyyyMMdd) == k.getClose()
 						&& k.getClose()/(1+percent) < index.getKValueByHCV(k_nn, k_n.getDate())
 						&& index.getKValueByHCV(k_nn, k_n.getDate()) > k_n.getClose()){
 					newHighs.add(index);
@@ -135,7 +135,7 @@ public class IndexUtils implements StkConstant {
 		}
 		return newHighs;
 	}
-	
+
 	/**
 	 * yyyyMMdd日的close价格 与 前期高点的close比较，
 	 * 规则为: 前期高点的close*small <= yyyyMMdd日的close <= 前期高点的close*large
@@ -162,7 +162,7 @@ public class IndexUtils implements StkConstant {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * 取图形收敛的index
 	 */
@@ -171,12 +171,12 @@ public class IndexUtils implements StkConstant {
 		int num = days/5; //分为5段去分析幅度是否收敛
 		for(Index index : indexs){
 			if(index.getKs().size() >= days){
-				
+
 			}
 		}
 		return result;
 	}
-	
+
 	/**
 	 * 得到yyyyMMdd日K线回补daysInterval日前的向上跳空缺口
 	 * @param indexs
@@ -201,7 +201,7 @@ public class IndexUtils implements StkConstant {
 				}
 				if(up != null){
 					K k = index.getK(yyyyMMdd);
-					if(k.getLow() < up.getHigh() && !up.getEndK().equals(yyyyMMdd) 
+					if(k.getLow() < up.getHigh() && !up.getEndK().equals(yyyyMMdd)
 							&& StkUtils.getDaysBetween(StkUtils.sf_ymd2.parse(up.getEndK().getDate()), StkUtils.sf_ymd2.parse(yyyyMMdd)) >= daysInterval ){
 						result.add(index);
 					}
@@ -210,13 +210,13 @@ public class IndexUtils implements StkConstant {
 		}
 		return result;
 	}
-	
+
 	public static List<List> search(List<Index> indexs, String date, int n, int m, boolean onlyGrowing) throws Exception {
 		List<List> datas = new ArrayList<List>();
 		int tmp = n;
 		for(Index index : indexs){
 			if(onlyGrowing){
-				if(index.valuationByGrowing(index.FN_JLRZZL) == 0 
+				if(index.valuationByGrowing(index.FN_JLRZZL) == 0
 					/*	&& !index.valuationByGrowing(Index.FN_ZYSRZZL)*/){
 					continue;
 				}
@@ -267,7 +267,7 @@ public class IndexUtils implements StkConstant {
 		}
 		return datas;
 	}
-	
+
 	/**
 	 * 缩量上涨
 	 * 创m天新高后，n天量价背离，缩量上涨或持平，回调可买入，前提是大盘多头！
@@ -284,7 +284,7 @@ public class IndexUtils implements StkConstant {
 		}
 		IndexUtils.search(indexs, date, n, m, onlyGrowing);
 	}
-	
+
 	public static void sortByCloseChangeAndNetProfit(List<Index> indexs,String today) throws Exception {
 		//IndexUtils.reportRSByCloseChange(indexs,StkUtils.getToday(),250);
 		IndexUtils.sortByNetProfit(indexs, StkUtils.getPrevQuarter(today));
@@ -296,9 +296,9 @@ public class IndexUtils implements StkConstant {
 			}
 		});
 	}
-	
-	
-	
+
+
+
 	/**
 	 * 季度jlr相对强度排行
 	 * @param yyyyMMdd 季度日期
@@ -317,7 +317,7 @@ public class IndexUtils implements StkConstant {
 			index.getCanslim().setNetProfitGrowthRank(i++);
 		}
 	}
-	
+
 	//gc
 	public static void getTopNByCloseChange(List<Index> indexs,String yyyyMMdd, int days, int n) throws Exception {
 		for(Index index : indexs){
@@ -330,7 +330,7 @@ public class IndexUtils implements StkConstant {
 				return obj.getCanslim().getCloseChange();
 		}});
 	}
-	
+
 	/**
 	 * 股价相对强度排行
 	 */
@@ -355,7 +355,7 @@ public class IndexUtils implements StkConstant {
 			index.getCanslim().setCloseChangeRS(100 - index.getCanslim().getCloseChangeRank()/cnt);
 		}
 	}
-	
+
 	public static void sortByCloseChange(List<Index> indexs, String startDate, String endDate) throws Exception {
 		for(Index index : indexs){
 			index.getCanslim().setCloseChange(index.getCloseChange(startDate, endDate));
@@ -377,7 +377,7 @@ public class IndexUtils implements StkConstant {
 			index.getCanslim().setCloseChangeRS(100 - index.getCanslim().getCloseChangeRank()/cnt);
 		}
 	}
-	
+
 	public static String reportGrowthPE(Connection conn, IndexContext context, final String yyyyMMdd) throws Exception{
 		List<Index> indexsGrowth = context.indexsGrowth;
 		double totalPE = 0.0;
@@ -424,7 +424,7 @@ public class IndexUtils implements StkConstant {
 		context.averagePEIndexs = sb.toString();
 		return StkUtils.createHtmlTable(yyyyMMdd, indexsGrowth);
 	}
-	
+
 	public static void sortByClose(List<Index> indexs, final String date){
 		Collections.sort(indexs, new Comparator<Index>(){
 			public int compare(Index arg0, Index arg1) {
@@ -447,7 +447,7 @@ public class IndexUtils implements StkConstant {
 			}
 		});
 	}
-	
+
 	public static Map<String,K> getKsRealTime(Connection conn, List<String> codes) throws Exception{
 		List<Index> indexs = new ArrayList<Index>();
 		if(codes == null){
@@ -500,17 +500,17 @@ public class IndexUtils implements StkConstant {
 		}
 		return map;
 	}
-	
+
 	public static K getKsRealTime(Connection conn, String code) throws Exception{
 		List<String> codes = new ArrayList<String>();
 		codes.add(code);
 		return IndexUtils.getKsRealTime(conn, codes).get(code);
 	}
-	
+
 	public static Map<String,K> getKsRealTime(Connection conn) throws Exception{
 		return IndexUtils.getKsRealTime(conn, (List)null);
 	}
-	
+
 	//getMethod.setRequestHeader("Cookie", "Hm_lpvt_1db88642e346389874251b5a1eded6e3=1401870866; Hm_lvt_1db88642e346389874251b5a1eded6e3=1399279853,1399456116,1399600423,1401761324; xq_a_token=bBfpd2WIHkEiOXxCZuvJKz; xq_r_token=HoJplnghTo9TdCtmaYhQ9C; bid=26948a7b701285b58366203fbc172ea6_hvykico0; xq_im_active=false; __utma=1.1861748176.1401870866.1401870866.1401870866.1; __utmb=1.2.9.1401870869035; __utmc=1; __utmz=1.1401870866.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)");
     public static List<String> getCareStkFromXueQiu(String label) throws Exception {
     	String page = HttpUtils.get("http://xueqiu.com/stock/portfolio/stocks.json?size=1000&pid=7&tuid=6237744859&showAll=false", null, XueqiuUtils.getCookies(), "GBK");
@@ -533,7 +533,7 @@ public class IndexUtils implements StkConstant {
         }
         return stks;
     }
-    
+
     public static boolean contain(List<Index> indexs, String code){
     	for(Index index : indexs){
     		if(index.getCode().equals(code)){
@@ -542,7 +542,7 @@ public class IndexUtils implements StkConstant {
     	}
     	return false;
     }
-    
+
     public static int indexOf(List<Index> indexs, String code){
     	for(int i=0;i<indexs.size();i++){
     		Index index = indexs.get(i);
@@ -552,7 +552,7 @@ public class IndexUtils implements StkConstant {
     	}
     	return -1;
     }
-    
+
     public static Index remove(List<Index> indexs, String code){
     	for(Index index : indexs){
     		if(index.getCode().equals(code)){
@@ -562,7 +562,7 @@ public class IndexUtils implements StkConstant {
     	}
     	return null;
     }
-    
+
     public static String containAnyStksNameWrapByString(String text,String startString,String endString){
     	if(STKS_NAME_PATTERN == null){
     		List<String> stks = JdbcUtils.list("select name from stk_cn", String.class);
@@ -570,14 +570,14 @@ public class IndexUtils implements StkConstant {
     	}
     	return StkUtils.getMatchStringAndWrapByString(text, STKS_NAME_PATTERN, startString, endString);
     }
-    
+
     private static String PATTERN = "stk_search_pattern";
     private static String PATTERN_MAP = "stk_search_pattern_map";
-    
-    public static Set<String> extractCodeFromText(String text){   
+
+    public static Set<String> extractCodeFromText(String text){
     	String pattern = null;
     	Map<String,String> map = null;
-    	
+
     	Object p = CacheUtils.get(CacheUtils.KEY_ONE_DAY, PATTERN);
     	if(p == null){
     		map = new HashMap<String,String>();
@@ -600,7 +600,7 @@ public class IndexUtils implements StkConstant {
     		pattern = String.valueOf(p);
     		map = (Map<String,String>)CacheUtils.get(CacheUtils.KEY_ONE_DAY, PATTERN_MAP);
     	}
-    	
+
     	Set<String> listName = StkUtils.getMatchStrings(text,  pattern );
     	Set<String> codes = new HashSet<String>();
     	for(String name : listName){
@@ -610,7 +610,7 @@ public class IndexUtils implements StkConstant {
     	}
     	return codes;
     }
-    
+
     public static List<String> indexToCode(Collection<Index> indexs){
 		List<String> results = new ArrayList<String>();
 		for(Index index : indexs){
@@ -618,7 +618,7 @@ public class IndexUtils implements StkConstant {
 		}
 		return results;
 	}
-    
+
     public static List<Index> codeToIndex(Connection conn, Collection<String> codes){
 		List<Index> results = new ArrayList<Index>();
 		for(String code : codes){

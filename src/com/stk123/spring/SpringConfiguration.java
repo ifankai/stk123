@@ -135,7 +135,8 @@ public class SpringConfiguration {
     @Bean
     public ViewResolver viewResolver() {
         InternalResourceViewResolver resolver = new InternalResourceViewResolver();
-        resolver.setPrefix("/WEB-INF/views/");
+        //resolver.setPrefix("/WEB-INF/views/");
+        resolver.setPrefix("/views");
         resolver.setSuffix(".jsp");
         //resolver.setViewClass(JstlView.class);
         //resolver.setExposeContextBeansAsAttributes(true);
