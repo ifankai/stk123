@@ -24,6 +24,7 @@ import org.springframework.web.servlet.config.annotation.DefaultServletHandlerCo
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.springframework.web.servlet.view.JstlView;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -138,8 +139,8 @@ public class SpringConfiguration {
         //resolver.setPrefix("/WEB-INF/views/");
         resolver.setPrefix("/views");
         resolver.setSuffix(".jsp");
-        //resolver.setViewClass(JstlView.class);
-        //resolver.setExposeContextBeansAsAttributes(true);
+        resolver.setViewClass(JstlView.class);
+        resolver.setExposeContextBeansAsAttributes(true); //使得可以在JSP页面中通过${ }访问容器中的bean
         return resolver;
     }
 

@@ -22,12 +22,12 @@ function show(codes){
         url:'/k/show/'+codes,
         success: function (data) {
             if(data){
-                $.each(data, function(stk){
+                $.each(data, function(){
                     $('#k-table').append("<tr>" +
-                        "<td>" + stk.nameAndCodeLink + "</td>" +
-                        "<td><img class='lazy' src='' data-original='"+ stk.kDUrl +"'></td>" +
-                        "<td><img class='lazy' src='' data-original='"+ stk.kWUrl +"'></td>" +
-                        "<td><img class='lazy' src='' data-original='"+ stk.kMUrl +"'></td>" +
+                        "<td>" + this.nameAndCodeLink + "</td>" +
+                        "<td><img class='lazy' src='' data-original='"+ this.kDUrl +"'></td>" +
+                        "<td><img class='lazy' src='' data-original='"+ this.kWUrl +"'></td>" +
+                        "<td><img class='lazy' src='' data-original='"+ this.kMUrl +"'></td>" +
                         "</tr>");
                 });
                 $('#k-table img.lazy').lazyload();
