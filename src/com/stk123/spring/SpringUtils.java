@@ -7,8 +7,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AssignableTypeFilter;
+import org.springframework.util.ClassUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -34,7 +36,6 @@ public class SpringUtils {
             throws ClassNotFoundException {
         ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false);
         provider.addIncludeFilter(new AssignableTypeFilter(clazz));
-
         List<Class<T>> classes = new ArrayList<Class<T>>();
         Set<BeanDefinition> components = provider.findCandidateComponents(basePackageToScan);
         for (BeanDefinition component : components) {
@@ -42,5 +43,9 @@ public class SpringUtils {
             classes.add(cls);
         }
         return classes;
+    }
+
+    public static Set<Class<?>> getAllInterfaces(Class<?> clazz) {
+        return ClassUtils.getAllInterfacesForClassAsSet(clazz);
     }
 }

@@ -22,14 +22,23 @@ function show(codes){
         url:'/k/show/'+codes,
         success: function (data) {
             if(data){
-                $.each(data, function(){
+                /*$.each(data, function(){
                     $('#k-table').append("<tr>" +
                         "<td>" + this.nameAndCodeLink + "</td>" +
                         "<td><img class='lazy' src='' data-original='"+ this.kDUrl +"'></td>" +
                         "<td><img class='lazy' src='' data-original='"+ this.kWUrl +"'></td>" +
                         "<td><img class='lazy' src='' data-original='"+ this.kMUrl +"'></td>" +
                         "</tr>");
-                });
+                });*/
+                var tpl =
+                    "{{#.}}<tr>" +
+                    "<td>{{nameAndCodeLink}}</td>" +
+                    "<td><img class='lazy' src='' data-original='{{kDUrl}}'></td>" +
+                    "<td><img class='lazy' src='' data-original='{{kWUrl}}'></td>" +
+                    "<td><img class='lazy' src='' data-original='{{kMUrl}}'></td>" +
+                    "</tr>{{/.}}";
+                var html = Mustache.to_html(tpl, data);
+                $('#k-table').html(html);
                 $('#k-table img.lazy').lazyload();
             }else{
                 alert('出错！');
