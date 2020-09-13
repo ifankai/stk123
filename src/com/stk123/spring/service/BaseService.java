@@ -1,6 +1,7 @@
 package com.stk123.spring.service;
 
 import com.stk123.spring.dto.StkDto;
+import com.stk123.spring.utils.MyJpaResultTransformer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.SQLQuery;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import java.util.List;
 
 @Service
@@ -52,13 +54,30 @@ public class BaseService implements ApplicationContextAware {
         return (T) getRepository(entity.getClass()).save(entity);
     }
 
+    public <T> List<T> findAll(String sql, Object[] params, Class<T> dto) {
+        Query query = em.createNativeQuery(sql);
+        if(params!=null){
+            for(int i=0,len=params.length;i<len;i++){
+                Object param=params[i];
+                query.setParameter(i+1, param);
+            }
+        }
+        query.unwrap(SQLQuery.class).setResultTransformer(new MyJpaResultTransformer(dto));
+        return query.getResultList();
+    }
+
+    public <T> List<T> findAll(String sql, Class<T> dto) {
+        return findAll(sql, null, dto);
+    }
 
     /***** hibernate method start *****/
 
     public <T> List<T> list(String sql, Class<T> dto) {
         Session session = em.unwrap(Session.class);
         SQLQuery q = session.createSQLQuery(sql);
-        q.setResultTransformer(Transformers.aliasToBean(dto));
+        //q.setResultTransformer(Transformers.aliasToBean(dto));
+        //q.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+        q.setResultTransformer(new MyJpaResultTransformer(dto));
         return q.list();
     }
 
