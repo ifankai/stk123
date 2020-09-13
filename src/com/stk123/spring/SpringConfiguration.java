@@ -137,7 +137,7 @@ public class SpringConfiguration {
     public ViewResolver viewResolver() {
         InternalResourceViewResolver resolver = new InternalResourceViewResolver();
         //resolver.setPrefix("/WEB-INF/views/");
-        resolver.setPrefix("/views");
+        resolver.setPrefix("/views/");
         resolver.setSuffix(".jsp");
         resolver.setViewClass(JstlView.class);
         resolver.setExposeContextBeansAsAttributes(true); //使得可以在JSP页面中通过${ }访问容器中的bean
