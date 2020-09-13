@@ -1,9 +1,13 @@
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@include file="../common/import.jsp" %>
+<%@include file="/common/import.jsp" %>
+<%
+    StkContext sc = StkContext.getContext();
+    pageContext.setAttribute(StkConstant.PAGE_TITLE, "K线");
+%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-<%@include file="../common/header.jsp" %>
+<%@include file="/common/header.jsp" %>
 <style type="text/css">
 a {
   text-decoration: none;
@@ -24,13 +28,14 @@ a {
 }
 </style>
 <body>
-<%@include file="../common/nav.jsp" %>
+<%@include file="/common/nav.jsp" %>
 <script type="text/javascript">
 $(function(){
-    show('600600,000001');
-    $("#xq-my").click(function () {
-      xueqiu('我的');
-    })
+    //show('600600,000001');
+    $("#xq a").click(function () {
+      xueqiu($(this).data('tab'));
+    });
+
 });
 function xueqiu(name) {
   $.ajax({
@@ -83,7 +88,10 @@ function parse(data){
 <div class="content">
 	<div class="page-container">
         <div class="row">
-            <div class="well"><a id="xq-my" class="btn">雪球自选股(我的)</a></div>
+            <div class="well" id="xq">
+                <a data-tab="我的" class="btn">雪球自选股(我的)</a>
+                <a data-tab="关注C" class="btn">雪球自选股(关注C)</a>
+            </div>
         </div>
 		<div class="row">
             <table class="table table-bordered table-striped">
