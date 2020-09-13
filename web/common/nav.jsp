@@ -18,7 +18,7 @@
         <div id="results"></div>
       </div>
       <div class="nav-collapse navigation">
-<%if(_user != null){%>
+<%//if(_user != null){%>
         <ul class="nav" role="navigation">
           <li class="divider-vertical"></li>
           <li><a target="_blank" href="/article"><span class="icon-edit"></span> 文档编辑</a></li>
@@ -35,24 +35,24 @@
 			</div>
           </li>
         </ul>
-<%}else{out.println("&nbsp;");}%>
+<%//}else{out.println("&nbsp;");}%>
       </div> 
-<%if(_user != null){%>      
+<%//if(_user != null){%>
       <div class="nav-collapse user">
         <div class="user-info pull-right">
           <div class="btn-group">
             <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-              <div><strong><%=_user.getStkUser().getNickname() %></strong></div>
+              <div><strong><%=_user!=null?_user.getStkUser().getNickname():"" %></strong></div>
               <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
               <li><a href=""><span class="icon-cogs"></span> 个人资料</a></li>
-<%if(_user.getStkUser().getId()==1){ %>
+<%//if(_user.getStkUser().getId()==1){ %>
 			  <li><a target="_blank" href="/main"><span class="icon-book"></span> 每日指标</a></li>
 			  <li><a target="_blank" href="/search?q=%E4%B8%80%E5%B9%B4%E6%9C%9F"><span class="icon-book"></span> 一年期牛基</a></li>
 			  <li><a target="_blank" href="/search?q=%E6%88%90%E7%AB%8B%E4%BB%A5%E6%9D%A5%E7%89%9B%E5%9F%BA"><span class="icon-book"></span> 成立以来牛基</a></li>
 			  
-<%} %>              
+<%//} %>
 			  <li><a target="_blank" href="http://data.eastmoney.com/report/ylyc.html"><span class="icon-book"></span> 东方财富-盈利预测</a></li>
 			  <li><a target="_blank" href="http://data.eastmoney.com/bbsj/201506/yjyg.html"><span class="icon-book"></span> 东方财富-业绩预告</a></li>
 			  <li><a target="_blank" href="http://data.eastmoney.com/IF/Data/Contract.html"><span class="icon-book"></span> 东方财富-期指持仓</a></li>
@@ -72,7 +72,7 @@
           </div>
         </div>
       </div>
-<%}%>
+<%//}%>
     </div>
   </div>
 </header>

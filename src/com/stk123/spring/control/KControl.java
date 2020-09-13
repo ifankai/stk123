@@ -59,7 +59,7 @@ public class KControl {
     @RequestMapping("/show/{codes}")
     @ResponseBody
     public List<StkDto> show(@PathVariable("codes")String codes){
-        log.info("codes:"+codes);
+        //log.info("codes:"+codes);
         List<StkDto> list = new ArrayList<StkDto>();
         if(!StringUtils.isEmpty(codes)) {
             String[] cs = StringUtils.split(StringUtils.replace(codes," ", ""), ",");
