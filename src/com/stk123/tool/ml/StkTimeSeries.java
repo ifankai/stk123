@@ -1,3 +1,4 @@
+/*
 package com.stk123.tool.ml;
 
 import java.sql.Connection;
@@ -34,14 +35,16 @@ public class StkTimeSeries extends TimeSeries {
 			TimeSeries tsI = new StkTimeSeries(conn, "600516", "20170418", "20170522",colToInclude);
 			//TimeSeries tsI = new StkTimeSeries(conn, "300176", "20160330", "20170208",colToInclude);
 			//System.out.println(tsI);
-			/*TimeSeries tsJ = new StkTimeSeries(conn, "601229", "20170523", "20170712",null);
+			*/
+/*TimeSeries tsJ = new StkTimeSeries(conn, "601229", "20170523", "20170712",null);
 			
 			final DistanceFunction distFn = DistanceFunctionFactory.getDistFnByName("EuclideanDistance");
 			final TimeWarpInfo info = com.dtw.DTW.getWarpInfoBetween(tsI, tsJ, distFn);
 			
 			System.out.println("=====================");
 	        System.out.println("Warp Distance: " + info.getDistance());
-	        System.out.println("Warp Path:     " + info.getPath());*/
+	        System.out.println("Warp Path:     " + info.getPath());*//*
+
 	        
 	        String codes = "";
 	        String sql = null;
@@ -202,3 +205,4 @@ public class StkTimeSeries extends TimeSeries {
 
 	}
 }
+*/

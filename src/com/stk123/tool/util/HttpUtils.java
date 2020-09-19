@@ -1,6 +1,5 @@
 package com.stk123.tool.util;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -12,14 +11,11 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -38,26 +34,19 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpState;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.NTCredentials;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.SimpleHttpConnectionManager;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.stk123.task.StkUtils;
-import com.stk123.task.XueqiuUtils;
-import com.stk123.web.WebUtils;
-import com.sun.enterprise.util.FileUtil;
 import com.sun.net.ssl.HostnameVerifier;
-import com.sun.net.ssl.HttpsURLConnection;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -390,7 +379,7 @@ public class HttpUtils {
             	    String sException = ExceptionUtils.getException(exception);
             	    boolean hasSimilar = false;
             	    for(StkErrorLog error : errors){
-            	        if(StringSimilarUtil.getStringSimilarityRatio(sException, error.getError()) >= 0.95){
+            	        if(StringSimilarUtils.getSimilarRatio(sException, error.getError()) >= 0.95){
             	            hasSimilar = true;
             	            break;
                         }
@@ -697,7 +686,7 @@ public class HttpUtils {
 		}
 
 		for(int i = start;i <= end;i++){
-			String fileName = StringUtils.replace(StringUtils.substringAfterLast(ds, "/"), replace, StringUtils.leftPad(String.valueOf(i), 3, "0")+".ts"); // "3M91ZO6546"+StringUtils.leftPad(String.valueOf(i), 3, "0")+".ts";
+			String fileName = StringUtils.replace(StringUtils.substringAfterLast(ds, "/"), replace, StringUtils.leftPad(String.valueOf(i), 3, "0")+".ts"); 
 			final String url = StringUtils.substringBeforeLast(ds, "/")+ "/" + fileName;
 			//System.out.println(url);
 
