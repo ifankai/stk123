@@ -19,6 +19,7 @@ public class IndexService extends BaseService {
     @Transactional
     public List<StkDto> findStkByCode(List<String> codes) {
         Assert.assertNotNull(codes);
+        //String sql = "select code, name from Stk where code in ('"+ StringUtils.join(codes,"','")+"')";
 
         List<String> sqlList = new ArrayList<String>();
         for(String code : codes){

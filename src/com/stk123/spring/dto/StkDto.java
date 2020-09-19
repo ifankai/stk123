@@ -8,7 +8,6 @@ import org.codehaus.jackson.annotate.JsonProperty;
 @Getter
 public class StkDto {
 
-    @org.hibernate.annotations.ColumnTransformer
     private String code;
     private String name;
     private String nameAndCodeLink;

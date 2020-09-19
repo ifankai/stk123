@@ -1,23 +1,21 @@
 package com.stk123.tool.util.collection;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
-import org.apache.commons.lang.StringUtils;
+import com.stk123.tool.util.StringSimilarUtils;
+import lombok.Getter;
+import lombok.Setter;
 
-import com.stk123.tool.ik.IKUtils;
-
-
-public class SimilarSet<E> extends HashSet<String> {
+@Setter
+@Getter
+public class SimilarSet<E> extends LinkedHashSet<String> {
 	
-	private static double similarRate = 0.7;
+	private double similarRate = 0.7;
 	private List similarList = new ArrayList();
-	
-	public void HashSet(double similarRate){
+
+	public SimilarSet(){}
+
+	public SimilarSet(double similarRate){
 		this.similarRate = similarRate;
 	}
 	
@@ -34,7 +32,7 @@ public class SimilarSet<E> extends HashSet<String> {
 		while(it.hasNext()){
 			String s = (String)it.next();
 			try {
-				if(this.similar(str.toString(), s) >= similarRate){
+				if(StringSimilarUtils.getSimilarRateByIKAnalyzer(str.toString(), s) >= similarRate){
 					return true;
 				}
 			} catch (Exception e) {
@@ -56,24 +54,7 @@ public class SimilarSet<E> extends HashSet<String> {
 		System.out.println(ss);
 	}
 	
-	public double similar(String o1, String o2) throws Exception{
-		List<String> chs1 = IKUtils.split(o1.toString());
-		List<String> chs2 = IKUtils.split(o2.toString());
-		List<String> min = chs1;
-		List<String> max = chs2;
-		if(chs1.size() > chs2.size()){
-			min = chs2;
-			max = chs1;
-		}
-		double match = 0;
-		for(String str : min){
-			if(max.contains(str)){
-				match ++;
-			}
-		}
-		//System.out.println("similar rate="+(match/min.size()));
-		return match/min.size();
-	}
+
 	
 	public void addSimilar(String s){
 		this.similarList.add(s);
