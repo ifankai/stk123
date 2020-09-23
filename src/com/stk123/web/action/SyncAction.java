@@ -2,7 +2,6 @@ package com.stk123.web.action;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,7 +91,7 @@ public class SyncAction {
 				return;
 			}
 		}catch(Exception e){
-			ac.setResponse("{code:0, message:'"+ExceptionUtils.getException(e)+"'}");
+			ac.setResponse("{code:0, message:'"+ExceptionUtils.getExceptionAsString(e)+"'}");
 		}
 	}
 	

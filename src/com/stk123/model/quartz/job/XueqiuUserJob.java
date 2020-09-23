@@ -2,11 +2,9 @@ package com.stk123.model.quartz.job;
 
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -31,7 +29,7 @@ public class XueqiuUserJob implements Job {
 			initUser("5819606767");//DAVID自由之路
 			initUser("3386153330");//刘志超
 		} catch (Exception e) {
-			EmailUtils.send("XueqiuUser Error", ExceptionUtils.getException(e));
+			EmailUtils.send("XueqiuUser Error", ExceptionUtils.getExceptionAsString(e));
 		}
 
 	}
@@ -74,7 +72,7 @@ public class XueqiuUserJob implements Job {
 					}
 				}catch(Exception e){
 					e.printStackTrace();
-					//EmailUtils.send("XueqiuUser Error", ExceptionUtils.getException(e));
+					//EmailUtils.send("XueqiuUser Error", ExceptionUtils.getExceptionAsString(e));
 					Thread.currentThread().sleep(1000*60);
 				}
 			}while(true);

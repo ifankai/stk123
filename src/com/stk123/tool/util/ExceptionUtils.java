@@ -13,9 +13,29 @@ import java.util.List;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class ExceptionUtils {
 
+    public final static String ERROR_CODE_999998 = "999998";
+    public final static String ERROR_CODE_999997 = "999997";
+
 	public static void insertLog(Connection conn, Exception e){
 		ExceptionUtils.insertLog(conn,"999999", e);
 	}
+
+	public static boolean insertLogWithSimilarCheck(Connection conn, String specialCode, Exception e) {
+        List<StkErrorLog> errors = ExceptionUtils.queryErrors(conn, specialCode);
+        String sException = ExceptionUtils.getExceptionAsString(e);
+        boolean hasSimilar = false;
+        for(StkErrorLog error : errors){
+            if(StringSimilarUtils.getSimilarRatio(sException, error.getError()) >= 0.95){
+                hasSimilar = true;
+                break;
+            }
+        }
+        if(!hasSimilar) {
+            ExceptionUtils.insertLog(conn, specialCode, e);
+            return true;
+        }
+        return false;
+    }
 
 	public static void insertLog(Connection conn, String code, Exception e){
 		List params = new ArrayList();
@@ -33,7 +53,7 @@ public class ExceptionUtils {
 		return new Exception(msg +"\r"+ aWriter.getBuffer().toString());
 	}
 
-	public static String getException(Throwable e){
+	public static String getExceptionAsString(Throwable e){
 		StringWriter aWriter = new StringWriter();
 		e.printStackTrace(new PrintWriter(aWriter));
 		return aWriter.getBuffer().toString();

@@ -55,7 +55,7 @@ public class XueqiuUserLongArticleJob implements Job {
 				try{
 					//initUsers();
 				}catch(Exception e){
-					EmailUtils.send("XueqiuUserLongArticleJob initUsers Error", ExceptionUtils.getException(e));
+					EmailUtils.send("XueqiuUserLongArticleJob initUsers Error", ExceptionUtils.getExceptionAsString(e));
 				}
 			}
 			System.out.println("MEMBERS.size="+MEMBERS.size());
@@ -108,7 +108,7 @@ public class XueqiuUserLongArticleJob implements Job {
 			}*/
 			
 		} catch (Exception e) {
-			EmailUtils.send("XueqiuUserLongArticleJob Error", ExceptionUtils.getException(e));
+			EmailUtils.send("XueqiuUserLongArticleJob Error", ExceptionUtils.getExceptionAsString(e));
 		}
 	}
 	
