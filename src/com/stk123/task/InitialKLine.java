@@ -724,8 +724,8 @@ public class InitialKLine {
 			List<String> pe3 = new ArrayList<String>();
 			pe3.add("全市场");pe3.add(String.valueOf(totalPE));pe3.add(String.valueOf(midPE));pe3.add(String.valueOf(totalPB));pe3.add(String.valueOf(midPB));pe3.add("");
 			pe.add(pe3);
-			EmailUtils.sendAndReport("成长股平均PE："+context.averagePE+",PB："+context.averagePB+
-					"；市场整体PE："+totalPE+",中位PE："+midPE+",整体PB："+totalPB+",中位PB："+midPB+",日期:"+today, 
+			EmailUtils.sendAndReport("平均PE:"+totalPE+",中位PE:"+midPE+",整体PB:"+totalPB+",中位PB:"+midPB+
+							";成长股平均PE:"+context.averagePE+",PB:"+context.averagePB+",日期:"+today,
 					StkUtils.createHtmlTable(null, pe) + "<br>" + peAndpeg + htmlMsg);
 			
 			System.out.println("更新非公开发行，员工持股价格溢价率");

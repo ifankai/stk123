@@ -1,6 +1,10 @@
 package com.stk123.tool.util;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.regex.Pattern;
 
 //https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?stockid=600600&id=6578044
 public class StrUtils {
@@ -21,11 +25,11 @@ public class StrUtils {
                 "第四节 经营情况的讨论与分析 ...... 7\n" +
                 "\n" +
                 "第五节 重要事项 ...... 12";
-        System.out.println(indexOfStringWithKeywordAfter(s,"目录", 10, "第一节"));
+        System.out.println(indexOfStringWithKeywordAfter(s,"目录", 10, "第(一|二)节"));
     }
 
     /**
-     * 查找searchStr，并且找到的searchStr后面n个位置内必须包含任一containStrs
+     * 查找searchStr，并且在找到的searchStr后面n个位置内必须包含任一containStrs
      */
     public static int indexOfStringWithKeywordAfter(String str, String searchStr, int n, String... containStrs) {
         int length = StringUtils.length(searchStr);
@@ -36,12 +40,25 @@ public class StrUtils {
             if(pos == -1) return pos;
 
             String afterStr = StringUtils.substring(str, pos+length, pos+length+n);
-            if(StringUtils.containsAny(afterStr, containStrs)) {
+            if(StrUtils.containsAny(afterStr, containStrs)) {
                 return pos;
             }else{
                 pos = pos + length;
             }
         }while(true);
+    }
+
+
+    public static boolean containsAny(String source, String... regexContainStrs) {
+        if (StringUtils.isEmpty(source) || ArrayUtils.isEmpty(regexContainStrs)) {
+            return false;
+        }
+        for (final String cs : regexContainStrs) {
+            if (Pattern.compile(cs, Pattern.CASE_INSENSITIVE).matcher(source).find()) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
