@@ -374,9 +374,9 @@ public class HttpUtils {
                 Connection conn = null;
             	try {
             	    conn = DBUtil.getConnection();
-            	    List<StkErrorLog> errors = ExceptionUtils.queryErrors(conn, "999998");
+            	    List<StkErrorLog> errors = ExceptionUtils.queryErrors(conn, ExceptionUtils.ERROR_CODE_999998);
             	    Exception exception = new Exception("url_" + response + ":" + url);
-            	    String sException = ExceptionUtils.getException(exception);
+            	    String sException = ExceptionUtils.getExceptionAsString(exception);
             	    boolean hasSimilar = false;
             	    for(StkErrorLog error : errors){
             	        if(StringSimilarUtils.getSimilarRatio(sException, error.getError()) >= 0.95){
@@ -385,7 +385,7 @@ public class HttpUtils {
                         }
                     }
                     if(!hasSimilar)
-                        ExceptionUtils.insertLog(conn, "999998", exception);
+                        ExceptionUtils.insertLog(conn, ExceptionUtils.ERROR_CODE_999998, exception);
                 }finally {
                     CloseUtil.close(conn);
                 }

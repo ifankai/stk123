@@ -26,7 +26,7 @@ public class ResearchReportJob implements Job {
 			getReportByType("1",Text.SUB_TYPE_COMPANY_RESEARCH);
 			getReportByType("2",Text.SUB_TYPE_INDUSTRY_RESEARCH);
 		} catch (Exception e) {
-			EmailUtils.send("ResearchReportJob Error", ExceptionUtils.getException(e));
+			EmailUtils.send("ResearchReportJob Error", ExceptionUtils.getExceptionAsString(e));
 		}
 	}
 

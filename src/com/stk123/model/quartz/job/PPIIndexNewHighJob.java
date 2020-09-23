@@ -24,7 +24,7 @@ public class PPIIndexNewHighJob implements Job {
 		try {
 			run();
 		} catch (Exception e) {
-			EmailUtils.send("PPIIndexNewHighJob Error", ExceptionUtils.getException(e));
+			EmailUtils.send("PPIIndexNewHighJob Error", ExceptionUtils.getExceptionAsString(e));
 		}
 	}
 	

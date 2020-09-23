@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.stk123.tool.util.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hwpf.usermodel.Table;
@@ -24,14 +25,6 @@ import com.stk123.bo.Stk;
 import com.stk123.bo.StkInvestigation;
 import com.stk123.model.Index;
 import com.stk123.tool.db.util.DBUtil;
-import com.stk123.tool.util.ConfigUtils;
-import com.stk123.tool.util.EmailUtils;
-import com.stk123.tool.util.FileType;
-import com.stk123.tool.util.HtmlUtils;
-import com.stk123.tool.util.HttpUtils;
-import com.stk123.tool.util.JdbcUtils;
-import com.stk123.tool.util.JsonUtils;
-import com.stk123.tool.util.WordUtils;
 
 public class InvestRobot {
 
@@ -69,7 +62,7 @@ public class InvestRobot {
 			//for(Stk stk : stks){
 				//System.out.println(stk.getCode());
 				//Index index =  new Index(conn,stk.getCode(),stk.getName());
-				List<Map> news = parse3();
+				List<Map> news = parse3(conn);
 				for(Map map : news){
 					List params = new ArrayList();
 					params.add(map.get("code"));
@@ -109,7 +102,7 @@ public class InvestRobot {
 	 * 投资者关系 PDF
 	 * http://irm.cninfo.com.cn
 	 */
-	public static List<Map> parse3() throws Exception {
+	public static List<Map> parse3(Connection conn) throws Exception {
 		List<Map> list = new ArrayList<Map>();
 		String page = HttpUtils.post("http://irm.cninfo.com.cn/ircs/index/search", "pageNo=1&pageSize=50&searchTypes=4%2C&market=&industry=&stockCode=", "utf-8");
 		ObjectMapper mapper = new ObjectMapper();
@@ -121,7 +114,13 @@ public class InvestRobot {
 				String title = result.getMainContent();
 				String investDate = StkUtils.formatDate(new Date(Long.parseLong(result.getPubDate())));
 				System.out.println(code+", "+title+", "+downloadUrl);
-				Map map = download(code, "http://static.cninfo.com.cn/"+downloadUrl, title, investDate);
+                Map map = null;
+				try {
+                    map = download(code, "http://static.cninfo.com.cn/" + downloadUrl, title, investDate);
+                }catch (Exception e){
+                    ExceptionUtils.insertLogWithSimilarCheck(conn, ExceptionUtils.ERROR_CODE_999997, e);
+                    continue;
+                }
 				list.add(map);
 			}
 		}

@@ -45,7 +45,7 @@ public class BaiduNewsSearchJob implements Job {
 				}
 				Thread.sleep(1000*2);
 			} catch (Exception e) {
-				EmailUtils.send("BaiduNewsSearchJob Error", ExceptionUtils.getException(e));
+				EmailUtils.send("BaiduNewsSearchJob Error", ExceptionUtils.getExceptionAsString(e));
 			}
 		}
 	}

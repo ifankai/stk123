@@ -115,14 +115,14 @@ public class InitialKLine {
 					String url = "http://www.csindex.com.cn/sseportal/ps/zhs/hqjt/csi/Csi300Perf.xls";
 					HttpUtils.download(url,null, ConfigUtils.getProp("initial_csi300")/*"d:\\share\\download\\"*/, "Csi300Perf_"+StkUtils.getToday()+".xls");
 				}catch(Exception e){
-					EmailUtils.send("Initial A Stock K Line Error", ExceptionUtils.getException(e));
+					EmailUtils.send("Initial A Stock K Line Error", ExceptionUtils.getExceptionAsString(e));
 				}
 				
 				//------------- HK --------------//
 				try{
 					initHKStock(conn);
 				}catch(Exception e){
-					EmailUtils.send("Initial HK Stock K Line Error", ExceptionUtils.getException(e));
+					EmailUtils.send("Initial HK Stock K Line Error", ExceptionUtils.getExceptionAsString(e));
 				}
 				
 				//sync to www.stk123.cn
@@ -134,7 +134,7 @@ public class InitialKLine {
 					Index.KLineWhereClause = Index.KLINE_20140101;
 					initUStock(conn);
 				}catch(Exception e){
-					EmailUtils.send("Initial US Stock K Line Error", ExceptionUtils.getException(e));
+					EmailUtils.send("Initial US Stock K Line Error", ExceptionUtils.getExceptionAsString(e));
 				}
 			}
 			//monitor task
@@ -740,7 +740,7 @@ public class InitialKLine {
 		}catch(Exception e){
 			e.printStackTrace();
 			ExceptionUtils.insertLog(conn, e);
-			logger.error(ExceptionUtils.getException(e));
+			logger.error(ExceptionUtils.getExceptionAsString(e));
 			EmailUtils.send("Initial A Stock K Line Error - InitialKLine", e);
 		}
 	}
