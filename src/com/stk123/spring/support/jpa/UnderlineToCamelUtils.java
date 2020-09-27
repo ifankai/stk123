@@ -1,4 +1,4 @@
-package com.stk123.spring.utils;
+package com.stk123.spring.support.jpa;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
