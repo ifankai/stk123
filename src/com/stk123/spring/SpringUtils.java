@@ -26,8 +26,12 @@ public class SpringUtils {
         return SpringUtils.getApplicationContext().getBean(clazz);
     }
 
+    public static <T> T getBean(String name){
+        return (T) SpringUtils.getApplicationContext().getBean(name);
+    }
+
     public static void main(String[] args) {
-        //SpringThreadPoolUtils utils = context.getBean(SpringThreadPoolUtils.class);
+        //SpringThreadPoolUtils support = context.getBean(SpringThreadPoolUtils.class);
         System.out.println(ThreadPoolService.getTaskExecutor().getMaxPoolSize());
         IndustryService industryService = SpringUtils.getBean(IndustryService.class);
     }
