@@ -17,7 +17,7 @@ public class CheckCashRevenueRatio extends AbstractCheck {
     }
 
     @Override
-    public ResultTrueOrFalse execute(String code) throws Exception {
+    public Result execute(String code) throws Exception {
         Connection conn = null;
         try {
             conn = ds.getConnection();

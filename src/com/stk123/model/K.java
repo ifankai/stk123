@@ -1,10 +1,12 @@
 package com.stk123.model;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.stk123.bo.StkKline;
@@ -133,6 +135,10 @@ public class K implements Serializable, Cloneable {
 		}else{
 			throw new Exception("type not support!");
 		}
+	}
+
+	public double getValue(String field) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+		return Double.parseDouble(BeanUtils.getProperty(this, field));
 	}
 	
 	/**

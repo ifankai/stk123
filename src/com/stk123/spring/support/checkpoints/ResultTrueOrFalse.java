@@ -8,8 +8,13 @@ public class ResultTrueOrFalse implements Result {
     private final static CheckResult CHECKRESULT_FALSE = new CheckResult("");
 
     private CheckResult cr;
+    private String message;
 
     public ResultTrueOrFalse(boolean passed){
+        cr = passed ? CHECKRESULT_TRUE : CHECKRESULT_FALSE;
+    }
+
+    public ResultTrueOrFalse(boolean passed, String message){
         cr = passed ? CHECKRESULT_TRUE : CHECKRESULT_FALSE;
     }
 
