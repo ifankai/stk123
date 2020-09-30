@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class CheckService {
 
-    public CheckResult check(String code, String beanName) {
+    public CheckResult check(String code, String beanName) throws Exception {
         Check check = SpringUtils.getBean(beanName);
         return check.execute(code).getCheckResult();
     }

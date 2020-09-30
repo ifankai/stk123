@@ -33,7 +33,7 @@ public class CheckControl {
 
     @RequestMapping("/{code}/{checkpoint}")
     @ResponseBody
-    public CheckResult check(@PathVariable("code")String code, @PathVariable("checkpoint")String beanName) {
+    public CheckResult check(@PathVariable("code")String code, @PathVariable("checkpoint")String beanName) throws Exception {
         return checkService.check(code, beanName);
     }
 }
