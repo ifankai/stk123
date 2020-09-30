@@ -73,26 +73,32 @@ if __name__ == '__main__':
     s1 = np.array([1, 2, 0, 1, 1, 2, 0, 1, 1, 2, 0, 1, 1, 2, 0, 1])
     s2 = np.array([0, 1, 1, 2, 0, 1, 1, 2, 0, 1, 1, 2, 0, 1, 1, 2])
     s3 = np.array([0.8, 1.5, 0, 1.2, 0, 0, 0.6, 1, 1.2, 0, 0, 1, 0.2, 2.4, 0.5, 0.4])
+    s4 = np.array([1, 2, 0, 1, 1, 2, 0, 1, 1, 2, 0, 1, 1, 2, 0, 1]) #np.array([2, 3, 1, 2, 2, 3, 1, 2, 2, 3, 1, 2, 2, 3, 1, 2])
 
     # 原始算法
     distance12, paths12 = TimeSeriesSimilarity(s1, s2)
     distance13, paths13 = TimeSeriesSimilarity(s1, s3)
+    distance14, paths14 = TimeSeriesSimilarity(s1, s4)
 
     print("更新前s1和s2距离：" + str(distance12))
     print("更新前s1和s3距离：" + str(distance13))
 
     best_path12 = best_path(paths12)
     best_path13 = best_path(paths13)
+    best_path14 = best_path(paths14)
 
     # 衰减系数
     com_ls1 = get_common_seq(best_path12)
     com_ls2 = get_common_seq(best_path13)
+    com_ls3 = get_common_seq(best_path14)
 
     # print(len(best_path12), com_ls1)
     # print(len(best_path13), com_ls2)
     weight12 = calculate_attenuate_weight(len(best_path12), com_ls1)
     weight13 = calculate_attenuate_weight(len(best_path13), com_ls2)
+    weight14 = calculate_attenuate_weight(len(best_path14), com_ls3)
 
     # 更新距离
     print("更新后s1和s2距离：" + str(distance12 * weight12))
     print("更新后s1和s3距离：" + str(distance13 * weight13))
+    print("更新后s1和s4距离：" + str(distance14 * weight14))
