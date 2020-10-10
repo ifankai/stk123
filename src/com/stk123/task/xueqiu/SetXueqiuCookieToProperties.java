@@ -23,11 +23,16 @@ public class SetXueqiuCookieToProperties {
 	public static void main(String[] args) {
 		String cookie = StkUtils.getSysClipboardText();
 		String[] cookies = StringUtils.split(cookie, "\n");
-		System.out.println("new cookie:"+cookies[cookies.length-1]);
+		String sCookie = cookies[cookies.length-1];
+		if(StringUtils.containsIgnoreCase(sCookie, "xueqiu.com")) {
+            System.out.println("new cookie:" + sCookie);
 
-		readValue("xueqiu.cookie");
-		updateProperties("xueqiu.cookie", cookies[cookies.length-1]);       
-	    System.out.println("操作完成");
+            readValue("xueqiu.cookie");
+            updateProperties("xueqiu.cookie", sCookie);
+            System.out.println("操作完成");
+        }else{
+            System.out.println("操作出错");
+        }
 	}
 	
 	public static String readValue(String key) {
