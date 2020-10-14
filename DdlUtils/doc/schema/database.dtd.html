@@ -1,0 +1,584 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html><head>
+<meta http-equiv='CONTENT-TYPE' content='text/html; charset=UTF-8' />
+<link rel='StyleSheet' href='DTDDocStyle.css' type='text/css' media='screen' />
+<title>Torque/DdlUtils XML database schema DTD</title>
+</head><body>
+<p class='DTDSource'><b><code>database.dtd</code></b>: <a href='database.dtd.html'>Elements</a> - Entities - <a href='database.dtd.org.html'>Source</a> | <a href='intro.html'>Intro</a> - <a href='elementsIndex.html'>Index</a><br /><a href='index.html' target='_top'>FRAMES</a>&nbsp;/&nbsp;<a href='database.dtd.html' target='_top'>NO FRAMES</a></p><h1>Torque/DdlUtils XML database schema DTD</h1>
+<p>Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements. See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership. The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License. You may obtain a copy of the License at</p><p>http://www.apache.org/licenses/LICENSE-2.0</p><p>Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied. See the License for the
+specific language governing permissions and limitations
+under the License.</p><br />
+<a name='database'></a>
+<br /><table class='elementTitle' summary="database"><tr><td class='leftElementTitle'>
+&lt;database&gt;</td><td class='rightElementTitle'>
+Root element
+</td></tr></table>
+<p>This defines the schema for a database. More precisely, it contains a number of DML elements that
+define the schema, such as tables, foreign key relationships, indexes and so forth.<br>
+<b>Note: DdlUtils only uses the <code>name</code> attribute. All other attributes are Torque-specific.</b></p><blockquote><table summary='element info'><tr>
+<td class='construct'><table summary="&lt;database&gt;'s children">
+<thead>
+<tr><th class='title' colspan='2'>&lt;database&gt;'s children</th></tr>
+<tr><th colspan='2' height='1' class='ruler'></th></tr>
+<tr><th class='subtitle'>Name</th><th class='subtitle'>Cardinality</th></tr>
+<tr><th colspan='2' height='1' class='ruler'></th></tr>
+</thead>
+<tbody><tr><td><a href='#external-schema'>external-schema</a></td><td>Any number</td></tr>
+<tr><td><a href='#table'>table</a></td><td>At least one</td></tr>
+</tbody></table></td><td class='construct'><table  summary="&lt;database&gt;'s attributes"><tr>
+<th class='title' colspan='3'>&lt;database&gt;'s attributes</th>
+</tr>
+<tr><th colspan='3' height='1' class='ruler'></th></tr>
+<tr>
+<th class='subtitle'>Name</th><th class='subtitle'>Values</th><th class='subtitle'>Default</th></tr>
+<tr><th colspan='3' height='1' class='ruler'></th></tr>
+<tr><td><a href='#database_baseClass'>baseClass</a></td><td></td><td></td></tr><tr><td><a href='#database_basePeer'>basePeer</a></td><td></td><td></td></tr><tr><td><a href='#database_defaultIdMethod'>defaultIdMethod</a></td><td>idbroker, native, autoincrement, sequence, none</td><td>none</td></tr><tr><td><a href='#database_defaultJavaNamingMethod'>defaultJavaNamingMethod</a></td><td>nochange, underscore, javaname</td><td>underscore</td></tr><tr><td><a href='#database_defaultJavaType'>defaultJavaType</a></td><td>object, primitive</td><td>primitive</td></tr><tr><td><a href='#database_heavyIndexing'>heavyIndexing</a></td><td>true, false</td><td>false</td></tr><tr><td><a href='#database_name'>name</a></td><td></td><td></td></tr><tr><td><a href='#database_package'>package</a></td><td></td><td></td></tr></table></td></tr></table></blockquote>
+<span class='inTextTitle'>Element's model:</span><p class='model'>(<a href='#external-schema'>external-schema</a>*, <a href='#table'>table</a>+)</p><a name='database_name'></a>
+<br /><table class='attributeTitle' summary="name"><tr><td class='leftAttributeTitle'>
+@name</td><td class='rightAttributeTitle'>
+Attribute of <a href='#database'>database</a>
+</td></tr></table>
+<p> The name of the database.</p><a name='database_defaultIdMethod'></a>
+<br /><table class='attributeTitle' summary="defaultIdMethod"><tr><td class='leftAttributeTitle'>
+@defaultIdMethod</td><td class='rightAttributeTitle'>
+Attribute of <a href='#database'>database</a>
+</td></tr></table>
+<p> Defines how values for identity columns are generated.
+Do not use autoincrement or sequence. They are deprecated in favor of
+using native which will use the Turbine Connection pool to determine
+which database it is talking to (yes, it knows that) and then use
+whatever native database methodology for insert increments that it can.
+Otherwise, you should use idbroker or none. none is good if you have a
+table that is just a join table. idbroker is good if you want a
+centralized repository for brokering out clumps of id's in a database
+agnostic way.
+<br><b>Note: This attribute is ignored by DdlUtils.</b></p><p><span class='inTextTitle'>Possible values</span>: idbroker, native, autoincrement, sequence, none - <span class='inTextTitle'>Default value</span>: none</p><a name='database_defaultJavaType'></a>
+<br /><table class='attributeTitle' summary="defaultJavaType"><tr><td class='leftAttributeTitle'>
+@defaultJavaType</td><td class='rightAttributeTitle'>
+Attribute of <a href='#database'>database</a>
+</td></tr></table>
+<p> Whether jdbc types are mapped to primitive types such as <code>int</code>
+(if possible) by default, or to reference types such as
+<code>java.lang.Integer</code>.
+<br><b>Note: This attribute is ignored by DdlUtils.</b></p><p><span class='inTextTitle'>Possible values</span>: object, primitive - <span class='inTextTitle'>Default value</span>: primitive</p><a name='database_package'></a>
+<br /><table class='attributeTitle' summary="package"><tr><td class='leftAttributeTitle'>
+@package</td><td class='rightAttributeTitle'>
+Attribute of <a href='#database'>database</a>
+</td></tr></table>
+<p> The package of the Java classes generated from this schema.
+<br><b>Note: This attribute is ignored by DdlUtils.</b></p><a name='database_baseClass'></a>
+<br /><table class='attributeTitle' summary="baseClass"><tr><td class='leftAttributeTitle'>
+@baseClass</td><td class='rightAttributeTitle'>
+Attribute of <a href='#database'>database</a>
+</td></tr></table>
+<p> The base class for the Java classes generated from this schema.
+<br><b>Note: This attribute is ignored by DdlUtils.</b></p><a name='database_basePeer'></a>
+<br /><table class='attributeTitle' summary="basePeer"><tr><td class='leftAttributeTitle'>
+@basePeer</td><td class='rightAttributeTitle'>
+Attribute of <a href='#database'>database</a>
+</td></tr></table>
+<p> Sorry, no documentation available.
+<br><b>Note: This attribute is ignored by DdlUtils.</b></p><a name='database_defaultJavaNamingMethod'></a>
+<br /><table class='attributeTitle' summary="defaultJavaNamingMethod"><tr><td class='leftAttributeTitle'>
+@defaultJavaNamingMethod</td><td class='rightAttributeTitle'>
+Attribute of <a href='#database'>database</a>
+</td></tr></table>
+<p>Determines how a table or column name is converted
+from the name attribute in the xml database file to a Java class or method name:
+<dl>
+<dt>nochange</dt><dd>Indicates not change is performed.</dd>
+<dt>underscore</dt><dd>Underscores are removed, First letter is capitalized, first
+letter after an underscore is capitalized, the rest of the letters are converted to
+lowercase.</dd>
+<dt>javaname</dt><dd>Same as underscore, but no letters are converted to lowercase.</dd>
+</dl>
+<br><b>Note: This attribute is ignored by DdlUtils.</b></p><p><span class='inTextTitle'>Possible values</span>: nochange, underscore, javaname - <span class='inTextTitle'>Default value</span>: underscore</p><a name='database_heavyIndexing'></a>
+<br /><table class='attributeTitle' summary="heavyIndexing"><tr><td class='leftAttributeTitle'>
+@heavyIndexing</td><td class='rightAttributeTitle'>
+Attribute of <a href='#database'>database</a>
+</td></tr></table>
+<p> Sorry, no documentation available.
+<br><b>Note: This attribute is ignored by DdlUtils.</b></p><p><span class='inTextTitle'>Possible values</span>: true, false - <span class='inTextTitle'>Default value</span>: false</p><a name='external-schema'></a>
+<br /><table class='elementTitle' summary="external-schema"><tr><td class='leftElementTitle'>
+&lt;external-schema/&gt;</td><td class='rightElementTitle'>
+Child of <a href='#database'>database</a>
+</td></tr></table>
+<p>Sorry, no documentation available
+<br><b>Note: DdlUtils currently ignores this element.</b></p><blockquote>
+<table  summary="&lt;external-schema&gt;'s attributes"><tr>
+<th class='title' colspan='3'>&lt;external-schema&gt;'s attributes</th>
+</tr>
+<tr><th colspan='3' height='1' class='ruler'></th></tr>
+<tr>
+<th class='subtitle'>Name</th><th class='subtitle'>Values</th><th class='subtitle'>Default</th></tr>
+<tr><th colspan='3' height='1' class='ruler'></th></tr>
+<tr><td><a href='#external-schema_filename'>filename</a></td><td></td><td></td></tr></table></blockquote>
+<p class='emptyTagNote'>This element is always empty.</p><a name='external-schema_filename'></a>
+<br /><table class='attributeTitle' summary="filename"><tr><td class='leftAttributeTitle'>
+@filename</td><td class='rightAttributeTitle'>
+Attribute of <a href='#external-schema'>external-schema</a>
+</td></tr></table>
+<p>Sorry, no documentation available.
+<br><b>Note: This attribute is ignored by DdlUtils.</b></p><p><span class='inTextTitle'>Required</span></p><a name='table'></a>
+<br /><table class='elementTitle' summary="table"><tr><td class='leftElementTitle'>
+&lt;table&gt;</td><td class='rightElementTitle'>
+Child of <a href='#database'>database</a>
+</td></tr></table>
+<p>Defines a table in the database schema.</p><blockquote><table summary='element info'><tr>
+<td class='construct'><table summary="&lt;table&gt;'s children">
+<thead>
+<tr><th class='title' colspan='2'>&lt;table&gt;'s children</th></tr>
+<tr><th colspan='2' height='1' class='ruler'></th></tr>
+<tr><th class='subtitle'>Name</th><th class='subtitle'>Cardinality</th></tr>
+<tr><th colspan='2' height='1' class='ruler'></th></tr>
+</thead>
+<tbody><tr><td><a href='#column'>column</a></td><td>At least one</td></tr>
+<tr><td><a href='#foreign-key'>foreign-key</a></td><td>Any number</td></tr>
+<tr><td><a href='#id-method-parameter'>id-method-parameter</a></td><td>Any number</td></tr>
+<tr><td><a href='#index'>index</a></td><td>Any number</td></tr>
+<tr><td><a href='#unique'>unique</a></td><td>Any number</td></tr>
+</tbody></table></td><td class='construct'><table  summary="&lt;table&gt;'s attributes"><tr>
+<th class='title' colspan='3'>&lt;table&gt;'s attributes</th>
+</tr>
+<tr><th colspan='3' height='1' class='ruler'></th></tr>
+<tr>
+<th class='subtitle'>Name</th><th class='subtitle'>Values</th><th class='subtitle'>Default</th></tr>
+<tr><th colspan='3' height='1' class='ruler'></th></tr>
+<tr><td><a href='#table_abstract'>abstract</a></td><td>true, false</td><td>false</td></tr><tr><td><a href='#table_alias'>alias</a></td><td></td><td></td></tr><tr><td><a href='#table_baseClass'>baseClass</a></td><td></td><td></td></tr><tr><td><a href='#table_basePeer'>basePeer</a></td><td></td><td></td></tr><tr><td><a href='#table_description'>description</a></td><td></td><td></td></tr><tr><td><a href='#table_heavyIndexing'>heavyIndexing</a></td><td>true, false</td><td></td></tr><tr><td><a href='#table_idMethod'>idMethod</a></td><td>idbroker, native, autoincrement, sequence, none, null</td><td>null</td></tr><tr><td><a href='#table_interface'>interface</a></td><td></td><td></td></tr><tr><td><a href='#table_javaName'>javaName</a></td><td></td><td></td></tr><tr><td><a href='#table_javaNamingMethod'>javaNamingMethod</a></td><td>nochange, underscore, javaname</td><td></td></tr><tr><td><a href='#table_name'>name</a></td><td></td><td></td></tr><tr><td><a href='#table_skipSql'>skipSql</a></td><td>true, false</td><td>false</td></tr></table></td></tr></table></blockquote>
+<span class='inTextTitle'>Element's model:</span><p class='model'>(<a href='#column'>column</a>+, (<a href='#foreign-key'>foreign-key</a> | <a href='#index'>index</a> | <a href='#unique'>unique</a> | <a href='#id-method-parameter'>id-method-parameter</a>)*)</p><a name='table_name'></a>
+<br /><table class='attributeTitle' summary="name"><tr><td class='leftAttributeTitle'>
+@name</td><td class='rightAttributeTitle'>
+Attribute of <a href='#table'>table</a>
+</td></tr></table>
+<p> The name of this table.</p><p><span class='inTextTitle'>Required</span></p><a name='table_javaName'></a>
+<br /><table class='attributeTitle' summary="javaName"><tr><td class='leftAttributeTitle'>
+@javaName</td><td class='rightAttributeTitle'>
+Attribute of <a href='#table'>table</a>
+</td></tr></table>
+<p> The name of the Java class generated from this table.
+<br><b>Note: This attribute is ignored by DdlUtils.</b></p><a name='table_idMethod'></a>
+<br /><table class='attributeTitle' summary="idMethod"><tr><td class='leftAttributeTitle'>
+@idMethod</td><td class='rightAttributeTitle'>
+Attribute of <a href='#table'>table</a>
+</td></tr></table>
+<p> Defines how values for identity columns are generated. See
+<code>database.defaultIdMethod</code> for more info.
+<br><b>Note: This attribute is ignored by DdlUtils.</b></p><p><span class='inTextTitle'>Possible values</span>: idbroker, native, autoincrement, sequence, none, null - <span class='inTextTitle'>Default value</span>: null</p><a name='table_skipSql'></a>
+<br /><table class='attributeTitle' summary="skipSql"><tr><td class='leftAttributeTitle'>
+@skipSql</td><td class='rightAttributeTitle'>
+Attribute of <a href='#table'>table</a>
+</td></tr></table>
+<p> Sorry, no documentation available.
+<br><b>Note: This attribute is ignored by DdlUtils.</b></p><p><span class='inTextTitle'>Possible values</span>: true, false - <span class='inTextTitle'>Default value</span>: false</p><a name='table_abstract'></a>
+<br /><table class='attributeTitle' summary="abstract"><tr><td class='leftAttributeTitle'>
+@abstract</td><td class='rightAttributeTitle'>
+Attribute of <a href='#table'>table</a>
+</td></tr></table>
+<p> Whether the class generated from this table is abstract.
+<br><b>Note: This attribute is ignored by DdlUtils.</b></p><p><span class='inTextTitle'>Possible values</span>: true, false - <span class='inTextTitle'>Default value</span>: false</p><a name='table_baseClass'></a>
+<br /><table class='attributeTitle' summary="baseClass"><tr><td class='leftAttributeTitle'>
+@baseClass</td><td class='rightAttributeTitle'>
+Attribute of <a href='#table'>table</a>
+</td></tr></table>
+<p> Base class for the java class generated from this table.
+<br><b>Note: This attribute is ignored by DdlUtils.</b></p><a name='table_basePeer'></a>
+<br /><table class='attributeTitle' summary="basePeer"><tr><td class='leftAttributeTitle'>
+@basePeer</td><td class='rightAttributeTitle'>
+Attribute of <a href='#table'>table</a>
+</td></tr></table>
+<p> Sorry, no documentation available.
+<br><b>Note: This attribute is ignored by DdlUtils.</b></p><a name='table_alias'></a>
+<br /><table class='attributeTitle' summary="alias"><tr><td class='leftAttributeTitle'>
+@alias</td><td class='rightAttributeTitle'>
+Attribute of <a href='#table'>table</a>
+</td></tr></table>
+<p> Sorry, no documentation available.
+<br><b>Note: This attribute is ignored by DdlUtils.</b></p><a name='table_interface'></a>
+<br /><table class='attributeTitle' summary="interface"><tr><td class='leftAttributeTitle'>
+@interface</td><td class='rightAttributeTitle'>
+Attribute of <a href='#table'>table</a>
+</td></tr></table>
+<p> Sorry, no documentation available.
+<br><b>Note: This attribute is ignored by DdlUtils.</b></p><a name='table_javaNamingMethod'></a>
+<br /><table class='attributeTitle' summary="javaNamingMethod"><tr><td class='leftAttributeTitle'>
+@javaNamingMethod</td><td class='rightAttributeTitle'>
+Attribute of <a href='#table'>table</a>
+</td></tr></table>
+<p>How the name of the corresponding java class is generated. See
+<code>database.defaultJavaNamingMethod</code> for more info. Use
+<code>nochange</code> if the default naming method shall be used.
+<br><b>Note: This attribute is ignored by DdlUtils.</b></p><p><span class='inTextTitle'>Possible values</span>: nochange, underscore, javaname</p><a name='table_heavyIndexing'></a>
+<br /><table class='attributeTitle' summary="heavyIndexing"><tr><td class='leftAttributeTitle'>
+@heavyIndexing</td><td class='rightAttributeTitle'>
+Attribute of <a href='#table'>table</a>
+</td></tr></table>
+<p> Sorry, no documentation available.
+<br><b>Note: This attribute is ignored by DdlUtils.</b></p><p><span class='inTextTitle'>Possible values</span>: true, false</p><a name='table_description'></a>
+<br /><table class='attributeTitle' summary="description"><tr><td class='leftAttributeTitle'>
+@description</td><td class='rightAttributeTitle'>
+Attribute of <a href='#table'>table</a>
+</td></tr></table>
+<p> Description of the table.</p><a name='id-method-parameter'></a>
+<br /><table class='elementTitle' summary="id-method-parameter"><tr><td class='leftElementTitle'>
+&lt;id-method-parameter/&gt;</td><td class='rightElementTitle'>
+Child of <a href='#table'>table</a>
+</td></tr></table>
+<p>Sorry, no documentation available
+<br><b>Note: DdlUtils currently ignores this element.</b></p><blockquote>
+<table  summary="&lt;id-method-parameter&gt;'s attributes"><tr>
+<th class='title' colspan='3'>&lt;id-method-parameter&gt;'s attributes</th>
+</tr>
+<tr><th colspan='3' height='1' class='ruler'></th></tr>
+<tr>
+<th class='subtitle'>Name</th><th class='subtitle'>Values</th><th class='subtitle'>Default</th></tr>
+<tr><th colspan='3' height='1' class='ruler'></th></tr>
+<tr><td><a href='#id-method-parameter_name'>name</a></td><td></td><td>default</td></tr><tr><td><a href='#id-method-parameter_value'>value</a></td><td></td><td></td></tr></table></blockquote>
+<p class='emptyTagNote'>This element is always empty.</p><a name='id-method-parameter_name'></a>
+<br /><table class='attributeTitle' summary="name"><tr><td class='leftAttributeTitle'>
+@name</td><td class='rightAttributeTitle'>
+Attribute of <a href='#id-method-parameter'>id-method-parameter</a>
+</td></tr></table>
+<p> Sorry, no documentation available.
+<br><b>Note: This attribute is ignored by DdlUtils.</b></p><p><span class='inTextTitle'>Default value</span>: default</p><a name='id-method-parameter_value'></a>
+<br /><table class='attributeTitle' summary="value"><tr><td class='leftAttributeTitle'>
+@value</td><td class='rightAttributeTitle'>
+Attribute of <a href='#id-method-parameter'>id-method-parameter</a>
+</td></tr></table>
+<p>Sorry, no documentation available.
+<br><b>Note: This attribute is ignored by DdlUtils.</b></p><p><span class='inTextTitle'>Required</span></p><a name='column'></a>
+<br /><table class='elementTitle' summary="column"><tr><td class='leftElementTitle'>
+&lt;column&gt;</td><td class='rightElementTitle'>
+Child of <a href='#table'>table</a>
+</td></tr></table>
+<p>Defines a column in a table.</p><blockquote><table summary='element info'><tr>
+<td class='construct'><table summary="&lt;column&gt;'s children">
+<thead>
+<tr><th class='title' colspan='2'>&lt;column&gt;'s children</th></tr>
+<tr><th colspan='2' height='1' class='ruler'></th></tr>
+<tr><th class='subtitle'>Name</th><th class='subtitle'>Cardinality</th></tr>
+<tr><th colspan='2' height='1' class='ruler'></th></tr>
+</thead>
+<tbody><tr><td><a href='#inheritance'>inheritance</a></td><td>Any number</td></tr>
+</tbody></table></td><td class='construct'><table  summary="&lt;column&gt;'s attributes"><tr>
+<th class='title' colspan='3'>&lt;column&gt;'s attributes</th>
+</tr>
+<tr><th colspan='3' height='1' class='ruler'></th></tr>
+<tr>
+<th class='subtitle'>Name</th><th class='subtitle'>Values</th><th class='subtitle'>Default</th></tr>
+<tr><th colspan='3' height='1' class='ruler'></th></tr>
+<tr><td><a href='#column_autoIncrement'>autoIncrement</a></td><td>true, false</td><td>false</td></tr><tr><td><a href='#column_default'>default</a></td><td></td><td></td></tr><tr><td><a href='#column_description'>description</a></td><td></td><td></td></tr><tr><td><a href='#column_inheritance'>inheritance</a></td><td>single, false</td><td>false</td></tr><tr><td><a href='#column_inputValidator'>inputValidator</a></td><td></td><td></td></tr><tr><td><a href='#column_javaName'>javaName</a></td><td></td><td></td></tr><tr><td><a href='#column_javaNamingMethod'>javaNamingMethod</a></td><td>nochange, underscore, javaname</td><td></td></tr><tr><td><a href='#column_javaType'>javaType</a></td><td>object, primitive</td><td></td></tr><tr><td><a href='#column_name'>name</a></td><td></td><td></td></tr><tr><td><a href='#column_primaryKey'>primaryKey</a></td><td>true, false</td><td>false</td></tr><tr><td><a href='#column_required'>required</a></td><td>true, false</td><td>false</td></tr><tr><td><a href='#column_size'>size</a></td><td></td><td></td></tr><tr><td><a href='#column_type'>type</a></td><td>BIT, TINYINT, SMALLINT, INTEGER, BIGINT, FLOAT, REAL, NUMERIC, DECIMAL, CHAR, VARCHAR, LONGVARCHAR, DATE, TIME, TIMESTAMP, BINARY, VARBINARY, LONGVARBINARY, NULL, OTHER, JAVA_OBJECT, DISTINCT, STRUCT, ARRAY, BLOB, CLOB, REF, BOOLEANINT, BOOLEANCHAR, DOUBLE</td><td>VARCHAR</td></tr></table></td></tr></table></blockquote>
+<span class='inTextTitle'>Element's model:</span><p class='model'>(<a href='#inheritance'>inheritance</a>*)</p><a name='column_name'></a>
+<br /><table class='attributeTitle' summary="name"><tr><td class='leftAttributeTitle'>
+@name</td><td class='rightAttributeTitle'>
+Attribute of <a href='#column'>column</a>
+</td></tr></table>
+<p> The name of this column.</p><p><span class='inTextTitle'>Required</span></p><a name='column_javaName'></a>
+<br /><table class='attributeTitle' summary="javaName"><tr><td class='leftAttributeTitle'>
+@javaName</td><td class='rightAttributeTitle'>
+Attribute of <a href='#column'>column</a>
+</td></tr></table>
+<p> The name of the Java field generated from this column.
+<br><b>Note: This attribute is ignored by DdlUtils.</b></p><a name='column_primaryKey'></a>
+<br /><table class='attributeTitle' summary="primaryKey"><tr><td class='leftAttributeTitle'>
+@primaryKey</td><td class='rightAttributeTitle'>
+Attribute of <a href='#column'>column</a>
+</td></tr></table>
+<p> Whether this is a primary key column.</p><p><span class='inTextTitle'>Possible values</span>: true, false - <span class='inTextTitle'>Default value</span>: false</p><a name='column_required'></a>
+<br /><table class='attributeTitle' summary="required"><tr><td class='leftAttributeTitle'>
+@required</td><td class='rightAttributeTitle'>
+Attribute of <a href='#column'>column</a>
+</td></tr></table>
+<p> Whether this is a required column, i.e. a column that is not
+allowed to contain <code>NULL</code> values. Note that primary
+key columns are <b>not</b> automatically required.</p><p><span class='inTextTitle'>Possible values</span>: true, false - <span class='inTextTitle'>Default value</span>: false</p><a name='column_type'></a>
+<br /><table class='attributeTitle' summary="type"><tr><td class='leftAttributeTitle'>
+@type</td><td class='rightAttributeTitle'>
+Attribute of <a href='#column'>column</a>
+</td></tr></table>
+<p> The JDBC type of the column. This will be automatically translated
+to a type native to the database.</p><p><span class='inTextTitle'>Possible values</span>: BIT, TINYINT, SMALLINT, INTEGER, BIGINT, FLOAT, REAL, NUMERIC, DECIMAL, CHAR, VARCHAR, LONGVARCHAR, DATE, TIME, TIMESTAMP, BINARY, VARBINARY, LONGVARBINARY, NULL, OTHER, JAVA_OBJECT, DISTINCT, STRUCT, ARRAY, BLOB, CLOB, REF, BOOLEANINT, BOOLEANCHAR, DOUBLE - <span class='inTextTitle'>Default value</span>: VARCHAR</p><a name='column_javaType'></a>
+<br /><table class='attributeTitle' summary="javaType"><tr><td class='leftAttributeTitle'>
+@javaType</td><td class='rightAttributeTitle'>
+Attribute of <a href='#column'>column</a>
+</td></tr></table>
+<p> Whether the jdbc type is mapped to a primitive type such as
+<code>int</code> (if possible), or to a reference type such as
+<code>java.lang.Integer</code>.
+<br><b>Note: This attribute is ignored by DdlUtils.</b></p><p><span class='inTextTitle'>Possible values</span>: object, primitive</p><a name='column_size'></a>
+<br /><table class='attributeTitle' summary="size"><tr><td class='leftAttributeTitle'>
+@size</td><td class='rightAttributeTitle'>
+Attribute of <a href='#column'>column</a>
+</td></tr></table>
+<p> The JDBC size specification of the column. This is type specific.
+For types that have a length (such as VARCHAR), specify a single
+number specifying this length. For types that have precision and
+scale (such as NUMERIC), specify a pair of values "precision,scale".</p><a name='column_default'></a>
+<br /><table class='attributeTitle' summary="default"><tr><td class='leftAttributeTitle'>
+@default</td><td class='rightAttributeTitle'>
+Attribute of <a href='#column'>column</a>
+</td></tr></table>
+<p> The default value of the column if any. Do not specify this attribute
+unless the column shall have a default value as an empty attribute
+value will be passed as an empty string (not <code>NULL</code>) to
+the database. This value is passed as is to the database, though you
+don't need to quote it for e.g. string values.</p><a name='column_autoIncrement'></a>
+<br /><table class='attributeTitle' summary="autoIncrement"><tr><td class='leftAttributeTitle'>
+@autoIncrement</td><td class='rightAttributeTitle'>
+Attribute of <a href='#column'>column</a>
+</td></tr></table>
+<p> Whether this column is an identity column, i.e. it's value is
+automatically defined by the database.</p><p><span class='inTextTitle'>Possible values</span>: true, false - <span class='inTextTitle'>Default value</span>: false</p><a name='column_inheritance'></a>
+<br /><table class='attributeTitle' summary="inheritance"><tr><td class='leftAttributeTitle'>
+@inheritance</td><td class='rightAttributeTitle'>
+Attribute of <a href='#column'>column</a>
+</td></tr></table>
+<p> Sorry, no documentation available.
+<br><b>Note: This attribute is ignored by DdlUtils.</b></p><p><span class='inTextTitle'>Possible values</span>: single, false - <span class='inTextTitle'>Default value</span>: false</p><a name='column_inputValidator'></a>
+<br /><table class='attributeTitle' summary="inputValidator"><tr><td class='leftAttributeTitle'>
+@inputValidator</td><td class='rightAttributeTitle'>
+Attribute of <a href='#column'>column</a>
+</td></tr></table>
+<p> Sorry, no documentation available.
+<br><b>Note: This attribute is ignored by DdlUtils.</b></p><a name='column_javaNamingMethod'></a>
+<br /><table class='attributeTitle' summary="javaNamingMethod"><tr><td class='leftAttributeTitle'>
+@javaNamingMethod</td><td class='rightAttributeTitle'>
+Attribute of <a href='#column'>column</a>
+</td></tr></table>
+<p>How the name of the corresponding java field is generated. See
+<code>database.defaultJavaNamingMethod</code> for more info. Use
+<code>nochange</code> if the default naming method shall be used.
+<br><b>Note: This attribute is ignored by DdlUtils.</b></p><p><span class='inTextTitle'>Possible values</span>: nochange, underscore, javaname</p><a name='column_description'></a>
+<br /><table class='attributeTitle' summary="description"><tr><td class='leftAttributeTitle'>
+@description</td><td class='rightAttributeTitle'>
+Attribute of <a href='#column'>column</a>
+</td></tr></table>
+<p> Description of the column.</p><a name='inheritance'></a>
+<br /><table class='elementTitle' summary="inheritance"><tr><td class='leftElementTitle'>
+&lt;inheritance/&gt;</td><td class='rightElementTitle'>
+Child of <a href='#column'>column</a>
+</td></tr></table>
+<p>Sorry, no documentation available
+<br><b>Note: DdlUtils currently ignores this element.</b></p><blockquote>
+<table  summary="&lt;inheritance&gt;'s attributes"><tr>
+<th class='title' colspan='3'>&lt;inheritance&gt;'s attributes</th>
+</tr>
+<tr><th colspan='3' height='1' class='ruler'></th></tr>
+<tr>
+<th class='subtitle'>Name</th><th class='subtitle'>Values</th><th class='subtitle'>Default</th></tr>
+<tr><th colspan='3' height='1' class='ruler'></th></tr>
+<tr><td><a href='#inheritance_class'>class</a></td><td></td><td></td></tr><tr><td><a href='#inheritance_extends'>extends</a></td><td></td><td></td></tr><tr><td><a href='#inheritance_key'>key</a></td><td></td><td></td></tr></table></blockquote>
+<p class='emptyTagNote'>This element is always empty.</p><a name='inheritance_key'></a>
+<br /><table class='attributeTitle' summary="key"><tr><td class='leftAttributeTitle'>
+@key</td><td class='rightAttributeTitle'>
+Attribute of <a href='#inheritance'>inheritance</a>
+</td></tr></table>
+<p> Sorry, no documentation available.
+<br><b>Note: This attribute is ignored by DdlUtils.</b></p><p><span class='inTextTitle'>Required</span></p><a name='inheritance_class'></a>
+<br /><table class='attributeTitle' summary="class"><tr><td class='leftAttributeTitle'>
+@class</td><td class='rightAttributeTitle'>
+Attribute of <a href='#inheritance'>inheritance</a>
+</td></tr></table>
+<p> Sorry, no documentation available.
+<br><b>Note: This attribute is ignored by DdlUtils.</b></p><p><span class='inTextTitle'>Required</span></p><a name='inheritance_extends'></a>
+<br /><table class='attributeTitle' summary="extends"><tr><td class='leftAttributeTitle'>
+@extends</td><td class='rightAttributeTitle'>
+Attribute of <a href='#inheritance'>inheritance</a>
+</td></tr></table>
+<p>Sorry, no documentation available.
+<br><b>Note: This attribute is ignored by DdlUtils.</b></p><a name='foreign-key'></a>
+<br /><table class='elementTitle' summary="foreign-key"><tr><td class='leftElementTitle'>
+&lt;foreign-key&gt;</td><td class='rightElementTitle'>
+Child of <a href='#table'>table</a>
+</td></tr></table>
+<p>Defines a foreign key relation from the table this element is defined in,
+to another table.</p><blockquote><table summary='element info'><tr>
+<td class='construct'><table summary="&lt;foreign-key&gt;'s children">
+<thead>
+<tr><th class='title' colspan='2'>&lt;foreign-key&gt;'s children</th></tr>
+<tr><th colspan='2' height='1' class='ruler'></th></tr>
+<tr><th class='subtitle'>Name</th><th class='subtitle'>Cardinality</th></tr>
+<tr><th colspan='2' height='1' class='ruler'></th></tr>
+</thead>
+<tbody><tr><td><a href='#reference'>reference</a></td><td>At least one</td></tr>
+</tbody></table></td><td class='construct'><table  summary="&lt;foreign-key&gt;'s attributes"><tr>
+<th class='title' colspan='3'>&lt;foreign-key&gt;'s attributes</th>
+</tr>
+<tr><th colspan='3' height='1' class='ruler'></th></tr>
+<tr>
+<th class='subtitle'>Name</th><th class='subtitle'>Values</th><th class='subtitle'>Default</th></tr>
+<tr><th colspan='3' height='1' class='ruler'></th></tr>
+<tr><td><a href='#foreign-key_foreignTable'>foreignTable</a></td><td></td><td></td></tr><tr><td><a href='#foreign-key_name'>name</a></td><td></td><td></td></tr><tr><td><a href='#foreign-key_onDelete'>onDelete</a></td><td>cascade, setnull, restrict, none</td><td>none</td></tr><tr><td><a href='#foreign-key_onUpdate'>onUpdate</a></td><td>cascade, setnull, restrict, none</td><td>none</td></tr></table></td></tr></table></blockquote>
+<span class='inTextTitle'>Element's model:</span><p class='model'>(<a href='#reference'>reference</a>+)</p><a name='foreign-key_foreignTable'></a>
+<br /><table class='attributeTitle' summary="foreignTable"><tr><td class='leftAttributeTitle'>
+@foreignTable</td><td class='rightAttributeTitle'>
+Attribute of <a href='#foreign-key'>foreign-key</a>
+</td></tr></table>
+<p>The name of the foreign table</p><p><span class='inTextTitle'>Required</span></p><a name='foreign-key_name'></a>
+<br /><table class='attributeTitle' summary="name"><tr><td class='leftAttributeTitle'>
+@name</td><td class='rightAttributeTitle'>
+Attribute of <a href='#foreign-key'>foreign-key</a>
+</td></tr></table>
+<p> The name of this foreign key. Even though you can leave it empty,
+we suggest that you always supply a meaningful name for foreign keys.</p><a name='foreign-key_onUpdate'></a>
+<br /><table class='attributeTitle' summary="onUpdate"><tr><td class='leftAttributeTitle'>
+@onUpdate</td><td class='rightAttributeTitle'>
+Attribute of <a href='#foreign-key'>foreign-key</a>
+</td></tr></table>
+<p> Specifies the action to perform when the value in the referenced column
+in the foreign table is changed:
+<dl>
+<dt>cascade</dt><dd>Change the value of the local column accordingly.</dd>
+<dt>setnull</dt><dd>Set the local column to <code>NULL</code> which
+effectively removes this specific foreign key relationship.</dd>
+<dt>restrict</dt><dd>Different databases may interpret this value
+differently, but usually it is synonymous with <code>none</code>.</dd>
+<dt>none</dt><dd>The value of the local column remains unchanged.</dd>
+<br><b>Note: This attribute is currently ignored by DdlUtils.</b></p><p><span class='inTextTitle'>Possible values</span>: cascade, setnull, restrict, none - <span class='inTextTitle'>Default value</span>: none</p><a name='foreign-key_onDelete'></a>
+<br /><table class='attributeTitle' summary="onDelete"><tr><td class='leftAttributeTitle'>
+@onDelete</td><td class='rightAttributeTitle'>
+Attribute of <a href='#foreign-key'>foreign-key</a>
+</td></tr></table>
+<p> Specifies the action to perform when the referenced row in the foreign
+table is deleted:
+<dl>
+<dt>cascade</dt><dd>Delete the local row.</dd>
+<dt>setnull</dt><dd>Set the local column to <code>NULL</code> which
+effectively removes this specific foreign key relationship.</dd>
+<dt>restrict</dt><dd>Different databases may interpret this value
+differently, but usually it is synonymous with <code>none</code>.</dd>
+<dt>none</dt><dd>The value of the local column remains unchanged.</dd>
+<br><b>Note: This attribute is currently ignored by DdlUtils.</b></p><p><span class='inTextTitle'>Possible values</span>: cascade, setnull, restrict, none - <span class='inTextTitle'>Default value</span>: none</p><a name='reference'></a>
+<br /><table class='elementTitle' summary="reference"><tr><td class='leftElementTitle'>
+&lt;reference/&gt;</td><td class='rightElementTitle'>
+Child of <a href='#foreign-key'>foreign-key</a>
+</td></tr></table>
+<p>A foreign key is specified by one or more references which put a column in the current table
+and a column in the foreign table into relation.</p><blockquote>
+<table  summary="&lt;reference&gt;'s attributes"><tr>
+<th class='title' colspan='3'>&lt;reference&gt;'s attributes</th>
+</tr>
+<tr><th colspan='3' height='1' class='ruler'></th></tr>
+<tr>
+<th class='subtitle'>Name</th><th class='subtitle'>Values</th><th class='subtitle'>Default</th></tr>
+<tr><th colspan='3' height='1' class='ruler'></th></tr>
+<tr><td><a href='#reference_foreign'>foreign</a></td><td></td><td></td></tr><tr><td><a href='#reference_local'>local</a></td><td></td><td></td></tr></table></blockquote>
+<p class='emptyTagNote'>This element is always empty.</p><a name='reference_local'></a>
+<br /><table class='attributeTitle' summary="local"><tr><td class='leftAttributeTitle'>
+@local</td><td class='rightAttributeTitle'>
+Attribute of <a href='#reference'>reference</a>
+</td></tr></table>
+<p> The name of the column in the current table</p><p><span class='inTextTitle'>Required</span></p><a name='reference_foreign'></a>
+<br /><table class='attributeTitle' summary="foreign"><tr><td class='leftAttributeTitle'>
+@foreign</td><td class='rightAttributeTitle'>
+Attribute of <a href='#reference'>reference</a>
+</td></tr></table>
+<p>The name of the column in the foreign table</p><p><span class='inTextTitle'>Required</span></p><a name='index'></a>
+<br /><table class='elementTitle' summary="index"><tr><td class='leftElementTitle'>
+&lt;index&gt;</td><td class='rightElementTitle'>
+Child of <a href='#table'>table</a>
+</td></tr></table>
+<p>Defines a non-unique index for the current table.</p><blockquote><table summary='element info'><tr>
+<td class='construct'><table summary="&lt;index&gt;'s children">
+<thead>
+<tr><th class='title' colspan='2'>&lt;index&gt;'s children</th></tr>
+<tr><th colspan='2' height='1' class='ruler'></th></tr>
+<tr><th class='subtitle'>Name</th><th class='subtitle'>Cardinality</th></tr>
+<tr><th colspan='2' height='1' class='ruler'></th></tr>
+</thead>
+<tbody><tr><td><a href='#index-column'>index-column</a></td><td>At least one</td></tr>
+</tbody></table></td><td class='construct'><table  summary="&lt;index&gt;'s attributes"><tr>
+<th class='title' colspan='3'>&lt;index&gt;'s attributes</th>
+</tr>
+<tr><th colspan='3' height='1' class='ruler'></th></tr>
+<tr>
+<th class='subtitle'>Name</th><th class='subtitle'>Values</th><th class='subtitle'>Default</th></tr>
+<tr><th colspan='3' height='1' class='ruler'></th></tr>
+<tr><td><a href='#index_name'>name</a></td><td></td><td></td></tr></table></td></tr></table></blockquote>
+<span class='inTextTitle'>Element's model:</span><p class='model'>(<a href='#index-column'>index-column</a>+)</p><a name='index_name'></a>
+<br /><table class='attributeTitle' summary="name"><tr><td class='leftAttributeTitle'>
+@name</td><td class='rightAttributeTitle'>
+Attribute of <a href='#index'>index</a>
+</td></tr></table>
+<p>The name of this index. Even though you can leave it empty, we suggest that
+you always supply a meaningful name for foreign keys.</p><a name='index-column'></a>
+<br /><table class='elementTitle' summary="index-column"><tr><td class='leftElementTitle'>
+&lt;index-column/&gt;</td><td class='rightElementTitle'>
+Child of <a href='#index'>index</a>
+</td></tr></table>
+<p>An index is defined for one or more columns of a table, which are specified by this element.</p><blockquote>
+<table  summary="&lt;index-column&gt;'s attributes"><tr>
+<th class='title' colspan='3'>&lt;index-column&gt;'s attributes</th>
+</tr>
+<tr><th colspan='3' height='1' class='ruler'></th></tr>
+<tr>
+<th class='subtitle'>Name</th><th class='subtitle'>Values</th><th class='subtitle'>Default</th></tr>
+<tr><th colspan='3' height='1' class='ruler'></th></tr>
+<tr><td><a href='#index-column_name'>name</a></td><td></td><td></td></tr><tr><td><a href='#index-column_size'>size</a></td><td></td><td></td></tr></table></blockquote>
+<p class='emptyTagNote'>This element is always empty.</p><a name='index-column_name'></a>
+<br /><table class='attributeTitle' summary="name"><tr><td class='leftAttributeTitle'>
+@name</td><td class='rightAttributeTitle'>
+Attribute of <a href='#index-column'>index-column</a>
+</td></tr></table>
+<p>The name of the column in the current table.</p><p><span class='inTextTitle'>Required</span></p><a name='index-column_size'></a>
+<br /><table class='attributeTitle' summary="size"><tr><td class='leftAttributeTitle'>
+@size</td><td class='rightAttributeTitle'>
+Attribute of <a href='#index-column'>index-column</a>
+</td></tr></table>
+<p>The size of the column within the index.
+<br><b>Note: This attribute is currently ignored by DdlUtils.</b></p><a name='unique'></a>
+<br /><table class='elementTitle' summary="unique"><tr><td class='leftElementTitle'>
+&lt;unique&gt;</td><td class='rightElementTitle'>
+Child of <a href='#table'>table</a>
+</td></tr></table>
+<p>Defines an unique index for the current table.</p><blockquote><table summary='element info'><tr>
+<td class='construct'><table summary="&lt;unique&gt;'s children">
+<thead>
+<tr><th class='title' colspan='2'>&lt;unique&gt;'s children</th></tr>
+<tr><th colspan='2' height='1' class='ruler'></th></tr>
+<tr><th class='subtitle'>Name</th><th class='subtitle'>Cardinality</th></tr>
+<tr><th colspan='2' height='1' class='ruler'></th></tr>
+</thead>
+<tbody><tr><td><a href='#unique-column'>unique-column</a></td><td>At least one</td></tr>
+</tbody></table></td><td class='construct'><table  summary="&lt;unique&gt;'s attributes"><tr>
+<th class='title' colspan='3'>&lt;unique&gt;'s attributes</th>
+</tr>
+<tr><th colspan='3' height='1' class='ruler'></th></tr>
+<tr>
+<th class='subtitle'>Name</th><th class='subtitle'>Values</th><th class='subtitle'>Default</th></tr>
+<tr><th colspan='3' height='1' class='ruler'></th></tr>
+<tr><td><a href='#unique_name'>name</a></td><td></td><td></td></tr></table></td></tr></table></blockquote>
+<span class='inTextTitle'>Element's model:</span><p class='model'>(<a href='#unique-column'>unique-column</a>+)</p><a name='unique_name'></a>
+<br /><table class='attributeTitle' summary="name"><tr><td class='leftAttributeTitle'>
+@name</td><td class='rightAttributeTitle'>
+Attribute of <a href='#unique'>unique</a>
+</td></tr></table>
+<p>The name of this index. Even though you can leave it empty, we suggest that
+you always supply a meaningful name for foreign keys.</p><a name='unique-column'></a>
+<br /><table class='elementTitle' summary="unique-column"><tr><td class='leftElementTitle'>
+&lt;unique-column/&gt;</td><td class='rightElementTitle'>
+Child of <a href='#unique'>unique</a>
+</td></tr></table>
+<p>An unique index is defined for one or more columns of a table, which are specified by this element.</p><blockquote>
+<table  summary="&lt;unique-column&gt;'s attributes"><tr>
+<th class='title' colspan='3'>&lt;unique-column&gt;'s attributes</th>
+</tr>
+<tr><th colspan='3' height='1' class='ruler'></th></tr>
+<tr>
+<th class='subtitle'>Name</th><th class='subtitle'>Values</th><th class='subtitle'>Default</th></tr>
+<tr><th colspan='3' height='1' class='ruler'></th></tr>
+<tr><td><a href='#unique-column_name'>name</a></td><td></td><td></td></tr></table></blockquote>
+<p class='emptyTagNote'>This element is always empty.</p><a name='unique-column_name'></a>
+<br /><table class='attributeTitle' summary="name"><tr><td class='leftAttributeTitle'>
+@name</td><td class='rightAttributeTitle'>
+Attribute of <a href='#unique-column'>unique-column</a>
+</td></tr></table>
+<p>The name of the column in the current table.</p><p><span class='inTextTitle'>Required</span></p></body></html>
