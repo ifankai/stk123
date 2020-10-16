@@ -1,0 +1,9 @@
+com\stk\web\UserController.class
+com\stk\StkMobileApplication.class
+com\stk\web\HelloController.class
+com\stk\model\User.class
+com\stk\config\WebConfig.class
+com\stk\web\ThymeleafController.class
+com\stk\util\NeoProperties.class
+com\stk\repository\UserRepository.class
+com\stk\config\WebConfig$MyFilter.class
