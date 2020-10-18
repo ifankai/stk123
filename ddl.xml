@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE database SYSTEM "http://db.apache.org/torque/dtd/database">
+  <database name="TWP4T1">
+    <table name="ADMLOCAL">
+      <column name="ADLCD" primaryKey="true" required="true" type="VARCHAR" size="10" autoIncrement="false"/>
+      <column name="ADLEDESC" primaryKey="false" required="false" type="VARCHAR" size="1024" autoIncrement="false"/>
+      <column name="ADLLDESC" primaryKey="false" required="false" type="VARCHAR" size="1024" autoIncrement="false"/>
+      <column name="ADLTYPE" primaryKey="false" required="false" type="VARCHAR" size="4" autoIncrement="false"/>
+      <column name="ADLCRE" primaryKey="false" required="true" type="TIMESTAMP" size="7" autoIncrement="false"/>
+      <column name="ADLCREUSR" primaryKey="false" required="false" type="VARCHAR" size="48" autoIncrement="false"/>
+      <column name="ADLUPD" primaryKey="false" required="true" type="TIMESTAMP" size="7" autoIncrement="false"/>
+      <column name="ADLUSR" primaryKey="false" required="false" type="VARCHAR" size="48" autoIncrement="false"/>
+      <unique name="ADMLOCAL_UK1">
+        <unique-column name="ADLCD"/>
+        <unique-column name="ADLEDESC"/>
+      </unique>
+    </table>
+  </database>

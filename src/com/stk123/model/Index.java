@@ -189,17 +189,17 @@ public class Index {
 		this.loc = loc;
 	}
 	
+	public Index(Connection conn, String code, String name) {
+		this(conn, code);
+		this.name = name;
+	}
+
 	public static int getLocation(String code){
 		if(code.startsWith(StkConstant.NUMBER_SIX) || code.startsWith("99")){
 			return Index.SH;
 		}else{
 			return Index.SZ;
 		}
-	}
-	
-	public Index(Connection conn, String code, String name) {
-		this(conn, code);
-		this.name = name;
 	}
 	
 	public String getLocationAsString(){

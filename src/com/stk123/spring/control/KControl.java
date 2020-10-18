@@ -2,6 +2,7 @@ package com.stk123.spring.control;
 
 import com.alibaba.fastjson.parser.TypeUtils;
 import com.stk123.model.Index;
+import com.stk123.model.K;
 import com.stk123.spring.dto.StkDto;
 import com.stk123.spring.jpa.entity.StkIndustryTypeEntity;
 import com.stk123.spring.service.IndexService;
@@ -15,13 +16,18 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.*;
 
 @Controller
@@ -39,6 +45,9 @@ public class KControl {
 
     @Autowired
     private ApplicationContext applicationContext;
+
+    @Autowired
+    protected DataSource ds;
 
     @RequestMapping("")
     public String index(HttpServletRequest request){
@@ -87,6 +96,41 @@ public class KControl {
     public List<StkDto> xueqiu(@PathVariable("name")String name) throws Exception {
         Set<String> codes = XueqiuUtils.getFollowStks(name);
         return show(StringUtils.join(codes, ","));
+    }
+
+    /**
+     * fromDate must after toDate
+     */
+    @RequestMapping("/{code}")
+    @ResponseBody
+    public List<K> getKs(@PathVariable("code")String code,
+                         @RequestParam(value = "type", required = false, defaultValue = "1")int type,
+                         @RequestParam(value = "days", required = false, defaultValue = "0")int days,
+                         @RequestParam(value = "fromDate", required = false)String fromDate,
+                         @RequestParam(value = "toDate", required = false)String toDate) throws Exception {
+        Connection conn = null;
+        try {
+            conn = ds.getConnection();
+            Index index = new Index(conn, code);
+            List<K> ks = null;
+            switch (type){
+                case 1: ks = index.getKs(); break;
+                case 2: ks = index.getKsWeekly(true); break;
+                case 3: ks = index.getKsMonthly(true); break;
+            }
+            if(StringUtils.isEmpty(fromDate)) {
+                return ks.subList(0, days);
+            }else{
+                int fromIndex = index.indexOf(fromDate);
+                int toIndex = fromIndex + days;
+                if(!StringUtils.isEmpty(toDate)) {
+                    toIndex = index.indexOf(toDate);
+                }
+                return ks.subList(fromIndex, toIndex);
+            }
+        }finally {
+            conn.close();
+        }
     }
 
     public void viewAllRequestMapping(HttpServletRequest request) {
