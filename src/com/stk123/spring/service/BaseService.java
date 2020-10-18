@@ -1,7 +1,6 @@
 package com.stk123.spring.service;
 
-import com.stk123.spring.dto.StkDto;
-import com.stk123.spring.utils.MyJpaResultTransformer;
+import com.stk123.spring.support.jpa.MyJpaResultTransformer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.SQLQuery;
