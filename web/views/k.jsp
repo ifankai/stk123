@@ -5,7 +5,7 @@
     StkContext sc = StkContext.getContext();
     pageContext.setAttribute(StkConstant.PAGE_TITLE, "K线");
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> 
 <html>
 <%@include file="/common/header.jsp" %>
 <style type="text/css">
