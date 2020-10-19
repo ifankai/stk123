@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.stk</groupId>
-	<artifactId>mobile-app</artifactId>
+	<artifactId>app-server</artifactId>
 	<version>1.0.0</version>
 	<packaging>war</packaging>
 
