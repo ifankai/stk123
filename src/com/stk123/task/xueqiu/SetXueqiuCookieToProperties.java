@@ -24,7 +24,8 @@ public class SetXueqiuCookieToProperties {
 		String cookie = StkUtils.getSysClipboardText();
 		String[] cookies = StringUtils.split(cookie, "\n");
 		String sCookie = cookies[cookies.length-1];
-		if(StringUtils.containsIgnoreCase(sCookie, "xueqiu.com")) {
+        System.out.println("cookie:"+sCookie);
+		if(StringUtils.containsIgnoreCase(sCookie, "xueqiu.com") || StringUtils.containsIgnoreCase(sCookie, "xq_id_token")) {
             System.out.println("new cookie:" + sCookie);
 
             readValue("xueqiu.cookie");

@@ -1,3 +1,6 @@
+DELAY : 2000
+Mouse : 1592 : 875 : Move : 0 : 0 : 0
+DELAY : 500
 Mouse : 1592 : 875 : Click : 0 : 0 : 0
 DELAY : 1000
 OPEN FILE : C:\Users\fankai\AppData\Local\360Chrome\Chrome\Application\360chrome.exe :  : 0
