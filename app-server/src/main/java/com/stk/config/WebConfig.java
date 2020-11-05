@@ -12,9 +12,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.filter.CorsFilter;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.*;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -24,7 +22,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Configuration
-public class WebConfig {
+//@EnableWebMvc
+public class WebConfig implements WebMvcConfigurer {
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
@@ -39,6 +38,11 @@ public class WebConfig {
             }
         };
     }
+
+    /*@Override
+    public void configurePathMatch(PathMatchConfigurer configurer) {
+        configurer.setUseTrailingSlashMatch(false);
+    }*/
 
 
     @Bean

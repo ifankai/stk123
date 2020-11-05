@@ -6,7 +6,6 @@
 /web/images/download
 /页面素材
 *.class
-stk123.iml
 .idea/**
 stk.jar
 web/WEB-INF/classes/**
