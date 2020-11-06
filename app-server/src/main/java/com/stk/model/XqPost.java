@@ -60,6 +60,9 @@ public class XqPost implements Serializable {
     private Long userId;
 
     @Column
+    private String userName;
+
+    @Column
     private String userAvatar;
 
 }

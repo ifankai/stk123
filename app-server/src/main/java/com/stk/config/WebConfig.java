@@ -5,6 +5,7 @@ import org.apache.catalina.filters.RemoteIpFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
@@ -30,19 +32,31 @@ public class WebConfig implements WebMvcConfigurer {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/*")
+                registry.addMapping("/**")
                         .allowedOrigins("*")
                         .allowCredentials(true)
-                        .allowedMethods("GET", "POST", "DELETE", "PUT","PATCH")
+                        .allowedMethods("GET", "POST", "DELETE", "PUT","PATCH","OPTIONS")
                         .maxAge(3600);
+            }
+            @Override
+            public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+                converters.add(customJackson2HttpMessageConverter());
             }
         };
     }
 
-    /*@Override
-    public void configurePathMatch(PathMatchConfigurer configurer) {
-        configurer.setUseTrailingSlashMatch(false);
-    }*/
+    /**
+     * 解决低版本ie responsebody返回json的时候提示下载问题
+     * @return
+     */
+    public MappingJackson2HttpMessageConverter customJackson2HttpMessageConverter() {
+        MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter();
+        List<MediaType> supportedMediaTypes = new ArrayList<MediaType>();
+        MediaType media = new MediaType(MediaType.TEXT_HTML, Charset.forName("UTF-8"));
+        supportedMediaTypes.add(media);
+        jsonConverter.setSupportedMediaTypes(supportedMediaTypes);
+        return jsonConverter;
+    }
 
 
     @Bean
