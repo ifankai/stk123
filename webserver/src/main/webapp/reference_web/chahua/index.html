@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<!--[if IE 7]>    <html class="no-js ie7 ie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8 ie" lang="en"> <![endif]-->
+<!--[if IE 9]>    <html class="no-js ie9 ie" lang="en"> <![endif]-->
+<!--[if gt IE 9]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+	<head>
+		<meta charset="utf-8" />
+		<title>Dashboard | Wuxia Bootstrap Admin Template</title>
+		<meta name="description" content="" />
+		<meta name="author" content="Walking Pixels | www.walkingpixels.com" />
+		<meta name="robots" content="index, follow" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<!-- CSS styles -->
+		<link rel='stylesheet' type='text/css' href='css/wuxia-red.css' />
+		
+		<!-- Fav and touch icons -->
+		<link rel="shortcut icon" href="img/icons/favicon.ico" />
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="img/icons/apple-touch-icon-114-precomposed.png" />
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="img/icons/apple-touch-icon-72-precomposed.png" />
+		<link rel="apple-touch-icon-precomposed" href="img/icons/apple-touch-icon-57-precomposed.png" />
+		
+		<!-- JS Libs -->
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+		<script>window.jQuery || document.write('<script src="js/libs/jquery.js"><\/script>')</script>
+		<script src="js/libs/modernizr.js"></script>
+		<script src="js/libs/selectivizr.js"></script>
+		
+		<script>
+			$(document).ready(function(){
+				
+				// Navbar tooltips
+				$('.navbar [title]').tooltip({
+					placement: 'bottom'
+				});
+				
+				// Content tooltips
+				$('[role=main] [title]').tooltip({
+					placement: 'top'
+				});
+				
+				// Dropdowns
+				$('.dropdown-toggle').dropdown();
+				
+			});
+		</script>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
+	<body>
+	
+		<!-- Main navigation bar -->
+		<header class="navbar navbar-fixed-top">
+			<div class="navbar-inner">
+				<div class="container">
+					<button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".user">
+						<span class="icon-user"></span>
+					</button>
+					<button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".navigation">
+						<span class="icon-chevron-down"></span>
+					</button>
+					<a class="brand" href="http://envato.walkingpixels.com/themes/wuxia/">Walking Pixels Wuxia Bootstrap admin template</a>
+					<nav class="nav-collapse navigation">
+						<ul class="nav" role="navigation">
+							<li class="active"><a href="index.html" title="Homepage dashboard"><span class="icon-home"></span> Dashboard</a></li>
+							<li><a href="forms.html" title="Form elements"><span class="icon-tasks"></span> Forms</a></li>
+							<li><a href="tables.html" title="Static and dynamic tables"><span class="icon-table"></span> Tables</a></li>
+							<li><a href="typography.html" title="Typography showcase"><span class="icon-font"></span> Typography</a></li>
+							<li><a href="ui-buttons.html" title="Buttons in navbar!"><span class="icon-magic"></span> UI &amp; Buttons</a></li>
+							<li class="divider-vertical"></li>
+							<li><a href="#" title="Buttons in navbar!" class="btn-wuxia-navbar"><div class="btn btn-wuxia"><span class="icon-key"></span> Widgets</div></a></li>
+						</ul>
+					</nav>
+					<nav class="nav-collapse user">
+						<div class="user-info pull-right">
+							<img src="http://placekitten.com/35/35" alt="User avatar" />
+							<div class="btn-group">
+								<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+									<div><strong>John Pixel</strong>Administrator</div>
+									<span class="caret"></span>
+								</a>
+								<ul class="dropdown-menu">
+									<li><a href=""><span class="icon-cogs"></span> Account settings</a></li>
+									<li><a href=""><span class="icon-bell"></span> Preferences</a></li>
+									<li><a href=""><span class="icon-envelope"></span> Email notifications</a></li>
+									<li class="divider"></li>
+									<li><a href=""><span class="icon-signout"></span> Logout</a></li>
+								</ul>
+							</div>
+						</div>
+					</nav>
+				</div>
+			</div>
+		</header>
+		<!-- /Main navigation bar -->
+		
+		<!-- Main content -->
+		<div class="container" role="main">
+		
+			<!-- Breadcrumbs -->
+			<ul class="breadcrumb">
+				<li><a href="#"><span class="icon-home"></span> Home</a></li>
+				<li><a href="#">Wuxia template</a></li>
+				<li class="active">Dashboard</li>
+			</ul>
+			<!-- Breadcrumbs -->
+		
+			<!-- Secondary navigation in hero unit -->
+			<div class="hero-unit blow">
+				<h1>Wuxia</h1>
+				<p>Wuxia literally means "martial hero". It is broad genre of Chinese fiction describing adventures of martial artists. Young male protagonist undertakes several trials and tribulations and learns several forms of martial arts from various fighters. At the end of the story he becomes a powerful fighter whom few can equal.</p>
+				<div class="nav-secondary inverse">
+					<nav>
+						<ul>
+							<li><a class="wuxify-me" href="charts.html"><span class="icon-signal"></span>Charts</a></li>
+							<li><a class="wuxify-me" href="gallery.html"><span class="icon-picture"></span>Gallery</a></li>
+							<li><a class="wuxify-me" href="file-explorer.html"><span class="icon-file"></span>File explorer</a></li>
+							<li><a class="wuxify-me" href="calendar.html"><span class="icon-calendar"></span>Calendar</a></li>
+							<li><a class="wuxify-me" href="grid.html"><span class="icon-th"></span>Grid</a></li>
+							<li><a class="wuxify-me" href="goodies.html"><span class="icon-heart"></span>Goodies</a><span class="badge badge-inverse">6</span></li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+			<!-- /Secondary navigation in hero unit -->
+			
+			<!-- Main data container -->
+			<div class="content">
+			
+				<!-- Page header -->
+				<div class="page-header">
+					<h1>Welcome, stranger!</h1>
+					<ul class="page-header-actions">
+						<li><a href="http://twitter.github.com/bootstrap/" class="btn btn-wuxia btn-inverse pull-right" title="Official Bootstrap website" target="_blank"><span class="icon-bookmark"></span> Bootstrap v2.0.4</a></li>
+					</ul>
+				</div>
+				<!-- /Page header -->
+				
+				<!-- Page container -->
+				<div class="page-container">
+				
+					<!-- Grid row -->
+					<div class="row">
+					
+						<!-- Page grid cell (4 blocks) -->
+						<article class="span4">
+							<p class="lead">Maecenas at mi eros. In mauris dolor, porttitor et sollicitudin at, auctor commodo augue. In congue rhoncus odio, sit amet aliquam enim suscipit id.</p>
+							<p>Maecenas rutrum, urna et iaculis sagittis, massa dolor facilisis purus, quis ultricies dui elit vitae lacus.</p>
+							<p>Vivamus blandit, odio sit amet viverra auctor, sem neque adipiscing urna, ac faucibus mauris quam nec libero. </p>
+						</article>
+						<!-- /Page grid cell (4 blocks) -->
+						
+						<!-- Page grid cell (8 blocks) -->
+						<article class="span8">
+							<div id="flot" class="flot dashboard"></div>
+						</article>
+						<!-- /Page grid cell (8 blocks) -->
+						
+					</div>
+					<!-- /Grid row -->
+					
+				</div>
+				<!-- /Page container -->
+				
+			</div>
+			<!-- /Main data container -->
+			
+			<!-- Main data container -->
+			<div class="content">
+			
+				<!-- Page header -->
+				<div class="page-header">
+					<h1><span class="icon-star"></span> Wuxia Bootstrap Admin Template</h1>
+					<span class="loading" title="Loading, please wait&hellip;">Loading&hellip;</span>
+				</div>
+				<!-- /Page header -->
+				
+				<!-- Page container -->
+				<div class="page-container">
+				
+					<!-- Grid row -->
+					<div class="row">
+					
+						<!-- Page grid cell (12 blocks - full) -->
+						<article class="span12">
+							<div class="nav-secondary">
+								<nav>
+									<ul>
+										<li><a class="wuxify-me" href="index.html"><span class="icon-home"></span>Dashboard</a></li>
+										<li><a class="wuxify-me" href="forms.html"><span class="icon-tasks"></span>Forms</a></li>
+										<li><a class="wuxify-me" href="tables.html"><span class="icon-table"></span>Tables</a></li>
+										<li><a class="wuxify-me" href="typography.html"><span class="icon-font"></span>Typography</a></li>
+										<li class="active"><a class="wuxify-me" href="ui-buttons.html"><span class="icon-magic"></span>UI &amp; Buttons</a></li>
+										<li><a class="wuxify-me" href="charts.html"><span class="icon-signal"></span>Charts</a></li>
+										<li><a href="gallery.html"><span class="icon-picture"></span>Gallery</a></li>
+										<li><a href="file-explorer.html"><span class="icon-file"></span>File explorer</a></li>
+										<li><a href="calendar.html"><span class="icon-calendar"></span>Calendar</a></li>
+										<li class="active"><a href="grid.html"><span class="icon-th"></span>Grid</a></li>
+										<li><a href="goodies.html"><span class="icon-heart"></span>Goodies</a><span class="badge badge-inverse">6</span></li>
+									</ul>
+								</nav>
+							</div>
+						</article>
+						<!-- /Page grid cell (12 blocks - full) -->
+						
+					</div>
+					<!-- /Grid row -->
+					
+				</div>
+				<!-- /Page container -->
+				
+			</div>
+			<!-- /Main data container -->
+			
+			<!-- Main data container -->
+			<div class="content">
+			
+				<!-- Tab content -->
+				<div class="page-container tab-content">
+				
+					<!-- Tab #ui -->
+					<div class="tab-pane active" id="ui">
+						
+						<!-- Grid row -->
+						<div class="row">
+						
+							<!-- Page grid cell (3 blocks) -->
+							<article class="span3 center">
+								<h2>Built with LESS</h2>
+								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas imperdiet venenatis.</p>
+							</article>
+							<!-- /Page grid cell (3 blocks) -->
+							
+							<!-- Page grid cell (3 blocks) -->
+							<article class="span3 center">
+								<h2>Responsive</h2>
+								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas imperdiet venenatis.</p>
+							</article>
+							<!-- /Page grid cell (3 blocks) -->
+							
+							<!-- Page grid cell (3 blocks) -->
+							<article class="span3 center">
+								<h2>HTML5 &amp; CSS3</h2>
+								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas imperdiet venenatis.</p>
+							</article>
+							<!-- /Page grid cell (3 blocks) -->
+							
+							<!-- Page grid cell (3 blocks) -->
+							<article class="span3 center">
+								<h2>jQuery powered</h2>
+								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas imperdiet venenatis.</p>
+							</article>
+							<!-- /Page grid cell (3 blocks) -->
+							
+						</div>
+						<!-- /Grid row -->
+						
+						<!-- Grid row -->
+						<div class="row">
+						
+							<!-- Page grid cell (12 blocks - full) -->
+							<article class="span12">
+									<h2>Lorem ipsum dolor sit</h2>
+							</article>
+							<!-- /Page grid cell (12 blocks - full) -->
+							
+							<!-- Page grid cell (8 blocks) -->
+							<article class="span8">
+								<table class="datatable table table-striped table-bordered" id="example">
+									<thead>
+										<tr>
+											<th>Rendering engine</th>
+											<th>Browser</th>
+											<th>Platform(s)</th>
+											<th>Engine version</th>
+											<th>CSS grade</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr class="odd gradeX">
+											<td>Trident</td>
+											<td>Internet
+												 Explorer 4.0</td>
+											<td>Win 95+</td>
+											<td>4</td>
+											<td>X</td>
+										</tr>
+										<tr class="even gradeC">
+											<td>Trident</td>
+											<td>Internet
+												 Explorer 5.0</td>
+											<td>Win 95+</td>
+											<td>5</td>
+											<td>C</td>
+										</tr>
+										<tr class="odd gradeA">
+											<td>Trident</td>
+											<td>Internet
+												 Explorer 5.5</td>
+											<td>Win 95+</td>
+											<td>5.5</td>
+											<td>A</td>
+										</tr>
+										<tr class="even gradeA">
+											<td>Trident</td>
+											<td>Internet
+												 Explorer 6</td>
+											<td>Win 98+</td>
+											<td>6</td>
+											<td>A</td>
+										</tr>
+										<tr class="odd gradeA">
+											<td>Trident</td>
+											<td>Internet Explorer 7</td>
+											<td>Win XP SP2+</td>
+											<td>7</td>
+											<td>A</td>
+										</tr>
+										<tr class="even gradeA">
+											<td>Trident</td>
+											<td>AOL browser (AOL desktop)</td>
+											<td>Win XP</td>
+											<td>6</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Gecko</td>
+											<td>Firefox 1.0</td>
+											<td>Win 98+ / OSX.2+</td>
+											<td>1.7</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Gecko</td>
+											<td>Firefox 1.5</td>
+											<td>Win 98+ / OSX.2+</td>
+											<td>1.8</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Gecko</td>
+											<td>Firefox 2.0</td>
+											<td>Win 98+ / OSX.2+</td>
+											<td>1.8</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Gecko</td>
+											<td>Firefox 3.0</td>
+											<td>Win 2k+ / OSX.3+</td>
+											<td>1.9</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Gecko</td>
+											<td>Camino 1.0</td>
+											<td>OSX.2+</td>
+											<td>1.8</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Gecko</td>
+											<td>Camino 1.5</td>
+											<td>OSX.3+</td>
+											<td>1.8</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Gecko</td>
+											<td>Netscape 7.2</td>
+											<td>Win 95+ / Mac OS 8.6-9.2</td>
+											<td>1.7</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Gecko</td>
+											<td>Netscape Browser 8</td>
+											<td>Win 98SE+</td>
+											<td>1.7</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Gecko</td>
+											<td>Netscape Navigator 9</td>
+											<td>Win 98+ / OSX.2+</td>
+											<td>1.8</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Gecko</td>
+											<td>Mozilla 1.0</td>
+											<td>Win 95+ / OSX.1+</td>
+											<td>1</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Gecko</td>
+											<td>Mozilla 1.1</td>
+											<td>Win 95+ / OSX.1+</td>
+											<td>1.1</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Gecko</td>
+											<td>Mozilla 1.2</td>
+											<td>Win 95+ / OSX.1+</td>
+											<td>1.2</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Gecko</td>
+											<td>Mozilla 1.3</td>
+											<td>Win 95+ / OSX.1+</td>
+											<td>1.3</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Gecko</td>
+											<td>Mozilla 1.4</td>
+											<td>Win 95+ / OSX.1+</td>
+											<td>1.4</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Gecko</td>
+											<td>Mozilla 1.5</td>
+											<td>Win 95+ / OSX.1+</td>
+											<td>1.5</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Gecko</td>
+											<td>Mozilla 1.6</td>
+											<td>Win 95+ / OSX.1+</td>
+											<td>1.6</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Gecko</td>
+											<td>Mozilla 1.7</td>
+											<td>Win 98+ / OSX.1+</td>
+											<td>1.7</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Gecko</td>
+											<td>Mozilla 1.8</td>
+											<td>Win 98+ / OSX.1+</td>
+											<td>1.8</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Gecko</td>
+											<td>Seamonkey 1.1</td>
+											<td>Win 98+ / OSX.2+</td>
+											<td>1.8</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Gecko</td>
+											<td>Epiphany 2.20</td>
+											<td>Gnome</td>
+											<td>1.8</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Webkit</td>
+											<td>Safari 1.2</td>
+											<td>OSX.3</td>
+											<td>125.5</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Webkit</td>
+											<td>Safari 1.3</td>
+											<td>OSX.3</td>
+											<td>312.8</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Webkit</td>
+											<td>Safari 2.0</td>
+											<td>OSX.4+</td>
+											<td>419.3</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Webkit</td>
+											<td>Safari 3.0</td>
+											<td>OSX.4+</td>
+											<td>522.1</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Webkit</td>
+											<td>OmniWeb 5.5</td>
+											<td>OSX.4+</td>
+											<td>420</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Webkit</td>
+											<td>iPod Touch / iPhone</td>
+											<td>iPod</td>
+											<td>420.1</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Webkit</td>
+											<td>S60</td>
+											<td>S60</td>
+											<td>413</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Presto</td>
+											<td>Opera 7.0</td>
+											<td>Win 95+ / OSX.1+</td>
+											<td>-</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Presto</td>
+											<td>Opera 7.5</td>
+											<td>Win 95+ / OSX.2+</td>
+											<td>-</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Presto</td>
+											<td>Opera 8.0</td>
+											<td>Win 95+ / OSX.2+</td>
+											<td>-</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Presto</td>
+											<td>Opera 8.5</td>
+											<td>Win 95+ / OSX.2+</td>
+											<td>-</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Presto</td>
+											<td>Opera 9.0</td>
+											<td>Win 95+ / OSX.3+</td>
+											<td>-</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Presto</td>
+											<td>Opera 9.2</td>
+											<td>Win 88+ / OSX.3+</td>
+											<td>-</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Presto</td>
+											<td>Opera 9.5</td>
+											<td>Win 88+ / OSX.3+</td>
+											<td>-</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Presto</td>
+											<td>Opera for Wii</td>
+											<td>Wii</td>
+											<td>-</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Presto</td>
+											<td>Nokia N800</td>
+											<td>N800</td>
+											<td>-</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Presto</td>
+											<td>Nintendo DS browser</td>
+											<td>Nintendo DS</td>
+											<td>8.5</td>
+											<td>C/A<sup>1</sup></td>
+										</tr>
+										<tr class="gradeC">
+											<td>KHTML</td>
+											<td>Konqureror 3.1</td>
+											<td>KDE 3.1</td>
+											<td>3.1</td>
+											<td>C</td>
+										</tr>
+										<tr class="gradeA">
+											<td>KHTML</td>
+											<td>Konqureror 3.3</td>
+											<td>KDE 3.3</td>
+											<td>3.3</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeA">
+											<td>KHTML</td>
+											<td>Konqureror 3.5</td>
+											<td>KDE 3.5</td>
+											<td>3.5</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeX">
+											<td>Tasman</td>
+											<td>Internet Explorer 4.5</td>
+											<td>Mac OS 8-9</td>
+											<td>-</td>
+											<td>X</td>
+										</tr>
+										<tr class="gradeC">
+											<td>Tasman</td>
+											<td>Internet Explorer 5.1</td>
+											<td>Mac OS 7.6-9</td>
+											<td>1</td>
+											<td>C</td>
+										</tr>
+										<tr class="gradeC">
+											<td>Tasman</td>
+											<td>Internet Explorer 5.2</td>
+											<td>Mac OS 8-X</td>
+											<td>1</td>
+											<td>C</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Misc</td>
+											<td>NetFront 3.1</td>
+											<td>Embedded devices</td>
+											<td>-</td>
+											<td>C</td>
+										</tr>
+										<tr class="gradeA">
+											<td>Misc</td>
+											<td>NetFront 3.4</td>
+											<td>Embedded devices</td>
+											<td>-</td>
+											<td>A</td>
+										</tr>
+										<tr class="gradeX">
+											<td>Misc</td>
+											<td>Dillo 0.8</td>
+											<td>Embedded devices</td>
+											<td>-</td>
+											<td>X</td>
+										</tr>
+										<tr class="gradeX">
+											<td>Misc</td>
+											<td>Links</td>
+											<td>Text only</td>
+											<td>-</td>
+											<td>X</td>
+										</tr>
+										<tr class="gradeX">
+											<td>Misc</td>
+											<td>Lynx</td>
+											<td>Text only</td>
+											<td>-</td>
+											<td>X</td>
+										</tr>
+										<tr class="gradeC">
+											<td>Misc</td>
+											<td>IE Mobile</td>
+											<td>Windows Mobile 6</td>
+											<td>-</td>
+											<td>C</td>
+										</tr>
+										<tr class="gradeC">
+											<td>Misc</td>
+											<td>PSP browser</td>
+											<td>PSP</td>
+											<td>-</td>
+											<td>C</td>
+										</tr>
+										<tr class="gradeU">
+											<td>Other browsers</td>
+											<td>All others</td>
+											<td>-</td>
+											<td>-</td>
+											<td>U</td>
+										</tr>
+									</tbody>
+								</table>
+							</article>
+							<!-- Page grid cell (8 blocks) -->
+							
+							<!-- Page grid cell (4 blocks) -->
+							<article class="span4">
+								<h3></h3>
+								<p>Nullam quis risus <strong>eget urna mollis</strong> ornare vel eu leo. <em>Cum sociisnatoque penatibus</em> et magnis dis parturient montes, <code>code</code> nascetur ridiculus mus. Nullam id dolor id nibh ultricies vehicula ut id elit. Sed euismod aliquet sapien consequat tincidunt.</p>
+								<p>Vivamus sagittis lacus vel augue laoreet <abbr title="Sample abbreviation">rutrum faucibus dolor auctor</abbr>. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Donec sed odio dui. Sed euismod aliquet sapien consequat tincidunt.</p>
+								<p class="demo-btns"><button class="btn btn-info btn-wuxia">Info</button> <button class="btn btn-success btn-wuxia">Success</button> <button class="btn btn-warning btn-wuxia">Warning</button> <button class="btn btn-danger btn-wuxia">Danger</button> <button class="btn btn-inverse btn-wuxia">Inverse</button></p>
+								<ul class="unstyled">
+									<li><span class="icon-ok"></span> Valid HTML5 &amp; CSS3 code</li>
+									<li><span class="icon-ok"></span> Lightweight style</li>
+									<li><span class="icon-ok"></span> Works with old browsers</li>
+									<li><span class="icon-ok"></span> Super easy to modify</li>
+									<li><span class="icon-ok"></span> Built with LESS</li>
+									<li><span class="icon-ok"></span> Various mixins, color variables</li>
+									<li><span class="icon-ok"></span> Support for phones and tablets</li>
+									<li><span class="icon-ok"></span> Easy to customize</li>
+								</ul>
+								<div class="pagination">
+									<ul>
+										<li class="disabled"><a href="#"><span class="icon-arrow-left"></span></a></li>
+										<li class="active"><a href="#">1</a></li>
+										<li><a href="#">2</a></li>
+										<li><a href="#">3</a></li>
+										<li><a href="#">4</a></li>
+										<li><a href="#"><span class="icon-arrow-right"></span></a></li>
+									</ul>
+								</div>
+							</article>
+							<!-- Page grid cell (4 blocks) -->
+							
+						</div>
+						<!-- Grid row -->
+						
+					</div>
+					<!-- /Tab #ui -->
+					
+				</div>
+				<!-- /Tab content -->
+			
+			</div>
+			<!-- /Main data container -->
+			
+		</div>
+		<!-- /Main content -->
+		
+		<!-- Main footer -->
+		<footer class="container">
+			<nav>
+				<ul>
+					<li>&copy; Copyright 2012. All rights reserved.</li>
+					<li><a href="">Documentation</a></li>
+					<li><a href="">Support</a></li>
+					<li><a href="">API</a></li>
+					<li><a href="">Blog</a></li>
+				</ul>
+			</nav>
+			<p>&copy; Copyright &copy; 2013.Company name All rights reserved.<a target="_blank" href="http://sc.chinaz.com/moban/">&#x7F51;&#x9875;&#x6A21;&#x677F;</a></p>
+		</footer>
+		<!-- /Main footer -->
+		
+		<!-- Scripts -->
+		<script src="js/navbar.js"></script>
+		<script src="js/plugins/waypoints.min.js"></script>
+		<script src="js/bootstrap/bootstrap-tooltip.js"></script>
+		<script src="js/bootstrap/bootstrap-dropdown.js"></script>
+		<script src="js/bootstrap/bootstrap-collapse.js"></script>
+		
+		<!-- jQuery Flot Charts -->
+		<!--[if lte IE 8]>
+			<script language="javascript" type="text/javascript" src="js/plugins/flot/excanvas.min.js"></script>
+		<![endif]-->
+		<script src="js/plugins/flot/jquery.flot.js"></script>
+		<script src="js/plugins/flot/jquery.flot.pie.js"></script>
+		
+		<script>
+			$(document).ready(function() {
+			
+				// Flot Chart
+				// we use an inline data source in the example, usually data would be fetched from a server
+				var data = [], totalPoints = 300;
+				function getRandomData() {
+					if (data.length > 0)
+						data = data.slice(1);
+				
+					// do a random walk
+					while (data.length < totalPoints) {
+						var prev = data.length > 0 ? data[data.length - 1] : 50;
+						var y = prev + Math.random() * 10 - 5;
+						if (y < 0)
+							y = 0;
+						if (y > 100)
+							y = 100;
+						data.push(y);
+					}
+				
+					// zip the generated y values with the x values
+					var res = [];
+					for (var i = 0; i < data.length; ++i)
+						res.push([i, data[i]])
+					return res;
+				}
+				
+				// setup control widget
+				var updateInterval = 30;
+				$("#updateInterval").val(updateInterval).change(function () {
+					var v = $(this).val();
+					if (v && !isNaN(+v)) {
+						updateInterval = +v;
+					if (updateInterval < 1)
+						updateInterval = 1;
+					if (updateInterval > 2000)
+						updateInterval = 2000;
+					$(this).val("" + updateInterval);
+					}
+				});
+				
+				// setup plot
+				var options = {
+					series: { shadowSize: 0, color: "#FF371B" }, // drawing is faster without shadows
+					yaxis: { min: 0, max: 100 },
+					xaxis: { show: false },
+					grid: { backgroundColor: '#ffffff' }
+				};
+				var plot = $.plot($("#flot"), [ getRandomData() ], options);
+				
+				function update() {
+					plot.setData([ getRandomData() ]);
+					// since the axes don't change, we don't need to call plot.setupGrid()
+					plot.draw();
+					setTimeout(update, updateInterval);
+				}
+				
+				update();
+			
+			});
+		</script>
+		
+		<!-- jQuery DataTable -->
+		<script src="js/plugins/dataTables/jquery.datatables.min.js"></script>
+		<script>
+			/* Default class modification */
+			$.extend( $.fn.dataTableExt.oStdClasses, {
+				"sWrapper": "dataTables_wrapper form-inline"
+			} );
+			
+			/* API method to get paging information */
+			$.fn.dataTableExt.oApi.fnPagingInfo = function ( oSettings )
+			{
+				return {
+					"iStart":         oSettings._iDisplayStart,
+					"iEnd":           oSettings.fnDisplayEnd(),
+					"iLength":        oSettings._iDisplayLength,
+					"iTotal":         oSettings.fnRecordsTotal(),
+					"iFilteredTotal": oSettings.fnRecordsDisplay(),
+					"iPage":          Math.ceil( oSettings._iDisplayStart / oSettings._iDisplayLength ),
+					"iTotalPages":    Math.ceil( oSettings.fnRecordsDisplay() / oSettings._iDisplayLength )
+				};
+			}
+			
+			/* Bootstrap style pagination control */
+			$.extend( $.fn.dataTableExt.oPagination, {
+				"bootstrap": {
+					"fnInit": function( oSettings, nPaging, fnDraw ) {
+						var oLang = oSettings.oLanguage.oPaginate;
+						var fnClickHandler = function ( e ) {
+							e.preventDefault();
+							if ( oSettings.oApi._fnPageChange(oSettings, e.data.action) ) {
+								fnDraw( oSettings );
+							}
+						};
+			
+						$(nPaging).addClass('pagination').append(
+							'<ul>'+
+								'<li class="prev disabled"><a href="#"><span class="icon-caret-left"></span> '+oLang.sPrevious+'</a></li>'+
+								'<li class="next disabled"><a href="#">'+oLang.sNext+' <span class="icon-caret-right"></span></a></li>'+
+							'</ul>'
+						);
+						var els = $('a', nPaging);
+						$(els[0]).bind( 'click.DT', { action: "previous" }, fnClickHandler );
+						$(els[1]).bind( 'click.DT', { action: "next" }, fnClickHandler );
+					},
+			
+					"fnUpdate": function ( oSettings, fnDraw ) {
+						var iListLength = 0;
+						var oPaging = oSettings.oInstance.fnPagingInfo();
+						var an = oSettings.aanFeatures.p;
+						var i, j, sClass, iStart, iEnd, iHalf=Math.floor(iListLength/2);
+			
+						if ( oPaging.iTotalPages < iListLength) {
+							iStart = 1;
+							iEnd = oPaging.iTotalPages;
+						}
+						else if ( oPaging.iPage <= iHalf ) {
+							iStart = 1;
+							iEnd = iListLength;
+						} else if ( oPaging.iPage >= (oPaging.iTotalPages-iHalf) ) {
+							iStart = oPaging.iTotalPages - iListLength + 1;
+							iEnd = oPaging.iTotalPages;
+						} else {
+							iStart = oPaging.iPage - iHalf + 1;
+							iEnd = iStart + iListLength - 1;
+						}
+			
+						for ( i=0, iLen=an.length ; i<iLen ; i++ ) {
+			
+							// Add / remove disabled classes from the static elements
+							if ( oPaging.iPage === 0 ) {
+								$('li:first', an[i]).addClass('disabled');
+							} else {
+								$('li:first', an[i]).removeClass('disabled');
+							}
+			
+							if ( oPaging.iPage === oPaging.iTotalPages-1 || oPaging.iTotalPages === 0 ) {
+								$('li:last', an[i]).addClass('disabled');
+							} else {
+								$('li:last', an[i]).removeClass('disabled');
+							}
+						}
+					}
+				}
+			});
+			
+			/* Table #example */
+			$(document).ready(function() {
+				$('.datatable').dataTable( {
+					"sDom": "<'row'<'span4'l><'span4'f>r>t<'row'<'span4'i><'span4'p>>",
+					"sPaginationType": "bootstrap",
+					"oLanguage": {
+						"sLengthMenu": "_MENU_ records per page"
+					}
+				});
+			});
+		</script>
+		
+		
+	<div style="display:none"><script src='http://v7.cnzz.com/stat.php?id=155540&web_id=155540' language='JavaScript' charset='gb2312'></script></div>
+</body>
+</html>

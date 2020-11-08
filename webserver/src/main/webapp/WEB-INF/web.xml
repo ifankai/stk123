@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	<display-name>Stock</display-name>
+
+	<servlet>
+		<servlet-name>Dispatcher</servlet-name>
+		<servlet-class>com.stk123.web.action.StkActionServlet</servlet-class>
+		<init-param>
+			<param-name>action-context</param-name>
+			<param-value>com.stk123.web.context.StkContext</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Dispatcher</servlet-name>
+		<url-pattern>/index</url-pattern>
+		<url-pattern>/login</url-pattern>
+		<url-pattern>/reg</url-pattern>
+		<url-pattern>/sync</url-pattern>
+		<url-pattern>/wx</url-pattern>
+		<!-- 下面要加到auth filter -->
+		<url-pattern>/main</url-pattern>
+		<url-pattern>/stk</url-pattern>
+		<url-pattern>/text</url-pattern>
+		<url-pattern>/article</url-pattern>
+		<url-pattern>/industry</url-pattern>
+		<url-pattern>/search</url-pattern>
+		<url-pattern>/upload</url-pattern>
+		<url-pattern>/data</url-pattern>
+		<url-pattern>/earning</url-pattern>
+		<url-pattern>/screener</url-pattern>
+		<url-pattern>*.do</url-pattern>
+	</servlet-mapping>
+
+
+    <!--<servlet>
+        <servlet-name>SpringMvc</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextClass</param-name>
+            <param-value>
+                org.springframework.web.context.support.AnnotationConfigWebApplicationContext
+            </param-value>
+        </init-param>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>com.stk123.spring.SpringConfiguration</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SpringMvc</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>-->
+
+
+	<servlet>
+	    <servlet-name>H2Console</servlet-name>
+	    <servlet-class>org.h2.server.web.WebServlet</servlet-class>
+	    <init-param>
+	        <param-name>webAllowOthers</param-name>
+	        <param-value></param-value>
+	    </init-param>
+	    <!--
+	    <init-param>
+	        <param-name>trace</param-name>
+	        <param-value></param-value>
+	    </init-param>
+	    -->
+	    <load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>H2Console</servlet-name>
+	    <url-pattern>/console/*</url-pattern>
+	</servlet-mapping>	
+
+	<filter>
+		<filter-name>EncodingFilter</filter-name>
+		<filter-class>com.stk123.tool.web.filter.EncodingFilter</filter-class>
+	</filter>
+	<filter>
+        <filter-name>AuthorizationServletFilter</filter-name>
+        <filter-class>com.stk123.tool.web.filter.AuthorizationServletFilter</filter-class>
+    </filter>
+	<filter-mapping>
+		<filter-name>EncodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+        <filter-name>AuthorizationServletFilter</filter-name>
+		<url-pattern>/main</url-pattern>
+		<url-pattern>/stk</url-pattern>
+		<url-pattern>/text</url-pattern>
+		<url-pattern>/article</url-pattern>
+		<url-pattern>/industry</url-pattern>
+		<url-pattern>/search</url-pattern>
+		<url-pattern>/upload</url-pattern>
+		<url-pattern>/data</url-pattern>
+		<url-pattern>/earning</url-pattern>
+		<url-pattern>/screener</url-pattern>
+		<url-pattern>*.do</url-pattern>
+    </filter-mapping>
+    
+    <error-page>   
+        <error-code>404</error-code>   
+        <location>/404</location>   
+	</error-page>
+	
+	<error-page>
+    	<error-code>500</error-code>
+    	<location>/error.jsp</location>
+     </error-page>
+
+	<session-config>
+		<session-timeout>120</session-timeout>
+	</session-config>
+
+	<welcome-file-list>
+		<welcome-file>index</welcome-file>
+	</welcome-file-list>
+
+	<error-page>
+		<exception-type>java.lang.Exception</exception-type>
+		<location>/common/error.jsp</location>
+	</error-page>
+	
+	<!--taglib>
+      <taglib-uri>/stk</taglib-uri>
+      <taglib-location>/WEB-INF/stk.tld</taglib-location>
+    </taglib-->
+
+</web-app>

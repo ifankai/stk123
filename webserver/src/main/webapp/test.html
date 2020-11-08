@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script type="text/javascript" src="/js/jquery.js"></script>
+<script type="text/javascript" src="/js/jquery.qtip.min.js"></script>
+<title>Insert title here</title>
+<script type="text/javascript">
+ 
+function shows()
+{
+    var f=document.getElementById("f");
+    f.style.display='block';    
+}    
+function closed()
+{
+    var f=document.getElementById("f");
+     
+    f.style.display='none';
+}    
+
+$(function() {
+$("#m").qtip({
+	    content: {
+	      text: "这是提示内容（by囧月 lwme.cnblogs.com）"
+	      , title: {
+	        text: "提示标题"
+	        , button: "关闭"
+	      }
+	    }
+	});
+});	
+</script>
+<style type="text/css">
+#f{
+    width:300px;
+    height:200px;
+    background: #FF0;
+    display:none;
+    letf:500px;
+    font-size:30px;
+}
+#m{
+    width:200px;
+    height:40px;
+    background: #F00;
+    font-size:30px;
+}
+ 
+</style>
+</head>
+<body>
+<div id="m" onmouseover="shows()" onmouseout="closed()">测试一下</div>
+<div id="f">显示层</div>
+ 
+</body>
+</html>

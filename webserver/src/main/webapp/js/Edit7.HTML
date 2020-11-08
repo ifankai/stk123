@@ -1,0 +1,477 @@
+<!--  
+To change this template, choose Tools | Templates  
+and open the template in the editor.  
+-->  
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">  
+<html>  
+  <head>  
+    <title>自动提示</title>  
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">  
+  
+    <script type = "text/javascript">  
+  
+    //update 2010-07-06  
+    //增加可以连续输入多个，中间用逗号分开  
+    /*********************************************** 
+     * Global variables 
+     ***********************************************/  
+    var maxResults = 10;    // max # of results to display  
+    var ignoreKeys = "";        //设置忽略的关键字  
+    var sMultiply =false;       //是否可以连续输入  
+  
+    /*********************************************** 
+     * Prototype for populating data 
+     ***********************************************/  
+    function get_data() {}  
+  
+    /*********************************************** 
+     * Find search keys in data set 
+     ***********************************************/  
+    function suggest(keywords,key,inputID,dataID,multiply)  
+    {  
+        var results = document.getElementById("results");  
+        sMultiply = multiply;  
+        var theinput=null;  
+        if(sMultiply){  
+            //keywords =keywords.toString();  
+            //将input的内容用split截取成数组,最多返回1000个  
+            theinput =keywords.split(",", 1000);  
+            //当输入为多个时只需要匹配最后一  
+            if(theinput.length>=1){  
+  
+                keywords =theinput[theinput.length-1];  
+            }  
+        }else{  
+            keywords =keywords.toString();  
+        }  
+        if(keywords != "")  
+        {  
+            //获得数据  
+            var terms = get_data(dataID); // sort? -- data should be alphabetical for best results  
+  
+            var ul = document.createElement("ul");  
+            var li;  
+            var a;  
+  
+            if ((key.keyCode == '40' || key.keyCode == '38' || key.keyCode == '13'))  
+            {  
+                navigate(key.keyCode,theinput,inputID);  
+            }  
+            else  
+            {  
+                var kIndex = -1;  
+  
+                for(var i = 0; i < terms.length; i++)  
+                {  
+                    kIndex = terms[i].activity.toLowerCase().indexOf(keywords.toLowerCase());  
+  
+                    if(kIndex >= 0)  
+                    {  
+                        li = document.createElement("li");  
+  
+                        // setup the link to populate the search box  
+                        a = document.createElement("a");  
+                        a.href = "javascript://";  
+  
+                        a.setAttribute("rel",terms[i].val);  
+                        a.setAttribute("rev", getRank(terms[i].activity.toLowerCase(), keywords.toLowerCase()));  
+  
+                        //if(!document.all) a.setAttribute("onclick","populate(this,theinput);");  
+                        //else  
+                        //鼠标点击选中li进行提交  
+                        a.onclick = function() { populate(this,theinput,inputID); }  
+  
+                        a.appendChild(document.createTextNode(""));  
+  
+                        if(keywords.length == 1)  
+                        {  
+                            var kws = terms[i].activity.toLowerCase().split(" ");  
+                            var firstWord = 0;  
+  
+                            for(var j = 0; j < kws.length; j++)  
+                            {  
+                                //  if(kws[j].toLowerCase().charAt(0) == keywords.toLowerCase()) {  
+  
+                                ul.appendChild(li);  
+  
+                                if(j != 0) {  
+                                    kIndex = terms[i].activity.toLowerCase().indexOf(" " + keywords.toLowerCase());  
+                                    kIndex++;  
+                                }  
+  
+                                break;  
+                                //  }  
+                            }  
+                        }  
+                        else if(keywords.length > 1) {  
+                            ul.appendChild(li);  
+                        }  
+                        else continue;  
+  
+  
+                        var before = terms[i].activity.substring(0,kIndex);  
+                        var after = terms[i].activity.substring(keywords.length + kIndex, terms[i].activity.length);  
+  
+                        //a.innerHTML = before + "<strong>" + keywords.toLowerCase() + "</strong>" + after;  
+                        var middle = terms[i].activity.substring(kIndex,keywords.length+kIndex);  
+                        a.innerHTML = before + "<strong>" +middle + "</strong>" + after;  
+                        li.appendChild(a);  
+  
+                    }  
+                }  
+                
+                li = document.createElement("li");
+    			li.innerHTML = "搜索 <strong><a>'"+keywords+"'</a></strong> 关键字";
+    			ul.appendChild(li);
+  
+                if(results.hasChildNodes()) results.removeChild(results.firstChild);  
+  
+                // position the list of suggestions  
+                var s = document.getElementById(inputID);  
+                var xy = findPos(s);  
+  
+                results.style.left = xy[0] + "px";  
+                results.style.top = xy[1] + s.offsetHeight + "px";  
+                results.style.width = s.offsetWidth + "px";  
+  
+                // if there are some results, show them  
+                if(ul.hasChildNodes()) {  
+                    results.appendChild(filterResults(ul));  
+  
+                    if(results.firstChild.childNodes.length == 1) results.firstChild.firstChild.getElementsByTagName("a")[0].className = "hover";  
+  
+                }  
+  
+            }  
+        }  
+        else  
+        {  
+            if(results.hasChildNodes()) results.removeChild(results.firstChild);  
+        }  
+    }  
+  
+    /*********************************************** 
+     * Rank results - used for sorting result sets 
+     * 0 if entire row starts with kw 
+     * 0 < i < 1 if any word in row starts with kw (1k char max) 
+     * i > 1 if row contains kw anywhere else 
+     ***********************************************/  
+    function getRank(activity, keywords)  
+    {  
+        var ret = -1;  
+        var kIndex = activity.indexOf(keywords);  
+  
+        ret = (activity.charAt(kIndex - 1) == " ") ? kIndex : (200*kIndex);  
+  
+        return ret;  
+    }  
+  
+    /*********************************************** 
+     * Sort the result suggestion sets 
+     ***********************************************/  
+    function filterResults(s)  
+    {  
+        var sorted = new Array();  
+  
+        for(var i = 0; i < s.childNodes.length; i++)  
+        {  
+            sorted.push(s.childNodes[i]);  
+        }  
+  
+        var ul = document.createElement("ul");  
+        var lis = sorted.sort(sortIndex);  
+  
+        for(var j = 0; j < lis.length; j++)  
+        {  
+            if(j < maxResults) ul.appendChild(lis[j]);  
+            else break;  
+        }  
+  
+        return ul;  
+  
+    }  
+  
+    function sortIndex(a,b)  
+    {  
+        // wow thats ugly -- need logic around grouped items getting out of order  
+        return (a.getElementsByTagName("a")[0].rev - b.getElementsByTagName("a")[0].rev);  
+    }  
+  
+  
+    /*********************************************** 
+     * Navigate using up/down and submit with 'Enter' 
+     ***********************************************/  
+    function navigate(key,theinput,inputID)  
+    {  
+        var results = document.getElementById("results");  
+        var keyIndex = document.getElementById("keyIndex");  
+  
+        var i = keyIndex.value;  
+  
+        if(i == "" || !i) i = -1;  
+        else i = parseFloat(i);  
+  
+        var ul = results.childNodes[0];  
+  
+        if(ul)  
+        {  
+            if(key == '40') // DOWN  
+            {  
+                i++;  
+                if(i > ul.childNodes.length-1) i = ul.childNodes.length-1;  
+  
+                keyIndex.value = i;  
+  
+                try {  
+                    ul.childNodes[i].getElementsByTagName("a")[0].className = "hover";  
+                    ul.childNodes[i-1].getElementsByTagName("a")[0].className = "";  
+                }  
+                catch(e) {}  
+            }  
+            else if(key == '38') // UP  
+            {  
+                i--;  
+                if(i <= 0) i = 0;  
+  
+                keyIndex.value = i;  
+  
+                try {  
+                    ul.childNodes[i].getElementsByTagName("a")[0].className = "hover";  
+                    ul.childNodes[i+1].getElementsByTagName("a")[0].className = "";  
+                }  
+                catch(e) {}  
+            }  
+            else if(key == '13' || key == '9') // ENTER/TAB -- POPULATE  
+            {  
+                if(i == -1) i = 0;  
+                populate(ul.childNodes[i].getElementsByTagName("a")[0],theinput,inputID);  
+            }  
+            else return;  
+        }  
+    }  
+  
+    /*********************************************** 
+     * Allow for using tab onkeydown 
+     ***********************************************/  
+    function tabfix(keywords, key)  
+    {  
+        if(key.keyCode == '9') {  
+            navigate(key.keyCode);  
+            return false;  
+        }  
+        else return true;  
+    }  
+  
+    /*********************************************** 
+     * Populate hidden fields via onclick on 'Enter' 
+     ***********************************************/  
+    function populate(a,theinput,inputID)  
+    {  
+        var ul = document.getElementById("results").childNodes[0];  
+        var inputold="";  
+        alert('theinput='+theinput+',inputID='+inputID);
+        var inputObj =document.getElementById(inputID);  
+        var pick;  
+        try {  
+            if(theinput != null){  
+                pick = a.innerHTML.replace("<strong>","").replace("</strong>","")+",";  
+  
+                // IE6 converts HTML elements to uppercase -- could be done with RegExp  
+                if(document.all) pick = a.innerHTML.replace("<STRONG>","").replace("</STRONG>","")+",";  
+  
+                if(theinput.length>=1){  
+                    //多项输入时要用到  
+                    //重新将当前输入值前的值添加到input标签里  
+                    for(var i=0; i<theinput.length-1;i++){  
+                        inputold=inputold+theinput[i]+",";  
+                        //alert("the input:"+i+theinput[i]);  
+                        // alert("the input old:"+inputold);  
+                    }  
+  
+                }  
+                //添加新配置的值  
+                inputObj.value=inputold+pick;  
+                //alert("jdl");  
+                //alert("inputlength:"+theinput.length);  
+                //document.getElementById("s").value = pick;  
+            }else{  
+                pick = a.innerHTML.replace("<strong>","").replace("</strong>","");  
+  
+                // IE6 converts HTML elements to uppercase -- could be done with RegExp  
+                if(document.all) pick = a.innerHTML.replace("<STRONG>","").replace("</STRONG>","");  
+                inputObj.value=pick;  
+            }  
+        }  
+        catch(e) {}  
+  
+  
+        clearSuggest();  
+    }  
+  
+    /*********************************************** 
+     * Find an elements position on the screen 
+     ***********************************************/  
+    function findPos(obj)  
+    {  
+        var curleft = curtop = 0;  
+        if (obj.offsetParent) {  
+            curleft = obj.offsetLeft  
+            curtop = obj.offsetTop  
+            while (obj = obj.offsetParent) {  
+                curleft += obj.offsetLeft  
+                curtop += obj.offsetTop  
+            }  
+        }  
+        return [curleft,curtop];  
+    }  
+  
+    /*********************************************** 
+     * Helper to preserve onclick on suggestions 
+     ***********************************************/  
+    function clearSuggest()  
+    {  
+        // need a timeout so the onclick event is captured before results are hidden  
+        setTimeout("hideSuggest()",200);  //time setѡ  ʱ  
+    }  
+  
+    /*********************************************** 
+     * Hide the suggestions list and remove from DOM 
+     ***********************************************/  
+    function hideSuggest()  
+    {  
+        var results = document.getElementById("results");  
+        if(results.hasChildNodes()) results.removeChild(results.firstChild);  
+  
+        document.getElementById("keyIndex").value = "-1"; // reset the suggestions index  
+    }  
+  
+    // get list values;  
+    function getListvalues(listID)  
+    {  
+        var options = this.getOptions(listID);  
+        var values = new Array();  
+        //alert("options length:"+options.length);  
+        for (var i = 0; i < options.length; i++)  
+        {  
+            var flag = true;  
+            for(var j=0; j<values.length; j++){  
+                if(values[j] == options[i].innerText){  
+                    flag = false;  
+                    break;  
+                }  
+            }  
+  
+            if(flag){  
+                values.push(options[i].innerText);  
+            }  
+        }  
+        // alert("values length"+values.length);  
+        return values;  
+  
+    }  
+  
+  
+    function get_data(dataID )  
+    {  
+        var terms = new Array();        
+        // var values2 = getListvalues("fromLocation_ces");  
+       //获取其它控件的值放入数组中  
+      /* var values2 = getListvalues(dataID); 
+        for(var i=0;i<values2.length;i++){ 
+            terms.push({val:1,activity:values2[i]}); 
+        } */  
+  		  //alert(document.all.fromRetailGroup.value);
+  
+        //alert("from location list values size:"+values2.length);  
+        //  alert("values2[0]"+values2[0]);  
+        var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];  
+  
+       for(var i=0;i<months.length;i++){  
+            terms.push({val:1,activity:months[i]});  
+        }  
+        return terms;  
+  
+    }  
+</script>  
+  
+    <style type = "text/css">  
+  
+.nodisplay {  
+    display: none;  
+}  
+  
+label {  
+    float: left;  
+    font: normal 12px Arial;  
+    width: 80px;  
+}  
+  
+#s {  
+    width: 300px;  
+}  
+  
+#results {  
+    position: absolute;  
+    top: 0;  
+    left: 0;  
+    width: 300px;  
+}  
+  
+#results ul {  
+    border: 1px solid #bfbfbf;  
+    margin: 0;  
+    padding: 0;  
+    list-style: none;  
+    width: 100%;  
+}  
+  
+#results ul li {  
+  text-align:left;  
+}  
+  
+#results ul li a {  
+    display: block;  
+    color: #444;  
+    background: #fff;  
+    font: normal 12px arial;  
+    text-decoration: none;  
+    padding: 1px 4px 2px 6px;  
+}  
+  
+* html #results ul li a {  
+    width: 100%;  
+}  
+  
+#results ul li a strong {  
+    color: red;  
+}  
+  
+#results ul li a:hover, #results ul li a.hover {  
+    background: #0056f4;  
+    color: #fff;  
+}  
+  
+#results ul li a:hover strong, #results ul li a.hover strong {  
+    color: #fff;  
+}  
+  
+</style>  
+  
+  </head>  
+  <body>  
+  
+      <!--参数设置为true 可以多选，中间用[,]隔开-->  
+  
+      <input id="fromRetailGroup" type="text" onkeyup="suggest(this.value,event,this.id,'fromAndToRetailGroupList',false);" onkeydown="return tabfix(this.value,event);" onblur="clearSuggest();"  style="width:170px"/>  
+  
+      <!--结果显示区域-->  
+
+            <label>kIndex</label>  
+            <input class="nodisplayd" type="text" id="keyIndex" />  
+            <label>rev</label>  
+            <input class="nodisplayd" type="text" id="sortIndex" />  
+  
+        <div id="results"></div>  
+    
+  </body>  
+</html>  
