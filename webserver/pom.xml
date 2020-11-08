@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.stk</groupId>
+    <artifactId>webserver</artifactId>
+    <version>1.0</version>
+    <packaging>war</packaging>
+
+    <name>webserver</name>
+    <url>http://www.stk.com</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <third.libs>${project.basedir}/src/main/webapp/WEB-INF/lib</third.libs>
+    </properties>
+
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>2.1.3.RELEASE</version>
+                <type>pom</type>
+                <scope>import</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter-logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!-- spring -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j</artifactId>
+            <version>1.3.8.RELEASE</version>
+        </dependency>
+
+        <!-- datasource -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+            <version>1.1.20</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.16</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.htmlparser</groupId>
+            <artifactId>htmlparser</artifactId>
+            <version>2.1</version>
+        </dependency>
+
+        <!--mvn install:install-file -DgroupId=com.oracle -DartifactId=ojdbc14 -Dversion=11.2.0 -Dpackaging=jar -Dfile=D:\share\workspace\stk123\webserver\lib\ojdbc14.jar-->
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>ojdbc14</artifactId>
+            <version>11.2.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
+            <version>4.5.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-queryparser</artifactId>
+            <version>4.5.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-highlighter</artifactId>
+            <version>4.5.0</version>
+        </dependency>
+        <!--mvn install:install-file -DgroupId=org.wltea -DartifactId=IKAnalyzer2012FF_u1 -Dversion=1.0.0 -Dpackaging=jar -Dfile=D:\share\workspace\stk123\webserver\lib\IKAnalyzer2012FF_u1.jar-->
+        <dependency>
+            <groupId>org.wltea</groupId>
+            <artifactId>IKAnalyzer2012FF_u1</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <version>3.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>1.9.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.11</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <version>2.1.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache</artifactId>
+            <version>2.8.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-email</artifactId>
+            <version>1.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sf.ezmorph</groupId>
+            <artifactId>ezmorph</artifactId>
+            <version>1.0.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sf.jsqlparser</groupId>
+            <artifactId>jsqlparser</artifactId>
+            <version>0.8.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>1.8.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>3.11</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-scratchpad</artifactId>
+            <version>3.11</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jdom</groupId>
+            <artifactId>jdom</artifactId>
+            <version>2.0.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>technology.tabula</groupId>
+            <artifactId>tabula</artifactId>
+            <version>1.0.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.tictactec</groupId>
+            <artifactId>ta-lib</artifactId>
+            <version>0.4.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jfreechart</artifactId>
+            <version>1.0.19</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.python</groupId>
+            <artifactId>jython</artifactId>
+            <version>2.7.2</version>
+        </dependency>
+
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>spring-repo</id>
+            <name>Spring Repository</name>
+            <url>https://repo.spring.io/libs-milestone</url>
+        </repository>
+    </repositories>
+
+    <build>
+        <finalName>webserver</finalName>
+        <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+            <plugins>
+                <plugin>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+                <!-- see http://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_war_packaging -->
+                <plugin>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.0.2</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.0</version>
+                    <configuration>
+                        <compilerArguments>
+                            <extdirs>${third.libs}</extdirs>
+                        </compilerArguments>
+                        <showWarnings>false</showWarnings>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.22.1</version>
+                </plugin>
+
+                <plugin>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>3.2.2</version>
+                    <configuration>
+                        <webResources>
+                            <resource>
+                                <directory>${third.libs}</directory>
+                                <targetPath>WEB-INF/lib/</targetPath>
+                                <includes>
+                                    <include>**/*.jar</include>
+                                </includes>
+                            </resource>
+                        </webResources>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>2.5.2</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>2.8.2</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>3.0.0</version>
+                    <executions>
+                        <execution>
+                            <!-- mvn antrun:run@ant-execute -->
+                            <id>ant-execute</id>
+                            <phase>compile</phase>
+                            <configuration>
+                                <target>
+                                    <property name="compile_classpath" refid="maven.compile.classpath"/>
+                                    <property name="runtime_classpath" refid="maven.runtime.classpath"/>
+                                    <property name="test_classpath" refid="maven.test.classpath"/>
+                                    <property name="plugin_classpath" refid="maven.plugin.classpath"/>
+
+                                    <echo message="compile classpath: ${compile_classpath}"/>
+                                    <echo message="runtime classpath: ${runtime_classpath}"/>
+                                    <echo message="test classpath:    ${test_classpath}"/>
+                                    <echo message="plugin classpath:  ${plugin_classpath}"/>
+                                </target>
+                            </configuration>
+                            <goals>
+                                <goal>run</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+
+            </plugins>
+        </pluginManagement>
+    </build>
+</project>

@@ -1,0 +1,47 @@
+ul.tagsinput { border:1px solid #CCC; background: #FFF; padding:5px; overflow-y: auto;}
+ul.tagsinput li.tag { border: 1px solid #3a87ad; -moz-border-radius:2px; -webkit-border-radius:2px; display: block; float: left; padding: 5px; text-decoration:none; background: #3a87ad; color: #fff; margin-right:2px;margin-top:5px; margin-bottom:3px;font-family: helvetica; font-size:18px;}
+ul.tagsinput li.drag-item:hover {cursor: move;}
+ul.tagsinput li.tag a { font-weight: bold; color: #fff; text-decoration:none; font-size: 11px;display: none;} 
+ul.tagsinput input { width:90px; margin:0px; font-family: helvetica; font-size: 13px; border:1px solid transparent; padding:5px; background: transparent; color: #000; outline:0px;  margin-top:4px; margin-bottom:3px; font-size:18px;}
+ul.tagsinput div { display:block; float: left; } 
+.tags_clear { clear: both; width: 100%; height: 0px; }
+.not_valid {background: #FBD8DB !important; color: #90111A !important;}
+.article-box ul{
+min-width:200px;
+word-break:keep-all;/* 不换行 */  
+    white-space:nowrap;/* 不换行 */  
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+.article-box tr{
+margin-left:20px;
+}
+.article-box ul.tagsinput {
+border: 0px solid #CCC;
+background: #FFF;
+padding:0px;
+overflow-y: auto;
+}
+.article-box ul.tagsinput input{
+font-size: 13px;
+padding: 0px;
+margin-left:0px;
+}
+.article-box ul, ol{
+margin:0px;
+margin-bottom:1px;
+}
+.article-box ul.tagsinput li.tag {
+border-radius: 3px;
+-moz-border-radius:3px;
+-webkit-border-radius:3px;
+padding:0px;
+text-decoration: none;
+background: #3a87ad;
+color: #fff;
+padding-left:5px;
+padding-right:5px;
+margin-right:5px;
+font-family: helvetica;
+font-size: 13px;
+}

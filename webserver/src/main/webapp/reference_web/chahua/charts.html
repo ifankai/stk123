@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<!--[if IE 7]>    <html class="no-js ie7 ie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8 ie" lang="en"> <![endif]-->
+<!--[if IE 9]>    <html class="no-js ie9 ie" lang="en"> <![endif]-->
+<!--[if gt IE 9]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+	<head>
+		<meta charset="utf-8" />
+		<title>Charts | Wuxia Bootstrap Admin Template</title>
+		<meta name="description" content="" />
+		<meta name="author" content="Walking Pixels | www.walkingpixels.com" />
+		<meta name="robots" content="index, follow" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		
+		<!-- jQuery Visualize Styles -->
+		<link rel='stylesheet' type='text/css' href='css/plugins/jquery.visualize.css' />
+		
+		<!-- CSS styles -->
+		<link rel='stylesheet' type='text/css' href='css/wuxia-red.css' />
+		
+		<!-- Fav and touch icons -->
+		<link rel="shortcut icon" href="img/icons/favicon.ico" />
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="img/icons/apple-touch-icon-114-precomposed.png" />
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="img/icons/apple-touch-icon-72-precomposed.png" />
+		<link rel="apple-touch-icon-precomposed" href="img/icons/apple-touch-icon-57-precomposed.png" />
+		
+		<!-- JS Libs -->
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+		<script>window.jQuery || document.write('<script src="js/libs/jquery.js"><\/script>')</script>
+		<script src="js/libs/modernizr.js"></script>
+		<script src="js/libs/selectivizr.js"></script>
+		
+		<script>
+			$(document).ready(function(){
+				
+				// Navbar tooltips
+				$('.navbar [title]').tooltip({
+					placement: 'bottom'
+				});
+				
+				// Content tooltips
+				$('[role=main] [title]').tooltip({
+					placement: 'top'
+				});
+				
+				// Dropdowns
+				$('.dropdown-toggle').dropdown();
+				
+				// Tabs
+				$('.demoTabs a').click(function (e) {
+					e.preventDefault();
+					$(this).tab('show');
+					$('table').trigger('visualizeRefresh');; // Refresh jQuery Visualize for hidden tabs
+				})
+				
+			});
+		</script>
+		<script type="text/javascript">
+			var _gaq=_gaq||[];_gaq.push(["_setAccount","UA-22557155-5"]);_gaq.push(["_trackPageview"]);(function(){var b=document.createElement("script");b.type="text/javascript";b.async=true;b.src=("https:"==document.location.protocol?"https://ssl":"http://www")+".google-analytics.com/ga.js";var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(b,a)})();
+		</script>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
+	<body>
+	
+		<!-- Main navigation bar -->
+		<header class="navbar navbar-fixed-top">
+			<div class="navbar-inner">
+				<div class="container">
+					<button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".user">
+						<span class="icon-user"></span>
+					</button>
+					<button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".navigation">
+						<span class="icon-chevron-down"></span>
+					</button>
+					<a class="brand" href="http://envato.walkingpixels.com/themes/wuxia/">Walking Pixels Wuxia Bootstrap admin template</a>
+					<nav class="nav-collapse navigation">
+						<ul class="nav" role="navigation">
+							<li><a href="index.html" title="Homepage dashboard"><span class="icon-home"></span> Dashboard</a></li>
+							<li><a href="forms.html" title="Form elements"><span class="icon-tasks"></span> Forms</a></li>
+							<li><a href="tables.html" title="Static and dynamic tables"><span class="icon-table"></span> Tables</a></li>
+							<li><a href="typography.html" title="Typography showcase"><span class="icon-font"></span> Typography</a></li>
+							<li><a href="ui-buttons.html" title="Buttons in navbar!"><span class="icon-magic"></span> UI &amp; Buttons</a></li>
+							<li class="divider-vertical"></li>
+							<li><a href="#" title="Buttons in navbar!" class="btn-wuxia-navbar"><div class="btn btn-wuxia"><span class="icon-key"></span> Widgets</div></a></li>
+						</ul>
+					</nav>
+					<nav class="nav-collapse user">
+						<div class="user-info pull-right">
+							<img src="http://placekitten.com/35/35" alt="User avatar" />
+							<div class="btn-group">
+								<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+									<div><strong>John Pixel</strong>Administrator</div>
+									<span class="caret"></span>
+								</a>
+								<ul class="dropdown-menu">
+									<li><a href=""><span class="icon-cogs"></span> Account settings</a></li>
+									<li><a href=""><span class="icon-bell"></span> Preferences</a></li>
+									<li><a href=""><span class="icon-envelope"></span> Email notifications</a></li>
+									<li class="divider"></li>
+									<li><a href=""><span class="icon-signout"></span> Logout</a></li>
+								</ul>
+							</div>
+						</div>
+					</nav>
+				</div>
+			</div>
+		</header>
+		<!-- /Main navigation bar -->
+		
+		<!-- Main content -->
+		<div class="container" role="main">
+		
+			<!-- Breadcrumbs -->
+			<ul class="breadcrumb">
+				<li><a href="#"><span class="icon-home"></span> Home</a></li>
+				<li><a href="#">Wuxia template</a></li>
+				<li class="active">Charts</li>
+			</ul>
+			<!-- Breadcrumbs -->
+		
+			<!-- Secondary navigation -->
+			<div class="nav-secondary">
+				<nav>
+					<ul>
+						<li class="active"><a class="wuxify-me" href="charts.html"><span class="icon-signal"></span>Charts</a></li>
+						<li><a class="wuxify-me" href="gallery.html"><span class="icon-picture"></span>Gallery</a></li>
+						<li><a class="wuxify-me" href="file-explorer.html"><span class="icon-file"></span>File explorer</a></li>
+						<li><a class="wuxify-me" href="calendar.html"><span class="icon-calendar"></span>Calendar</a></li>
+						<li><a class="wuxify-me" href="grid.html"><span class="icon-th"></span>Grid</a></li>
+						<li><a class="wuxify-me" href="goodies.html"><span class="icon-heart"></span>Goodies</a><span class="badge badge-inverse">6</span></li>
+					</ul>
+				</nav>
+			</div>
+			<!-- /Secondary navigation -->
+			
+			<!-- Main data container -->
+			<div class="content">
+			
+				<!-- Page header -->
+				<div class="page-header">
+					<h1><span class="icon-signal"></span> Data visualization</h1>
+					<ul class="page-header-actions">
+						<li class="active demoTabs"><a href="#visualize" class="btn btn-wuxia">jQuery Visualize</a></li>
+						<li class="demoTabs"><a href="#flot" class="btn btn-wuxia">jQuery Flot Charts</a></li>
+						<li><a href="http://twitter.github.com/bootstrap/components.html" class="btn btn-wuxia btn-inverse pull-right" title="Official Bootstrap documentation" target="_blank"><span class="icon-question-sign"></span> Bootstrap Docs</a></li>
+					</ul>
+				</div>
+				<!-- /Page header -->
+				
+				<!-- Tab content -->
+				<div class="page-container tab-content">
+				
+					<!-- Tab #visualize -->
+					<div class="tab-pane active" id="visualize">
+						
+						<!-- Grid row -->
+						<div class="row">
+					
+							<!-- Example jQuery Visualize -->
+							<!-- Page grid cell (5 blocks) -->
+							<article class="span7">
+								
+								<h2>jQuery Visualize</h2>
+								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vitae ac ligula eleifend commodo id quis risus. Donec consequat lorem et metus facilisis vitae dapibus felis fermentum.</p>
+								<p class="well">jQuery Visualize plugin for accessible charts and graphs that uses JavaScript to scrape data from an HTML table and generate bar, line, area, and pie chart visualizations using the HTML5 canvas element. This technique provides a simple way to generate charts, but more importantly, because it bases the chart on data already in the page in an HTML table element, it is accessible to people who browse the web with a screen reader or other assistive technology, or with browsers that don't fully support JavaScript or HTML5 Canvas.</p>
+								<p>Etiam diam tortor, malesuada eu semper sit amet, ornare sit amet nunc. Praesent eros purus, bibendum commodo commodo eu, aliquam quis nibh. Integer ullamcorper semper est, at euismod justo tincidunt sit amet. Curabitur commodo tristique augue ac pellentesque.</p>
+								<p>Maecenas varius ultricies orci non ullamcorper. Mauris vestibulum convallis ligula eget adipiscing. Sed fringilla, ante fringilla egestas iaculis, orci lorem rhoncus arcu, venenatis vehicula purus urna id diam.</p>
+								
+							</article>
+							<!-- /Page grid cell (5 blocks) -->
+							
+							<!-- Page grid cell (7 blocks) -->
+							<article class="span5">
+							
+								<table data-chart="line">
+									<caption>Employee Sales by Department</caption>
+									<thead>
+										<tr>
+											<td></td>
+											<th scope="col">food</th>
+											<th scope="col">auto</th>
+											<th scope="col">household</th>
+											<th scope="col">furniture</th>
+											<th scope="col">kitchen</th>
+											<th scope="col">bath</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<th scope="row">Mary</th>
+											<td>190</td>
+											<td>160</td>
+											<td>40</td>
+											<td>120</td>
+											<td>30</td>
+											<td>70</td>
+										</tr>
+										<tr>
+											<th scope="row">Tom</th>
+											<td>3</td>
+											<td>40</td>
+											<td>30</td>
+											<td>45</td>
+											<td>35</td>
+											<td>49</td>
+										</tr>
+									</tbody>
+								</table>
+								
+							</article>
+							<!-- /Page grid cell (7 blocks) -->
+							
+						</div>
+						<!-- /Grid row -->
+							
+						<!-- Grid row -->
+						<div class="row">
+							
+							<!-- Page grid cell (4 blocks) -->
+							<article class="span4">
+							
+								<table data-chart="pie">
+									<caption>Employee Sales by Department</caption>
+									<thead>
+										<tr>
+											<td></td>
+											<th scope="col">food</th>
+											<th scope="col">auto</th>
+											<th scope="col">household</th>
+											<th scope="col">furniture</th>
+											<th scope="col">kitchen</th>
+											<th scope="col">bath</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<th scope="row">Mary</th>
+											<td>190</td>
+											<td>160</td>
+											<td>40</td>
+											<td>120</td>
+											<td>30</td>
+											<td>70</td>
+										</tr>
+										<tr>
+											<th scope="row">Tom</th>
+											<td>3</td>
+											<td>40</td>
+											<td>30</td>
+											<td>45</td>
+											<td>35</td>
+											<td>49</td>
+										</tr>
+									</tbody>
+								</table>
+								
+							</article>
+							<!-- /Page grid cell (4 blocks) -->
+							
+							<!-- Page grid cell (4 blocks) -->
+							<article class="span4">
+							
+								<table data-chart="bar">
+									<caption>Employee Sales by Department</caption>
+									<thead>
+										<tr>
+											<td></td>
+											<th scope="col">food</th>
+											<th scope="col">auto</th>
+											<th scope="col">household</th>
+											<th scope="col">furniture</th>
+											<th scope="col">kitchen</th>
+											<th scope="col">bath</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<th scope="row">Mary</th>
+											<td>190</td>
+											<td>160</td>
+											<td>40</td>
+											<td>120</td>
+											<td>30</td>
+											<td>70</td>
+										</tr>
+										<tr>
+											<th scope="row">Tom</th>
+											<td>3</td>
+											<td>40</td>
+											<td>30</td>
+											<td>45</td>
+											<td>35</td>
+											<td>49</td>
+										</tr>
+									</tbody>
+								</table>
+								
+							</article>
+							<!-- /Page grid cell (4 blocks) -->
+							
+							<!-- Page grid cell (4 blocks) -->
+							<article class="span4">
+							
+								<table data-chart="area">
+									<caption>Employee Sales by Department</caption>
+									<thead>
+										<tr>
+											<td></td>
+											<th scope="col">food</th>
+											<th scope="col">auto</th>
+											<th scope="col">household</th>
+											<th scope="col">furniture</th>
+											<th scope="col">kitchen</th>
+											<th scope="col">bath</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<th scope="row">Mary</th>
+											<td>190</td>
+											<td>160</td>
+											<td>40</td>
+											<td>120</td>
+											<td>30</td>
+											<td>70</td>
+										</tr>
+										<tr>
+											<th scope="row">Tom</th>
+											<td>3</td>
+											<td>40</td>
+											<td>30</td>
+											<td>45</td>
+											<td>35</td>
+											<td>49</td>
+										</tr>
+									</tbody>
+								</table>
+								
+							</article>
+							<!-- /Page grid cell (4 blocks) -->
+						
+						</div>
+						<!-- /Grid row -->
+						
+					</div>
+					<!-- Tab #visualize -->
+					
+					<!-- Tab #flot -->
+					<div class="tab-pane" id="flot">
+						
+						<!-- Grid row -->
+						<div class="row">
+					
+							<!-- Example jQuery Flot -->
+							<!-- Page grid cell (5 blocks) -->
+							<article class="span5">
+								
+								<h2>jQuery Flot Charts</h2>
+								<p>Flot is a pure Javascript plotting library for jQuery. It produces graphical plots of arbitrary datasets on-the-fly client-side. The focus is on simple usage (all settings are optional), attractive looks and interactive features like zooming and mouse tracking.</p>
+								<p>The plugin works with Internet Explorer 6+, Firefox 2.x+, Safari 3.0+, Opera 9.5+ and Konqueror 4.x+ with the HTML canvas tag (the excanvas Javascript emulation helper is used for IE < /></p>
+								<p>More Flot Chart <a href="http://people.iola.dk/olau/flot/examples/" target="_blank">examples</a>.</p>
+								
+							</article>
+							<!-- /Page grid cell (5 blocks) -->
+							
+							<!-- Page grid cell (7 blocks) -->
+							<article class="span7">
+							
+								<div id="demo-1" class="flot wide"></div>
+								
+							</article>
+							<!-- /Page grid cell (7 blocks) -->
+							
+						</div>
+						<!-- /Grid row -->
+							
+						<!-- Grid row -->
+						<div class="row">
+							
+							<!-- Page grid cell (4 blocks) -->
+							<article class="span4">
+							
+								<h3>Nunc blandit magna eu urna</h3>
+								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus urna odio, tincidunt porta consectetur in, pellentesque at odio. Vestibulum interdum turpis at elit lobortis fringilla. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nunc blandit magna eu urna gravida sit amet semper lorem mattis.</p>
+								<p>Nulla facilisi. Morbi consectetur mattis tellus sit amet ullamcorper. Sed facilisis lacus vel arcu luctus scelerisque. Nullam congue sodales auctor. Sed vulputate lacus et felis porta porta. </p>
+								<div id="demo-2" class="flot"></div>
+								
+							</article>
+							<!-- /Page grid cell (4 blocks) -->
+							
+							<!-- Page grid cell (4 blocks) -->
+							<article class="span4">
+							
+								<h3>Etiam egestas, ante congue</h3>
+								<p>Aliquam hendrerit justo id libero vestibulum commodo. Nulla tincidunt congue justo, vitae tristique metus laoreet id. In non odio sodales enim vulputate dignissim quis eget libero. Duis ultrices facilisis ipsum, vel gravida nibh mattis quis.</p>
+								<div id="demo-3" class="flot"></div>
+								<p>Maecenas id malesuada metus. Ut suscipit tristique nulla, vel vulputate dolor ornare a. Mauris placerat metus at nunc bibendum ac feugiat nisl tincidunt.</p>
+								
+							</article>
+							<!-- /Page grid cell (4 blocks) -->
+							
+							<!-- Page grid cell (4 blocks) -->
+							<article class="span4">
+							
+								<h3>Duis vitae dui</h3>
+								<p>Aliquam fringilla tincidunt egestas. Nam laoreet erat congue lectus rutrum quis interdum sem fermentum. Nulla facilisi.</p>
+								<div id="demo-4" class="flot"></div>
+								<p class="hoverdata">Mouse hovers at (<span id="x">0</span>, <span id="y">0</span>). <span id="clickdata"></span></p>
+								<p>Curabitur dapibus accumsan vulputate. Aliquam fringilla tincidunt egestas. Nam laoreet erat congue lectus rutrum quis interdum sem fermentum.</p>
+								<h3>Morbi consectetur</h3>
+								<p>Nullam congue sodales auctor. Sed vulputate lacus et felis porta porta.</p>
+								
+							</article>
+							<!-- /Page grid cell (4 blocks) -->
+						
+						</div>
+						<!-- /Grid row -->
+						
+					</div>
+					<!-- /Tab #flot -->
+					
+				</div>
+				<!-- /Tab content -->
+			
+			</div>
+			<!-- /Main data container -->
+			
+		</div>
+		<!-- /Main content -->
+		
+		<!-- Main footer -->
+		<footer class="container">
+			<nav>
+				<ul>
+					<li>&copy; Copyright 2012. All rights reserved.</li>
+					<li><a href="">Documentation</a></li>
+					<li><a href="">Support</a></li>
+					<li><a href="">API</a></li>
+					<li><a href="">Blog</a></li>
+				</ul>
+			</nav>
+			<p>&copy; Copyright &copy; 2013.Company name All rights reserved.<a target="_blank" href="http://sc.chinaz.com/moban/">&#x7F51;&#x9875;&#x6A21;&#x677F;</a></p>
+		</footer>
+		<!-- /Main footer -->
+		
+		<!-- Scripts -->
+		<script src="js/navbar.js"></script>
+		<script src="js/plugins/waypoints.min.js"></script>
+		<script src="js/bootstrap/bootstrap-tooltip.js"></script>
+		<script src="js/bootstrap/bootstrap-dropdown.js"></script>
+		<script src="js/bootstrap/bootstrap-tab.js"></script>
+		<script src="js/bootstrap/bootstrap-collapse.js"></script>
+		
+		<!-- jQuery Visualize -->
+		<!--[if lte IE 8]>
+			<script language="javascript" type="text/javascript" src="js/plugins/visualize/excanvas.js"></script>
+		<![endif]-->
+		<script src="js/plugins/visualize/jquery.visualize.min.js"></script>
+		<script src="js/plugins/visualize/jquery.visualize.tooltip.min.js"></script>
+		
+		<script>
+			$(document).ready(function() {
+			
+				$('table').each(function() {
+					var chartType = ''; // Set chart type
+					var chartWidth = $(this).parent().width()*0.85; // Set chart width to 85% of its parent
+					var chartHeight = chartWidth; // Nice squares
+					
+					if ($(this).attr('data-chart')) { // If exists chart-chart attribute
+						chartType = $(this).attr('data-chart'); // Get chart type from data-chart attribute
+					} else {
+						chartType = 'area'; // If data-chart attribute is not set, use 'area' type as default. Options: 'bar', 'area', 'pie', 'line'
+					}
+					
+					if(chartType == 'line' || chartType == 'pie') {
+						$(this).hide().visualize({
+							type: chartType,
+							width: chartWidth,
+							height: chartHeight,
+							colors: ['#389abe','#fa9300','#6b9b20','#d43f3f','#8960a7','#33363b','#b29559','#6bd5b1','#66c9ee'],
+							lineDots: 'double',
+							interaction: true,
+							multiHover: 5,
+							tooltip: true,
+							tooltiphtml: function(data) {
+								var html ='';
+								for(var i=0; i<data.point.length; i++){
+									html += '<p class="tooltip chart_tooltip"><div class="tooltip-inner"><strong>'+data.point[i].value+'</strong> '+data.point[i].yLabels[0]+'</div></p>';
+								}	
+								return html;
+							}
+						});
+					} else {
+						$(this).hide().visualize({
+							type: chartType,
+							width: chartWidth,
+							height: chartHeight,
+							colors: ['#389abe','#fa9300','#6b9b20','#d43f3f','#8960a7','#33363b','#b29559','#6bd5b1','#66c9ee'],
+						});
+					}
+				});
+			
+			});
+		</script>
+		
+		<!-- jQuery Flot Charts -->
+		<!--[if lte IE 8]>
+			<script language="javascript" type="text/javascript" src="js/plugins/flot/excanvas.min.js"></script>
+		<![endif]-->
+		<script src="js/plugins/flot/jquery.flot.js"></script>
+		<script src="js/plugins/flot/jquery.flot.pie.js"></script>
+		
+		<script>
+			$(document).ready(function() {
+			
+				// Demo #2
+				var d1 = [];
+				for (var i = 0; i < 14; i += 0.5)
+					d1.push([i, Math.sin(i)]);
+				
+				var d2 = [[0, 3], [4, 8], [8, 5], [9, 13]];
+				
+				var d3 = [];
+				for (var i = 0; i < 14; i += 0.5)
+					d3.push([i, Math.cos(i)]);
+				
+				var d4 = [];
+				for (var i = 0; i < 14; i += 0.1)
+					d4.push([i, Math.sqrt(i * 10)]);
+				
+				var d5 = [];
+				for (var i = 0; i < 14; i += 0.5)
+					d5.push([i, Math.sqrt(i)]);
+				
+				var d6 = [];
+				for (var i = 0; i < 14; i += 0.5 + Math.random())
+					d6.push([i, Math.sqrt(2*i + Math.sin(i) + 5)]);
+						
+				$.plot($("#demo-2"), [
+					{
+						data: d1,
+						lines: { show: true, fill: true }
+					},
+					{
+						data: d2,
+						bars: { show: true }
+					},
+						{
+					data: d3,
+						points: { show: true }
+					},
+					{
+						data: d4,
+						lines: { show: true }
+					},
+					{
+						data: d5,
+						lines: { show: true },
+						points: { show: true }
+					},
+					{
+						data: d6,
+						lines: { show: true, steps: true }
+					}
+				], {
+					grid: { backgroundColor: '#ffffff' }
+				});
+				
+				// Demo #3
+				var data = [];
+				var series = Math.floor(Math.random()*6)+3;
+				for( var i = 0; i<series; i++){
+					data[i] = { label: "Series"+(i+1), data: Math.floor(Math.random()*100)+1 }
+				}
+				
+				$.plot($("#demo-3"), data, {
+					series: {
+						pie: {
+							innerRadius: 0.5,
+							show: true
+						}
+					},
+					grid: { backgroundColor: '#ffffff' }
+				});
+				
+				// Demo #4
+				var sin = [], cos = [];
+				for (var i = 0; i < 14; i += 0.5) {
+					sin.push([i, Math.sin(i)]);
+					cos.push([i, Math.cos(i)]);
+				}
+				
+				var plot = $.plot($("#demo-4"),
+					[ { data: sin, label: "sin(x)"}, { data: cos, label: "cos(x)" } ], {
+						series: {
+							lines: { show: true },
+							points: { show: true }
+						},
+						grid: { hoverable: true, clickable: true, backgroundColor: '#ffffff' },
+						yaxis: { min: -1.2, max: 1.2 }
+					});
+				
+				function showTooltip(x, y, contents) {
+					$('<div id="tooltip"><div class="tooltip-inner">' + contents + '</div></div>').css( {
+						position: 'absolute',
+						display: 'none',
+						top: y + 10,
+						left: x + 10
+					}).appendTo("body").fadeIn(200);
+				}
+				
+				var previousPoint = null;
+				$("#demo-4").bind("plothover", function (event, pos, item) {
+					$("#x").text(pos.x.toFixed(2));
+					$("#y").text(pos.y.toFixed(2));
+				
+						if (item) {
+							if (previousPoint != item.dataIndex) {
+								previousPoint = item.dataIndex;
+				
+								$("#tooltip").remove();
+								var x = item.datapoint[0].toFixed(2),
+									y = item.datapoint[1].toFixed(2);
+				
+								showTooltip(item.pageX, item.pageY,
+								item.series.label + " of " + x + " = " + y);
+							}
+						} else {
+							$("#tooltip").remove();
+							previousPoint = null;
+						}
+				});
+				
+				$("#demo-4").bind("plotclick", function (event, pos, item) {
+					if (item) {
+						$("#clickdata").text("You clicked point " + item.dataIndex + " in " + item.series.label + ".");
+						plot.highlight(item.series, item.datapoint);
+					}
+				});
+				
+				// Demo #1
+				// we use an inline data source in the example, usually data would be fetched from a server
+				var data = [], totalPoints = 300;
+				function getRandomData() {
+					if (data.length > 0)
+						data = data.slice(1);
+				
+					// do a random walk
+					while (data.length < totalPoints) {
+						var prev = data.length > 0 ? data[data.length - 1] : 50;
+						var y = prev + Math.random() * 10 - 5;
+						if (y < 0)
+							y = 0;
+						if (y > 100)
+							y = 100;
+						data.push(y);
+					}
+				
+					// zip the generated y values with the x values
+					var res = [];
+					for (var i = 0; i < data.length; ++i)
+						res.push([i, data[i]])
+					return res;
+				}
+				
+				// setup control widget
+				var updateInterval = 30;
+				$("#updateInterval").val(updateInterval).change(function () {
+					var v = $(this).val();
+					if (v && !isNaN(+v)) {
+						updateInterval = +v;
+					if (updateInterval < 1)
+						updateInterval = 1;
+					if (updateInterval > 2000)
+						updateInterval = 2000;
+					$(this).val("" + updateInterval);
+					}
+				});
+				
+				// setup plot
+				var options = {
+					series: { shadowSize: 0, color: '#389abe' }, // drawing is faster without shadows
+					yaxis: { min: 0, max: 100 },
+					xaxis: { show: false },
+					grid: { backgroundColor: '#ffffff' }
+				};
+				var plot = $.plot($("#demo-1"), [ getRandomData() ], options);
+				
+				function update() {
+					plot.setData([ getRandomData() ]);
+					// since the axes don't change, we don't need to call plot.setupGrid()
+					plot.draw();
+					setTimeout(update, updateInterval);
+				}
+				
+				update();
+			
+			});
+		</script>
+		
+	<div style="display:none"><script src='http://v7.cnzz.com/stat.php?id=155540&web_id=155540' language='JavaScript' charset='gb2312'></script></div>
+</body>
+</html>
