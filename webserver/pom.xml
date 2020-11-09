@@ -329,8 +329,8 @@
                                             <!--指定main-class-->
                                             <!--<attribute name="Main-Class" value="demo.SayHello" />-->
                                             <!--指定Class-Path-->
-                                            <attribute name="Class-Path" value="D:\share\workspace\stk123\webserver\target\webserver\WEB-INF\lib">
-                                            </attribute>
+                                            <!--<attribute name="Class-Path" value="D:\share\workspace\stk123\webserver\target\webserver\WEB-INF\lib">-->
+                                            <!--</attribute>-->
                                         </manifest>
 
                                     </jar>
