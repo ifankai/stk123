@@ -323,6 +323,17 @@
                                     <echo message="runtime classpath: ${runtime_classpath}"/>
                                     <echo message="test classpath:    ${test_classpath}"/>
                                     <echo message="plugin classpath:  ${plugin_classpath}"/>
+
+                                    <jar destfile="./stk.jar" basedir="target/classes" includes="**" >
+                                        <manifest>
+                                            <!--指定main-class-->
+                                            <!--<attribute name="Main-Class" value="demo.SayHello" />-->
+                                            <!--指定Class-Path-->
+                                            <attribute name="Class-Path" value="D:\share\workspace\stk123\webserver\target\webserver\WEB-INF\lib">
+                                            </attribute>
+                                        </manifest>
+
+                                    </jar>
                                 </target>
                             </configuration>
                             <goals>
@@ -332,6 +343,74 @@
                     </executions>
                 </plugin>
 
+
+                <plugin>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>3.1.1</version>
+                    <configuration>
+                        <descriptorRefs>
+                            <descriptorRef>jar-with-dependencies</descriptorRef>
+                        </descriptorRefs>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>make-assembly</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>single</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+
+
+                <!-- 各种maven plugin的详细说明：https://www.jianshu.com/p/0d85d0539b1a -->
+
+                <!--
+                 1.spring-boot:run  运行Spring Boot应用
+                 2.spring-boot:repackage 重新打包jar/war包为可执行包
+                 3.spring-boot:start 和spring-boot:stop 管理Spring Boot 应用的生命周期(即集成测试)
+                 -->
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>repackage</goal>
+                            </goals>
+                            <configuration>
+                                <classifier>spring-boot</classifier>
+                                <mainClass>
+                                    org.baeldung.executable.ExecutableMavenJar
+                                </mainClass>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- tomcat7:deploy -->
+                <plugin>
+                    <groupId>org.apache.tomcat.maven</groupId>
+                    <artifactId>tomcat7-maven-plugin</artifactId>
+                    <version>2.0</version>
+                    <executions>
+                        <execution>
+                            <id>tomcat-run</id>
+                            <goals>
+                                <goal>exec-war-only</goal>
+                            </goals>
+                            <phase>package</phase>
+                            <configuration>
+                                <path>/</path>
+                                <enableNaming>false</enableNaming>
+                                <finalName>webapp.jar</finalName>
+                                <charset>utf-8</charset>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
 
             </plugins>
         </pluginManagement>
