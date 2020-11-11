@@ -41,19 +41,22 @@ public class XqPost implements Serializable {
     @Column
     private Integer replyCount;
 
+    @Column
+    private Date insertDate; //post记录创建时间
+
     @Column(columnDefinition = "boolean default false")
-    private Boolean isFavorite;
+    private Boolean isFavorite = false;
 
     @Column
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     private Date favoriteDate;
 
     @Column(columnDefinition = "boolean default false")
-    private Boolean isRead;
+    private Boolean isRead = false;
 
     @Column
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
-    private Date readDate;
+    private Date readDate; //post读取时间，读取后isRead改为true
 
     //user information:
     @Column

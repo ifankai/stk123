@@ -98,11 +98,17 @@
         </dependency>
 
         <!--mvn install:install-file -DgroupId=com.oracle -DartifactId=ojdbc14 -Dversion=11.2.0 -Dpackaging=jar -Dfile=D:\share\workspace\stk123\webserver\lib\ojdbc14.jar-->
-        <dependency>
-            <groupId>com.oracle</groupId>
-            <artifactId>ojdbc14</artifactId>
-            <version>11.2.0</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.oracle</groupId>-->
+            <!--<artifactId>ojdbc14</artifactId>-->
+            <!--<version>11.2.0</version>-->
+        <!--</dependency>-->
+        <!--&lt;!&ndash;mvn install:install-file -DgroupId=org.wltea -DartifactId=IKAnalyzer2012FF_u1 -Dversion=1.0.0 -Dpackaging=jar -Dfile=D:\share\workspace\stk123\webserver\lib\IKAnalyzer2012FF_u1.jar&ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>org.wltea</groupId>-->
+            <!--<artifactId>IKAnalyzer2012FF_u1</artifactId>-->
+            <!--<version>1.0.0</version>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>org.apache.lucene</groupId>
@@ -118,12 +124,6 @@
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-highlighter</artifactId>
             <version>4.5.0</version>
-        </dependency>
-        <!--mvn install:install-file -DgroupId=org.wltea -DartifactId=IKAnalyzer2012FF_u1 -Dversion=1.0.0 -Dpackaging=jar -Dfile=D:\share\workspace\stk123\webserver\lib\IKAnalyzer2012FF_u1.jar-->
-        <dependency>
-            <groupId>org.wltea</groupId>
-            <artifactId>IKAnalyzer2012FF_u1</artifactId>
-            <version>1.0.0</version>
         </dependency>
 
         <dependency>
