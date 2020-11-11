@@ -34,7 +34,7 @@ public class XqController {
         log.info("query.....");
         List<XqPost> list = null;
         if(type == null || StringUtils.equals(type, "all")) {
-            list = xqPostRepository.findAllOrderByInsertDateDesc();
+            list = xqPostRepository.findAllByOrderByInsertDateDesc();
         }else if(StringUtils.equals(type, "unread")){
             list = xqPostRepository.findByIsReadOrderByInsertDateDesc(false);
             if (!CollectionUtils.isEmpty(list)) {
