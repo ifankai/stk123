@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
+    <facet type="Spring" name="Spring">
+      <configuration />
+    </facet>
     <facet type="web" name="Web">
       <configuration>
         <descriptors>
@@ -11,9 +14,6 @@
           <root url="file://$MODULE_DIR$/src/main/webapp" relative="/" />
         </webroots>
       </configuration>
-    </facet>
-    <facet type="Spring" name="Spring">
-      <configuration />
     </facet>
   </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
@@ -89,7 +89,6 @@
     <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.6" level="project" />
     <orderEntry type="library" name="Maven: org.htmlparser:htmlparser:2.1" level="project" />
     <orderEntry type="library" name="Maven: org.htmlparser:htmllexer:2.1" level="project" />
-    <orderEntry type="library" name="Maven: com.oracle:ojdbc14:11.2.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.lucene:lucene-core:4.5.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.lucene:lucene-queryparser:4.5.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.lucene:lucene-queries:4.5.0" level="project" />
@@ -97,7 +96,6 @@
     <orderEntry type="library" name="Maven: jakarta-regexp:jakarta-regexp:1.4" level="project" />
     <orderEntry type="library" name="Maven: org.apache.lucene:lucene-highlighter:4.5.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.lucene:lucene-memory:4.5.0" level="project" />
-    <orderEntry type="library" name="Maven: org.wltea:IKAnalyzer2012FF_u1:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: commons-httpclient:commons-httpclient:3.1" level="project" />
     <orderEntry type="library" name="Maven: commons-logging:commons-logging:1.0.4" level="project" />
     <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.11" level="project" />

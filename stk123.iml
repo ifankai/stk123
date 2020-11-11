@@ -49,6 +49,7 @@
         <jarDirectory url="file://$MODULE_DIR$/DdlUtils/lib" recursive="false" />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="Python 3.7 interpreter library" level="application" />
   </component>
   <component name="PyDocumentationSettings">
     <option name="renderExternalDocumentation" value="true" />
