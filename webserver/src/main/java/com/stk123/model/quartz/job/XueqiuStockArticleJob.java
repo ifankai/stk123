@@ -9,6 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -158,6 +163,24 @@ public class XueqiuStockArticleJob implements Job {
 							results.add(a);
 							ids.add(a.id);
 							insertText(conn, code, a);
+
+                            XqPost xqPost = new XqPost();
+                            xqPost.setId(Long.valueOf((String)art.get("id")));
+                            xqPost.setTitle((String) art.get("title"));
+                            xqPost.setText((String) art.get("text"));
+                            xqPost.setCreatedAt(Long.valueOf((String)art.get("created_at")));
+                            xqPost.setReplyCount(Integer.valueOf((String)art.get("reply_count")));
+                            xqPost.setUserId(Long.valueOf((String)art.get("user_id")));
+                            xqPost.setUserName((String) ((Map)art.get("user")).get("screen_name"));
+                            xqPost.setUserAvatar(StringUtils.split((String) ((Map)art.get("user")).get("profile_image_url"), ",")[1]);
+
+                            ObjectMapper objectMapper = new ObjectMapper();
+                            String json = objectMapper.writeValueAsString(xqPost);
+
+                            requestHeaders.put("Content-Type", "application/json;charset=UTF-8");
+                            List<Header> respHeaders = new ArrayList<Header>();
+							HttpUtils.post("http://81.68.255.181/api/xq/post", null, json,"UTF-8", respHeaders);
+
 						}
 					}
 				}
@@ -165,6 +188,19 @@ public class XueqiuStockArticleJob implements Job {
 		}
 		return results;
 	}
+
+	@Getter
+    @Setter
+	static class XqPost{
+        private Long id;
+        private String title;
+        private String text;
+        private Long createdAt;
+        private Integer replyCount;
+        private Long userId;
+        private String userName;
+        private String userAvatar;
+    }
 	
 	private static void insertText(Connection conn, String code, XueqiuArticle xa) throws Exception {
 		List params = new ArrayList();
@@ -191,7 +227,7 @@ public class XueqiuStockArticleJob implements Job {
 		Connection conn = null;
 		try {
 			conn = DBUtil.getConnection();
-			List<XueqiuArticle> results = getArticles(conn,"000671");
+			List<XueqiuArticle> results = getArticles(conn,"600600");
 			System.out.println(results);
 		}finally{
 			CloseUtil.close(conn);
