@@ -167,7 +167,7 @@ public class XueqiuStockArticleJob implements Job {
                             XqPost xqPost = new XqPost();
                             xqPost.setId(Long.valueOf((String)art.get("id")));
                             xqPost.setTitle((String) art.get("title"));
-                            xqPost.setText((String) art.get("text"));
+                            xqPost.setText((String) art.get("description"));
                             xqPost.setCreatedAt(Long.valueOf((String)art.get("created_at")));
                             xqPost.setReplyCount(Integer.valueOf((String)art.get("reply_count")));
                             xqPost.setUserId(Long.valueOf((String)art.get("user_id")));
@@ -179,7 +179,7 @@ public class XueqiuStockArticleJob implements Job {
 
                             requestHeaders.put("Content-Type", "application/json;charset=UTF-8");
                             List<Header> respHeaders = new ArrayList<Header>();
-							HttpUtils.post("http://81.68.255.181/api/xq/post", null, json,requestHeaders,"UTF-8", respHeaders);
+							HttpUtils.post("http://81.68.255.181:8080/api/xq/post", null, json,requestHeaders,"UTF-8", respHeaders);
 
 						}
 					}
