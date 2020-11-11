@@ -179,7 +179,7 @@ public class XueqiuStockArticleJob implements Job {
 
                             requestHeaders.put("Content-Type", "application/json;charset=UTF-8");
                             List<Header> respHeaders = new ArrayList<Header>();
-							HttpUtils.post("http://81.68.255.181/api/xq/post", null, json,"UTF-8", respHeaders);
+							HttpUtils.post("http://81.68.255.181/api/xq/post", null, json,requestHeaders,"UTF-8", respHeaders);
 
 						}
 					}
