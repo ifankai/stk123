@@ -27,7 +27,7 @@
       <configuration sdkName="Python 3.7" />
     </facet>
   </component>
-  <component name="NewModuleRootManager">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
     <output url="file://$MODULE_DIR$/web/WEB-INF/classes" />
     <output-test url="file://$MODULE_DIR$/web/WEB-INF/classes" />
     <exclude-output />
