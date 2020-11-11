@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface XqPostRepository extends JpaRepository<XqPost, Long> {
 
-    List<XqPost> findAllOrderByInsertDateDesc();
+    List<XqPost> findAllByOrderByInsertDateDesc();
 
     List<XqPost> findByIsReadOrderByInsertDateDesc(Boolean isRead);
 
