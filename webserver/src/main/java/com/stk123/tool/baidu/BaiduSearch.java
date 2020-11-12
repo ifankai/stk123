@@ -14,12 +14,11 @@ import org.apache.commons.httpclient.NoHttpResponseException;
 import org.apache.commons.lang.StringUtils;
 import org.htmlparser.Node;
 
-import com.stk123.task.StkUtils;
+import com.stk123.tool.util.StkUtils;
 import com.stk123.tool.util.EmailUtils;
 import com.stk123.tool.util.HtmlUtils;
 import com.stk123.tool.util.HttpUtils;
 import com.stk123.StkConstant;
-import com.stk123.web.WebUtils;
 
 
 @SuppressWarnings("unchecked")
@@ -138,12 +137,23 @@ public class BaiduSearch {
 		}
 		return total;
 	}
-	
+
+    public static String getBaiduNewsUrl(String searchWords, boolean inTitle){
+        return "http://news.baidu.com/ns?ct=0&rn=20&ie=utf-8&bs="+searchWords+"&rsv_bp=1&sr=0&cl=2&f=8&prevct=0&word="+searchWords+"&tn="+(inTitle?"newstitle":"news")+"&inputT=0";
+    }
+
+    public static String getBaiduNewsSearch(String name, String id, String searchWord, String dispWord, boolean inTitle, int fontSize){
+        return "<a target=\"_blank\" name=\""+name+"\" id=\""+id+"\" keyword=\""+searchWord+"\" intitle=\""+inTitle+"\" href=\""+getBaiduNewsUrl(searchWord,inTitle)+"\" style=\"font-size: "+fontSize+"\">"+dispWord+"</a>";
+    }
+    public static String getBaiduNewsSearch(String name, String id, String searchWord, String despWord, boolean inTitle){
+        return getBaiduNewsSearch(name, id, searchWord, despWord, inTitle, 12);
+    }
+
 	/**
 	 * @return 0:没有相关新闻; 1:有相关新闻; 2:date日之后有新闻
 	 */
 	public static int getBaiduNewsCount(Date date,String searchword,boolean searchInTitle) throws Exception {
-		String url = WebUtils.getBaiduNewsUrl(URLEncoder.encode(searchword, StkConstant.ENCODING_UTF_8), searchInTitle);
+		String url = getBaiduNewsUrl(URLEncoder.encode(searchword, StkConstant.ENCODING_UTF_8), searchInTitle);
 		//System.out.println(url);
 		String page = HttpUtils.get(url,StkConstant.ENCODING_UTF_8);
         Node node = HtmlUtils.getNodeByAttribute(page, null, "id", "header_top_bar");
@@ -181,7 +191,7 @@ public class BaiduSearch {
 	}
 	
 	public static List<String> getBaiduNews(Date date,String searchwordorUrl,boolean searchInTitle) throws Exception {
-		String url = searchwordorUrl.startsWith("http")?searchwordorUrl:WebUtils.getBaiduNewsUrl(URLEncoder.encode(searchwordorUrl, StkConstant.ENCODING_UTF_8), searchInTitle);
+		String url = searchwordorUrl.startsWith("http")?searchwordorUrl:getBaiduNewsUrl(URLEncoder.encode(searchwordorUrl, StkConstant.ENCODING_UTF_8), searchInTitle);
 		//System.out.println(url);
 		String page = HttpUtils.get(url,StkConstant.ENCODING_UTF_8);
         Node node = HtmlUtils.getNodeByAttribute(page, null, "id", "header_top_bar");

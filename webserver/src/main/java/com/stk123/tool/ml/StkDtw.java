@@ -2,7 +2,6 @@ package com.stk123.tool.ml;
 
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -12,7 +11,7 @@ import org.apache.commons.lang.ArrayUtils;
 import com.stk123.bo.Stk;
 import com.stk123.model.Index;
 import com.stk123.model.K;
-import com.stk123.task.StkUtils;
+import com.stk123.tool.util.StkUtils;
 import com.stk123.tool.db.util.DBUtil;
 import com.stk123.tool.util.JdbcUtils;
 import com.stk123.tool.util.collection.Name2Value;

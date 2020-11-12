@@ -15,13 +15,13 @@ import org.apache.lucene.index.IndexableField;
 
 import com.stk123.model.Index;
 import com.stk123.model.User;
-import com.stk123.task.StkUtils;
+import com.stk123.tool.util.StkUtils;
 import com.stk123.tool.ik.DocumentField;
 import com.stk123.tool.ik.DocumentType;
-import com.stk123.tool.search.Search;
+import com.stk123.web.search.Search;
 import com.stk123.tool.util.JsonUtils;
 import com.stk123.tool.util.collection.Name2ListSet;
-import com.stk123.tool.web.util.RequestUtils;
+import com.stk123.web.core.util.RequestUtils;
 import com.stk123.StkConstant;
 import com.stk123.web.WebUtils;
 import com.stk123.web.context.StkContext;

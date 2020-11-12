@@ -1,6 +1,5 @@
 package com.stk123.task.sub;
 
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -15,14 +14,12 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 
 import com.stk123.bo.StkDictionary;
-import com.stk123.task.StkUtils;
+import com.stk123.tool.util.StkUtils;
 import com.stk123.task.XueqiuUtils;
 import com.stk123.tool.baidu.BaiDuHi;
 import com.stk123.tool.db.TableTools;
-import com.stk123.tool.db.util.DBUtil;
 import com.stk123.tool.util.ConfigUtils;
 import com.stk123.tool.util.EmailUtils;
-import com.stk123.tool.util.ExceptionUtils;
 import com.stk123.tool.util.HttpUtils;
 import com.stk123.tool.util.JsonUtils;
 import com.stk123.web.StkDict;

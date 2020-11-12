@@ -1,4 +1,4 @@
-package com.stk123.tool.web.config;
+package com.stk123.web.core.config;
 
 import java.net.URL;
 

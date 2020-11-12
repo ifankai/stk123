@@ -10,7 +10,7 @@ import org.quartz.JobExecutionException;
 
 import com.stk123.bo.StkDataPpi;
 import com.stk123.bo.StkDataPpiType;
-import com.stk123.task.StkUtils;
+import com.stk123.tool.util.StkUtils;
 import com.stk123.tool.db.util.DBUtil;
 import com.stk123.tool.util.EmailUtils;
 import com.stk123.tool.util.ExceptionUtils;

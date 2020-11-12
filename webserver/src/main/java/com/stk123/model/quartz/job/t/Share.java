@@ -1,7 +1,6 @@
 package com.stk123.model.quartz.job.t;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -14,9 +13,8 @@ import org.apache.commons.lang.StringUtils;
 import com.stk123.model.quartz.job.t.K.Calc;
 import com.stk123.model.quartz.job.t.strategy.Output;
 import com.stk123.model.quartz.job.t.strategy.Strategy;
-import com.stk123.model.quartz.job.t.strategy.TradeStrategy1;
 import com.stk123.model.quartz.job.t.strategy.TradeStrategy2;
-import com.stk123.task.StkUtils;
+import com.stk123.tool.util.StkUtils;
 import com.stk123.tool.db.connection.Pool;
 import com.stk123.tool.util.HttpUtils;
 import com.stk123.tool.util.JsonUtils;

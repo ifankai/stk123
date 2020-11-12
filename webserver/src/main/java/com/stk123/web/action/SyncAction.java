@@ -13,7 +13,7 @@ import com.stk123.tool.util.ExceptionUtils;
 import com.stk123.tool.util.JdbcUtils;
 import com.stk123.tool.util.JsonUtils;
 import com.stk123.tool.util.collection.Name2Value;
-import com.stk123.tool.web.ActionContext;
+import com.stk123.web.core.ActionContext;
 
 public class SyncAction {
 	

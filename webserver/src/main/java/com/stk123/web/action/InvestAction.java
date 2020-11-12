@@ -11,10 +11,10 @@ import org.apache.commons.lang.StringUtils;
 
 import com.stk123.bo.StkInvestigation;
 import com.stk123.model.Index;
-import com.stk123.task.StkUtils;
+import com.stk123.tool.util.StkUtils;
 import com.stk123.tool.util.JdbcUtils;
 import com.stk123.tool.util.JsonUtils;
-import com.stk123.tool.web.util.RequestUtils;
+import com.stk123.web.core.util.RequestUtils;
 import com.stk123.StkConstant;
 import com.stk123.web.WebUtils;
 import com.stk123.web.context.StkContext;

@@ -9,7 +9,7 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-import com.stk123.task.StkUtils;
+import com.stk123.tool.util.StkUtils;
 import com.stk123.tool.baidu.BaiduSearch;
 import com.stk123.tool.util.EmailUtils;
 import com.stk123.tool.util.ExceptionUtils;

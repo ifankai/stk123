@@ -40,7 +40,7 @@ import com.stk123.bo.cust.StkFnDataCust;
 import com.stk123.json.XueQiuQianFuQuan;
 import com.stk123.model.K.Condition;
 import com.stk123.task.InitialData;
-import com.stk123.task.StkUtils;
+import com.stk123.tool.util.StkUtils;
 import com.stk123.task.XueqiuUtils;
 import com.stk123.tool.util.AlgorithmUtils;
 import com.stk123.tool.util.CacheUtils;

@@ -1,4 +1,4 @@
-package com.stk123.tool.web;
+package com.stk123.web.core;
 
 import java.io.IOException;
 import java.io.PrintWriter;

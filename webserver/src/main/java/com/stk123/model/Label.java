@@ -10,7 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import com.stk123.bo.StkLabel;
 import com.stk123.bo.StkLabelText;
 import com.stk123.bo.StkText;
-import com.stk123.task.StkUtils;
+import com.stk123.tool.util.StkUtils;
 import com.stk123.tool.db.TableTools;
 import com.stk123.tool.db.connection.Pool;
 import com.stk123.tool.db.util.DBUtil;

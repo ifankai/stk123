@@ -3,23 +3,19 @@ package com.stk123.model.strategy;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.stk123.model.Index;
 import com.stk123.model.IndexUtils;
-import com.stk123.task.StkUtils;
-import com.stk123.task.XueqiuUtils;
+import com.stk123.tool.util.StkUtils;
 import com.stk123.tool.db.util.CloseUtil;
 import com.stk123.tool.db.util.DBUtil;
 import com.stk123.tool.util.EmailUtils;
 import com.stk123.tool.util.ExceptionUtils;
 import com.stk123.tool.util.JdbcUtils;
-import com.stk123.tool.util.collection.Name2Value;
 //import org.junit.Assert;
 
 public abstract class Strategy {

@@ -16,7 +16,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
@@ -45,11 +44,11 @@ import org.wltea.analyzer.lucene.IKAnalyzer;
 
 import com.stk123.bo.Stk;
 import com.stk123.bo.StkText;
-import com.stk123.task.StkUtils;
+import com.stk123.tool.util.StkUtils;
 import com.stk123.tool.db.TableTools;
 import com.stk123.tool.db.connection.Pool;
 import com.stk123.tool.db.util.DBUtil;
-import com.stk123.tool.search.Search;
+import com.stk123.web.search.Search;
 import com.stk123.tool.util.ConfigUtils;
 import com.stk123.tool.util.JdbcUtils;
 

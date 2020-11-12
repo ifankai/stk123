@@ -45,7 +45,6 @@ import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.commons.lang.StringUtils;
 
-import com.stk123.task.StkUtils;
 import com.sun.net.ssl.HostnameVerifier;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

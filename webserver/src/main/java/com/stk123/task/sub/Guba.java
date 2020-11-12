@@ -8,7 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.htmlparser.Node;
 
 import com.stk123.bo.Stk;
-import com.stk123.task.StkUtils;
+import com.stk123.tool.util.StkUtils;
 import com.stk123.tool.db.TableTools;
 import com.stk123.tool.db.util.DBUtil;
 import com.stk123.tool.util.ConfigUtils;

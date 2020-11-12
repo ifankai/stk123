@@ -1,4 +1,4 @@
-package com.stk123.tool.web.util;
+package com.stk123.web.core.util;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;

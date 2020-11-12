@@ -1,19 +1,14 @@
 package com.stk123.model.strategy;
 
-import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-
-import com.stk123.model.Ene;
 import com.stk123.model.Index;
 import com.stk123.model.K;
-import com.stk123.task.StkUtils;
+import com.stk123.tool.util.StkUtils;
 import com.stk123.tool.util.EmailUtils;
 
 public class Strategy4 extends Strategy {

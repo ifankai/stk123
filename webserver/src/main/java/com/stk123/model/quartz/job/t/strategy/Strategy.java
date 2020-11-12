@@ -5,7 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import com.stk123.model.quartz.job.t.K;
 import com.stk123.model.quartz.job.t.Share;
 import com.stk123.model.quartz.job.t.TradeUtils;
-import com.stk123.task.StkUtils;
+import com.stk123.tool.util.StkUtils;
 import com.stk123.tool.util.ChineseUtils;
 
 public abstract class Strategy<T> {

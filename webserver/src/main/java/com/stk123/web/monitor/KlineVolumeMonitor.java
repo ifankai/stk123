@@ -19,7 +19,7 @@ import com.stk123.bo.StkMonitor;
 import com.stk123.model.Index;
 import com.stk123.model.Industry;
 import com.stk123.model.K;
-import com.stk123.task.StkUtils;
+import com.stk123.tool.util.StkUtils;
 import com.stk123.tool.db.TableTools;
 import com.stk123.tool.db.util.DBUtil;
 import com.stk123.tool.util.ConfigUtils;

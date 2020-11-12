@@ -2,19 +2,11 @@ package com.stk123.model.strategy;
 
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 
 import com.stk123.model.Index;
 import com.stk123.model.K;
-import com.stk123.task.StkUtils;
-import com.stk123.task.XueqiuUtils;
-import com.stk123.tool.db.util.CloseUtil;
-import com.stk123.tool.db.util.DBUtil;
-import com.stk123.tool.util.EmailUtils;
+import com.stk123.tool.util.StkUtils;
 
 
 public class Strategy18 extends Strategy {

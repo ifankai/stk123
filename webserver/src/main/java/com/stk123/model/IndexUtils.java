@@ -14,7 +14,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 
 import com.stk123.bo.Stk;
-import com.stk123.task.StkUtils;
+import com.stk123.tool.util.StkUtils;
 import com.stk123.task.XueqiuUtils;
 import com.stk123.tool.util.CacheUtils;
 import com.stk123.tool.util.HttpUtils;

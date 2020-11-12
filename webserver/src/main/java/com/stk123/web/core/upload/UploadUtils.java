@@ -1,4 +1,4 @@
-package com.stk123.tool.web.upload;
+package com.stk123.web.core.upload;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -8,7 +8,7 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import com.stk123.task.StkUtils;
+import com.stk123.tool.util.StkUtils;
 import com.stk123.StkConstant;
 
 public class UploadUtils {
