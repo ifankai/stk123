@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import com.stk123.tool.util.ConfigUtils;
-import com.stk123.web.StkConstant;
 
 
 public class DBUtil {

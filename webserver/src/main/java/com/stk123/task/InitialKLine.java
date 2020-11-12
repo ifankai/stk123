@@ -48,7 +48,7 @@ import com.stk123.tool.util.JsonUtils;
 import com.stk123.tool.util.Retry;
 import com.stk123.tool.util.RetryUtils;
 import com.stk123.tool.util.collection.IntRange2IntMap;
-import com.stk123.web.StkConstant;
+import com.stk123.StkConstant;
 
 
 @SuppressWarnings({ "unchecked", "rawtypes" })

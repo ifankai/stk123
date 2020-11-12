@@ -1,24 +1,19 @@
 package com.stk123.web.action;
 
-import java.io.PrintWriter;
-import java.lang.reflect.Method;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import com.stk123.bo.StkKeyword;
-import com.stk123.bo.StkKeywordLink;
 import com.stk123.model.Index;
 import com.stk123.model.Keyword;
 import com.stk123.tool.ik.StkSearch;
 import com.stk123.tool.util.JdbcUtils;
 import com.stk123.tool.util.JsonUtils;
-import com.stk123.web.StkConstant;
+import com.stk123.StkConstant;
 import com.stk123.web.context.StkContext;
 
 

@@ -9,7 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import com.stk123.task.StkUtils;
-import com.stk123.web.StkConstant;
+import com.stk123.StkConstant;
 
 public class UploadUtils {
 	

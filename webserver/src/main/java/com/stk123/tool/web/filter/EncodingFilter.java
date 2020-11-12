@@ -9,7 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import com.stk123.web.StkConstant;
+import com.stk123.StkConstant;
 
 public class EncodingFilter implements Filter {
 

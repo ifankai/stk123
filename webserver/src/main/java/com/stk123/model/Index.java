@@ -2,16 +2,13 @@ package com.stk123.model;
 
 import java.awt.Point;
 import java.sql.Connection;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -40,13 +37,11 @@ import com.stk123.bo.StkKline;
 import com.stk123.bo.StkMonitor;
 import com.stk123.bo.StkRestricted;
 import com.stk123.bo.cust.StkFnDataCust;
-import com.stk123.json.SinaQianFuQuan;
 import com.stk123.json.XueQiuQianFuQuan;
 import com.stk123.model.K.Condition;
 import com.stk123.task.InitialData;
 import com.stk123.task.StkUtils;
 import com.stk123.task.XueqiuUtils;
-import com.stk123.tool.db.util.DateUtil;
 import com.stk123.tool.util.AlgorithmUtils;
 import com.stk123.tool.util.CacheUtils;
 import com.stk123.tool.util.ChartUtils;
@@ -62,7 +57,7 @@ import com.stk123.tool.util.JsonUtils;
 import com.stk123.tool.util.collection.Name2Value;
 import com.stk123.tool.util.collection.Table;
 import com.stk123.tool.util.collection.TableCell;
-import com.stk123.web.StkConstant;
+import com.stk123.StkConstant;
 
 
 @SuppressWarnings({ "unchecked", "rawtypes" })

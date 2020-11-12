@@ -4,7 +4,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.stk123.web.StkConstant;
+import com.stk123.StkConstant;
 
 public class CookieUtils {
 	

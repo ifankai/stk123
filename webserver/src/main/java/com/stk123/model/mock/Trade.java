@@ -1,18 +1,10 @@
 package com.stk123.model.mock;
 
-import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
 
 import com.stk123.model.Index;
 import com.stk123.model.K;
 import com.stk123.model.K.MACD;
-import com.stk123.model.mock.Condition;
-import com.stk123.tool.db.connection.Pool;
-import com.stk123.tool.util.JdbcUtils;
-import com.stk123.web.StkConstant;
 
 public class Trade {
 	

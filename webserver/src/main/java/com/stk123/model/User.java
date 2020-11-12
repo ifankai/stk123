@@ -1,6 +1,5 @@
 package com.stk123.model;
 
-import java.io.File;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -9,7 +8,7 @@ import java.util.List;
 import com.stk123.bo.StkUser;
 import com.stk123.tool.db.util.sequence.SequenceUtils;
 import com.stk123.tool.util.JdbcUtils;
-import com.stk123.web.StkConstant;
+import com.stk123.StkConstant;
 import com.stk123.web.WebUtils;
 
 public class User implements Serializable{

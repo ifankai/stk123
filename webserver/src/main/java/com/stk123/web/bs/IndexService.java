@@ -7,7 +7,6 @@ import java.util.Map;
 
 import com.stk123.bo.StkDataPpiType;
 import com.stk123.bo.StkIndexNode;
-import com.stk123.bo.StkIndustryType;
 import com.stk123.model.Industry;
 import com.stk123.tool.db.connection.Pool;
 import com.stk123.tool.tree.Tree;
@@ -15,7 +14,7 @@ import com.stk123.tool.tree.TreeNode;
 import com.stk123.tool.util.CacheUtils;
 import com.stk123.tool.util.JdbcUtils;
 import com.stk123.tool.util.JsonUtils;
-import com.stk123.web.StkConstant;
+import com.stk123.StkConstant;
 import com.stk123.web.pojo.MetaData;
 import com.stk123.web.pojo.Node;
 

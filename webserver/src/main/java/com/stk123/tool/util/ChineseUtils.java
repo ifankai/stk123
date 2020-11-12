@@ -2,7 +2,7 @@ package com.stk123.tool.util;
 
 import java.io.UnsupportedEncodingException;
 
-import com.stk123.web.StkConstant;
+import com.stk123.StkConstant;
 
 public class ChineseUtils {
 
