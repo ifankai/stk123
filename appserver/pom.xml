@@ -23,7 +23,7 @@
         <maven.test.skip>true</maven.test.skip>
 
 		<ftp.host>81.68.255.181</ftp.host>
-		<ftp.path>/root</ftp.path>
+		<ftp.path>/var/stk</ftp.path>
 		<ftp.username>root</ftp.username>
 		<ftp.password>***REMOVED***</ftp.password>
 		<ftp.depends>yes</ftp.depends>
@@ -36,12 +36,6 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.12</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -132,20 +126,20 @@
 				<executions>
 					<execution>
 						<id>deploy</id>
-						<phase>package</phase>
+						<phase>install</phase>
 						<goals>
 							<goal>run</goal>
 						</goals>
 						<configuration>
-							<target name="scp-deploy" description="Use antrun plugin to deploy with SCP and SSH">
+							<target name="stk-deploy" description="Use antrun plugin to deploy with SCP and SSH">
 								<!-- remote host and the command to be executed there -->
 
 								<echo message="Stopping appserver ..." />
-								<sshexec trust="true" failonerror="true"
-										 host="${ftp.host}"
+								<sshexec trust="true" failonerror="false"
+										 host="${ftp.host}" verbose="false"
 										 username="${ftp.username}"
 										 password="${ftp.password}"
-										 command="./stop.sh"
+										 command="cd ${ftp.path}; ./appserver_stop.sh"
 										 timeout="120000" />
 
 								<!-- file to be transferred -->
@@ -160,7 +154,7 @@
 										 host="${ftp.host}"
 										 username="${ftp.username}"
 										 password="${ftp.password}"
-										 command="./start.sh"
+										 command="cd ${ftp.path}; ./appserver_start.sh > /dev/null"
 										 timeout="120000" />
 								<echo message="The deployment is done." />
 
@@ -174,43 +168,6 @@
 						</configuration>
 					</execution>
 
-					<execution>
-						<id>restart</id>
-						<phase>install</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-							<target name="scp-deploy" description="Use antrun plugin to deploy with SCP and SSH">
-								<!-- remote host and the command to be executed there -->
-
-								<echo message="Stopping appserver ..." />
-								<sshexec trust="true" failonerror="true"
-										 host="${ftp.host}"
-										 username="${ftp.username}"
-										 password="${ftp.password}"
-										 command="./stop.sh"
-										 timeout="120000" />
-
-								<!-- remote host and the command to be executed there -->
-								<echo message="Starting appserver ..." />
-								<sshexec trust="true" failonerror="true"
-										 host="${ftp.host}"
-										 username="${ftp.username}"
-										 password="${ftp.password}"
-										 command="./start.sh"
-										 timeout="120000" />
-								<echo message="The deployment is done." />
-
-								<taskdef name="scp" classname="org.apache.tools.ant.taskdefs.optional.ssh.Scp">
-									<classpath refid="maven.plugin.classpath" />
-								</taskdef>
-								<taskdef name="scp" classname="org.apache.tools.ant.taskdefs.optional.ssh.SSHExec">
-									<classpath refid="maven.plugin.classpath" />
-								</taskdef>
-							</target>
-						</configuration>
-					</execution>
 
 				</executions>
 
@@ -226,6 +183,32 @@
 						<version>1.10.9</version>
 					</dependency>
 				</dependencies>
+			</plugin>
+
+
+			<!-- typescript-generator   mvn process-classes -->
+			<plugin>
+				<groupId>cz.habarta.typescript-generator</groupId>
+				<artifactId>typescript-generator-maven-plugin</artifactId>
+				<version>1.25.322</version>
+				<executions>
+					<execution>
+						<id>generate</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<phase>process-classes</phase>
+						<configuration>
+							<jsonLibrary>jackson2</jsonLibrary>
+							<classes>
+								<class>com.stk.model.XqPost</class>
+								<class>com.stk.model.RequestResult</class>
+							</classes>
+							<outputFile>src/main/java/com/stk/model/typescript.d.ts</outputFile>
+							<outputKind>module</outputKind>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 
         </plugins>
