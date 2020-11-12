@@ -10,7 +10,7 @@ import javax.servlet.http.HttpSession;
 
 import com.stk123.model.User;
 import com.stk123.tool.util.JsonUtils;
-import com.stk123.tool.web.util.CookieUtils;
+import com.stk123.web.core.util.CookieUtils;
 import com.stk123.StkConstant;
 import com.stk123.web.context.StkContext;
 

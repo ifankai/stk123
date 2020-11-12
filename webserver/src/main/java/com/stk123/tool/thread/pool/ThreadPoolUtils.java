@@ -22,19 +22,15 @@ import org.htmlparser.nodes.TagNode;
 import com.stk123.bo.Stk;
 import com.stk123.bo.StkInternetSearch;
 import com.stk123.model.Index;
-import com.stk123.task.StkUtils;
 import com.stk123.tool.db.TableTools;
 import com.stk123.tool.db.connection.ConnectionPool;
-import com.stk123.tool.db.util.DBUtil;
 import com.stk123.tool.util.ConfigUtils;
-import com.stk123.tool.util.EmailUtils;
 import com.stk123.tool.util.ExceptionUtils;
 import com.stk123.tool.util.HtmlUtils;
 import com.stk123.tool.util.HttpUtils;
 import com.stk123.tool.util.JdbcUtils;
 import com.stk123.tool.util.collection.Name2ListSet;
 import com.stk123.tool.util.collection.Name2Value;
-import com.stk123.web.StkDict;
 
 
 public class ThreadPoolUtils {
@@ -129,69 +125,69 @@ public class ThreadPoolUtils {
 	
 
 	public static void main(String[] args) throws Exception {
-		ConfigUtils.setPropsFromResource(TableTools.class, "db.properties");
-		final ConnectionPool pool = ConnectionPool.getInstance();
-		try {
-			List<StkInternetSearch> searchs = JdbcUtils.list(pool.getConnection(), "select * from stk_internet_search where status=1 order by search_source", StkInternetSearch.class);
-			List<Callable> tasks = new ArrayList<Callable>();
-			for(final StkInternetSearch search : searchs){
-				Callable task = new Callable(){
-					public Object call() throws Exception {
-						Connection conn = null; 
-						try{
-							conn = pool.getConnection();
-							switch(search.getSearchSource().intValue()){
-								case 1 :
-									return parseSinaBlogPage(conn, search);
-								case 10 :
-									/*String date = parseStkAccountInfo(conn, search);
-									if(date != null){
-										updateSearch(conn, date, search);
-										EmailUtils.send("【股票账户数据,日期:"+date+"】", createStkAccountInfoTable(conn, 50));
-									}*/
-									return null;
-								case 11 :
-									return parseGov(conn,search);
-								default :
-									return null;
-							}
-						}finally{
-							pool.release(conn);
-						}
-					}
-				};
-				tasks.add(task);	
-			}
-			List<Object> results = run(tasks,4);
-			
-			Name2ListSet<String,String> set = new Name2ListSet<String,String>();
-			for(Object result : results){
-				if(result != null){
-					Map<String,Object> map = (Map<String,Object>)result;
-					StkInternetSearch search = (StkInternetSearch)map.get("search");
-					String title = StkDict.getDict(StkDict.INTERNET_SEARCH_TYPE, search.getSearchSource().toString());
-					set.add(title, (List<String>)map.get("result"));
-				}
-			}
-			
-			if(set.size() > 0){
-				StringBuffer sb = new StringBuffer();
-				for(Name2Value<String, List<String>> pair : set.getList()){
-					sb.append("<b>"+pair.getName()+":<b><br>");
-					for(String txt : pair.getValue()){
-						sb.append("&nbsp;&nbsp;").append(txt).append("<br>");
-					}
-				}
-				System.out.println(sb.toString());
-				//EmailUtils.send("【关注对象最新动态,日期:"+StkUtils.getToday()+"】", sb.toString());
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			ExceptionUtils.insertLog(pool.getConnection(), e);
-		} finally {
-			if (pool != null)
-				pool.closePool();
-		}
+//		ConfigUtils.setPropsFromResource(TableTools.class, "db.properties");
+//		final ConnectionPool pool = ConnectionPool.getInstance();
+//		try {
+//			List<StkInternetSearch> searchs = JdbcUtils.list(pool.getConnection(), "select * from stk_internet_search where status=1 order by search_source", StkInternetSearch.class);
+//			List<Callable> tasks = new ArrayList<Callable>();
+//			for(final StkInternetSearch search : searchs){
+//				Callable task = new Callable(){
+//					public Object call() throws Exception {
+//						Connection conn = null;
+//						try{
+//							conn = pool.getConnection();
+//							switch(search.getSearchSource().intValue()){
+//								case 1 :
+//									return parseSinaBlogPage(conn, search);
+//								case 10 :
+//									/*String date = parseStkAccountInfo(conn, search);
+//									if(date != null){
+//										updateSearch(conn, date, search);
+//										EmailUtils.send("【股票账户数据,日期:"+date+"】", createStkAccountInfoTable(conn, 50));
+//									}*/
+//									return null;
+//								case 11 :
+//									return parseGov(conn,search);
+//								default :
+//									return null;
+//							}
+//						}finally{
+//							pool.release(conn);
+//						}
+//					}
+//				};
+//				tasks.add(task);
+//			}
+//			List<Object> results = run(tasks,4);
+//
+//			Name2ListSet<String,String> set = new Name2ListSet<String,String>();
+//			for(Object result : results){
+//				if(result != null){
+//					Map<String,Object> map = (Map<String,Object>)result;
+//					StkInternetSearch search = (StkInternetSearch)map.get("search");
+//					String title = StkDict.getDict(StkDict.INTERNET_SEARCH_TYPE, search.getSearchSource().toString());
+//					set.add(title, (List<String>)map.get("result"));
+//				}
+//			}
+//
+//			if(set.size() > 0){
+//				StringBuffer sb = new StringBuffer();
+//				for(Name2Value<String, List<String>> pair : set.getList()){
+//					sb.append("<b>"+pair.getName()+":<b><br>");
+//					for(String txt : pair.getValue()){
+//						sb.append("&nbsp;&nbsp;").append(txt).append("<br>");
+//					}
+//				}
+//				System.out.println(sb.toString());
+//				//EmailUtils.send("【关注对象最新动态,日期:"+StkUtils.getToday()+"】", sb.toString());
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			ExceptionUtils.insertLog(pool.getConnection(), e);
+//		} finally {
+//			if (pool != null)
+//				pool.closePool();
+//		}
 	}
 	
 	public static void updateSearch(Connection conn, String lastText, StkInternetSearch search){

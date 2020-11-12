@@ -21,7 +21,7 @@ import com.stk123.bo.StkUser;
 import com.stk123.bo.cust.StkFnDataCust;
 import com.stk123.model.Index;
 import com.stk123.model.User;
-import com.stk123.task.StkUtils;
+import com.stk123.tool.util.StkUtils;
 import com.stk123.tool.util.MyCacheUtils;
 import com.stk123.tool.html.HtmlTable;
 import com.stk123.tool.html.HtmlTd;
@@ -82,16 +82,7 @@ public class WebUtils {
 		sc.put("no_of_newhigh250", String.valueOf(no_of_newhigh250));
 	}
 	
-	public static String getBaiduNewsUrl(String searchWords, boolean inTitle){
-		return "http://news.baidu.com/ns?ct=0&rn=20&ie=utf-8&bs="+searchWords+"&rsv_bp=1&sr=0&cl=2&f=8&prevct=0&word="+searchWords+"&tn="+(inTitle?"newstitle":"news")+"&inputT=0";
-	}
-	
-	public static String getBaiduNewsSearch(String name, String id, String searchWord, String dispWord, boolean inTitle, int fontSize){
-		return "<a target=\"_blank\" name=\""+name+"\" id=\""+id+"\" keyword=\""+searchWord+"\" intitle=\""+inTitle+"\" href=\""+getBaiduNewsUrl(searchWord,inTitle)+"\" style=\"font-size: "+fontSize+"\">"+dispWord+"</a>";
-	}
-	public static String getBaiduNewsSearch(String name, String id, String searchWord, String despWord, boolean inTitle){
-		return getBaiduNewsSearch(name, id, searchWord, despWord, inTitle, 12);
-	}
+
 	
 	public static String display2(String html,int len){
 		if(html == null)return html;

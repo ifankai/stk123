@@ -4,11 +4,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
@@ -19,13 +16,8 @@ import org.quartz.JobExecutionException;
 import com.stk123.model.Index;
 import com.stk123.model.IndexUtils;
 import com.stk123.model.strategy.StrategyManager;
-import com.stk123.task.StkUtils;
-import com.stk123.task.XueqiuUtils;
 import com.stk123.tool.db.connection.Pool;
-import com.stk123.tool.db.util.CloseUtil;
-import com.stk123.tool.db.util.DBUtil;
 import com.stk123.tool.util.EmailUtils;
-import com.stk123.tool.util.JdbcUtils;
 
 @CommonsLog
 public class ShortTrade implements Job{

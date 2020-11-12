@@ -25,8 +25,6 @@ import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.util.PDFText2HTML;
 import org.apache.pdfbox.util.PDFTextStripper;
 
-import com.stk123.task.StkUtils;
-
 public class PDFUtils {
 	
 	public static String getText(String file) throws Exception{

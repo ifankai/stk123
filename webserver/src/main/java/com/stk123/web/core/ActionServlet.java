@@ -1,4 +1,4 @@
-package com.stk123.tool.web;
+package com.stk123.web.core;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -26,14 +26,14 @@ import org.apache.commons.beanutils.converters.ShortConverter;
 
 import com.stk123.bo.StkUser;
 import com.stk123.model.User;
-import com.stk123.task.StkUtils;
+import com.stk123.tool.util.StkUtils;
 import com.stk123.tool.db.connection.Pool;
 import com.stk123.tool.util.CacheUtils;
-import com.stk123.tool.web.config.ActionConfig;
-import com.stk123.tool.web.config.ConfigHelper;
-import com.stk123.tool.web.config.ForwardConfig;
-import com.stk123.tool.web.config.MvcConfig;
-import com.stk123.tool.web.util.RequestUtils;
+import com.stk123.web.core.config.ActionConfig;
+import com.stk123.web.core.config.ConfigHelper;
+import com.stk123.web.core.config.ForwardConfig;
+import com.stk123.web.core.config.MvcConfig;
+import com.stk123.web.core.util.RequestUtils;
 import com.stk123.StkConstant;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

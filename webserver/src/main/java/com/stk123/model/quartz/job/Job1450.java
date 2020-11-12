@@ -17,7 +17,7 @@ import com.stk123.model.IndexContext;
 import com.stk123.model.IndexUtils;
 import com.stk123.model.K;
 import com.stk123.task.InitialKLine;
-import com.stk123.task.StkUtils;
+import com.stk123.tool.util.StkUtils;
 import com.stk123.tool.db.util.DBUtil;
 import com.stk123.tool.util.EmailUtils;
 import com.stk123.tool.util.JdbcUtils;

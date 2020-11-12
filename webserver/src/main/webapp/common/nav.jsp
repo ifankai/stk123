@@ -1,6 +1,7 @@
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@page import="com.stk123.web.WebUtils" %>
 <%@page import="com.stk123.model.User" %>
+<%@ page import="com.stk123.tool.util.StkUtils" %>
 <%
   User _user = WebUtils.getUser(session);
 %>

@@ -3,10 +3,9 @@ package com.stk123.spring.control;
 import com.stk123.model.Index;
 import com.stk123.model.K;
 import com.stk123.spring.dto.StkDto;
-import com.stk123.spring.jpa.entity.StkIndustryTypeEntity;
 import com.stk123.spring.service.IndexService;
 import com.stk123.spring.service.IndustryService;
-import com.stk123.task.StkUtils;
+import com.stk123.tool.util.StkUtils;
 import com.stk123.task.XueqiuUtils;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
@@ -21,12 +20,10 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
-import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.*;
 
 @Controller

@@ -13,10 +13,7 @@ import org.quartz.JobExecutionException;
 import com.stk123.model.Index;
 import com.stk123.model.K;
 import com.stk123.model.K.MACD;
-import com.stk123.task.StkUtils;
 import com.stk123.tool.util.EmailUtils;
-import com.stk123.tool.util.HttpUtils;
-import com.stk123.tool.util.JsonUtils;
 import com.stk123.tool.util.collection.Name2Value;
 
 public class IndexRealTimeJob implements Job {

@@ -1,4 +1,4 @@
-package com.stk123.tool.web.filter;
+package com.stk123.web.core.filter;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -14,9 +14,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.stk123.model.User;
-import com.stk123.task.StkUtils;
+import com.stk123.tool.util.StkUtils;
 import com.stk123.tool.db.connection.Pool;
-import com.stk123.tool.web.util.CookieUtils;
+import com.stk123.web.core.util.CookieUtils;
 import com.stk123.StkConstant;
 import com.stk123.web.action.LoginAction;
 

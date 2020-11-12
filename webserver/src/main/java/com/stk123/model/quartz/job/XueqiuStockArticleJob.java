@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,7 +22,7 @@ import org.quartz.JobExecutionException;
 
 import com.stk123.bo.Stk;
 import com.stk123.model.Index;
-import com.stk123.task.StkUtils;
+import com.stk123.tool.util.StkUtils;
 import com.stk123.task.XueqiuUtils;
 import com.stk123.tool.db.util.CloseUtil;
 import com.stk123.tool.db.util.DBUtil;

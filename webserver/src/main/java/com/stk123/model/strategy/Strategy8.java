@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.stk123.model.Index;
 import com.stk123.model.K;
-import com.stk123.task.StkUtils;
+import com.stk123.tool.util.StkUtils;
 import com.stk123.tool.util.EmailUtils;
 
 public class Strategy8 extends Strategy {

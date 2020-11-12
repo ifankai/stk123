@@ -8,6 +8,6 @@
 <%@page import="com.stk123.web.*" %>
 <%@page import="com.stk123.web.context.*" %>
 <%@page import="com.stk123.tool.ik.*" %>
-<%@page import="com.stk123.tool.web.util.*" %>
+<%@page import="com.stk123.web.core.util.*" %>
 <%@page import="org.apache.commons.lang.*" %>
 <%@page import="com.stk123.web.bs.*" %>

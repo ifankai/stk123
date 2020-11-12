@@ -1,4 +1,4 @@
-package com.stk123.tool.search;
+package com.stk123.web.search;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,15 +48,12 @@ import com.stk123.tool.db.connection.Pool;
 import com.stk123.tool.ik.DocumentField;
 import com.stk123.tool.ik.DocumentType;
 import com.stk123.tool.ik.IKUtils;
-import com.stk123.tool.ik.StkSearch;
 import com.stk123.tool.tree.Tree;
 import com.stk123.tool.tree.TreeNode;
-import com.stk123.tool.util.ChineseUtils;
 import com.stk123.tool.util.HtmlUtils;
 import com.stk123.tool.util.JdbcUtils;
 import com.stk123.tool.util.collection.Name2Value;
 import com.stk123.web.StkDict;
-import com.stk123.web.WebUtils;
 import com.stk123.web.bs.IndexService;
 
 public class Search {

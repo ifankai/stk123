@@ -10,28 +10,20 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.stk123.tool.util.*;
 import org.apache.commons.lang.StringUtils;
 import org.htmlparser.Node;
-import org.htmlparser.nodes.TagNode;
 import org.htmlparser.tags.LinkTag;
 import org.htmlparser.tags.OptionTag;
 import org.htmlparser.tags.TableTag;
 
 import com.stk123.bo.Stk;
 import com.stk123.bo.StkDeptType;
-import com.stk123.bo.StkImportInfo;
 import com.stk123.bo.StkText;
 import com.stk123.model.Index;
 import com.stk123.model.Text;
 import com.stk123.tool.db.TableTools;
 import com.stk123.tool.db.util.DBUtil;
-import com.stk123.tool.db.util.sequence.SequenceUtils;
-import com.stk123.tool.util.ConfigUtils;
-import com.stk123.tool.util.EmailUtils;
-import com.stk123.tool.util.HtmlUtils;
-import com.stk123.tool.util.HttpUtils;
-import com.stk123.tool.util.JdbcUtils;
-import com.stk123.tool.util.JsonUtils;
 
 
 @SuppressWarnings({ "unchecked", "rawtypes" })

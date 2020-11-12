@@ -1,12 +1,9 @@
 package com.stk123.model;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 
 import com.stk123.bo.StkImportInfoType;
-import com.stk123.task.StkUtils;
 import com.stk123.tool.db.connection.Pool;
 import com.stk123.tool.util.JdbcUtils;
 

@@ -5,8 +5,8 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 
 import com.stk123.model.User;
-import com.stk123.tool.web.upload.UploadResult;
-import com.stk123.tool.web.upload.UploadUtils;
+import com.stk123.web.core.upload.UploadResult;
+import com.stk123.web.core.upload.UploadUtils;
 import com.stk123.web.context.StkContext;
 
 public class UploadAction {

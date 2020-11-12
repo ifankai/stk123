@@ -22,7 +22,7 @@ import com.stk123.model.IndexUtils;
 import com.stk123.model.User;
 import com.stk123.model.strategy.Strategy;
 import com.stk123.model.strategy.StrategyManager;
-import com.stk123.task.StkUtils;
+import com.stk123.tool.util.StkUtils;
 import com.stk123.tool.util.HttpUtils;
 import com.stk123.tool.util.JdbcUtils;
 import com.stk123.tool.util.JsonUtils;

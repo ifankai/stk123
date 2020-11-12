@@ -2,7 +2,7 @@ package com.stk123.model.quartz.job;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.stk123.task.StkUtils;
+import com.stk123.tool.util.StkUtils;
 
 public class XueqiuArticle {
 	public XueqiuUser user;

@@ -1,4 +1,4 @@
-package com.stk123.tool.web.upload;
+package com.stk123.web.core.upload;
 
 public class UploadResult {
 	

@@ -18,10 +18,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hwpf.usermodel.Table;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.htmlparser.Node;
-import org.htmlparser.nodes.TagNode;
-import org.htmlparser.tags.TableTag;
 
-import com.stk123.bo.Stk;
 import com.stk123.bo.StkInvestigation;
 import com.stk123.model.Index;
 import com.stk123.tool.db.util.DBUtil;

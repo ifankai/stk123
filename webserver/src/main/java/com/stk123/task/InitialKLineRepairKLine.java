@@ -1,7 +1,5 @@
 package com.stk123.task;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.sql.Connection;
 import java.util.List;
 
@@ -11,6 +9,7 @@ import com.stk123.tool.db.util.DBUtil;
 import com.stk123.tool.util.ConfigUtils;
 import com.stk123.tool.util.EmailUtils;
 import com.stk123.tool.util.JdbcUtils;
+import com.stk123.tool.util.StkUtils;
 
 
 public class InitialKLineRepairKLine {

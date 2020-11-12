@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.stk123.tool.web.ActionContext;
+import com.stk123.web.core.ActionContext;
 
 public class WeixinAction {
 	

@@ -9,8 +9,7 @@ public interface StkConstant {
 	
 	//--- sync ----//
 	public final static String SYNC_APIKEY = "apikey";
-	public final static String SYNC_KEY = ConfigUtils.getProp("sync_key");
-	
+
 	//----other -----//
 	public final static String NULL = "null";
 	public final static String NA = "N/A";

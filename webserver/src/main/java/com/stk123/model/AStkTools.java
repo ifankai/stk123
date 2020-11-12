@@ -1,30 +1,24 @@
 package com.stk123.model;
 
 import java.sql.Connection;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
 import com.stk123.bo.Stk;
 import com.stk123.bo.StkFnType;
-import com.stk123.model.strategy.Strategy16;
 import com.stk123.task.InitialData;
-import com.stk123.task.InitialKLine;
 import com.stk123.task.NoticeRobot;
-import com.stk123.task.StkUtils;
+import com.stk123.tool.util.StkUtils;
 import com.stk123.tool.db.util.DBUtil;
 import com.stk123.tool.util.HttpUtils;
 import com.stk123.tool.util.JdbcUtils;
 import com.stk123.tool.util.JsonUtils;
 import com.stk123.tool.util.PDFUtils;
-import com.stk123.web.action.SyncAction;
 
 //import net.sf.json.JSONException;
 //import net.sf.json.JSONObject;

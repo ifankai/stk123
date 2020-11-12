@@ -14,11 +14,8 @@ import org.htmlparser.Tag;
 import org.htmlparser.tags.TableTag;
 
 import com.stk123.bo.Stk;
-import com.stk123.bo.StkFnData;
-import com.stk123.bo.StkIndustryType;
-import com.stk123.bo.StkKline;
 import com.stk123.bo.cust.StkFnDataCust;
-import com.stk123.task.StkUtils;
+import com.stk123.tool.util.StkUtils;
 import com.stk123.tool.db.TableTools;
 import com.stk123.tool.db.util.DBUtil;
 import com.stk123.tool.util.ConfigUtils;

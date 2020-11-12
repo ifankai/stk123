@@ -10,8 +10,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.stk123.bo.StkKline;
-import com.stk123.model.quartz.job.t.K.Calc;
-import com.stk123.task.StkUtils;
+import com.stk123.tool.util.StkUtils;
 import com.stk123.tool.util.HttpUtils;
 import com.stk123.tool.util.collection.IntRange2IntMap;
 
