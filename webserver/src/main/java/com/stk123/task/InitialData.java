@@ -8,7 +8,6 @@ import java.util.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stk123.spring.SpringUtils;
 import com.stk123.spring.jpa.entity.StkDataIndustryPeEntity;
-import com.stk123.spring.jpa.repository.StkDataIndustryPeRepository;
 import com.stk123.spring.service.IndustryService;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -47,7 +46,7 @@ import com.stk123.tool.util.HttpUtils;
 import com.stk123.tool.util.JdbcUtils;
 import com.stk123.tool.util.JsonUtils;
 import com.stk123.tool.util.collection.Name2Value;
-import com.stk123.web.StkConstant;
+import com.stk123.StkConstant;
 import com.stk123.web.StkDict;
 
 

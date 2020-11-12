@@ -1,5 +1,5 @@
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@page import="com.stk123.web.StkConstant" %>
+<%@page import="com.stk123.StkConstant" %>
 <head>
 <title><%=pageContext.getAttribute(StkConstant.PAGE_TITLE) %></title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">

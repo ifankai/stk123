@@ -9,7 +9,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.stk123.tool.tree.Tree;
 import com.stk123.tool.util.JsonUtils;
-import com.stk123.web.StkConstant;
+import com.stk123.StkConstant;
 import com.stk123.web.bs.IndexService;
 import com.stk123.web.bs.StkService;
 import com.stk123.web.context.StkContext;

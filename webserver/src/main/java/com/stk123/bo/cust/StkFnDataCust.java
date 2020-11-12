@@ -5,10 +5,9 @@ import java.text.ParseException;
 import java.util.List;
 
 import com.stk123.bo.StkFnData;
-import com.stk123.model.Index;
 import com.stk123.task.StkUtils;
 import com.stk123.tool.util.collection.TableCell;
-import com.stk123.web.StkConstant;
+import com.stk123.StkConstant;
 
 
 public class StkFnDataCust extends StkFnData implements TableCell {

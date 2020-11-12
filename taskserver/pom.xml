@@ -5,11 +5,10 @@
 
     <groupId>com.stk</groupId>
     <artifactId>taskserver</artifactId>
-    <version>1.0</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>taskserver</name>
-    <url>http://www.stk.com</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -19,8 +18,8 @@
 
         <dependency>
             <groupId>com.stk</groupId>
-            <artifactId>webserver</artifactId>
-            <version>1.0</version>
+            <artifactId>common</artifactId>
+            <version>1.0.0</version>
         </dependency>
 
     </dependencies>

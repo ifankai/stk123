@@ -4,17 +4,14 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.stk123.model.User;
 import com.stk123.tool.util.JsonUtils;
 import com.stk123.tool.web.util.CookieUtils;
-import com.stk123.web.StkConstant;
+import com.stk123.StkConstant;
 import com.stk123.web.context.StkContext;
 
 public class LoginAction {

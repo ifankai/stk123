@@ -1,4 +1,4 @@
-package com.stk123.web;
+package com.stk123;
 
 import java.util.Arrays;
 import java.util.List;

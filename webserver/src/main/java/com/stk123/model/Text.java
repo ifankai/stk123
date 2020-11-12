@@ -5,14 +5,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.stk123.bo.StkText;
 import com.stk123.task.StkUtils;
 import com.stk123.tool.db.util.sequence.SequenceUtils;
-import com.stk123.tool.search.Search;
 import com.stk123.tool.util.JdbcUtils;
-import com.stk123.web.StkConstant;
-
-import oracle.sql.CLOB;
 
 public class Text {
 	

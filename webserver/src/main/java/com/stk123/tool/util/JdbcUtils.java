@@ -40,8 +40,7 @@ import com.stk123.tool.db.connection.Pool;
 import com.stk123.tool.db.sql.Dialect;
 import com.stk123.tool.db.sql.dialect.OracleDialect;
 import com.stk123.tool.db.util.sequence.SequenceUtils;
-import com.stk123.tool.sync.Sync;
-import com.stk123.web.StkConstant;
+import com.stk123.StkConstant;
 
 //import net.sf.jsqlparser.statement.delete.Delete;
 //import net.sf.jsqlparser.statement.insert.Insert;

@@ -1,7 +1,6 @@
 package com.stk123.web.action;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,15 +14,12 @@ import com.stk123.bo.StkKlineRankIndustry;
 import com.stk123.bo.StkKlineRankIndustryStock;
 import com.stk123.model.Index;
 import com.stk123.model.Industry;
-import com.stk123.task.StkUtils;
 import com.stk123.tool.util.JdbcUtils;
 import com.stk123.tool.util.JsonUtils;
-import com.stk123.web.StkConstant;
+import com.stk123.StkConstant;
 import com.stk123.web.StkDict;
-import com.stk123.web.WebUtils;
 import com.stk123.web.bs.StkService;
 import com.stk123.web.context.StkContext;
-import com.stk123.web.pojo.GridBox;
 import com.stk123.web.pojo.MetaData;
 import com.stk123.web.pojo.Node;
 

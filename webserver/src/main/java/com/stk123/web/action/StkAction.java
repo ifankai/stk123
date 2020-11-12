@@ -1,8 +1,6 @@
 package com.stk123.web.action;
 
-import java.net.URLEncoder;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,17 +16,13 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
-import org.htmlparser.Node;
 
 import com.stk123.bo.StkCare;
-import com.stk123.bo.StkInvestigation;
 import com.stk123.bo.StkMonitor;
 import com.stk123.bo.StkText;
 import com.stk123.model.Index;
 import com.stk123.model.K;
 import com.stk123.model.Keyword;
-import com.stk123.model.quartz.job.XueqiuArticle;
-import com.stk123.model.quartz.job.XueqiuStockArticleJob;
 import com.stk123.task.EarningsForecast;
 import com.stk123.task.StkUtils;
 import com.stk123.task.XueqiuUtils;
@@ -36,18 +30,15 @@ import com.stk123.tool.baidu.BaiduSearch;
 import com.stk123.tool.ik.DocumentField;
 import com.stk123.tool.ik.IKUtils;
 import com.stk123.tool.search.Search;
-import com.stk123.tool.util.HtmlUtils;
 import com.stk123.tool.util.HttpUtils;
 import com.stk123.tool.util.JdbcUtils;
 import com.stk123.tool.util.JdbcUtils.IngoreCaseHashMap;
 import com.stk123.tool.util.JsonUtils;
 import com.stk123.tool.util.collection.Name2Value;
 import com.stk123.tool.web.util.RequestUtils;
-import com.stk123.web.StkConstant;
+import com.stk123.StkConstant;
 import com.stk123.web.WebUtils;
 import com.stk123.web.context.StkContext;
-import com.stk123.web.pojo.GridBox;
-import com.sun.net.ssl.HttpsURLConnection;
 
 
 public class StkAction {

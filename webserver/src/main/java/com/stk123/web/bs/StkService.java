@@ -6,12 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.stk123.bo.StkCare;
 import com.stk123.bo.StkDictionary;
 import com.stk123.bo.StkIndustryType;
 import com.stk123.bo.StkMonitor;
 import com.stk123.bo.cust.StkFnDataCust;
-import com.stk123.model.Fn;
 import com.stk123.model.Index;
 import com.stk123.model.K;
 import com.stk123.task.EarningsForecast;
@@ -20,10 +18,8 @@ import com.stk123.tool.db.connection.Pool;
 import com.stk123.tool.util.CacheUtils;
 import com.stk123.tool.util.JdbcUtils;
 import com.stk123.tool.util.JsonUtils;
-import com.stk123.web.StkConstant;
+import com.stk123.StkConstant;
 import com.stk123.web.StkDict;
-import com.stk123.web.WebUtils;
-import com.stk123.web.context.StkContext;
 
 public class StkService {
 	

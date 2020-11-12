@@ -17,7 +17,7 @@ import com.stk123.tool.db.util.DBUtil;
 import com.stk123.tool.db.util.sequence.SequenceUtils;
 import com.stk123.tool.util.ConfigUtils;
 import com.stk123.tool.util.JdbcUtils;
-import com.stk123.web.StkConstant;
+import com.stk123.StkConstant;
 
 public class Label {
 	

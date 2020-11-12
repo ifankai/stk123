@@ -2,7 +2,6 @@ package com.stk123.model;
 
 import java.io.Serializable;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,13 +12,10 @@ import org.apache.commons.lang.StringUtils;
 import org.htmlparser.Node;
 import org.htmlparser.tags.TableTag;
 
-import com.stk123.bo.StkFnType;
 import com.stk123.bo.StkIndustry;
 import com.stk123.bo.StkIndustryType;
 import com.stk123.bo.StkKlineRankIndustry;
 import com.stk123.tool.db.connection.Pool;
-import com.stk123.tool.web.ActionContext;
-import com.stk123.web.StkConstant;
 
 
 @SuppressWarnings("serial")

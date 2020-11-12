@@ -3,14 +3,9 @@ package com.stk123.tool.baidu;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -19,21 +14,11 @@ import org.apache.commons.httpclient.NoHttpResponseException;
 import org.apache.commons.lang.StringUtils;
 import org.htmlparser.Node;
 
-import com.stk123.bo.Stk;
-import com.stk123.model.Index;
 import com.stk123.task.StkUtils;
-import com.stk123.tool.db.TableTools;
-import com.stk123.tool.db.util.DBUtil;
-import com.stk123.tool.html.HtmlA;
-import com.stk123.tool.util.ConfigUtils;
 import com.stk123.tool.util.EmailUtils;
-import com.stk123.tool.util.ExceptionUtils;
 import com.stk123.tool.util.HtmlUtils;
 import com.stk123.tool.util.HttpUtils;
-import com.stk123.tool.util.JdbcUtils;
-import com.stk123.tool.util.collection.Name2Value;
-import com.stk123.tool.util.collection.SimilarSet;
-import com.stk123.web.StkConstant;
+import com.stk123.StkConstant;
 import com.stk123.web.WebUtils;
 
 

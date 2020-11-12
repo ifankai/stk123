@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.beanutils.BeanUtils;
 
-import com.stk123.web.StkConstant;
+import com.stk123.StkConstant;
 
 public class RequestUtils {
 	

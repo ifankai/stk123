@@ -4,18 +4,15 @@ import java.sql.Connection;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.stk123.bo.StkEarningSearchView;
 import com.stk123.bo.StkIndustryType;
 import com.stk123.bo.StkSearchCondition;
 import com.stk123.bo.StkSearchMview;
@@ -24,7 +21,6 @@ import com.stk123.bo.StkUsSearchView;
 import com.stk123.model.IndexUtils;
 import com.stk123.model.User;
 import com.stk123.model.strategy.Strategy;
-import com.stk123.model.strategy.Strategy18;
 import com.stk123.model.strategy.StrategyManager;
 import com.stk123.task.StkUtils;
 import com.stk123.tool.util.HttpUtils;
@@ -32,7 +28,7 @@ import com.stk123.tool.util.JdbcUtils;
 import com.stk123.tool.util.JsonUtils;
 import com.stk123.tool.util.collection.Name2IntegerMap;
 import com.stk123.tool.util.collection.Name2Value;
-import com.stk123.web.StkConstant;
+import com.stk123.StkConstant;
 import com.stk123.web.WebUtils;
 import com.stk123.web.context.StkContext;
 import com.stk123.web.form.ScreenerForm;

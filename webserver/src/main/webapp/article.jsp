@@ -1,3 +1,4 @@
+<%@ page import="com.stk123.StkConstant" %>
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@include file="/common/import.jsp" %>
 <%
@@ -8,7 +9,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <%
-  pageContext.setAttribute(StkConstant.PAGE_TITLE, "文档编辑"); 
+  pageContext.setAttribute(StkConstant.PAGE_TITLE, "文档编辑");
 %>
 <%@include file="/common/header.jsp" %>
 <link rel="stylesheet" type="text/css" href="/css/larger.css" />

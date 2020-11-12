@@ -1,13 +1,6 @@
 package com.stk123.tool.util;
 
-import java.net.URLEncoder;
-import java.sql.Connection;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,30 +8,18 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.httpclient.Header;
 import org.apache.commons.lang.StringUtils;
 //import org.htmlcleaner.HtmlCleaner;
 //import org.htmlcleaner.XPatherException;
 import org.htmlparser.*;
 import org.htmlparser.filters.*;
 import org.htmlparser.nodes.TagNode;
-import org.htmlparser.tags.ImageTag;
-import org.htmlparser.tags.LinkTag;
 import org.htmlparser.tags.TableColumn;
 import org.htmlparser.tags.TableHeader;
 import org.htmlparser.tags.TableRow;
 import org.htmlparser.tags.TableTag;
-import org.htmlparser.tags.TextareaTag;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.visitors.NodeVisitor;
-
-import com.stk123.json.Column;
-import com.stk123.model.IndexUtils;
-import com.stk123.task.InitialData;
-import com.stk123.task.StkUtils;
-import com.stk123.task.XueqiuUtils;
-import com.stk123.tool.db.util.DBUtil;
-import com.stk123.web.StkConstant;
 
 
 public class HtmlUtils {

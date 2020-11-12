@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -37,15 +34,9 @@ import com.stk123.tool.web.config.ConfigHelper;
 import com.stk123.tool.web.config.ForwardConfig;
 import com.stk123.tool.web.config.MvcConfig;
 import com.stk123.tool.web.util.RequestUtils;
-import com.stk123.web.StkConstant;
+import com.stk123.StkConstant;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
-import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 public class ActionServlet extends HttpServlet {
 

@@ -6,7 +6,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import com.stk123.web.StkConstant;
+import com.stk123.StkConstant;
 
 /**
  * 定义css，js版本信息

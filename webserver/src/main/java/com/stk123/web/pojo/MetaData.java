@@ -1,6 +1,6 @@
 package com.stk123.web.pojo;
 
-import com.stk123.web.StkConstant;
+import com.stk123.StkConstant;
 
 public class MetaData {
 	public String id;

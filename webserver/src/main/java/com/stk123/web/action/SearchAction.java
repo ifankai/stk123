@@ -1,6 +1,5 @@
 package com.stk123.web.action;
 
-import java.net.URLDecoder;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,12 +18,11 @@ import com.stk123.model.User;
 import com.stk123.task.StkUtils;
 import com.stk123.tool.ik.DocumentField;
 import com.stk123.tool.ik.DocumentType;
-import com.stk123.tool.ik.SearchEngine;
 import com.stk123.tool.search.Search;
 import com.stk123.tool.util.JsonUtils;
 import com.stk123.tool.util.collection.Name2ListSet;
 import com.stk123.tool.web.util.RequestUtils;
-import com.stk123.web.StkConstant;
+import com.stk123.StkConstant;
 import com.stk123.web.WebUtils;
 import com.stk123.web.context.StkContext;
 

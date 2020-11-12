@@ -2,8 +2,6 @@ package com.stk123.task;
 
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -14,18 +12,15 @@ import org.htmlparser.tags.TableTag;
 import com.stk123.bo.Stk;
 import com.stk123.bo.StkDictionary;
 import com.stk123.model.Index;
-import com.stk123.model.Text;
 import com.stk123.tool.db.TableTools;
 import com.stk123.tool.db.util.DBUtil;
 import com.stk123.tool.util.ConfigUtils;
-import com.stk123.tool.util.EmailUtils;
 import com.stk123.tool.util.ExceptionUtils;
 import com.stk123.tool.util.HtmlUtils;
 import com.stk123.tool.util.HttpUtils;
 import com.stk123.tool.util.JdbcUtils;
 import com.stk123.tool.util.JsonUtils;
-import com.stk123.web.StkConstant;
-import com.stk123.web.StkDict;
+import com.stk123.StkConstant;
 import com.stk123.web.bs.StkService;
 
 public class EarningsForecast {

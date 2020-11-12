@@ -27,7 +27,7 @@ import com.stk123.tool.util.EmailUtils;
 import com.stk123.tool.util.HtmlUtils;
 import com.stk123.tool.util.HttpUtils;
 import com.stk123.tool.util.JdbcUtils;
-import com.stk123.web.StkConstant;
+import com.stk123.StkConstant;
 
 public class NewsRobot {
 	
