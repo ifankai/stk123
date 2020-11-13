@@ -1,7 +1,7 @@
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@include file="/common/import.jsp" %>
 <%
-	pageContext.setAttribute(StkConstant.PAGE_TITLE, "每日指标");
+	pageContext.setAttribute(CommonConstant.PAGE_TITLE, "每日指标");
 	StkContext sc = StkContext.getContext();
     Connection conn = sc.getConnection();
 %>

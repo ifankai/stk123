@@ -11,27 +11,31 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.stk123.tool.util.*;
+import com.stk123.common.util.EmailUtils;
+import com.stk123.common.util.HtmlUtils;
+import com.stk123.service.HttpUtils;
+import com.stk123.service.ServiceUtils;
+import com.stk123.common.util.*;
 import org.apache.commons.lang.StringUtils;
 import org.htmlparser.Node;
 import org.htmlparser.tags.Span;
 
-import com.stk123.bo.Stk;
-import com.stk123.bo.StkImportInfo;
-import com.stk123.bo.StkImportInfoType;
-import com.stk123.bo.cust.StkFnDataCust;
+import com.stk123.model.bo.Stk;
+import com.stk123.model.bo.StkImportInfo;
+import com.stk123.model.bo.StkImportInfoType;
+import com.stk123.model.bo.cust.StkFnDataCust;
 import com.stk123.model.Index;
 import com.stk123.model.Industry;
 import com.stk123.model.News;
-import com.stk123.tool.db.util.DBUtil;
-import com.stk123.StkConstant;
+import com.stk123.common.db.util.DBUtil;
+import com.stk123.common.CommonConstant;
 
 public class NewsRobot {
 	
 	private static Date InitialDate = null;
 	static{
 		try {
-			InitialDate = StkUtils.addDay(new Date(), -7);
+			InitialDate = ServiceUtils.addDay(new Date(), -7);
 			//InitialDate = StkUtils.sf_ymd2.parse("20110101");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -102,10 +106,10 @@ public class NewsRobot {
 			
 			for(StkImportInfoType type : types){
 				boolean match = false;
-				String[] patterns = type.getMatchPattern().split(StkConstant.MARK_SEMICOLON);
+				String[] patterns = type.getMatchPattern().split(CommonConstant.MARK_SEMICOLON);
 				for(String pattern : patterns){
-					if(StkUtils.getMatchString(title, pattern) != null){
-						if(type.getNotMatchPattern() != null && StkUtils.getMatchString(title, type.getNotMatchPattern().split(StkConstant.MARK_SEMICOLON)) != null){
+					if(ServiceUtils.getMatchString(title, pattern) != null){
+						if(type.getNotMatchPattern() != null && ServiceUtils.getMatchString(title, type.getNotMatchPattern().split(CommonConstant.MARK_SEMICOLON)) != null){
 							continue;
 						}
 						match = true;
@@ -116,7 +120,7 @@ public class NewsRobot {
 					List params = new ArrayList();
 					params.add(index.getCode());
 					params.add(type.getType());
-					params.add(new Timestamp(StkUtils.addDay(((Date)map.get("date")),-5).getTime()));
+					params.add(new Timestamp(ServiceUtils.addDay(((Date)map.get("date")),-5).getTime()));
 					params.add(new Timestamp(((Date)map.get("date")).getTime()));
 					List<StkImportInfo> infos = JdbcUtils.list(conn, "select * from stk_import_info where code=? and type=? and info_create_time between ? and ?", params, StkImportInfo.class);
 					if(infos.size() == 0){
@@ -142,7 +146,7 @@ public class NewsRobot {
 								params.clear();
 								params.add(index.getCode());
 								params.add(News.TYPE_1);
-								double percent = StkUtils.numberFormat(index.changePercent * 100, 2);
+								double percent = ServiceUtils.numberFormat(index.changePercent * 100, 2);
 								params.add("["+type.getName()+"] 半年来总额是主营收入(TTM)的 "+ percent +"%");
 								JdbcUtils.insert(conn, "insert into stk_import_info(id,code,type,insert_time,info) values (s_import_info_id.nextval,?,?,sysdate,?)", params);
 								
@@ -158,7 +162,7 @@ public class NewsRobot {
 								params.clear();
 								params.add(index.getCode());
 								params.add(News.TYPE_4);
-								params.add("["+type.getName()+"] 金额是总市值["+StkUtils.number2String(index.getTotalMarketValue(),2)+"亿]的 "+StkUtils.numberFormat(index.changePercent * 100, 2)+"%. - " + title);
+								params.add("["+type.getName()+"] 金额是总市值["+ServiceUtils.number2String(index.getTotalMarketValue(),2)+"亿]的 "+ServiceUtils.numberFormat(index.changePercent * 100, 2)+"%. - " + title);
 								JdbcUtils.insert(conn, "insert into stk_import_info(id,code,type,insert_time,info) values (s_import_info_id.nextval,?,?,sysdate,?)", params);
 							}
 						}
@@ -176,7 +180,7 @@ public class NewsRobot {
 	}
 	
 	public static boolean checkContactGreaterThanTotalMarketValue(Index index, String title, double percent) throws Exception{
-		String amount = StkUtils.getMatchString(title, StkUtils.PATTERN_1);
+		String amount = ServiceUtils.getMatchString(title, ServiceUtils.PATTERN_1);
 		if(amount != null){
 			double total = 0;
 			if(amount.contains("万")){
@@ -195,18 +199,18 @@ public class NewsRobot {
 	}
 	
 	public static boolean checkContactSumGreaterThanMainIncome(Connection conn, Index index, String title, Date newsCreateDate) throws Exception{
-		String amount = StkUtils.getMatchString(title, StkUtils.PATTERN_1);
+		String amount = ServiceUtils.getMatchString(title, ServiceUtils.PATTERN_1);
 		if(amount != null){
 			List params = new ArrayList();
 			params.add(index.getCode());
-			params.add(new Timestamp(StkUtils.addDay(newsCreateDate,-180).getTime()));
+			params.add(new Timestamp(ServiceUtils.addDay(newsCreateDate,-180).getTime()));
 			params.add(new Timestamp(newsCreateDate.getTime()));
 			List<StkImportInfo> infos = JdbcUtils.list(conn, "select * from stk_import_info where code=? and type=200 and info_create_time between ? and ?", params, StkImportInfo.class);
 			double total = 0.0;
 			for(StkImportInfo info : infos){
 				String t = info.getTitle();
 				if(t.contains("同比") || t.contains("环比"))continue;
-				amount = StkUtils.getMatchString(t, StkUtils.PATTERN_1);
+				amount = ServiceUtils.getMatchString(t, ServiceUtils.PATTERN_1);
 				if(amount != null){
 					if(amount.contains("万")){
 						total += Double.parseDouble(StringUtils.replace(amount, "万", "")) / 10000;
@@ -250,10 +254,10 @@ public class NewsRobot {
 					String href = HtmlUtils.getAttribute(a, "href");
 					String title = a.toPlainTextString();
 					Node dateNode = a.getPreviousSibling();
-					String date = StkUtils.getMatchString(dateNode.toPlainTextString(), StkUtils.PATTERN_YYYY_MM_DD);
+					String date = ServiceUtils.getMatchString(dateNode.toPlainTextString(), ServiceUtils.PATTERN_YYYY_MM_DD);
 					//System.out.println(href+","+title+","+date);
 					
-					Date d = StkUtils.sf_ymd.parse(date);
+					Date d = ServiceUtils.sf_ymd.parse(date);
 					if(d.before(dateBefore)){
 						stop = true;
 						break;
@@ -302,10 +306,10 @@ public class NewsRobot {
 					String href = HtmlUtils.getAttribute(a, "href");
 					String title = a.toPlainTextString();
 					Node dateNode = HtmlUtils.getNodeByTagName(li, "span");
-					String date = StkUtils.getMatchString(dateNode.toPlainTextString(), StkUtils.PATTERN_YYYY_MM_DD);
+					String date = ServiceUtils.getMatchString(dateNode.toPlainTextString(), ServiceUtils.PATTERN_YYYY_MM_DD);
 					//System.out.println(href+","+title+","+date);
 					
-					Date d = StkUtils.sf_ymd.parse(date);
+					Date d = ServiceUtils.sf_ymd.parse(date);
 					if(d.before(dateBefore)){
 						stop = true;
 						break;
@@ -362,7 +366,7 @@ public class NewsRobot {
 						}
 						
 						String date = StringUtils.substringBetween(info, "\"newsdate\":\"", "\",\"caption");
-						Date d = StkUtils.sf_ymd.parse(date);
+						Date d = ServiceUtils.sf_ymd.parse(date);
 						if(d.before(DateBefore)){
 							stop = true;
 							break;
@@ -408,7 +412,7 @@ public class NewsRobot {
 				List<StkImportInfo> infos = JdbcUtils.list(conn, "select * from stk_import_info where type>100 and code=?", params, StkImportInfo.class);
 				for(StkImportInfo info : infos){
 					StkImportInfoType type = News.getType(info.getType());
-					if(type.getNotMatchPattern() != null && StkUtils.getMatchString(info.getTitle(), type.getNotMatchPattern().split(",")) != null){
+					if(type.getNotMatchPattern() != null && ServiceUtils.getMatchString(info.getTitle(), type.getNotMatchPattern().split(",")) != null){
 						System.out.println(info.getTitle());
 						params.clear();
 						params.add(info.getId());

@@ -16,30 +16,31 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.stk123.tool.util.*;
+import com.stk123.service.*;
+import com.stk123.common.util.*;
 import org.apache.commons.lang.StringUtils;
 import org.htmlparser.Node;
 import org.htmlparser.tags.LinkTag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.stk123.bo.Stk;
-import com.stk123.bo.StkImportInfoType;
-import com.stk123.bo.StkKlineRankIndustry;
-import com.stk123.bo.StkPe;
-import com.stk123.json.MeiGuSina;
+import com.stk123.model.bo.Stk;
+import com.stk123.model.bo.StkImportInfoType;
+import com.stk123.model.bo.StkKlineRankIndustry;
+import com.stk123.model.bo.StkPe;
+import com.stk123.model.json.MeiGuSina;
 import com.stk123.model.Index;
 import com.stk123.model.IndexContext;
 import com.stk123.model.IndexUtils;
 import com.stk123.model.Industry;
 import com.stk123.model.K;
 import com.stk123.model.News;
-import com.stk123.model.strategy.Strategy;
-import com.stk123.tool.db.TableTools;
-import com.stk123.tool.db.connection.ConnectionPool;
-import com.stk123.tool.db.util.DBUtil;
-import com.stk123.tool.util.collection.IntRange2IntMap;
-import com.stk123.StkConstant;
+import com.stk123.task.strategy.Strategy;
+import com.stk123.common.db.TableTools;
+import com.stk123.common.db.connection.ConnectionPool;
+import com.stk123.common.db.util.DBUtil;
+import com.stk123.common.util.collection.IntRange2IntMap;
+import com.stk123.common.CommonConstant;
 
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -47,7 +48,7 @@ public class InitialKLine {
 	
 	private static Logger logger = LoggerFactory.getLogger(InitialKLine.class);
 	
-	private static final String yesterday = StkUtils.getYesterday();
+	private static final String yesterday = TaskUtils.getYesterday();
 	private static final Date now = new Date();
 	private static final int DAYS_OF_600 = 600;
     private static final int DAYS_OF_500 = 500;
@@ -59,7 +60,7 @@ public class InitialKLine {
 	private static boolean initonly = false;
 	private static boolean analyse = false;
 	
-	public static String today = StkUtils.getToday();//"20160923";
+	public static String today = TaskUtils.getToday();//"20160923";
 	public static final int US_STK_HOT = 200; //美股雪球关注人数下限
 	
 	public static boolean addToCareStks = true;
@@ -104,7 +105,7 @@ public class InitialKLine {
 					
 					//下载沪深300市盈率xls数据
 					String url = "http://www.csindex.com.cn/sseportal/ps/zhs/hqjt/csi/Csi300Perf.xls";
-					HttpUtils.download(url,null, ConfigUtils.getProp("initial_csi300")/*"d:\\share\\download\\"*/, "Csi300Perf_"+StkUtils.getToday()+".xls");
+					HttpUtils.download(url,null, ConfigUtils.getProp("initial_csi300")/*"d:\\share\\download\\"*/, "Csi300Perf_"+TaskUtils.getToday()+".xls");
 				}catch(Exception e){
 					EmailUtils.send("Initial A Stock K Line Error", ExceptionUtils.getExceptionAsString(e));
 				}
@@ -142,7 +143,7 @@ public class InitialKLine {
 	
 	public static void initHKStock(Connection conn) throws Exception {
 		try{
-			int dayOfWeek = StkUtils.getDayOfWeek(now);
+			int dayOfWeek = TaskUtils.getDayOfWeek(now);
 			boolean flag = (dayOfWeek == 1 || dayOfWeek == 2 || dayOfWeek == 3 || dayOfWeek == 4 || dayOfWeek == 5)?true:false;
 			
 			List<Stk> stks = JdbcUtils.list(conn, "select code,name from stk_hk order by code", Stk.class);
@@ -157,7 +158,7 @@ public class InitialKLine {
 	
 	public static void initUStock(Connection conn) throws Exception{
 		try{
-			int dayOfWeek = StkUtils.getDayOfWeek(now);
+			int dayOfWeek = TaskUtils.getDayOfWeek(now);
 			boolean flag = (dayOfWeek == 2 || dayOfWeek == 3 || dayOfWeek == 4 || dayOfWeek == 5 || dayOfWeek == 6)?true:false;
 			
 			List<Stk> stks = JdbcUtils.list(conn, "select code,name from stk where market=2 and cate=2 order by code", Stk.class);
@@ -196,7 +197,7 @@ public class InitialKLine {
 			params.clear();
 			params.add(today);
 			Double avgPE2 = JdbcUtils.load("select avg(pe_ttm) from stk_kline_us where kline_date=? and pe_ttm is not null and pe_ttm>3 and pe_ttm<200", params, Double.class);
-			avgPE2 = StkUtils.numberFormat(avgPE2, 2);
+			avgPE2 = TaskUtils.numberFormat(avgPE2, 2);
 			
 			params.clear();
 			params.add(avgPE2);
@@ -275,7 +276,7 @@ public class InitialKLine {
 	
 	public static void initAStock(final Connection conn) throws Exception{
 		List params = new ArrayList();
-		int dayOfWeek = StkUtils.getDayOfWeek(now);
+		int dayOfWeek = TaskUtils.getDayOfWeek(now);
 		boolean flag = (dayOfWeek == 1 || dayOfWeek == 2 || dayOfWeek == 3 || dayOfWeek == 4 || dayOfWeek == 5)?true:false;
 		//flag = true;
 		if(!analyse){
@@ -367,13 +368,13 @@ public class InitialKLine {
 			params.clear();
 			params.add(today);
 			Double totalPE = JdbcUtils.load("select avg(pe_ttm) from stk_kline where kline_date=? and pe_ttm is not null and pe_ttm>3 and pe_ttm<200", params, Double.class);
-			totalPE = StkUtils.numberFormat(totalPE, 2);
+			totalPE = TaskUtils.numberFormat(totalPE, 2);
 			Double totalPB = JdbcUtils.load("select avg(pb_ttm) from stk_kline where kline_date=? and pb_ttm is not null and pb_ttm>0 and pb_ttm<30", params, Double.class);
-			totalPB = StkUtils.numberFormat(totalPB, 2);
+			totalPB = TaskUtils.numberFormat(totalPB, 2);
 			Double midPB = JdbcUtils.load("select median(pb_ttm) from stk_kline where kline_date=? and pb_ttm is not null and pb_ttm>0 and pb_ttm<30", params, Double.class);
-			midPB = StkUtils.numberFormat(midPB, 2);
+			midPB = TaskUtils.numberFormat(midPB, 2);
 			Double midPE = JdbcUtils.load("select median(pe_ttm) from stk_kline where kline_date=? and pe_ttm is not null and pe_ttm>3 and pe_ttm<200", params, Double.class);
-			midPE = StkUtils.numberFormat(midPE, 2);
+			midPE = TaskUtils.numberFormat(midPE, 2);
 			
 			if(i >= 1){
 				params.clear();
@@ -419,40 +420,40 @@ public class InitialKLine {
 			System.out.println("1.0.创200日新高");
 			List<Index> newHighs = IndexUtils.getNewHighs(context.indexs, today, DAYS_OF_200);
 			if(newHighs.size() > 0){
-				EmailUtils.sendAndReport("创"+ DAYS_OF_200 +"日新高股,总计:"+newHighs.size()+",日期:"+today, StkUtils.createHtmlTable(today, newHighs));
+				EmailUtils.sendAndReport("创"+ DAYS_OF_200 +"日新高股,总计:"+newHighs.size()+",日期:"+today, TaskUtils.createHtmlTable(today, newHighs));
 			}
             System.out.println("1.0.创100日新高");
 			newHighs = IndexUtils.getNewHighs(context.indexs, today, DAYS_OF_100);
 			if(newHighs.size() > 0){
-				EmailUtils.sendAndReport("创"+ DAYS_OF_100 +"日新高股,总计:"+newHighs.size()+",日期:"+today, StkUtils.createHtmlTable(today, newHighs));
+				EmailUtils.sendAndReport("创"+ DAYS_OF_100 +"日新高股,总计:"+newHighs.size()+",日期:"+today, TaskUtils.createHtmlTable(today, newHighs));
 			}
 
 			System.out.println("1.1.接近200日新高");
 			List<Index> closeNewHighs = IndexUtils.getNearNewHighs(context.indexs, today, DAYS_OF_200);
 			if(closeNewHighs.size() > 0){
-				EmailUtils.sendAndReport("接近"+ DAYS_OF_200 +"日新高股,总计:"+closeNewHighs.size()+",日期:"+today, StkUtils.createHtmlTable(today, closeNewHighs));
+				EmailUtils.sendAndReport("接近"+ DAYS_OF_200 +"日新高股,总计:"+closeNewHighs.size()+",日期:"+today, TaskUtils.createHtmlTable(today, closeNewHighs));
 			}
 			System.out.println("1.2.接近100日新高");
 			closeNewHighs = IndexUtils.getNearNewHighs(context.indexs, today, DAYS_OF_100);
 			if(closeNewHighs.size() > 0){
-				EmailUtils.sendAndReport("接近"+ DAYS_OF_100 +"日新高股,总计:"+closeNewHighs.size()+",日期:"+today, StkUtils.createHtmlTable(today, closeNewHighs));
+				EmailUtils.sendAndReport("接近"+ DAYS_OF_100 +"日新高股,总计:"+closeNewHighs.size()+",日期:"+today, TaskUtils.createHtmlTable(today, closeNewHighs));
 			}
 
 			System.out.println("1.3.接近500日新高且K线缠绕");
 			closeNewHighs = IndexUtils.getCloseNewHighsAndInteract(context.indexs, today, DAYS_OF_500);
 			if(closeNewHighs.size() > 0){
-				EmailUtils.sendAndReport("接近"+ DAYS_OF_500 +"日新高且K线缠绕股,总计:"+closeNewHighs.size()+",日期:"+today, StkUtils.createHtmlTable(today, closeNewHighs));
+				EmailUtils.sendAndReport("接近"+ DAYS_OF_500 +"日新高且K线缠绕股,总计:"+closeNewHighs.size()+",日期:"+today, TaskUtils.createHtmlTable(today, closeNewHighs));
 			}
 
             System.out.println("1.4.创250日新低");
             List<Index> newLows = IndexUtils.getNewLows(context.indexs, today, DAYS_OF_250);
             if(newLows.size() > 0){
-                EmailUtils.sendAndReport("创"+ DAYS_OF_200 +"日新低股,总计:"+newLows.size()+",日期:"+today, StkUtils.createHtmlTable(today, newLows));
+                EmailUtils.sendAndReport("创"+ DAYS_OF_200 +"日新低股,总计:"+newLows.size()+",日期:"+today, TaskUtils.createHtmlTable(today, newLows));
             }
             System.out.println("1.4.创600日新低");
             newLows = IndexUtils.getNewLows(context.indexs, today, DAYS_OF_600);
             if(newLows.size() > 0){
-                EmailUtils.sendAndReport("创"+ DAYS_OF_600 +"日新低股,总计:"+newLows.size()+",日期:"+today, StkUtils.createHtmlTable(today, newLows));
+                EmailUtils.sendAndReport("创"+ DAYS_OF_600 +"日新低股,总计:"+newLows.size()+",日期:"+today, TaskUtils.createHtmlTable(today, newLows));
             }
 			
 			//3.search TODO 增加和昨天比较后新加的
@@ -619,7 +620,7 @@ public class InitialKLine {
 				if(results.size() > 0){
 					//Strategy.logToDB(conn, today, "自选股C", results);
 					EmailUtils.sendAndReport("自选股C, 个数："+results.size()+" 日期:"+today, 
-						StkUtils.createHtmlTable(today, results));
+						TaskUtils.createHtmlTable(today, results));
 				}
 				addToCareStks = true;
 			}
@@ -676,8 +677,8 @@ public class InitialKLine {
 					return (int)((d1-d0)*100);
 				}
 			});
-			context.averagePE = StkUtils.number2String(gtotalPE/context.indexsGrowth.size(), 2);
-			context.averagePB = StkUtils.number2String(gtotalPB/pbCnt, 2);
+			context.averagePE = TaskUtils.number2String(gtotalPE/context.indexsGrowth.size(), 2);
+			context.averagePB = TaskUtils.number2String(gtotalPB/pbCnt, 2);
 			
 			if(i >= 1){
 				params.clear();
@@ -694,7 +695,7 @@ public class InitialKLine {
 			}
 			
 			
-			String htmlMsg = StkUtils.createHtmlTable(today, context.indexsGrowth);
+			String htmlMsg = TaskUtils.createHtmlTable(today, context.indexsGrowth);
 			
 			
 			String peAndpeg = "市场整体中位PB低点大约是2PB：<br>" +
@@ -704,7 +705,7 @@ public class InitialKLine {
 					"成长股最佳PE投资区间是20PE-50PE。<br>" +
 					"低于20PE而其业绩却超过30%增长的话，要小心业绩陷阱。<br>" +
 					"高于50PE要注意泡沫风险，就不要盲目杀入了。<br>"
-					+ StkUtils.createPEAndPEG()+"<br>";
+					+ TaskUtils.createPEAndPEG()+"<br>";
 			List<List<String>> pe = new ArrayList<List<String>>();
 			List<String> pe1 = new ArrayList<String>();
 			pe1.add("");pe1.add("平均PE");pe1.add("中位PE");pe1.add("平均PB");pe1.add("中位PB");pe1.add("统计数");
@@ -717,7 +718,7 @@ public class InitialKLine {
 			pe.add(pe3);
 			EmailUtils.sendAndReport("平均PE:"+totalPE+",中位PE:"+midPE+",整体PB:"+totalPB+",中位PB:"+midPB+
 							";成长股平均PE:"+context.averagePE+",PB:"+context.averagePB+",日期:"+today,
-					StkUtils.createHtmlTable(null, pe) + "<br>" + peAndpeg + htmlMsg);
+					TaskUtils.createHtmlTable(null, pe) + "<br>" + peAndpeg + htmlMsg);
 			
 			System.out.println("更新非公开发行，员工持股价格溢价率");
 			for(Index index : context.indexs){
@@ -931,7 +932,7 @@ public class InitialKLine {
 		String page = HttpUtils.get("http://hq.sinajs.cn/rn="+Math.random()+"&list=gb_dji", null, "GBK");
 		String dateTmp = page.split(",")[25];
 		String[] tmp = dateTmp.split(" ");
-		String date = StkUtils.sf_ymd2.format(StkUtils.sf_ymd7.parse(tmp[0]+" "+tmp[1]+" "+StkUtils.YEAR));
+		String date = TaskUtils.sf_ymd2.format(TaskUtils.sf_ymd7.parse(tmp[0]+" "+tmp[1]+" "+TaskUtils.YEAR));
 
 		while(true){
 			page = HttpUtils.get("http://stock.finance.sina.com.cn/usstock/api/jsonp.php/IO.XSRV2.CallbackList"+URLEncoder.encode("['f0j3ltzVzdo2Fo4p']","utf-8")+"/US_CategoryService.getList?page="+pageNum+"&num=60&sort=&asc=0&market=&id=", null, "GBK");
@@ -1036,9 +1037,9 @@ public class InitialKLine {
 				      "4、股价排名前200，每两周翻一遍。<br>"+
 				      "再结合基本面及技术面找出最强的10只及次强的10只作为自选股观察，不定期的再筛选新强加入，弱股剔除。<br>";
 		EmailUtils.send("沧州老张选股法,总计："+datas.size()+",日期:"+today, czlz + 
-				"入榜：<br>"+StkUtils.createHtmlTable(today, added, addtitle) + "<br>" +
-				"出榜：<br>"+StkUtils.createHtmlTable(today, deleted, addtitle) + "<br>" +
-				StkUtils.createHtmlTable(today, datas, addtitle));
+				"入榜：<br>"+TaskUtils.createHtmlTable(today, added, addtitle) + "<br>" +
+				"出榜：<br>"+TaskUtils.createHtmlTable(today, deleted, addtitle) + "<br>" +
+				TaskUtils.createHtmlTable(today, datas, addtitle));
 	}
 	
 	public static void checkStkCreate250DaysBoxHigh(Connection conn, IndexContext context) throws Exception {
@@ -1072,7 +1073,7 @@ public class InitialKLine {
 		for(Index index : results){
 			List data = new ArrayList();
 			data.add(index);
-			data.add(StkUtils.createWeeklyKLine(index));
+			data.add(TaskUtils.createWeeklyKLine(index));
 			datas.add(data);
 			
 			params.clear();
@@ -1087,7 +1088,7 @@ public class InitialKLine {
 			List<String> addtitle = new ArrayList<String>();
 			addtitle.add("周线图");
 			String czlz = "重点：突破时候量能不能超过前期高点的量能，且每次调整都是缩量的，而上涨则是温和放量的。<br>";
-			EmailUtils.sendAndReport("突破300日、振幅80%以内箱体的股票,总计:"+results.size()+",日期:"+today, czlz + StkUtils.createHtmlTable(today, datas, addtitle)  );
+			EmailUtils.sendAndReport("突破300日、振幅80%以内箱体的股票,总计:"+results.size()+",日期:"+today, czlz + TaskUtils.createHtmlTable(today, datas, addtitle)  );
 		}
 	}
 	
@@ -1121,7 +1122,7 @@ public class InitialKLine {
 		for(Index index : results){
 			List data = new ArrayList();
 			data.add(index);
-			data.add(StkUtils.createDailyKLine(index));
+			data.add(TaskUtils.createDailyKLine(index));
 			datas.add(data);
 			
 			params.clear();
@@ -1135,7 +1136,7 @@ public class InitialKLine {
 		for(Index index : resultsYesterday){
 			List data = new ArrayList();
 			data.add(index);
-			data.add(StkUtils.createDailyKLine(index));
+			data.add(TaskUtils.createDailyKLine(index));
 			datasYesterday.add(data);
 		}
 		List<List> added = notContain(datas,datasYesterday);//入榜
@@ -1144,9 +1145,9 @@ public class InitialKLine {
 			List<String> addtitle = new ArrayList<String>();
 			addtitle.add("日线图");
 			EmailUtils.send("股价60日最强，从大盘"+kLow.getLow()+"["+kLow.getDate()+"]开始计算"+",日期:"+today, 
-					"入榜：<br>"+StkUtils.createHtmlTable(today, added, addtitle) + "<br>" +
-					"出榜：<br>"+StkUtils.createHtmlTable(today, deleted, addtitle) + "<br>" +
-					StkUtils.createHtmlTable(today, datas, addtitle));
+					"入榜：<br>"+TaskUtils.createHtmlTable(today, added, addtitle) + "<br>" +
+					"出榜：<br>"+TaskUtils.createHtmlTable(today, deleted, addtitle) + "<br>" +
+					TaskUtils.createHtmlTable(today, datas, addtitle));
 		}
 	}
 	
@@ -1234,11 +1235,11 @@ public class InitialKLine {
 		if(cnt > 0){
 			EmailUtils.sendAndReport("K线缠绕,个数：" + cnt
 					+ ",日期:" + today, "<b>切记最好等均线走出多头排列后再入，短期均线金叉长期均线</b>"
-					+ "<br>10,20,30,60,120日K线缠绕<br>"	+ StkUtils.createHtmlTable(today, results2)  
-					+ "<br><br>10,20,30,60,250日K线缠绕<br>" + StkUtils.createHtmlTable(today, results3) 
-					+ "<br><br>10,20,30,60日K线缠绕<br>" + StkUtils.createHtmlTable(today, results4) 
-					+ "<br><br>" + StkUtils.createHtmlTable(today, results) 
-					+ "<br><br>10,20,30日K线缠绕<br>" + StkUtils.createHtmlTable(today, results5) 
+					+ "<br>10,20,30,60,120日K线缠绕<br>"	+ TaskUtils.createHtmlTable(today, results2)
+					+ "<br><br>10,20,30,60,250日K线缠绕<br>" + TaskUtils.createHtmlTable(today, results3)
+					+ "<br><br>10,20,30,60日K线缠绕<br>" + TaskUtils.createHtmlTable(today, results4)
+					+ "<br><br>" + TaskUtils.createHtmlTable(today, results)
+					+ "<br><br>10,20,30日K线缠绕<br>" + TaskUtils.createHtmlTable(today, results5)
 					);
 		}
 	}
@@ -1273,7 +1274,7 @@ public class InitialKLine {
 			}
 		}
 		if(results.size() > 0){
-			EmailUtils.sendAndReport("南京高人战法,个数："+results.size()+",日期:"+today,StkUtils.createHtmlTable(today, results));
+			EmailUtils.sendAndReport("南京高人战法,个数："+results.size()+",日期:"+today,TaskUtils.createHtmlTable(today, results));
 		}
 	}
 	
@@ -1299,8 +1300,8 @@ public class InitialKLine {
 		}
 		if((results.size()+results2.size()) > 0){
 			EmailUtils.sendAndReport("突破天量,个数："+results.size()+",日期:"+today,
-					"突破历史天量：<br>"+StkUtils.createHtmlTable(today, results2)   + "<br><br>" +
-					"突破600日天量：<br>" + StkUtils.createHtmlTable(today, results)  );
+					"突破历史天量：<br>"+TaskUtils.createHtmlTable(today, results2)   + "<br><br>" +
+					"突破600日天量：<br>" + TaskUtils.createHtmlTable(today, results)  );
 		}
 	}
 	
@@ -1353,8 +1354,8 @@ public class InitialKLine {
 					}});
 				EmailUtils.sendAndReport("天量后缩量,个数："+cnt+",日期:"
 		                   +today,"突破下降趋势线后 或 碰到120/250均线 才能买入,或越多均线粘合时越好"
-		                   +"<br><br>长期缩量1/8票<br>"+StkUtils.createHtmlTable(today, results)  
-		                   +"<br><br>短期60日缩量1/5票<br>"+StkUtils.createHtmlTable(today, results2)  
+		                   +"<br><br>长期缩量1/8票<br>"+TaskUtils.createHtmlTable(today, results)
+		                   +"<br><br>短期60日缩量1/5票<br>"+TaskUtils.createHtmlTable(today, results2)
 		                   );
 			}else if(market == 2){
 				Collections.sort(results, new Comparator<Index>(){
@@ -1366,8 +1367,8 @@ public class InitialKLine {
 						return (o2.getStk().getHot() - o1.getStk().getHot());
 					}});
 				EmailUtils.send("[美股]天量后缩量,个数："+cnt+",日期:"+today,
-						"长期缩量1/8票<br>"+ StkUtils.createHtmlTable(today, results)
-						+"<br><br>短期60日缩量1/5票<br>"+StkUtils.createHtmlTable(today, results2)
+						"长期缩量1/8票<br>"+ TaskUtils.createHtmlTable(today, results)
+						+"<br><br>短期60日缩量1/5票<br>"+TaskUtils.createHtmlTable(today, results2)
 						);
 			}
 		}
@@ -1504,7 +1505,7 @@ public class InitialKLine {
 				return i;
 			}});
 		if(indexs.size() > 0){
-			EmailUtils.sendAndReport("王朋选股,个数："+indexs.size()+",日期:"+today,StkUtils.createHtmlTable(today, indexs));
+			EmailUtils.sendAndReport("王朋选股,个数："+indexs.size()+",日期:"+today,TaskUtils.createHtmlTable(today, indexs));
 			//EmailUtils.send(new String[]{"66933859@qq.com","327226952@qq.com"}, "选股,个数："+indexs.size()+",日期:"+today,StkUtils.createHtmlTable2(today, indexs));
 		}
 	}
@@ -1563,7 +1564,7 @@ public class InitialKLine {
 				return i;
 			}});
 		if(indexs.size() > 0){
-			EmailUtils.sendAndReport("王朋选股优化-1,个数："+indexs.size()+",日期:"+today,StkUtils.createHtmlTable(today, indexs));
+			EmailUtils.sendAndReport("王朋选股优化-1,个数："+indexs.size()+",日期:"+today,TaskUtils.createHtmlTable(today, indexs));
 		}
 	}
 	
@@ -1652,7 +1653,7 @@ public class InitialKLine {
 				return i;
 			}});
 		if(indexs.size() > 0){
-			EmailUtils.sendAndReport("王朋选股优化-2,个数："+indexs.size()+",日期:"+today,StkUtils.createHtmlTable(today, indexs));
+			EmailUtils.sendAndReport("王朋选股优化-2,个数："+indexs.size()+",日期:"+today,TaskUtils.createHtmlTable(today, indexs));
 		}
 	}
 	
@@ -1685,8 +1686,8 @@ public class InitialKLine {
 					return i;
 				}});
 			EmailUtils.sendAndReport("价格低于前高，量超前量,个数："+ cnt +",日期:"+today,
-					"长期票<br>" + StkUtils.createHtmlTable(today, indexs) +
-					"<br><br>短期票<br>" + StkUtils.createHtmlTable(today, indexs2)
+					"长期票<br>" + TaskUtils.createHtmlTable(today, indexs) +
+					"<br><br>短期票<br>" + TaskUtils.createHtmlTable(today, indexs2)
 					);
 		}
 
@@ -1761,7 +1762,7 @@ public class InitialKLine {
 				public int compare(Index o1, Index o2) {
 					return (o2.getStk().getHot() - o1.getStk().getHot());
 				}});
-			EmailUtils.send("[美股]黄金三角,总计:"+results.size()+",日期:"+today, StkUtils.createHtmlTable(today, results));
+			EmailUtils.send("[美股]黄金三角,总计:"+results.size()+",日期:"+today, TaskUtils.createHtmlTable(today, results));
 		}
 	}
 	
@@ -1835,10 +1836,10 @@ public class InitialKLine {
 				}});
 			EmailUtils.send("[美股]K线缠绕,个数：" + cnt
 					+ ",日期:" + today, "<b>切记最好等均线走出多头排列后再入</b>"
-					+ "<br>10,20,30,60,250日K线缠绕<br>" + StkUtils.createHtmlTable(today, results3)
-					+ "<br><br>10,20,30,60,120日K线缠绕<br>" + StkUtils.createHtmlTable(today, results2)
-					+ "<br><br>10,20,30,60日K线缠绕<br>" + StkUtils.createHtmlTable(today, results4)
-					+ "<br><br>" + StkUtils.createHtmlTable(today, results));
+					+ "<br>10,20,30,60,250日K线缠绕<br>" + TaskUtils.createHtmlTable(today, results3)
+					+ "<br><br>10,20,30,60,120日K线缠绕<br>" + TaskUtils.createHtmlTable(today, results2)
+					+ "<br><br>10,20,30,60日K线缠绕<br>" + TaskUtils.createHtmlTable(today, results4)
+					+ "<br><br>" + TaskUtils.createHtmlTable(today, results));
 		}
 	}
 	
@@ -1857,7 +1858,7 @@ public class InitialKLine {
 				public int compare(Index o1, Index o2) {
 					return (o2.getStk().getHot() - o1.getStk().getHot());
 				}});
-			EmailUtils.send("[美股]K线突破下降趋势线,个数："+results.size()+",日期:"+today,StkUtils.createHtmlTable(today, results));
+			EmailUtils.send("[美股]K线突破下降趋势线,个数："+results.size()+",日期:"+today,TaskUtils.createHtmlTable(today, results));
 		}
 	}
 	
@@ -1880,7 +1881,7 @@ public class InitialKLine {
 			if(market == 1){
 				Strategy.logToDB(conn, today, "一品抄底-底部", results);
 				EmailUtils.sendAndReport("一品抄底-底部,个数："+results.size()+",日期:"+today,"一品抄底要点：三根线要贴近0轴，MACD也要贴近0轴<br>"+
-						StkUtils.createHtmlTable(today, results)  );
+						TaskUtils.createHtmlTable(today, results)  );
 			}
 		}
 		return results.size();
@@ -1961,13 +1962,13 @@ public class InitialKLine {
 			if(market == 1){
 				Strategy.logToDB(conn, today, "一品抄底-MACD", results);
 				EmailUtils.sendAndReport("一品抄底-MACD,个数："+results.size()+",日期:"+today,"一品抄底要点：三根线要贴近0轴，MACD也要贴近0轴<br>"+
-						StkUtils.createHtmlTable(today, results)  );
+						TaskUtils.createHtmlTable(today, results)  );
 			}else if(market == 2){
 				Collections.sort(results, new Comparator<Index>(){
 					public int compare(Index o1, Index o2) {
 						return (o2.getStk().getHot() - o1.getStk().getHot());
 					}});
-				EmailUtils.send("[美股]一品抄底-MACD,个数："+results.size()+",日期:"+today,StkUtils.createHtmlTable(today, results));
+				EmailUtils.send("[美股]一品抄底-MACD,个数："+results.size()+",日期:"+today,TaskUtils.createHtmlTable(today, results));
 			}
 		}
 		return results.size();
@@ -2055,7 +2056,7 @@ public class InitialKLine {
 			if(results.size() > 100){
 				title = EmailUtils.IMPORTANT + title;
 			}
-			EmailUtils.sendAndReport(title,StkUtils.createHtmlTable(today, results));
+			EmailUtils.sendAndReport(title,TaskUtils.createHtmlTable(today, results));
 			List params = new ArrayList();
 			params.add(results.size());
 			params.add(today);
@@ -2095,7 +2096,7 @@ public class InitialKLine {
 					title = EmailUtils.IMPORTANT + title;
 				}
 				EmailUtils.sendAndReport(title,"重点观察：一品抄底 趋势线 拐头向上 或 已经上叉黑马线在上方运行；同时ENE Upper快大于Lower数<br>" +
-						StkUtils.createHtmlTable(today, results)  );
+						TaskUtils.createHtmlTable(today, results)  );
 				List params = new ArrayList();
 				params.add(results.size());
 				params.add(today);
@@ -2108,7 +2109,7 @@ public class InitialKLine {
 				/*for(Index index : results){
 					System.out.println(index.getCode()+","+index.getName()+",change="+index.changePercent);
 				}*/
-				EmailUtils.send("[美股]"+(weekly?"[周线]":"")+"二品抄底-买入时机,个数："+results.size()+",日期:"+today,StkUtils.createHtmlTable(today, results));
+				EmailUtils.send("[美股]"+(weekly?"[周线]":"")+"二品抄底-买入时机,个数："+results.size()+",日期:"+today,TaskUtils.createHtmlTable(today, results));
 			}
 		}
 		return results;
@@ -2171,7 +2172,7 @@ public class InitialKLine {
 			}
 		}
 		if(results.size() > 0){
-			EmailUtils.sendAndReport("连续涨停后开板,个数："+results.size()+",日期:"+today,StkUtils.createHtmlTable(today, results));
+			EmailUtils.sendAndReport("连续涨停后开板,个数："+results.size()+",日期:"+today,TaskUtils.createHtmlTable(today, results));
 		}
 	}
 	
@@ -2191,7 +2192,7 @@ public class InitialKLine {
 			}
 		}
 		if(results.size() > 0){
-			EmailUtils.send("连续涨停后马上开板股,个数："+results.size()+",日期:"+today,StkUtils.createHtmlTable(today, results));
+			EmailUtils.send("连续涨停后马上开板股,个数："+results.size()+",日期:"+today,TaskUtils.createHtmlTable(today, results));
 		}
 	}
 	
@@ -2220,7 +2221,7 @@ public class InitialKLine {
 			/*for(Index index : results){
 				System.out.println(index.getCode()+","+index.getName()+",change="+index.changePercent);
 			}*/
-			EmailUtils.send("[美股][周线]趋势线突破,个数："+results.size()+",日期:"+today,StkUtils.createHtmlTable(today, results));
+			EmailUtils.send("[美股][周线]趋势线突破,个数："+results.size()+",日期:"+today,TaskUtils.createHtmlTable(today, results));
 		}
 	}
 	
@@ -2249,7 +2250,7 @@ public class InitialKLine {
 			/*for(Index index : results){
 				System.out.println(index.getCode()+","+index.getName()+",change="+index.changePercent);
 			}*/
-			EmailUtils.send("[美股][月线]趋势线突破,个数："+results.size()+",日期:"+today,StkUtils.createHtmlTable(today, results));
+			EmailUtils.send("[美股][月线]趋势线突破,个数："+results.size()+",日期:"+today,TaskUtils.createHtmlTable(today, results));
 		}
 	}
 	
@@ -2282,7 +2283,7 @@ public class InitialKLine {
 				public int compare(Index o1, Index o2) {
 					return (int)((o2.changePercent - o1.changePercent)*10000);
 				}});
-			EmailUtils.send("[美股][周线]MACD粘合选股,个数："+results.size()+",日期:"+today,StkUtils.createHtmlTable(today, results));
+			EmailUtils.send("[美股][周线]MACD粘合选股,个数："+results.size()+",日期:"+today,TaskUtils.createHtmlTable(today, results));
 		}
 	}
 	
@@ -2311,7 +2312,7 @@ public class InitialKLine {
 			}
 		}
 		if(results.size() > 0){
-			EmailUtils.send("连续涨停，开板后，新高股,个数："+results.size()+",日期:"+today,StkUtils.createHtmlTable(today, results));
+			EmailUtils.send("连续涨停，开板后，新高股,个数："+results.size()+",日期:"+today,TaskUtils.createHtmlTable(today, results));
 		}
 	}
 	
@@ -2323,10 +2324,10 @@ public class InitialKLine {
 		for(Node node : nodes){			
 			String title = ((LinkTag)HtmlUtils.getNodeByTagName(node, "a")).getAttribute("title");
 			boolean match = false;
-			String[] patterns = type.getMatchPattern().split(StkConstant.MARK_SEMICOLON);
+			String[] patterns = type.getMatchPattern().split(CommonConstant.MARK_SEMICOLON);
 			for(String pattern : patterns){
-				if(StkUtils.getMatchString(title, pattern) != null){
-					if(type.getNotMatchPattern() != null && StkUtils.getMatchString(title, type.getNotMatchPattern().split(StkConstant.MARK_SEMICOLON)) != null){
+				if(TaskUtils.getMatchString(title, pattern) != null){
+					if(type.getNotMatchPattern() != null && TaskUtils.getMatchString(title, type.getNotMatchPattern().split(CommonConstant.MARK_SEMICOLON)) != null){
 						continue;
 					}
 					match = true;
@@ -2371,7 +2372,7 @@ public class InitialKLine {
 		}
 		if(results.size() > 0){
 			EmailUtils.sendAndReport("资金流入且离底部不远,个数："+results.size()+",日期:"+today,"抄底要点：一品抄底三根线要贴近0轴，MACD也要贴近0轴<br>"+
-					StkUtils.createHtmlTable(today, results)  );
+					TaskUtils.createHtmlTable(today, results)  );
 		}
 	}
 	
@@ -2403,10 +2404,10 @@ public class InitialKLine {
 		pe1.add("");pe1.add("20日涨幅");
 		pe.add(pe1);
 		List<String> pe2 = new ArrayList<String>();
-		pe2.add("沪深300");pe2.add(StkUtils.numberFormat2Digits((k.getClose()/k20.getClose()-1)*100)+"%");
+		pe2.add("沪深300");pe2.add(TaskUtils.numberFormat2Digits((k.getClose()/k20.getClose()-1)*100)+"%");
 		pe.add(pe2);
 		List<String> pe3 = new ArrayList<String>();
-		pe3.add("中证1000");pe3.add(StkUtils.numberFormat2Digits((kk.getClose()/kk20.getClose()-1)*100)+"%");
+		pe3.add("中证1000");pe3.add(TaskUtils.numberFormat2Digits((kk.getClose()/kk20.getClose()-1)*100)+"%");
 		pe.add(pe3);
 		
 		
@@ -2417,10 +2418,10 @@ public class InitialKLine {
 		b1.add("");b1.add("Bias");b1.add("优化参数");
 		bb.add(b1);
 		List<String> b2 = new ArrayList<String>();
-		b2.add("沪深300");b2.add(StkUtils.numberFormat2Digits(bias1));b2.add("(17,0,-12)");
+		b2.add("沪深300");b2.add(TaskUtils.numberFormat2Digits(bias1));b2.add("(17,0,-12)");
 		bb.add(b2);
 		List<String> b3 = new ArrayList<String>();
-		b3.add("中证1000");b3.add(StkUtils.numberFormat2Digits(bias2));b3.add("(18,3,-8)");
+		b3.add("中证1000");b3.add(TaskUtils.numberFormat2Digits(bias2));b3.add("(18,3,-8)");
 		bb.add(b3);
 		
 		
@@ -2565,26 +2566,26 @@ public class InitialKLine {
 			for(int i=0;i<x;i++){
 				gn = new ArrayList<String>();
 				gn.add(String.valueOf(i+1));
-				gn.add(get10jqkaIndustryUrl(indexs1.get(i)));gn.add(StkUtils.number2String(indexs1.get(i).changePercent*100, 2)+"%");
-				gn.add(get10jqkaIndustryUrl(indexs2.get(i)));gn.add(StkUtils.number2String(indexs2.get(i).changePercent*100, 2)+"%");
-				gn.add(get10jqkaIndustryUrl(indexs3.get(i)));gn.add(StkUtils.number2String(indexs3.get(i).changePercent*100, 2)+"%");
-				gn.add(get10jqkaIndustryUrl(indexs4.get(i)));gn.add(StkUtils.number2String(indexs4.get(i).changePercent, 0));
+				gn.add(get10jqkaIndustryUrl(indexs1.get(i)));gn.add(TaskUtils.number2String(indexs1.get(i).changePercent*100, 2)+"%");
+				gn.add(get10jqkaIndustryUrl(indexs2.get(i)));gn.add(TaskUtils.number2String(indexs2.get(i).changePercent*100, 2)+"%");
+				gn.add(get10jqkaIndustryUrl(indexs3.get(i)));gn.add(TaskUtils.number2String(indexs3.get(i).changePercent*100, 2)+"%");
+				gn.add(get10jqkaIndustryUrl(indexs4.get(i)));gn.add(TaskUtils.number2String(indexs4.get(i).changePercent, 0));
 				gnList.add(gn);
 			}
 		}
 		
 		if(realtime){
-			EmailUtils.sendImport("【策略】",StkUtils.createHtmlTable(null, pe)
-					+ "<br>"+StkUtils.createHtmlTable(null, list)
-					+ "<br>"+StkUtils.createHtmlTable(null, bb)
+			EmailUtils.sendImport("【策略】",TaskUtils.createHtmlTable(null, pe)
+					+ "<br>"+TaskUtils.createHtmlTable(null, list)
+					+ "<br>"+TaskUtils.createHtmlTable(null, bb)
 					);
 		}else{
-			EmailUtils.sendAndReport("【策略】",StkUtils.createHtmlTable(null, pe)  
-					+ "<br>"+  StkUtils.createHtmlTable(null, list)
-					+ "<br>"+  StkUtils.createHtmlTable(null, bb)
+			EmailUtils.sendAndReport("【策略】",TaskUtils.createHtmlTable(null, pe)
+					+ "<br>"+  TaskUtils.createHtmlTable(null, list)
+					+ "<br>"+  TaskUtils.createHtmlTable(null, bb)
 					+ "<br><a href='http://q.10jqka.com.cn/stock/gn/' target='_blank'>同花顺概念板块</a>"
 					+ "<br>"+ "20日正收益行业个数："+ x //+ " (抄底找60日排名差，40日其次，20日排名好且开始变正值的行业)"
-					+ "<br>"+StkUtils.createHtmlTable(null, gnList)
+					+ "<br>"+TaskUtils.createHtmlTable(null, gnList)
 					);
 		}
 	}
@@ -2617,14 +2618,14 @@ public class InitialKLine {
 			for(Index result : results){
 				List data = new ArrayList();
 				data.add(result);
-				data.add(StkUtils.numberFormat(result.changePercent, 2));
-				data.add(StkUtils.numberFormat(result.getPETTM(), 2));
+				data.add(TaskUtils.numberFormat(result.changePercent, 2));
+				data.add(TaskUtils.numberFormat(result.getPETTM(), 2));
 				datas.add(data);
 			}
 			List<String> addtitle = new ArrayList<String>();
 			addtitle.add("PEG");
 			addtitle.add("PE(TTM)");
-			EmailUtils.sendAndReport("PEG排序,个数："+results.size()+",日期:"+today, StkUtils.createHtmlTable(today, datas, addtitle) );
+			EmailUtils.sendAndReport("PEG排序,个数："+results.size()+",日期:"+today, TaskUtils.createHtmlTable(today, datas, addtitle) );
 		}
 	}
 	
@@ -2747,12 +2748,12 @@ public class InitialKLine {
 		table6 = buildIndustryTable(indexs.subList(0, 10), date10);
 		
 		EmailUtils.sendAndReport("行业分析 - "+category+",日期:"+today, "<a href='http://q.10jqka.com.cn/gn/' target='_blank'>同花顺概念板块</a><br><a href='http://q.10jqka.com.cn/thshy/' target='_blank'>同花顺行业</a><br><br>"
-				+ (k1 != null ? StkUtils.formatDate(k1.getDate())+"以来涨幅:<br>"+StkUtils.createHtmlTable(null, table4) : "") + "<br>"
-				+ (k2 != null ? StkUtils.formatDate(k2.getDate())+"以来涨幅:<br>"+StkUtils.createHtmlTable(null, table5) : "") + "<br>"
-				+ "10日涨幅:<br>" + StkUtils.createHtmlTable(null, table6) + "<br>"
-				+ "突破下降趋势线:<br>" + StkUtils.createHtmlTable(null, table3) + "<br>"
-				+ "突破20日均线:<br>" + StkUtils.createHtmlTable(null, table1) + "<br>"
-				+ "创60日新高后回抽20日均线:<br>" + StkUtils.createHtmlTable(null, table2) + "<br>"
+				+ (k1 != null ? TaskUtils.formatDate(k1.getDate())+"以来涨幅:<br>"+TaskUtils.createHtmlTable(null, table4) : "") + "<br>"
+				+ (k2 != null ? TaskUtils.formatDate(k2.getDate())+"以来涨幅:<br>"+TaskUtils.createHtmlTable(null, table5) : "") + "<br>"
+				+ "10日涨幅:<br>" + TaskUtils.createHtmlTable(null, table6) + "<br>"
+				+ "突破下降趋势线:<br>" + TaskUtils.createHtmlTable(null, table3) + "<br>"
+				+ "突破20日均线:<br>" + TaskUtils.createHtmlTable(null, table1) + "<br>"
+				+ "创60日新高后回抽20日均线:<br>" + TaskUtils.createHtmlTable(null, table2) + "<br>"
 				);
 	}
 	
@@ -2766,7 +2767,7 @@ public class InitialKLine {
 			row = new ArrayList<String>();
 			row.add(i+"");
 			row.add(get10jqkaIndustryUrl(index));
-			row.add(StkUtils.number2String(index.changePercent, 2)+"%");
+			row.add(TaskUtils.number2String(index.changePercent, 2)+"%");
 			row.add(index.getCapitalFlowImageOnMain(date));
 			K k = index.getK(today);
 			double ma60 = k.getMA(K.Close, 60);
@@ -2881,7 +2882,7 @@ public class InitialKLine {
 				}
 				int flag = (v-vv)>=2||(v2-vv2)>=2?(v-vv)+(v2-vv2):0;
 				TimeWindowResult tw = new TimeWindowResult();
-				tw.date = StkUtils.sf_ymd.format(StkUtils.addDayOfWorking(todayK.getDate(), i));
+				tw.date = TaskUtils.sf_ymd.format(TaskUtils.addDayOfWorking(todayK.getDate(), i));
 				tw.count1 = v;
 				tw.diff1 = v-vv;
 				tw.count2 = v2;

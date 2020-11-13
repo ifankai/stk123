@@ -7,9 +7,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.stk123.tool.tree.Tree;
-import com.stk123.tool.util.JsonUtils;
-import com.stk123.StkConstant;
+import com.stk123.web.tool.tree.Tree;
+import com.stk123.common.util.JsonUtils;
+import com.stk123.common.CommonConstant;
 import com.stk123.web.bs.IndexService;
 import com.stk123.web.bs.StkService;
 import com.stk123.web.context.StkContext;
@@ -20,7 +20,7 @@ public class IndexAction {
 	public final static IndexService indexService = new IndexService();
 	
 	public String perform() throws Exception {
-		return StkConstant.ACTION_SUCC;
+		return CommonConstant.ACTION_SUCC;
 	}
 	
 	public void getUpdownRank() throws Exception {
@@ -39,7 +39,7 @@ public class IndexAction {
 	public void index() throws Exception {
 		StkContext sc = StkContext.getContext();
 		HttpServletRequest request = sc.getRequest();
-		String sid = request.getParameter(StkConstant.PARAMETER_ID);
+		String sid = request.getParameter(CommonConstant.PARAMETER_ID);
 		Tree tree = indexService.getTree();
 		String template = "undefined";
 		if(sid != null && sid.length() > 0){
@@ -67,7 +67,7 @@ public class IndexAction {
 				list = indexService.getPPI(id);
 			}
 			
-			String json = JsonUtils.getJsonString4JavaPOJO(list, StkConstant.DATE_FORMAT_YYYY_MM_DD);
+			String json = JsonUtils.getJsonString4JavaPOJO(list, CommonConstant.DATE_FORMAT_YYYY_MM_DD);
 			StringBuffer sb = new StringBuffer();
 			sb.append("{\"template\":\"").append(template).append("\",\"datas\":").append(json).append("}");
 			//System.out.println(sb.toString());

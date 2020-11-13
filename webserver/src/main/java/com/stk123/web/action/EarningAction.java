@@ -11,15 +11,15 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.stk123.bo.StkEarningsForecast;
-import com.stk123.bo.cust.StkEarningsNoticeCust;
+import com.stk123.model.bo.StkEarningsForecast;
+import com.stk123.model.bo.cust.StkEarningsNoticeCust;
 import com.stk123.model.Index;
 import com.stk123.model.Industry;
 import com.stk123.model.User;
-import com.stk123.tool.util.StkUtils;
-import com.stk123.tool.util.JdbcUtils;
-import com.stk123.tool.util.JsonUtils;
-import com.stk123.StkConstant;
+import com.stk123.service.ServiceUtils;
+import com.stk123.common.util.JdbcUtils;
+import com.stk123.common.util.JsonUtils;
+import com.stk123.common.CommonConstant;
 import com.stk123.web.WebUtils;
 import com.stk123.web.context.StkContext;
 
@@ -29,11 +29,11 @@ public class EarningAction {
 		StkContext sc = StkContext.getContext();
 		User user = sc.getUser();
 		if(user == null){
-			return StkConstant.ACTION_404;
+			return CommonConstant.ACTION_404;
 		}
 		Map<String, String> map = JsonUtils.testJson(user.getStkUser().getEarningSearchParams());
 		sc.put("searchparams", map);
-		return StkConstant.ACTION_SUCC;
+		return CommonConstant.ACTION_SUCC;
 	}
 	
 	public void getEarningNotice() throws Exception {
@@ -187,7 +187,7 @@ public class EarningAction {
 				String[] stks = deletestk.split(",");
 				List l = new ArrayList();
 				for(String s : stks){
-					l.add("'"+StkUtils.getNumberFromString(s)+"'");
+					l.add("'"+ServiceUtils.getNumberFromString(s)+"'");
 				}
 				sql.append(" and c.code in (" + StringUtils.join(l,",") + ")");
 				sql.append(" group by code)");
@@ -198,9 +198,9 @@ public class EarningAction {
 					sql.append(" order by fn_date desc");
 				}else{
 					if(StringUtils.isEmpty(fnDate)){
-						String now = StkUtils.getToday();
-						String prev = StkUtils.getPrevQuarter(now);
-						String next = StkUtils.getNextQuarter(now);
+						String now = ServiceUtils.getToday();
+						String prev = ServiceUtils.getPrevQuarter(now);
+						String next = ServiceUtils.getNextQuarter(now);
 						sql.append("fn_date in ('"+prev+"', '"+next+"')");
 					}else{
 						sql.append("fn_date='"+fnDate+"'");
@@ -215,10 +215,10 @@ public class EarningAction {
 						sql.append(" and er_high >= "+erhigh);
 					}
 					if(!StringUtils.isEmpty(noticefrom)){
-						sql.append(" and notice_date >= "+ StkUtils.formatDate(noticefrom, StkUtils.sf_ymd14, StkUtils.sf_ymd2));
+						sql.append(" and notice_date >= "+ ServiceUtils.formatDate(noticefrom, ServiceUtils.sf_ymd14, ServiceUtils.sf_ymd2));
 					}
 					if(!StringUtils.isEmpty(noticeto)){
-						sql.append(" and notice_date <= "+ StkUtils.formatDate(noticeto, StkUtils.sf_ymd14, StkUtils.sf_ymd2));
+						sql.append(" and notice_date <= "+ ServiceUtils.formatDate(noticeto, ServiceUtils.sf_ymd14, ServiceUtils.sf_ymd2));
 					}
 					//sql.append(" and last_amount>0 ");
 					sql.append(" order by insert_time desc");
@@ -231,8 +231,8 @@ public class EarningAction {
 		System.out.println(sql);
 		List<StkEarningsNoticeCust> cares = JdbcUtils.list(conn,sql.toString(),	StkEarningsNoticeCust.class);
 		
-		Date start30 = StkUtils.addDay(StkUtils.getToday(), -30);
-		Date start180 = StkUtils.addDay(StkUtils.getToday(), -180);
+		Date start30 = ServiceUtils.addDay(ServiceUtils.getToday(), -30);
+		Date start180 = ServiceUtils.addDay(ServiceUtils.getToday(), -180);
 		for(StkEarningsNoticeCust care : cares){
 			System.out.print('.');
 			try{
@@ -246,7 +246,7 @@ public class EarningAction {
 					if(!StringUtils.isEmpty(realnethigh) && net > Double.parseDouble(realnethigh)){
 						continue;
 					}
-					Double cashGrowth = index.getFnDataLastestByType(StkConstant.FN_TYPE_CN_JYHDXJL).getFnValue();
+					Double cashGrowth = index.getFnDataLastestByType(CommonConstant.FN_TYPE_CN_JYHDXJL).getFnValue();
 					if(cashGrowth != null){
 						if(!StringUtils.isEmpty(cashlow) && cashGrowth < Double.parseDouble(cashlow)){
 							continue;
@@ -261,7 +261,7 @@ public class EarningAction {
 				
 				List map = new ArrayList();
 				Industry ind = index.getIndustryByMyFn();
-				map.add(StkUtils.wrapCodeAndNameAsHtml(index.getCode(), index.getName()) + (ind!=null?ind.getType().getName().substring(0, 1):"-"));
+				map.add(ServiceUtils.wrapCodeAndNameAsHtml(index.getCode(), index.getName()) + (ind!=null?ind.getType().getName().substring(0, 1):"-"));
 				map.add(index.getIndustryDefault()!=null?index.getIndustryDefault().getType().getName():"-");
 				List<Industry> inds = index.getIndustriesBySource("qq_conception");
 				List<String> sb = new ArrayList<String>();
@@ -284,11 +284,11 @@ public class EarningAction {
 						continue;
 					}
 				}
-				map.add(StkUtils.number2String(mv,2));
+				map.add(ServiceUtils.number2String(mv,2));
 				//毛利率
 				//StkFnDataCust fn = index.getFnDataLastestByType(index.FN_GROSS_MARGIN);
-				map.add(StkUtils.numberFormat2Digits(care.getGrossMargin()) + "%");	
-				map.add(care.getFnDate()==null?"":StkUtils.formatDate(care.getFnDate()));
+				map.add(ServiceUtils.numberFormat2Digits(care.getGrossMargin()) + "%");
+				map.add(care.getFnDate()==null?"":ServiceUtils.formatDate(care.getFnDate()));
 				if(care.getErLow() == null){
 					map.add("-");
 				}else if(care.getErLow().equals(care.getErHigh())){
@@ -311,34 +311,34 @@ public class EarningAction {
 				if(care.getRealDate() != null){
 					Double jlr = null;
 					try{
-						String str = StkUtils.getMatchString(care.getDetail(),"-?[0-9]*(\\.?)[0-9]*万元.{1}-?[0-9]*(\\.?)[0-9]*万元");
+						String str = ServiceUtils.getMatchString(care.getDetail(),"-?[0-9]*(\\.?)[0-9]*万元.{1}-?[0-9]*(\\.?)[0-9]*万元");
 						double jlr2 = care.getLastAmount()/10000*(1+perGrowth);
 						if(str != null){
 							double jlrlow = Double.parseDouble(StringUtils.substringBefore(str, "万元"));
-							double jlrhigh = Double.parseDouble(StkUtils.getNumberFromString(StringUtils.substringAfter(str, "万元")).replaceAll("-", ""));
+							double jlrhigh = Double.parseDouble(ServiceUtils.getNumberFromString(StringUtils.substringAfter(str, "万元")).replaceAll("-", ""));
 							jlr2 = (jlrlow+jlrhigh)/2/10000;
 						}else{
 							if("预盈".equals(care.getErType()) && care.getLastAmount() < 0){
 								jlr2 = Math.abs(care.getLastAmount()/10000*(1+perGrowth));//因为预盈，所以jlr不可能是负数
 							}
 						}
-						if(care.getFnDate().endsWith(StkUtils.MMDD_Q4)){
+						if(care.getFnDate().endsWith(ServiceUtils.MMDD_Q4)){
 							jlr = jlr2;
-						}else if(care.getFnDate().endsWith(StkUtils.MMDD_Q3)){
+						}else if(care.getFnDate().endsWith(ServiceUtils.MMDD_Q3)){
 							jlr = jlr2+
-									index.getNetProfitByOneQuarter(StkUtils.getQuarter(care.getFnDate(), 3));
-						}else if(care.getFnDate().endsWith(StkUtils.MMDD_Q2)){
+									index.getNetProfitByOneQuarter(ServiceUtils.getQuarter(care.getFnDate(), 3));
+						}else if(care.getFnDate().endsWith(ServiceUtils.MMDD_Q2)){
 							jlr = jlr2+
-								   	index.getNetProfitByOneQuarter(StkUtils.getQuarter(care.getFnDate(), 2)) +
-									index.getNetProfitByOneQuarter(StkUtils.getQuarter(care.getFnDate(), 3));
-						}else if(care.getFnDate().endsWith(StkUtils.MMDD_Q1)){
+								   	index.getNetProfitByOneQuarter(ServiceUtils.getQuarter(care.getFnDate(), 2)) +
+									index.getNetProfitByOneQuarter(ServiceUtils.getQuarter(care.getFnDate(), 3));
+						}else if(care.getFnDate().endsWith(ServiceUtils.MMDD_Q1)){
 							jlr = jlr2+
-									index.getNetProfitByOneQuarter(StkUtils.getQuarter(care.getFnDate(), 1)) +
-								   	index.getNetProfitByOneQuarter(StkUtils.getQuarter(care.getFnDate(), 2)) +
-									index.getNetProfitByOneQuarter(StkUtils.getQuarter(care.getFnDate(), 3));
+									index.getNetProfitByOneQuarter(ServiceUtils.getQuarter(care.getFnDate(), 1)) +
+								   	index.getNetProfitByOneQuarter(ServiceUtils.getQuarter(care.getFnDate(), 2)) +
+									index.getNetProfitByOneQuarter(ServiceUtils.getQuarter(care.getFnDate(), 3));
 						}
 						//System.out.println("pe jlr="+jlr2);
-						pe = StkUtils.numberFormat(index.getTotalMarketValue()/jlr, 2);
+						pe = ServiceUtils.numberFormat(index.getTotalMarketValue()/jlr, 2);
 						//if(pe <= 0 && flag)continue;
 					}catch(Exception e){
 						
@@ -378,16 +378,16 @@ public class EarningAction {
 					map.add("-");
 				}else if(m==1){
 					map.add(totalpe);
-					map.add(pe==null?"-":StkUtils.number2String(pe/totalpe, 2));
+					map.add(pe==null?"-":ServiceUtils.number2String(pe/totalpe, 2));
 				}else{
 					double dd = (totalpe-maxpe)/(m-1);
-					map.add(StkUtils.number2String(dd, 2));
-					map.add(pe==null?"-":StkUtils.number2String(pe/dd, 2));
+					map.add(ServiceUtils.number2String(dd, 2));
+					map.add(pe==null?"-":ServiceUtils.number2String(pe/dd, 2));
 				}
 				
 				//peg
 				double jlrzz = index.getCAGRByEarningsForecast();
-				map.add(pe==null||jlrzz == 0?"-":StkUtils.number2String(pe/jlrzz, 2));
+				map.add(pe==null||jlrzz == 0?"-":ServiceUtils.number2String(pe/jlrzz, 2));
 				
 				//业绩修正
 				/*List<StkImportInfo> infos = index.getImportInfoAfterDate(260, start30);
@@ -397,12 +397,12 @@ public class EarningAction {
 				boolean has2 = false;
 				if(efs!=null && efs.size()>0){
 					for(StkEarningsForecast ef : efs){
-						if(ef.getForecastYear().equals(String.valueOf(StkUtils.YEAR))){
-							map.add(StkUtils.numberFormat(mv/ef.getForecastNetProfit(), 2));
+						if(ef.getForecastYear().equals(String.valueOf(ServiceUtils.YEAR))){
+							map.add(ServiceUtils.numberFormat(mv/ef.getForecastNetProfit(), 2));
 							has1 = true;
 						}
-						if(ef.getForecastYear().equals(String.valueOf(StkUtils.YEAR+1))){
-							map.add(StkUtils.numberFormat(mv/ef.getForecastNetProfit(), 2));
+						if(ef.getForecastYear().equals(String.valueOf(ServiceUtils.YEAR+1))){
+							map.add(ServiceUtils.numberFormat(mv/ef.getForecastNetProfit(), 2));
 							has2 = true;
 						}
 						if(has1 && has2)break;
@@ -416,9 +416,9 @@ public class EarningAction {
 				}
 				
 				//业绩预告公告日期
-				map.add(care.getNoticeDate()!=null?StkUtils.formatDate(care.getNoticeDate()):"-");
-				map.add(care.getRealDate()!=null?StkUtils.formatDate(care.getRealDate()):"-");
-				map.add(care.getInsertTime()!=null?StkUtils.formatDate(care.getInsertTime(), StkUtils.sf_ymd):"-");
+				map.add(care.getNoticeDate()!=null?ServiceUtils.formatDate(care.getNoticeDate()):"-");
+				map.add(care.getRealDate()!=null?ServiceUtils.formatDate(care.getRealDate()):"-");
+				map.add(care.getInsertTime()!=null?ServiceUtils.formatDate(care.getInsertTime(), ServiceUtils.sf_ymd):"-");
 				//亮点
 				/*List<String> ld = new ArrayList<String>();
 				infos = index.getImportInfoAfterDate(140, start180);

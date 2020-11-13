@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.stk123.tool.util.StkUtils;
-import com.stk123.tool.db.util.sequence.SequenceUtils;
-import com.stk123.tool.util.JdbcUtils;
+import com.stk123.service.ServiceUtils;
+import com.stk123.common.db.util.sequence.SequenceUtils;
+import com.stk123.common.util.JdbcUtils;
 
 public class Text {
 	
@@ -75,7 +75,7 @@ public class Text {
 	}
 	
 	public static long insert(Connection conn,int type, String code,String title, String content, int subType, String insertTime) throws Exception{
-		return Text.insert(conn, type, code, title, content, subType, StkUtils.sf_ymd9.parse(insertTime));
+		return Text.insert(conn, type, code, title, content, subType, ServiceUtils.sf_ymd9.parse(insertTime));
 	}
 	
 	public static long insert(Connection conn,int type, String title, String content, int subType, String insertTime) throws Exception{
@@ -85,7 +85,7 @@ public class Text {
 		params.add(type);
 		params.add(title);
 		params.add(JdbcUtils.createClob(conn, content));
-		params.add(StkUtils.sf_ymd9.parse(insertTime));
+		params.add(ServiceUtils.sf_ymd9.parse(insertTime));
 		params.add(subType);
 		params.add(subType);
 		params.add(title);

@@ -6,15 +6,19 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import com.stk123.tool.util.*;
+import com.stk123.common.util.EmailUtils;
+import com.stk123.common.util.HtmlUtils;
+import com.stk123.service.HttpUtils;
+import com.stk123.service.ServiceUtils;
+import com.stk123.common.util.*;
 import org.apache.commons.lang.StringUtils;
 import org.htmlparser.tags.TableTag;
 
-import com.stk123.bo.Stk;
+import com.stk123.model.bo.Stk;
 import com.stk123.model.Index;
 import com.stk123.model.K;
-import com.stk123.tool.db.util.DBUtil;
-import com.stk123.StkConstant;
+import com.stk123.common.db.util.DBUtil;
+import com.stk123.common.CommonConstant;
 
 public class InvestorRelationship {
 	
@@ -27,7 +31,7 @@ public class InvestorRelationship {
 
 	public static void main(String[] args) throws Exception {
 		Connection conn = null;
-		String today = StkUtils.getToday();
+		String today = ServiceUtils.getToday();
 		//today = "20150529";
 		List<Index> results = new ArrayList<Index>();
 		try {
@@ -95,7 +99,7 @@ public class InvestorRelationship {
 					}});
 				StringBuffer sb = new StringBuffer();
 				for(Index index : results){
-					sb.append(index.getName()+"[<a target='_blank' href='http://"+StkConstant.HOST_PORT+"/stk.do?s="+index.getCode()+"'>"+index.getCode()+"</a>]"+"["+StkUtils.number2String(index.getTotalMarketValue(),2)+"亿]"+"<a target='_blank' href='http://ircs.p5w.net/ircs/interaction/bbs.do?stockcode="+index.getCode()+"&stocktype=S'>来源</a>,"+index.changePercent);
+					sb.append(index.getName()+"[<a target='_blank' href='http://"+CommonConstant.HOST_PORT+"/stk.do?s="+index.getCode()+"'>"+index.getCode()+"</a>]"+"["+ServiceUtils.number2String(index.getTotalMarketValue(),2)+"亿]"+"<a target='_blank' href='http://ircs.p5w.net/ircs/interaction/bbs.do?stockcode="+index.getCode()+"&stocktype=S'>来源</a>,"+index.changePercent);
 					sb.append("<br>");
 				}
 				EmailUtils.send("互动平台-并购重组，个数："+results.size()+"，日期："+today, sb.toString());

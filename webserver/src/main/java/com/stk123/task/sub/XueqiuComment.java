@@ -10,18 +10,17 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.htmlparser.Node;
 
-import com.stk123.bo.Stk;
-import com.stk123.bo.StkDictionary;
-import com.stk123.bo.StkText;
-import com.stk123.task.XueqiuUtils;
-import com.stk123.tool.db.TableTools;
-import com.stk123.tool.db.util.DBUtil;
-import com.stk123.tool.util.ConfigUtils;
-import com.stk123.tool.util.EmailUtils;
-import com.stk123.tool.util.HtmlUtils;
-import com.stk123.tool.util.HttpUtils;
-import com.stk123.tool.util.JdbcUtils;
-import com.stk123.tool.util.JsonUtils;
+import com.stk123.model.bo.Stk;
+import com.stk123.model.bo.StkDictionary;
+import com.stk123.model.bo.StkText;
+import com.stk123.service.XueqiuUtils;
+import com.stk123.common.db.TableTools;
+import com.stk123.common.db.util.DBUtil;
+import com.stk123.common.util.ConfigUtils;
+import com.stk123.common.util.HtmlUtils;
+import com.stk123.service.HttpUtils;
+import com.stk123.common.util.JdbcUtils;
+import com.stk123.common.util.JsonUtils;
 import com.stk123.web.StkDict;
 
 /**

@@ -2,12 +2,12 @@ package com.stk123.web.context;
 
 import java.util.List;
 
-import com.stk123.bo.StkFnType;
+import com.stk123.model.bo.StkFnType;
 import com.stk123.model.Fn;
 import com.stk123.model.Index;
 import com.stk123.model.User;
 import com.stk123.web.core.ActionContext;
-import com.stk123.StkConstant;
+import com.stk123.common.CommonConstant;
 
 
 public class StkContext extends ActionContext {
@@ -39,7 +39,7 @@ public class StkContext extends ActionContext {
 	}
 	
 	public User getUser(){
-		return (User)this.get(StkConstant.SESSION_CURRENT_USER);
+		return (User)this.get(CommonConstant.SESSION_CURRENT_USER);
 	}
 	
 	

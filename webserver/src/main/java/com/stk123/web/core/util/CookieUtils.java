@@ -4,13 +4,13 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.stk123.StkConstant;
+import com.stk123.common.CommonConstant;
 
 public class CookieUtils {
 	
 	public static void addCookie(HttpServletResponse response, String name, String value, int age) {
 		Cookie cookies = new Cookie(name, value);
-		cookies.setPath(String.valueOf(StkConstant.MARK_SLASH));
+		cookies.setPath(String.valueOf(CommonConstant.MARK_SLASH));
 		//cookies.setMaxAge(-1);//设置cookie经过多长秒后被删除。如果0，就说明立即删除。如果是负数就表明当浏览器关闭时自动删除。
 		cookies.setMaxAge(age);
 		response.addCookie(cookies);
@@ -23,7 +23,7 @@ public class CookieUtils {
 				return cookie.getValue();
 			}
 		}
-		return StkConstant.MARK_BLANK_SPACE;
+		return CommonConstant.MARK_BLANK_SPACE;
 	}
 
 	public static Cookie getCookie(HttpServletRequest request, String cookieName) {
@@ -49,7 +49,7 @@ public class CookieUtils {
 			Cookie cookie = getCookie(request, cookieName);
 			if (cookie != null) {
 				cookie.setMaxAge(0);// 如果0，就说明立即删除
-				cookie.setPath(String.valueOf(StkConstant.MARK_SLASH));// 不要漏掉
+				cookie.setPath(String.valueOf(CommonConstant.MARK_SLASH));// 不要漏掉
 				response.addCookie(cookie);
 				return true;
 			}

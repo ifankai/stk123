@@ -8,15 +8,15 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.stk123.bo.StkDictionary;
-import com.stk123.bo.StkIndustryType;
-import com.stk123.bo.StkKlineRankIndustry;
-import com.stk123.bo.StkKlineRankIndustryStock;
+import com.stk123.model.bo.StkDictionary;
+import com.stk123.model.bo.StkIndustryType;
+import com.stk123.model.bo.StkKlineRankIndustry;
+import com.stk123.model.bo.StkKlineRankIndustryStock;
 import com.stk123.model.Index;
 import com.stk123.model.Industry;
-import com.stk123.tool.util.JdbcUtils;
-import com.stk123.tool.util.JsonUtils;
-import com.stk123.StkConstant;
+import com.stk123.common.util.JdbcUtils;
+import com.stk123.common.util.JsonUtils;
+import com.stk123.common.CommonConstant;
 import com.stk123.web.StkDict;
 import com.stk123.web.bs.StkService;
 import com.stk123.web.context.StkContext;
@@ -31,13 +31,13 @@ public class IndustryAction {
 	public String perform() throws Exception {
 		StkContext sc = StkContext.getContext();
 		HttpServletRequest request = sc.getRequest();
-		String id = request.getParameter(StkConstant.PARAMETER_ID);
+		String id = request.getParameter(CommonConstant.PARAMETER_ID);
 		if(id != null && id.length() > 0){
 			Connection conn = StkContext.getConnection();
 			Industry industry = Industry.getIndustry(conn, id);
-			sc.put(StkConstant.ATTRIBUTE_INDUSTRY_SELECT, industry);
+			sc.put(CommonConstant.ATTRIBUTE_INDUSTRY_SELECT, industry);
 		}
-		return StkConstant.ACTION_SUCC;
+		return CommonConstant.ACTION_SUCC;
 	}
 	
 	public String dailyRank() throws Exception {
@@ -56,7 +56,7 @@ public class IndustryAction {
 			rank.setStkIndustryType(industry.getType());
 		}
 		sc.put("industry_rank", ranks);
-		return StkConstant.ACTION_SUCC;
+		return CommonConstant.ACTION_SUCC;
 	}
 	
 	public void list() throws Exception {
@@ -69,7 +69,7 @@ public class IndustryAction {
 		for(StkDictionary source : sources){
 			Map map = new HashMap();
 			map.put("data", source.getText());
-			if(source.getParam2().equals(StkConstant.NUMBER_ONE)){
+			if(source.getParam2().equals(CommonConstant.NUMBER_ONE)){
 				map.put("state", "open");
 			}
 			List<Node> nodes = new ArrayList<Node>();
@@ -96,7 +96,7 @@ public class IndustryAction {
 		StkContext sc = StkContext.getContext();
 		HttpServletRequest request = sc.getRequest();
 		Connection conn = StkContext.getConnection();
-		String id = request.getParameter(StkConstant.PARAMETER_ID);
+		String id = request.getParameter(CommonConstant.PARAMETER_ID);
 		Industry industry = Industry.getIndustry(conn, id);
 		List<Index> stks = industry.getIndexs();
 		String json = "{\"data\":"+JsonUtils.getJsonString4JavaPOJO(stkService.getStkList(stks, 2))+"}";

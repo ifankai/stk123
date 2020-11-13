@@ -5,18 +5,21 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.stk123.common.util.EmailUtils;
+import com.stk123.service.HttpUtils;
+import com.stk123.common.util.JsonUtils;
 import org.apache.commons.lang.StringUtils;
 
-import com.stk123.bo.StkMonitor;
+import com.stk123.model.bo.StkMonitor;
 import com.stk123.model.Ene;
 import com.stk123.model.Index;
-import com.stk123.tool.util.StkUtils;
-import com.stk123.task.XueqiuUtils;
-import com.stk123.tool.baidu.BaiDuHi;
-import com.stk123.tool.db.TableTools;
-import com.stk123.tool.db.connection.Pool;
-import com.stk123.tool.db.util.DBUtil;
-import com.stk123.tool.util.*;
+import com.stk123.service.ServiceUtils;
+import com.stk123.service.XueqiuUtils;
+import com.stk123.service.baidu.BaiDuHi;
+import com.stk123.common.db.TableTools;
+import com.stk123.common.db.connection.Pool;
+import com.stk123.common.db.util.DBUtil;
+import com.stk123.common.util.*;
 import com.stk123.web.StkDict;
 
 
@@ -66,7 +69,7 @@ public class KlineMonitor extends Monitor {
 		}else if("6".equals(sm.getParam2())){
 			if(param1 != param3)trigger = true;
 		}
-		String sb = translate(sm,conn)+",日期"+StkUtils.getToday();
+		String sb = translate(sm,conn)+",日期"+ServiceUtils.getToday();
 		//System.out.println(sb);
 		if(trigger){
 			if(updateResult){

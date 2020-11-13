@@ -10,20 +10,24 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.stk123.tool.util.*;
+import com.stk123.common.util.HtmlUtils;
+import com.stk123.service.HttpUtils;
+import com.stk123.common.util.JsonUtils;
+import com.stk123.service.ServiceUtils;
+import com.stk123.common.util.*;
 import org.apache.commons.lang.StringUtils;
 import org.htmlparser.Node;
 import org.htmlparser.tags.LinkTag;
 import org.htmlparser.tags.OptionTag;
 import org.htmlparser.tags.TableTag;
 
-import com.stk123.bo.Stk;
-import com.stk123.bo.StkDeptType;
-import com.stk123.bo.StkText;
+import com.stk123.model.bo.Stk;
+import com.stk123.model.bo.StkDeptType;
+import com.stk123.model.bo.StkText;
 import com.stk123.model.Index;
 import com.stk123.model.Text;
-import com.stk123.tool.db.TableTools;
-import com.stk123.tool.db.util.DBUtil;
+import com.stk123.common.db.TableTools;
+import com.stk123.common.db.util.DBUtil;
 
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -56,7 +60,7 @@ public class BillBoardReport {
 			Node dnode = HtmlUtils.getNodeByAttribute(page, null, "class", "tipsdate");
 			if(dnode == null)continue;
 			String transDate = dnode.toPlainTextString();
-			transDate = StkUtils.getMatchString(transDate, "\\d{4}-\\d{2}-\\d{2}");
+			transDate = ServiceUtils.getMatchString(transDate, "\\d{4}-\\d{2}-\\d{2}");
 			Node ul = HtmlUtils.getNodeByAttribute(page, null, "id", "datelist");
 			List<String> dates = new ArrayList<String>();
 			List<Node> as = HtmlUtils.getNodeListByTagName(ul, "a");
@@ -239,8 +243,8 @@ public class BillBoardReport {
 						//System.out.println(href);
 						String date = HttpUtils.getParameter(href, null, "date");
 						//System.out.println(date);
-						Date d = StkUtils.sf_ymd.parse(date);
-						if(d.after(StkUtils.addDay(new Date(), -60))){
+						Date d = ServiceUtils.sf_ymd.parse(date);
+						if(d.after(ServiceUtils.addDay(new Date(), -60))){
 							String subPage = HttpUtils.get("http://data.eastmoney.com/soft/stock/StockDetail.aspx?code="+code+"&date="+date, "utf8");
 							List<Node> tables = HtmlUtils.getNodeListByTagNameAndAttribute(subPage, null, "table", "class", "tab2");
 							List<List<String>> tableList = HtmlUtils.getListFromTable((TableTag)tables.get(0), 1);
@@ -263,8 +267,8 @@ public class BillBoardReport {
 						List params = new ArrayList();
 						params.add(code);
 						params.add(Text.SUB_TYPE_ORG_BUY_WITHIN_60);
-						params.add(new Timestamp(StkUtils.addDay(new Date(),-7).getTime()));
-						params.add(new Timestamp(StkUtils.addDay(new Date(),1).getTime()));
+						params.add(new Timestamp(ServiceUtils.addDay(new Date(),-7).getTime()));
+						params.add(new Timestamp(ServiceUtils.addDay(new Date(),1).getTime()));
 						List<StkText> infos = JdbcUtils.list(conn, "select * from stk_text where code=? and sub_type=? and insert_time between ? and ?", params, StkText.class);
 						if(infos.size() == 0){
 							Index in = new Index(conn, code);

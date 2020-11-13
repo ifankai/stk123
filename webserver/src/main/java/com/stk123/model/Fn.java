@@ -1,16 +1,14 @@
 package com.stk123.model;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.stk123.bo.StkFnType;
-import com.stk123.bo.StkIndustryType;
-import com.stk123.tool.db.connection.Pool;
-import com.stk123.tool.util.CacheUtils;
-import com.stk123.tool.util.JdbcUtils;
+import com.stk123.model.bo.StkFnType;
+import com.stk123.common.db.connection.Pool;
+import com.stk123.common.util.CacheUtils;
+import com.stk123.common.util.JdbcUtils;
 
 public class Fn {
 	

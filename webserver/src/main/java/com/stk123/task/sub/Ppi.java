@@ -10,16 +10,16 @@ import org.htmlparser.Node;
 import org.htmlparser.Tag;
 import org.htmlparser.tags.TableTag;
 
-import com.stk123.bo.StkDataPpiType;
-import com.stk123.tool.util.StkUtils;
-import com.stk123.tool.db.TableTools;
-import com.stk123.tool.db.util.DBUtil;
-import com.stk123.tool.util.ConfigUtils;
-import com.stk123.tool.util.EmailUtils;
-import com.stk123.tool.util.HtmlUtils;
-import com.stk123.tool.util.HttpUtils;
-import com.stk123.tool.util.JdbcUtils;
-import com.stk123.tool.util.JsonUtils;
+import com.stk123.model.bo.StkDataPpiType;
+import com.stk123.service.ServiceUtils;
+import com.stk123.common.db.TableTools;
+import com.stk123.common.db.util.DBUtil;
+import com.stk123.common.util.ConfigUtils;
+import com.stk123.common.util.EmailUtils;
+import com.stk123.common.util.HtmlUtils;
+import com.stk123.service.HttpUtils;
+import com.stk123.common.util.JdbcUtils;
+import com.stk123.common.util.JsonUtils;
 
 
 /**
@@ -94,9 +94,9 @@ public class Ppi {
 							String mmdd = StringUtils.replace(data.getKey(), "-", "");
 							String date = mmdd;
 							if(mmdd.length() == 4){
-								int year = StkUtils.YEAR;
+								int year = ServiceUtils.YEAR;
 								date = year + mmdd;
-								if(StkUtils.getToday().compareTo(date) < 0){
+								if(ServiceUtils.getToday().compareTo(date) < 0){
 									date = (--year) + mmdd;
 								}
 							}
@@ -127,7 +127,7 @@ public class Ppi {
 								//System.out.println(k);
 								params.clear();
 								params.add(childType.getId());
-								String pdate = StkUtils.formatDate(StringUtils.replace(String.valueOf(k.get("pdate")), "Mon ", ""), StkUtils.sf_ymd7, StkUtils.sf_ymd2);
+								String pdate = ServiceUtils.formatDate(StringUtils.replace(String.valueOf(k.get("pdate")), "Mon ", ""), ServiceUtils.sf_ymd7, ServiceUtils.sf_ymd2);
 								params.add(pdate);
 								params.add(k.get("close"));
 								params.add(childType.getId());

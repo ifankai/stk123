@@ -9,10 +9,10 @@ import java.util.List;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 
-import com.stk123.bo.StkKline;
-import com.stk123.tool.util.StkUtils;
-import com.stk123.tool.util.HttpUtils;
-import com.stk123.tool.util.collection.IntRange2IntMap;
+import com.stk123.model.bo.StkKline;
+import com.stk123.service.ServiceUtils;
+import com.stk123.service.HttpUtils;
+import com.stk123.common.util.collection.IntRange2IntMap;
 
 
 public class K implements Serializable, Cloneable {
@@ -79,10 +79,10 @@ public class K implements Serializable, Cloneable {
 			//if(kLine.getCloseChange() == null)break;
 			//double tmp = StkUtils.numberFormat(lastKLine.getClose()/lastKLine.getCloseChange()*kLine.getCloseChange(),2);
 			double tmpCloseChanged = lastKLine.getClose()/lastKLine.getCloseChange()*kLine.getCloseChange()/kLine.getClose();
-			this.setOpen(StkUtils.numberFormat(kLine.getOpen() * tmpCloseChanged, 2));
-			this.setClose(StkUtils.numberFormat(kLine.getClose() * tmpCloseChanged, 2));
-			this.setHigh(StkUtils.numberFormat(kLine.getHigh() * tmpCloseChanged, 2));
-			this.setLow(StkUtils.numberFormat(kLine.getLow() * tmpCloseChanged, 2));
+			this.setOpen(ServiceUtils.numberFormat(kLine.getOpen() * tmpCloseChanged, 2));
+			this.setClose(ServiceUtils.numberFormat(kLine.getClose() * tmpCloseChanged, 2));
+			this.setHigh(ServiceUtils.numberFormat(kLine.getHigh() * tmpCloseChanged, 2));
+			this.setLow(ServiceUtils.numberFormat(kLine.getLow() * tmpCloseChanged, 2));
 			this.setVolumn(kLine.getVolumn());
 			this.setAmount(kLine.getAmount()==null?0:kLine.getAmount());
 			this.setCloseChange(kLine.getCloseChange()==null?0:kLine.getCloseChange());
@@ -194,7 +194,7 @@ public class K implements Serializable, Cloneable {
 			}
 			total += k.getValue(type);
 		}
-		return StkUtils.numberFormat(total/tmp,2);
+		return ServiceUtils.numberFormat(total/tmp,2);
 	}
 	
 	public double getMA(int days, Calculator func) throws Exception {
@@ -207,7 +207,7 @@ public class K implements Serializable, Cloneable {
 			}
 			total += func.calc(k);
 		}
-		return StkUtils.numberFormat(total/tmp,2);
+		return ServiceUtils.numberFormat(total/tmp,2);
 	}
 	
 	public double getSUM(int type, int days) throws Exception {
@@ -219,7 +219,7 @@ public class K implements Serializable, Cloneable {
 			}
 			total += k.getValue(type);
 		}
-		return StkUtils.numberFormat(total,2);
+		return ServiceUtils.numberFormat(total,2);
 	}
 	
 	public K getMax(int type, int days, int type2, int days2) throws Exception {
@@ -379,9 +379,9 @@ public class K implements Serializable, Cloneable {
 		}else{
 			value = this.getMA(K.Close, Ene.N);
 		}
-		double upper = StkUtils.numberFormat((1+Ene.M1/100.0)*value,2);
-		double lower = StkUtils.numberFormat((1-Ene.M2/100.0)*value,2);
-		double ene = StkUtils.numberFormat((upper+lower)/2,2);
+		double upper = ServiceUtils.numberFormat((1+Ene.M1/100.0)*value,2);
+		double lower = ServiceUtils.numberFormat((1-Ene.M2/100.0)*value,2);
+		double ene = ServiceUtils.numberFormat((upper+lower)/2,2);
 		this.ene.setEne(ene);
 		this.ene.setUpper(upper);
 		this.ene.setLower(lower);
@@ -817,7 +817,7 @@ public class K implements Serializable, Cloneable {
 				return (va - vb) / (vc - vb) * 100;
 			}}
 		);
-		return StkUtils.numberFormat(z, 2);
+		return ServiceUtils.numberFormat(z, 2);
 	}
 	
 	/**
@@ -830,7 +830,7 @@ public class K implements Serializable, Cloneable {
 				return k.getEpcd_Hxscm();
 			}}
 		);
-		return StkUtils.numberFormat(z, 2);
+		return ServiceUtils.numberFormat(z, 2);
 	}
 	
 	/**
@@ -857,7 +857,7 @@ public class K implements Serializable, Cloneable {
 				);
 			}}
 		);
-		return StkUtils.numberFormat(3*x - 2*y, 2);
+		return ServiceUtils.numberFormat(3*x - 2*y, 2);
 	}
 	
 	//10均量连续上升或下降次数
@@ -1008,16 +1008,16 @@ public class K implements Serializable, Cloneable {
 	}
 	
 	public boolean dateBefore(K k) throws Exception{
-		Date d1 = StkUtils.sf_ymd2.parse(this.getDate());
-		Date d2 = StkUtils.sf_ymd2.parse(k.getDate());
+		Date d1 = ServiceUtils.sf_ymd2.parse(this.getDate());
+		Date d2 = ServiceUtils.sf_ymd2.parse(k.getDate());
 		return d1.before(d2);
 	}
 	public boolean dateBeforeOrEquals(K k) throws Exception{
 		return this.dateEquals(k) || this.dateBefore(k);
 	}
 	public boolean dateAfter(K k) throws Exception{
-		Date d1 = StkUtils.sf_ymd2.parse(this.getDate());
-		Date d2 = StkUtils.sf_ymd2.parse(k.getDate());
+		Date d1 = ServiceUtils.sf_ymd2.parse(this.getDate());
+		Date d2 = ServiceUtils.sf_ymd2.parse(k.getDate());
 		return d1.after(d2);
 	}
 	public boolean dateAfterOrEquals(K k) throws Exception{

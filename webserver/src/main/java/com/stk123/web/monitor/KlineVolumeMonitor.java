@@ -14,22 +14,22 @@ import org.apache.commons.lang.StringUtils;
 import org.htmlparser.Node;
 import org.htmlparser.tags.TableTag;
 
-import com.stk123.bo.Stk;
-import com.stk123.bo.StkMonitor;
+import com.stk123.model.bo.Stk;
+import com.stk123.model.bo.StkMonitor;
 import com.stk123.model.Index;
 import com.stk123.model.Industry;
 import com.stk123.model.K;
-import com.stk123.tool.util.StkUtils;
-import com.stk123.tool.db.TableTools;
-import com.stk123.tool.db.util.DBUtil;
-import com.stk123.tool.util.ConfigUtils;
-import com.stk123.tool.util.EmailUtils;
-import com.stk123.tool.util.ExceptionUtils;
-import com.stk123.tool.util.HtmlUtils;
-import com.stk123.tool.util.HttpUtils;
-import com.stk123.tool.util.JdbcUtils;
-import com.stk123.tool.util.JsonUtils;
-import com.stk123.tool.util.ListUtils;
+import com.stk123.service.ServiceUtils;
+import com.stk123.common.db.TableTools;
+import com.stk123.common.db.util.DBUtil;
+import com.stk123.common.util.ConfigUtils;
+import com.stk123.common.util.EmailUtils;
+import com.stk123.service.ExceptionUtils;
+import com.stk123.common.util.HtmlUtils;
+import com.stk123.service.HttpUtils;
+import com.stk123.common.util.JdbcUtils;
+import com.stk123.common.util.JsonUtils;
+import com.stk123.common.util.ListUtils;
 
 
 //14:50 trigger every working day.
@@ -192,7 +192,7 @@ public class KlineVolumeMonitor {
 				if(trigger > 0){
 					//Ene ene = index.getK().getEne(index);
 					StringBuffer sb = new StringBuffer();
-					sb.append(index.getName()+"["+StkUtils.wrapCodeLink(index.getCode())+"]");
+					sb.append(index.getName()+"["+ServiceUtils.wrapCodeLink(index.getCode())+"]");
 					sb.append("量能"+v+"在60日内最小量排名第"+(5-trigger));
 					return sb.toString();
 				}
@@ -208,7 +208,7 @@ public class KlineVolumeMonitor {
 		List<List<String>> datas = HtmlUtils.getListFromTable((TableTag)table,0);
 		List<Index> results = new ArrayList<Index>();
 		for(List<String> data : datas){
-			double percentige = StkUtils.percentigeGreatThan(data.get(7));
+			double percentige = ServiceUtils.percentigeGreatThan(data.get(7));
 			boolean jk = "减亏".equals(data.get(2));
 			if(percentige >= 50 && !jk){
 				Index index = new Index(conn,data.get(0));
@@ -272,9 +272,9 @@ public class KlineVolumeMonitor {
 				index.initKLines(30);
 				//index.getKs().clear();
 				index.gc();
-				if(index.getK(StkUtils.getToday()).getEne().getLower() >= index.getK(StkUtils.getToday()).getLow()){
+				if(index.getK(ServiceUtils.getToday()).getEne().getLower() >= index.getK(ServiceUtils.getToday()).getLow()){
 					//resultsEne.add(title+index.getName()+"["+index.getCode()+"]");
-					addResult(resultsEne,index,title+index.getName()+"["+StkUtils.wrapCodeLink(index.getCode())+"]");
+					addResult(resultsEne,index,title+index.getName()+"["+ServiceUtils.wrapCodeLink(index.getCode())+"]");
 				}
 			}
 			index.gc();
@@ -285,9 +285,9 @@ public class KlineVolumeMonitor {
 	}
 	
 	public static void addResult(List results, Index index, String str) throws Exception{
-		K todayK = index.getK(StkUtils.getToday());
+		K todayK = index.getK(ServiceUtils.getToday());
 		if(todayK != null && !todayK.isUpLimit()){
-			results.add(str+",[市值:"+StkUtils.number2String(index.getTotalMarketValue(),2)+"亿]");
+			results.add(str+",[市值:"+ServiceUtils.number2String(index.getTotalMarketValue(),2)+"亿]");
 		}
 	}
 

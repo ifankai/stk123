@@ -3,13 +3,13 @@ package com.stk123.task;
 import java.sql.Connection;
 import java.util.List;
 
+import com.stk123.service.ServiceUtils;
 import com.stk123.model.Index;
-import com.stk123.tool.db.TableTools;
-import com.stk123.tool.db.util.DBUtil;
-import com.stk123.tool.util.ConfigUtils;
-import com.stk123.tool.util.EmailUtils;
-import com.stk123.tool.util.JdbcUtils;
-import com.stk123.tool.util.StkUtils;
+import com.stk123.common.db.TableTools;
+import com.stk123.common.db.util.DBUtil;
+import com.stk123.common.util.ConfigUtils;
+import com.stk123.common.util.EmailUtils;
+import com.stk123.common.util.JdbcUtils;
 
 
 public class InitialKLineRepairKLine {
@@ -32,7 +32,7 @@ public class InitialKLineRepairKLine {
 					e.printStackTrace();
 				}
 			}
-			int dayOfWeek = StkUtils.getDayOfWeek(StkUtils.now);
+			int dayOfWeek = ServiceUtils.getDayOfWeek(ServiceUtils.now);
 			if(sb.length() > 0 && dayOfWeek < 6){
 				EmailUtils.send("Repair K Line Unsccessfully", sb.toString());
 			}

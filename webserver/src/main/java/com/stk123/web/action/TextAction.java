@@ -20,29 +20,29 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 
-import com.stk123.bo.Stk;
-import com.stk123.bo.StkLabel;
-import com.stk123.bo.StkText;
+import com.stk123.model.bo.Stk;
+import com.stk123.model.bo.StkLabel;
+import com.stk123.model.bo.StkText;
 import com.stk123.model.Index;
 import com.stk123.model.Keyword;
 import com.stk123.model.Label;
 import com.stk123.model.User;
-import com.stk123.tool.util.StkUtils;
-import com.stk123.tool.db.util.sequence.SequenceUtils;
-import com.stk123.tool.ik.DocumentField;
-import com.stk123.tool.ik.IKUtils;
-import com.stk123.web.search.Search;
-import com.stk123.tool.util.HtmlUtils;
-import com.stk123.tool.util.JdbcUtils;
-import com.stk123.tool.util.JsonUtils;
-import com.stk123.tool.util.collection.Name2Value;
+import com.stk123.service.ServiceUtils;
+import com.stk123.common.db.util.sequence.SequenceUtils;
+import com.stk123.common.ik.DocumentField;
+import com.stk123.web.ik.StkIKUtils;
+import com.stk123.web.ik.Search;
+import com.stk123.common.util.HtmlUtils;
+import com.stk123.common.util.JdbcUtils;
+import com.stk123.common.util.JsonUtils;
+import com.stk123.common.util.collection.Name2Value;
 import com.stk123.web.core.util.RequestUtils;
-import com.stk123.StkConstant;
+import com.stk123.common.CommonConstant;
 import com.stk123.web.StkDict;
 import com.stk123.web.WebUtils;
 import com.stk123.web.context.StkContext;
 
-public class TextAction implements StkConstant {
+public class TextAction implements CommonConstant {
 	
 	public void perform() throws Exception {
 		addOrUpdate();
@@ -50,9 +50,9 @@ public class TextAction implements StkConstant {
 	}
 	
 	public static String downloadImg(String text){
-		Set<String> imgs = StkUtils.getMatchStrings(text, HtmlUtils.RegxpForImgTag);
+		Set<String> imgs = ServiceUtils.getMatchStrings(text, HtmlUtils.RegxpForImgTag);
 		for(String img : imgs){
-			Set<String> srcs = StkUtils.getMatchStrings(img, HtmlUtils.RegxpForImaTagSrcAttr);
+			Set<String> srcs = ServiceUtils.getMatchStrings(img, HtmlUtils.RegxpForImaTagSrcAttr);
 			if(srcs.size() > 0){
 				String src = srcs.iterator().next();
 				String url = StringUtils.substringBetween(src, MARK_DOUBLE_QUOTATION, MARK_DOUBLE_QUOTATION);
@@ -110,7 +110,7 @@ public class TextAction implements StkConstant {
 					params.clear();
 					params.add(seq);
 					params.add(userId);
-					StkText stext = JdbcUtils.load(conn, StkConstant.SQL_SELECT_TEXT_BY_ID, params, StkText.class);
+					StkText stext = JdbcUtils.load(conn, CommonConstant.SQL_SELECT_TEXT_BY_ID, params, StkText.class);
 					//IKUtils.addDocument(stext);
 					Search search = new Search(userId);
 					search.addDocument(stext);
@@ -178,7 +178,7 @@ public class TextAction implements StkConstant {
 		}
 		if(text == null || text.trim().length()==0)return text;
 		StringBuilder sb = new StringBuilder(text);
-		Set<String> listName = StkUtils.getMatchStrings(text, StkConstant.MARK_PARENTHESIS_LEFT + PATTERN + StkConstant.MARK_PARENTHESIS_RIGHT);
+		Set<String> listName = ServiceUtils.getMatchStrings(text, CommonConstant.MARK_PARENTHESIS_LEFT + PATTERN + CommonConstant.MARK_PARENTHESIS_RIGHT);
 		for(String name : listName){
 			//String pattern = "(<([^>]*)>|<([^>]*)/>)([^<]*)"+name+"([^((\\[|\\()["+index.getCode()+"]{6}(\\)|\\]))]{8})([^<]*)((<([^>]*)>)|(<([^>]*)/>)|(</([^>]*)>))";
 			String pattern = name + NOT_MATCH_A;
@@ -194,7 +194,7 @@ public class TextAction implements StkConstant {
 	        	Collections.reverse(pos);
 	        	for(Name2Value<String, Name2Value<Integer,Integer>> pair : pos){
 	        		String s = pair.getName();
-	            	String replace = StkUtils.getMatchStringAndReplace(s, name, offset, A_START_1 + PATTERN_MAP.get(name) + A_START_2 + name + A_END);
+	            	String replace = ServiceUtils.getMatchStringAndReplace(s, name, offset, A_START_1 + PATTERN_MAP.get(name) + A_START_2 + name + A_END);
 	            	sb.delete(pair.getValue().getName(), pair.getValue().getValue());
 	            	sb.insert(pair.getValue().getName(), replace);
 	        	}
@@ -218,7 +218,7 @@ public class TextAction implements StkConstant {
 			params.add(user.getStkUser().getId());
 			int n = JdbcUtils.delete(conn, SQL_DELETE_TEXT_BY_USER_ID, params);
 			if(n == 1){
-				IKUtils.deleteDocument(id);
+				StkIKUtils.deleteDocument(id);
 				//delete link with label
 				Label label = new Label(user.getStkUser().getId());
 				label.deleteLink(id);
@@ -241,7 +241,7 @@ public class TextAction implements StkConstant {
 		Connection conn = sc.getConnection();
 		String code = request.getParameter(PARAMETER_CODE);
 		String ctype = request.getParameter(PARAMETER_CTYPE);
-		int page = RequestUtils.getInt(request, StkConstant.PARAMETER_PAGE);
+		int page = RequestUtils.getInt(request, CommonConstant.PARAMETER_PAGE);
 		int perPage = 10;//StkConstant.SYS_ARTICLE_LIST_PER_PAGE;
 		int count = 0;
 		List params = new ArrayList();
@@ -260,11 +260,11 @@ public class TextAction implements StkConstant {
 		count = JdbcUtils.load(conn, SQL_COUNT_TEXT_BY_USER_ID, params, Integer.class);
 		String json = JsonUtils.getJsonString4JavaPOJO(texts, DATE_FORMAT_YYYY_MM_DD_HH_MM_SS);
 		
-		StringBuffer sb = new StringBuffer(StkConstant.MARK_BRACE_LEFT);
-		sb.append("\"count\":").append(count).append(StkConstant.MARK_COMMA);
-		sb.append("\"perpage\":").append(perPage).append(StkConstant.MARK_COMMA);
+		StringBuffer sb = new StringBuffer(CommonConstant.MARK_BRACE_LEFT);
+		sb.append("\"count\":").append(count).append(CommonConstant.MARK_COMMA);
+		sb.append("\"perpage\":").append(perPage).append(CommonConstant.MARK_COMMA);
 		sb.append("\"data\":").append(json);
-		sb.append(StkConstant.MARK_BRACE_RIGHT);
+		sb.append(CommonConstant.MARK_BRACE_RIGHT);
 		
 		sc.setResponse(sb.toString());
 	}
@@ -278,7 +278,7 @@ public class TextAction implements StkConstant {
 		HttpServletRequest request = sc.getRequest();
 		Connection conn = sc.getConnection();
 		String code = request.getParameter(PARAMETER_CODE);
-		int page = RequestUtils.getInt(request, StkConstant.PARAMETER_PAGE);
+		int page = RequestUtils.getInt(request, CommonConstant.PARAMETER_PAGE);
 		int perPage = 10;//StkConstant.SYS_ARTICLE_LIST_PER_PAGE;
 		
 		List<StkText> texts = new ArrayList<StkText>();
@@ -310,11 +310,11 @@ public class TextAction implements StkConstant {
 		}
 		String json = JsonUtils.getJsonString4JavaPOJO(texts, DATE_FORMAT_YYYY_MM_DD_HH_MM_SS);
 		
-		StringBuffer sb = new StringBuffer(StkConstant.MARK_BRACE_LEFT);
-		sb.append("\"count\":").append(count).append(StkConstant.MARK_COMMA);
-		sb.append("\"perpage\":").append(perPage).append(StkConstant.MARK_COMMA);
+		StringBuffer sb = new StringBuffer(CommonConstant.MARK_BRACE_LEFT);
+		sb.append("\"count\":").append(count).append(CommonConstant.MARK_COMMA);
+		sb.append("\"perpage\":").append(perPage).append(CommonConstant.MARK_COMMA);
 		sb.append("\"data\":").append(json);
-		sb.append(StkConstant.MARK_BRACE_RIGHT);
+		sb.append(CommonConstant.MARK_BRACE_RIGHT);
 		
 		sc.setResponse(sb.toString());
 	}
@@ -335,7 +335,7 @@ public class TextAction implements StkConstant {
 		HttpServletRequest request = sc.getRequest();
 		Connection conn = sc.getConnection();
 		String subtype = request.getParameter("subtype");
-		int page = RequestUtils.getInt(request, StkConstant.PARAMETER_PAGE);
+		int page = RequestUtils.getInt(request, CommonConstant.PARAMETER_PAGE);
 		int perPage = 20;
 		int count = 0;
 		
@@ -352,20 +352,20 @@ public class TextAction implements StkConstant {
 		
 		for(StkText text : texts){
 			if(text.getCode() != null){
-				text.setCode(StkUtils.wrapCodeAndNameAsHtml(new Index(conn, text.getCode())));
+				text.setCode(ServiceUtils.wrapCodeAndNameAsHtml(new Index(conn, text.getCode())));
 			}else{
 				text.setCode(StkDict.getDict(StkDict.TEXT_SUB_TYPE, text.getSubType()));
 			}
 			text.setText(WebUtils.display(text.getText(),80,false,false));
 		}
 		
-		String json = JsonUtils.getJsonString4JavaPOJO(texts, StkConstant.DATE_FORMAT_YYYY_MM_DD_HH_MM_SS);
+		String json = JsonUtils.getJsonString4JavaPOJO(texts, CommonConstant.DATE_FORMAT_YYYY_MM_DD_HH_MM_SS);
 		
-		StringBuffer sb = new StringBuffer(StkConstant.MARK_BRACE_LEFT);
-		sb.append("\"count\":").append(count).append(StkConstant.MARK_COMMA);
-		sb.append("\"perpage\":").append(perPage).append(StkConstant.MARK_COMMA);
+		StringBuffer sb = new StringBuffer(CommonConstant.MARK_BRACE_LEFT);
+		sb.append("\"count\":").append(count).append(CommonConstant.MARK_COMMA);
+		sb.append("\"perpage\":").append(perPage).append(CommonConstant.MARK_COMMA);
 		sb.append("\"data\":").append(json);
-		sb.append(StkConstant.MARK_BRACE_RIGHT);
+		sb.append(CommonConstant.MARK_BRACE_RIGHT);
 		
 		sc.setResponse(sb.toString());
 	}
@@ -384,15 +384,15 @@ public class TextAction implements StkConstant {
 		String keyword = request.getParameter("keyword");
 		String fromTime = request.getParameter("from");
 		String toTime = request.getParameter("to");
-		int page = RequestUtils.getInt(request, StkConstant.PARAMETER_PAGE);
+		int page = RequestUtils.getInt(request, CommonConstant.PARAMETER_PAGE);
 		int perPage = 20;
 		int count = 0;
 		
 		List<StkText> texts = null;
 		if("all".equals(subtype)){
 			List params = new ArrayList();
-			params.add(new Timestamp(StkUtils.sf_ymd14.parse(fromTime).getTime()));
-			params.add(new Timestamp(StkUtils.sf_ymd14.parse(toTime).getTime()));
+			params.add(new Timestamp(ServiceUtils.sf_ymd14.parse(fromTime).getTime()));
+			params.add(new Timestamp(ServiceUtils.sf_ymd14.parse(toTime).getTime()));
 			params.add("%"+keyword+"%");
 			params.add("%"+keyword+"%");
 			texts = JdbcUtils.list(conn,JdbcUtils.DIALECT.getLimitedString(SQL_SELECT_TEXT_ALL_BY_KEYWORD, (page-1)*perPage, perPage),params, StkText.class);
@@ -400,8 +400,8 @@ public class TextAction implements StkConstant {
 		}else{
 			List params = new ArrayList();
 			params.add(subtype);
-			params.add(new Timestamp(StkUtils.sf_ymd14.parse(fromTime).getTime()));
-			params.add(new Timestamp(StkUtils.sf_ymd14.parse(toTime).getTime()));
+			params.add(new Timestamp(ServiceUtils.sf_ymd14.parse(fromTime).getTime()));
+			params.add(new Timestamp(ServiceUtils.sf_ymd14.parse(toTime).getTime()));
 			params.add("%"+keyword+"%");
 			params.add("%"+keyword+"%");
 			texts = JdbcUtils.list(conn,JdbcUtils.DIALECT.getLimitedString(SQL_SELECT_TEXT_BY_SUBTYPE_BY_KEYWORD, (page-1)*perPage, perPage),params, StkText.class);
@@ -410,20 +410,20 @@ public class TextAction implements StkConstant {
 		
 		for(StkText text : texts){
 			if(text.getCode() != null){
-				text.setCode(StkUtils.wrapCodeAndNameAsHtml(new Index(conn, text.getCode())));
+				text.setCode(ServiceUtils.wrapCodeAndNameAsHtml(new Index(conn, text.getCode())));
 			}else{
 				text.setCode(StkDict.getDict(StkDict.TEXT_SUB_TYPE, text.getSubType()));
 			}
 			text.setText(WebUtils.display(text.getText(),80,false,false));
 		}
 		
-		String json = JsonUtils.getJsonString4JavaPOJO(texts, StkConstant.DATE_FORMAT_YYYY_MM_DD_HH_MM_SS);
+		String json = JsonUtils.getJsonString4JavaPOJO(texts, CommonConstant.DATE_FORMAT_YYYY_MM_DD_HH_MM_SS);
 		
-		StringBuffer sb = new StringBuffer(StkConstant.MARK_BRACE_LEFT);
-		sb.append("\"count\":").append(count).append(StkConstant.MARK_COMMA);
-		sb.append("\"perpage\":").append(perPage).append(StkConstant.MARK_COMMA);
+		StringBuffer sb = new StringBuffer(CommonConstant.MARK_BRACE_LEFT);
+		sb.append("\"count\":").append(count).append(CommonConstant.MARK_COMMA);
+		sb.append("\"perpage\":").append(perPage).append(CommonConstant.MARK_COMMA);
 		sb.append("\"data\":").append(json);
-		sb.append(StkConstant.MARK_BRACE_RIGHT);
+		sb.append(CommonConstant.MARK_BRACE_RIGHT);
 		
 		sc.setResponse(sb.toString());
 	}

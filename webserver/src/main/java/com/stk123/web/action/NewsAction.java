@@ -6,14 +6,14 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.stk123.bo.StkImportInfo;
+import com.stk123.model.bo.StkImportInfo;
 import com.stk123.model.Index;
 import com.stk123.model.News;
-import com.stk123.tool.util.StkUtils;
-import com.stk123.tool.util.JdbcUtils;
-import com.stk123.tool.util.JsonUtils;
+import com.stk123.service.ServiceUtils;
+import com.stk123.common.util.JdbcUtils;
+import com.stk123.common.util.JsonUtils;
 import com.stk123.web.core.util.RequestUtils;
-import com.stk123.StkConstant;
+import com.stk123.common.CommonConstant;
 import com.stk123.web.context.StkContext;
 
 public class NewsAction {
@@ -34,9 +34,9 @@ public class NewsAction {
 		StkContext sc = StkContext.getContext();
 		HttpServletRequest request = sc.getRequest();
 		Connection conn = sc.getConnection();
-		String code = request.getParameter(StkConstant.PARAMETER_CODE);
+		String code = request.getParameter(CommonConstant.PARAMETER_CODE);
 		String type = request.getParameter("type");
-		int page = RequestUtils.getInt(request, StkConstant.PARAMETER_PAGE);
+		int page = RequestUtils.getInt(request, CommonConstant.PARAMETER_PAGE);
 		int perPage = 20;//StkConstant.SYS_ARTICLE_LIST_PER_PAGE;
 		int count = 0;
 		List<StkImportInfo> infos = null;
@@ -62,24 +62,24 @@ public class NewsAction {
 			StkImportInfo prevInfo = this.getPreviousInfo(conn, info);
 			int days = 0;
 			if(prevInfo != null){
-				days = StkUtils.getDaysBetween(info.getInfoCreateTime(), prevInfo.getInfoCreateTime());
+				days = ServiceUtils.getDaysBetween(info.getInfoCreateTime(), prevInfo.getInfoCreateTime());
 			}
 			Index index = new Index(conn, info.getCode());
 			String infoType = News.getType(info.getType()).getName();
-			String title = StkUtils.wrapCodeAndNameAsHtml(index) +
-					" <a target='_blank' class='r-menu-care' code='"+info.getCode()+"' name='"+index.getName()+"' type='"+infoType+"' createtime='"+StkUtils.formatDate(info.getInfoCreateTime(),StkUtils.sf_ymd)+"' href='"+info.getUrlTarget()+"'>"+info.getTitle()+"</a>";
+			String title = ServiceUtils.wrapCodeAndNameAsHtml(index) +
+					" <a target='_blank' class='r-menu-care' code='"+info.getCode()+"' name='"+index.getName()+"' type='"+infoType+"' createtime='"+ServiceUtils.formatDate(info.getInfoCreateTime(),ServiceUtils.sf_ymd)+"' href='"+info.getUrlTarget()+"'>"+info.getTitle()+"</a>";
 			info.setTitle(title + (days>90?" <img src='/images/icon_new.png' width='24px' height='12px'>":""));
 			info.setInfo(infoType);
 			info.setUrlSource(null);
 		}
 		
-		String json = JsonUtils.getJsonString4JavaPOJO(infos, StkConstant.DATE_FORMAT_YYYY_MM_DD);
+		String json = JsonUtils.getJsonString4JavaPOJO(infos, CommonConstant.DATE_FORMAT_YYYY_MM_DD);
 		
-		StringBuffer sb = new StringBuffer(StkConstant.MARK_BRACE_LEFT);
-		sb.append("\"count\":").append(count).append(StkConstant.MARK_COMMA);
-		sb.append("\"perpage\":").append(perPage).append(StkConstant.MARK_COMMA);
+		StringBuffer sb = new StringBuffer(CommonConstant.MARK_BRACE_LEFT);
+		sb.append("\"count\":").append(count).append(CommonConstant.MARK_COMMA);
+		sb.append("\"perpage\":").append(perPage).append(CommonConstant.MARK_COMMA);
 		sb.append("\"data\":").append(json);
-		sb.append(StkConstant.MARK_BRACE_RIGHT);
+		sb.append(CommonConstant.MARK_BRACE_RIGHT);
 		
 		sc.setResponse(sb.toString());
 	}
@@ -102,7 +102,7 @@ public class NewsAction {
 		HttpServletRequest request = sc.getRequest();
 		Connection conn = sc.getConnection();
 		String type = request.getParameter("type");
-		int page = RequestUtils.getInt(request, StkConstant.PARAMETER_PAGE);
+		int page = RequestUtils.getInt(request, CommonConstant.PARAMETER_PAGE);
 		
 		int perPage = 20;//StkConstant.SYS_ARTICLE_LIST_PER_PAGE;
 		int count = 0;
@@ -118,17 +118,17 @@ public class NewsAction {
 		}
 		
 		for(StkImportInfo info : infos){
-			String title = StkUtils.wrapCodeAndNameAsHtml(new Index(conn, info.getCode()));
+			String title = ServiceUtils.wrapCodeAndNameAsHtml(new Index(conn, info.getCode()));
 			info.setTitle(title);
 		}
 		
-		String json = JsonUtils.getJsonString4JavaPOJO(infos, StkConstant.DATE_FORMAT_YYYY_MM_DD_HH_MM_SS);
+		String json = JsonUtils.getJsonString4JavaPOJO(infos, CommonConstant.DATE_FORMAT_YYYY_MM_DD_HH_MM_SS);
 		
-		StringBuffer sb = new StringBuffer(StkConstant.MARK_BRACE_LEFT);
-		sb.append("\"count\":").append(count).append(StkConstant.MARK_COMMA);
-		sb.append("\"perpage\":").append(perPage).append(StkConstant.MARK_COMMA);
+		StringBuffer sb = new StringBuffer(CommonConstant.MARK_BRACE_LEFT);
+		sb.append("\"count\":").append(count).append(CommonConstant.MARK_COMMA);
+		sb.append("\"perpage\":").append(perPage).append(CommonConstant.MARK_COMMA);
 		sb.append("\"data\":").append(json);
-		sb.append(StkConstant.MARK_BRACE_RIGHT);
+		sb.append(CommonConstant.MARK_BRACE_RIGHT);
 		
 		sc.setResponse(sb.toString());
 	}

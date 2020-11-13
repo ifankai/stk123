@@ -7,19 +7,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import com.stk123.tool.util.*;
+import com.stk123.service.*;
+import com.stk123.common.util.*;
 import org.apache.commons.lang.StringUtils;
 import org.htmlparser.Node;
 import org.htmlparser.nodes.TagNode;
 import org.htmlparser.tags.TableTag;
 
-import com.stk123.bo.StkInternetSearch;
-import com.stk123.bo.StkTransAccount;
-import com.stk123.tool.db.TableTools;
-import com.stk123.tool.db.connection.ConnectionPool;
-import com.stk123.tool.thread.pool.ThreadPoolUtils;
-import com.stk123.tool.util.collection.Name2ListSet;
-import com.stk123.tool.util.collection.Name2Value;
+import com.stk123.model.bo.StkInternetSearch;
+import com.stk123.model.bo.StkTransAccount;
+import com.stk123.common.db.TableTools;
+import com.stk123.common.db.connection.ConnectionPool;
+import com.stk123.task.thread.pool.ThreadPoolUtils;
+import com.stk123.common.util.collection.Name2ListSet;
+import com.stk123.common.util.collection.Name2Value;
 import com.stk123.web.StkDict;
 
 
@@ -78,7 +79,7 @@ public class InternetSearch {
 				}
 				//System.out.println(sb.toString());
 				String content = sb.toString();
-				EmailUtils.send("【新浪博客最新动态,日期:"+StkUtils.getToday()+"】", content);
+				EmailUtils.send("【新浪博客最新动态,日期:"+ServiceUtils.getToday()+"】", content);
 				if(content.contains("十进宫")){
 					//EmailUtils.send("kai.fan@suncorp.com.au", "十进宫", content);
 				}
@@ -178,70 +179,70 @@ public class InternetSearch {
 		List<List<String>> datas = new ArrayList<List<String>>();
 		for(StkTransAccount data : list){
 			List<String> row = new ArrayList<String>();
-			row.add(data.getWeekStartDate()+"-"+data.getWeekEndDate()+"["+StkUtils.getDaysBetween(StkUtils.sf_ymd2.parse(data.getWeekStartDate()), StkUtils.sf_ymd2.parse(data.getWeekEndDate()))+"]");
-			row.add(StkUtils.number2String(data.getValidAccount(), 2));
+			row.add(data.getWeekStartDate()+"-"+data.getWeekEndDate()+"["+ServiceUtils.getDaysBetween(ServiceUtils.sf_ymd2.parse(data.getWeekStartDate()), ServiceUtils.sf_ymd2.parse(data.getWeekEndDate()))+"]");
+			row.add(ServiceUtils.number2String(data.getValidAccount(), 2));
 			//newAccount > 200000 green
 			if(data.getNewAccount() > 200000){
-				row.add(StkUtils.setHtmlFontColor(StkUtils.number2String(data.getNewAccount(), 2), "green"));
+				row.add(ServiceUtils.setHtmlFontColor(ServiceUtils.number2String(data.getNewAccount(), 2), "green"));
 			}else{
-				row.add(StkUtils.number2String(data.getNewAccount(), 2));
+				row.add(ServiceUtils.number2String(data.getNewAccount(), 2));
 			}
-			row.add(StkUtils.number2String(data.getHoldAAccount(), 2));
+			row.add(ServiceUtils.number2String(data.getHoldAAccount(), 2));
 			//transAAccount < 650 red
 			if(data.getTransAAccount() < 650){
-				row.add(StkUtils.setHtmlFontColor(StkUtils.number2String(data.getTransAAccount(), 2),"red"));
+				row.add(ServiceUtils.setHtmlFontColor(ServiceUtils.number2String(data.getTransAAccount(), 2),"red"));
 			}else{
-				row.add(StkUtils.number2String(data.getTransAAccount(), 2));
+				row.add(ServiceUtils.number2String(data.getTransAAccount(), 2));
 			}
 			//holdTransActivity > 0.22 green, holdTransActivity < 0.12 red
 			if(data.getHoldTransActivity() > 0.70){
-				row.add(StkUtils.setHtmlFontColor(StkUtils.number2String(data.getHoldTransActivity()*100,2)+"%","green"));
+				row.add(ServiceUtils.setHtmlFontColor(ServiceUtils.number2String(data.getHoldTransActivity()*100,2)+"%","green"));
 				if(data.getHoldTransActivity() >= 0.80){
 					try{
 					//EmailUtils.send("【风险】【股市账户统计】交易活跃度大于45！！！", "交易活跃度:"+data.getHoldTransActivity());
 					}catch(Exception e){}
 				}
 			}else if(data.getHoldTransActivity() < 0.20){
-				row.add(StkUtils.setHtmlFontColor(StkUtils.number2String(data.getHoldTransActivity()*100,2)+"%","red"));
+				row.add(ServiceUtils.setHtmlFontColor(ServiceUtils.number2String(data.getHoldTransActivity()*100,2)+"%","red"));
 			}else{
-				row.add(StkUtils.number2String(data.getHoldTransActivity()*100,2)+"%");
+				row.add(ServiceUtils.number2String(data.getHoldTransActivity()*100,2)+"%");
 			}
 			//validTransActivity < 0.05 red
 			if(data.getValidTransActivity() < 0.09){
-				row.add(StkUtils.setHtmlFontColor(StkUtils.number2String(data.getValidTransActivity()*100,2)+"%","red"));
+				row.add(ServiceUtils.setHtmlFontColor(ServiceUtils.number2String(data.getValidTransActivity()*100,2)+"%","red"));
 			}else{
-				row.add(StkUtils.number2String(data.getValidTransActivity()*100,2)+"%");
+				row.add(ServiceUtils.number2String(data.getValidTransActivity()*100,2)+"%");
 			}
 			//newTransActivity > 0.018 green
 			if(data.getNewTransActivity() > 0.018){
-				row.add(StkUtils.setHtmlFontColor(StkUtils.number2String(data.getNewTransActivity()*100,2)+"%","green"));
+				row.add(ServiceUtils.setHtmlFontColor(ServiceUtils.number2String(data.getNewTransActivity()*100,2)+"%","green"));
 			}else{
-				row.add(StkUtils.number2String(data.getNewTransActivity()*100,2)+"%");
+				row.add(ServiceUtils.number2String(data.getNewTransActivity()*100,2)+"%");
 			}
 			//result1 <= 55 green, result1 >= 200 red
 			if(data.getResult1() <= 15){
-				row.add(StkUtils.setHtmlFontColor(StkUtils.number2String(data.getResult1(),2),"green"));
+				row.add(ServiceUtils.setHtmlFontColor(ServiceUtils.number2String(data.getResult1(),2),"green"));
 			}else if(data.getResult1() >= 100){
-				row.add(StkUtils.setHtmlFontColor(StkUtils.number2String(data.getResult1(),2),"red"));
+				row.add(ServiceUtils.setHtmlFontColor(ServiceUtils.number2String(data.getResult1(),2),"red"));
 			}else{
-				row.add(StkUtils.number2String(data.getResult1(),2));
+				row.add(ServiceUtils.number2String(data.getResult1(),2));
 			}
 			//result2 <= 50 green, result2 >= 200 red
 			if(data.getResult2() <= 10){
-				row.add(StkUtils.setHtmlFontColor(StkUtils.number2String(data.getResult2(),2),"green"));
+				row.add(ServiceUtils.setHtmlFontColor(ServiceUtils.number2String(data.getResult2(),2),"green"));
 				if(data.getResult2() <= 5){
 					try{
 					//EmailUtils.send("【风险】【股市账户统计】Result2 < 12 ！！！", "Result2:"+data.getResult2());
 					}catch(Exception e){}
 				}
 			}else if(data.getResult2() >= 100){
-				row.add(StkUtils.setHtmlFontColor(StkUtils.number2String(data.getResult2(),2),"red"));
+				row.add(ServiceUtils.setHtmlFontColor(ServiceUtils.number2String(data.getResult2(),2),"red"));
 			}else{
-				row.add(StkUtils.number2String(data.getResult2(),2));
+				row.add(ServiceUtils.number2String(data.getResult2(),2));
 			}
 			datas.add(row);
 		}
-		return StkUtils.createHtmlTable(titles, datas);
+		return ServiceUtils.createHtmlTable(titles, datas);
 	}
 	
 	
@@ -285,7 +286,7 @@ public class InternetSearch {
 				}
 			}
 		}
-		int days = StkUtils.getDaysBetween(StkUtils.sf_ymd2.parse(startDate), StkUtils.sf_ymd2.parse(endDate));
+		int days = ServiceUtils.getDaysBetween(ServiceUtils.sf_ymd2.parse(startDate), ServiceUtils.sf_ymd2.parse(endDate));
 		//holdTransActivity > 0.22 green, holdTransActivity < 0.12 red
 		double holdTransActivity = Double.parseDouble(transAAccount)/days*5/Double.parseDouble(holdAAccount);
 		//validTransActivity < 0.05 red
@@ -332,7 +333,7 @@ public class InternetSearch {
 			double validAccount = tran.getValidAccount()/2;
 			double newAccount = tran.getNewAccount()/2.5;
 			
-			int days = StkUtils.getDaysBetween(StkUtils.sf_ymd2.parse(startDate), StkUtils.sf_ymd2.parse(endDate));
+			int days = ServiceUtils.getDaysBetween(ServiceUtils.sf_ymd2.parse(startDate), ServiceUtils.sf_ymd2.parse(endDate));
 			double holdTransActivity = transAAccount/days*5/holdAAccount;
 			//validTransActivity < 0.05 red
 			double validTransActivity = transAAccount/validAccount;

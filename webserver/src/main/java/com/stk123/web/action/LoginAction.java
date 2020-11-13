@@ -9,9 +9,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.stk123.model.User;
-import com.stk123.tool.util.JsonUtils;
+import com.stk123.common.util.JsonUtils;
 import com.stk123.web.core.util.CookieUtils;
-import com.stk123.StkConstant;
+import com.stk123.common.CommonConstant;
 import com.stk123.web.context.StkContext;
 
 public class LoginAction {
@@ -21,22 +21,22 @@ public class LoginAction {
 		HttpServletRequest request = sc.getRequest();
 		HttpServletResponse response = sc.getResponse();
 		Connection conn = StkContext.getConnection();
-		String username = request.getParameter(StkConstant.PARAMETER_USERNAME);
-		String password = request.getParameter(StkConstant.PARAMETER_PASSWORD);
-		String autologin = request.getParameter(StkConstant.PARAMETER_AUTOLOGIN);
+		String username = request.getParameter(CommonConstant.PARAMETER_USERNAME);
+		String password = request.getParameter(CommonConstant.PARAMETER_PASSWORD);
+		String autologin = request.getParameter(CommonConstant.PARAMETER_AUTOLOGIN);
 		User user = login(conn, request,response, username, password);
 		if(user != null){
 			setCookieAge(response, username, password);
-			if(StkConstant.NUMBER_ONE.equals(autologin)){
-				CookieUtils.addCookie(response, StkConstant.PARAMETER_AUTOLOGIN, autologin, Integer.MAX_VALUE);
+			if(CommonConstant.NUMBER_ONE.equals(autologin)){
+				CookieUtils.addCookie(response, CommonConstant.PARAMETER_AUTOLOGIN, autologin, Integer.MAX_VALUE);
 			}else{
-				CookieUtils.deleteCookie(request, response, StkConstant.PARAMETER_AUTOLOGIN);
+				CookieUtils.deleteCookie(request, response, CommonConstant.PARAMETER_AUTOLOGIN);
 			}
-            return StkConstant.ACTION_SUCC;
+            return CommonConstant.ACTION_SUCC;
 		}else{
 			//用户名密码错误
-			sc.put(StkConstant.ATTRIBUTE_LOGIN_ERROR, true);
-			return StkConstant.ACTION_FAIL;
+			sc.put(CommonConstant.ATTRIBUTE_LOGIN_ERROR, true);
+			return CommonConstant.ACTION_FAIL;
 		}
 	}
 	
@@ -44,7 +44,7 @@ public class LoginAction {
 		User user = User.loadByEmail(conn, userName);
 		if(user != null && user.getStkUser().getPassword().equals(password)){
 			HttpSession session = request.getSession();
-			session.setAttribute(StkConstant.SESSION_CURRENT_USER, user);
+			session.setAttribute(CommonConstant.SESSION_CURRENT_USER, user);
             return user;
 		}
 		return null;
@@ -54,14 +54,14 @@ public class LoginAction {
 		StkContext sc = StkContext.getContext();
 		HttpServletRequest request = sc.getRequest();
 		request.getSession().invalidate();
-		return StkConstant.ACTION_SUCC;
+		return CommonConstant.ACTION_SUCC;
 	}
 	
 	private final static int age = 30*24*60*60;
 	
 	public static void setCookieAge(HttpServletResponse response,String email,String password){
-		CookieUtils.addCookie(response, StkConstant.PARAMETER_USERNAME, email, age);
-		CookieUtils.addCookie(response, StkConstant.PARAMETER_PASSWORD, password, age);
+		CookieUtils.addCookie(response, CommonConstant.PARAMETER_USERNAME, email, age);
+		CookieUtils.addCookie(response, CommonConstant.PARAMETER_PASSWORD, password, age);
 	}
 	
 	public void register() throws Exception {
@@ -69,10 +69,10 @@ public class LoginAction {
 		StkContext sc = StkContext.getContext();
 		HttpServletRequest request = sc.getRequest();
 		Connection conn = StkContext.getConnection();
-		String nickname = request.getParameter(StkConstant.PARAMETER_NICKNAME);
-		String email = request.getParameter(StkConstant.PARAMETER_EMAIL);
-		String pw1 = request.getParameter(StkConstant.PARAMETER_PW1);
-		String pw2 = request.getParameter(StkConstant.PARAMETER_PW2);
+		String nickname = request.getParameter(CommonConstant.PARAMETER_NICKNAME);
+		String email = request.getParameter(CommonConstant.PARAMETER_EMAIL);
+		String pw1 = request.getParameter(CommonConstant.PARAMETER_PW1);
+		String pw2 = request.getParameter(CommonConstant.PARAMETER_PW2);
 		User user = User.loadByNameOrEmail(conn, nickname, email);
 		List errors = new ArrayList();
 		if(user != null){
@@ -87,7 +87,7 @@ public class LoginAction {
 		}else{
 			user = User.create(conn, nickname, email.toLowerCase(), pw1);
 			if(user != null){
-				sc.setResponse(StkConstant.NUMBER_ONE);
+				sc.setResponse(CommonConstant.NUMBER_ONE);
 			}else{
 				sc.setResponse("-1");
 			}

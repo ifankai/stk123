@@ -1,12 +1,10 @@
 package com.stk123;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.Scanner;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.stk123.tool.util.ChineseUtils;
+import com.stk123.common.util.ChineseUtils;
 
 /*****
  * idea shortcut: https://blog.csdn.net/fmwind/article/details/80930840
