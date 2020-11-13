@@ -1,4 +1,4 @@
-package com.stk123.web.pojo;
+package com.stk123.model.pojo;
 
 import com.stk123.common.CommonConstant;
 

@@ -51,7 +51,7 @@ public class StkSearch {
 	
 	public static void clear() throws Exception{
 		ks = null;
-		StkIKUtils.init();
+		WebIKUtils.init();
 	}
 	
 	public static synchronized StkSearch getInstance() throws Exception{
@@ -61,7 +61,7 @@ public class StkSearch {
 		Directory directory = new RAMDirectory();
 		
 		// 配置IndexWriterConfig
-		IndexWriterConfig iwConfig = StkIKUtils.getConfig();
+		IndexWriterConfig iwConfig = WebIKUtils.getConfig();
 		iwConfig.setOpenMode(OpenMode.CREATE_OR_APPEND);
 		IndexWriter iwriter = new IndexWriter(directory, iwConfig);
 		// 写入索引
@@ -83,7 +83,7 @@ public class StkSearch {
 		}
 		List<StkText> texts = JdbcUtils.list(conn, "select * from stk_text", StkText.class);
 		for(StkText text : texts){
-			Document doc = StkIKUtils.getDocument(text);
+			Document doc = WebIKUtils.getDocument(text);
 			iwriter.addDocument(doc);
 		}
 		

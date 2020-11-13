@@ -17,11 +17,11 @@ import com.stk123.model.Industry;
 import com.stk123.common.util.JdbcUtils;
 import com.stk123.common.util.JsonUtils;
 import com.stk123.common.CommonConstant;
-import com.stk123.web.StkDict;
-import com.stk123.web.bs.StkService;
+import com.stk123.service.DictService;
+import com.stk123.service.StkService;
 import com.stk123.web.context.StkContext;
-import com.stk123.web.pojo.MetaData;
-import com.stk123.web.pojo.Node;
+import com.stk123.model.pojo.MetaData;
+import com.stk123.model.pojo.Node;
 
 
 public class IndustryAction {
@@ -63,7 +63,7 @@ public class IndustryAction {
 		StkContext sc = StkContext.getContext();
 		Connection conn = StkContext.getConnection();
 		List<StkIndustryType> indTypes = JdbcUtils.list(conn, "select * from stk_industry_type order by name asc", StkIndustryType.class);
-		List<StkDictionary> sources = StkDict.getDictionaryOrderByParam(StkDict.INDUSTRY_SOURCE);
+		List<StkDictionary> sources = DictService.getDictionaryOrderByParam(DictService.INDUSTRY_SOURCE);
 		
 		List list = new ArrayList();
 		for(StkDictionary source : sources){

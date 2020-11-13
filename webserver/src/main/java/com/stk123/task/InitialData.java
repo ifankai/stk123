@@ -40,7 +40,7 @@ import com.stk123.common.db.util.DBUtil;
 import com.stk123.common.db.util.sequence.SequenceUtils;
 import com.stk123.common.util.collection.Name2Value;
 import com.stk123.common.CommonConstant;
-import com.stk123.web.StkDict;
+import com.stk123.service.DictService;
 
 
 /**
@@ -169,7 +169,7 @@ public class InitialData {
 			//牛基列表
 			InitialData.initAwesomeFund();
 			//牛散
-			List<StkDictionary> aps = StkDict.getDictionary(StkDict.NIUSAN);
+			List<StkDictionary> aps = DictService.getDictionary(DictService.NIUSAN);
 			for(StkDictionary sd : aps){
 				awesomePersons.add(new Name2Value(sd.getText(),3));
 			}

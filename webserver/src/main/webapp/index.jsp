@@ -1,4 +1,6 @@
 <%@ page import="com.stk123.service.ServiceUtils" %>
+<%@ page import="com.stk123.service.DictService" %>
+<%@ page import="com.stk123.service.StkService" %>
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" errorPage="/common/error.jsp"%>
 <%@include file="/common/import.jsp" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -292,7 +294,7 @@ $(document).ready(function(){
 	    <ul class="nav nav-tabs" role="tablist">
 	<%
 		int j=0;
-		List<StkDictionary> funds = StkDict.getDictionaryOrderByParam(StkDict.FAMOUS_FUNDS);
+		List<StkDictionary> funds = DictService.getDictionaryOrderByParam(DictService.FAMOUS_FUNDS);
 		for(StkDictionary subType : funds){
 			j++;
 	%>      
@@ -611,7 +613,7 @@ $(function() {
 	    <ul class="nav nav-tabs" role="tablist">
 	      <li class="active"><a href="#text-all" role="tab" data-toggle="tab">全部</a></li>
 	<%
-		for(StkDictionary subType : StkDict.getDictionaryOrderByParam(StkDict.TEXT_SUB_TYPE)){
+		for(StkDictionary subType : DictService.getDictionaryOrderByParam(DictService.TEXT_SUB_TYPE)){
 	%>      
 	      <li><a href="#text-<%=subType.getKey() %>" id="text-tab-<%=subType.getKey() %>" data="<%=subType.getKey()%>" role="tab" data-toggle="tab"><%=subType.getText() %></a></li>
 	<%
@@ -638,7 +640,7 @@ $(function() {
 		<div class="pagination pagination-right" id="pager-text-all"></div>
       </div>
 <%
-	for(StkDictionary subType : StkDict.getDictionaryOrderByParam(StkDict.TEXT_SUB_TYPE)){
+	for(StkDictionary subType : DictService.getDictionaryOrderByParam(DictService.TEXT_SUB_TYPE)){
 %>
       <div class="tab-pane" id="text-<%=subType.getKey()%>" >
       	<div id="text-list-<%=subType.getKey() %>" style="height:100%;overflow:auto;text-align:left;">
@@ -716,7 +718,7 @@ $(function() {
         <table class="datatable table table-striped table-bordered" id="stk-updown">
           <thead><tr>
             <% 
-              columns = StkService.getColumnNames(StkDict.STKS_COLUMN_NAMES);
+              columns = StkService.getColumnNames(DictService.STKS_COLUMN_NAMES);
               for(StkDictionary column : columns){
             	  if(column.getRemark().equals(CommonConstant.NUMBER_ONE)){
             %>

@@ -40,6 +40,7 @@ import org.apache.lucene.search.highlight.SimpleHTMLFormatter;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
+import org.springframework.util.ResourceUtils;
 import org.wltea.analyzer.cfg.Configuration;
 import org.wltea.analyzer.cfg.DefaultConfig;
 import org.wltea.analyzer.dic.Dictionary;
@@ -55,7 +56,7 @@ import com.stk123.common.util.ConfigUtils;
 import com.stk123.common.util.JdbcUtils;
 
 
-public class StkIKUtils extends IKUtils {
+public class WebIKUtils extends IKUtils {
 	
 	public static Set<String> default_excludes = new HashSet<String>();
 	
@@ -106,7 +107,7 @@ public class StkIKUtils extends IKUtils {
 		try{
 			conn = Pool.getPool().getConnection();
 			
-			URL url = StkIKUtils.class.getResource("keyword_stop.txt");
+			URL url = ResourceUtils.getURL("classpath:keyword_stop.txt");
 			List<String> stopWords = new ArrayList<String>();
 			stopWords.addAll(IOUtils.readLines(url.openStream()));
 			dict.disableWords(stopWords);
@@ -163,17 +164,17 @@ public class StkIKUtils extends IKUtils {
 	
 	public static void addDocument(StkText text) throws Exception{
 		for(Directory directory : getDirectorys()){
-			IndexWriterConfig iwConfig = StkIKUtils.getConfig();
+			IndexWriterConfig iwConfig = WebIKUtils.getConfig();
 			IndexWriter iwriter = new IndexWriter(directory, iwConfig);
-			iwriter.addDocument(StkIKUtils.getDocument(text));
+			iwriter.addDocument(WebIKUtils.getDocument(text));
 			iwriter.close();
 		}
 	}
 	
 	public static void updateDocument(StkText text) throws Exception{
-		Document doc = StkIKUtils.getDocument(text);
+		Document doc = WebIKUtils.getDocument(text);
 		for(Directory directory : getDirectorys()){
-			IndexWriterConfig iwConfig = StkIKUtils.getConfig();
+			IndexWriterConfig iwConfig = WebIKUtils.getConfig();
 			IndexWriter iwriter = new IndexWriter(directory, iwConfig);
 			iwriter.updateDocument(new Term(DocumentField.ID.value(), text.getId().toString()), doc);
 			iwriter.close();
@@ -182,7 +183,7 @@ public class StkIKUtils extends IKUtils {
 	
 	public static void deleteDocument(String id) throws Exception{
 		for(Directory directory : getDirectorys()){
-			IndexWriterConfig iwConfig = StkIKUtils.getConfig();
+			IndexWriterConfig iwConfig = WebIKUtils.getConfig();
 			IndexWriter iwriter = new IndexWriter(directory, iwConfig);
 			iwriter.deleteDocuments(new Term(DocumentField.ID.value(), id));
 			iwriter.close();
@@ -193,13 +194,13 @@ public class StkIKUtils extends IKUtils {
 	 * 交集
 	 */
 	public static Set<String> intersection(String src, String des) throws Exception {
-		return StkIKUtils.intersection(src, des, null);
+		return WebIKUtils.intersection(src, des, null);
 	}
 	
 	public static Set<String> intersection(String src, String des, List<String> excludes) throws Exception {
-		List<String> s1 = StkIKUtils.split(src);
+		List<String> s1 = WebIKUtils.split(src);
 		//System.out.println("关键字："+s1);
-		List<String> s2 = StkIKUtils.split(des);
+		List<String> s2 = WebIKUtils.split(des);
 		//System.out.println("关键字："+s2);
 		Set<String> set1 = new HashSet<String>();
 		set1.addAll(s1);

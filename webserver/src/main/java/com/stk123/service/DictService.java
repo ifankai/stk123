@@ -1,4 +1,4 @@
-package com.stk123.web;
+package com.stk123.service;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -15,7 +15,7 @@ import com.stk123.common.db.connection.Pool;
 import com.stk123.common.util.JdbcUtils;
 
 
-public class StkDict {
+public class DictService {
 	
 	public final static Integer MONITOR_K_PARAM1 = new Integer(1);
 	public final static Integer MONITOR_K_PARAM2 = new Integer(2);

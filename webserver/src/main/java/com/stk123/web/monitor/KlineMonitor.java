@@ -20,7 +20,7 @@ import com.stk123.common.db.TableTools;
 import com.stk123.common.db.connection.Pool;
 import com.stk123.common.db.util.DBUtil;
 import com.stk123.common.util.*;
-import com.stk123.web.StkDict;
+import com.stk123.service.DictService;
 
 
 public class KlineMonitor extends Monitor {
@@ -90,8 +90,8 @@ public class KlineMonitor extends Monitor {
 			Index index = new Index(conn, sm.getCode());
 			StringBuffer sb = new StringBuffer();
 			sb.append(index.getName()+"["+index.getCode()+"]");
-			String param1 = StkDict.getDict(StkDict.MONITOR_K_PARAM1, sm.getParam1());
-			String param2 = StkDict.getDict(StkDict.MONITOR_K_PARAM2, sm.getParam2());
+			String param1 = DictService.getDict(DictService.MONITOR_K_PARAM1, sm.getParam1());
+			String param2 = DictService.getDict(DictService.MONITOR_K_PARAM2, sm.getParam2());
 			sb.append(param1+param2+sm.getParam3());
 			return sb.toString();
 		}else{

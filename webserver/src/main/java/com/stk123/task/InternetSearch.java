@@ -21,7 +21,7 @@ import com.stk123.common.db.connection.ConnectionPool;
 import com.stk123.task.thread.pool.ThreadPoolUtils;
 import com.stk123.common.util.collection.Name2ListSet;
 import com.stk123.common.util.collection.Name2Value;
-import com.stk123.web.StkDict;
+import com.stk123.service.DictService;
 
 
 public class InternetSearch {
@@ -64,7 +64,7 @@ public class InternetSearch {
 				if(result != null){
 					Map<String,Object> map = (Map<String,Object>)result;
 					StkInternetSearch search = (StkInternetSearch)map.get("search");
-					String title = StkDict.getDict(StkDict.INTERNET_SEARCH_TYPE, search.getSearchSource().toString());
+					String title = DictService.getDict(DictService.INTERNET_SEARCH_TYPE, search.getSearchSource().toString());
 					set.add(title, (List<String>)map.get("result"));
 				}
 			}

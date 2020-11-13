@@ -1,11 +1,10 @@
-package com.stk123.task;
+package com.stk123.service;
 
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.stk123.service.*;
 import com.stk123.common.util.*;
 import org.apache.commons.lang.StringUtils;
 import org.htmlparser.Node;
@@ -17,7 +16,7 @@ import com.stk123.model.Index;
 import com.stk123.common.db.TableTools;
 import com.stk123.common.db.util.DBUtil;
 import com.stk123.common.CommonConstant;
-import com.stk123.web.bs.StkService;
+import com.stk123.service.StkService;
 
 public class EarningsForecast {
 

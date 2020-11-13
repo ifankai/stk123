@@ -23,12 +23,12 @@ import com.stk123.model.bo.StkText;
 import com.stk123.model.Index;
 import com.stk123.model.K;
 import com.stk123.model.Keyword;
-import com.stk123.task.EarningsForecast;
+import com.stk123.service.EarningsForecast;
 import com.stk123.service.ServiceUtils;
 import com.stk123.service.XueqiuUtils;
 import com.stk123.service.baidu.BaiduSearch;
 import com.stk123.common.ik.DocumentField;
-import com.stk123.web.ik.StkIKUtils;
+import com.stk123.web.ik.WebIKUtils;
 import com.stk123.web.ik.Search;
 import com.stk123.service.HttpUtils;
 import com.stk123.common.util.JdbcUtils;
@@ -69,7 +69,7 @@ public class StkAction {
 		List params = new ArrayList();
 		params.add(code);
 		List<String> list = JdbcUtils.list(conn, "select b.name name from stk_keyword_link a, stk_keyword b where b.status=0 and a.keyword_id=b.id and a.code=? and a.code_type="+CommonConstant.KEYWORD_TYPE_STK, params, String.class);
-		Set<String> ppi = StkIKUtils.intersection(index.getStock().getCompanyProfile()+list, PPI_KW.toString());
+		Set<String> ppi = WebIKUtils.intersection(index.getStock().getCompanyProfile()+list, PPI_KW.toString());
 		sc.put("keyword_ppi", ppi);
 	}
 	
@@ -307,7 +307,7 @@ public class StkAction {
 		}else{
 			keyword.append(StringUtils.join(kws, CommonConstant.MARK_COMMA)).append(CommonConstant.MARK_COMMA).append(sZhuyin);
 		}
-		List<Document> stks = Search.searchRelatedStk(keyword.toString(), searchWordsWeight, StkIKUtils.default_excludes,0,14);
+		List<Document> stks = Search.searchRelatedStk(keyword.toString(), searchWordsWeight, WebIKUtils.default_excludes,0,14);
 		List<Map> jsonList = new ArrayList<Map>();
 		for(Document stk : stks){
 			String id = stk.get(DocumentField.ID.value());

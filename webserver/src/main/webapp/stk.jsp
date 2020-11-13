@@ -1,6 +1,7 @@
 <%@page import="com.stk123.common.util.JdbcUtils"%>
 <%@ page import="java.util.List" %>
-<%@ page import="com.stk123.service.ServiceUtils" %>
+<%@ page import="com.stk123.service.*" %>
+<%@ page import="com.stk123.service.baidu.*" %>
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@include file="/common/import.jsp" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -202,22 +203,22 @@ $(function() {
     <article class="span5">
        <blockquote>
        <p>
-        <%=WebUtils.getBaiduNewsSearch("baidu_1","baidu_2001",stkName+" site:(cnstock.com)","上海证券报",false) %>
-        <%=WebUtils.getBaiduNewsSearch("baidu_1","baidu_2002",stkName+" site:(cs.com.cn)","中国证券报",false) %>
-        <%=WebUtils.getBaiduNewsSearch("baidu_1","baidu_2003",stkName+" site:(ccstock.cn)","证券日报",false) %>
-        <%=WebUtils.getBaiduNewsSearch("baidu_1","baidu_2004",stkName+" site:(cb.com.cn)","中国经营报",false) %>
-        <%=WebUtils.getBaiduNewsSearch("baidu_1","baidu_2005",stkName+" site:(21cbh.com)","21世纪报",false) %>
-        <%=WebUtils.getBaiduNewsSearch("baidu_1","baidu_2006",stkName+" site:(eeo.com.cn)","经济观察报",false) %>
+        <%=BaiduSearch.getBaiduNewsSearch("baidu_1","baidu_2001",stkName+" site:(cnstock.com)","上海证券报",false) %>
+        <%=BaiduSearch.getBaiduNewsSearch("baidu_1","baidu_2002",stkName+" site:(cs.com.cn)","中国证券报",false) %>
+        <%=BaiduSearch.getBaiduNewsSearch("baidu_1","baidu_2003",stkName+" site:(ccstock.cn)","证券日报",false) %>
+        <%=BaiduSearch.getBaiduNewsSearch("baidu_1","baidu_2004",stkName+" site:(cb.com.cn)","中国经营报",false) %>
+        <%=BaiduSearch.getBaiduNewsSearch("baidu_1","baidu_2005",stkName+" site:(21cbh.com)","21世纪报",false) %>
+        <%=BaiduSearch.getBaiduNewsSearch("baidu_1","baidu_2006",stkName+" site:(eeo.com.cn)","经济观察报",false) %>
        </p>
        </blockquote>
     </article>
     <article class="span5">
        <blockquote>
        <p>
-        <%=WebUtils.getBaiduNewsSearch("baidu_1","baidu_1001",stkName+" 超预期 | "+stkName+" 爆发","超预期/爆发",true) %>
-        <%=WebUtils.getBaiduNewsSearch("baidu_1","baidu_1010",stkName+" 高增长 | "+stkName+" 高成长","高增长/高成长",true) %>
-        <%=WebUtils.getBaiduNewsSearch("baidu_1","baidu_1020",stkName+" 提价 | "+stkName+" 强烈推荐","提价/强烈推荐",true) %>
-        <%=WebUtils.getBaiduNewsSearch("baidu_2","baidu_170",stkName+" 利好","利好预期",true) %>
+        <%=BaiduSearch.getBaiduNewsSearch("baidu_1","baidu_1001",stkName+" 超预期 | "+stkName+" 爆发","超预期/爆发",true) %>
+        <%=BaiduSearch.getBaiduNewsSearch("baidu_1","baidu_1010",stkName+" 高增长 | "+stkName+" 高成长","高增长/高成长",true) %>
+        <%=BaiduSearch.getBaiduNewsSearch("baidu_1","baidu_1020",stkName+" 提价 | "+stkName+" 强烈推荐","提价/强烈推荐",true) %>
+        <%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_170",stkName+" 利好","利好预期",true) %>
        <%if(isAdmin){%><script type="text/javascript">baiduSearch("baidu_1");</script><%} %>
        </p>
        </blockquote>
@@ -227,32 +228,32 @@ $(function() {
     <article class="span5">
        <blockquote>
         <p>
-        <%=WebUtils.getBaiduNewsSearch("baidu_2","baidu_100",stkName+" 行业 | "+stkName+" 产业","行业/产业",true) %>
-        <%=WebUtils.getBaiduNewsSearch("baidu_2","baidu_101",stkName+" 景气","景气度",true) %>
-        <%=WebUtils.getBaiduNewsSearch("baidu_2","baidu_102",stkName+" 竞争对手","竞争对手",false) %>
-        <%=WebUtils.getBaiduNewsSearch("baidu_2","baidu_116",stkName+" 上游 | "+stkName+" 下游","上下游",true) %>
-        <%=WebUtils.getBaiduNewsSearch("baidu_2","baidu_110",stkName+" 龙头","龙头",true) %>
-        <%=WebUtils.getBaiduNewsSearch("baidu_2","baidu_112",stkName+" 新产品","新产品",true) %>
-        <%=WebUtils.getBaiduNewsSearch("baidu_2","baidu_114",stkName+" 产能","产能",false) %>
-        <%=WebUtils.getBaiduNewsSearch("baidu_2","baidu_200",stkName+" 转型","转型",true) %>
-        <%=WebUtils.getBaiduNewsSearch("baidu_2","baidu_210",stkName+" 管理层","管理层",false) %>
-        <%=WebUtils.getBaiduNewsSearch("baidu_2","baidu_117",stkName+" 出货量 | "+stkName+" 开工率","出货量/开工率",false, 16) %>
-        <%=WebUtils.getBaiduNewsSearch("baidu_2","baidu_120",stkName+" 订单 | "+stkName+" 中标 | "+stkName+" 合同","订单/中标/合同",true,16) %>
-        <%=WebUtils.getBaiduNewsSearch("baidu_2","baidu_190",stkName+" 市场占有率","市场占有率",false) %>
-        <%=WebUtils.getBaiduNewsSearch("baidu_2","baidu_180",stkName+" 核心技术","核心技术",true) %>
+        <%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_100",stkName+" 行业 | "+stkName+" 产业","行业/产业",true) %>
+        <%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_101",stkName+" 景气","景气度",true) %>
+        <%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_102",stkName+" 竞争对手","竞争对手",false) %>
+        <%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_116",stkName+" 上游 | "+stkName+" 下游","上下游",true) %>
+        <%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_110",stkName+" 龙头","龙头",true) %>
+        <%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_112",stkName+" 新产品","新产品",true) %>
+        <%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_114",stkName+" 产能","产能",false) %>
+        <%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_200",stkName+" 转型","转型",true) %>
+        <%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_210",stkName+" 管理层","管理层",false) %>
+        <%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_117",stkName+" 出货量 | "+stkName+" 开工率","出货量/开工率",false, 16) %>
+        <%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_120",stkName+" 订单 | "+stkName+" 中标 | "+stkName+" 合同","订单/中标/合同",true,16) %>
+        <%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_190",stkName+" 市场占有率","市场占有率",false) %>
+        <%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_180",stkName+" 核心技术","核心技术",true) %>
         </p>
       </blockquote>
     </article>
     <article class="span5">
        <blockquote>
         <p>
-        <%=WebUtils.getBaiduNewsSearch("baidu_2","baidu_130",stkName+" 重组 | "+stkName+" 并购 | "+stkName+" 收购","重组/并购/收购",true) %>
-        <%=WebUtils.getBaiduNewsSearch("baidu_2","baidu_160",stkName+" 股权激励","股权激励",true,20) %>
-        <%=WebUtils.getBaiduNewsSearch("baidu_2","baidu_140",stkName+" 回购 | "+stkName+" 增持","回购/增持",true) %>
-        <%=WebUtils.getBaiduNewsSearch("baidu_2","baidu_150",stkName+" 增发","增发",true,16) %>
-        <%=WebUtils.getBaiduNewsSearch("baidu_2","baidu_155",stkName+" 非公开发行","非公开发行",false,16) %>
-        <%=WebUtils.getBaiduNewsSearch("baidu_2","baidu_220",stkName+" 举牌","举牌",true,16) %>
-        <%=WebUtils.getBaiduNewsSearch("baidu_2","baidu_230",stkName+" 央企改革","央企改革",true) %>
+        <%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_130",stkName+" 重组 | "+stkName+" 并购 | "+stkName+" 收购","重组/并购/收购",true) %>
+        <%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_160",stkName+" 股权激励","股权激励",true,20) %>
+        <%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_140",stkName+" 回购 | "+stkName+" 增持","回购/增持",true) %>
+        <%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_150",stkName+" 增发","增发",true,16) %>
+        <%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_155",stkName+" 非公开发行","非公开发行",false,16) %>
+        <%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_220",stkName+" 举牌","举牌",true,16) %>
+        <%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_230",stkName+" 央企改革","央企改革",true) %>
         <%if(isAdmin){%><script type="text/javascript">baiduSearch("baidu_2");</script><%} %>
         </p>
        </blockquote>
@@ -428,7 +429,7 @@ if(index.getMarket()==1){
   }
   %>
   3.查看每股公积金是否>=3元(风生水起)。
-  4.盈利预测：<%=EarningsForecast.getEarningsForecast(index.getCode())  %>  
+  4.盈利预测：<%=EarningsForecast.getEarningsForecast(index.getCode())  %>
   5.业绩拐点先行指标：经营活动现金流量净额 同比增长：<%
     StkFnDataCust fn = index.getFnDataLastestByType(CommonConstant.FN_TYPE_CN_JYHDXJLLJE);
     if(fn != null){
@@ -650,8 +651,8 @@ $(function() {
   if(info != null){
 	out.print("<span style='color:red'>"+info.getInfo()+" ["+ServiceUtils.formatDate(info.getInsertTime())+"]"+"</span>");
   }
-  %> - <a target="_blank" href='http://www.iwencai.com/search?typed=0&preParams=&ts=1&f=1&qs=result_channel&selfsectsn=&querytype=&searchfilter=&tid=info&w=<%=index.getName()%>%20股权激励'>问财搜索</a> <%=WebUtils.getBaiduNewsSearch("baidu_2","baidu_160",stkName+" 股权激励","百度搜索",true,20) %> 
-  2.高管是否增持，公司是否有回购: <%=WebUtils.getBaiduNewsSearch("baidu_2","baidu_140",stkName+" 回购 | "+stkName+" 增持","搜索回购/增持",true) %>
+  %> - <a target="_blank" href='http://www.iwencai.com/search?typed=0&preParams=&ts=1&f=1&qs=result_channel&selfsectsn=&querytype=&searchfilter=&tid=info&w=<%=index.getName()%>%20股权激励'>问财搜索</a> <%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_160",stkName+" 股权激励","百度搜索",true,20) %> 
+  2.高管是否增持，公司是否有回购: <%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_140",stkName+" 回购 | "+stkName+" 增持","搜索回购/增持",true) %>
   3.员工持股计划：<%
   List<StkMonitor> ms = index.getMonitor(2);
   out.print(WebUtils.createTableOfStkMonitor(index, ms, "员工持股"));
@@ -715,7 +716,7 @@ $(function() {
       	<table class="xueqiuTable table table-striped table-bordered" id="stk-care">
           <thead><tr>
             <% 
-              List<StkDictionary> columns = StkService.getColumnNames(1006);
+              List<StkDictionary> columns = com.stk123.service.StkService.getColumnNames(1006);
               for(StkDictionary column : columns){
             %>
               	<th width="<%=column.getParam3()%>%"><%=column.getText() %></th>
@@ -832,10 +833,10 @@ $(function() {
 		<tr>
 		  <td width="330">股票
 		    <select id="kparam1">
-		      <%=StkDict.htmlOptions(StkDict.MONITOR_K_PARAM1) %>
+		      <%=DictService.htmlOptions(DictService.MONITOR_K_PARAM1) %>
 		    </select>数值
 		    <select id="kparam2">
-		      <%=StkDict.htmlOptions(StkDict.MONITOR_K_PARAM2,"2") %>
+		      <%=DictService.htmlOptions(DictService.MONITOR_K_PARAM2,"2") %>
 		    </select>
 		    <input type="text" id="kparam3" size="8" value=""/>
 		    <input type="button" onclick="kmonitorcreate()" value="监控"/>

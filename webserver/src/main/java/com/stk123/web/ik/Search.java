@@ -47,13 +47,13 @@ import com.stk123.model.Index;
 import com.stk123.common.db.connection.Pool;
 import com.stk123.common.ik.DocumentField;
 import com.stk123.common.ik.DocumentType;
-import com.stk123.web.tool.tree.Tree;
-import com.stk123.web.tool.tree.TreeNode;
+import com.stk123.model.tree.Tree;
+import com.stk123.model.tree.TreeNode;
 import com.stk123.common.util.HtmlUtils;
 import com.stk123.common.util.JdbcUtils;
 import com.stk123.common.util.collection.Name2Value;
-import com.stk123.web.StkDict;
-import com.stk123.web.bs.IndexService;
+import com.stk123.service.DictService;
+import com.stk123.service.IndexService;
 
 public class Search {
 
@@ -79,7 +79,7 @@ public class Search {
 		try{
 			conn = Pool.getPool().getConnection();
 			directoryStkAndIndustry = new RAMDirectory();
-			IndexWriterConfig iwConfig = StkIKUtils.getConfig();
+			IndexWriterConfig iwConfig = WebIKUtils.getConfig();
 			iwConfig.setOpenMode(OpenMode.CREATE);
 			IndexWriter iwriter = new IndexWriter(directoryStkAndIndustry, iwConfig);
 
@@ -115,12 +115,12 @@ public class Search {
 			}
 
 			//industry
-			List<StkIndustryType> inds = JdbcUtils.list(conn, "select * from stk_industry_type a,stk_dictionary b where a.source=b.key and b.type="+StkDict.INDUSTRY_SOURCE, StkIndustryType.class);
+			List<StkIndustryType> inds = JdbcUtils.list(conn, "select * from stk_industry_type a,stk_dictionary b where a.source=b.key and b.type="+DictService.INDUSTRY_SOURCE, StkIndustryType.class);
 			for(StkIndustryType ind : inds){
 				Document doc = new Document();
 				doc.add(new Field(DocumentField.ID.value(), ind.getId().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
 				doc.add(new Field(DocumentField.TYPE.value(), DocumentType.INDUSTRY.value(), Field.Store.YES, Field.Index.NOT_ANALYZED));
-				doc.add(new TextField(DocumentField.TITLE.value(), ind.getName()+" ["+StkDict.getDict(StkDict.INDUSTRY_SOURCE, ind.getSource())+"]", Field.Store.YES));
+				doc.add(new TextField(DocumentField.TITLE.value(), ind.getName()+" ["+DictService.getDict(DictService.INDUSTRY_SOURCE, ind.getSource())+"]", Field.Store.YES));
 				iwriter.addDocument(doc);
 			}
 
@@ -154,7 +154,7 @@ public class Search {
 		System.out.println("Search.initUserText,userId="+this.userId+",dir="+(INDEX_PATH + File.separator + userId));
 		Connection conn = null;
 		try{
-			IndexWriterConfig iwConfig = StkIKUtils.getConfig();
+			IndexWriterConfig iwConfig = WebIKUtils.getConfig();
 			iwConfig.setOpenMode(OpenMode.CREATE);
 			IndexWriter iwriter = new IndexWriter(this.directoryUser, iwConfig);
 
@@ -163,7 +163,7 @@ public class Search {
 			params.add(this.userId);
 			List<StkText> texts = JdbcUtils.list(conn, "select * from stk_text where insert_time>=sysdate-700 and user_id=?", params, StkText.class);
 			for(StkText text : texts){
-				Document doc = StkIKUtils.getDocument(text);
+				Document doc = WebIKUtils.getDocument(text);
 				iwriter.addDocument(doc);
 			}
 			iwriter.commit();
@@ -294,16 +294,16 @@ public class Search {
 	}
 
 	public void addDocument(StkText text) throws Exception{
-		IndexWriterConfig iwConfig = StkIKUtils.getConfig();
+		IndexWriterConfig iwConfig = WebIKUtils.getConfig();
 		iwConfig.setOpenMode(OpenMode.APPEND);
 		IndexWriter iwriter = new IndexWriter(this.directoryUser, iwConfig);
-		iwriter.addDocument(StkIKUtils.getDocument(text));
+		iwriter.addDocument(WebIKUtils.getDocument(text));
 		iwriter.close();
 	}
 
 	public void updateDocument(StkText text) throws Exception{
-		Document doc = StkIKUtils.getDocument(text);
-		IndexWriterConfig iwConfig = StkIKUtils.getConfig();
+		Document doc = WebIKUtils.getDocument(text);
+		IndexWriterConfig iwConfig = WebIKUtils.getConfig();
 		iwConfig.setOpenMode(OpenMode.CREATE_OR_APPEND);
 		IndexWriter iwriter = new IndexWriter(directoryUser, iwConfig);
 		iwriter.updateDocument(new Term(DocumentField.ID.value(), text.getId().toString()), doc);
@@ -311,7 +311,7 @@ public class Search {
 	}
 
 	public void deleteDocument(String id) throws Exception{
-		IndexWriterConfig iwConfig = StkIKUtils.getConfig();
+		IndexWriterConfig iwConfig = WebIKUtils.getConfig();
 		IndexWriter iwriter = new IndexWriter(directoryUser, iwConfig);
 		iwriter.deleteDocuments(new Term(DocumentField.ID.value(), id));
 		iwriter.close();
