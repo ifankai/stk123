@@ -5,17 +5,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.stk123.tool.util.*;
+import com.stk123.service.*;
+import com.stk123.common.util.*;
 import org.apache.commons.lang.StringUtils;
 import org.htmlparser.Node;
 import org.htmlparser.tags.TableTag;
 
-import com.stk123.bo.Stk;
-import com.stk123.bo.StkDictionary;
+import com.stk123.model.bo.Stk;
+import com.stk123.model.bo.StkDictionary;
 import com.stk123.model.Index;
-import com.stk123.tool.db.TableTools;
-import com.stk123.tool.db.util.DBUtil;
-import com.stk123.StkConstant;
+import com.stk123.common.db.TableTools;
+import com.stk123.common.db.util.DBUtil;
+import com.stk123.common.CommonConstant;
 import com.stk123.web.bs.StkService;
 
 public class EarningsForecast {
@@ -45,7 +46,7 @@ public class EarningsForecast {
 					for(List<String> data : datas){
 						if(data.size() >= 5){
 							String er = data.get(3);
-							double value = StkUtils.percentigeGreatThan(er);
+							double value = ServiceUtils.percentigeGreatThan(er);
 							String content = JsonUtils.getJsonString4JavaPOJO(data);
 							params.clear();
 							params.add(content);
@@ -70,7 +71,7 @@ public class EarningsForecast {
 							Double erLow = null;
 							Double erHigh = null;
 							if(!"-".equals(er)){
-								List<String> ers = StkUtils.getMatchAllStrings(er, "-?\\d+(\\.\\d+)?%?");
+								List<String> ers = ServiceUtils.getMatchAllStrings(er, "-?\\d+(\\.\\d+)?%?");
 								if(ers.size() == 1){
 									erLow = Double.parseDouble(StringUtils.replace(ers.get(0),"%",""));
 									erHigh = erLow;
@@ -176,7 +177,7 @@ public class EarningsForecast {
 	}
 	
 	public static List<String> getEarningsForecastAsList(String code) throws Exception {
-		int year = StkUtils.YEAR;
+		int year = ServiceUtils.YEAR;
 		String sql = "select distinct ef.code code,"
 				+ "nvl((select a.forecast_net_profit from stk_earnings_forecast a where a.code = ef.code and a.forecast_year="+(year-1)+"),0) \"a_np\","
 				+ "nvl((select a.pe from stk_earnings_forecast a where a.code = ef.code and a.forecast_year="+(year-1)+"),0) \"a_pe\","
@@ -197,14 +198,14 @@ public class EarningsForecast {
 			if(m == null)return null;
 			Index index = new Index(conn, String.valueOf(m.get("code")));
 			List<String> l = new ArrayList<String>();
-			Double anp = StkUtils.numberFormat(Double.parseDouble(String.valueOf(m.get("a_np"))),2);
-			Double ape = StkUtils.numberFormat(Double.parseDouble(String.valueOf(m.get("a_pe"))),2);
-			Double bnp = StkUtils.numberFormat(Double.parseDouble(String.valueOf(m.get("b_np"))),2);
-			Double bpe = StkUtils.numberFormat(Double.parseDouble(String.valueOf(m.get("b_pe"))),2);
-			Double cnp = StkUtils.numberFormat(Double.parseDouble(String.valueOf(m.get("c_np"))),2);
-			Double cpe = StkUtils.numberFormat(Double.parseDouble(String.valueOf(m.get("c_pe"))),2);
-			Double dnp = StkUtils.numberFormat(Double.parseDouble(String.valueOf(m.get("d_np"))),2);
-			Double dpe = StkUtils.numberFormat(Double.parseDouble(String.valueOf(m.get("d_pe"))),2);
+			Double anp = ServiceUtils.numberFormat(Double.parseDouble(String.valueOf(m.get("a_np"))),2);
+			Double ape = ServiceUtils.numberFormat(Double.parseDouble(String.valueOf(m.get("a_pe"))),2);
+			Double bnp = ServiceUtils.numberFormat(Double.parseDouble(String.valueOf(m.get("b_np"))),2);
+			Double bpe = ServiceUtils.numberFormat(Double.parseDouble(String.valueOf(m.get("b_pe"))),2);
+			Double cnp = ServiceUtils.numberFormat(Double.parseDouble(String.valueOf(m.get("c_np"))),2);
+			Double cpe = ServiceUtils.numberFormat(Double.parseDouble(String.valueOf(m.get("c_pe"))),2);
+			Double dnp = ServiceUtils.numberFormat(Double.parseDouble(String.valueOf(m.get("d_np"))),2);
+			Double dpe = ServiceUtils.numberFormat(Double.parseDouble(String.valueOf(m.get("d_pe"))),2);
 			
 			/*//去年
 			l.add(String.valueOf(anp));
@@ -275,16 +276,16 @@ public class EarningsForecast {
 		l.add(String.valueOf(anp));
 		l.add(String.valueOf(ape));
 		//去年PEG(2年复合增长率)
-		double cagr = StkUtils.calcCAGR(anp, cnp, 2);
+		double cagr = ServiceUtils.calcCAGR(anp, cnp, 2);
 		if(cagr == 0){
-			l.add(StkConstant.MARK_HYPHEN);
+			l.add(CommonConstant.MARK_HYPHEN);
 		}else{
 			l.add(format(ape/cagr));
 		}
 		//去年PEG(3年复合增长率)
-		cagr = StkUtils.calcCAGR(anp, dnp, 3);
+		cagr = ServiceUtils.calcCAGR(anp, dnp, 3);
 		if(cagr == 0){
-			l.add(StkConstant.MARK_HYPHEN);
+			l.add(CommonConstant.MARK_HYPHEN);
 		}else{
 			l.add(format(ape/cagr));
 		}
@@ -293,14 +294,14 @@ public class EarningsForecast {
 		l.add(String.valueOf(bnp));
 		l.add(String.valueOf(bpe));
 		if(anp == 0){
-			l.add(StkConstant.MARK_HYPHEN);
-			l.add(StkConstant.MARK_HYPHEN);
+			l.add(CommonConstant.MARK_HYPHEN);
+			l.add(CommonConstant.MARK_HYPHEN);
 		}else{
 			l.add(format((bnp-anp)/anp*100)+"%");
 			//今年PEG(2年复合增长率)
-			cagr = StkUtils.calcCAGR(bnp, dnp, 2);
+			cagr = ServiceUtils.calcCAGR(bnp, dnp, 2);
 			if(cagr == 0){
-				l.add(StkConstant.MARK_HYPHEN);
+				l.add(CommonConstant.MARK_HYPHEN);
 			}else{
 				l.add(format(bpe/cagr));
 			}
@@ -309,7 +310,7 @@ public class EarningsForecast {
 		//明年
 		l.add(String.valueOf(cnp));
 		if(bnp == 0){
-			l.add(StkConstant.MARK_HYPHEN);
+			l.add(CommonConstant.MARK_HYPHEN);
 		}else{
 			l.add(format((cnp-bnp)/bnp*100)+"%");
 		}
@@ -317,14 +318,14 @@ public class EarningsForecast {
 		//后年
 		l.add(String.valueOf(dnp));
 		if(cnp == 0){
-			l.add(StkConstant.MARK_HYPHEN);
+			l.add(CommonConstant.MARK_HYPHEN);
 		}else{
 			l.add(format((dnp-cnp)/cnp*100)+"%");
 		}
 		
 		//明后年增速
 		if(cnp == 0 || bnp == 0){
-			l.add(StkConstant.MARK_HYPHEN);
+			l.add(CommonConstant.MARK_HYPHEN);
 		}else{
 			l.add(format(((cnp-bnp)/bnp*100 + (dnp-cnp)/cnp*100)/2)+"%");
 		}
@@ -340,14 +341,14 @@ public class EarningsForecast {
 			if(dict.getKey().equals("name"))continue;
 			cn.add(dict.getText());
 		}
-		return StkUtils.createHtmlTableOneLine(cn, list);
+		return ServiceUtils.createHtmlTableOneLine(cn, list);
 	}
 	
 	public static String format(Double d){
 		if(d.isInfinite()){
-			return StkConstant.MARK_HYPHEN;
+			return CommonConstant.MARK_HYPHEN;
 		}else{
-			return StkUtils.number2String(d,2);
+			return ServiceUtils.number2String(d,2);
 		}
 	}
 }

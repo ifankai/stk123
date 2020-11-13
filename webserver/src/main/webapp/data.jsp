@@ -4,9 +4,9 @@
 	StkContext sc = StkContext.getContext();
 	Industry industrySelect = (Industry)sc.get("index_select");
 	if(industrySelect!=null){
-		pageContext.setAttribute(StkConstant.PAGE_TITLE, industrySelect.getType().getName() + " - 数据指标");
+		pageContext.setAttribute(CommonConstant.PAGE_TITLE, industrySelect.getType().getName() + " - 数据指标");
 	}else{
-		pageContext.setAttribute(StkConstant.PAGE_TITLE, "数据指标");
+		pageContext.setAttribute(CommonConstant.PAGE_TITLE, "数据指标");
 	}
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">

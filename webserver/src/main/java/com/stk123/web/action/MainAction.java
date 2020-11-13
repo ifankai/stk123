@@ -10,9 +10,9 @@ import java.util.Map;
 import com.stk123.model.Index;
 import com.stk123.model.K;
 import com.stk123.model.User;
-import com.stk123.tool.util.JdbcUtils;
-import com.stk123.tool.util.JsonUtils;
-import com.stk123.StkConstant;
+import com.stk123.common.util.JdbcUtils;
+import com.stk123.common.util.JsonUtils;
+import com.stk123.common.CommonConstant;
 import com.stk123.web.context.StkContext;
 
 public class MainAction {
@@ -21,9 +21,9 @@ public class MainAction {
 		StkContext sc = StkContext.getContext();
 		User user = sc.getUser();
 		if(user == null){
-			return StkConstant.ACTION_404;
+			return CommonConstant.ACTION_404;
 		}
-		return StkConstant.ACTION_SUCC;
+		return CommonConstant.ACTION_SUCC;
 	}
 	
 	public void getDailyReportForUS() throws Exception {
@@ -49,7 +49,7 @@ public class MainAction {
 				}
 			}
 		}
-		String json = JsonUtils.getJsonString4JavaPOJO(pes, StkConstant.DATE_FORMAT_YYYY_MM_DD);
+		String json = JsonUtils.getJsonString4JavaPOJO(pes, CommonConstant.DATE_FORMAT_YYYY_MM_DD);
 		sc.setResponse(json);
 	}
 	
@@ -132,7 +132,7 @@ public class MainAction {
 			newMap.put("DATE", StkUtils.sf_ymd2.format(StkUtils.addDay(StkUtils.now, i+1)));
 			pes.add(newMap);
 		}*/
-		String json = JsonUtils.getJsonString4JavaPOJO(pes, StkConstant.DATE_FORMAT_YYYY_MM_DD);
+		String json = JsonUtils.getJsonString4JavaPOJO(pes, CommonConstant.DATE_FORMAT_YYYY_MM_DD);
 		//System.out.println(json);
 		sc.setResponse(json);
 	}
@@ -143,7 +143,7 @@ public class MainAction {
 	public void getStkKline() throws Exception{
 		StkContext sc = StkContext.getContext();
 		Connection conn = sc.getConnection();
-		String code = sc.getRequest().getParameter(StkConstant.PARAMETER_S);
+		String code = sc.getRequest().getParameter(CommonConstant.PARAMETER_S);
 		Index index = new Index(conn, code);
 		List<K> ks = index.getKs();
 		List<Map> result = new ArrayList<Map>();
@@ -154,7 +154,7 @@ public class MainAction {
 			m.put(VALUE, k.getClose());
 			result.add(m);
 		}
-		String json = JsonUtils.getJsonString4JavaPOJO(result,StkConstant.DATE_FORMAT_YYYY_MM_DD);
+		String json = JsonUtils.getJsonString4JavaPOJO(result,CommonConstant.DATE_FORMAT_YYYY_MM_DD);
 		//System.out.println(json);
 		sc.setResponse(json);
 		

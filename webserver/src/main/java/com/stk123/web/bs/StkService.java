@@ -6,19 +6,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.stk123.bo.StkDictionary;
-import com.stk123.bo.StkIndustryType;
-import com.stk123.bo.StkMonitor;
-import com.stk123.bo.cust.StkFnDataCust;
+import com.stk123.model.bo.StkDictionary;
+import com.stk123.model.bo.StkIndustryType;
+import com.stk123.model.bo.StkMonitor;
+import com.stk123.model.bo.cust.StkFnDataCust;
 import com.stk123.model.Index;
 import com.stk123.model.K;
 import com.stk123.task.EarningsForecast;
-import com.stk123.tool.util.StkUtils;
-import com.stk123.tool.db.connection.Pool;
-import com.stk123.tool.util.CacheUtils;
-import com.stk123.tool.util.JdbcUtils;
-import com.stk123.tool.util.JsonUtils;
-import com.stk123.StkConstant;
+import com.stk123.service.ServiceUtils;
+import com.stk123.common.db.connection.Pool;
+import com.stk123.common.util.CacheUtils;
+import com.stk123.common.util.JdbcUtils;
+import com.stk123.common.util.JsonUtils;
+import com.stk123.common.CommonConstant;
 import com.stk123.web.StkDict;
 
 public class StkService {
@@ -71,22 +71,22 @@ public class StkService {
 				map.put(StkConstant.JSON_ROE, index.getROE());
 				map.put(StkConstant.JSON_LAST_QUARTER_NET_PROFIT_MARGIN, StkUtils.formatNumber(index.getNetProfitGrowthLastestQuarter(),2));
 				map.put(StkConstant.JSON_GROSS_MARGIN, index.getFnDataLastestByType(index.FN_GROSS_MARGIN).getFnValue());*/
-				map.put(StkConstant.JSON_NAME, StkUtils.wrapCodeAndNameAsHtml(index.getCode(), index.getName()));
-				map.put(StkConstant.JSON_PERCENTAGE_UPDOWN, StkUtils.numberFormat2Digits(index.getK().getKline().getPercentage()));
-				map.put(StkConstant.JSON_MARKET_VALUE, StkUtils.number2String(index.getTotalMarketValue(),2));
-				String industry = StkConstant.NA;
+				map.put(CommonConstant.JSON_NAME, ServiceUtils.wrapCodeAndNameAsHtml(index.getCode(), index.getName()));
+				map.put(CommonConstant.JSON_PERCENTAGE_UPDOWN, ServiceUtils.numberFormat2Digits(index.getK().getKline().getPercentage()));
+				map.put(CommonConstant.JSON_MARKET_VALUE, ServiceUtils.number2String(index.getTotalMarketValue(),2));
+				String industry = CommonConstant.NA;
 				if(index.getIndustryDefault() != null){
 					StkIndustryType indType = index.getIndustryDefault().getType();
-					industry = StkUtils.wrapIndustryAsHtml(indType.getId(), indType.getName());
+					industry = ServiceUtils.wrapIndustryAsHtml(indType.getId(), indType.getName());
 				}
-				map.put(StkConstant.JSON_INDUSTRY, industry);
-				map.put(StkConstant.JSON_PE_TTM, index.getK().getKline().getPeTtm());
-				map.put(StkConstant.JSON_PB, StkUtils.number2String(index.getPB(),2));
-				map.put(StkConstant.JSON_PS, index.getPSAsString());
-				map.put(StkConstant.JSON_ROE, StkUtils.numberFormat2Digits(index.getROE()));
-				map.put(StkConstant.JSON_LAST_QUARTER_NET_PROFIT_MARGIN, index.getNetProfitGrowthLastestQuarterAsString());
+				map.put(CommonConstant.JSON_INDUSTRY, industry);
+				map.put(CommonConstant.JSON_PE_TTM, index.getK().getKline().getPeTtm());
+				map.put(CommonConstant.JSON_PB, ServiceUtils.number2String(index.getPB(),2));
+				map.put(CommonConstant.JSON_PS, index.getPSAsString());
+				map.put(CommonConstant.JSON_ROE, ServiceUtils.numberFormat2Digits(index.getROE()));
+				map.put(CommonConstant.JSON_LAST_QUARTER_NET_PROFIT_MARGIN, index.getNetProfitGrowthLastestQuarterAsString());
 				StkFnDataCust fn = index.getFnDataLastestByType(index.FN_GROSS_MARGIN);
-				map.put(StkConstant.JSON_GROSS_MARGIN, fn==null?"--":StkUtils.numberFormat2Digits(fn.getFnValue()));
+				map.put(CommonConstant.JSON_GROSS_MARGIN, fn==null?"--":ServiceUtils.numberFormat2Digits(fn.getFnValue()));
 				list.add(map);
 			}
 			return list;
@@ -104,13 +104,13 @@ public class StkService {
 			for(StkMonitor care : ms){
 				Index index = new Index(conn, care.getCode());
 				Map map = new HashMap();
-				map.put(StkConstant.JSON_NAME, StkUtils.wrapCodeAndNameAsHtml(index.getCode(), index.getName()));
+				map.put(CommonConstant.JSON_NAME, ServiceUtils.wrapCodeAndNameAsHtml(index.getCode(), index.getName()));
 				//map.put(StkConstant.JSON_MARKET_VALUE, StkUtils.formatNumber(index.getTotalMarketValue(),2));
 				map.put("type", "<a target='_blank' href='"+care.getResult1()+"'>"+care.getParam1()+"</a>");
-				map.put("date", StkUtils.formatDate(care.getParam3(),StkUtils.sf_ymd2, StkUtils.sf_ymd) );
+				map.put("date", ServiceUtils.formatDate(care.getParam3(),ServiceUtils.sf_ymd2, ServiceUtils.sf_ymd) );
 				map.put("price", care.getParam2());
 				//map.put("close", index.getK().getClose());
-				map.put("refdate", StkUtils.formatDate(care.getParam4(),StkUtils.sf_ymd2, StkUtils.sf_ymd));
+				map.put("refdate", ServiceUtils.formatDate(care.getParam4(),ServiceUtils.sf_ymd2, ServiceUtils.sf_ymd));
 				map.put("rate", care.getParam5());
 				list.add(map);
 			}
@@ -124,32 +124,32 @@ public class StkService {
 		List<List> list = new ArrayList<List>();
 		for(Index index : codes){
 			List row = new ArrayList();
-			row.add(StkUtils.wrapCodeAsHtml(index.getCode()));
+			row.add(ServiceUtils.wrapCodeAsHtml(index.getCode()));
 			row.add(index.getName());
 			K k = index.getK();
 			if(k != null && k.getKline() != null){
-				row.add(k.getKline().getPercentage()==null?StkConstant.MARK_DOUBLE_HYPHEN:StkUtils.numberFormat2Digits(k.getKline().getPercentage()));
+				row.add(k.getKline().getPercentage()==null?CommonConstant.MARK_DOUBLE_HYPHEN:ServiceUtils.numberFormat2Digits(k.getKline().getPercentage()));
 			}else{
-				row.add(StkConstant.MARK_DOUBLE_HYPHEN);
+				row.add(CommonConstant.MARK_DOUBLE_HYPHEN);
 			}
-			row.add(StkUtils.number2String(index.getTotalMarketValue(),2));
-			String industry = StkConstant.NA;
+			row.add(ServiceUtils.number2String(index.getTotalMarketValue(),2));
+			String industry = CommonConstant.NA;
 			if(index.getIndustryDefault() != null){
 				StkIndustryType indType = index.getIndustryDefault().getType();
-				industry = StkUtils.wrapIndustryAsHtml(indType.getId(), indType.getName());
+				industry = ServiceUtils.wrapIndustryAsHtml(indType.getId(), indType.getName());
 			}
 			row.add(industry);
 			if(k != null && k.getKline() != null){
 				row.add(k.getKline().getPeTtm());
 			}else{
-				row.add(StkConstant.MARK_DOUBLE_HYPHEN);
+				row.add(CommonConstant.MARK_DOUBLE_HYPHEN);
 			}
-			row.add(StkUtils.number2String(index.getPB(),2));
+			row.add(ServiceUtils.number2String(index.getPB(),2));
 			row.add(index.getPSAsString());
-			row.add(StkUtils.numberFormat2Digits(index.getROE()));
+			row.add(ServiceUtils.numberFormat2Digits(index.getROE()));
 			row.add(index.getNetProfitGrowthLastestQuarterAsString());
 			StkFnDataCust fn = index.getFnDataLastestByType(index.FN_GROSS_MARGIN);
-			row.add(fn==null?StkConstant.MARK_DOUBLE_HYPHEN:StkUtils.numberFormat2Digits(fn.getFnValue()));
+			row.add(fn==null?CommonConstant.MARK_DOUBLE_HYPHEN:ServiceUtils.numberFormat2Digits(fn.getFnValue()));
 			list.add(row);
 		}
 		return list;
@@ -162,34 +162,34 @@ public class StkService {
 		List<List> list = new ArrayList<List>();
 		for(Index index : codes){
 			List row = new ArrayList();
-			row.add(StkUtils.wrapCodeAndNameAsHtml(index.getCode(), index.getName()));
+			row.add(ServiceUtils.wrapCodeAndNameAsHtml(index.getCode(), index.getName()));
 			K k = index.getK();
 			if(from == 1){
 				if(k != null && k.getKline() != null){
-					row.add(k.getKline().getPercentage()==null?StkConstant.MARK_DOUBLE_HYPHEN:StkUtils.numberFormat2Digits(k.getKline().getPercentage()));
+					row.add(k.getKline().getPercentage()==null?CommonConstant.MARK_DOUBLE_HYPHEN:ServiceUtils.numberFormat2Digits(k.getKline().getPercentage()));
 				}else{
-					row.add(StkConstant.MARK_DOUBLE_HYPHEN);
+					row.add(CommonConstant.MARK_DOUBLE_HYPHEN);
 				}
 			}
-			row.add(StkUtils.number2String(index.getTotalMarketValue(),2));
-			String industry = StkConstant.NA;
+			row.add(ServiceUtils.number2String(index.getTotalMarketValue(),2));
+			String industry = CommonConstant.NA;
 			if(index.getIndustryDefault() != null){
 				StkIndustryType indType = index.getIndustryDefault().getType();
-				industry = StkUtils.wrapIndustryAsHtml(indType.getId(), indType.getName());
+				industry = ServiceUtils.wrapIndustryAsHtml(indType.getId(), indType.getName());
 			}
 			row.add(industry);
 			if(k != null && k.getKline() != null){
 				row.add(k.getKline().getPeTtm());
 			}else{
-				row.add(StkConstant.MARK_DOUBLE_HYPHEN);
+				row.add(CommonConstant.MARK_DOUBLE_HYPHEN);
 			}
-			row.add(StkUtils.number2String(index.getPB(),2));
+			row.add(ServiceUtils.number2String(index.getPB(),2));
 			row.add(index.getPSAsString());
-			row.add(StkUtils.numberFormat2Digits(index.getROE()));
+			row.add(ServiceUtils.numberFormat2Digits(index.getROE()));
 			row.add(index.getOperatingIncomeGrowthRateAsString());
 			row.add(index.getNetProfitGrowthLastestQuarterAsString());
 			StkFnDataCust fn = index.getFnDataLastestByType(index.FN_GROSS_MARGIN);
-			row.add(fn==null?StkConstant.MARK_DOUBLE_HYPHEN:fn.getFnValue());
+			row.add(fn==null?CommonConstant.MARK_DOUBLE_HYPHEN:fn.getFnValue());
 			if(from == 2){
 				List<String> ef = EarningsForecast.getEarningsForecastAsList(index.getCode());
 				if(ef != null){

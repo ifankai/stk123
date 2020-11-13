@@ -7,13 +7,13 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.stk123.bo.StkKeyword;
+import com.stk123.model.bo.StkKeyword;
 import com.stk123.model.Index;
 import com.stk123.model.Keyword;
-import com.stk123.tool.ik.StkSearch;
-import com.stk123.tool.util.JdbcUtils;
-import com.stk123.tool.util.JsonUtils;
-import com.stk123.StkConstant;
+import com.stk123.web.ik.StkSearch;
+import com.stk123.common.util.JdbcUtils;
+import com.stk123.common.util.JsonUtils;
+import com.stk123.common.CommonConstant;
 import com.stk123.web.context.StkContext;
 
 
@@ -32,9 +32,9 @@ public class KeywordAction {
 	public String addOrListToStk(StkContext sc) throws Exception{
 		Connection conn = sc.getConnection();
 		HttpServletRequest request = sc.getRequest();
-		String code = request.getParameter(StkConstant.PARAMETER_KWCODE);
-		String type = request.getParameter(StkConstant.PARAMETER_KWTYPE);
-		String kw = request.getParameter(StkConstant.PARAMETER_K);
+		String code = request.getParameter(CommonConstant.PARAMETER_KWCODE);
+		String type = request.getParameter(CommonConstant.PARAMETER_KWTYPE);
+		String kw = request.getParameter(CommonConstant.PARAMETER_K);
 		List params = new ArrayList();
 		if(kw != null && kw.length() > 0){
 			Keyword keyword = new Keyword(conn,kw); 
@@ -49,7 +49,7 @@ public class KeywordAction {
 			String json = JsonUtils.getJsonString4JavaPOJO(list);
 			return json;
 		}else{
-			return StkConstant.NUMBER_ONE;
+			return CommonConstant.NUMBER_ONE;
 		}
 		
 	}
@@ -58,9 +58,9 @@ public class KeywordAction {
 		StkContext sc = StkContext.getContext();
 		Connection conn = sc.getConnection();
 		HttpServletRequest request = sc.getRequest();
-		String reqKw = request.getParameter(StkConstant.PARAMETER_K).trim();
+		String reqKw = request.getParameter(CommonConstant.PARAMETER_K).trim();
 		if(reqKw != null && reqKw.length() > 0){
-			String[] kws = reqKw.split(StkConstant.MARK_COMMA);
+			String[] kws = reqKw.split(CommonConstant.MARK_COMMA);
 			for(String kw : kws){
 				kw = kw.trim();
 				if(kw != null && kw.length() > 0){
@@ -75,14 +75,14 @@ public class KeywordAction {
 			}
 			StkSearch.clear();
 		}
-		sc.setResponse(StkConstant.NUMBER_ONE);
+		sc.setResponse(CommonConstant.NUMBER_ONE);
 	}
 	
 	public void listMainBusiness() throws Exception{
 		StkContext sc = StkContext.getContext();
 		Connection conn = sc.getConnection();
 		HttpServletRequest request = sc.getRequest();
-		String code = request.getParameter(StkConstant.PARAMETER_CODE);
+		String code = request.getParameter(CommonConstant.PARAMETER_CODE);
 		
 		Index index = new Index(conn, code);
 		List<Map> list = index.getMainBusiness();
@@ -94,7 +94,7 @@ public class KeywordAction {
 		StkContext sc = StkContext.getContext();
 		Connection conn = sc.getConnection();
 		HttpServletRequest request = sc.getRequest();
-		String kid = request.getParameter(StkConstant.PARAMETER_ID);
+		String kid = request.getParameter(CommonConstant.PARAMETER_ID);
 		Keyword kw  = new Keyword(conn);
 		int result = kw.delete(kid);
 		sc.setResponse(result);

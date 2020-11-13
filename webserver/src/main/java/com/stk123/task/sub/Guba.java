@@ -7,15 +7,15 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.htmlparser.Node;
 
-import com.stk123.bo.Stk;
-import com.stk123.tool.util.StkUtils;
-import com.stk123.tool.db.TableTools;
-import com.stk123.tool.db.util.DBUtil;
-import com.stk123.tool.util.ConfigUtils;
-import com.stk123.tool.util.ExceptionUtils;
-import com.stk123.tool.util.HtmlUtils;
-import com.stk123.tool.util.HttpUtils;
-import com.stk123.tool.util.JdbcUtils;
+import com.stk123.model.bo.Stk;
+import com.stk123.service.ServiceUtils;
+import com.stk123.common.db.TableTools;
+import com.stk123.common.db.util.DBUtil;
+import com.stk123.common.util.ConfigUtils;
+import com.stk123.service.ExceptionUtils;
+import com.stk123.common.util.HtmlUtils;
+import com.stk123.service.HttpUtils;
+import com.stk123.common.util.JdbcUtils;
 
 
 public class Guba {
@@ -29,7 +29,7 @@ public class Guba {
 			for(Stk stk : stks){
 				try{
 					System.out.println(stk.getCode());
-					task(conn, stk.getCode(), StkUtils.getToday());
+					task(conn, stk.getCode(), ServiceUtils.getToday());
 					//break;
 				}catch(Exception e){
 					e.printStackTrace();

@@ -1,7 +1,7 @@
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@page import="com.stk123.web.WebUtils" %>
 <%@page import="com.stk123.model.User" %>
-<%@ page import="com.stk123.tool.util.StkUtils" %>
+<%@ page import="com.stk123.service.ServiceUtils" %>
 <%
   User _user = WebUtils.getUser(session);
 %>
@@ -66,7 +66,7 @@
 			  <li><a target="_blank" href="http://data.eastmoney.com/gpzy/pledgeRatio.aspx"><span class="icon-book"></span> 东方财富-上市公司质押比例</a></li>
 			  <li><a target="_blank" href="http://www.cninfo.com.cn/disclosure/prbookinfo.jsp?desc=0&&order=2&&&market=szmb&&stockCode=&&sjplrq="><span class="icon-book"></span> 定期报告预约披露时间表</a></li>
 			  
-			  <li><a target="_blank" href="/dailyreport/<%=StkUtils.getToday() %>/index.html"><span class="icon-book"></span> 策略模型</a></li>
+			  <li><a target="_blank" href="/dailyreport/<%=ServiceUtils.getToday() %>/index.html"><span class="icon-book"></span> 策略模型</a></li>
 			  <li><a target="_blank" href="https://www.jisilu.cn/data/indicator/"><span class="icon-book"></span> 市场的估值</a></li>
               <li><a href="javascript:logout()"><span class="icon-signout"></span> 退出</a></li>
             </ul>

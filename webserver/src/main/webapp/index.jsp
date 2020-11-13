@@ -1,9 +1,10 @@
+<%@ page import="com.stk123.service.ServiceUtils" %>
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" errorPage="/common/error.jsp"%>
 <%@include file="/common/import.jsp" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <%
-  pageContext.setAttribute(StkConstant.PAGE_TITLE, "小智慧365_我的投资地盘"); 
+  pageContext.setAttribute(CommonConstant.PAGE_TITLE, "小智慧365_我的投资地盘");
 %>
 <%@include file="/common/header.jsp" %>
 <%@include file="/common/js_datatables.jsp" %>
@@ -40,7 +41,7 @@ color: #878d96;
   </div>
 <%
 StkContext sc = StkContext.getContext();
-if(sc != null && sc.get(StkConstant.ATTRIBUTE_LOGIN_ERROR) != null){ 
+if(sc != null && sc.get(CommonConstant.ATTRIBUTE_LOGIN_ERROR) != null){
 %>  
   <div class="alert alert-danger login-error" >用户名密码错误，请重新输入</div>
 <%} %>  
@@ -306,8 +307,8 @@ $(document).ready(function(){
     <div class="controls" style="float:right;padding-top:40px">
 		<div class="input-append">
 		    包括减仓 <input type="checkbox" id="org-decrease-included" />
-			从 <input class="datepicker" id="org-from" value="<%=StkUtils.getDate(-400, StkUtils.sf_ymd14) %>" type="text" style="width:70px"><span class="add-on"><i class="icon-calendar"></i></span>
-			到 <input class="datepicker" id="org-to" value="<%=StkUtils.getToday(StkUtils.sf_ymd14) %>" type="text" style="width:70px"><span class="add-on"><i class="icon-calendar"></i></span>
+			从 <input class="datepicker" id="org-from" value="<%=ServiceUtils.getDate(-400, ServiceUtils.sf_ymd14) %>" type="text" style="width:70px"><span class="add-on"><i class="icon-calendar"></i></span>
+			到 <input class="datepicker" id="org-to" value="<%=ServiceUtils.getToday(ServiceUtils.sf_ymd14) %>" type="text" style="width:70px"><span class="add-on"><i class="icon-calendar"></i></span>
 			<input type="text" id="org-search" style="width: 80px" placeholder="基金关键字"/>
 			<button class="btn" onclick="searchFundByKeyword();">查询</button>
 		</div>
@@ -576,8 +577,8 @@ $(document).ready(function() {
     <div class="controls" style="float:right;">
 		<div class="input-append">
 		    汇总 <input type="checkbox" value=""/>
-			从 <input class="datepicker" id="invest_from" value="<%=StkUtils.getDate(-30, StkUtils.sf_ymd14) %>" type="text" style="width:70px"><span class="add-on"><i class="icon-calendar"></i></span>
-			到 <input class="datepicker" id="invest_to" value="<%=StkUtils.getToday(StkUtils.sf_ymd14) %>" type="text" style="width:70px"><span class="add-on"><i class="icon-calendar"></i></span>
+			从 <input class="datepicker" id="invest_from" value="<%=ServiceUtils.getDate(-30, ServiceUtils.sf_ymd14) %>" type="text" style="width:70px"><span class="add-on"><i class="icon-calendar"></i></span>
+			到 <input class="datepicker" id="invest_to" value="<%=ServiceUtils.getToday(ServiceUtils.sf_ymd14) %>" type="text" style="width:70px"><span class="add-on"><i class="icon-calendar"></i></span>
 			<button class="btn" onclick="listInvest('search',1);">搜索</button>
 			<button class="btn" onclick="listInvest('index',1);">刷新</button>
 			<input type="text" id="invest_search" style="width: 80px" placeholder="查询关键字"/>
@@ -621,8 +622,8 @@ $(function() {
     <div class="controls" style="float:right;padding-top:10px">
 		<div class="input-append">
 		    仅查询标题 <input type="checkbox" id="text_content_included" checked/>
-			从 <input class="datepicker" id="text_from" value="<%=StkUtils.getDate(-365, StkUtils.sf_ymd14) %>" type="text" style="width:70px"><span class="add-on"><i class="icon-calendar"></i></span>
-			到 <input class="datepicker" id="text_to" value="<%=StkUtils.getToday(StkUtils.sf_ymd14) %>" type="text" style="width:70px"><span class="add-on"><i class="icon-calendar"></i></span>
+			从 <input class="datepicker" id="text_from" value="<%=ServiceUtils.getDate(-365, ServiceUtils.sf_ymd14) %>" type="text" style="width:70px"><span class="add-on"><i class="icon-calendar"></i></span>
+			到 <input class="datepicker" id="text_to" value="<%=ServiceUtils.getToday(ServiceUtils.sf_ymd14) %>" type="text" style="width:70px"><span class="add-on"><i class="icon-calendar"></i></span>
 			<input type="text" id="text_search" style="width: 80px" value="困境反转"/>
 			<button class="btn" onclick="searchTextByKeyword();">查询关键字</button>
 		</div>
@@ -717,7 +718,7 @@ $(function() {
             <% 
               columns = StkService.getColumnNames(StkDict.STKS_COLUMN_NAMES);
               for(StkDictionary column : columns){
-            	  if(column.getRemark().equals(StkConstant.NUMBER_ONE)){
+            	  if(column.getRemark().equals(CommonConstant.NUMBER_ONE)){
             %>
               <th><%=column.getText() %></th>
             <%
@@ -777,7 +778,7 @@ $(document).ready(function() {
                   <%
                   for(int i=0; i<columns.size(); i++){
             StkDictionary column = (StkDictionary)columns.get(i);
-            if(StkConstant.NUMBER_ZERO.equals(column.getRemark())){
+            if(CommonConstant.NUMBER_ZERO.equals(column.getRemark())){
               if(i==columns.size()-1){
                 out.println("{\"targets\":["+i+"], \"visible\":false}");
               }else{

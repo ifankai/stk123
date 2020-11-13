@@ -1,6 +1,6 @@
-<%@page import="com.stk123.tool.util.JdbcUtils"%>
+<%@page import="com.stk123.common.util.JdbcUtils"%>
 <%@ page import="java.util.List" %>
-<%@ page import="com.stk123.tool.util.StkUtils" %>
+<%@ page import="com.stk123.service.ServiceUtils" %>
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@include file="/common/import.jsp" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -8,8 +8,8 @@
 <%
 	StkContext sc = StkContext.getContext();
 	Index index = sc.getIndex();
-  	String stkNameCode = index.getName()+StkConstant.MARK_BLANK_SPACE+StkConstant.MARK_BRACKET_LEFT+index.getCode()+StkConstant.MARK_BRACKET_RIGHT;
-  	pageContext.setAttribute(StkConstant.PAGE_TITLE, stkNameCode); 
+  	String stkNameCode = index.getName()+CommonConstant.MARK_BLANK_SPACE+CommonConstant.MARK_BRACKET_LEFT+index.getCode()+CommonConstant.MARK_BRACKET_RIGHT;
+  	pageContext.setAttribute(CommonConstant.PAGE_TITLE, stkNameCode);
 %>
 <%@include file="/common/header.jsp" %>
 <%@include file="/common/js_datatables.jsp" %>
@@ -43,7 +43,7 @@ color:#CC0033;
 <div class="container" role="main">
 <div class="content">
   <div class="page-header">
-    <h3><font color="red"><%=index.getName() %></font><%=StkConstant.MARK_BLANK_SPACE+StkConstant.MARK_BRACKET_LEFT+index.getCode()+StkConstant.MARK_BRACKET_RIGHT%></h3>
+    <h3><font color="red"><%=index.getName() %></font><%=CommonConstant.MARK_BLANK_SPACE+CommonConstant.MARK_BRACKET_LEFT+index.getCode()+CommonConstant.MARK_BRACKET_RIGHT%></h3>
   </div>
   <div class="page-container">
     <div class="row stkbaseinfo">
@@ -51,12 +51,12 @@ color:#CC0033;
         <blockquote>
           <table><tr>
           <td width="42px"><span>收盘：</span></td><td><%=index.getK().getClose() %></td>
-          <td width="60px"><span>总股本：</span></td><td><%=index.getStk().getTotalCapital()!=null?StkUtils.number2String(index.getStk().getTotalCapital()/10000,2):"" %>亿</td>
-          <td width="60px"><span>总市值：</span></td><td><%=StkUtils.number2String(index.getTotalMarketValue(),2)%>亿</td>
-          <td width="80px"><span>PE<sup>TTM</sup>/PE：</span></td><td><%=index.getK().getKline().getPeTtm() %>/<%=StkUtils.number2String(index.getPE(), 2) %></td>
-          <td width="42px"><span>PB<sup>TTM</sup>：</span></td><td><%=StkUtils.number2String(index.getPB(),2) %></td>
+          <td width="60px"><span>总股本：</span></td><td><%=index.getStk().getTotalCapital()!=null?ServiceUtils.number2String(index.getStk().getTotalCapital()/10000,2):"" %>亿</td>
+          <td width="60px"><span>总市值：</span></td><td><%=ServiceUtils.number2String(index.getTotalMarketValue(),2)%>亿</td>
+          <td width="80px"><span>PE<sup>TTM</sup>/PE：</span></td><td><%=index.getK().getKline().getPeTtm() %>/<%=ServiceUtils.number2String(index.getPE(), 2) %></td>
+          <td width="42px"><span>PB<sup>TTM</sup>：</span></td><td><%=ServiceUtils.number2String(index.getPB(),2) %></td>
           <td width="42px"><span>PS<sup>TTM</sup>：</span></td><td><%=index.getPSAsString() %></td>
-          <td width="40px"><span>PR：</span></td><td><%=StkUtils.number2String(index.getPR(),2) %></td>
+          <td width="40px"><span>PR：</span></td><td><%=ServiceUtils.number2String(index.getPR(),2) %></td>
           <td width="42px"><span>地域：</span></td><td><%=index.getStk().getAddress() %></td>
           </tr></table>
         </blockquote>
@@ -356,19 +356,19 @@ if(index.getMarket()==1){
             <%
 			  for(List<StkFnDataCust> fnData : fnDatas){
 				  
-				StkFnDataCust tmpFnData = (StkFnDataCust)StkUtils.getFirstNotNull(fnData);
+				StkFnDataCust tmpFnData = (StkFnDataCust)ServiceUtils.getFirstNotNull(fnData);
 				String style = "";
 				if(tmpFnData != null && tmpFnData.getNumber() != 4) style = " style='color:#FF6666'";
 			%>
 				<tr<%=style %>>
-				  <td><%=tmpFnData.getNumber()==4?StkUtils.formatDate(tmpFnData.getFnDate(),StkUtils.sf_ymd2,StkUtils.sf_yyyy_MM):("(Q"+tmpFnData.getNumber()+")") %></td>
+				  <td><%=tmpFnData.getNumber()==4?ServiceUtils.formatDate(tmpFnData.getFnDate(),ServiceUtils.sf_ymd2,ServiceUtils.sf_yyyy_MM):("(Q"+tmpFnData.getNumber()+")") %></td>
 				<%
 				  int j = 0;
 				  for(StkFnDataCust fn : fnData){
 					  if(tabs.contains(j++)){
 						  out.print("<td>"+(fn==null?"--":fn.getFnValueToString())+"</td>");
 						  if(fn!=null && fn.getStkFnType()!=null && fn.getStkFnType().getColspan() != null){
-							  out.print("<td>"+(StkUtils.numberFormat2Digits(fn.getFnDateByOneQuarter()))+"</td>");
+							  out.print("<td>"+(ServiceUtils.numberFormat2Digits(fn.getFnDateByOneQuarter()))+"</td>");
 						  }
 					  }
 				  } 
@@ -397,12 +397,12 @@ if(index.getMarket()==1){
           <tbody>
             <%
 			  for(List<StkFnDataCust> fnData : fnDatas){ 
-				StkFnDataCust tmpFnData = (StkFnDataCust)StkUtils.getFirstNotNull(fnData);
+				StkFnDataCust tmpFnData = (StkFnDataCust)ServiceUtils.getFirstNotNull(fnData);
 				String style = "";
 				if(tmpFnData != null && tmpFnData.getNumber() != 4) style = " style='color:#FF6666'";
 			%>
 				<tr<%=style %>>
-				  <td><%=tmpFnData.getNumber()==4?StkUtils.formatDate(tmpFnData.getFnDate(),StkUtils.sf_ymd2,StkUtils.sf_yyyy_MM):("(Q"+tmpFnData.getNumber()+")") %></td>
+				  <td><%=tmpFnData.getNumber()==4?ServiceUtils.formatDate(tmpFnData.getFnDate(),ServiceUtils.sf_ymd2,ServiceUtils.sf_yyyy_MM):("(Q"+tmpFnData.getNumber()+")") %></td>
 				<%
 				  int j = 0;
 				  for(StkFnDataCust fn : fnData){
@@ -430,11 +430,11 @@ if(index.getMarket()==1){
   3.查看每股公积金是否>=3元(风生水起)。
   4.盈利预测：<%=EarningsForecast.getEarningsForecast(index.getCode())  %>  
   5.业绩拐点先行指标：经营活动现金流量净额 同比增长：<%
-    StkFnDataCust fn = index.getFnDataLastestByType(StkConstant.FN_TYPE_CN_JYHDXJLLJE);
+    StkFnDataCust fn = index.getFnDataLastestByType(CommonConstant.FN_TYPE_CN_JYHDXJLLJE);
     if(fn != null){
     	Double rate = fn.getRateOfYear(false);
     	if(rate != null){
-  			double d = StkUtils.numberFormat(rate,2);
+  			double d = ServiceUtils.numberFormat(rate,2);
 			out.print(d >= 100?"<span style='color:red'>"+d+"%</span>":d+"%");
     	}
     }
@@ -543,7 +543,7 @@ if(index.getMarket()==1){
     <h3 style="line-height: 59px;"><span class="icon-tasks"></span> 
     	<a target="_blank" href="http://stockpage.10jqka.com.cn/<%=index.getCode() %>/holder/">十大流通股东</a>
     </h3>
-    <%if(index.getMarket() == 3){%> <a target="_blank" href="https://di.hkex.com.hk/di/NSSrchCorpList.aspx?sa1=cl&scsd=<%=StkUtils.formatDate(StkUtils.addDay(new java.util.Date(),-365), StkUtils.sf_ymd11)%>&sced=<%=StkUtils.formatDate(new java.util.Date(), StkUtils.sf_ymd11)%>&sc=<%=index.getCode()%>&src=MAIN&lang=ZH">港股股权持仓</a> (打开后点击：大股東完整名單) <%}%>
+    <%if(index.getMarket() == 3){%> <a target="_blank" href="https://di.hkex.com.hk/di/NSSrchCorpList.aspx?sa1=cl&scsd=<%=ServiceUtils.formatDate(ServiceUtils.addDay(new java.util.Date(),-365), ServiceUtils.sf_ymd11)%>&sced=<%=ServiceUtils.formatDate(new java.util.Date(), ServiceUtils.sf_ymd11)%>&sc=<%=index.getCode()%>&src=MAIN&lang=ZH">港股股权持仓</a> (打开后点击：大股東完整名單) <%}%>
     <div style="position: absolute;left:175px;top:9px;" >
     <ul class="nav nav-tabs" role="tablist">
 <%
@@ -648,7 +648,7 @@ $(function() {
   1.是否有股权激励：<%
   StkImportInfo info = JdbcUtils.load(sc.getConnection(), "select * from stk_import_info where type=5 and code='"+index.getCode()+"' order by id desc", StkImportInfo.class);
   if(info != null){
-	out.print("<span style='color:red'>"+info.getInfo()+" ["+StkUtils.formatDate(info.getInsertTime())+"]"+"</span>");	  
+	out.print("<span style='color:red'>"+info.getInfo()+" ["+ServiceUtils.formatDate(info.getInsertTime())+"]"+"</span>");
   }
   %> - <a target="_blank" href='http://www.iwencai.com/search?typed=0&preParams=&ts=1&f=1&qs=result_channel&selfsectsn=&querytype=&searchfilter=&tid=info&w=<%=index.getName()%>%20股权激励'>问财搜索</a> <%=WebUtils.getBaiduNewsSearch("baidu_2","baidu_160",stkName+" 股权激励","百度搜索",true,20) %> 
   2.高管是否增持，公司是否有回购: <%=WebUtils.getBaiduNewsSearch("baidu_2","baidu_140",stkName+" 回购 | "+stkName+" 增持","搜索回购/增持",true) %>
@@ -662,18 +662,18 @@ $(function() {
   5.订单金额占主营收入：<%
   info = JdbcUtils.load(sc.getConnection(), "select * from stk_import_info where type=1 and code="+index.getCode()+" order by id desc", StkImportInfo.class);
   if(info != null){
-	out.print("<span style='color:red'>"+info.getInfo()+" ["+StkUtils.formatDate(info.getInsertTime())+"]"+"</span>");	  
+	out.print("<span style='color:red'>"+info.getInfo()+" ["+ServiceUtils.formatDate(info.getInsertTime())+"]"+"</span>");
   }
   %>
   6.募集资金：<%
   info = JdbcUtils.load(sc.getConnection(), "select * from stk_import_info where type=21 and code="+index.getCode()+" order by id desc", StkImportInfo.class);
   if(info != null){
-	out.print("<span style='color:red'>"+info.getInfo()+" ["+StkUtils.formatDate(info.getInsertTime())+"]"+"</span>");	  
+	out.print("<span style='color:red'>"+info.getInfo()+" ["+ServiceUtils.formatDate(info.getInsertTime())+"]"+"</span>");
   }
   %>
   7.牛散：<%out.print(WebUtils.createTableOfStkImportInfo(sc.getConnection(),index, 3));%>
   8.资金流：<%out.print(index.getCapitalFlowImageOnMainAndSuper(60, 800, 50));%>
-  9.互动易：<a target="_blank" href="http://ircs.p5w.net/ircs/interaction/queryQuestionByGszz.do?condition.stockcode=<%=index.getCode() %>&condition.status=3&condition.dateFrom=<%=StkUtils.formatDate(StkUtils.addDay(StkUtils.getToday(),-30), StkUtils.sf_ymd) %>&condition.dateTo=<%=StkUtils.formatDate(StkUtils.getToday()) %>">投资者互动平台</a>
+  9.互动易：<a target="_blank" href="http://ircs.p5w.net/ircs/interaction/queryQuestionByGszz.do?condition.stockcode=<%=index.getCode() %>&condition.status=3&condition.dateFrom=<%=ServiceUtils.formatDate(ServiceUtils.addDay(ServiceUtils.getToday(),-30), ServiceUtils.sf_ymd) %>&condition.dateTo=<%=ServiceUtils.formatDate(ServiceUtils.getToday()) %>">投资者互动平台</a>
 </pre>
 <%} %>
 
@@ -827,7 +827,7 @@ $(function() {
 <div class="content">
   <div class="page-container">
 		<div id="chartstk" style="width:100%; height:600px;"></div>
-<%if(_user != null && _user.getStkUser().getId()==1 && StkConstant.IS_DEV){ %>		
+<%if(_user != null && _user.getStkUser().getId()==1 && CommonConstant.IS_DEV){ %>
 		<table width="98%" border="1">
 		<tr>
 		  <td width="330">股票

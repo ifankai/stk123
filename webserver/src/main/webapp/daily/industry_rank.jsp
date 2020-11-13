@@ -1,4 +1,4 @@
-<%@ page import="com.stk123.tool.util.StkUtils" %>
+<%@ page import="com.stk123.service.ServiceUtils" %>
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@include file="/common/import.jsp" %>
 <%
@@ -51,7 +51,7 @@
     <%
       int k = 0;
       for(StkKlineRankIndustryStock stk : rank.getStkKlineRankIndustryStock()){
-    	  out.print("<a target='_blank' href='/stk.do?s="+stk.getCode()+"' title='"+StkUtils.numberFormat(stk.getChangePercent()*100,2)+"%'>"+Index.getName(stk.getCode())+"</a>&nbsp;");
+    	  out.print("<a target='_blank' href='/stk.do?s="+stk.getCode()+"' title='"+ServiceUtils.numberFormat(stk.getChangePercent()*100,2)+"%'>"+Index.getName(stk.getCode())+"</a>&nbsp;");
     	  if(k++ >= 5)break;
       }
     %>

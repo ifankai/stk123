@@ -4,9 +4,9 @@
 	StkContext sc = StkContext.getContext();
 	Industry industrySelect = (Industry)sc.get("industry_select");
 	if(industrySelect!=null){
-		pageContext.setAttribute(StkConstant.PAGE_TITLE, industrySelect.getType().getName() + " - 行业分类");
+		pageContext.setAttribute(CommonConstant.PAGE_TITLE, industrySelect.getType().getName() + " - 行业分类");
 	}else{
-		pageContext.setAttribute(StkConstant.PAGE_TITLE, "行业分类");
+		pageContext.setAttribute(CommonConstant.PAGE_TITLE, "行业分类");
 	}
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -31,9 +31,9 @@
             <% 
               List<StkDictionary> columns = StkService.getColumnNames(1000);
               for(StkDictionary column : columns){
-            	  if(column.getParam3().equals(StkConstant.NUMBER_ONE)){
-            		  String select = StkConstant.MARK_EMPTY;
-            		  if(column.getKey().equals(StkConstant.JSON_NAME)){
+            	  if(column.getParam3().equals(CommonConstant.NUMBER_ONE)){
+            		  String select = CommonConstant.MARK_EMPTY;
+            		  if(column.getKey().equals(CommonConstant.JSON_NAME)){
             			  //TODO select = StkUtils.getQuartersAsSelect();
             		  }
             %>

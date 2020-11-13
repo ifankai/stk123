@@ -6,10 +6,10 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.stk123.bo.StkReportDaily;
+import com.stk123.model.bo.StkReportDaily;
 import com.stk123.model.Index;
-import com.stk123.tool.util.JdbcUtils;
-import com.stk123.StkConstant;
+import com.stk123.common.util.JdbcUtils;
+import com.stk123.common.CommonConstant;
 import com.stk123.web.WebUtils;
 import com.stk123.web.context.StkContext;
 
@@ -20,10 +20,10 @@ public class DailyReportAction {
 		StkContext sc = StkContext.getContext();
 		//WebUtils.setCareStk(sc);
 		HttpServletRequest request = sc.getRequest();
-		String date = request.getParameter(StkConstant.PARAMETER_DATE);
-		String type = request.getParameter(StkConstant.PARAMETER_TYPE);
+		String date = request.getParameter(CommonConstant.PARAMETER_DATE);
+		String type = request.getParameter(CommonConstant.PARAMETER_TYPE);
 		String sort = request.getParameter("sort");
-		String order = request.getParameter(StkConstant.PARAMETER_ORDER);
+		String order = request.getParameter(CommonConstant.PARAMETER_ORDER);
 		if(date == null || date.length() == 0){
 			date = WebUtils.REPORT_DATE;
 		}
@@ -43,6 +43,6 @@ public class DailyReportAction {
 			indexs.add(index);
 		}
 		sc.put("stk_reports", indexs);
-		return StkConstant.ACTION_SUCC;
+		return CommonConstant.ACTION_SUCC;
 	}
 }

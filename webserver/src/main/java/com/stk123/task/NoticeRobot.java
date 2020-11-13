@@ -7,19 +7,21 @@ import java.sql.Connection;
 import java.util.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.stk123.tool.util.*;
+import com.stk123.service.*;
+import com.stk123.common.util.*;
+import com.stk123.common.util.pdf.PDFUtils;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
-import com.stk123.bo.Stk;
-import com.stk123.bo.StkMonitor;
+import com.stk123.model.bo.Stk;
+import com.stk123.model.bo.StkMonitor;
 import com.stk123.model.Index;
 import com.stk123.model.K;
 import com.stk123.model.News;
 import com.stk123.model.Text;
-import com.stk123.tool.db.util.DBUtil;
+import com.stk123.common.db.util.DBUtil;
 
 /**
  * 公告 机器人
@@ -65,7 +67,7 @@ public class NoticeRobot {
 		List<StkMonitor> ms = JdbcUtils.list(conn, "select * from stk_monitor where type=2 and code=?", params, StkMonitor.class);
 		for(StkMonitor m : ms){
 			params.clear();
-			params.add(StkUtils.number2String(index.getK().getClose()/index.getK(m.getParam4()).getClose(), 2));
+			params.add(ServiceUtils.number2String(index.getK().getClose()/index.getK(m.getParam4()).getClose(), 2));
 			params.add(m.getId());
 			JdbcUtils.update(conn, "update stk_monitor set param_5=? where id=?", params);
 		}
@@ -153,7 +155,7 @@ public class NoticeRobot {
 
         Set<String> prices1 = new HashSet<String>();
         Set<String> prices2 = new HashSet<String>();
-        Date DateBefore = StkUtils.addDay(new Date(), -1);
+        Date DateBefore = ServiceUtils.addDay(new Date(), -1);
         for(Announcement item : root.getAnnouncements()){
             Date createDate = new Date(item.getAnnouncementTime());
             if(createDate.before(DateBefore)){
@@ -171,15 +173,15 @@ public class NoticeRobot {
                 String fileType = getFileType(downloadFilePath, sourceType);
                 if("pdf".equalsIgnoreCase(fileType)){
                     String spdf = PDFUtils.getText(downloadFilePath);
-                    Set<String> sets = StkUtils.getMatchStrings(spdf, "(收盘价)( ?)[0-9]*(\\.?)[0-9]+( ?)(元测算)");
+                    Set<String> sets = ServiceUtils.getMatchStrings(spdf, "(收盘价)( ?)[0-9]*(\\.?)[0-9]+( ?)(元测算)");
                     if(sets != null && sets.size() == 0){
-                        sets = StkUtils.getMatchStrings(spdf, "(购买均价)( ?)[0-9]*(\\.?)[0-9]+( ?)(元/股)");
+                        sets = ServiceUtils.getMatchStrings(spdf, "(购买均价)( ?)[0-9]*(\\.?)[0-9]+( ?)(元/股)");
                     }
                     prices1.addAll(sets);
                     if(sets!= null && sets.size() > 0){
                         //System.out.println(item);
                         String p = sets.iterator().next();
-                        String s = StkUtils.getMatchStrings(p,"\\d+(\\.?)(\\d+)?( *)(元)").iterator().next();
+                        String s = ServiceUtils.getMatchStrings(p,"\\d+(\\.?)(\\d+)?( *)(元)").iterator().next();
                         double price = Double.parseDouble(StringUtils.replace(StringUtils.replace(s, " ", ""),"元",""));
                         //System.out.println(price);
                         insertStkMonitor(conn, index, "员工持股", price, item);
@@ -193,47 +195,47 @@ public class NoticeRobot {
                 if("pdf".equalsIgnoreCase(fileType)){
                     String spdf = PDFUtils.getText(downloadFilePath);
 
-                    if(createDate.after(StkUtils.addDay(new Date(), -1))){
+                    if(createDate.after(ServiceUtils.addDay(new Date(), -1))){
 						/*if(StkUtils.getMatchString(title, "获得中国(证监会|证券监督).{0,10}(核准|审核通过|批复)") != null){
 							EmailUtils.sendAndReport("【非公开发行股票获得中国证监会核准】-"+ index.getName(),
 									StkUtils.wrapCodeAndNameAsHtml(index) + " - " + StkUtils.wrapLink(title, "http://www.cninfo.com.cn/information/companyinfo.html?fulltext?"+index.getCode()));
 						}*/
                         //System.out.println(downloadFilePath);
-                        if(StkUtils.getMatchString(title, "非公开发行.{0,15}(报告|公告)") != null){
-                            Set<String> matches = StkUtils.getMatchStrings(spdf,"发行.{2,10}无锁定期");
-                            matches.addAll(StkUtils.getMatchStrings(spdf,"发行.{2,10}无限售期"));
-                            matches.addAll(StkUtils.getMatchStrings(spdf,"发行.{2,10}不设限售期"));
-                            matches.addAll(StkUtils.getMatchStrings(spdf,"发行.{2,10}无限售条件"));
-                            matches.addAll(StkUtils.getMatchStrings(spdf,"发行结束.{0,6}可.{0,2}交易"));
+                        if(ServiceUtils.getMatchString(title, "非公开发行.{0,15}(报告|公告)") != null){
+                            Set<String> matches = ServiceUtils.getMatchStrings(spdf,"发行.{2,10}无锁定期");
+                            matches.addAll(ServiceUtils.getMatchStrings(spdf,"发行.{2,10}无限售期"));
+                            matches.addAll(ServiceUtils.getMatchStrings(spdf,"发行.{2,10}不设限售期"));
+                            matches.addAll(ServiceUtils.getMatchStrings(spdf,"发行.{2,10}无限售条件"));
+                            matches.addAll(ServiceUtils.getMatchStrings(spdf,"发行结束.{0,6}可.{0,2}交易"));
 
                             if(matches.size() > 0){
                                 EmailUtils.sendAndReport("★【非公开发行-无限售期】-"+ index.getName(),
-                                        StkUtils.wrapCodeAndNameAsHtml(index)+" "+matches + " - " + StkUtils.wrapLink(title, "http://www.cninfo.com.cn/information/companyinfo.html?fulltext?"+index.getCode()));
+                                        ServiceUtils.wrapCodeAndNameAsHtml(index)+" "+matches + " - " + ServiceUtils.wrapLink(title, "http://www.cninfo.com.cn/information/companyinfo.html?fulltext?"+index.getCode()));
                             }
                         }
                     }
 
-                    Set<String> sets = StkUtils.getMatchStrings(spdf, "(非公开发行股票价格为)( ?)[0-9]*(\\.?)[0-9]+( *)(元/股)");
+                    Set<String> sets = ServiceUtils.getMatchStrings(spdf, "(非公开发行股票价格为)( ?)[0-9]*(\\.?)[0-9]+( *)(元/股)");
                     if(sets != null && sets.size() == 0){
-                        sets = StkUtils.getMatchStrings(spdf, "(发行价格为)( ?)[0-9]*(\\.?)[0-9]+( *)(元/股)");
+                        sets = ServiceUtils.getMatchStrings(spdf, "(发行价格为)( ?)[0-9]*(\\.?)[0-9]+( *)(元/股)");
                     }
                     if(sets != null && sets.size() == 0){
-                        sets = StkUtils.getMatchStrings(spdf, "(交易日公司股票交易均价，即)( ?)[0-9]*(\\.?)[0-9]+( *)(元/股)");
+                        sets = ServiceUtils.getMatchStrings(spdf, "(交易日公司股票交易均价，即)( ?)[0-9]*(\\.?)[0-9]+( *)(元/股)");
                     }
                     if(sets != null && sets.size() == 0){
-                        sets = StkUtils.getMatchStrings(spdf, "(个交易日股票交易)(.{0,50})(即)( ?)[0-9]*(\\.?)[0-9]+( *)(元/股)");
+                        sets = ServiceUtils.getMatchStrings(spdf, "(个交易日股票交易)(.{0,50})(即)( ?)[0-9]*(\\.?)[0-9]+( *)(元/股)");
                     }
                     if(sets != null && sets.size() == 0){
-                        sets = StkUtils.getMatchStrings(spdf, "(以)( ?)[0-9]*(\\.?)[0-9]+( *)(元/股为本次发行的发行价格)");
+                        sets = ServiceUtils.getMatchStrings(spdf, "(以)( ?)[0-9]*(\\.?)[0-9]+( *)(元/股为本次发行的发行价格)");
                     }
                     if(sets != null && sets.size() == 0){
-                        sets = StkUtils.getMatchStrings(spdf, "(每股发行价为人民币，即)( ?)[0-9]*(\\.?)[0-9]+( *)(元)");
+                        sets = ServiceUtils.getMatchStrings(spdf, "(每股发行价为人民币，即)( ?)[0-9]*(\\.?)[0-9]+( *)(元)");
                     }
                     prices2.addAll(sets);
                     if(sets!= null && sets.size() > 0){
                         //System.out.println(item);
                         String p = sets.iterator().next();
-                        String s = StkUtils.getMatchStrings(p,"\\d+(\\.?)(\\d+)?( *)(元)").iterator().next();
+                        String s = ServiceUtils.getMatchStrings(p,"\\d+(\\.?)(\\d+)?( *)(元)").iterator().next();
                         double price = Double.parseDouble(StringUtils.replace(StringUtils.replace(s, " ", ""),"元",""));
                         //System.out.println(price);
                         insertStkMonitor(conn, index, "非公开发行", price, item);
@@ -248,9 +250,9 @@ public class NoticeRobot {
                 String fileType = getFileType(downloadFilePath, sourceType);
                 if("pdf".equalsIgnoreCase(fileType)){
                     String spdf = PDFUtils.getText(downloadFilePath);
-                    Set<String> sets = StkUtils.getMatchStrings(spdf, "(净利润增长率不低于)( ?)[0-9]*(\\.?)[0-9]+( *)(%)");
+                    Set<String> sets = ServiceUtils.getMatchStrings(spdf, "(净利润增长率不低于)( ?)[0-9]*(\\.?)[0-9]+( *)(%)");
                     if(sets != null && sets.size() == 0){
-                        sets = StkUtils.getMatchStrings(spdf, "(营业收入增长率不低于)( ?)[0-9]*(\\.?)[0-9]+( *)(%)");
+                        sets = ServiceUtils.getMatchStrings(spdf, "(营业收入增长率不低于)( ?)[0-9]*(\\.?)[0-9]+( *)(%)");
                     }
                     if(sets!= null && sets.size() > 0){
                         //System.out.println(item);
@@ -258,7 +260,7 @@ public class NoticeRobot {
                         Iterator it = sets.iterator();
                         while(it.hasNext()){
                             String p = String.valueOf(it.next());
-                            String s = StkUtils.getMatchStrings(p,"\\d+(\\.?)(\\d+)?( *)(%)").iterator().next();
+                            String s = ServiceUtils.getMatchStrings(p,"\\d+(\\.?)(\\d+)?( *)(%)").iterator().next();
                             double price = Double.parseDouble(StringUtils.replace(StringUtils.replace(s, " ", ""),"%",""));
                             if(price > tmp){
                                 tmp = price;
@@ -269,10 +271,10 @@ public class NoticeRobot {
                             List params = new ArrayList();
                             params.add(index.getCode());
                             params.add(News.TYPE_5);
-                            params.add("[股权激励] "+ tmp +"% - "+ title + " - "+ StkUtils.formatDate(new Date(item.getAnnouncementTime()), StkUtils.sf_ymd2));
+                            params.add("[股权激励] "+ tmp +"% - "+ title + " - "+ ServiceUtils.formatDate(new Date(item.getAnnouncementTime()), ServiceUtils.sf_ymd2));
                             params.add(index.getCode());
                             params.add(News.TYPE_5);
-                            params.add("[股权激励] "+ tmp +"% - "+ title + " - "+ StkUtils.formatDate(new Date(item.getAnnouncementTime()), StkUtils.sf_ymd2));
+                            params.add("[股权激励] "+ tmp +"% - "+ title + " - "+ ServiceUtils.formatDate(new Date(item.getAnnouncementTime()), ServiceUtils.sf_ymd2));
                             JdbcUtils.insert(conn, "insert into stk_import_info select s_import_info_id.nextval,?,?,sysdate,1,?,null,null,null,null from dual "
                                     + "where not exists (select 1 from stk_import_info where code=? and type=? and info=?)", params);
                             //EmailUtils.send("发现股权激励", item.toString());
@@ -296,7 +298,7 @@ public class NoticeRobot {
                         if(StringUtils.contains(line, "已累计投入募集资金总额") ||
                                 StringUtils.contains(line, "已累计使用募集资金总额")){
                             //System.out.println(line);
-                            String n1 = StkUtils.getNumberFromString(line);
+                            String n1 = ServiceUtils.getNumberFromString(line);
                             //System.out.println(n1);
                             if(n1 == null || "-".equals(n1))break;
                             int j = 1;
@@ -304,7 +306,7 @@ public class NoticeRobot {
                                 line = ls.get(i-j);
                                 if(StringUtils.contains(line, "r募集资金总额")){
                                     //System.out.println(line);
-                                    String n2 = StkUtils.getNumberFromString(line);
+                                    String n2 = ServiceUtils.getNumberFromString(line);
                                     double d1 = Double.parseDouble(n1);
                                     double d2 = Double.parseDouble(n2);
                                     if(d1 < d2 * 0.8 && d1 > d2 * 0.2){
@@ -336,7 +338,7 @@ public class NoticeRobot {
                 if("pdf".equalsIgnoreCase(fileType)){
                     String spdf = PDFUtils.getText(downloadFilePath);
                     if(StringUtils.contains(spdf, "■同向上升") || title.contains("√ 同向上升") || title.contains("√同向上升")){
-                        EmailUtils.send("业绩上修", StkUtils.wrapCodeAndNameAsHtml(index)+"-"+StkUtils.wrapLink(title, "http://www.cninfo.com.cn/"+filePath));
+                        EmailUtils.send("业绩上修", ServiceUtils.wrapCodeAndNameAsHtml(index)+"-"+ServiceUtils.wrapLink(title, "http://www.cninfo.com.cn/"+filePath));
                     }
                 }
             }
@@ -352,7 +354,7 @@ public class NoticeRobot {
 		 * param4 = 不复权时，价格对应的最靠近的日期
 		 * result1 = source file url
 		 */
-		String date = StkUtils.formatDate(new Date(item.getAnnouncementTime()), StkUtils.sf_ymd2);
+		String date = ServiceUtils.formatDate(new Date(item.getAnnouncementTime()), ServiceUtils.sf_ymd2);
 		List params = new ArrayList();
 		params.add(index.getCode());
 		params.add(type);
@@ -376,7 +378,7 @@ public class NoticeRobot {
 			}
 		}while(true);
 		params.add(tmpK.getDate());
-		params.add(StkUtils.number2String(index.getK().getClose()/tmpK.getClose(), 2));
+		params.add(ServiceUtils.number2String(index.getK().getClose()/tmpK.getClose(), 2));
 		params.add("http://static.cninfo.com.cn/"+item.getAdjunctUrl());
 		params.add(index.getCode());
 		params.add("http://static.cninfo.com.cn/"+item.getAdjunctUrl());

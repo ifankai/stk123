@@ -10,14 +10,14 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.htmlparser.tags.TableTag;
 
-import com.stk123.bo.po.StkKlinePO;
-import com.stk123.tool.util.StkUtils;
-import com.stk123.tool.db.TableTools;
-import com.stk123.tool.db.util.DBUtil;
-import com.stk123.tool.util.ConfigUtils;
-import com.stk123.tool.util.HtmlUtils;
-import com.stk123.tool.util.HttpUtils;
-import com.stk123.tool.util.JdbcUtils;
+import com.stk123.model.bo.po.StkKlinePO;
+import com.stk123.service.ServiceUtils;
+import com.stk123.common.db.TableTools;
+import com.stk123.common.db.util.DBUtil;
+import com.stk123.common.util.ConfigUtils;
+import com.stk123.common.util.HtmlUtils;
+import com.stk123.service.HttpUtils;
+import com.stk123.common.util.JdbcUtils;
 
 
 public class Forex {
@@ -34,11 +34,11 @@ public class Forex {
 	}
 	
 	public static void initForex(Connection conn, int flag) throws Exception {
-		Date today = StkUtils.now;
-		Date stDate = StkUtils.addDay(today, -60);
+		Date today = ServiceUtils.now;
+		Date stDate = ServiceUtils.addDay(today, -60);
 		int cnt = 0;
 		while(true){
-			String body = "action=historical_data&curr_id=155&st_date="+URLEncoder.encode(StkUtils.formatDate(stDate, StkUtils.sf_ymd11), "utf-8")+"&end_date="+URLEncoder.encode(StkUtils.formatDate(today, StkUtils.sf_ymd11), "utf-8")+"&interval_sec=Daily";
+			String body = "action=historical_data&curr_id=155&st_date="+URLEncoder.encode(ServiceUtils.formatDate(stDate, ServiceUtils.sf_ymd11), "utf-8")+"&end_date="+URLEncoder.encode(ServiceUtils.formatDate(today, ServiceUtils.sf_ymd11), "utf-8")+"&interval_sec=Daily";
 			Map<String, String> requestHeaders = new HashMap<String, String>();
 	    	requestHeaders.put("X-Requested-With","XMLHttpRequest");
 			String page = HttpUtils.post("http://cn.investing.com/instruments/HistoricalDataAjax", null,body,requestHeaders, "utf-8", null);
@@ -50,7 +50,7 @@ public class Forex {
 				if(data.size() < 5)continue;
 				StkKlinePO kline = new StkKlinePO();
 				kline.setCode("USDHKD");
-				kline.setKlineDate(StkUtils.formatDate(data.get(0), StkUtils.sf_ymd10,StkUtils.sf_ymd2));
+				kline.setKlineDate(ServiceUtils.formatDate(data.get(0), ServiceUtils.sf_ymd10,ServiceUtils.sf_ymd2));
 				kline.setOpen(Double.valueOf(data.get(2))*100);
 				kline.setClose(Double.valueOf(data.get(1))*100);
 				kline.setHigh(Double.valueOf(data.get(3))*100);
@@ -60,8 +60,8 @@ public class Forex {
 				cnt ++;
 			}
 			if(flag > 0 && cnt >= flag)break;
-			today = StkUtils.addDay(today, -60);
-			stDate = StkUtils.addDay(today, -60);
+			today = ServiceUtils.addDay(today, -60);
+			stDate = ServiceUtils.addDay(today, -60);
 		}
 	}
 

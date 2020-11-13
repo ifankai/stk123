@@ -1,7 +1,7 @@
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@page import="com.stk123.StkConstant" %>
+<%@page import="com.stk123.common.CommonConstant" %>
 <head>
-<title><%=pageContext.getAttribute(StkConstant.PAGE_TITLE) %></title>
+<title><%=pageContext.getAttribute(CommonConstant.PAGE_TITLE) %></title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="description" content="" />
 <meta name="author" content="xzh365 | www.xzh365.com" />

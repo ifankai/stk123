@@ -1,19 +1,18 @@
 package com.stk123.model;
 
-import java.awt.Point;
-import java.sql.Connection;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
+import com.stk123.common.CommonConstant;
+import com.stk123.service.ExceptionUtils;
+import com.stk123.service.HttpUtils;
+import com.stk123.service.ServiceUtils;
+import com.stk123.service.XueqiuUtils;
+import com.stk123.model.K.Condition;
+import com.stk123.model.bo.*;
+import com.stk123.model.bo.cust.StkFnDataCust;
+import com.stk123.model.json.XueQiuQianFuQuan;
+import com.stk123.common.util.*;
+import com.stk123.common.util.collection.Name2Value;
+import com.stk123.common.util.collection.Table;
+import com.stk123.common.util.collection.TableCell;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.time.DateUtils;
@@ -24,40 +23,12 @@ import org.htmlparser.tags.TableRow;
 import org.htmlparser.tags.TableTag;
 import org.jfree.data.category.DefaultCategoryDataset;
 
-import com.stk123.bo.Stk;
-import com.stk123.bo.StkCapitalFlow;
-import com.stk123.bo.StkEarningsForecast;
-import com.stk123.bo.StkEarningsNotice;
-import com.stk123.bo.StkFnData;
-import com.stk123.bo.StkFnType;
-import com.stk123.bo.StkHolder;
-import com.stk123.bo.StkImportInfo;
-import com.stk123.bo.StkIndustryType;
-import com.stk123.bo.StkKline;
-import com.stk123.bo.StkMonitor;
-import com.stk123.bo.StkRestricted;
-import com.stk123.bo.cust.StkFnDataCust;
-import com.stk123.json.XueQiuQianFuQuan;
-import com.stk123.model.K.Condition;
-import com.stk123.task.InitialData;
-import com.stk123.tool.util.StkUtils;
-import com.stk123.task.XueqiuUtils;
-import com.stk123.tool.util.AlgorithmUtils;
-import com.stk123.tool.util.CacheUtils;
-import com.stk123.tool.util.ChartUtils;
-import com.stk123.tool.util.ChineseUtils;
-import com.stk123.tool.util.DrawLineUtils;
-import com.stk123.tool.util.EmailUtils;
-import com.stk123.tool.util.ExceptionUtils;
-import com.stk123.tool.util.HtmlUtils;
-import com.stk123.tool.util.HttpUtils;
-import com.stk123.tool.util.ImageUtils;
-import com.stk123.tool.util.JdbcUtils;
-import com.stk123.tool.util.JsonUtils;
-import com.stk123.tool.util.collection.Name2Value;
-import com.stk123.tool.util.collection.Table;
-import com.stk123.tool.util.collection.TableCell;
-import com.stk123.StkConstant;
+import java.awt.*;
+import java.sql.Connection;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -71,15 +42,15 @@ public class Index {
 	public final static String SH_LOWER = "sh";
 	public final static String SZ_LOWER = "sz";
 	
-	public String FN_JLR = StkConstant.FN_TYPE_CN_JLR;//净利润
-	public String FN_JLRZZL = StkConstant.FN_TYPE_CN_JLRZZL;//净利润增长率
-	public String FN_MGJZC = StkConstant.FN_TYPE_CN_MGJZC; //每股净资产_调整后(元)
-	public String FN_ZYSR = StkConstant.FN_TYPE_CN_ZYSR; //主营收入
-	public String FN_YFFY = StkConstant.FN_TYPE_CN_YFFY; //研发费用
-	public String FN_GDQY = StkConstant.FN_TYPE_CN_GDQY; //归属于母公司股东权益合计
-	public String FN_ZYSRZZL = StkConstant.FN_TYPE_CN_ZYSRZZL;//主营收入增长率
-	public String FN_ROE = StkConstant.FN_TYPE_CN_ROE;//ROE
-	public String FN_GROSS_MARGIN = StkConstant.FN_TYPE_CN_GROSS_MARGIN;//毛利率
+	public String FN_JLR = CommonConstant.FN_TYPE_CN_JLR;//净利润
+	public String FN_JLRZZL = CommonConstant.FN_TYPE_CN_JLRZZL;//净利润增长率
+	public String FN_MGJZC = CommonConstant.FN_TYPE_CN_MGJZC; //每股净资产_调整后(元)
+	public String FN_ZYSR = CommonConstant.FN_TYPE_CN_ZYSR; //主营收入
+	public String FN_YFFY = CommonConstant.FN_TYPE_CN_YFFY; //研发费用
+	public String FN_GDQY = CommonConstant.FN_TYPE_CN_GDQY; //归属于母公司股东权益合计
+	public String FN_ZYSRZZL = CommonConstant.FN_TYPE_CN_ZYSRZZL;//主营收入增长率
+	public String FN_ROE = CommonConstant.FN_TYPE_CN_ROE;//ROE
+	public String FN_GROSS_MARGIN = CommonConstant.FN_TYPE_CN_GROSS_MARGIN;//毛利率
 	
 	public final static int FN_Growth = 1;
 	public final static int FN_Potential = 2;
@@ -95,8 +66,8 @@ public class Index {
 	public final static String KLINE_20170101 = "and kline_date>='20170101'";
 	
 	public static String getKlineDateAsWhereClause(int days) {
-		Date date = StkUtils.addDay(new Date(), days);
-		String s = StkUtils.formatDate(date, StkUtils.sf_ymd2);
+		Date date = ServiceUtils.addDay(new Date(), days);
+		String s = ServiceUtils.formatDate(date, ServiceUtils.sf_ymd2);
 		return "and kline_date>='"+s+"'";
 	}
 	
@@ -156,7 +127,7 @@ public class Index {
 	public Index(Connection conn, String code) {
 		this.conn = conn;
 		this.code = code;
-		boolean isAllNumber = StkUtils.isAllNumeric(code);
+		boolean isAllNumber = ServiceUtils.isAllNumeric(code);
 		
 		if(code.length() == 5 && isAllNumber){
 			this.market = HK;
@@ -190,7 +161,7 @@ public class Index {
 	}
 
 	public static int getLocation(String code){
-		if(code.startsWith(StkConstant.NUMBER_SIX) || code.startsWith("99")){
+		if(code.startsWith(CommonConstant.NUMBER_SIX) || code.startsWith("99")){
 			return Index.SH;
 		}else{
 			return Index.SZ;
@@ -276,7 +247,7 @@ public class Index {
 	/********************************* 初始化信息 ******************************************/
 	private final static String SQL_INIT = "select * from stk_fn_type where status=1 and market=";
 	//init stk info and fn data
-	public void init() throws Exception {
+	/*public void init() throws Exception {
 		if(this.getName() == null){
 			throw new Exception("stk name is null.");
 		}
@@ -287,7 +258,7 @@ public class Index {
 		}
 		//fn
 		InitialData.initFnDataTTM(this.getConnection(),StkUtils.now,this,fnTypes);
-	}
+	}*/
 	
 	//from finance.qq.com
 	public void initKLine() throws Exception {
@@ -459,7 +430,7 @@ public class Index {
 					double low = Double.parseDouble(ss[34]);
 					double amount = Double.parseDouble(ss[37]) * 10000;
 					double pettm = 0;
-					if(ss[39].length()>0 && StkUtils.isAllNumericOrDot(ss[39])){
+					if(ss[39].length()>0 && ServiceUtils.isAllNumericOrDot(ss[39])){
 						pettm = Double.parseDouble(ss[39]);
 					}
 					//System.out.println("date="+date+",lastClose="+lastClose+",open="+open+",close="+close+",high="+high+",low="+low+",volume="+volume+",amount="+amount+",percentage="+percentage+",pettm="+pettm);
@@ -517,7 +488,7 @@ public class Index {
 					double low = Double.parseDouble(ss[34]);
 					double amount = Double.parseDouble(ss[37]);
 					double pettm = 0;
-					if(ss[39].length()>0 && StkUtils.isAllNumericOrDot(ss[39])){
+					if(ss[39].length()>0 && ServiceUtils.isAllNumericOrDot(ss[39])){
 						pettm = Double.parseDouble(ss[39]);
 					}
 					//System.out.println("date="+date+",lastClose="+lastClose+",open="+open+",close="+close+",high="+high+",low="+low+",volume="+volume+",amount="+amount+",percentage="+percentage+",pettm="+pettm);
@@ -578,13 +549,13 @@ public class Index {
 				node = HtmlUtils.getNodeByAttribute(str, "", "id", "timeInfo");
 				if(node == null)return;//停牌
 				if("-&nbsp;&nbsp;".equals(node.toPlainTextString()))return;//新股
-				String date = StkUtils.formatDate(StkUtils.sf_ymd.parse(StkUtils.YEAR + "-" + StringUtils.substring(node.toPlainTextString(), 0, 5)),StkUtils.sf_ymd2);
+				String date = ServiceUtils.formatDate(ServiceUtils.sf_ymd.parse(ServiceUtils.YEAR + "-" + StringUtils.substring(node.toPlainTextString(), 0, 5)),ServiceUtils.sf_ymd2);
 				node = HtmlUtils.getNodeByText(str, "", "今开：");
 				if(node == null){//停牌了
 					return;
 				}
 				String open = node.getLastChild().toPlainTextString();
-				if("-".equals(open) || (StkUtils.isAllNumericOrDot(open) && Double.parseDouble(open) == 0.0)){//停牌了
+				if("-".equals(open) || (ServiceUtils.isAllNumericOrDot(open) && Double.parseDouble(open) == 0.0)){//停牌了
 					return;
 				}
 				node = HtmlUtils.getNodeByAttribute(str, "", "class", "quote-percentage");
@@ -705,7 +676,7 @@ public class Index {
 				this.setCloseChange();
 				
 				if(peTTM == null || "0".equals(peTTM) || "-".equals(peTTM)){
-					peTTM = StkUtils.number2String(this.getPETTMByCalculation(StkUtils.getToday()).getPe(),2);
+					peTTM = ServiceUtils.number2String(this.getPETTMByCalculation(ServiceUtils.getToday()).getPe(),2);
 					params.clear();
 					params.add(peTTM);
 					params.add(code);
@@ -755,8 +726,8 @@ public class Index {
 				}*/
 			}
 		}else if(market == 2){
-			Date tmp = StkUtils.addDay(StkUtils.now, -60);
-			String url = "http://finance.yahoo.com/q/hp?s="+StringUtils.replace(code, ".", "%5E")+"&a="+StkUtils.get(tmp,Calendar.MONTH)+"&b="+StkUtils.get(tmp,Calendar.DATE)+"&c="+StkUtils.get(tmp,Calendar.YEAR)+"&d="+StkUtils.get(StkUtils.now,Calendar.MONTH)+"&e="+StkUtils.get(StkUtils.now,Calendar.DATE)+"&f="+StkUtils.get(StkUtils.now,Calendar.YEAR)+"&g=d";
+			Date tmp = ServiceUtils.addDay(ServiceUtils.now, -60);
+			String url = "http://finance.yahoo.com/q/hp?s="+StringUtils.replace(code, ".", "%5E")+"&a="+ServiceUtils.get(tmp,Calendar.MONTH)+"&b="+ServiceUtils.get(tmp,Calendar.DATE)+"&c="+ServiceUtils.get(tmp,Calendar.YEAR)+"&d="+ServiceUtils.get(ServiceUtils.now,Calendar.MONTH)+"&e="+ServiceUtils.get(ServiceUtils.now,Calendar.DATE)+"&f="+ServiceUtils.get(ServiceUtils.now,Calendar.YEAR)+"&g=d";
 			//System.out.println(url);
 			String page = HttpUtils.get(url, "utf8");
 			Node node = HtmlUtils.getNodeByAttribute(page, null, "class", "yfnc_datamodoutline1");
@@ -777,7 +748,7 @@ public class Index {
 				if(k.size() >= 7){
 					params.clear();
 					params.add(code);
-					String date = StkUtils.formatDate(new SimpleDateFormat("MMM d, yyyy",Locale.US).parse(String.valueOf(k.get(0))), new SimpleDateFormat("yyyyMMdd"));
+					String date = ServiceUtils.formatDate(new SimpleDateFormat("MMM d, yyyy",Locale.US).parse(String.valueOf(k.get(0))), new SimpleDateFormat("yyyyMMdd"));
 					params.add(date);
 					params.add(StringUtils.replace(String.valueOf(k.get(1)), ",", ""));
 					params.add(StringUtils.replace(String.valueOf(k.get(4)), ",", ""));
@@ -809,7 +780,7 @@ public class Index {
 	public void initKLines(int n) throws Exception {
 		List params = new ArrayList();
 		Date now = new Date();
-		String startDate = StkUtils.formatDate(StkUtils.addDay(now, -n),StkUtils.sf_ymd2);
+		String startDate = ServiceUtils.formatDate(ServiceUtils.addDay(now, -n),ServiceUtils.sf_ymd2);
 		
 		if(market == 1){
 			if(this.getStk().getCate() == 2 || this.getStk().getCate() == 1){
@@ -844,14 +815,14 @@ public class Index {
 					tmp = (this.loc==1?"sse":"ssz")+StringUtils.substring(this.code, 2, 8);
 				}
 				
-				String page = HttpUtils.get("http://webstock.quote.hermes.hexun.com/a/kline?code="+tmp+"&start="+StkUtils.getToday()+"150000&number=-1000&type=5&callback=callback", null, "gb2312");
+				String page = HttpUtils.get("http://webstock.quote.hermes.hexun.com/a/kline?code="+tmp+"&start="+ServiceUtils.getToday()+"150000&number=-1000&type=5&callback=callback", null, "gb2312");
 				//System.out.println(page);
 				List<List> datas = JsonUtils.getList4Json("["+StringUtils.substringBetween(page, "[[", "]]")+"]]", ArrayList.class );
 				for(List data:datas){
 					if(data == null)return;
 					String date = String.valueOf(data.get(0));
 					date = date.replaceAll("000000", "");
-					if(date.compareTo(StkUtils.getToday()) > 0)continue;
+					if(date.compareTo(ServiceUtils.getToday()) > 0)continue;
 					if(date.compareTo(startDate) < 0)continue;
 					params.clear();
 					params.add(this.code);
@@ -1004,7 +975,7 @@ public class Index {
 		//http://quote.hexun.com/default.html
 		//http://webstock.quote.hermes.hexun.com/a/kline?code=szse399006&start=20151120150000&number=-1000&type=3&callback=callback
 		//http://webstock.quote.hermes.hexun.com/a/kline?code=szse002026&start=20151204150000&number=-1000&type=2&callback=callback
-		String time = StkUtils.sf_ymd12.format(new Date());
+		String time = ServiceUtils.sf_ymd12.format(new Date());
 		String page = HttpUtils.get("http://webstock.quote.hermes.hexun.com/a/kline?code="+tmp+"&start="+time+"&number=-1000&type="+type+"&callback=callback", null, "utf-8");
 		List<List> datas = JsonUtils.getList4Json("["+StringUtils.substringBetween(page, "[[", "]]")+"]]", ArrayList.class );
 		Collections.reverse(datas);
@@ -1102,7 +1073,7 @@ public class Index {
 			List params = new ArrayList();
 			params.add(code);
 			params.add(today);
-			params.add(StkUtils.getNumberFromString(node.toPlainTextString()));
+			params.add(ServiceUtils.getNumberFromString(node.toPlainTextString()));
 			params.add(code);
 			params.add(today);
 			//System.out.println(params);
@@ -1157,7 +1128,7 @@ public class Index {
 		for(StkCapitalFlow flow : flows) {
 			dataset.addValue(flow.getMainAmount(), "", flow.getFlowDate());
 		}
-		return StkUtils.getImgBase64(ImageUtils.getImageStr(ChartUtils.createBarChart(dataset,300, 40)), 300, 30);
+		return ServiceUtils.getImgBase64(ImageUtils.getImageStr(ChartUtils.createBarChart(dataset,300, 40)), 300, 30);
 	}
 
 	
@@ -1173,12 +1144,12 @@ public class Index {
 			if(flow.getLargePercent() != null && flow.getSuperLargePercent() != null){
 				double d = (flow.getLargePercent()+flow.getSuperLargePercent())/2;
 				if(d > 0)NumberOfCapitalFlowPostive++;
-				dataset.addValue(StkUtils.numberFormat(d, 2), "", flow.getFlowDate());
+				dataset.addValue(ServiceUtils.numberFormat(d, 2), "", flow.getFlowDate());
 			}else{
 				dataset.addValue(flow.getSuperLargePercent(), "", flow.getFlowDate());
 			}
 		}
-		return StkUtils.getImgBase64(ImageUtils.getImageStr(ChartUtils.createBarChart(dataset,width, high+10)), width, high);
+		return ServiceUtils.getImgBase64(ImageUtils.getImageStr(ChartUtils.createBarChart(dataset,width, high+10)), width, high);
 	}
 	
 	public String getCapitalFlowImageOnMainAndSuper(int days) throws Exception {
@@ -1191,12 +1162,12 @@ public class Index {
 			if(flow.getLargePercent() != null && flow.getSuperLargePercent() != null){
 				double d = (flow.getLargePercent()+flow.getSuperLargePercent())/2;
 				if(d > 0)NumberOfCapitalFlowPostive++;
-				dataset.addValue(StkUtils.numberFormat(d, 2), "", flow.getFlowDate());
+				dataset.addValue(ServiceUtils.numberFormat(d, 2), "", flow.getFlowDate());
 			}else{
 				dataset.addValue(flow.getSuperLargePercent(), "", flow.getFlowDate());
 			}
 		}
-		return StkUtils.getImgBase64(ImageUtils.getImageStr(ChartUtils.createBarChart(dataset,260, 40)), 260, 24);
+		return ServiceUtils.getImgBase64(ImageUtils.getImageStr(ChartUtils.createBarChart(dataset,260, 40)), 260, 24);
 	}
 	
 	private double replaceAmount(String str){
@@ -1216,7 +1187,7 @@ public class Index {
 		XueQiuQianFuQuan xq = (XueQiuQianFuQuan) JsonUtils.getObject4Json(page, XueQiuQianFuQuan.class, m);
 		for(Map map : xq.getChartlist()){
 			String time = (String)map.get("time");
-			time = StkUtils.sf_ymd2.format(new Date(time));
+			time = ServiceUtils.sf_ymd2.format(new Date(time));
 			map.put("time", time);
 		}
 		for(String yyyyMMdd : yyyyMMdds){
@@ -1253,7 +1224,7 @@ public class Index {
 	/**
 	 */
 	public void updatePEFromXueQiu() throws Exception {
-		String page = HttpUtils.get("http://xueqiu.com/S/"+StkUtils.getStkLocation(code)+code, null, "utf-8");
+		String page = HttpUtils.get("http://xueqiu.com/S/"+ServiceUtils.getStkLocation(code)+code, null, "utf-8");
 		this.updatePEFromXueQiu(page);
 	}
 	/**
@@ -1266,7 +1237,7 @@ public class Index {
 		String peTTM = nodeTTM!=null?nodeTTM.getLastChild().toPlainTextString():"0";
 		params.add(peTTM);
 		params.add(code);
-		params.add(StkUtils.getToday());
+		params.add(ServiceUtils.getToday());
 		JdbcUtils.update(this.getConnection(), "update "+this.tab_stkkline+" set pe_ttm=?,pe_lyr=? where code=? and kline_date=?", params);
 	}
 	
@@ -1280,8 +1251,8 @@ public class Index {
 		for(int i=0; i<ks.size(); i=i+50){
 			String ed = ks.get(i).getDate();
 			String sd = ks.get(i+50>=ks.size()?ks.size()-1:i+50).getDate();
-			ed = StkUtils.sf_ymd.format(StkUtils.sf_ymd2.parse(ed));
-			sd = StkUtils.sf_ymd.format(StkUtils.sf_ymd2.parse(sd));
+			ed = ServiceUtils.sf_ymd.format(ServiceUtils.sf_ymd2.parse(ed));
+			sd = ServiceUtils.sf_ymd.format(ServiceUtils.sf_ymd2.parse(sd));
 			String page = HttpUtils.get("http://q.stock.sohu.com/app2/history.up?method=history&code=cn_"+this.code+"&sd="+sd+"&ed="+ed+"&t=d&res=js&r="+Math.random()+"&"+Math.random(), null, "utf-8");
 			page = StringUtils.replace(page, "\n", "");
 			List<List> list = JsonUtils.getList4Json("[["+StringUtils.substringBetween(page, "[[", "]]")+"]]", ArrayList.class);
@@ -1290,7 +1261,7 @@ public class Index {
 					List params = new ArrayList();
 					params.add(StringUtils.replace(StringUtils.replace(String.valueOf(hsl.get(9)), "%", ""),"-", ""));
 					params.add(code);
-					params.add(StkUtils.sf_ymd2.format(StkUtils.sf_ymd.parse(String.valueOf(hsl.get(0)))));
+					params.add(ServiceUtils.sf_ymd2.format(ServiceUtils.sf_ymd.parse(String.valueOf(hsl.get(0)))));
 					JdbcUtils.update(this.getConnection(), "update "+tab_stkkline+" set hsl=? where code=? and kline_date=?", params);
 				}
 			}
@@ -1445,7 +1416,7 @@ public class Index {
 		List<StkRestricted> Restricted = this.getRestricted();
 		StkRestricted ret = null;
 		for(StkRestricted sr : Restricted){
-			Date listingDate = StkUtils.sf_ymd.parse(sr.getListingDate());
+			Date listingDate = ServiceUtils.sf_ymd.parse(sr.getListingDate());
 			if(listingDate.after(start) && listingDate.before(end)){
 				if(ret == null){
 					ret = sr;
@@ -1565,7 +1536,7 @@ public class Index {
 		K kw = null;
 		kws = new LinkedList<K>();
 		for(K k : ks){
-			Date kd = StkUtils.sf_ymd2.parse(k.getDate());
+			Date kd = ServiceUtils.sf_ymd2.parse(k.getDate());
 			Date monday = ((Calendar)DateUtils.iterator(kd, DateUtils.RANGE_WEEK_MONDAY).next()).getTime();
 			if(a == null || monday.compareTo(a) != 0){
 				if(kw != null){
@@ -1608,7 +1579,7 @@ public class Index {
 		K kw = null;
 		kms = new LinkedList<K>();
 		for(K k : ks){
-			Date kd = StkUtils.sf_ymd2.parse(k.getDate());
+			Date kd = ServiceUtils.sf_ymd2.parse(k.getDate());
 			int month = kd.getMonth();
 			if(a == -1 || month != a){
 				if(kw != null){
@@ -1776,8 +1747,8 @@ public class Index {
 		return value;
 	}
 	public double getKValueByHHV(String rangeDate) throws Exception {
-		String startDate = StringUtils.rightPad(rangeDate, 8, StkConstant.NUMBER_ZERO);
-		String endDate = StringUtils.rightPad(rangeDate, 8, StkConstant.NUMBER_NINE);
+		String startDate = StringUtils.rightPad(rangeDate, 8, CommonConstant.NUMBER_ZERO);
+		String endDate = StringUtils.rightPad(rangeDate, 8, CommonConstant.NUMBER_NINE);
 		return this.getKValueByHHV(startDate, endDate);
 	}
 	public double getKValueByLLV(String startDate, String endDate) throws Exception {
@@ -1808,8 +1779,8 @@ public class Index {
 	}
 	
 	public double getKValueByLLV(String rangeDate) throws Exception {
-		String startDate = StringUtils.rightPad(rangeDate, 8, StkConstant.NUMBER_ZERO);
-		String endDate = StringUtils.rightPad(rangeDate, 8, StkConstant.NUMBER_NINE);
+		String startDate = StringUtils.rightPad(rangeDate, 8, CommonConstant.NUMBER_ZERO);
+		String endDate = StringUtils.rightPad(rangeDate, 8, CommonConstant.NUMBER_NINE);
 		return this.getKValueByLLV(startDate, endDate);
 	}
 	
@@ -1976,8 +1947,8 @@ public class Index {
 			for(StkFnDataCust data : this.fnData){
 				data.setFnData(this.fnData);
 				data.setStkFnType(Fn.getFnTypes().get(data.getType().toString()));
-				int mm = StkUtils.get(sf_ymd2.parse(data.getFnDate()), Calendar.MONTH)+1;
-				data.setNumber(StkUtils.getQuarterNumber(MMEnd, mm));
+				int mm = ServiceUtils.get(sf_ymd2.parse(data.getFnDate()), Calendar.MONTH)+1;
+				data.setNumber(ServiceUtils.getQuarterNumber(MMEnd, mm));
 			}
 		}
 		//CacheUtils.putByCode(this.getCode(), CacheUtils.KEY_STK_FN, fnData);
@@ -2059,16 +2030,16 @@ public class Index {
 		this.getFnData();
 		if(this.getFnData().size() <= 0)return this.fnTable;
 		//List<List<StkFnDataCust>> result = new ArrayList<List<StkFnDataCust>>();
-		String MMEnd = StkConstant.NUMBER_TWELVE;//A stock default value
+		String MMEnd = CommonConstant.NUMBER_TWELVE;//A stock default value
 		if(this.market == 2 && this.getStk().getYearEnd() != null){
-			MMEnd = String.valueOf(StkUtils.get(StkUtils.sf_MMdd.parse(this.getStk().getYearEnd()), Calendar.MONTH)+1);
-			MMEnd = StringUtils.leftPad(MMEnd, 2, StkConstant.NUMBER_ZERO);
+			MMEnd = String.valueOf(ServiceUtils.get(ServiceUtils.sf_MMdd.parse(this.getStk().getYearEnd()), Calendar.MONTH)+1);
+			MMEnd = StringUtils.leftPad(MMEnd, 2, CommonConstant.NUMBER_ZERO);
 		}
 		int year = this.getFnMaxYear();
 		if(year == 0) return null;
 		boolean flag = false;
 		while(true){
-			List<String> quarters = StkUtils.getQuarters(year+MMEnd);
+			List<String> quarters = ServiceUtils.getQuarters(year+MMEnd);
 			int i = 0;
 			for(String yearMM : quarters){
 				if(n <= 0 && i > 0)break;
@@ -2135,7 +2106,7 @@ public class Index {
 			}
 		}
 		if(maxYear != null){
-			fnMaxYear = StkUtils.get(StkUtils.sf_ymd2.parse(maxYear), Calendar.YEAR);
+			fnMaxYear = ServiceUtils.get(ServiceUtils.sf_ymd2.parse(maxYear), Calendar.YEAR);
 		}
 		return fnMaxYear;
 	}
@@ -2153,7 +2124,7 @@ public class Index {
 			return 0;
 		}
 		K endK = this.getK(end);
-		double change = StkUtils.numberFormat((endK.getCloseChange() - startK.getCloseChange())/startK.getCloseChange(),2);
+		double change = ServiceUtils.numberFormat((endK.getCloseChange() - startK.getCloseChange())/startK.getCloseChange(),2);
 		closeChange.put(key, change);
 		return change;
 	}
@@ -2163,8 +2134,8 @@ public class Index {
 	 * @throws Exception
 	 */
 	public double getCloseChange(String rangeDate) throws Exception {
-		String startDate = StringUtils.rightPad(rangeDate, 8, StkConstant.NUMBER_ZERO);
-		String endDate = StringUtils.rightPad(rangeDate, 8, StkConstant.NUMBER_NINE);
+		String startDate = StringUtils.rightPad(rangeDate, 8, CommonConstant.NUMBER_ZERO);
+		String endDate = StringUtils.rightPad(rangeDate, 8, CommonConstant.NUMBER_NINE);
 		return this.getCloseChange(startDate, endDate);
 	}
 	
@@ -2210,7 +2181,7 @@ public class Index {
 		while(--days >= 0){
 			total += this.getKValue(date, days, type);
 		}
-		return StkUtils.numberFormat(total/tmp,2);
+		return ServiceUtils.numberFormat(total/tmp,2);
 	}
 	
 	/********************************** 总市值  (亿)****************************************/
@@ -2251,12 +2222,12 @@ public class Index {
 			ps = k.getKline().getPsTtm();
 		}
 		if(ps == null){
-			ps = StkUtils.numberFormat(this.getPSTTM(),2);
+			ps = ServiceUtils.numberFormat(this.getPSTTM(),2);
 		}
 		if(ps != null){
 			return ps.toString();
 		}
-		return StkConstant.MARK_DOUBLE_HYPHEN;
+		return CommonConstant.MARK_DOUBLE_HYPHEN;
 	}
 	
 	
@@ -2272,7 +2243,7 @@ public class Index {
 	
 	public Double getPBTTM(String date) throws Exception{
 		if(date == null){
-			date = StkUtils.getToday();
+			date = ServiceUtils.getToday();
 		}
 		List<K> list = this.getKs();
 		for(K k : list){
@@ -2302,11 +2273,11 @@ public class Index {
 	}
 	
 	public double getPE() throws Exception {
-		int year = StkUtils.YEAR - 1;
-		String yyyyMMdd = year+StkUtils.MMDD_Q4;
+		int year = ServiceUtils.YEAR - 1;
+		String yyyyMMdd = year+ServiceUtils.MMDD_Q4;
 		Map<String,StkFnDataCust> fnData = this.getFnDataByDate(yyyyMMdd);
 		while(fnData.get(FN_JLR) == null){
-			yyyyMMdd = (year --)+StkUtils.MMDD_Q4;
+			yyyyMMdd = (year --)+ServiceUtils.MMDD_Q4;
 			//System.out.println("yyyyMMdd="+yyyyMMdd);
 			fnData = this.getFnDataByDate(yyyyMMdd);
 			if(year <= 2005)return 0.0;
@@ -2318,7 +2289,7 @@ public class Index {
 	/********************************** pe 市盈率 ****************************************/
 	public Double getPETTM(String date) throws Exception{
 		if(date == null){
-			date = StkUtils.getToday();
+			date = ServiceUtils.getToday();
 		}
 		List<K> list = this.getKs();
 		for(K k : list){
@@ -2335,7 +2306,7 @@ public class Index {
 	}
 	
 	public PE getPETTMByCalculation() throws Exception {
-		return this.getPETTMByCalculation(StkUtils.getToday());
+		return this.getPETTMByCalculation(ServiceUtils.getToday());
 	}
 	
 	public double getPEG() throws Exception{
@@ -2357,7 +2328,7 @@ public class Index {
 		String lastyyyyMMdd = yyyyMMdd;
 		double jlr = 0.0;
 		for(int i=1; i<=4; i++){
-			lastyyyyMMdd = StkUtils.getQuarter(lastyyyyMMdd, 1);
+			lastyyyyMMdd = ServiceUtils.getQuarter(lastyyyyMMdd, 1);
 			if((jlr = this.getNetProfitByOneQuarter(lastyyyyMMdd)) > 0){
 				break;
 			}
@@ -2365,7 +2336,7 @@ public class Index {
 		pe.setEndQuarter(lastyyyyMMdd);
 		//System.out.println("lastyyyyMMdd="+lastyyyyMMdd+",jlr="+jlr);
 		for(int i=1; i<=3; i++){
-			lastyyyyMMdd = StkUtils.getQuarter(lastyyyyMMdd, 1);
+			lastyyyyMMdd = ServiceUtils.getQuarter(lastyyyyMMdd, 1);
 			double one = this.getNetProfitByOneQuarter(lastyyyyMMdd);
 			if(one == 0){
 				return pe;
@@ -2374,7 +2345,7 @@ public class Index {
 		}
 		pe.setStartQuarter(lastyyyyMMdd);
 		pe.setJlr(jlr);
-		double value = StkUtils.numberFormat(this.getStk().getTotalCapital()/10000 * this.getK(yyyyMMdd).getClose() / pe.getJlr(), 2);
+		double value = ServiceUtils.numberFormat(this.getStk().getTotalCapital()/10000 * this.getK(yyyyMMdd).getClose() / pe.getJlr(), 2);
 		pe.setPe(value);
 		return pe;
 	}
@@ -2390,7 +2361,7 @@ public class Index {
 	/********************************** 主营收入增长率 *************************************/
 	public String getOperatingIncomeGrowthRateAsString() throws Exception {
 		StkFnDataCust fn = getFnDataLastestByType(FN_ZYSRZZL);
-		return fn!=null?fn.getFnValueToString():StkConstant.MARK_DOUBLE_HYPHEN;
+		return fn!=null?fn.getFnValueToString():CommonConstant.MARK_DOUBLE_HYPHEN;
 	}
 	
 	
@@ -2433,8 +2404,8 @@ public class Index {
 	public boolean isReversion() throws Exception {
 		if(this.getFnData().size() == 0)return false;
 		String curyyyyMMdd = this.getFnData().get(0).getFnDate();
-		String lastyyyyMMdd = StkUtils.getPrevQuarter(curyyyyMMdd);
-		String last2yyyyMMdd = StkUtils.getPrevQuarter(lastyyyyMMdd);
+		String lastyyyyMMdd = ServiceUtils.getPrevQuarter(curyyyyMMdd);
+		String last2yyyyMMdd = ServiceUtils.getPrevQuarter(lastyyyyMMdd);
 		//净利率增长率
 		double jlrzzl = this.getNetProfitGrowthAsNumber(curyyyyMMdd);
 		double lastjlrzzl = this.getNetProfitGrowthAsNumber(lastyyyyMMdd);
@@ -2461,9 +2432,9 @@ public class Index {
 	 * @return 数据不全返回0
 	 */
 	public double getNetProfitByOneQuarter(String yyyyMMdd) throws Exception {
-		String MMdd = StkUtils.formatDate(StkUtils.sf_ymd2.parse(yyyyMMdd), StkUtils.sf_MMdd);
-		if(!StkUtils.MMDD_Q1.equals(MMdd)){
-			String lastyyyyMMdd = StkUtils.getPrevQuarter(yyyyMMdd);
+		String MMdd = ServiceUtils.formatDate(ServiceUtils.sf_ymd2.parse(yyyyMMdd), ServiceUtils.sf_MMdd);
+		if(!ServiceUtils.MMDD_Q1.equals(MMdd)){
+			String lastyyyyMMdd = ServiceUtils.getPrevQuarter(yyyyMMdd);
 			Map<String,StkFnDataCust> fnData = this.getFnDataByDate(yyyyMMdd);
 			Map<String,StkFnDataCust> lastfnData = this.getFnDataByDate(lastyyyyMMdd);
 			if(fnData != null && fnData.get(FN_JLR) != null && fnData.get(FN_JLR).getFnValue() != null
@@ -2511,11 +2482,11 @@ public class Index {
 	}
 	
 	public String getNetProfitGrowthLastestQuarterAsString() throws Exception {
-		if(this.getFnData().size() == 0)return StkConstant.MARK_DOUBLE_HYPHEN;
+		if(this.getFnData().size() == 0)return CommonConstant.MARK_DOUBLE_HYPHEN;
 		String curyyyyMMdd = this.getFnData().get(0).getFnDate();
 		Double d = this.getNetProfitGrowth(curyyyyMMdd);
-		if(d == null)return StkConstant.MARK_DOUBLE_HYPHEN;
-		return StkUtils.number2String(d,2);
+		if(d == null)return CommonConstant.MARK_DOUBLE_HYPHEN;
+		return ServiceUtils.number2String(d,2);
 	}
 	
 	private Map<String,Double> netProfitGrowthAverageValue = new HashMap<String,Double>();
@@ -2544,7 +2515,7 @@ public class Index {
 				return 0;
 			}
 			total += growth;
-			curyyyyMMdd = StkUtils.getPrevQuarter(curyyyyMMdd);
+			curyyyyMMdd = ServiceUtils.getPrevQuarter(curyyyyMMdd);
 			i --;
 			if(i <= 0)break;
 		}
@@ -2558,8 +2529,8 @@ public class Index {
 	 * 成长性：最近三年净利润增长为正，当年季度净利润增长也是正
 	 */
 	public double valuationByGrowing(String fnType) throws Exception {
-		int curYear = StkUtils.YEAR;
-		String yyyyMMdd = (--curYear)+StkUtils.MMDD_Q4;
+		int curYear = ServiceUtils.YEAR;
+		String yyyyMMdd = (--curYear)+ServiceUtils.MMDD_Q4;
 		int i = 3;
 		int j = 0;
 		double total = 0.0;
@@ -2576,27 +2547,27 @@ public class Index {
 				total += d.get(fnType).getFnValue().doubleValue();
 				j++;
 			}
-			yyyyMMdd = (--curYear)+StkUtils.MMDD_Q4;
+			yyyyMMdd = (--curYear)+ServiceUtils.MMDD_Q4;
 		}
 		Map<String,StkFnDataCust> d = null;
 		
-		yyyyMMdd = curYear+StkUtils.MMDD_Q4;
+		yyyyMMdd = curYear+ServiceUtils.MMDD_Q4;
 		d = this.getFnDataByDate(yyyyMMdd);
 		if( d.get(FN_JLR) != null && d.get(FN_JLR).getFnValue() != null && d.get(FN_JLR).getFnValue().doubleValue() <= 0){
 			return 0;
 		}
 		
-		yyyyMMdd = StkUtils.YEAR+StkUtils.MMDD_Q3;
+		yyyyMMdd = ServiceUtils.YEAR+ServiceUtils.MMDD_Q3;
 		d = this.getFnDataByDate(yyyyMMdd);
 		if(d.get(fnType) != null && d.get(fnType).getFnValue() != null && d.get(fnType).getFnValue().doubleValue() <= 0){
 			return 0;
 		}
-		yyyyMMdd = StkUtils.YEAR+StkUtils.MMDD_Q2;
+		yyyyMMdd = ServiceUtils.YEAR+ServiceUtils.MMDD_Q2;
 		d = this.getFnDataByDate(yyyyMMdd);
 		if(d.get(fnType) != null && d.get(fnType).getFnValue() != null && d.get(fnType).getFnValue().doubleValue() <= 0){
 			return 0;
 		}
-		yyyyMMdd = StkUtils.YEAR+StkUtils.MMDD_Q1;
+		yyyyMMdd = ServiceUtils.YEAR+ServiceUtils.MMDD_Q1;
 		d = this.getFnDataByDate(yyyyMMdd);
 		if(d.get(fnType) != null && d.get(fnType).getFnValue() != null && d.get(fnType).getFnValue().doubleValue() <= 0){
 			return 0;
@@ -2614,7 +2585,7 @@ public class Index {
 	 */
 	public void valuationByCAGR(String yyyyMMdd) throws Exception {
 		List params = new ArrayList();
-		String year = StkUtils.formatDate(StkUtils.sf_ymd2.parse(yyyyMMdd), StkUtils.sf_yyyy);
+		String year = ServiceUtils.formatDate(ServiceUtils.sf_ymd2.parse(yyyyMMdd), ServiceUtils.sf_yyyy);
 		List<String> list = new ArrayList<String>();
 		for(int i=0;i<=4;i++){
 			list.add("'"+(Integer.parseInt(year)-i)+"1231'");
@@ -2633,12 +2604,12 @@ public class Index {
 				if(d2 >= d3 && d3 >= d4 && d4 > 0 && d3 >= d3Last && d3Last > 0 && d2 >= d2Last && d2Last >= d2LastLast && d2LastLast > 0){
 					System.out.print(this.finance());
 					//复合增长率A
-					System.out.println("复合增长率A,2年,"+StkUtils.number2String(d2,2)+",3年,"+StkUtils.number2String(d3,2)+",4年,"+StkUtils.number2String(d4,2));
+					System.out.println("复合增长率A,2年,"+ServiceUtils.number2String(d2,2)+",3年,"+ServiceUtils.number2String(d3,2)+",4年,"+ServiceUtils.number2String(d4,2));
 					System.out.println();
 				}else if(d2 >= d3 && d2 >= d2Last && d2Last > 0 && d3 >= d3Last && d3Last > 0){//2年复合大于3年复合，今年去年复合大于去年前年复合
 					System.out.print(this.finance());
 					//复合增长率B
-					System.out.println("复合增长率B,2年,"+StkUtils.number2String(d2,2)+",3年,"+StkUtils.number2String(d3,2)+",4年,"+StkUtils.number2String(d4,2));
+					System.out.println("复合增长率B,2年,"+ServiceUtils.number2String(d2,2)+",3年,"+ServiceUtils.number2String(d3,2)+",4年,"+ServiceUtils.number2String(d4,2));
 					System.out.println();
 				}
 			}
@@ -2661,7 +2632,7 @@ public class Index {
 	public double getPECanBuy() throws Exception {
 		double cagr = getCAGRByEarningsForecast(2);
 		if(cagr == 0)return 0;
-		return StkUtils.numberFormat(Math.pow(1+cagr, 3)*10, 2);
+		return ServiceUtils.numberFormat(Math.pow(1+cagr, 3)*10, 2);
 	}
 	
 	public double getCAGRByEarningsForecast() throws Exception {
@@ -2670,12 +2641,12 @@ public class Index {
 		int i = 0 ;
 		for(StkEarningsForecast ef : list){
 			if(startValue != null)i++;
-			if(ef.getForecastYear().equals(String.valueOf(StkUtils.YEAR-1))){
+			if(ef.getForecastYear().equals(String.valueOf(ServiceUtils.YEAR-1))){
 				startValue = ef.getForecastNetProfit();
 			}
 		}
 		if(i > 1){
-			return StkUtils.calcCAGR(startValue, list.get(list.size()-1).getForecastNetProfit(), i);
+			return ServiceUtils.calcCAGR(startValue, list.get(list.size()-1).getForecastNetProfit(), i);
 		}
 		return 0;
 	}
@@ -2686,7 +2657,7 @@ public class Index {
 		if(list.size() <= years){
 			return 0;
 		}else{
-			return StkUtils.calcCAGR(list.get(0).getForecastNetProfit(), list.get(years).getForecastNetProfit(), years);
+			return ServiceUtils.calcCAGR(list.get(0).getForecastNetProfit(), list.get(years).getForecastNetProfit(), years);
 		}
 	}
 	
@@ -2757,7 +2728,7 @@ public class Index {
 		this.performanceNoticesList = getPerformanceNotices();
 		if(performanceNoticesList != null && performanceNoticesList.size() > 0){
 			StkEarningsNotice en = this.performanceNoticesList.get(0);
-			if(StkUtils.dateBefore(date, en.getFnDate())){
+			if(ServiceUtils.dateBefore(date, en.getFnDate())){
 				return en;
 			}
 		}
@@ -2836,7 +2807,7 @@ public class Index {
 		if(s != null && s.length() > 0){
 			String[] ss = s.split(HTML_BR_BR);
 			for(String str : ss){
-				String name = StringUtils.substringBetween(str, StkConstant.HTML_TAG_B, StkConstant.HTML_TAG_B_END);
+				String name = StringUtils.substringBetween(str, CommonConstant.HTML_TAG_B, CommonConstant.HTML_TAG_B_END);
 				this.f9.add(new Name2Value(name,str));
 			}
 		}
@@ -2866,13 +2837,13 @@ public class Index {
 		if(finance != null){
 			return finance;
 		}
-		String yyyyMMdd = StkUtils.YEAR+StkUtils.MMDD_Q4;
+		String yyyyMMdd = ServiceUtils.YEAR+ServiceUtils.MMDD_Q4;
 		StringBuffer sb = new StringBuffer();
 		double totalCapital = this.getStk().getTotalCapital()/10000;
 		String expect = StringUtils.replace(StringUtils.replace(StringUtils.replace(this.getStk().getEarningExpect(), ",", "，"), "?", ""), "<br>", "；");
-		sb.append(this.code+","+this.getStk().getName()+",总股本,"+StkUtils.number2String(totalCapital,2)+",雪球PE："+this.getPETTM()+",可投资PE："+this.getPECanBuy()+",行业,"+StringUtils.join(this.getIndustryName(), "/")).append(",,,").append(expect).append("\n");
+		sb.append(this.code+","+this.getStk().getName()+",总股本,"+ServiceUtils.number2String(totalCapital,2)+",雪球PE："+this.getPETTM()+",可投资PE："+this.getPECanBuy()+",行业,"+StringUtils.join(this.getIndustryName(), "/")).append(",,,").append(expect).append("\n");
 		sb.append("年份,最低价,最高价,净利润,ROE,毛利率,负债率,主营收入增长,应收账款,预收账款,三项费用比重,经营现金流,净利润增长率,股东人数,最低市值,最高市值,PE低,PE高,PEG低,PEG高").append("\n");
-		String MMdd = StkUtils.formatDate(StkUtils.sf_ymd2.parse(yyyyMMdd), StkUtils.sf_MMdd);
+		String MMdd = ServiceUtils.formatDate(ServiceUtils.sf_ymd2.parse(yyyyMMdd), ServiceUtils.sf_MMdd);
 		boolean flag = false;
 		while(true){
 			Map<String,StkFnDataCust> d = this.getFnDataByDate(yyyyMMdd);
@@ -2881,7 +2852,7 @@ public class Index {
 			}else{
 				if(flag)break;
 			}
-			String year = StkUtils.formatDate(StkUtils.sf_ymd2.parse(yyyyMMdd), StkUtils.sf_yyyy);
+			String year = ServiceUtils.formatDate(ServiceUtils.sf_ymd2.parse(yyyyMMdd), ServiceUtils.sf_yyyy);
 			yyyyMMdd = (Integer.parseInt(year)-1)+MMdd;
 			Map<String,StkFnDataCust> dLast = this.getFnDataByDate(yyyyMMdd);
 			double jlr = d.get(FN_JLR)==null?0.0:d.get(FN_JLR).getFnValue();
@@ -2904,22 +2875,22 @@ public class Index {
 					+","+(d.get("30")==null?"":d.get("30").getFnValue())
 					+","+(d.get("80")==null?"":d.get("80").getFnValue())
 					+","+(d.get(FN_ZYSRZZL)==null?"":d.get(FN_ZYSRZZL).getFnValue())
-					+","+(d.get("210")==null?"":StkUtils.number2String(d.get("210").getFnValue()/10000,2))
-					+","+(d.get("200")==null?"":StkUtils.number2String(d.get("200").getFnValue()/10000,2))
+					+","+(d.get("210")==null?"":ServiceUtils.number2String(d.get("210").getFnValue()/10000,2))
+					+","+(d.get("200")==null?"":ServiceUtils.number2String(d.get("200").getFnValue()/10000,2))
 					+","+(d.get("45")==null?"":d.get("45").getFnValue())
-					+","+(d.get("300")==null?"":StkUtils.number2String(d.get("300").getFnValue()/10000,2))
-					+","+StkUtils.number2String(jlrAdd, 2)
+					+","+(d.get("300")==null?"":ServiceUtils.number2String(d.get("300").getFnValue()/10000,2))
+					+","+ServiceUtils.number2String(jlrAdd, 2)
 					+","+(this.getHolder(year+"1231")==null?"0":this.getHolder(year+"1231").getHolder())
-					+","+StkUtils.number2String(lowValue*totalCapital, 2)
-					+","+StkUtils.number2String(highValue*totalCapital, 2)
-					+","+StkUtils.number2String(lowPE, 2)
-					+","+StkUtils.number2String(highPE, 2)
-					+","+StkUtils.number2String(jlrAdd==0?0:lowPE/jlrAdd, 2)
-					+","+StkUtils.number2String(jlrAdd==0?0:highPE/jlrAdd, 2)
+					+","+ServiceUtils.number2String(lowValue*totalCapital, 2)
+					+","+ServiceUtils.number2String(highValue*totalCapital, 2)
+					+","+ServiceUtils.number2String(lowPE, 2)
+					+","+ServiceUtils.number2String(highPE, 2)
+					+","+ServiceUtils.number2String(jlrAdd==0?0:lowPE/jlrAdd, 2)
+					+","+ServiceUtils.number2String(jlrAdd==0?0:highPE/jlrAdd, 2)
 					).append("\n");
 			
-			if(Integer.parseInt(year) == StkUtils.YEAR || Integer.parseInt(year) == StkUtils.YEAR-1){
-				for(String MMDD:StkUtils.MMDD_Q321){
+			if(Integer.parseInt(year) == ServiceUtils.YEAR || Integer.parseInt(year) == ServiceUtils.YEAR-1){
+				for(String MMDD:ServiceUtils.MMDD_Q321){
 					Map<String,StkFnDataCust> fnQ = this.getFnDataByDate(year+MMDD);
 					if(fnQ.size() > 0){
 						jlr = fnQ.get(FN_JLR)==null?0.0:fnQ.get(FN_JLR).getFnValue();
@@ -2930,17 +2901,17 @@ public class Index {
 							jlrAdd = (jlr - jlrLast)/jlrLast*100;
 						}
 						
-						sb.append(StkUtils.mmddToQuarter(MMDD)
+						sb.append(ServiceUtils.mmddToQuarter(MMDD)
 								+",,,"+jlr
 								+","+(fnQ.get("10")==null?"":fnQ.get("10").getFnValue())
 								+","+(fnQ.get("30")==null?"":fnQ.get("30").getFnValue())
 								+","+(fnQ.get("80")==null?"":fnQ.get("80").getFnValue())
 								+","+(fnQ.get(FN_ZYSRZZL)==null?"":fnQ.get(FN_ZYSRZZL).getFnValue())
-								+","+(fnQ.get("210")==null?"":StkUtils.number2String(fnQ.get("210").getFnValue()/10000,2))
-								+","+(fnQ.get("200")==null?"":StkUtils.number2String(fnQ.get("200").getFnValue()/10000,2))
+								+","+(fnQ.get("210")==null?"":ServiceUtils.number2String(fnQ.get("210").getFnValue()/10000,2))
+								+","+(fnQ.get("200")==null?"":ServiceUtils.number2String(fnQ.get("200").getFnValue()/10000,2))
 								+","+(fnQ.get("45")==null?"":fnQ.get("45").getFnValue())
-								+","+(fnQ.get("300")==null?"":StkUtils.number2String(fnQ.get("300").getFnValue()/10000,2))
-								+","+StkUtils.number2String(jlrAdd, 2)
+								+","+(fnQ.get("300")==null?"":ServiceUtils.number2String(fnQ.get("300").getFnValue()/10000,2))
+								+","+ServiceUtils.number2String(jlrAdd, 2)
 								+","+(this.getHolder(year+MMDD)==null?"0":this.getHolder(year+MMDD).getHolder())
 								+",,,,,,"
 								).append("\n");
@@ -2954,8 +2925,8 @@ public class Index {
 	
 	public List<List> getValueHistoryList() throws Exception {
 		boolean flag = false;
-		String yyyyMMdd = StkUtils.YEAR+StkUtils.MMDD_Q4;
-		String MMdd = StkUtils.formatDate(StkUtils.sf_ymd2.parse(yyyyMMdd), StkUtils.sf_MMdd);
+		String yyyyMMdd = ServiceUtils.YEAR+ServiceUtils.MMDD_Q4;
+		String MMdd = ServiceUtils.formatDate(ServiceUtils.sf_ymd2.parse(yyyyMMdd), ServiceUtils.sf_MMdd);
 		double totalCapital = this.getStk().getTotalCapital()/10000;
 		List rows = new ArrayList();
 		while(true){
@@ -2965,7 +2936,7 @@ public class Index {
 			}else{
 				if(flag)break;
 			}
-			String year = StkUtils.formatDate(StkUtils.sf_ymd2.parse(yyyyMMdd), StkUtils.sf_yyyy);
+			String year = ServiceUtils.formatDate(ServiceUtils.sf_ymd2.parse(yyyyMMdd), ServiceUtils.sf_yyyy);
 			double lowValue = this.getKValueByLLV(year);
 			if(lowValue == 0){
 				break;
@@ -2995,14 +2966,14 @@ public class Index {
 			row.add(year);
 			row.add(String.valueOf(lowValue));
 			row.add(String.valueOf(highValue));
-			row.add(StkUtils.number2String(lowCapital, 2));
-			row.add(StkUtils.number2String(highCapital, 2));
-			row.add(StkUtils.number2String(lowPE, 2));
-			row.add(StkUtils.number2String(highPE, 2));
-			row.add(StkUtils.number2String(lowPB, 2));
-			row.add(StkUtils.number2String(highPB, 2));
-			row.add(StkUtils.number2String(jlrLastAdd==0?0:lowPE/jlrLastAdd, 2));
-			row.add(StkUtils.number2String(jlrLastAdd==0?0:highPE/jlrLastAdd, 2));
+			row.add(ServiceUtils.number2String(lowCapital, 2));
+			row.add(ServiceUtils.number2String(highCapital, 2));
+			row.add(ServiceUtils.number2String(lowPE, 2));
+			row.add(ServiceUtils.number2String(highPE, 2));
+			row.add(ServiceUtils.number2String(lowPB, 2));
+			row.add(ServiceUtils.number2String(highPB, 2));
+			row.add(ServiceUtils.number2String(jlrLastAdd==0?0:lowPE/jlrLastAdd, 2));
+			row.add(ServiceUtils.number2String(jlrLastAdd==0?0:highPE/jlrLastAdd, 2));
 			rows.add(row);
 		}
 		return rows;
@@ -3250,7 +3221,7 @@ public class Index {
 							abs = Math.abs(ma120 - ma60);
 							min = Math.min(ma120, ma60);
 							if(abs/min <= flag){
-								StkUtils.Pair p = StkUtils.minmax(d);
+								ServiceUtils.Pair p = ServiceUtils.minmax(d);
 								double dd = (p.getMax()-p.getMin())/p.getMin();
 								if(dd <= 0.040){
 									this.changePercent = dd;
@@ -3302,7 +3273,7 @@ public class Index {
 							abs = Math.abs(ma250 - ma60);
 							min = Math.min(ma250, ma60);
 							if(abs/min <= flag){
-								StkUtils.Pair p = StkUtils.minmax(d);
+								ServiceUtils.Pair p = ServiceUtils.minmax(d);
 								double dd = (p.getMax()-p.getMin())/p.getMin();
 								if(dd <= 0.040){
 									this.changePercent = dd;
@@ -3349,7 +3320,7 @@ public class Index {
 						abs = Math.abs(ma30 - ma60);
 						min = Math.min(ma30, ma60);
 						if(abs/min <= flag){
-							StkUtils.Pair p = StkUtils.minmax(d);
+							ServiceUtils.Pair p = ServiceUtils.minmax(d);
 							double dd = (p.getMax()-p.getMin())/p.getMin();
 							if(dd <= 0.03){
 								this.changePercent = dd;
@@ -3389,7 +3360,7 @@ public class Index {
 				min = Math.min(ma10, ma20);
 				//System.out.println("abs/min="+abs/min);
 				if(abs/min <= flag){
-					StkUtils.Pair p = StkUtils.minmax(d);
+					ServiceUtils.Pair p = ServiceUtils.minmax(d);
 					double dd = (p.getMax()-p.getMin())/p.getMin();
 					if(dd <= 0.015){
 						this.changePercent = dd;
@@ -3418,7 +3389,7 @@ public class Index {
 				abs = Math.abs(ma10 - ma20);
 				min = Math.min(ma10, ma20);
 				if(abs/min <= flag){
-					StkUtils.Pair p = StkUtils.minmax(d);
+					ServiceUtils.Pair p = ServiceUtils.minmax(d);
 					double dd = (p.getMax()-p.getMin())/p.getMin();
 					if(dd < 0.02){
 						this.changePercent = dd;
@@ -3746,12 +3717,12 @@ public class Index {
 	}
 
 	public String getXueqiuLinkByCode(){
-	    String scode = (market == 1?StkUtils.getStkLocation(code):code);
-	    return StkUtils.wrapLink(code, "http://xueqiu.com/S/"+scode);
+	    String scode = (market == 1?ServiceUtils.getStkLocation(code):code);
+	    return ServiceUtils.wrapLink(code, "http://xueqiu.com/S/"+scode);
     }
     public String getXueqiuLinkByName(){
-        String scode = (market == 1?(StkUtils.getStkLocation(code)+code):code);
-        return StkUtils.wrapLink(name, "http://xueqiu.com/S/"+scode);
+        String scode = (market == 1?(ServiceUtils.getStkLocation(code)+code):code);
+        return ServiceUtils.wrapLink(name, "http://xueqiu.com/S/"+scode);
     }
 	
 	public String getCode() {
@@ -3799,7 +3770,7 @@ public class Index {
 	}
 	
 	public String getNameByTrim(){
-		return StringUtils.replace(this.getName(), StkConstant.MARK_BLANK_SPACE, StkConstant.MARK_EMPTY);
+		return StringUtils.replace(this.getName(), CommonConstant.MARK_BLANK_SPACE, CommonConstant.MARK_EMPTY);
 	}
 	
 	public String getNameforCate4(){
@@ -3850,7 +3821,7 @@ public class Index {
 	
 	public String toHtml(){
 		try {
-			return this.getName() + "["+StkUtils.wrapCodeLink(this.code)+"]["+StkUtils.number2String(this.getTotalMarketValue(),2)+"亿]";
+			return this.getName() + "["+ServiceUtils.wrapCodeLink(this.code)+"]["+ServiceUtils.number2String(this.getTotalMarketValue(),2)+"亿]";
 		} catch (Exception e) {
 			e.printStackTrace();
 		} 
@@ -3859,7 +3830,7 @@ public class Index {
 	
 	public String toString(){
 		try {
-			return this.getName() + "["+this.code+"]["+StkUtils.number2String(this.getTotalMarketValue(),2)+"亿]";
+			return this.getName() + "["+this.code+"]["+ServiceUtils.number2String(this.getTotalMarketValue(),2)+"亿]";
 		} catch (Exception e) {
 			e.printStackTrace();
 		} 

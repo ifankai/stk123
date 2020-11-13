@@ -1,7 +1,8 @@
+<%@ page import="com.stk123.common.CommonConstant" %>
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@include file="/common/import.jsp" %>
 <%
-	pageContext.setAttribute(StkConstant.PAGE_TITLE, "业绩预告");
+	pageContext.setAttribute(CommonConstant.PAGE_TITLE, "业绩预告");
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -31,16 +32,16 @@
     </div>
     <div class="controls" style="float:right;">
     <%
-	    String now = StkUtils.getToday();
-		String prev = StkUtils.getPrevQuarter(now);
-		String next = StkUtils.getNextQuarter(now);
+	    String now = ServiceUtils.getToday();
+		String prev = ServiceUtils.getPrevQuarter(now);
+		String next = ServiceUtils.getNextQuarter(now);
     %>
 		<div class="input-append">
 			<b>业绩预告:</b>
 			季报日期  <select id="fndate" style="width:95px">
 						<option value="">--All--</option>
-						<option value="<%=prev %>"><%=StkUtils.formatDate(prev) %></option>
-						<option value="<%=next %>"><%=StkUtils.formatDate(next) %></option>
+						<option value="<%=prev %>"><%=ServiceUtils.formatDate(prev) %></option>
+						<option value="<%=next %>"><%=ServiceUtils.formatDate(next) %></option>
 					</select>
 			业绩预告低点>=<input type="text" id="erlow" style="width: 30px"/>
 			业绩预告低点<=<input type="text" id="erlow2" style="width: 30px"/>
@@ -52,8 +53,8 @@
 			~<input type="text" id="mvhigh" style="width: 30px"/>
 		</div>
 		<div class="input-append">
-			业绩预告公告日期 <input class="datepicker" id="noticefrom" value="<%=StkUtils.getDate(-180, StkUtils.sf_ymd14) %>" type="text" style="width:70px"><span class="add-on"><i class="icon-calendar"></i></span>
-			到 <input class="datepicker" id="noticeto" value="<%=StkUtils.getDate(30, StkUtils.sf_ymd14) %>" type="text" style="width:70px"><span class="add-on"><i class="icon-calendar"></i></span>
+			业绩预告公告日期 <input class="datepicker" id="noticefrom" value="<%=ServiceUtils.getDate(-180, ServiceUtils.sf_ymd14) %>" type="text" style="width:70px"><span class="add-on"><i class="icon-calendar"></i></span>
+			到 <input class="datepicker" id="noticeto" value="<%=ServiceUtils.getDate(30, ServiceUtils.sf_ymd14) %>" type="text" style="width:70px"><span class="add-on"><i class="icon-calendar"></i></span>
 			查询股票
 			<input type="text" id="querystk" style="width:80px"/>
 			<button class="btn" id="btn-search" onclick="search(true, false);">查询</button>&nbsp;&nbsp;&nbsp;&nbsp;

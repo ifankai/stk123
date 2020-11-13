@@ -2,7 +2,7 @@
 <%@include file="/common/import.jsp" %>
 <%
 	String q = RequestUtils.getString(request, "q");
-	pageContext.setAttribute(StkConstant.PAGE_TITLE, q+" - 搜索");
+	pageContext.setAttribute(CommonConstant.PAGE_TITLE, q+" - 搜索");
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>

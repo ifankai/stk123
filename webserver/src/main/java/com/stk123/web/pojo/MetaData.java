@@ -1,11 +1,11 @@
 package com.stk123.web.pojo;
 
-import com.stk123.StkConstant;
+import com.stk123.common.CommonConstant;
 
 public class MetaData {
 	public String id;
 	//public String title;
-	public String isLeaf = StkConstant.YES_N;
+	public String isLeaf = CommonConstant.YES_N;
 	
 	public String getId() {
 		return id;

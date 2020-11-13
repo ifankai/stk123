@@ -7,17 +7,17 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.stk123.bo.StkLabel;
-import com.stk123.bo.StkLabelText;
-import com.stk123.bo.StkText;
-import com.stk123.tool.util.StkUtils;
-import com.stk123.tool.db.TableTools;
-import com.stk123.tool.db.connection.Pool;
-import com.stk123.tool.db.util.DBUtil;
-import com.stk123.tool.db.util.sequence.SequenceUtils;
-import com.stk123.tool.util.ConfigUtils;
-import com.stk123.tool.util.JdbcUtils;
-import com.stk123.StkConstant;
+import com.stk123.model.bo.StkLabel;
+import com.stk123.model.bo.StkLabelText;
+import com.stk123.model.bo.StkText;
+import com.stk123.service.ServiceUtils;
+import com.stk123.common.db.TableTools;
+import com.stk123.common.db.connection.Pool;
+import com.stk123.common.db.util.DBUtil;
+import com.stk123.common.db.util.sequence.SequenceUtils;
+import com.stk123.common.util.ConfigUtils;
+import com.stk123.common.util.JdbcUtils;
+import com.stk123.common.CommonConstant;
 
 public class Label {
 	
@@ -119,7 +119,7 @@ public class Label {
 			conn = Pool.getPool().getConnection();
 			List params = new ArrayList();
 			params.add(textId);
-			JdbcUtils.delete(conn, SQL_DELETE_LABEL_TEXT_BY_NOTIN_LABLE_ID + StringUtils.join(labelIds, StkConstant.MARK_COMMA) + StkConstant.MARK_PARENTHESIS_RIGHT, params);
+			JdbcUtils.delete(conn, SQL_DELETE_LABEL_TEXT_BY_NOTIN_LABLE_ID + StringUtils.join(labelIds, CommonConstant.MARK_COMMA) + CommonConstant.MARK_PARENTHESIS_RIGHT, params);
 		}finally{
 			Pool.getPool().free(conn);
 		}
@@ -214,8 +214,8 @@ public class Label {
 			Label label = new Label(1);
 			List<StkText> sts = JdbcUtils.list(conn, "select id,title,disp_order from stk_text where type=0 order by disp_order desc,insert_time desc", StkText.class);
 			for(StkText text : sts){
-				Set<String> labels = StkUtils.getLabels(text.getTitle());
-				labels.addAll(StkUtils.getLabels(text.getText()));
+				Set<String> labels = ServiceUtils.getLabels(text.getTitle());
+				labels.addAll(ServiceUtils.getLabels(text.getText()));
 				if(labels.size() > 0){
 					//label.addLink(labels, text.getId());
 				}

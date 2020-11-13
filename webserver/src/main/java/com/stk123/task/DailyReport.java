@@ -12,29 +12,30 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
-import com.stk123.tool.util.*;
+import com.stk123.service.*;
+import com.stk123.common.util.*;
 import org.apache.commons.lang.StringUtils;
 import org.htmlparser.Node;
 import org.htmlparser.tags.LinkTag;
 import org.htmlparser.tags.Span;
 
-import com.stk123.bo.Stk;
-import com.stk123.bo.StkFnData;
-import com.stk123.bo.StkFnType;
-import com.stk123.bo.StkImportInfo;
-import com.stk123.bo.StkIndustryRank;
-import com.stk123.bo.StkIndustryType;
-import com.stk123.bo.StkInfoLog;
-import com.stk123.bo.StkKline;
-import com.stk123.pojo.IndustryChange;
-import com.stk123.pojo.StkChange;
-import com.stk123.tool.db.TableTools;
-import com.stk123.tool.db.util.DBUtil;
-import com.stk123.tool.db.util.DateUtil;
-import com.stk123.tool.html.HtmlA;
-import com.stk123.tool.html.HtmlTable;
-import com.stk123.tool.html.HtmlTd;
-import com.stk123.tool.html.HtmlTr;
+import com.stk123.model.bo.Stk;
+import com.stk123.model.bo.StkFnData;
+import com.stk123.model.bo.StkFnType;
+import com.stk123.model.bo.StkImportInfo;
+import com.stk123.model.bo.StkIndustryRank;
+import com.stk123.model.bo.StkIndustryType;
+import com.stk123.model.bo.StkInfoLog;
+import com.stk123.model.bo.StkKline;
+import com.stk123.model.pojo.IndustryChange;
+import com.stk123.model.pojo.StkChange;
+import com.stk123.common.db.TableTools;
+import com.stk123.common.db.util.DBUtil;
+import com.stk123.common.db.util.DateUtil;
+import com.stk123.common.html.HtmlA;
+import com.stk123.common.html.HtmlTable;
+import com.stk123.common.html.HtmlTd;
+import com.stk123.common.html.HtmlTr;
 
 
 /**
@@ -124,14 +125,14 @@ public class DailyReport {
 		html.append("<div><img src='http://www.yz21.org/stock/szsec/sh-zj.png' alt='沪市大盘资金指标' /></div>");
 		try{
 			conn = DBUtil.getConnection();
-			String mailTitle = "Daily Report ("+StkUtils.formatDate(new Date())+")";
+			String mailTitle = "Daily Report ("+ServiceUtils.formatDate(new Date())+")";
 			
 			//--------------------import info
 			html.append(createImportInfoTable(conn).toHtml());
 			//--------------------industry care
 			html.append(createIndustryCareTable());
 			//--------------------industry rank
-			if(Integer.parseInt(StkUtils.formatDate(new Date(), StkUtils.sf_hh)) >= 15){
+			if(Integer.parseInt(ServiceUtils.formatDate(new Date(), ServiceUtils.sf_hh)) >= 15){
 				List<HtmlTable> industryTables = createIndustryRankTable(conn);
 				for(HtmlTable industryTable:industryTables){
 					html.append(industryTable.toHtml()).append("<br>");
@@ -152,7 +153,7 @@ public class DailyReport {
 			Integer reportId =  JdbcUtils.load(conn, "select nvl(max(id)+1,100001) from stk_pe", Integer.class);
 			List params = new ArrayList();
 			params.add(reportId);
-			params.add(StkUtils.formatDate(new Date(),StkUtils.sf_ymd2));
+			params.add(ServiceUtils.formatDate(new Date(),ServiceUtils.sf_ymd2));
 			params.add(JdbcUtils.createClob(html.toString()));
 			JdbcUtils.insert(conn, "insert into stk_pe values (?,?,?)", params);
 			
@@ -203,7 +204,7 @@ public class DailyReport {
 			params.clear();
 			params.add(importInfo.getCode());
 			Stk stk = JdbcUtils.load(conn, "select code,name from stk where code=?", params, Stk.class);
-			td.text = StkUtils.wrapName(stk.getName(), stk.getCode())+"["+StkUtils.wrapCode(stk.getCode())+"]";
+			td.text = ServiceUtils.wrapName(stk.getName(), stk.getCode())+"["+ServiceUtils.wrapCode(stk.getCode())+"]";
 			tr.columns.add(td);
 			
 			tr.columns.add(createIndustryColumn(conn,importInfo.getCode()));
@@ -213,7 +214,7 @@ public class DailyReport {
 			tr.columns.add(td);
 			
 			td = new HtmlTd();
-			td.text = StkUtils.formatDate(importInfo.getInsertTime());
+			td.text = ServiceUtils.formatDate(importInfo.getInsertTime());
 			tr.columns.add(td);
 			
 			tr.columns.add(createImportInfoCareColumn(String.valueOf(importInfo.getId())));
@@ -274,7 +275,7 @@ public class DailyReport {
 							stkChange.setStk(stk);
 							double closeChange = (stkKlines.get(0).getCloseChange()-stkKlines.get(days).getCloseChange())/stkKlines.get(days).getCloseChange() * 100;
 							//System.out.println(stk.getCode()+","+days+","+closeChange+","+stkKlines.get(0).getKlineDate()+","+stkKlines.get(days-1).getKlineDate());
-							stkChange.setCloseChange(Double.parseDouble(StkUtils.number2String(closeChange, 2)));
+							stkChange.setCloseChange(Double.parseDouble(ServiceUtils.number2String(closeChange, 2)));
 							rank.addStkChange(stkChange);
 						}
 					}
@@ -304,7 +305,7 @@ public class DailyReport {
 				realNum ++;
 			}
 			if(realNum != 0){
-				a.setCloseChange(Double.parseDouble(StkUtils.number2String(totalChange/realNum,2)));
+				a.setCloseChange(Double.parseDouble(ServiceUtils.number2String(totalChange/realNum,2)));
 			}
 		}
 		Collections.sort(ranks,new Comparator<IndustryChange>(){
@@ -400,7 +401,7 @@ public class DailyReport {
 			tmp.clear();
 			for(int i=0;i<a.getStkChanges().size();i++){
 				StkChange stk = a.getStkChanges().get(i);
-				String str = stk.getStk().getName()+"["+StkUtils.wrapCode(stk.getStk().getCode())+"]["+StkUtils.wrapColorForChange(stk.getCloseChange())+"%]";
+				String str = stk.getStk().getName()+"["+ServiceUtils.wrapCode(stk.getStk().getCode())+"]["+ServiceUtils.wrapColorForChange(stk.getCloseChange())+"%]";
 				String s = null;
 				if(i==0){
 					s = "<div style='float:left'>" + str;
@@ -464,14 +465,14 @@ public class DailyReport {
 			
 			//第三列 开始关注日期
 			column = new HtmlTd();
-			int workingDays = StkUtils.getWorkingDays(stk.getStatusDate(), new Date());
+			int workingDays = ServiceUtils.getWorkingDays(stk.getStatusDate(), new Date());
 			String strWDays = "";
 			if( workingDays >= 5 && workingDays <= 10){
 				strWDays = "<font color='#FF0000'>("+workingDays+")</font>";
 			}else{
 				strWDays = "("+workingDays+")";
 			}
-			column.text = StkUtils.sf_ymd.format(new Date(stk.getStatusDate().getTime())).substring(2, 10)+strWDays;
+			column.text = ServiceUtils.sf_ymd.format(new Date(stk.getStatusDate().getTime())).substring(2, 10)+strWDays;
 			row.columns.add(column);	
 			
 			//第四列 公司新闻
@@ -563,7 +564,7 @@ public class DailyReport {
 	
 	
 	private static String getInfoFromWindForCareStk(String code) throws Exception {
-		String loc = StkUtils.getStkLocation(code);
+		String loc = ServiceUtils.getStkLocation(code);
 		StringBuilder careInfos = new StringBuilder();
 		
 		//wind公司新闻
@@ -581,7 +582,7 @@ public class DailyReport {
 						continue;
 					}
 					String date = StringUtils.substringBetween(info, "\"newsdate\":\"", "\",\"caption");
-					Date d = StkUtils.sf_ymd.parse(date);
+					Date d = ServiceUtils.sf_ymd.parse(date);
 					if(d.before(DateUtil.addDay(new Date(), -7))){
 						continue;
 					}
@@ -625,7 +626,7 @@ public class DailyReport {
 			List<Node> span = HtmlUtils.getNodeListByTagName(li.get(0), "span");
 			if(span != null && span.get(0).toPlainTextString().length() > 0){
 				String time = StringUtils.substringBetween(StringUtils.trim(span.get(0).toPlainTextString()), "(", " ");
-				Date date = StkUtils.sf_ymd.parse(StkUtils.YEAR+"-"+time);
+				Date date = ServiceUtils.sf_ymd.parse(ServiceUtils.YEAR+"-"+time);
 				if(date.after(DateUtil.addDay(new Date(), -2))){
 					List<Node> link = HtmlUtils.getNodeListByTagName(li.get(0), "a");
 					sql = "insert into stk_info_log(code,source,description,url,insert_time) values(?,?,?,?,?)";
@@ -635,7 +636,7 @@ public class DailyReport {
 					params.add(title);
 					String url = ((LinkTag)link.get(0)).getAttribute("href");
 					params.add(url);
-					if(StringUtils.contains(title, name) && contains(title, keywordsInclude) && !contains(title, keywordsExclude) && StkUtils.percentigeContainAndGreatThan(title,filterPercentige)){
+					if(StringUtils.contains(title, name) && contains(title, keywordsInclude) && !contains(title, keywordsExclude) && ServiceUtils.percentigeContainAndGreatThan(title,filterPercentige)){
 						HtmlA a = new HtmlA();
 						a.text = title;
 						a.attributes.put("href", url);
@@ -652,7 +653,7 @@ public class DailyReport {
 				}
 				List<Node> span = HtmlUtils.getNodeListByTagName(n, "span");
 				String time = StringUtils.substringBetween(StringUtils.trim(span.get(0).toPlainTextString()), "(", " ");
-				Date date = StkUtils.sf_ymd.parse(StkUtils.YEAR+"-"+time);
+				Date date = ServiceUtils.sf_ymd.parse(ServiceUtils.YEAR+"-"+time);
 				if(date.before(DateUtil.addDay(new Date(), -2))){
 					continue;
 				}
@@ -674,7 +675,7 @@ public class DailyReport {
 					JdbcUtils.update(conn, sql, params);
 				}
 				
-				if(StringUtils.contains(title, name) && contains(title, keywordsInclude) && !contains(title, keywordsExclude) && StkUtils.percentigeContainAndGreatThan(title,filterPercentige)){
+				if(StringUtils.contains(title, name) && contains(title, keywordsInclude) && !contains(title, keywordsExclude) && ServiceUtils.percentigeContainAndGreatThan(title,filterPercentige)){
 					HtmlA a1 = new HtmlA();
 					a1.text = title;
 					a1.attributes.put("href", a.getAttribute("href"));
@@ -687,7 +688,7 @@ public class DailyReport {
 	
 	private static void getInfoFromWind(Connection conn,Date now,String code,String name,List<String> titleContainKeywords) throws Exception {
 		List params = new ArrayList();
-		String loc = StkUtils.getStkLocation(code);;
+		String loc = ServiceUtils.getStkLocation(code);;
 		
 		//wind大事提醒
 		String url = "http://114.80.159.18/CorpEventsWeb/NewsEventAlert.aspx?windcode="+code+"."+loc+"&t=1";
@@ -740,9 +741,9 @@ public class DailyReport {
 						HtmlA a = new HtmlA();
 						a.text = "大事提醒";
 						a.attributes.put("href", url);
-						titleContainKeywords.add("["+a.toHtml()+"]"+StkUtils.wrapColorForKeyword(title2, keywordsInclude));
+						titleContainKeywords.add("["+a.toHtml()+"]"+ServiceUtils.wrapColorForKeyword(title2, keywordsInclude));
 						
-						if(StkUtils.percentigeContainAndGreatThan(title2,50.0)){
+						if(ServiceUtils.percentigeContainAndGreatThan(title2,50.0)){
 							params.clear();
 							params.add(code);
 							params.add("[大事提醒]"+title2);
@@ -789,7 +790,7 @@ public class DailyReport {
 				params.add(title);
 				String target = StringUtils.substringBetween(first, "\"target\":\"", "\"");
 				params.add(target);
-				if(contains(title, keywordsInclude) && !contains(title, keywordsExclude) && StkUtils.percentigeContainAndGreatThan(title,filterPercentige)){
+				if(contains(title, keywordsInclude) && !contains(title, keywordsExclude) && ServiceUtils.percentigeContainAndGreatThan(title,filterPercentige)){
 					HtmlA a = new HtmlA();
 					a.text = "Wind";
 					a.attributes.put("href", url);
@@ -799,7 +800,7 @@ public class DailyReport {
 					a2.attributes.put("href", target);
 					
 					String date = StringUtils.substringBetween(first, "\"newsdate\":\"", "\",\"caption");
-					Date d = StkUtils.sf_ymd.parse(date);
+					Date d = ServiceUtils.sf_ymd.parse(date);
 					if(d.after(DateUtil.addDay(new Date(), -2))){
 						titleContainKeywords.add("["+a.toHtml()+"]"+a2.toHtml()+"("+date+")");
 					}
@@ -813,7 +814,7 @@ public class DailyReport {
 						continue;
 					}
 					String date = StringUtils.substringBetween(info, "\"newsdate\":\"", "\",\"caption");
-					Date d = StkUtils.sf_ymd.parse(date);
+					Date d = ServiceUtils.sf_ymd.parse(date);
 					if(d.before(DateUtil.addDay(new Date(), -2))){
 						continue;
 					}
@@ -832,7 +833,7 @@ public class DailyReport {
 						params.add(code);
 						JdbcUtils.update(conn, sql, params);
 					}
-					if(/*StringUtils.contains(title, name) && */contains(title, keywordsInclude)&& !contains(title, keywordsExclude) && StkUtils.percentigeContainAndGreatThan(title,filterPercentige)){
+					if(/*StringUtils.contains(title, name) && */contains(title, keywordsInclude)&& !contains(title, keywordsExclude) && ServiceUtils.percentigeContainAndGreatThan(title,filterPercentige)){
 						HtmlA a = new HtmlA();
 						a.text = "Wind";
 						a.attributes.put("href", url);
@@ -906,7 +907,7 @@ public class DailyReport {
 				hasThead = true;
 			}
 			
-			List<StkFnData> filterDatas = filter(fnDatas,StkUtils.YEAR - fnReportYears,"1231");
+			List<StkFnData> filterDatas = filter(fnDatas,ServiceUtils.YEAR - fnReportYears,"1231");
 			List<Double> fnValues = ma(filterDatas,2);
 			
 			boolean hasLessValue = false;
@@ -984,7 +985,7 @@ public class DailyReport {
 						if(i==2){//第二季
 							td.attributes.put("style","color:#FF6600");
 						}
-						td.text += "("+StkUtils.number2String(upByYearGreaterThan30*100,0)+"%)";
+						td.text += "("+ServiceUtils.number2String(upByYearGreaterThan30*100,0)+"%)";
 					}else if(upByYearGreaterThan30 >= 0.2){
 						if(i==1){//第一季
 							td.attributes.put("style","color:#336600");
@@ -992,7 +993,7 @@ public class DailyReport {
 						if(i==2){//第二季
 							td.attributes.put("style","color:#339900");
 						}
-						td.text += "("+StkUtils.number2String(upByYearGreaterThan30*100,0)+"%)";
+						td.text += "("+ServiceUtils.number2String(upByYearGreaterThan30*100,0)+"%)";
 					}
 				}else{//都是正的
 					double upByYearGreaterThan30 = upByYear(fnDatas,fnData.getFnDate());
@@ -1003,7 +1004,7 @@ public class DailyReport {
 						if(i==2){//第二季
 							td.attributes.put("style","color:#FF6600");
 						}
-						td.text += "("+StkUtils.number2String(upByYearGreaterThan30*100,0)+"%)";
+						td.text += "("+ServiceUtils.number2String(upByYearGreaterThan30*100,0)+"%)";
 					}else if(upByYearGreaterThan30 <= -0.2){
 						if(i==1){//第一季
 							td.attributes.put("style","color:#336600");
@@ -1011,7 +1012,7 @@ public class DailyReport {
 						if(i==2){//第二季
 							td.attributes.put("style","color:#339900");
 						}
-						td.text += "("+StkUtils.number2String(upByYearGreaterThan30*100,0)+"%)";
+						td.text += "("+ServiceUtils.number2String(upByYearGreaterThan30*100,0)+"%)";
 					}
 				}
 			}
@@ -1101,9 +1102,9 @@ public class DailyReport {
 		
 		link = new HtmlA();
 		link.text = "F9";
-		String loc = StkUtils.getStkLocation(code);
+		String loc = ServiceUtils.getStkLocation(code);
 		link.attributes.put("href", "http://www.windin.com/home/stock/html/"+code+"."+loc+".shtml");
-		td.text = td.text+"["+StkUtils.wrapCode(code)+"]"+"["+link.toHtml()+"]";
+		td.text = td.text+"["+ServiceUtils.wrapCode(code)+"]"+"["+link.toHtml()+"]";
 		
 		link = new HtmlA();
 		link.text = "情报";

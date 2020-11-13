@@ -14,10 +14,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.stk123.model.User;
-import com.stk123.tool.util.StkUtils;
-import com.stk123.tool.db.connection.Pool;
+import com.stk123.service.ServiceUtils;
+import com.stk123.common.db.connection.Pool;
 import com.stk123.web.core.util.CookieUtils;
-import com.stk123.StkConstant;
+import com.stk123.common.CommonConstant;
 import com.stk123.web.action.LoginAction;
 
 
@@ -36,7 +36,7 @@ public class AuthorizationServletFilter implements Filter {
 		HttpServletRequest request = (HttpServletRequest) servletRequest;
 		HttpServletResponse response = (HttpServletResponse) servletResponse;
         try {
-        	if(!StkUtils.isDev()){
+        	if(!ServiceUtils.isDev()){
         		filterChain.doFilter(servletRequest, servletResponse);
         		return;
         	}
@@ -45,8 +45,8 @@ public class AuthorizationServletFilter implements Filter {
             //登陆页就不需要进行验证了   
             if(!PATH_INDEX.equals(requestURI)){   
                 HttpSession session = request.getSession(false);   
-                if(session == null || session.getAttribute(StkConstant.SESSION_CURRENT_USER) == null ){
-                	String autologin = CookieUtils.getCookieValue(request, StkConstant.PARAMETER_AUTOLOGIN);
+                if(session == null || session.getAttribute(CommonConstant.SESSION_CURRENT_USER) == null ){
+                	String autologin = CookieUtils.getCookieValue(request, CommonConstant.PARAMETER_AUTOLOGIN);
                 	if("1".equals(autologin) && autoLogin(request,response)){
                 		/*String username = CookieUtils.getCookieValue(request, "username");  
                         String password = CookieUtils.getCookieValue(request, "password");  
@@ -67,8 +67,8 @@ public class AuthorizationServletFilter implements Filter {
 	}
 	
 	public boolean autoLogin(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String username = CookieUtils.getCookieValue(request, StkConstant.PARAMETER_USERNAME);  
-        String password = CookieUtils.getCookieValue(request, StkConstant.PARAMETER_PASSWORD);;  
+        String username = CookieUtils.getCookieValue(request, CommonConstant.PARAMETER_USERNAME);
+        String password = CookieUtils.getCookieValue(request, CommonConstant.PARAMETER_PASSWORD);;
         Connection conn = Pool.getPool().getConnection();
         User user = LoginAction.login(conn, request, response, username, password);
         Pool.getPool().free(conn);

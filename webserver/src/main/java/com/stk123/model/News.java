@@ -3,9 +3,9 @@ package com.stk123.model;
 import java.sql.Connection;
 import java.util.List;
 
-import com.stk123.bo.StkImportInfoType;
-import com.stk123.tool.db.connection.Pool;
-import com.stk123.tool.util.JdbcUtils;
+import com.stk123.model.bo.StkImportInfoType;
+import com.stk123.common.db.connection.Pool;
+import com.stk123.common.util.JdbcUtils;
 
 public class News {
 	

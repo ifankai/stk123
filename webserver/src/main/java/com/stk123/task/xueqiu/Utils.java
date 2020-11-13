@@ -2,9 +2,9 @@ package com.stk123.task.xueqiu;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.stk123.task.XueqiuUtils;
-import com.stk123.tool.util.HtmlUtils;
-import com.stk123.tool.util.HttpUtils;
+import com.stk123.service.XueqiuUtils;
+import com.stk123.common.util.HtmlUtils;
+import com.stk123.service.HttpUtils;
 import org.apache.commons.lang.StringUtils;
 import org.htmlparser.Node;
 

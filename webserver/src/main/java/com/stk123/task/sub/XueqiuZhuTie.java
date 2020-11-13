@@ -13,15 +13,15 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.stk123.bo.StkDictionary;
-import com.stk123.tool.util.StkUtils;
-import com.stk123.task.XueqiuUtils;
-import com.stk123.tool.baidu.BaiDuHi;
-import com.stk123.tool.db.TableTools;
-import com.stk123.tool.util.ConfigUtils;
-import com.stk123.tool.util.EmailUtils;
-import com.stk123.tool.util.HttpUtils;
-import com.stk123.tool.util.JsonUtils;
+import com.stk123.model.bo.StkDictionary;
+import com.stk123.service.ServiceUtils;
+import com.stk123.service.XueqiuUtils;
+import com.stk123.service.baidu.BaiDuHi;
+import com.stk123.common.db.TableTools;
+import com.stk123.common.util.ConfigUtils;
+import com.stk123.common.util.EmailUtils;
+import com.stk123.service.HttpUtils;
+import com.stk123.common.util.JsonUtils;
 import com.stk123.web.StkDict;
 
 
@@ -44,7 +44,7 @@ public class XueqiuZhuTie {
 				try{
 					Date startTime = new Date();
 					if(lastStartTime == null){
-						lastStartTime = StkUtils.addMinute(startTime, -180);
+						lastStartTime = ServiceUtils.addMinute(startTime, -180);
 					}
 					System.out.println("[XueqiuZhuTie]"+lastStartTime);
 					run(lastStartTime);
@@ -90,7 +90,7 @@ public class XueqiuZhuTie {
 					Date createTime = cal.getTime();
 					if(createTime.after(time) && !sendMsg.contains(createAt)){
 						sendMsg.add(createAt);
-						results.add(dict.getValue().getText()+"["+StkUtils.formatDate(createTime,StkUtils.sf_ymd9)+"]"+":"+article);
+						results.add(dict.getValue().getText()+"["+ServiceUtils.formatDate(createTime,ServiceUtils.sf_ymd9)+"]"+":"+article);
 					}
 				}
 				Thread.currentThread().sleep(1000);

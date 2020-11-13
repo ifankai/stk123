@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.stk123.tool.db.connection.Pool;
+import com.stk123.common.db.connection.Pool;
 
 
 public class ActionContext implements Serializable {

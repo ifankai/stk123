@@ -24,17 +24,17 @@ import org.apache.commons.beanutils.converters.IntegerConverter;
 import org.apache.commons.beanutils.converters.LongConverter;
 import org.apache.commons.beanutils.converters.ShortConverter;
 
-import com.stk123.bo.StkUser;
+import com.stk123.model.bo.StkUser;
 import com.stk123.model.User;
-import com.stk123.tool.util.StkUtils;
-import com.stk123.tool.db.connection.Pool;
-import com.stk123.tool.util.CacheUtils;
+import com.stk123.service.ServiceUtils;
+import com.stk123.common.db.connection.Pool;
+import com.stk123.common.util.CacheUtils;
 import com.stk123.web.core.config.ActionConfig;
 import com.stk123.web.core.config.ConfigHelper;
 import com.stk123.web.core.config.ForwardConfig;
 import com.stk123.web.core.config.MvcConfig;
 import com.stk123.web.core.util.RequestUtils;
-import com.stk123.StkConstant;
+import com.stk123.common.CommonConstant;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -88,7 +88,7 @@ public class ActionServlet extends HttpServlet {
 		    ConvertUtils.register(new LongConverter(null), Long.class);
 		    ConvertUtils.register(new ShortConverter(null), Short.class);
 
-		    if(StkUtils.isDev()){
+		    if(ServiceUtils.isDev()){
 		    	System.out.println("This is localhost");
 		    }else{
 		    	System.out.println("This is stk123.cn");
@@ -201,11 +201,11 @@ public class ActionServlet extends HttpServlet {
             ctx.setApplication(this.getServletContext());
             ctx.setForm(form);
             if(session != null){
-            	User user = (User)session.getAttribute(StkConstant.SESSION_CURRENT_USER);
-    			ctx.put(StkConstant.SESSION_CURRENT_USER, user);
+            	User user = (User)session.getAttribute(CommonConstant.SESSION_CURRENT_USER);
+    			ctx.put(CommonConstant.SESSION_CURRENT_USER, user);
             	//throw new ServletException("请重新登陆!");
             }
-            if(!StkUtils.isDev()){
+            if(!ServiceUtils.isDev()){
             	StkUser su = new StkUser();
             	su.setId(1);
             	su.setNickname("Stk123之路");
@@ -213,8 +213,8 @@ public class ActionServlet extends HttpServlet {
             	if(session == null){
             		session = request.getSession();
             	}
-            	session.setAttribute(StkConstant.SESSION_CURRENT_USER, user);
-            	ctx.put(StkConstant.SESSION_CURRENT_USER, user);
+            	session.setAttribute(CommonConstant.SESSION_CURRENT_USER, user);
+            	ctx.put(CommonConstant.SESSION_CURRENT_USER, user);
             }
             ActionContext.setContext(ctx);
             return ctx;
@@ -267,7 +267,7 @@ public class ActionServlet extends HttpServlet {
 		} catch (Exception e) {
 			throw new ServletException(e);
 		}*/
-		return StkConstant.ACTION_FAIL;
+		return CommonConstant.ACTION_FAIL;
 	}
     
     
@@ -324,8 +324,8 @@ public class ActionServlet extends HttpServlet {
 		if (path == null) {
 			path = request.getServletPath();
 		}
-		int slash = path.indexOf(StkConstant.MARK_SLASH);
-		int period = path.lastIndexOf(StkConstant.MARK_DOT);
+		int slash = path.indexOf(CommonConstant.MARK_SLASH);
+		int period = path.lastIndexOf(CommonConstant.MARK_DOT);
 		if(period == -1)period = path.length();
 		if ((period >= 0) && (period > slash)) {
 			path = path.substring(slash+1, period);
@@ -391,7 +391,7 @@ public class ActionServlet extends HttpServlet {
 		}*/
 		if (forward.isRedirect()) {
 			// only prepend context path for relative uri
-			if (uri.startsWith(StkConstant.MARK_SLASH)) {
+			if (uri.startsWith(CommonConstant.MARK_SLASH)) {
 				uri = request.getContextPath() + uri;
 			}
 			response.sendRedirect(response.encodeRedirectURL(uri));

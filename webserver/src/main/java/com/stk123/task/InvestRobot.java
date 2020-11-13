@@ -12,16 +12,17 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.stk123.tool.util.*;
+import com.stk123.service.*;
+import com.stk123.common.util.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hwpf.usermodel.Table;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.htmlparser.Node;
 
-import com.stk123.bo.StkInvestigation;
+import com.stk123.model.bo.StkInvestigation;
 import com.stk123.model.Index;
-import com.stk123.tool.db.util.DBUtil;
+import com.stk123.common.db.util.DBUtil;
 
 public class InvestRobot {
 
@@ -29,7 +30,7 @@ public class InvestRobot {
 	static{
 		try {
 			//InitialDate = StkUtils.sf_ymd2.parse("20110101");
-			InitialDate = StkUtils.addDay(new Date(), -7);
+			InitialDate = ServiceUtils.addDay(new Date(), -7);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -87,7 +88,7 @@ public class InvestRobot {
 			List<String> s = new ArrayList();
 			for(StkInvestigation inv : list){
 				Index index =  new Index(conn,inv.getCode());
-				s.add(StkUtils.wrapCodeAndNameAsHtml(index)+" "+StkUtils.wrapLink(inv.getTitle(), inv.getSourceUrl()) + " ["+inv.getInvestigatorCount()+"]");
+				s.add(ServiceUtils.wrapCodeAndNameAsHtml(index)+" "+ServiceUtils.wrapLink(inv.getTitle(), inv.getSourceUrl()) + " ["+inv.getInvestigatorCount()+"]");
 			}
 			EmailUtils.send("投资者关系", StringUtils.join(s, "<br>"));
 		} finally {
@@ -109,7 +110,7 @@ public class InvestRobot {
 				String downloadUrl = result.getAttachmentUrl();
 				String code = result.getStockCode();
 				String title = result.getMainContent();
-				String investDate = StkUtils.formatDate(new Date(Long.parseLong(result.getPubDate())));
+				String investDate = ServiceUtils.formatDate(new Date(Long.parseLong(result.getPubDate())));
 				System.out.println(code+", "+title+", "+downloadUrl);
                 Map map = null;
 				try {
@@ -182,7 +183,7 @@ public class InvestRobot {
 		map.put("sourceUrl", downloadUrl);
 		map.put("sourceType", sourceType);
 		map.put("title", title);
-		map.put("investDate", StkUtils.sf_ymd.parse(investDate));
+		map.put("investDate", ServiceUtils.sf_ymd.parse(investDate));
 		map.put("code", code);
 
 		if("doc".equalsIgnoreCase(sourceType)){
@@ -224,7 +225,7 @@ public class InvestRobot {
 	public static List<Map> parse(Index index,Date DateBefore) throws Exception {
 		List<Map> news = new ArrayList<Map>();
 		Date now = new Date();
-		String page = HttpUtils.get("http://www.cninfo.com.cn//disclosure/tzzgxxx/stocks/zxxx1y/cninfo/"+index.getCode()+".js?ver="+StkUtils.formatDate(now, StkUtils.sf_ymd12), "gb2312");
+		String page = HttpUtils.get("http://www.cninfo.com.cn//disclosure/tzzgxxx/stocks/zxxx1y/cninfo/"+index.getCode()+".js?ver="+ServiceUtils.formatDate(now, ServiceUtils.sf_ymd12), "gb2312");
 		//System.out.println(page);
 		if("404".equals(page)){
 			return news;
@@ -233,7 +234,7 @@ public class InvestRobot {
 		List<List> list = JsonUtils.getList4Json(json+"]", List.class);
 		for(List item : list){
 			//System.out.println(item);
-			Date investDate = StkUtils.sf_ymd.parse(String.valueOf(item.get(5)));
+			Date investDate = ServiceUtils.sf_ymd.parse(String.valueOf(item.get(5)));
 			if(investDate.before(DateBefore)){
 				break;
 			}

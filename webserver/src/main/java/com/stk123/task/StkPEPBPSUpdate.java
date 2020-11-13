@@ -2,22 +2,19 @@ package com.stk123.task;
 
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.stk123.bo.Stk;
-import com.stk123.bo.StkImportInfoType;
+import com.stk123.model.bo.Stk;
 import com.stk123.model.Index;
-import com.stk123.model.News;
-import com.stk123.tool.db.util.DBUtil;
-import com.stk123.tool.util.EmailUtils;
-import com.stk123.tool.util.ExceptionUtils;
-import com.stk123.tool.util.HttpUtils;
-import com.stk123.tool.util.JdbcUtils;
-import com.stk123.tool.util.JsonUtils;
+import com.stk123.common.db.util.DBUtil;
+import com.stk123.common.util.EmailUtils;
+import com.stk123.service.ExceptionUtils;
+import com.stk123.service.HttpUtils;
+import com.stk123.common.util.JdbcUtils;
+import com.stk123.common.util.JsonUtils;
 
 public class StkPEPBPSUpdate {
 

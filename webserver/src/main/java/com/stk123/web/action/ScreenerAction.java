@@ -13,34 +13,34 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.stk123.bo.StkIndustryType;
-import com.stk123.bo.StkSearchCondition;
-import com.stk123.bo.StkSearchMview;
-import com.stk123.bo.StkStrategy;
-import com.stk123.bo.StkUsSearchView;
+import com.stk123.model.bo.StkIndustryType;
+import com.stk123.model.bo.StkSearchCondition;
+import com.stk123.model.bo.StkSearchMview;
+import com.stk123.model.bo.StkStrategy;
+import com.stk123.model.bo.StkUsSearchView;
 import com.stk123.model.IndexUtils;
 import com.stk123.model.User;
-import com.stk123.model.strategy.Strategy;
-import com.stk123.model.strategy.StrategyManager;
-import com.stk123.tool.util.StkUtils;
-import com.stk123.tool.util.HttpUtils;
-import com.stk123.tool.util.JdbcUtils;
-import com.stk123.tool.util.JsonUtils;
-import com.stk123.tool.util.collection.Name2IntegerMap;
-import com.stk123.tool.util.collection.Name2Value;
-import com.stk123.StkConstant;
+import com.stk123.task.strategy.Strategy;
+import com.stk123.task.strategy.StrategyManager;
+import com.stk123.service.ServiceUtils;
+import com.stk123.service.HttpUtils;
+import com.stk123.common.util.JdbcUtils;
+import com.stk123.common.util.JsonUtils;
+import com.stk123.common.util.collection.Name2IntegerMap;
+import com.stk123.common.util.collection.Name2Value;
+import com.stk123.common.CommonConstant;
 import com.stk123.web.WebUtils;
 import com.stk123.web.context.StkContext;
 import com.stk123.web.form.ScreenerForm;
-import com.stk123.tool.util.Arrays;
+import com.stk123.common.util.Arrays;
 
-public class ScreenerAction implements StkConstant {
+public class ScreenerAction implements CommonConstant {
 	
 	public String perform() throws Exception {
 		StkContext sc = StkContext.getContext();
 		User user = sc.getUser();
 		if(user == null){
-			return StkConstant.ACTION_404;
+			return CommonConstant.ACTION_404;
 		}
 		//Connection conn = sc.getConnection();
 		HttpServletRequest request = sc.getRequest();
@@ -91,12 +91,12 @@ public class ScreenerAction implements StkConstant {
 			try{
 				List row = new ArrayList();
 				codes.add(view.getCode());
-				row.add(StkUtils.wrapCodeAndNameAsHtml2(view.getCode(),view.getName()));
+				row.add(ServiceUtils.wrapCodeAndNameAsHtml2(view.getCode(),view.getName()));
 				if(view.getMarket() == 3){
 					result.add(row);
 					continue;
 				}
-				row.add(StkUtils.nvl(StringUtils.substring(view.getMyIndustry(), 0, 1), MARK_HYPHEN));
+				row.add(ServiceUtils.nvl(StringUtils.substring(view.getMyIndustry(), 0, 1), MARK_HYPHEN));
 				//row.add(view.getListingDays());
 				row.add(display(view.getIndustry()));
 				
@@ -114,8 +114,8 @@ public class ScreenerAction implements StkConstant {
 					}
 				}
 				
-				row.add(StkUtils.numberFormat0Digits(view.getMarketCap()));
-				row.add(StkUtils.numberFormat2Digits(view.getRoe()));
+				row.add(ServiceUtils.numberFormat0Digits(view.getMarketCap()));
+				row.add(ServiceUtils.numberFormat2Digits(view.getRoe()));
 				
 				row.add(formatDate(view.getErDate()));
 				//业绩预告
@@ -123,52 +123,52 @@ public class ScreenerAction implements StkConstant {
 					row.add(MARK_HYPHEN);
 					row.add(MARK_HYPHEN);
 				}else if(view.getErLow().equals(view.getErHigh())){
-					row.add(createLink(StkUtils.numberFormat0Digits(view.getErLow())+MARK_PERCENTAGE, view.getCode()));
-					row.add(StkUtils.numberFormat0Digits(view.getErLow()));
+					row.add(createLink(ServiceUtils.numberFormat0Digits(view.getErLow())+MARK_PERCENTAGE, view.getCode()));
+					row.add(ServiceUtils.numberFormat0Digits(view.getErLow()));
 				}else{
-					row.add(createLink(StkUtils.numberFormat0Digits(view.getErLow())+MARK_PERCENTAGE+MARK_TILDE+StkUtils.numberFormat0Digits(view.getErHigh())+MARK_PERCENTAGE, view.getCode()));
-					row.add(StkUtils.numberFormat0Digits((view.getErLow() + view.getErHigh())/2));
+					row.add(createLink(ServiceUtils.numberFormat0Digits(view.getErLow())+MARK_PERCENTAGE+MARK_TILDE+ServiceUtils.numberFormat0Digits(view.getErHigh())+MARK_PERCENTAGE, view.getCode()));
+					row.add(ServiceUtils.numberFormat0Digits((view.getErLow() + view.getErHigh())/2));
 				}
-				row.add(StkUtils.numberFormat2Digits(view.getPeg()));
+				row.add(ServiceUtils.numberFormat2Digits(view.getPeg()));
 				row.add(view.getErNetProfitMaxFlag().intValue()==1?"高":MARK_EMPTY);
 				//PE
-				row.add(StkUtils.numberFormat2Digits(view.getPe()));
+				row.add(ServiceUtils.numberFormat2Digits(view.getPe()));
 				//静PE/动PE
 				if(view.getPeYoy() != null && view.getPe()!=null&&view.getPe()!=0) {
-					row.add(StkUtils.numberFormat2Digits(view.getPeYoy()/view.getPe()));
+					row.add(ServiceUtils.numberFormat2Digits(view.getPeYoy()/view.getPe()));
 				}else{
 					row.add(MARK_HYPHEN);
 				}
 				//预告PE
-				row.add(StkUtils.numberFormat2Digits(view.getErPe()));
+				row.add(ServiceUtils.numberFormat2Digits(view.getErPe()));
 				if(view.getPe() != null && view.getErPe() != null && view.getErPe() != 0){					
-					row.add(StkUtils.numberFormat2Digits(view.getPe()/view.getErPe()));
+					row.add(ServiceUtils.numberFormat2Digits(view.getPe()/view.getErPe()));
 				}else{
 					row.add(MARK_HYPHEN);
 				}
-				row.add(StkUtils.numberFormat2Digits(view.getForecastPeThisYear()));
-				row.add(StkUtils.numberFormat2Digits(view.getForecastPeNextYear()));
+				row.add(ServiceUtils.numberFormat2Digits(view.getForecastPeThisYear()));
+				row.add(ServiceUtils.numberFormat2Digits(view.getForecastPeNextYear()));
 				//pb
-				row.add(StkUtils.numberFormat2Digits(view.getPb()));
-				row.add(StkUtils.numberFormat2Digits(view.getPs()));
+				row.add(ServiceUtils.numberFormat2Digits(view.getPb()));
+				row.add(ServiceUtils.numberFormat2Digits(view.getPs()));
 				row.add(view.getPeNtile());	
 				row.add(view.getPbNtile());
 				row.add(view.getPsNtile());
 				row.add(view.getNtile());
-				row.add(StkUtils.nvl(view.getGrossProfitMargin(), MARK_HYPHEN, StkUtils.numberFormat2Digits(view.getGrossProfitMargin())+MARK_PERCENTAGE));
-				row.add(StkUtils.nvl(view.getSaleProfitMargin(), MARK_HYPHEN, StkUtils.numberFormat2Digits(view.getSaleProfitMargin())+MARK_PERCENTAGE));
+				row.add(ServiceUtils.nvl(view.getGrossProfitMargin(), MARK_HYPHEN, ServiceUtils.numberFormat2Digits(view.getGrossProfitMargin())+MARK_PERCENTAGE));
+				row.add(ServiceUtils.nvl(view.getSaleProfitMargin(), MARK_HYPHEN, ServiceUtils.numberFormat2Digits(view.getSaleProfitMargin())+MARK_PERCENTAGE));
 				
-				row.add(StkUtils.nvl(view.getRevenueGrowthRate(), MARK_HYPHEN, StkUtils.numberFormat2Digits(view.getRevenueGrowthRate())+MARK_PERCENTAGE));
+				row.add(ServiceUtils.nvl(view.getRevenueGrowthRate(), MARK_HYPHEN, ServiceUtils.numberFormat2Digits(view.getRevenueGrowthRate())+MARK_PERCENTAGE));
 				row.add(view.getRevenueMaxFlag().intValue()==1?"高":MARK_EMPTY);
 				
 				row.add(rateStatus(view.getNetProfitGrowthRate()));				
 				row.add(view.getNetProfitMaxFlag().intValue()==1?"高":MARK_EMPTY);
 				
 				//经营现金净流量与净利润的比率
-				row.add(StkUtils.nvl(view.getCashNetProfitRate(), MARK_HYPHEN, view.getCashNetProfitRate()+MARK_PERCENTAGE));
+				row.add(ServiceUtils.nvl(view.getCashNetProfitRate(), MARK_HYPHEN, view.getCashNetProfitRate()+MARK_PERCENTAGE));
 				//负债率
-				row.add(StkUtils.nvl(view.getDebtRate(), MARK_HYPHEN, StkUtils.numberFormat2Digits(view.getDebtRate())+MARK_PERCENTAGE));
-				row.add(StkUtils.nvl(view.getResearchRate(), MARK_HYPHEN, StkUtils.numberFormat2Digits(view.getResearchRate())+MARK_PERCENTAGE));
+				row.add(ServiceUtils.nvl(view.getDebtRate(), MARK_HYPHEN, ServiceUtils.numberFormat2Digits(view.getDebtRate())+MARK_PERCENTAGE));
+				row.add(ServiceUtils.nvl(view.getResearchRate(), MARK_HYPHEN, ServiceUtils.numberFormat2Digits(view.getResearchRate())+MARK_PERCENTAGE));
 				
 				row.add(formatDate(view.getFnDate()));
 				row.add(view.getCloseChange10());
@@ -199,7 +199,7 @@ public class ScreenerAction implements StkConstant {
 		List<Strategy> ss = StrategyManager.getStrategyFromSreenerForm(conn, form);
 		List<String> codes = new ArrayList();
 		for(Strategy s : ss){
-			s.run(conn, StkUtils.getToday());
+			s.run(conn, ServiceUtils.getToday());
 			codes.addAll(s.getResultCode());
 		}
 		form = new ScreenerForm();
@@ -237,19 +237,19 @@ public class ScreenerAction implements StkConstant {
 		for(StkUsSearchView view : list){
 			try{
 				List row = new ArrayList();
-				row.add(StkUtils.wrapCodeAndNameAsHtml(view.getCode(),view.getName()));
+				row.add(ServiceUtils.wrapCodeAndNameAsHtml(view.getCode(),view.getName()));
 				row.add(display(view.getIndustry()));
-				row.add(StkUtils.formatDate(view.getFnDate()));
+				row.add(ServiceUtils.formatDate(view.getFnDate()));
 				row.add(view.getMarketCap());
 				row.add(view.getRoe());
 				row.add(view.getPe());
 				row.add(view.getPb());
 				row.add(view.getPs());
 				row.add(view.getPeg());
-				row.add(StkUtils.nvl(view.getGrossProfitMargin(), StkConstant.MARK_HYPHEN, view.getGrossProfitMargin()+StkConstant.MARK_PERCENTAGE));
+				row.add(ServiceUtils.nvl(view.getGrossProfitMargin(), CommonConstant.MARK_HYPHEN, view.getGrossProfitMargin()+CommonConstant.MARK_PERCENTAGE));
 				row.add(rateStatus(view.getNetProfitGrowthRate()));
-				row.add(StkUtils.nvl(view.getDebtRate(), StkConstant.MARK_HYPHEN, view.getDebtRate()+StkConstant.MARK_PERCENTAGE));
-				row.add(StkUtils.nvl(view.getResearchRate(), StkConstant.MARK_HYPHEN, view.getResearchRate()+StkConstant.MARK_PERCENTAGE));
+				row.add(ServiceUtils.nvl(view.getDebtRate(), CommonConstant.MARK_HYPHEN, view.getDebtRate()+CommonConstant.MARK_PERCENTAGE));
+				row.add(ServiceUtils.nvl(view.getResearchRate(), CommonConstant.MARK_HYPHEN, view.getResearchRate()+CommonConstant.MARK_PERCENTAGE));
 				result.add(row);
 			}catch(Exception e){
 				System.err.println(view.getCode());
@@ -455,10 +455,10 @@ public class ScreenerAction implements StkConstant {
 			else if(rate == 999)return "扭亏";
 			else if(rate == -9999)return "转亏";
 			else{
-				return rate+StkConstant.MARK_PERCENTAGE;
+				return rate+CommonConstant.MARK_PERCENTAGE;
 			}
 		}
-		return StkConstant.MARK_HYPHEN;
+		return CommonConstant.MARK_HYPHEN;
 	}
 	
 	private String createLink(String s, String code){
@@ -470,7 +470,7 @@ public class ScreenerAction implements StkConstant {
 	}
 	
 	private String formatDate(String d) throws ParseException{
-		return StkUtils.formatDate(d,StkUtils.sf_ymd2, StkUtils.sf_ymd16);
+		return ServiceUtils.formatDate(d,ServiceUtils.sf_ymd2, ServiceUtils.sf_ymd16);
 	}
 	
 	private void addWhereClauseCodes(StringBuffer sql, ScreenerForm form){
@@ -606,7 +606,7 @@ public class ScreenerAction implements StkConstant {
 	private void addWhereClauseComment(StringBuffer sql, ScreenerForm form) {
 		if(form.getComment() != null && form.getComment().length() > 0){
 			String comment = form.getComment();
-			String appendSql = StkUtils.getMatchString(comment, "\\{[^}]*\\}");
+			String appendSql = ServiceUtils.getMatchString(comment, "\\{[^}]*\\}");
 			if(appendSql != null){
 				sql.append(" "+StringUtils.substringBetween(appendSql, "{", "}"));
 			}

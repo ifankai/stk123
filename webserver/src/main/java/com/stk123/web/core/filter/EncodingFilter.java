@@ -9,7 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import com.stk123.StkConstant;
+import com.stk123.common.CommonConstant;
 
 public class EncodingFilter implements Filter {
 
@@ -19,7 +19,7 @@ public class EncodingFilter implements Filter {
 
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
-		request.setCharacterEncoding(StkConstant.ENCODING_UTF_8); 
+		request.setCharacterEncoding(CommonConstant.ENCODING_UTF_8);
 		chain.doFilter(request, response);  
 	}
 

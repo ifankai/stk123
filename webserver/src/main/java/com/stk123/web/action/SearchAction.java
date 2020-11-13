@@ -15,14 +15,14 @@ import org.apache.lucene.index.IndexableField;
 
 import com.stk123.model.Index;
 import com.stk123.model.User;
-import com.stk123.tool.util.StkUtils;
-import com.stk123.tool.ik.DocumentField;
-import com.stk123.tool.ik.DocumentType;
-import com.stk123.web.search.Search;
-import com.stk123.tool.util.JsonUtils;
-import com.stk123.tool.util.collection.Name2ListSet;
+import com.stk123.service.ServiceUtils;
+import com.stk123.common.ik.DocumentField;
+import com.stk123.common.ik.DocumentType;
+import com.stk123.web.ik.Search;
+import com.stk123.common.util.JsonUtils;
+import com.stk123.common.util.collection.Name2ListSet;
 import com.stk123.web.core.util.RequestUtils;
-import com.stk123.StkConstant;
+import com.stk123.common.CommonConstant;
 import com.stk123.web.WebUtils;
 import com.stk123.web.context.StkContext;
 
@@ -30,7 +30,7 @@ import com.stk123.web.context.StkContext;
 public class SearchAction {
 	
 	public String perform() throws Exception {
-		return StkConstant.ACTION_SUCC;
+		return CommonConstant.ACTION_SUCC;
 	}
 	
 	public void search() throws Exception {
@@ -41,8 +41,8 @@ public class SearchAction {
 		}
 		HttpServletRequest request = sc.getRequest();
 		Connection conn = StkContext.getConnection();
-		String searchword = request.getParameter(StkConstant.PARAMETER_Q);
-		int page = RequestUtils.getInt(request, StkConstant.PARAMETER_PAGE);
+		String searchword = request.getParameter(CommonConstant.PARAMETER_Q);
+		int page = RequestUtils.getInt(request, CommonConstant.PARAMETER_PAGE);
 		
 		int perPage = 20;
 		int start = (page-1)*perPage;
@@ -75,7 +75,7 @@ public class SearchAction {
 				String code = doc.get(DocumentField.CODE.value());
 				if(title == null && code != null){
 					Index index = new Index(conn, code);
-					title = StkUtils.wrapCodeAndNameAsHtml(index);
+					title = ServiceUtils.wrapCodeAndNameAsHtml(index);
 					codeExisting.add(index.getCode());
 				}else if(code != null && title != null){
 					Index index = new Index(conn, code);
@@ -95,7 +95,7 @@ public class SearchAction {
 			map.put(DocumentField.ID.value(), doc.get(DocumentField.ID.value()));
 			String time = doc.get(DocumentField.TIME.value());
 			if(time != null){
-				map.put(DocumentField.TIME.value(), StkUtils.formatDate(time, StkUtils.sf_ymd12, StkUtils.sf_ymd9) );
+				map.put(DocumentField.TIME.value(), ServiceUtils.formatDate(time, ServiceUtils.sf_ymd12, ServiceUtils.sf_ymd9) );
 			}
 			results.add(map);
 		}
@@ -105,9 +105,9 @@ public class SearchAction {
 			int cnt = Collections.frequency(codeExisting, code);
 			Index index = new Index(conn, code);
 			if(cnt > 1){
-				stkTitles.add(StkUtils.wrapCodeAndNameAsHtml(index) + cnt + "次");
+				stkTitles.add(ServiceUtils.wrapCodeAndNameAsHtml(index) + cnt + "次");
 			}else{
-				stkTitles.add(StkUtils.wrapCodeAndNameAsHtml(index));
+				stkTitles.add(ServiceUtils.wrapCodeAndNameAsHtml(index));
 			}
 		}
 		for(String title : stkTitles){
@@ -116,13 +116,13 @@ public class SearchAction {
 		
 		set.sort();
 		String json = JsonUtils.getJsonString4JavaPOJO(results);
-		json = "{\"left\":"+json+", \"right\":"+JsonUtils.getJsonString4JavaPOJO(set)+StkConstant.MARK_BRACE_RIGHT;
+		json = "{\"left\":"+json+", \"right\":"+JsonUtils.getJsonString4JavaPOJO(set)+CommonConstant.MARK_BRACE_RIGHT;
 		
-		StringBuffer sb = new StringBuffer(StkConstant.MARK_BRACE_LEFT);
-		sb.append("\"count\":").append(totalCount.totalCount).append(StkConstant.MARK_COMMA);
-		sb.append("\"perpage\":").append(perPage).append(StkConstant.MARK_COMMA);
+		StringBuffer sb = new StringBuffer(CommonConstant.MARK_BRACE_LEFT);
+		sb.append("\"count\":").append(totalCount.totalCount).append(CommonConstant.MARK_COMMA);
+		sb.append("\"perpage\":").append(perPage).append(CommonConstant.MARK_COMMA);
 		sb.append("\"data\":").append(json);
-		sb.append(StkConstant.MARK_BRACE_RIGHT);
+		sb.append(CommonConstant.MARK_BRACE_RIGHT);
 
 		sc.setResponse(sb.toString());
 	}

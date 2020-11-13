@@ -5,8 +5,8 @@ import com.stk123.model.K;
 import com.stk123.spring.dto.StkDto;
 import com.stk123.spring.service.IndexService;
 import com.stk123.spring.service.IndustryService;
-import com.stk123.tool.util.StkUtils;
-import com.stk123.task.XueqiuUtils;
+import com.stk123.service.ServiceUtils;
+import com.stk123.service.XueqiuUtils;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,12 +75,12 @@ public class KControl {
                     url = "http://webquoteklinepic.eastmoney.com/GetPic.aspx?imageType=KXL&nid=116."+stk.getCode()+"&token=&type=%s&unitWidth=-6&ef=&formula=MACD";
                 }else {
                     String code = (Index.getLocation(stk.getCode()) == Index.SH ? 1 : 0) + "." + stk.getCode();
-                    url = "http://webquoteklinepic.eastmoney.com/GetPic.aspx?token=&nid=" + code + "&type=%s&unitWidth=-6&ef=&formula=MACD&imageType=KXL&_=" + StkUtils.now.getTime();
+                    url = "http://webquoteklinepic.eastmoney.com/GetPic.aspx?token=&nid=" + code + "&type=%s&unitWidth=-6&ef=&formula=MACD&imageType=KXL&_=" + ServiceUtils.now.getTime();
                 }
                 stk.setDailyUrl(String.format(url, "D"));
                 stk.setWeekUrl(String.format(url, "W"));
                 stk.setMonthUrl(String.format(url, "M"));
-                stk.setNameAndCodeLink(StkUtils.wrapCodeAndName(stk.getCode(), stk.getName()));
+                stk.setNameAndCodeLink(ServiceUtils.wrapCodeAndName(stk.getCode(), stk.getName()));
                 list.add(stk);
             }
         }

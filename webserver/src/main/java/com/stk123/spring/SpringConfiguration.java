@@ -1,11 +1,9 @@
 package com.stk123.spring;
 
 import com.alibaba.druid.pool.DruidDataSourceFactory;
-import com.stk123.tool.util.ConfigUtils;
+import com.stk123.common.util.ConfigUtils;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;

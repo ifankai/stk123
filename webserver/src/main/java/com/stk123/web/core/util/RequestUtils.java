@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.beanutils.BeanUtils;
 
-import com.stk123.StkConstant;
+import com.stk123.common.CommonConstant;
 
 public class RequestUtils {
 	
@@ -110,7 +110,7 @@ public class RequestUtils {
 	 */
 	public static void setCharacterEncoding(HttpServletRequest request)
 			throws UnsupportedEncodingException {
-		request.setCharacterEncoding(StkConstant.ENCODING_UTF_8);
+		request.setCharacterEncoding(CommonConstant.ENCODING_UTF_8);
 	}
 
 	/**
@@ -121,7 +121,7 @@ public class RequestUtils {
 	 */
 	public static String getString(HttpServletRequest request, String paramName) {
 		String value = request.getParameter(paramName);
-		return value != null ? value : StkConstant.MARK_EMPTY;
+		return value != null ? value : CommonConstant.MARK_EMPTY;
 	}
 
 	/**
@@ -132,7 +132,7 @@ public class RequestUtils {
 	 */
 	public static String getStrAttribute(HttpServletRequest request, String paramName) {
 		String value = (String) request.getAttribute(paramName);
-		return value != null ? value : StkConstant.MARK_EMPTY;
+		return value != null ? value : CommonConstant.MARK_EMPTY;
 	}
 
 	/**

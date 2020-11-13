@@ -1,7 +1,7 @@
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@include file="/common/import.jsp" %>
 <%
-	pageContext.setAttribute(StkConstant.PAGE_TITLE, "A股筛选器");
+	pageContext.setAttribute(CommonConstant.PAGE_TITLE, "A股筛选器");
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>

@@ -1,6 +1,6 @@
 package com.stk123.spring;
 
-import com.stk123.model.strategy.Strategy;
+import com.stk123.task.strategy.Strategy;
 import com.stk123.spring.jpa.entity.Admapp;
 import com.stk123.spring.jpa.entity.StkDataIndustryPeEntity;
 import com.stk123.spring.jpa.entity.StkIndustryTypeEntity;

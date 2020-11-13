@@ -5,16 +5,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.stk123.bo.StkDataPpiType;
-import com.stk123.bo.StkIndexNode;
+import com.stk123.model.bo.StkDataPpiType;
+import com.stk123.model.bo.StkIndexNode;
 import com.stk123.model.Industry;
-import com.stk123.tool.db.connection.Pool;
-import com.stk123.tool.tree.Tree;
-import com.stk123.tool.tree.TreeNode;
-import com.stk123.tool.util.CacheUtils;
-import com.stk123.tool.util.JdbcUtils;
-import com.stk123.tool.util.JsonUtils;
-import com.stk123.StkConstant;
+import com.stk123.common.db.connection.Pool;
+import com.stk123.web.tool.tree.Tree;
+import com.stk123.web.tool.tree.TreeNode;
+import com.stk123.common.util.CacheUtils;
+import com.stk123.common.util.JdbcUtils;
+import com.stk123.common.util.JsonUtils;
+import com.stk123.common.CommonConstant;
 import com.stk123.web.pojo.MetaData;
 import com.stk123.web.pojo.Node;
 
@@ -87,7 +87,7 @@ public class IndexService {
 			if(node.getChildren().size() > 0){
 				n.getChildren().addAll(convertToNode(node.getChildren()));
 			}else{
-				n.getAttr().setIsLeaf(StkConstant.YES_Y);
+				n.getAttr().setIsLeaf(CommonConstant.YES_Y);
 			}
 			rs.add(n);
 		}

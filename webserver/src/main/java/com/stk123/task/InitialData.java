@@ -6,10 +6,11 @@ import java.sql.Timestamp;
 import java.util.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stk123.service.*;
 import com.stk123.spring.SpringUtils;
 import com.stk123.spring.jpa.entity.StkDataIndustryPeEntity;
 import com.stk123.spring.service.IndustryService;
-import com.stk123.tool.util.*;
+import com.stk123.common.util.*;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -20,25 +21,25 @@ import org.htmlparser.nodes.TagNode;
 import org.htmlparser.tags.LinkTag;
 import org.htmlparser.tags.TableTag;
 
-import com.stk123.bo.Stk;
-import com.stk123.bo.StkDictionary;
-import com.stk123.bo.StkFnType;
-import com.stk123.bo.StkHolder;
-import com.stk123.bo.StkIndustry;
-import com.stk123.bo.StkIndustryType;
-import com.stk123.bo.StkOrganization;
-import com.stk123.bo.cust.StkFnDataCust;
-import com.stk123.json.HexunIndustryConception;
-import com.stk123.json.MeiGuSina;
+import com.stk123.model.bo.Stk;
+import com.stk123.model.bo.StkDictionary;
+import com.stk123.model.bo.StkFnType;
+import com.stk123.model.bo.StkHolder;
+import com.stk123.model.bo.StkIndustry;
+import com.stk123.model.bo.StkIndustryType;
+import com.stk123.model.bo.StkOrganization;
+import com.stk123.model.bo.cust.StkFnDataCust;
+import com.stk123.model.json.HexunIndustryConception;
+import com.stk123.model.json.MeiGuSina;
 import com.stk123.model.Index;
 import com.stk123.model.Industry;
 import com.stk123.model.News;
 import com.stk123.model.Text;
-import com.stk123.tool.db.TableTools;
-import com.stk123.tool.db.util.DBUtil;
-import com.stk123.tool.db.util.sequence.SequenceUtils;
-import com.stk123.tool.util.collection.Name2Value;
-import com.stk123.StkConstant;
+import com.stk123.common.db.TableTools;
+import com.stk123.common.db.util.DBUtil;
+import com.stk123.common.db.util.sequence.SequenceUtils;
+import com.stk123.common.util.collection.Name2Value;
+import com.stk123.common.CommonConstant;
 import com.stk123.web.StkDict;
 
 
@@ -51,7 +52,7 @@ public class InitialData {
 
     private static final Log log = LogFactory.getLog(InitialData.class);
 
-	private static int fnYearFrom = StkUtils.YEAR - 3;
+	private static int fnYearFrom = ServiceUtils.YEAR - 3;
 	private static List<String> infos = new ArrayList<String>();
 	private static List<Name2Value> awesomefunds = new ArrayList<Name2Value>();
 
@@ -118,7 +119,7 @@ public class InitialData {
 				}
 				try{
 					//update财务数据
-					initFnDataTTM(conn,StkUtils.now,index,fnTypes);
+					initFnDataTTM(conn,ServiceUtils.now,index,fnTypes);
 				}catch(Exception e){
 					ExceptionUtils.insertLog(conn, stk.getCode(), e);
 					e.printStackTrace();
@@ -134,7 +135,7 @@ public class InitialData {
 	public static void initialAStock(Connection conn) throws Exception {
 		try{
 			infos.clear();
-			InitialData.initialStk(conn,StkUtils.now);
+			InitialData.initialStk(conn,ServiceUtils.now);
 		}catch(Exception e){
 			EmailUtils.send("Initial A Stock initial Data Error", e);
 			e.printStackTrace();
@@ -187,7 +188,7 @@ public class InitialData {
 					//行业，盈利预期
 					//updateStkInfoFromWind(conn,index,StkUtils.now,fnTypes);
 					//fn
-					initFnDataTTM(conn,StkUtils.now,index,fnTypes);
+					initFnDataTTM(conn,ServiceUtils.now,index,fnTypes);
 				}catch(Exception e){
 					ExceptionUtils.insertLog(conn, stk.getCode(), e);
 					e.printStackTrace();
@@ -290,7 +291,7 @@ public class InitialData {
 				List params = new ArrayList();
 				params.add(item[0]);
 				params.add(item[1]);
-				params.add(new Timestamp(StkUtils.now.getTime()));
+				params.add(new Timestamp(ServiceUtils.now.getTime()));
 				params.add(item[0]);
 				String sql = "insert into stk(code,name,insert_time,market) select ?,?,?,3 from dual where not exists (select 1 from stk where code=?)";
 				JdbcUtils.insert(conn, sql, params);
@@ -379,7 +380,7 @@ public class InitialData {
 						String code = StringUtils.substring(var, var.length()-6);
 						String name = StringUtils.substringBetween(s, "=\"", ",");
 						System.out.println("code="+code+", name="+name);
-						if(code.length() != 6 && !StkUtils.isAllNumeric(code))continue;
+						if(code.length() != 6 && !ServiceUtils.isAllNumeric(code))continue;
 
 						params.clear();
 						params.add(code);
@@ -581,7 +582,7 @@ public class InitialData {
 	//http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zjh1&date=2020-08-07
 	//http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zz1&date=2020-08-05
 	public static void initialIndustryFromCsindex_zjh(Connection conn, int n) throws Exception {
-		String page = HttpUtils.get("http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zjh1&date="+StkUtils.formatDate(StkUtils.addDayOfWorking(StkUtils.now, -1), StkUtils.sf_ymd), "utf-8");
+		String page = HttpUtils.get("http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zjh1&date="+ServiceUtils.formatDate(ServiceUtils.addDayOfWorking(ServiceUtils.now, -1), ServiceUtils.sf_ymd), "utf-8");
 		//System.out.println(page);
 		List<Node> tables = HtmlUtils.getNodeListByTagNameAndAttribute(page, null, "table", "class", "list-div-table");
 		String parentCode = null;
@@ -635,8 +636,8 @@ public class InitialData {
 		do{
 			if(day <= 0) break;
 
-			Date date = StkUtils.addDayOfWorking(StkUtils.now, (day--)-n);
-			String d1 = StkUtils.formatDate(date, StkUtils.sf_ymd);
+			Date date = ServiceUtils.addDayOfWorking(ServiceUtils.now, (day--)-n);
+			String d1 = ServiceUtils.formatDate(date, ServiceUtils.sf_ymd);
 			String url = "http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zjh1&date="+d1;
             log.info(url);
 			page = HttpUtils.get(url, "utf-8");
@@ -651,7 +652,7 @@ public class InitialData {
 							StkIndustryType indType = Industry.insertOrLoadIndustryType(conn, null,  code, null, "csindex_zjh");
 							indIdMap.put(indType.getCode(), indType.getId());
 						}
-						String sdate = StkUtils.formatDate(date, StkUtils.sf_ymd2);
+						String sdate = ServiceUtils.formatDate(date, ServiceUtils.sf_ymd2);
 						String pe = StringUtils.trim(tds.get(2).toPlainTextString());
 						if(NumberUtils.isNumber(pe)) {
 							IndustryService industryService = SpringUtils.getBean(IndustryService.class);
@@ -661,7 +662,7 @@ public class InitialData {
 								entity.setIndustryId(indIdMap.get(code));
 								entity.setPeDate(sdate);
 								entity.setPe(Double.parseDouble(pe));
-								entity.setInsertTime(StkUtils.getTime());
+								entity.setInsertTime(ServiceUtils.getTime());
 							}else{
 								entity.setPe(Double.parseDouble(pe));
 							}
@@ -677,8 +678,8 @@ public class InitialData {
 		do{
 			if(day <= 0) break;
 
-			Date date = StkUtils.addDayOfWorking(StkUtils.now, (day--)-n);
-			String d1 = StkUtils.formatDate(date, StkUtils.sf_ymd);
+			Date date = ServiceUtils.addDayOfWorking(ServiceUtils.now, (day--)-n);
+			String d1 = ServiceUtils.formatDate(date, ServiceUtils.sf_ymd);
 			String url = "http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zjh2&date="+d1;
 			log.info(url);
 			page = HttpUtils.get(url, "utf-8");
@@ -693,7 +694,7 @@ public class InitialData {
 							StkIndustryType indType = Industry.insertOrLoadIndustryType(conn, null,  code, null, "csindex_zjh");
 							indIdMap.put(indType.getCode(), indType.getId());
 						}
-						String sdate = StkUtils.formatDate(date, StkUtils.sf_ymd2);
+						String sdate = ServiceUtils.formatDate(date, ServiceUtils.sf_ymd2);
 						String pe = StringUtils.trim(tds.get(2).toPlainTextString());
 						if(NumberUtils.isNumber(pe)) {
 							IndustryService industryService = SpringUtils.getBean(IndustryService.class);
@@ -703,7 +704,7 @@ public class InitialData {
 								entity.setIndustryId(indIdMap.get(code));
 								entity.setPeDate(sdate);
 								entity.setPeTtm(Double.parseDouble(pe));
-								entity.setInsertTime(StkUtils.getTime());
+								entity.setInsertTime(ServiceUtils.getTime());
 							}else{
 								entity.setPeTtm(Double.parseDouble(pe));
 							}
@@ -719,8 +720,8 @@ public class InitialData {
 		do{
 			if(day <= 0) break;
 
-			Date date = StkUtils.addDayOfWorking(StkUtils.now, (day--)-n);
-			String d1 = StkUtils.formatDate(date, StkUtils.sf_ymd);
+			Date date = ServiceUtils.addDayOfWorking(ServiceUtils.now, (day--)-n);
+			String d1 = ServiceUtils.formatDate(date, ServiceUtils.sf_ymd);
 			String url = "http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zjh3&date="+d1;
 			log.info(url);
 			page = HttpUtils.get(url, "utf-8");
@@ -735,7 +736,7 @@ public class InitialData {
 							StkIndustryType indType = Industry.insertOrLoadIndustryType(conn, null,  code, null, "csindex_zjh");
 							indIdMap.put(indType.getCode(), indType.getId());
 						}
-						String sdate = StkUtils.formatDate(date, StkUtils.sf_ymd2);
+						String sdate = ServiceUtils.formatDate(date, ServiceUtils.sf_ymd2);
 						String pe = StringUtils.trim(tds.get(2).toPlainTextString());
 						if(NumberUtils.isNumber(pe)) {
 							IndustryService industryService = SpringUtils.getBean(IndustryService.class);
@@ -745,7 +746,7 @@ public class InitialData {
 								entity.setIndustryId(indIdMap.get(code));
 								entity.setPeDate(sdate);
 								entity.setPb(Double.parseDouble(pe));
-								entity.setInsertTime(StkUtils.getTime());
+								entity.setInsertTime(ServiceUtils.getTime());
 							}else{
 								entity.setPb(Double.parseDouble(pe));
 							}
@@ -761,8 +762,8 @@ public class InitialData {
 		do{
 			if(day <= 0) break;
 
-			Date date = StkUtils.addDayOfWorking(StkUtils.now, (day--)-n);
-			String d1 = StkUtils.formatDate(date, StkUtils.sf_ymd);
+			Date date = ServiceUtils.addDayOfWorking(ServiceUtils.now, (day--)-n);
+			String d1 = ServiceUtils.formatDate(date, ServiceUtils.sf_ymd);
 			String url = "http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zjh4&date="+d1;
 			log.info(url);
 			page = HttpUtils.get(url, "utf-8");
@@ -777,7 +778,7 @@ public class InitialData {
 							StkIndustryType indType = Industry.insertOrLoadIndustryType(conn, null,  code, null, "csindex_zjh");
 							indIdMap.put(indType.getCode(), indType.getId());
 						}
-						String sdate = StkUtils.formatDate(date, StkUtils.sf_ymd2);
+						String sdate = ServiceUtils.formatDate(date, ServiceUtils.sf_ymd2);
 						String pe = StringUtils.trim(tds.get(2).toPlainTextString());
 						if(NumberUtils.isNumber(pe)) {
 							IndustryService industryService = SpringUtils.getBean(IndustryService.class);
@@ -787,7 +788,7 @@ public class InitialData {
 								entity.setIndustryId(indIdMap.get(code));
 								entity.setPeDate(sdate);
 								entity.setAdr(Double.parseDouble(pe));
-								entity.setInsertTime(StkUtils.getTime());
+								entity.setInsertTime(ServiceUtils.getTime());
 							}else{
 								entity.setAdr(Double.parseDouble(pe));
 							}
@@ -801,7 +802,7 @@ public class InitialData {
 
 	//中证行业-个股，市盈率
 	public static void initialIndustryFromCsindex_zz1(Connection conn) throws Exception {
-		String page = HttpUtils.get("http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zz1&date="+StkUtils.formatDate(StkUtils.addDayOfWorking(StkUtils.now, -1), StkUtils.sf_ymd), "utf-8");
+		String page = HttpUtils.get("http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zz1&date="+ServiceUtils.formatDate(ServiceUtils.addDayOfWorking(ServiceUtils.now, -1), ServiceUtils.sf_ymd), "utf-8");
 		//System.out.println(page);
 		List<Node> tables = HtmlUtils.getNodeListByTagNameAndAttribute(page, null, "table", "class", "list-div-table");
 		String parentCode = null;
@@ -858,14 +859,14 @@ public class InitialData {
 	//巨潮 pe
 	public static void initialIndustryFromCnIndex(Connection conn, int n) throws Exception {
 		List params = new ArrayList();
-		Date date = StkUtils.now;
+		Date date = ServiceUtils.now;
 		String page = null;
 		while(true){
-			String sdate = StkUtils.formatDate(date, StkUtils.sf_ymd);
+			String sdate = ServiceUtils.formatDate(date, ServiceUtils.sf_ymd);
 			page = HttpUtils.get("http://www.cnindex.com.cn/syl/"+sdate+"/cninfo_hsls.html", "utf-8");
 			System.out.println("http://www.cnindex.com.cn/syl/"+sdate+"/cninfo_hsls.html");
 			if(!"404".equals(page))break;
-			date = StkUtils.addDay(date, -1);
+			date = ServiceUtils.addDay(date, -1);
 		}
 		List<Node> nodes = HtmlUtils.getNodesByText(page, null, "查看");
 		for(Node node : nodes){
@@ -897,11 +898,11 @@ public class InitialData {
 		}
 		Map<String,Integer> indIdMap = new HashMap<String,Integer>();
 		while(true){
-			String sdate = StkUtils.formatDate(date, StkUtils.sf_ymd);
+			String sdate = ServiceUtils.formatDate(date, ServiceUtils.sf_ymd);
 			//System.out.println(sdate);
 			//沪深
 			page = HttpUtils.get("http://www.cnindex.com.cn/syl/"+sdate+"/cninfo_hsls.html", "utf-8");
-			date = StkUtils.addDay(date, -1);
+			date = ServiceUtils.addDay(date, -1);
 			n --;
 			if(n <= 0)break;
 			if("404".equals(page))continue;
@@ -1101,7 +1102,7 @@ public class InitialData {
 	public static void updateStkInfoFromWind(Connection conn,Index index,Date now,List<StkFnType> fnTypes) throws Exception {
 		String code = index.getCode();
 		String name = index.getName();
-		String loc = StkUtils.getStkLocation(code);
+		String loc = ServiceUtils.getStkLocation(code);
 		String page = HttpUtils.get("http://www.windin.com/home/stock/html_wind/"+code+"."+loc+".shtml", null, "utf8");
 		List params = new ArrayList();
 
@@ -1110,7 +1111,7 @@ public class InitialData {
 		if(industryCompare != null && industryCompare.getChildren() != null && industryCompare.getChildren().elementAt(2) != null){
 			String industry = StringUtils.substringBetween(HtmlUtils.getNodeByText(industryCompare.toHtml(), null, "所属行业：").toHtml(), "所属行业：", "(");
 			params.add(industry);
-			com.stk123.bo.StkIndustryType type = JdbcUtils.load(conn, "select * from stk_industry_type where name=? and source='wind'",params, StkIndustryType.class);
+			com.stk123.model.bo.StkIndustryType type = JdbcUtils.load(conn, "select * from stk_industry_type where name=? and source='wind'",params, StkIndustryType.class);
 			if(type == null){
 				params.clear();
 				params.add(industry);
@@ -1206,7 +1207,7 @@ public class InitialData {
 						double percentige = (holder1.getHolder()-holder2.getHolder())/holder2.getHolder();
 						if( (percentige <= -0.15 && (holder1.getHolder() > 0 && holder1.getHolder() <= 8000)) ||
 							(percentige <= -0.20 && (holder1.getHolder() > 8000 && holder1.getHolder() <= 16000))	){
-							String info = holder1.getFnDate()+"["+holder1.getHolder()+"]"+"比"+holder2.getFnDate()+"["+holder2.getHolder()+"]"+"减少"+StkUtils.number2String(percentige*100,2)+"%";
+							String info = holder1.getFnDate()+"["+holder1.getHolder()+"]"+"比"+holder2.getFnDate()+"["+holder2.getHolder()+"]"+"减少"+ServiceUtils.number2String(percentige*100,2)+"%";
 							/*params.clear();
 							params.add(code);
 							params.add(info);
@@ -1234,7 +1235,7 @@ public class InitialData {
 					if(fnType.getSource().intValue()==2){
 						String fnDate = kv.getKey();
 						fnDate = "20"+StringUtils.replace(StringUtils.replace(fnDate, "-", ""), "*", "");
-						String fnValue = StkUtils.getValueFromMap(kv.getValue(), fnType.getName());
+						String fnValue = ServiceUtils.getValueFromMap(kv.getValue(), fnType.getName());
 						if("--".equals(fnValue)){
 							fnValue = "0.0";
 						}
@@ -1261,7 +1262,7 @@ public class InitialData {
 							if(index.FN_JLR.equals(String.valueOf(fnType.getType()))){
 								if(index.getNetProfitGrowthAverageValue(12, 5) >= 5
 										&& index.getNetProfitGrowthAsNumber(fnDate) >= 45){
-									infos.add("[成长股季度净利润增长]"+code+","+index.getName()+","+"季度"+fnDate+"净利润增长"+StkUtils.number2String(index.getNetProfitGrowthAsNumber(fnDate), 2));
+									infos.add("[成长股季度净利润增长]"+code+","+index.getName()+","+"季度"+fnDate+"净利润增长"+ServiceUtils.number2String(index.getNetProfitGrowthAsNumber(fnDate), 2));
 								}
 							}
 
@@ -1277,7 +1278,7 @@ public class InitialData {
 			address = address.getNextSibling();
 			if(address != null){
 				params.clear();
-				params.add(StkUtils.getMatchString(address.toPlainTextString(), "[\u4e00-\u9fa5]+"));
+				params.add(ServiceUtils.getMatchString(address.toPlainTextString(), "[\u4e00-\u9fa5]+"));
 				params.add(code);
 				JdbcUtils.update(conn, "update stk set address=? where code=?", params);
 			}
@@ -1354,7 +1355,7 @@ public class InitialData {
 						double percentige = (holder1.getHolder()-holder2.getHolder())/holder2.getHolder();
 						if( (percentige <= -0.15 && (holder1.getHolder() > 0 && holder1.getHolder() <= 8000)) ||
 							(percentige <= -0.20 && (holder1.getHolder() > 8000 && holder1.getHolder() <= 16000))	){
-							String info = holder1.getFnDate()+"["+holder1.getHolder()+"]"+"比"+holder2.getFnDate()+"["+holder2.getHolder()+"]"+"减少"+StkUtils.number2String(percentige*100,2)+"%";
+							String info = holder1.getFnDate()+"["+holder1.getHolder()+"]"+"比"+holder2.getFnDate()+"["+holder2.getHolder()+"]"+"减少"+ServiceUtils.number2String(percentige*100,2)+"%";
 							/*params.clear();
 							params.add(code);
 							params.add(info);
@@ -1427,7 +1428,7 @@ public class InitialData {
 				}
 
 				if(org != null){
-					double holdcount = StkUtils.getAmount万(StringUtils.replace(data.get(1), "股", ""));
+					double holdcount = ServiceUtils.getAmount万(StringUtils.replace(data.get(1), "股", ""));
 					params.clear();
 					params.add(index.getCode());
 					params.add(date);
@@ -1524,7 +1525,7 @@ public class InitialData {
 				}
 
 				for(Map.Entry<String, List<StkFnType>> fnEntry: map.entrySet()){
-					int year = StkUtils.YEAR;
+					int year = ServiceUtils.YEAR;
 					String id = null;
 					if("1".equals(fnEntry.getKey()) || "2".equals(fnEntry.getKey())){
 						id = "BalanceSheetNewTable0";
@@ -1676,9 +1677,9 @@ public class InitialData {
 								index.insertFnData(params);
 
 								//主营收入增长率连续3个季度大于净利润增加率40个点
-								if(StkConstant.FN_TYPE_CN_ZYSRZZL.equals(fnType.getType().toString())){
-									StkFnDataCust fn1 = index.getFnDataLastestByType(StkConstant.FN_TYPE_CN_ZYSRZZL);
-									StkFnDataCust fn2 = index.getFnDataLastestByType(StkConstant.FN_TYPE_CN_JLRZZL);
+								if(CommonConstant.FN_TYPE_CN_ZYSRZZL.equals(fnType.getType().toString())){
+									StkFnDataCust fn1 = index.getFnDataLastestByType(CommonConstant.FN_TYPE_CN_ZYSRZZL);
+									StkFnDataCust fn2 = index.getFnDataLastestByType(CommonConstant.FN_TYPE_CN_JLRZZL);
 									if(fn1 != null && fn2 != null && fn1.getFnValue() != null && fn2.getFnValue() != null
 											&&  fn1.getFnValue() > 40
 											&& fn1.getFnValue() > 0 && fn1.getFnValue() - fn2.getFnValue() >= 40){
@@ -2206,7 +2207,7 @@ public class InitialData {
 			}else{
 				params.add(JdbcUtils.createClob(companyProfile));
 			}
-			params.add(StkUtils.isAllNumeric(code)?1:2);
+			params.add(ServiceUtils.isAllNumeric(code)?1:2);
 			sql = "insert into stk(code,name,total_capital,company_profile,insert_time,market) values(?,?,?,?,sysdate,?)";
 			JdbcUtils.insert(conn, sql, params);
 			infos.add("[新股]"+code+","+name);

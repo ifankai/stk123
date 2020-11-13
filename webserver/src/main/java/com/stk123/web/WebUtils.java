@@ -10,32 +10,33 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
-import com.stk123.StkConstant;
+import com.stk123.common.CommonConstant;
+import com.stk123.service.ServiceConstant;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
-import com.stk123.bo.Stk;
-import com.stk123.bo.StkImportInfo;
-import com.stk123.bo.StkMonitor;
-import com.stk123.bo.StkUser;
-import com.stk123.bo.cust.StkFnDataCust;
+import com.stk123.model.bo.Stk;
+import com.stk123.model.bo.StkImportInfo;
+import com.stk123.model.bo.StkMonitor;
+import com.stk123.model.bo.StkUser;
+import com.stk123.model.bo.cust.StkFnDataCust;
 import com.stk123.model.Index;
 import com.stk123.model.User;
-import com.stk123.tool.util.StkUtils;
-import com.stk123.tool.util.MyCacheUtils;
-import com.stk123.tool.html.HtmlTable;
-import com.stk123.tool.html.HtmlTd;
-import com.stk123.tool.html.HtmlTr;
-import com.stk123.tool.util.ChineseUtils;
-import com.stk123.tool.util.HtmlUtils;
-import com.stk123.tool.util.JdbcUtils;
+import com.stk123.service.ServiceUtils;
+import com.stk123.common.util.MyCacheUtils;
+import com.stk123.common.html.HtmlTable;
+import com.stk123.common.html.HtmlTd;
+import com.stk123.common.html.HtmlTr;
+import com.stk123.common.util.ChineseUtils;
+import com.stk123.common.util.HtmlUtils;
+import com.stk123.common.util.JdbcUtils;
 import com.stk123.web.context.StkContext;
 
 
 public class WebUtils {
 	
 	public static User getUser(HttpSession session){
-		return (User)session.getAttribute(StkConstant.SESSION_CURRENT_USER);
+		return (User)session.getAttribute(CommonConstant.SESSION_CURRENT_USER);
 	}
 	
 	public static StkUser getUserInfo(HttpSession session){
@@ -56,7 +57,7 @@ public class WebUtils {
 	public static String REPORT_DATE = WebUtils.class+"REPORT_DATE";
 	
 	public static String getFnDate(List<StkFnDataCust> list){
-		StkFnDataCust fnData = (StkFnDataCust)StkUtils.getFirstNotNull(list);
+		StkFnDataCust fnData = (StkFnDataCust)ServiceUtils.getFirstNotNull(list);
 		return fnData.getFnDate();
 	}
 	
@@ -87,7 +88,7 @@ public class WebUtils {
 	public static String display2(String html,int len){
 		if(html == null)return html;
 		String rhtml = HtmlUtils.removeHTML(html);
-		String summary = ChineseUtils.substring(rhtml, len, StkConstant.MARK_EMPTY);
+		String summary = ChineseUtils.substring(rhtml, len, CommonConstant.MARK_EMPTY);
 		if(summary.length() == rhtml.length())return "<div class=\"content-detail-inner\">"+html+"</div>";
 		StringBuffer sb = new StringBuffer();
 		sb.append("<div class=\"content-summary\">");
@@ -121,10 +122,10 @@ public class WebUtils {
 	}
 			
 	public static String display(String html,int len,boolean br,boolean showImg,boolean showThreeDot){
-		if(html == null)return StkConstant.MARK_DOUBLE_HYPHEN;
-		String img = StkUtils.getMatchString(html, HtmlUtils.RegxpForImgTag);
+		if(html == null)return CommonConstant.MARK_DOUBLE_HYPHEN;
+		String img = ServiceUtils.getMatchString(html, HtmlUtils.RegxpForImgTag);
 		String rhtml = HtmlUtils.removeHTML(html);
-		String summary = ChineseUtils.substring(rhtml, len, StkConstant.MARK_EMPTY);
+		String summary = ChineseUtils.substring(rhtml, len, CommonConstant.MARK_EMPTY);
 		if(summary.length() == rhtml.length() && img == null){
 			return CONTENT_DETAIL_INNER + html + DIV_END;
 		}
@@ -132,8 +133,8 @@ public class WebUtils {
 		sb.append(CONTENT_SUMMARY);
 		sb.append(summary);
 		if(showThreeDot)
-			sb.append(StkConstant.MARK_THREE_DOT);
-		if(br)sb.append(StkConstant.HTML_TAG_BR);
+			sb.append(CommonConstant.MARK_THREE_DOT);
+		if(br)sb.append(CommonConstant.HTML_TAG_BR);
 		sb.append(SHOW_TEXT_1);
 		//StringUtils.replace(text, searchString, replacement)
 		if(img != null && showImg){
@@ -152,19 +153,19 @@ public class WebUtils {
 	public static String display(String html,String summary,int len){
 		if(html == null)return html;
 		String rhtml = HtmlUtils.removeHTML(html);
-		String tmp = ChineseUtils.substring(rhtml, len, StkConstant.MARK_EMPTY);
+		String tmp = ChineseUtils.substring(rhtml, len, CommonConstant.MARK_EMPTY);
 		if(summary == null){
 			return display(html,len);
 		}
 		if(tmp.length() == rhtml.length()){
 			return CONTENT_DETAIL_INNER + summary + DIV_END;
 		}
-		String img = StkUtils.getMatchString(html, HtmlUtils.RegxpForImgTag);
+		String img = ServiceUtils.getMatchString(html, HtmlUtils.RegxpForImgTag);
 		StringBuffer sb = new StringBuffer();
 		sb.append(CONTENT_SUMMARY);
 		sb.append(summary);
-		sb.append(StkConstant.MARK_THREE_DOT);
-		sb.append(StkConstant.HTML_TAG_BR);
+		sb.append(CommonConstant.MARK_THREE_DOT);
+		sb.append(CommonConstant.HTML_TAG_BR);
 		sb.append(SHOW_TEXT_1);
 		//StringUtils.replace(text, searchString, replacement)
 		if(img != null){
@@ -210,20 +211,17 @@ public class WebUtils {
         }   
     } 
 	
-	public final static String WEB_CLASS_PATH = WebUtils.class.getResource("/").getPath();
-	public final static String WEB_PATH = WEB_CLASS_PATH + "../../";
-	public final static String WEB_IMAGE_PATH = WEB_PATH + "images/";
-	
+
 	// file///D:/xxx.png
 	public static String download(String url) throws MalformedURLException, IOException{
 		String file = StringUtils.substringAfter(url, "//");
 		file = StringUtils.replace(file, ":", "");
-		String target = WEB_CLASS_PATH + "../../images/download/" + file;
+		String target = ServiceConstant.WEB_CLASS_PATH + "../../images/download/" + file;
 		//System.out.println(target);
 		File targetFile = new File(target);
 		if(!targetFile.exists()){
 			FileUtils.copyURLToFile(new URL(url), targetFile, 10*1000, 10*1000);
-			FileUtils.copyFile(targetFile, new File(StkConstant.PATH_TEXT_IMG_DOWNLOAD/*"D:/share/workspace/stock/web/images/download/"*/+file));
+			FileUtils.copyFile(targetFile, new File(CommonConstant.PATH_TEXT_IMG_DOWNLOAD/*"D:/share/workspace/stock/web/images/download/"*/+file));
 		}
 		return "/images/download/"+file;
 	}
@@ -264,7 +262,7 @@ public class WebUtils {
 				List<HtmlTd> row = new ArrayList<HtmlTd>();
 				row.add(HtmlTd.getInstanceAlignRight(m.getParam2()));
 				row.add(HtmlTd.getInstanceAlignRight(index.getK(m.getParam4()).getClose()));
-				row.add(HtmlTd.getInstanceAlignRight(StkUtils.formatDate(m.getParam3())));
+				row.add(HtmlTd.getInstanceAlignRight(ServiceUtils.formatDate(m.getParam3())));
 				HtmlTd td = HtmlTd.getInstanceAlignRight(m.getParam5());
 				if(Double.parseDouble(m.getParam5()) <= 1){
 					td.attributes.put("style", "color:red");
@@ -274,7 +272,7 @@ public class WebUtils {
 				datas.add(row);
 			}
 		}
-		return datas.size()>0 ? createTable(titles, datas) : StkConstant.MARK_EMPTY;
+		return datas.size()>0 ? createTable(titles, datas) : CommonConstant.MARK_EMPTY;
 	}
 	
 	public static String createTableOfStkImportInfo(Connection conn, Index index, int type) throws Exception {
@@ -287,11 +285,11 @@ public class WebUtils {
 		for(StkImportInfo m : infos){
 			List<HtmlTd> row = new ArrayList<HtmlTd>();
 			row.add(HtmlTd.getInstanceAlignRight(m.getInfo()));
-			row.add(HtmlTd.getInstanceAlignRight(StkUtils.formatDate(m.getInsertTime())));
+			row.add(HtmlTd.getInstanceAlignRight(ServiceUtils.formatDate(m.getInsertTime())));
 			datas.add(row);
 			//out.println("<span style='color:red'>"+sii.getInfo()+" ["+StkUtils.formatDate(sii.getInsertTime())+"]"+"</span>");
 		}
-		return datas.size()>0 ? createTable(titles, datas) : StkConstant.MARK_EMPTY;
+		return datas.size()>0 ? createTable(titles, datas) : CommonConstant.MARK_EMPTY;
 	}
 
 }

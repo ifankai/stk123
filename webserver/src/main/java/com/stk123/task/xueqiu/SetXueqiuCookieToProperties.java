@@ -10,7 +10,7 @@ import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.stk123.tool.util.StkUtils;
+import com.stk123.service.ServiceUtils;
 
 public class SetXueqiuCookieToProperties {
 	
@@ -21,7 +21,7 @@ public class SetXueqiuCookieToProperties {
     private static Properties props = new Properties();
 
 	public static void main(String[] args) {
-		String cookie = StkUtils.getSysClipboardText();
+		String cookie = ServiceUtils.getSysClipboardText();
 		String[] cookies = StringUtils.split(cookie, "\n");
 		String sCookie = cookies[cookies.length-1];
         System.out.println("cookie:"+sCookie);

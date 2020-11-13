@@ -1,32 +1,23 @@
 package com.stk123.model;
 
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.stk123.common.CommonConstant;
+import com.stk123.common.util.CacheUtils;
+import com.stk123.common.util.JdbcUtils;
+import com.stk123.common.util.JsonUtils;
+import com.stk123.common.util.ListUtils;
+import com.stk123.model.bo.Stk;
+import com.stk123.service.HttpUtils;
+import com.stk123.service.ServiceUtils;
+import com.stk123.service.XueqiuUtils;
 import org.apache.commons.lang.StringUtils;
 
-import com.stk123.bo.Stk;
-import com.stk123.tool.util.StkUtils;
-import com.stk123.task.XueqiuUtils;
-import com.stk123.tool.util.CacheUtils;
-import com.stk123.tool.util.HttpUtils;
-import com.stk123.tool.util.JdbcUtils;
-import com.stk123.tool.util.JsonUtils;
-import com.stk123.tool.util.ListUtils;
-import com.stk123.StkConstant;
+import java.sql.Connection;
+import java.util.*;
 
 
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public class IndexUtils implements StkConstant {
+public class IndexUtils implements CommonConstant {
 
 	public static String STKS_NAME_PATTERN = null;
 
@@ -39,9 +30,9 @@ public class IndexUtils implements StkConstant {
 	 */
 	public static List<Index> getNewHighs(List<Index> indexs,String yyyyMMdd,int days) throws Exception{
 		List<Index> newHighs = new ArrayList<Index>();
-		String today_1 = StkUtils.formatDate(StkUtils.addDay(yyyyMMdd, -1),StkUtils.sf_ymd2);
-		String today_20 = StkUtils.formatDate(StkUtils.addDay(yyyyMMdd, -20),StkUtils.sf_ymd2);
-		String today_n = StkUtils.formatDate(StkUtils.addDay(yyyyMMdd, -days),StkUtils.sf_ymd2);
+		String today_1 = ServiceUtils.formatDate(ServiceUtils.addDay(yyyyMMdd, -1),ServiceUtils.sf_ymd2);
+		String today_20 = ServiceUtils.formatDate(ServiceUtils.addDay(yyyyMMdd, -20),ServiceUtils.sf_ymd2);
+		String today_n = ServiceUtils.formatDate(ServiceUtils.addDay(yyyyMMdd, -days),ServiceUtils.sf_ymd2);
 		for(Index index : indexs){
 			if(index.getKs().size() >= days){
 				if(index.getKValueByHCV(today_n, today_20) > index.getK(today_1).getClose()
@@ -57,9 +48,9 @@ public class IndexUtils implements StkConstant {
 	//创days天新低
     public static List<Index> getNewLows(List<Index> indexs,String yyyyMMdd,int days) throws Exception{
         List<Index> newHighs = new ArrayList<Index>();
-        String today_1 = StkUtils.formatDate(StkUtils.addDay(yyyyMMdd, -1),StkUtils.sf_ymd2);
-        String today_20 = StkUtils.formatDate(StkUtils.addDay(yyyyMMdd, -20),StkUtils.sf_ymd2);
-        String today_n = StkUtils.formatDate(StkUtils.addDay(yyyyMMdd, -days),StkUtils.sf_ymd2);
+        String today_1 = ServiceUtils.formatDate(ServiceUtils.addDay(yyyyMMdd, -1),ServiceUtils.sf_ymd2);
+        String today_20 = ServiceUtils.formatDate(ServiceUtils.addDay(yyyyMMdd, -20),ServiceUtils.sf_ymd2);
+        String today_n = ServiceUtils.formatDate(ServiceUtils.addDay(yyyyMMdd, -days),ServiceUtils.sf_ymd2);
         for(Index index : indexs){
             if(index.getKs().size() >= days){
                 if(index.getKValueByLCV(today_n, today_20) < index.getK(today_1).getClose()
@@ -74,9 +65,9 @@ public class IndexUtils implements StkConstant {
 
 	public static List<Index> getNearNewHighs(List<Index> indexs, String yyyyMMdd, int days) throws Exception{
 		List<Index> newHighs = new ArrayList<Index>();
-		String today_1 = StkUtils.formatDate(StkUtils.addDay(yyyyMMdd, -1),StkUtils.sf_ymd2);
-		String today_20 = StkUtils.formatDate(StkUtils.addDay(yyyyMMdd, -20),StkUtils.sf_ymd2);
-		String today_n = StkUtils.formatDate(StkUtils.addDay(yyyyMMdd, -days),StkUtils.sf_ymd2);
+		String today_1 = ServiceUtils.formatDate(ServiceUtils.addDay(yyyyMMdd, -1),ServiceUtils.sf_ymd2);
+		String today_20 = ServiceUtils.formatDate(ServiceUtils.addDay(yyyyMMdd, -20),ServiceUtils.sf_ymd2);
+		String today_n = ServiceUtils.formatDate(ServiceUtils.addDay(yyyyMMdd, -days),ServiceUtils.sf_ymd2);
 		for(Index index : indexs){
 			if(!index.isStop(yyyyMMdd) && !index.getK().isUpLimit()){
 				if(index.getKs().size() >= days){
@@ -94,9 +85,9 @@ public class IndexUtils implements StkConstant {
 
 	public static List<Index> getCloseNewHighsAndInteract(List<Index> indexs,String yyyyMMdd,int days) throws Exception{
 		List<Index> newHighs = new ArrayList<Index>();
-		String today_1 = StkUtils.formatDate(StkUtils.addDay(yyyyMMdd, -1),StkUtils.sf_ymd2);
-		String today_20 = StkUtils.formatDate(StkUtils.addDay(yyyyMMdd, -20),StkUtils.sf_ymd2);
-		String today_n = StkUtils.formatDate(StkUtils.addDay(yyyyMMdd, -days),StkUtils.sf_ymd2);
+		String today_1 = ServiceUtils.formatDate(ServiceUtils.addDay(yyyyMMdd, -1),ServiceUtils.sf_ymd2);
+		String today_20 = ServiceUtils.formatDate(ServiceUtils.addDay(yyyyMMdd, -20),ServiceUtils.sf_ymd2);
+		String today_n = ServiceUtils.formatDate(ServiceUtils.addDay(yyyyMMdd, -days),ServiceUtils.sf_ymd2);
 		for(Index index : indexs){
 			if(!index.isStop(yyyyMMdd) && !index.getK().isUpLimit()){
 				if(index.getKs().size() >= days){
@@ -200,7 +191,7 @@ public class IndexUtils implements StkConstant {
 				if(up != null){
 					K k = index.getK(yyyyMMdd);
 					if(k.getLow() < up.getHigh() && !up.getEndK().equals(yyyyMMdd)
-							&& StkUtils.getDaysBetween(StkUtils.sf_ymd2.parse(up.getEndK().getDate()), StkUtils.sf_ymd2.parse(yyyyMMdd)) >= daysInterval ){
+							&& ServiceUtils.getDaysBetween(ServiceUtils.sf_ymd2.parse(up.getEndK().getDate()), ServiceUtils.sf_ymd2.parse(yyyyMMdd)) >= daysInterval ){
 						result.add(index);
 					}
 				}
@@ -248,8 +239,8 @@ public class IndexUtils implements StkConstant {
 			if(d1 + d2 <= 0 || d2 <= 0)continue;
 			List data = new ArrayList();
 			data.add(index);
-			data.add(StkUtils.number2String(index.getCloseChange(date, m)*100,2));
-			data.add(StringUtils.join(index.getIndustryName(/*Index.INDUSTRY_WIND*/), StkConstant.MARK_SLASH));
+			data.add(ServiceUtils.number2String(index.getCloseChange(date, m)*100,2));
+			data.add(StringUtils.join(index.getIndustryName(/*Index.INDUSTRY_WIND*/), CommonConstant.MARK_SLASH));
 			datas.add(data);
 		}
 		Collections.sort(datas, new Comparator(){
@@ -261,7 +252,7 @@ public class IndexUtils implements StkConstant {
 		});
 		for(List data:datas){
 			//System.out.println(StringUtils.replaceEach(data.toString(), new String[]{"[","]"," "}, new String[]{"","",""}));
-			data.set(1, String.valueOf(data.get(1)) + StkConstant.MARK_PERCENTAGE);
+			data.set(1, String.valueOf(data.get(1)) + CommonConstant.MARK_PERCENTAGE);
 		}
 		return datas;
 	}
@@ -272,7 +263,7 @@ public class IndexUtils implements StkConstant {
 	 */
 	public static void search(Connection conn, String date, int n, int m, boolean onlyGrowing) throws Exception {
 		if(date == null || "".equals(date)){
-			date = StkUtils.getToday();
+			date = ServiceUtils.getToday();
 		}
 		List<Stk> stks = JdbcUtils.list(conn, "select code,name from stk_cn order by code", Stk.class);
 		List<Index> indexs = new ArrayList<Index>();
@@ -285,7 +276,7 @@ public class IndexUtils implements StkConstant {
 
 	public static void sortByCloseChangeAndNetProfit(List<Index> indexs,String today) throws Exception {
 		//IndexUtils.reportRSByCloseChange(indexs,StkUtils.getToday(),250);
-		IndexUtils.sortByNetProfit(indexs, StkUtils.getPrevQuarter(today));
+		IndexUtils.sortByNetProfit(indexs, ServiceUtils.getPrevQuarter(today));
 		Collections.sort(indexs, new Comparator<Index>(){
 			public int compare(Index arg0, Index arg1) {
 				int rs1 = arg1.getCanslim().getCloseChangeRank()*3+arg1.getCanslim().getNetProfitGrowthRank();
@@ -376,52 +367,6 @@ public class IndexUtils implements StkConstant {
 		}
 	}
 
-	public static String reportGrowthPE(Connection conn, IndexContext context, final String yyyyMMdd) throws Exception{
-		List<Index> indexsGrowth = context.indexsGrowth;
-		double totalPE = 0.0;
-		double totalPB = 0.0;
-		int pbCnt = 0;
-		for(Index index : context.indexs){
-			if(index.isStop(yyyyMMdd)){
-				continue;
-			}
-			if(index.isGrowth()){
-				System.out.println("growth stk="+index.getCode());
-				double pe = index.getPETTMByCalculation(yyyyMMdd).getPe();
-				if(pe == 0 || pe < 5 || pe > 200){
-					continue;
-				}
-				double pb = index.getPB();
-				if(pb > 0){
-					pbCnt ++;
-					totalPB += pb;
-				}
-				index.changePercent = pe;
-				indexsGrowth.add(index);
-				totalPE += pe;
-			}
-		}
-		Collections.sort(indexsGrowth, new Comparator<Index>(){
-			public int compare(Index arg0, Index arg1) {
-				double d0 = arg0.changePercent;
-				double d1 = arg1.changePercent;
-				return (int)((d1-d0)*100);
-			}
-		});
-		StringBuffer sb = new StringBuffer();
-		String date = StkUtils.getPrevQuarter(yyyyMMdd);
-		for(Index stk : indexsGrowth){
-			sb.append(stk.getCode()+","+stk.getName()+","+StkUtils.numberFormat(stk.getPETTMByCalculation(yyyyMMdd).getPe(), 2)).append(",")
-			  .append(date+"净利润增长:"+stk.getNetProfitGrowthAsNumber(date)).append("%\n");
-		}
-		sb.append("\ntotal size:"+indexsGrowth.size()+"\n");
-		context.averagePE = StkUtils.number2String(totalPE/indexsGrowth.size(), 2);
-		context.averagePB = StkUtils.number2String(totalPB/pbCnt, 2);
-		sb.append("avg pe:"+context.averagePE);
-		sb.append(",avg pb:"+context.averagePB);
-		context.averagePEIndexs = sb.toString();
-		return StkUtils.createHtmlTable(yyyyMMdd, indexsGrowth);
-	}
 
 	public static void sortByClose(List<Index> indexs, final String date){
 		Collections.sort(indexs, new Comparator<Index>(){
@@ -566,7 +511,7 @@ public class IndexUtils implements StkConstant {
     		List<String> stks = JdbcUtils.list("select name from stk_cn", String.class);
     		STKS_NAME_PATTERN = StringUtils.replace(StringUtils.join(stks, '|'), "*", "\\*");
     	}
-    	return StkUtils.getMatchStringAndWrapByString(text, STKS_NAME_PATTERN, startString, endString);
+    	return ServiceUtils.getMatchStringAndWrapByString(text, STKS_NAME_PATTERN, startString, endString);
     }
 
     private static String PATTERN = "stk_search_pattern";
@@ -591,7 +536,7 @@ public class IndexUtils implements StkConstant {
 					map.put(name2, stk.getCode());
 				}
 			}
-			pattern = StkConstant.MARK_PARENTHESIS_LEFT + StringUtils.join(result, MARK_VERTICAL) + StkConstant.MARK_PARENTHESIS_RIGHT;
+			pattern = CommonConstant.MARK_PARENTHESIS_LEFT + StringUtils.join(result, MARK_VERTICAL) + CommonConstant.MARK_PARENTHESIS_RIGHT;
 			CacheUtils.put(CacheUtils.KEY_ONE_DAY, PATTERN, pattern);
 			CacheUtils.put(CacheUtils.KEY_ONE_DAY, PATTERN_MAP, map);
     	}else{
@@ -599,7 +544,7 @@ public class IndexUtils implements StkConstant {
     		map = (Map<String,String>)CacheUtils.get(CacheUtils.KEY_ONE_DAY, PATTERN_MAP);
     	}
 
-    	Set<String> listName = StkUtils.getMatchStrings(text,  pattern );
+    	Set<String> listName = ServiceUtils.getMatchStrings(text,  pattern );
     	Set<String> codes = new HashSet<String>();
     	for(String name : listName){
     		if(map.get(name) != null){

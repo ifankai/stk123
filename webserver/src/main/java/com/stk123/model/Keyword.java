@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.stk123.bo.StkKeyword;
-import com.stk123.bo.StkKeywordLink;
-import com.stk123.tool.db.util.sequence.SequenceUtils;
-import com.stk123.tool.util.JdbcUtils;
+import com.stk123.model.bo.StkKeyword;
+import com.stk123.model.bo.StkKeywordLink;
+import com.stk123.common.db.util.sequence.SequenceUtils;
+import com.stk123.common.util.JdbcUtils;
 
 
 public class Keyword implements Serializable {

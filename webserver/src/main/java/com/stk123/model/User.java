@@ -5,11 +5,11 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.stk123.bo.StkUser;
-import com.stk123.tool.db.util.sequence.SequenceUtils;
-import com.stk123.tool.util.JdbcUtils;
-import com.stk123.StkConstant;
-import com.stk123.web.WebUtils;
+import com.stk123.service.ServiceConstant;
+import com.stk123.model.bo.StkUser;
+import com.stk123.common.db.util.sequence.SequenceUtils;
+import com.stk123.common.util.JdbcUtils;
+import com.stk123.common.CommonConstant;
 
 public class User implements Serializable{
 	
@@ -74,12 +74,12 @@ public class User implements Serializable{
 	}
 	
 	public String getUserUploadImagePath(){
-		return WebUtils.WEB_IMAGE_PATH + this.getStkUser().getId() + StkConstant.MARK_SLASH;
+		return ServiceConstant.WEB_IMAGE_PATH + this.getStkUser().getId() + CommonConstant.MARK_SLASH;
 	}
 	
 	private final static String PATH_IMAGES = "/images/";
 	
 	public String getUserUploadImageRelativePath(){
-		return PATH_IMAGES + this.getStkUser().getId() + StkConstant.MARK_SLASH;
+		return PATH_IMAGES + this.getStkUser().getId() + CommonConstant.MARK_SLASH;
 	}
 }

@@ -6,16 +6,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.stk123.tool.util.StkUtils;
+import com.stk123.service.ServiceUtils;
+import com.stk123.service.XueqiuUtils;
 import org.apache.commons.lang.StringUtils;
 
-import com.stk123.bo.Stk;
+import com.stk123.model.bo.Stk;
 import com.stk123.model.Index;
-import com.stk123.tool.db.TableTools;
-import com.stk123.tool.db.util.DBUtil;
-import com.stk123.tool.util.ConfigUtils;
-import com.stk123.tool.util.HttpUtils;
-import com.stk123.tool.util.JdbcUtils;
+import com.stk123.common.db.TableTools;
+import com.stk123.common.db.util.DBUtil;
+import com.stk123.common.util.ConfigUtils;
+import com.stk123.service.HttpUtils;
+import com.stk123.common.util.JdbcUtils;
 
 public class XueqiuFollow {
 
@@ -56,7 +57,7 @@ public class XueqiuFollow {
 		}
 		String page = HttpUtils.get("http://xueqiu.com/recommend/pofriends.json?type=1&code="+code+"&start=0&count=14&_="+new Date().getTime(),null, requestHeaders, "GBK");
 		String totalNumber = StringUtils.substringBetween(page, "\"totalcount\":", ",");
-		if(totalNumber != null && StkUtils.isAllNumeric(totalNumber)){
+		if(totalNumber != null && ServiceUtils.isAllNumeric(totalNumber)){
 			int tn = Integer.parseInt(totalNumber);
 			List params = new ArrayList();
 			params.add(tn);
