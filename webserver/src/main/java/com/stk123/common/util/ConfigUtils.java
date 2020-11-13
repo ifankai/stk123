@@ -2,6 +2,7 @@ package com.stk123.common.util;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.URL;
@@ -61,7 +62,7 @@ public class ConfigUtils {
 	
 	public static void setPropsFromResource(Class clazz, String resName) throws Exception {
 //		URL resUrl = clazz.getResource(resName);
-		URL resUrl = ResourceUtils.getURL("classpath:"+resName);
+		URL resUrl = ConfigUtils.getURL(resName);
         if (resUrl == null) {
         	throw new RuntimeException("Resource file "+resUrl+" is not exists.");
         }
@@ -93,6 +94,10 @@ me.class.getResourceAsStream("file/myfile.xml");
 	 */
 	public static void setPropsFromResource(String resName) throws Exception {
 		setPropsFromResource(ConfigUtils.class, resName);
+	}
+
+	public static URL getURL(String resName) throws FileNotFoundException {
+		return ResourceUtils.getURL("classpath:"+resName);
 	}
 	
 	public static void main(String[] args) throws Exception {

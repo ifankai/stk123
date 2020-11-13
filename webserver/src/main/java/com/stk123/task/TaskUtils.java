@@ -8,7 +8,7 @@ import com.stk123.model.bo.StkImportInfo;
 import com.stk123.model.bo.StkRestricted;
 import com.stk123.model.bo.cust.StkFnDataCust;
 import com.stk123.service.ServiceUtils;
-import com.stk123.service.XueqiuUtils;
+import com.stk123.service.XueqiuService;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
@@ -98,7 +98,7 @@ public class TaskUtils extends ServiceUtils {
                     indexs.add(index);
 
                     if(market == 1){
-                        boolean xqFollowStk = XueqiuUtils.existingXueqiuFollowStk("全部", index.getCode());
+                        boolean xqFollowStk = XueqiuService.existingXueqiuFollowStk("全部", index.getCode());
                         if(xqFollowStk && InitialKLine.addToCareStks){
                             InitialKLine.careStks.add(index.getCode());
                         }

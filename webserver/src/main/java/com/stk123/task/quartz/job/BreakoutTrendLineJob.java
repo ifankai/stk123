@@ -23,7 +23,7 @@ import com.stk123.model.Index;
 import com.stk123.model.IndexUtils;
 import com.stk123.model.K;
 import com.stk123.service.ServiceUtils;
-import com.stk123.service.XueqiuUtils;
+import com.stk123.service.XueqiuService;
 import com.stk123.service.baidu.BaiduSearch;
 import com.stk123.common.db.util.DBUtil;
 import com.stk123.common.util.EmailUtils;
@@ -164,7 +164,7 @@ public class BreakoutTrendLineJob implements Job {
 	private static boolean existingXueqiuFollow(String code){
 		if(FollowC.size() == 0){
 			try {
-				FollowC = XueqiuUtils.getFollowStks("关注C");
+				FollowC = XueqiuService.getFollowStks("关注C");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

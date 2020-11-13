@@ -1,8 +1,5 @@
 package com.stk123.web.action;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.sql.Connection;
 import java.text.ParseException;
 import java.util.*;
@@ -10,8 +7,6 @@ import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 
 import com.stk123.model.Index;
-import com.stk123.service.XueqiuUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.stk123.model.bo.StkIndustryType;

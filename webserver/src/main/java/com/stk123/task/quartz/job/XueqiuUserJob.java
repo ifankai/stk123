@@ -9,7 +9,7 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-import com.stk123.service.XueqiuUtils;
+import com.stk123.service.XueqiuService;
 import com.stk123.common.db.util.DBUtil;
 import com.stk123.common.util.EmailUtils;
 import com.stk123.service.ExceptionUtils;
@@ -44,7 +44,7 @@ public class XueqiuUserJob implements Job {
 			do{
 				try{
 					//System.out.println(cnt);
-					String page = HttpUtils.get("https://xueqiu.com/friendships/followers.json?pageNo="+cnt+"&uid="+userId,null,XueqiuUtils.getCookies(), "gb2312");
+					String page = HttpUtils.get("https://xueqiu.com/friendships/followers.json?pageNo="+cnt+"&uid="+userId,null,XueqiuService.getCookies(), "gb2312");
 					//System.out.println(page);
 					Map m = JsonUtils.testJson(page);
 					maxCnt = Integer.parseInt(String.valueOf(m.get("maxPage")));

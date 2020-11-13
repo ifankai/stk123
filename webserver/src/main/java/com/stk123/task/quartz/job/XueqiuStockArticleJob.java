@@ -23,7 +23,7 @@ import org.quartz.JobExecutionException;
 import com.stk123.model.bo.Stk;
 import com.stk123.model.Index;
 import com.stk123.service.ServiceUtils;
-import com.stk123.service.XueqiuUtils;
+import com.stk123.service.XueqiuService;
 import com.stk123.common.db.util.CloseUtil;
 import com.stk123.common.db.util.DBUtil;
 import com.stk123.common.db.util.sequence.SequenceUtils;
@@ -106,7 +106,7 @@ public class XueqiuStockArticleJob implements Job {
 		if(StringUtils.length(code) == 5){
 			scode = code;
 		}
-		Map<String, String> requestHeaders = XueqiuUtils.getCookies();
+		Map<String, String> requestHeaders = XueqiuService.getCookies();
 		//String page = HttpUtils.get("https://xueqiu.com/statuses/search.json?count=10&comment=0&symbol="+scode+"&hl=0&source=all&sort=alpha&page=1&_="+new Date().getTime(),null, requestHeaders, "gb2312");
 
         String url = "https://xueqiu.com/query/v1/symbol/search/status?count=100&comment=0&symbol="+scode+"&hl=0&source=all&sort=&page=1&q=";
@@ -242,7 +242,7 @@ public class XueqiuStockArticleJob implements Job {
 		int cnt400 = 0;
 		do{
 			//System.out.println(p);
-			String page = HttpUtils.get("http://xueqiu.com/statuses/search.json?count=20&comment=0&symbol="+scode+"&hl=0&source=user&sort=time&page="+p+"&_="+new Date().getTime(),null, XueqiuUtils.getCookies(), "gb2312");
+			String page = HttpUtils.get("http://xueqiu.com/statuses/search.json?count=20&comment=0&symbol="+scode+"&hl=0&source=user&sort=time&page="+p+"&_="+new Date().getTime(),null, XueqiuService.getCookies(), "gb2312");
 			//System.out.println(page);
 			p++;
 			if("400".equals(page)){

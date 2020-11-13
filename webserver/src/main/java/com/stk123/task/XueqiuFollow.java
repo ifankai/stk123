@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.stk123.service.ServiceUtils;
-import com.stk123.service.XueqiuUtils;
+import com.stk123.service.XueqiuService;
 import org.apache.commons.lang.StringUtils;
 
 import com.stk123.model.bo.Stk;
@@ -30,7 +30,7 @@ public class XueqiuFollow {
 		try {
 			conn = DBUtil.getConnection();
 			List<Stk> stks = JdbcUtils.list(conn, "select code,name from stk order by code", Stk.class);
-			Map<String, String> cookies = XueqiuUtils.getCookies();
+			Map<String, String> cookies = XueqiuService.getCookies();
 			System.out.println(cookies);
 			for(Stk stk : stks){
 				try{

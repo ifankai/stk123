@@ -29,8 +29,8 @@ import com.stk123.model.bo.StkIndustry;
 import com.stk123.model.bo.StkIndustryType;
 import com.stk123.model.bo.StkOrganization;
 import com.stk123.model.bo.cust.StkFnDataCust;
-import com.stk123.model.json.HexunIndustryConception;
-import com.stk123.model.json.MeiGuSina;
+import com.stk123.model.dto.HexunIndustryConception;
+import com.stk123.model.dto.SinaMeiGu;
 import com.stk123.model.Index;
 import com.stk123.model.Industry;
 import com.stk123.model.News;
@@ -2001,7 +2001,7 @@ public class InitialData {
 						page = HttpUtils.get(url, null, "GBK");
 						m = new HashMap<String, Class>();
 				        m.put("data", Map.class);
-						MeiGuSina meiGu = (MeiGuSina)JsonUtils.getObject4Json(StringUtils.substringBetween(page, "((", "));"), MeiGuSina.class, m);
+						SinaMeiGu meiGu = (SinaMeiGu)JsonUtils.getObject4Json(StringUtils.substringBetween(page, "((", "));"), SinaMeiGu.class, m);
 						if(meiGu == null || meiGu.getData() == null){
 							break;
 						}
@@ -2046,7 +2046,7 @@ public class InitialData {
 				//System.out.println(page);
 				Map<String, Class> m = new HashMap<String, Class>();
 		        m.put("data", Map.class);
-				MeiGuSina meiGu = (MeiGuSina)JsonUtils.getObject4Json(StringUtils.substringBetween(page, "((", "));"), MeiGuSina.class, m);
+				SinaMeiGu meiGu = (SinaMeiGu)JsonUtils.getObject4Json(StringUtils.substringBetween(page, "((", "));"), SinaMeiGu.class, m);
 				if(meiGu.getData() == null){
 					break;
 				}

@@ -14,7 +14,7 @@ import com.stk123.model.bo.StkMonitor;
 import com.stk123.model.Ene;
 import com.stk123.model.Index;
 import com.stk123.service.ServiceUtils;
-import com.stk123.service.XueqiuUtils;
+import com.stk123.service.XueqiuService;
 import com.stk123.service.baidu.BaiDuHi;
 import com.stk123.common.db.TableTools;
 import com.stk123.common.db.connection.Pool;
@@ -101,7 +101,7 @@ public class KlineMonitor extends Monitor {
 
     //getMethod.setRequestHeader("Cookie", "Hm_lpvt_1db88642e346389874251b5a1eded6e3=1401870866; Hm_lvt_1db88642e346389874251b5a1eded6e3=1399279853,1399456116,1399600423,1401761324; xq_a_token=bBfpd2WIHkEiOXxCZuvJKz; xq_r_token=HoJplnghTo9TdCtmaYhQ9C; bid=26948a7b701285b58366203fbc172ea6_hvykico0; xq_im_active=false; __utma=1.1861748176.1401870866.1401870866.1401870866.1; __utmb=1.2.9.1401870869035; __utmc=1; __utmz=1.1401870866.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)");
     public static void getCareAFromXueQiu(Set<String> careA) throws Exception {
-    	String page = HttpUtils.get("http://xueqiu.com/stock/portfolio/stocks.json?size=1000&pid=7&tuid=6237744859&showAll=false", null, XueqiuUtils.getCookies(), "GBK");
+    	String page = HttpUtils.get("http://xueqiu.com/stock/portfolio/stocks.json?size=1000&pid=7&tuid=6237744859&showAll=false", null, XueqiuService.getCookies(), "GBK");
         System.out.println(page);
         Map<String, Class> m = new HashMap<String, Class>();
         m.put("portfolios", Map.class);

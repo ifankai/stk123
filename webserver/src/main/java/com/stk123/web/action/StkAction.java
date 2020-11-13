@@ -25,7 +25,7 @@ import com.stk123.model.K;
 import com.stk123.model.Keyword;
 import com.stk123.service.EarningsForecast;
 import com.stk123.service.ServiceUtils;
-import com.stk123.service.XueqiuUtils;
+import com.stk123.service.XueqiuService;
 import com.stk123.service.baidu.BaiduSearch;
 import com.stk123.common.ik.DocumentField;
 import com.stk123.web.ik.WebIKUtils;
@@ -421,7 +421,7 @@ public class StkAction {
 	
 	private List<Map> getNoticeFromXueqiu(Index index) throws Exception {
 		String scode = index.getLocationAsString()+index.getCode();
-		Map<String, String> headerRequests = XueqiuUtils.getCookies();
+		Map<String, String> headerRequests = XueqiuService.getCookies();
 		List<Map> notices = new ArrayList<Map>();
 		Date now = new Date();
 		int pageNum = 1;
@@ -430,7 +430,7 @@ public class StkAction {
 			String page = HttpUtils.get("https://xueqiu.com/statuses/stock_timeline.json?symbol_id="+scode+"&count=50&source=%E5%85%AC%E5%91%8A&page="+pageNum,null,headerRequests, "GBK");
 			if("400".equals(page) || "404".equals(page)){
 				if(!clearCookie){
-					XueqiuUtils.clearCookie();
+					XueqiuService.clearCookie();
 					clearCookie = true;
 					continue;
 				}
