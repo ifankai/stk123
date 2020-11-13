@@ -20,8 +20,8 @@ import com.stk123.common.CommonConstant;
 import com.stk123.service.DictService;
 import com.stk123.service.StkService;
 import com.stk123.web.context.StkContext;
-import com.stk123.model.pojo.MetaData;
-import com.stk123.model.pojo.Node;
+import com.stk123.model.dto.MetaData;
+import com.stk123.model.dto.Node;
 
 
 public class IndustryAction {

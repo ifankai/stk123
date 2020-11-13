@@ -11,17 +11,15 @@ import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 
-import com.stk123.model.bo.StkSearchCondition;
 import com.stk123.model.Index;
 import com.stk123.model.IndexUtils;
 import com.stk123.model.K;
 import com.stk123.service.ServiceUtils;
-import com.stk123.service.XueqiuUtils;
+import com.stk123.service.XueqiuService;
 import com.stk123.common.db.util.CloseUtil;
 import com.stk123.common.db.util.DBUtil;
 import com.stk123.common.util.EmailUtils;
 import com.stk123.common.util.JdbcUtils;
-import com.stk123.common.util.JsonUtils;
 import com.stk123.common.util.collection.Name2Value;
 //import com.stk123.web.action.ScreenerAction;
 //import com.stk123.web.form.ScreenerForm;
@@ -116,8 +114,8 @@ public class StrategyManager {
     public static List<Index> getFollowIndex(Connection conn) throws Exception {
         Set<String>	followStks = null;
         try{
-            followStks = XueqiuUtils.getFollowStks("关注C");
-            followStks.addAll(XueqiuUtils.getFollowStks("我的"));
+            followStks = XueqiuService.getFollowStks("关注C");
+            followStks.addAll(XueqiuService.getFollowStks("我的"));
             IOUtils.writeLines(followStks, null, new FileOutputStream(new File("d:\\care.txt")));
         }catch(Exception e){
             followStks = new HashSet(IOUtils.readLines(new FileInputStream("d:\\care.txt")));

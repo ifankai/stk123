@@ -14,7 +14,7 @@ import org.quartz.JobExecutionException;
 
 import com.stk123.model.bo.StkXueqiuUser;
 import com.stk123.model.IndexUtils;
-import com.stk123.service.XueqiuUtils;
+import com.stk123.service.XueqiuService;
 import com.stk123.common.db.util.DBUtil;
 import com.stk123.common.util.EmailUtils;
 import com.stk123.service.ExceptionUtils;
@@ -117,7 +117,7 @@ public class XueqiuUserLongArticleJob implements Job {
 		int maxCnt = 0;
 		Random r = new Random();
 		do{
-			String page = HttpUtils.get("https://xueqiu.com/friendships/groups/members.json?uid=6237744859&gid=0&page="+cnt+"&_="+new Date().getTime(),null,XueqiuUtils.getCookies(), "gb2312");
+			String page = HttpUtils.get("https://xueqiu.com/friendships/groups/members.json?uid=6237744859&gid=0&page="+cnt+"&_="+new Date().getTime(),null,XueqiuService.getCookies(), "gb2312");
 			Map m = JsonUtils.testJson(page);
 			maxCnt = Integer.parseInt(String.valueOf(m.get("maxPage")));
 			List<Map> users = (List<Map>)m.get("users");
@@ -144,7 +144,7 @@ public class XueqiuUserLongArticleJob implements Job {
 		int pageCnt = 1;
 		Random r = new Random();
 		while(true){
-			Map<String, String> requestHeaders = XueqiuUtils.getCookies();
+			Map<String, String> requestHeaders = XueqiuService.getCookies();
 			//System.out.println(requestHeaders.get("Cookie"));
 			requestHeaders.put("Content-Type", "application/json;charset=UTF-8");
 			String page = HttpUtils.get("https://xueqiu.com/v4/statuses/user_timeline.json?user_id="+user.id+"&page="+(pageCnt++)+"&type=2&_="+new Date().getTime(),null,requestHeaders, "UTF-8");

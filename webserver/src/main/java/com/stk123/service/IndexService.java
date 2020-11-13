@@ -15,8 +15,8 @@ import com.stk123.common.util.CacheUtils;
 import com.stk123.common.util.JdbcUtils;
 import com.stk123.common.util.JsonUtils;
 import com.stk123.common.CommonConstant;
-import com.stk123.model.pojo.MetaData;
-import com.stk123.model.pojo.Node;
+import com.stk123.model.dto.MetaData;
+import com.stk123.model.dto.Node;
 
 public class IndexService {
 

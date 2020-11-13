@@ -6,7 +6,7 @@ import com.stk123.spring.dto.StkDto;
 import com.stk123.spring.service.IndexService;
 import com.stk123.spring.service.IndustryService;
 import com.stk123.service.ServiceUtils;
-import com.stk123.service.XueqiuUtils;
+import com.stk123.service.XueqiuService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,7 +90,7 @@ public class KControl {
     @RequestMapping("/xueqiu/{name}")
     @ResponseBody
     public List<StkDto> xueqiu(@PathVariable("name")String name) throws Exception {
-        Set<String> codes = XueqiuUtils.getFollowStks(name);
+        Set<String> codes = XueqiuService.getFollowStks(name);
         return show(StringUtils.join(codes, ","));
     }
 

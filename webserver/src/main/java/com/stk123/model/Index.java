@@ -4,11 +4,11 @@ import com.stk123.common.CommonConstant;
 import com.stk123.service.ExceptionUtils;
 import com.stk123.service.HttpUtils;
 import com.stk123.service.ServiceUtils;
-import com.stk123.service.XueqiuUtils;
+import com.stk123.service.XueqiuService;
 import com.stk123.model.K.Condition;
 import com.stk123.model.bo.*;
 import com.stk123.model.bo.cust.StkFnDataCust;
-import com.stk123.model.json.XueQiuQianFuQuan;
+import com.stk123.model.dto.XueQiuQianFuQuan;
 import com.stk123.common.util.*;
 import com.stk123.common.util.collection.Name2Value;
 import com.stk123.common.util.collection.Table;
@@ -537,7 +537,7 @@ public class Index {
 						tmp = (this.loc==1?Index.SH_UPPER:Index.SZ_UPPER)+this.code;
 					}
 				}
-				String page = HttpUtils.get("http://xueqiu.com/S/"+tmp, null, XueqiuUtils.getCookies(), "utf-8");
+				String page = HttpUtils.get("http://xueqiu.com/S/"+tmp, null, XueqiuService.getCookies(), "utf-8");
 				Node node = HtmlUtils.getNodeByAttribute(page, "", "class", "stockQuote");
 				if(node == null)return;
 				String str = node.toHtml();

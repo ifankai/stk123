@@ -28,7 +28,7 @@ import com.stk123.model.bo.Stk;
 import com.stk123.model.bo.StkImportInfoType;
 import com.stk123.model.bo.StkKlineRankIndustry;
 import com.stk123.model.bo.StkPe;
-import com.stk123.model.json.MeiGuSina;
+import com.stk123.model.dto.SinaMeiGu;
 import com.stk123.model.Index;
 import com.stk123.model.IndexContext;
 import com.stk123.model.IndexUtils;
@@ -939,7 +939,7 @@ public class InitialKLine {
 			//System.out.println(page);
 			Map<String, Class> m = new HashMap<String, Class>();
 	        m.put("data", Map.class);
-			MeiGuSina meiGu = (MeiGuSina)JsonUtils.getObject4Json(StringUtils.substringBetween(page, "((", "));"), MeiGuSina.class, m);
+			SinaMeiGu meiGu = (SinaMeiGu)JsonUtils.getObject4Json(StringUtils.substringBetween(page, "((", "));"), SinaMeiGu.class, m);
 			if(meiGu == null || meiGu.getData() == null){
 				break;
 			}
