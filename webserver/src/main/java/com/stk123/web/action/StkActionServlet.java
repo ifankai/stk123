@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.stk123.service.ServiceUtils;
-import com.stk123.web.ik.StkIKUtils;
+import com.stk123.web.ik.WebIKUtils;
 import com.stk123.web.core.ActionServlet;
 
 
@@ -17,7 +17,7 @@ public class StkActionServlet extends ActionServlet {
     	try {
     		super.init();
     		if(ServiceUtils.isDev()){
-    			StkIKUtils.init();
+    			WebIKUtils.init();
     		}
 
 		} catch (Exception e) {

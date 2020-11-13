@@ -1,4 +1,4 @@
-package com.stk123.web.tool.tree;
+package com.stk123.model.tree;
 
 import java.io.Serializable;
 import java.util.ArrayList;

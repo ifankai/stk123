@@ -1,16 +1,17 @@
 package com.stk123.web.action;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.sql.Connection;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.stk123.model.Index;
+import com.stk123.service.XueqiuUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.stk123.model.bo.StkIndustryType;
@@ -196,7 +197,7 @@ public class ScreenerAction implements CommonConstant {
 		StkContext sc = StkContext.getContext();
 		Connection conn = sc.getConnection();
 		ScreenerForm form = (ScreenerForm)sc.getForm();
-		List<Strategy> ss = StrategyManager.getStrategyFromSreenerForm(conn, form);
+		List<Strategy> ss = getStrategyFromSreenerForm(conn, form);
 		List<String> codes = new ArrayList();
 		for(Strategy s : ss){
 			s.run(conn, ServiceUtils.getToday());
@@ -211,8 +212,63 @@ public class ScreenerAction implements CommonConstant {
 		sc.setForm(form);
 		searchForCN();
 	}
-	
-	public void searchForUS() throws Exception {
+
+    public static List<Strategy> getSearchConditionWithStrategy(Connection conn) throws Exception {
+        List<StkSearchCondition> scs = JdbcUtils.list(conn, "select * from stk_search_condition order by nvl(update_time, insert_time)", StkSearchCondition.class);
+        List<Strategy> list = new ArrayList();
+        for(StkSearchCondition sc : scs){
+            ScreenerForm form = (ScreenerForm)JsonUtils.getObject4Json(sc.getText(), ScreenerForm.class);
+            if(form.getAstrategy() != null && form.getAstrategy().length > 0){
+                for(String sid : form.getAstrategy()){
+                    Strategy s = StrategyManager.getStrategyById(sid);
+                    if(s != null){
+                        s.setDataSourceName(sc.getName());
+                        s.setIndexs(getIndexBySreenerForm(conn, form));
+                        list.add(s);
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
+    public static List<Strategy> getStrategyFromSreenerForm(Connection conn, ScreenerForm form) throws Exception {
+        List<Strategy> list = new ArrayList();
+        if(form.getAstrategy() != null && form.getAstrategy().length > 0){
+            for(String sid : form.getAstrategy()){
+                Strategy s = StrategyManager.getStrategyById(sid);
+                if(s != null){
+                    s.setDataSourceName("test");
+                    s.setIndexs(getIndexBySreenerForm(conn, form));
+                    s.logToDB = false;
+                    list.add(s);
+                }
+            }
+        }
+        return list;
+    }
+
+    public static List<Index> getIndexFromSearchCondition(Connection conn, int id) {
+        StkSearchCondition sc = JdbcUtils.load(conn, "select * from stk_search_condition where id=?", id, StkSearchCondition.class);
+        ScreenerForm form = (ScreenerForm)JsonUtils.getObject4Json(sc.getText(), ScreenerForm.class);
+        return getIndexBySreenerForm(conn, form);
+    }
+
+    public static List<Index> getIndexBySreenerForm(Connection conn, ScreenerForm form) {
+        List<String> codes = getCodeBySreenerForm(conn, form);
+        return IndexUtils.codeToIndex(conn, codes);
+    }
+
+    public static List<String> getCodeBySreenerForm(Connection conn, ScreenerForm form) {
+        ScreenerAction action = new ScreenerAction();
+        String sql = action.formToSql(conn, form, "code");
+        return JdbcUtils.list(conn, sql, String.class);
+    }
+
+
+
+
+    public void searchForUS() throws Exception {
 		StkContext sc = StkContext.getContext();
 		HttpServletRequest request = sc.getRequest();
 		Connection conn = sc.getConnection();

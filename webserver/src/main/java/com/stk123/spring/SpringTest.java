@@ -1,6 +1,5 @@
 package com.stk123.spring;
 
-import com.stk123.task.strategy.Strategy;
 import com.stk123.spring.jpa.entity.Admapp;
 import com.stk123.spring.jpa.entity.StkDataIndustryPeEntity;
 import com.stk123.spring.jpa.entity.StkIndustryTypeEntity;
@@ -14,13 +13,11 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ClassUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 @Component
@@ -57,10 +54,10 @@ public class SpringTest {
 
             repostory();
 
-            List<Class<Strategy>> classes = SpringUtils.getAllSubClasses(Strategy.class, "com.stk123");
-            for(Class clazz : classes){
-                log.info(clazz.getName());
-            }
+//            List<Class<Strategy>> classes = SpringUtils.getAllSubClasses(Strategy.class, "com.stk123");
+//            for(Class clazz : classes){
+//                log.info(clazz.getName());
+//            }
         }else {
             test.home();
         }

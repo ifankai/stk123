@@ -30,7 +30,7 @@ import com.stk123.model.User;
 import com.stk123.service.ServiceUtils;
 import com.stk123.common.db.util.sequence.SequenceUtils;
 import com.stk123.common.ik.DocumentField;
-import com.stk123.web.ik.StkIKUtils;
+import com.stk123.web.ik.WebIKUtils;
 import com.stk123.web.ik.Search;
 import com.stk123.common.util.HtmlUtils;
 import com.stk123.common.util.JdbcUtils;
@@ -38,7 +38,7 @@ import com.stk123.common.util.JsonUtils;
 import com.stk123.common.util.collection.Name2Value;
 import com.stk123.web.core.util.RequestUtils;
 import com.stk123.common.CommonConstant;
-import com.stk123.web.StkDict;
+import com.stk123.service.DictService;
 import com.stk123.web.WebUtils;
 import com.stk123.web.context.StkContext;
 
@@ -218,7 +218,7 @@ public class TextAction implements CommonConstant {
 			params.add(user.getStkUser().getId());
 			int n = JdbcUtils.delete(conn, SQL_DELETE_TEXT_BY_USER_ID, params);
 			if(n == 1){
-				StkIKUtils.deleteDocument(id);
+				WebIKUtils.deleteDocument(id);
 				//delete link with label
 				Label label = new Label(user.getStkUser().getId());
 				label.deleteLink(id);
@@ -251,10 +251,10 @@ public class TextAction implements CommonConstant {
 		List<StkText> texts = JdbcUtils.list(conn,JdbcUtils.DIALECT.getLimitedString(SQL_SELECT_TEXT_BY_USER_ID, (page-1)*perPage, perPage) ,params, StkText.class);
 		for(StkText text : texts){//TODO
 			if(text.getType()==2){
-				text.setTitle((text.getSubType() != 0?"["+StkDict.getDict(StkDict.TEXT_SUB_TYPE, text.getSubType())+"]":"") + text.getTitle());
+				text.setTitle((text.getSubType() != 0?"["+DictService.getDict(DictService.TEXT_SUB_TYPE, text.getSubType())+"]":"") + text.getTitle());
 				text.setText(WebUtils.display(text.getText(), 330));
 			}else{
-				text.setText(WebUtils.display((text.getSubType() != 0?"["+StkDict.getDict(StkDict.TEXT_SUB_TYPE, text.getSubType())+"]":"") + text.getText(), 330));
+				text.setText(WebUtils.display((text.getSubType() != 0?"["+DictService.getDict(DictService.TEXT_SUB_TYPE, text.getSubType())+"]":"") + text.getText(), 330));
 			}
 		}
 		count = JdbcUtils.load(conn, SQL_COUNT_TEXT_BY_USER_ID, params, Integer.class);
@@ -354,7 +354,7 @@ public class TextAction implements CommonConstant {
 			if(text.getCode() != null){
 				text.setCode(ServiceUtils.wrapCodeAndNameAsHtml(new Index(conn, text.getCode())));
 			}else{
-				text.setCode(StkDict.getDict(StkDict.TEXT_SUB_TYPE, text.getSubType()));
+				text.setCode(DictService.getDict(DictService.TEXT_SUB_TYPE, text.getSubType()));
 			}
 			text.setText(WebUtils.display(text.getText(),80,false,false));
 		}
@@ -412,7 +412,7 @@ public class TextAction implements CommonConstant {
 			if(text.getCode() != null){
 				text.setCode(ServiceUtils.wrapCodeAndNameAsHtml(new Index(conn, text.getCode())));
 			}else{
-				text.setCode(StkDict.getDict(StkDict.TEXT_SUB_TYPE, text.getSubType()));
+				text.setCode(DictService.getDict(DictService.TEXT_SUB_TYPE, text.getSubType()));
 			}
 			text.setText(WebUtils.display(text.getText(),80,false,false));
 		}

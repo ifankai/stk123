@@ -1,8 +1,10 @@
 package com.stk123.web.core.config;
 
+import java.io.FileNotFoundException;
 import java.net.URL;
 
 import org.apache.commons.digester.Digester;
+import org.springframework.util.ResourceUtils;
 
 public class ConfigHelper {
 	
@@ -16,8 +18,8 @@ public class ConfigHelper {
 		System.out.println(mvc.getActions().get("test").getForward());
 	}
 
-	public static URL getResource(Class clazz, String resName) {
-		return clazz.getResource(resName);
+	public static URL getResource(Class clazz, String resName) throws FileNotFoundException {
+		return ResourceUtils.getURL("classpath:"+resName);
 	}
 	
 	public static MvcConfig parseMvcConfig(Class clazz, String resName) throws Exception {

@@ -21,7 +21,7 @@ import com.stk123.common.util.HtmlUtils;
 import com.stk123.service.HttpUtils;
 import com.stk123.common.util.JdbcUtils;
 import com.stk123.common.util.JsonUtils;
-import com.stk123.web.StkDict;
+import com.stk123.service.DictService;
 
 /**
  * 雪球个股评论
@@ -37,7 +37,7 @@ public class XueqiuComment {
 		try{
 			try{
 				conn = DBUtil.getConnection();
-				Map<String, StkDictionary> comments = StkDict.getDict(StkDict.XUEQIU_COMMENT);
+				Map<String, StkDictionary> comments = DictService.getDict(DictService.XUEQIU_COMMENT);
 				for(Map.Entry<String, StkDictionary> dict : comments.entrySet()){
 					String page = HttpUtils.get("http://xueqiu.com/stock/portfolio/stocks.json?size=1000&pid=-1&tuid="+dict.getKey()+"",null,XueqiuUtils.getCookies(), "gb2312");
 					//System.out.println(page);
@@ -82,7 +82,7 @@ public class XueqiuComment {
 			//==============================
 			
 			try{
-				Map<String, StkDictionary> articles = StkDict.getDict(StkDict.XUEQIU_ARTICLE);
+				Map<String, StkDictionary> articles = DictService.getDict(DictService.XUEQIU_ARTICLE);
 				for(Map.Entry<String, StkDictionary> dict : articles.entrySet()){
 					String page = HttpUtils.get("http://xueqiu.com/statuses/user_timeline.json?user_id="+dict.getKey()+"&page=1&type=0",null, XueqiuUtils.getCookies(), "gb2312");
 					//System.out.println(page);

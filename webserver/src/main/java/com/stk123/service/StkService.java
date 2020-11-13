@@ -1,4 +1,16 @@
-package com.stk123.web.bs;
+package com.stk123.service;
+
+import com.stk123.common.CommonConstant;
+import com.stk123.common.db.connection.Pool;
+import com.stk123.common.util.CacheUtils;
+import com.stk123.common.util.JdbcUtils;
+import com.stk123.common.util.JsonUtils;
+import com.stk123.model.Index;
+import com.stk123.model.K;
+import com.stk123.model.bo.StkDictionary;
+import com.stk123.model.bo.StkIndustryType;
+import com.stk123.model.bo.StkMonitor;
+import com.stk123.model.bo.cust.StkFnDataCust;
 
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -6,28 +18,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.stk123.model.bo.StkDictionary;
-import com.stk123.model.bo.StkIndustryType;
-import com.stk123.model.bo.StkMonitor;
-import com.stk123.model.bo.cust.StkFnDataCust;
-import com.stk123.model.Index;
-import com.stk123.model.K;
-import com.stk123.task.EarningsForecast;
-import com.stk123.service.ServiceUtils;
-import com.stk123.common.db.connection.Pool;
-import com.stk123.common.util.CacheUtils;
-import com.stk123.common.util.JdbcUtils;
-import com.stk123.common.util.JsonUtils;
-import com.stk123.common.CommonConstant;
-import com.stk123.web.StkDict;
-
 public class StkService {
 	
 	public static List<StkDictionary> getColumnNames(int type){
 		List<StkDictionary> list = null;
 		list = (List<StkDictionary>)CacheUtils.getForever(CacheUtils.KEY_STKS_COLUMN_NAMES+type);
 		//if(list == null){
-			list = StkDict.getDictionaryOrderByParam(type);
+			list = DictService.getDictionaryOrderByParam(type);
 			CacheUtils.putForever(CacheUtils.KEY_STKS_COLUMN_NAMES+type, list);
 		//}
 		return list;

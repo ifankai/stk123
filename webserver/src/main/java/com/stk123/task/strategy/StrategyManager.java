@@ -23,8 +23,8 @@ import com.stk123.common.util.EmailUtils;
 import com.stk123.common.util.JdbcUtils;
 import com.stk123.common.util.JsonUtils;
 import com.stk123.common.util.collection.Name2Value;
-import com.stk123.web.action.ScreenerAction;
-import com.stk123.web.form.ScreenerForm;
+//import com.stk123.web.action.ScreenerAction;
+//import com.stk123.web.form.ScreenerForm;
 
 public class StrategyManager {
 
@@ -65,10 +65,10 @@ public class StrategyManager {
 		strategys.add(new Strategy16());//模型16-阳线放量阴线缩量
 		//strategys.add(new Strategy17());//K锟竭诧拷锟斤拷
 
-		List<Strategy> slist = getSearchConditionWithStrategy(conn);
+		/*List<Strategy> slist = getSearchConditionWithStrategy(conn);
 		for(Strategy s : slist){
 			strategys.add(s);
-		}
+		}*/
 
 		List<Index> netProfitGrwothGreaterThanZeroIndexs = getNetProfitGrwothGreaterThanZero(conn);
 
@@ -112,71 +112,20 @@ public class StrategyManager {
 		}
 	}
 
-	public static List<Strategy> getSearchConditionWithStrategy(Connection conn) throws Exception {
-		List<StkSearchCondition> scs = JdbcUtils.list(conn, "select * from stk_search_condition order by nvl(update_time, insert_time)", StkSearchCondition.class);
-		List<Strategy> list = new ArrayList();
-		for(StkSearchCondition sc : scs){
-			ScreenerForm form = (ScreenerForm)JsonUtils.getObject4Json(sc.getText(), ScreenerForm.class);
-			if(form.getAstrategy() != null && form.getAstrategy().length > 0){
-				for(String sid : form.getAstrategy()){
-					Strategy s = getStrategyById(sid);
-					if(s != null){
-						s.setDataSourceName(sc.getName());
-						s.setIndexs(getIndexBySreenerForm(conn, form));
-						list.add(s);
-					}
-				}
-			}
-		}
-		return list;
-	}
 
-	public static List<Strategy> getStrategyFromSreenerForm(Connection conn, ScreenerForm form) throws Exception {
-		List<Strategy> list = new ArrayList();
-		if(form.getAstrategy() != null && form.getAstrategy().length > 0){
-			for(String sid : form.getAstrategy()){
-				Strategy s = getStrategyById(sid);
-				if(s != null){
-					s.setDataSourceName("test");
-					s.setIndexs(getIndexBySreenerForm(conn, form));
-					s.logToDB = false;
-					list.add(s);
-				}
-			}
-		}
-		return list;
-	}
+    public static List<Index> getFollowIndex(Connection conn) throws Exception {
+        Set<String>	followStks = null;
+        try{
+            followStks = XueqiuUtils.getFollowStks("关注C");
+            followStks.addAll(XueqiuUtils.getFollowStks("我的"));
+            IOUtils.writeLines(followStks, null, new FileOutputStream(new File("d:\\care.txt")));
+        }catch(Exception e){
+            followStks = new HashSet(IOUtils.readLines(new FileInputStream("d:\\care.txt")));
+            //EmailUtils.send("雪锟斤拷锟斤拷取锟斤拷锟斤拷注C锟斤拷失锟斤拷", e);//锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟絏ueqiuUtils锟斤拷cookie锟芥换锟斤拷锟斤拷锟铰碉拷
+        }
 
-	public static List<Index> getIndexFromSearchCondition(Connection conn, int id) {
-		StkSearchCondition sc = JdbcUtils.load(conn, "select * from stk_search_condition where id=?", id, StkSearchCondition.class);
-		ScreenerForm form = (ScreenerForm)JsonUtils.getObject4Json(sc.getText(), ScreenerForm.class);
-		return getIndexBySreenerForm(conn, form);
-	}
-
-	public static List<Index> getIndexBySreenerForm(Connection conn, ScreenerForm form) {
-		List<String> codes = getCodeBySreenerForm(conn, form);
-		return IndexUtils.codeToIndex(conn, codes);
-	}
-
-	public static List<String> getCodeBySreenerForm(Connection conn, ScreenerForm form) {
-		ScreenerAction action = new ScreenerAction();
-		String sql = action.formToSql(conn, form, "code");
-		return JdbcUtils.list(conn, sql, String.class);
-	}
-
-	public static List<Index> getFollowIndex(Connection conn) throws Exception {
-		Set<String>	followStks = null;
-		try{
-			followStks = XueqiuUtils.getFollowStks("关注C");
-			followStks.addAll(XueqiuUtils.getFollowStks("我的"));
-			IOUtils.writeLines(followStks, null, new FileOutputStream(new File("d:\\care.txt")));
-		}catch(Exception e){
-			followStks = new HashSet(IOUtils.readLines(new FileInputStream("d:\\care.txt")));
-			//EmailUtils.send("雪锟斤拷锟斤拷取锟斤拷锟斤拷注C锟斤拷失锟斤拷", e);//锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟絏ueqiuUtils锟斤拷cookie锟芥换锟斤拷锟斤拷锟铰碉拷
-		}
-
-		return IndexUtils.codeToIndex(conn, followStks);
-	}
+        return IndexUtils.codeToIndex(conn, followStks);
+    }
 
 	public static List<Index> getEarningForecastIndex(Connection conn) throws Exception {
 		List<String> codes = JdbcUtils.list(conn, "select code from stk_search_mview v where 1=1 and v.Gross_Profit_Margin >= 20.0 and v.er_low >= 30.0 and v.er_pe >= 0.0 and er_date=?",ServiceUtils.getNextQuarter(ServiceUtils.getToday()), String.class);
@@ -226,7 +175,7 @@ public class StrategyManager {
 
 	public static void main(String[] args) throws Exception{
 		Connection conn = DBUtil.getConnection();
-		getIndexFromSearchCondition(conn, 9);
+		//getIndexFromSearchCondition(conn, 9);
 		CloseUtil.close(conn);
 	}
 }

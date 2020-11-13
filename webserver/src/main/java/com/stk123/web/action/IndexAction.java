@@ -7,11 +7,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.stk123.web.tool.tree.Tree;
+import com.stk123.model.tree.Tree;
 import com.stk123.common.util.JsonUtils;
 import com.stk123.common.CommonConstant;
-import com.stk123.web.bs.IndexService;
-import com.stk123.web.bs.StkService;
+import com.stk123.service.IndexService;
+import com.stk123.service.StkService;
 import com.stk123.web.context.StkContext;
 
 public class IndexAction {

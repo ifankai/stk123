@@ -22,7 +22,7 @@ import com.stk123.common.util.ConfigUtils;
 import com.stk123.common.util.EmailUtils;
 import com.stk123.service.HttpUtils;
 import com.stk123.common.util.JsonUtils;
-import com.stk123.web.StkDict;
+import com.stk123.service.DictService;
 
 
 /**
@@ -71,7 +71,7 @@ public class XueqiuZhuTie {
 	private static void run(Date time) {
 		try{
 			List<String> results = new ArrayList<String>();
-			Map<String, StkDictionary> articles = StkDict.getDict(StkDict.XUEQIU_ZHUTIE);
+			Map<String, StkDictionary> articles = DictService.getDict(DictService.XUEQIU_ZHUTIE);
 			for(Map.Entry<String, StkDictionary> dict : articles.entrySet()){
 				if(dict.getValue().getParam() != null)continue;
 				String page = HttpUtils.get("http://xueqiu.com/statuses/user_timeline.json?user_id="+dict.getKey()+"&page=1&type=", null, XueqiuUtils.getCookies(), "gb2312");
