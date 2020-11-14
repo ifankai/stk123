@@ -1,4 +1,4 @@
-package com.stk123.task.xueqiu;
+package com.stk123.task.schedule.xueqiu;
 
 import org.h2.util.StringUtils;
 

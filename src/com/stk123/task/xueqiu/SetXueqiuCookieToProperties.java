@@ -1,4 +1,4 @@
-package com.stk123.task.xueqiu;
+package com.stk123.task.schedule.xueqiu;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;

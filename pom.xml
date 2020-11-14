@@ -23,6 +23,7 @@
         <module>common</module>
         <module>service</module>
         <module>taskserver</module>
+        <module>webserver</module>
     </modules>
 
     <properties>
