@@ -91,7 +91,7 @@ public class XueqiuStockArticleJob implements Job {
 			log.error("XueqiuStockArticleJob", e);
 		}finally{
 			CloseUtil.close(conn);
-			if(codeIndex >= stocks.size()){
+    			if(codeIndex >= stocks.size()){
 				if(results.size() > 0){
 					EmailUtils.send("雪球个股长文end", StringUtils.join(results, "<br><br>"));
 				}

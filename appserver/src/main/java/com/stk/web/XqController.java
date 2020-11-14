@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.thymeleaf.util.StringUtils;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -33,14 +34,19 @@ public class XqController {
     public RequestResult query(@PathVariable(value = "type", required = false)String type){
         log.info("query.....");
         List<XqPost> list = null;
-        if(type == null || StringUtils.equals(type, "all")) {
-            list = xqPostRepository.findAllByOrderByInsertDateDesc();
-        }else if(StringUtils.equals(type, "unread")){
-            list = xqPostRepository.findByIsReadOrderByInsertDateDesc(false);
+        if(type == null || StringUtils.equals(type, "all") || StringUtils.equals(type, "unread")) {
+            list = xqPostRepository.queryTop5ByIsReadFalseOrderByInsertDateAsc();
             if (!CollectionUtils.isEmpty(list)) {
                 //必须放在一个单独的class里，不然 @Async 不生效
                 xqService.updateToRead(list);
             }
+            Collections.reverse(list);
+        /*}else if(StringUtils.equals(type, "unread")){
+            list = xqPostRepository.findByIsReadOrderByInsertDateDesc(false);
+            if (!CollectionUtils.isEmpty(list)) {
+
+                xqService.updateToRead(list);
+            }*/
         }else if(StringUtils.equals(type, "read")) {
             list = xqPostRepository.findByIsReadOrderByInsertDateDesc(true);
         }else if(StringUtils.equals(type, "favorite")) {
@@ -62,8 +68,8 @@ public class XqController {
     @RequestMapping(value = "/post", method = RequestMethod.POST)
     @ResponseBody
     public RequestResult save(@RequestBody XqPost post){
-        XqPost result = xqPostRepository.save(post);
         post.setInsertDate(new Date());
+        XqPost result = xqPostRepository.save(post);
         return result != null ? RequestResult.SUCCESS : RequestResult.FAIL;
     }
 

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -26,6 +27,7 @@ public class XqService {
         log.info("异步调用：updateToRead");
         list.forEach(item -> {
             item.setIsRead(true);
+            item.setReadDate(new Date());
         });
         xqPostRepository.saveAll(list);
     }

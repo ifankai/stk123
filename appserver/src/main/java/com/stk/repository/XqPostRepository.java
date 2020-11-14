@@ -15,4 +15,7 @@ public interface XqPostRepository extends JpaRepository<XqPost, Long> {
 
     List<XqPost> findByIsFavoriteOrderByFavoriteDateDesc(Boolean isFavorite);
 
+    // 查找未读的最早的n条记录
+    List<XqPost> queryTop5ByIsReadFalseOrderByInsertDateAsc();
+
 }
