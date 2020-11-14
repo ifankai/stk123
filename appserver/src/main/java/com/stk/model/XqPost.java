@@ -42,6 +42,7 @@ public class XqPost implements Serializable {
     private Integer replyCount;
 
     @Column
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     private Date insertDate; //post记录创建时间
 
     @Column(columnDefinition = "boolean default false")

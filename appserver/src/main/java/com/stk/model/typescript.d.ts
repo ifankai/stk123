@@ -1,4 +1,4 @@
-// Generated using typescript-generator version 1.25.322 on 2020-11-12 17:19:44.
+// Generated using typescript-generator version 1.25.322 on 2020-11-14 15:58:22.
 
 export interface XqPost extends Serializable {
     id: number;
