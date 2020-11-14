@@ -1,4 +1,4 @@
-package com.stk123.task.xueqiu;
+package com.stk123.task.schedule.xueqiu;
 
 public class Follower {
     private boolean subscribeable;
