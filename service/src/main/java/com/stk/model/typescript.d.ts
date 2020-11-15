@@ -1,4 +1,4 @@
-// Generated using typescript-generator version 1.25.322 on 2020-11-14 20:29:38.
+// Generated using typescript-generator version 1.25.322 on 2020-11-15 20:39:20.
 
 export interface XqPost extends Serializable {
     id: number;
@@ -6,6 +6,7 @@ export interface XqPost extends Serializable {
     text: string;
     createdAt: Date;
     replyCount: number;
+    followersCount: number;
     insertDate: Date;
     isFavorite: boolean;
     favoriteDate: Date;

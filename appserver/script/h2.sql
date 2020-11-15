@@ -6,3 +6,5 @@ insert into STK_XQ_POST values (1, CURRENT_TIMESTAMP, false, 10, 'text', 'title'
 insert into STK_XQ_POST values (2, CURRENT_TIMESTAMP, true, 5, 'text123', 'title123', 'avatar_url', 160, null, false, null);
 
 update STK_XQ_POST set is_read=false ;
+
+alter table STK_XQ_POST add  followers_Count integer(10)

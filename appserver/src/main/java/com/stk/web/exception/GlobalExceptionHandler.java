@@ -1,6 +1,6 @@
 package com.stk.web.exception;
 
-import com.stk123.model.app.RequestResult;
+import com.stk.model.RequestResult;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;

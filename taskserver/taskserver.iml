@@ -27,6 +27,14 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="libs" level="project" />
     <orderEntry type="module" module-name="common" />
+    <orderEntry type="library" name="Maven: com.stk:commons-digester:1.0" level="project" />
+    <orderEntry type="library" name="Maven: com.stk:IKAnalyzer2012FF_u1:1.0" level="project" />
+    <orderEntry type="library" name="Maven: com.stk:jdom:1.0" level="project" />
+    <orderEntry type="library" name="Maven: com.stk:json-lib:1.0" level="project" />
+    <orderEntry type="library" name="Maven: com.stk:ojdbc14:1.0" level="project" />
+    <orderEntry type="library" name="Maven: com.stk:poi-scratchpad-3.11-20141221:1.0" level="project" />
+    <orderEntry type="library" name="Maven: com.stk:spring-mobile-device-2.0.0.M3:1.0" level="project" />
+    <orderEntry type="library" name="Maven: com.stk:xstream:1.0" level="project" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.4" level="project" />
     <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.6" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.11" level="project" />
