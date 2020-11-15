@@ -20,6 +20,40 @@
     </properties>
 
     <dependencies>
+
+        <dependency>
+            <groupId>com.stk</groupId>
+            <artifactId>commons-digester</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.stk</groupId>
+            <artifactId>IKAnalyzer2012FF_u1</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.stk</groupId>
+            <artifactId>jdom</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.stk</groupId>
+            <artifactId>json-lib</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.stk</groupId>
+            <artifactId>ojdbc14</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.stk</groupId>
+            <artifactId>poi-scratchpad-3.11-20141221</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.stk</groupId>
+            <artifactId>spring-mobile-device-2.0.0.M3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.stk</groupId>
+            <artifactId>xstream</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

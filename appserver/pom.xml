@@ -42,7 +42,13 @@
             <groupId>com.stk</groupId>
             <artifactId>service</artifactId>
 			<version>1.0.0</version>
-		</dependency>
+            <exclusions>
+                <exclusion>
+                    <artifactId>slf4j-simple</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
         <dependency>
@@ -167,7 +173,7 @@
 										 host="${ftp.host}"
 										 username="${ftp.username}"
 										 password="${ftp.password}"
-										 command="cd ${ftp.path}; ./appserver_start.sh > /dev/null"
+										 command="cd ${ftp.path}; ./appserver_start.sh"
 										 timeout="120000" />
 								<echo message="The deployment is done." />
 
@@ -200,29 +206,29 @@
 
 
 			<!-- typescript-generator   mvn process-classes -->
-			<plugin>
-				<groupId>cz.habarta.typescript-generator</groupId>
-				<artifactId>typescript-generator-maven-plugin</artifactId>
-				<version>1.25.322</version>
-				<executions>
-					<execution>
-						<id>generate</id>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-						<phase>process-classes</phase>
-						<configuration>
-							<jsonLibrary>jackson2</jsonLibrary>
-							<classes>
-								<class>com.stk123.model.app.XqPost</class>
-								<class>com.stk123.model.app.RequestResult</class>
-							</classes>
-							<outputFile>../service/src/main/java/com/stk123/model/app/typescript.d.ts</outputFile>
-							<outputKind>module</outputKind>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+			<!--<plugin>-->
+				<!--<groupId>cz.habarta.typescript-generator</groupId>-->
+				<!--<artifactId>typescript-generator-maven-plugin</artifactId>-->
+				<!--<version>1.25.322</version>-->
+				<!--<executions>-->
+					<!--<execution>-->
+						<!--<id>generate</id>-->
+						<!--<goals>-->
+							<!--<goal>generate</goal>-->
+						<!--</goals>-->
+						<!--<phase>process-classes</phase>-->
+						<!--<configuration>-->
+							<!--<jsonLibrary>jackson2</jsonLibrary>-->
+							<!--<classes>-->
+								<!--<class>XqPost</class>-->
+								<!--<class>RequestResult</class>-->
+							<!--</classes>-->
+							<!--<outputFile>../service/src/main/java/stk/model/typescript.d.ts</outputFile>-->
+							<!--<outputKind>module</outputKind>-->
+						<!--</configuration>-->
+					<!--</execution>-->
+				<!--</executions>-->
+			<!--</plugin>-->
 
         </plugins>
     </build>

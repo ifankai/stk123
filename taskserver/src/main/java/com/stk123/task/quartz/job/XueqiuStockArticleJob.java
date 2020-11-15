@@ -1,24 +1,13 @@
 package com.stk123.task.quartz.job;
 
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.stk123.model.app.XqPost;
-import lombok.Getter;
-import lombok.Setter;
+import com.stk.model.XqPost;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateFormatUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -169,9 +158,13 @@ public class XueqiuStockArticleJob implements Job {
                             xqPost.setId(Long.valueOf((String)art.get("id")));
                             xqPost.setTitle((String) art.get("title"));
                             xqPost.setText((String) art.get("description"));
-                            xqPost.setCreatedAt(new Date((Long)art.get("created_at")));
+
+                            String createDate = (String)art.get("created_at");
+                            if(createDate != null) xqPost.setCreatedAt(new Date(Long.parseLong(createDate)));
                             xqPost.setReplyCount(Integer.valueOf((String)art.get("reply_count")));
-							xqPost.setFollowersCount(Integer.valueOf((String)art.get("followers_count")));
+
+                            String followersCount = (String)((Map)art.get("user")).get("followers_count");
+                            if(followersCount != null) xqPost.setFollowersCount(Integer.valueOf(followersCount));
 
                             xqPost.setUserId(Long.valueOf((String)art.get("user_id")));
                             xqPost.setUserName((String) ((Map)art.get("user")).get("screen_name"));

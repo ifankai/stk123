@@ -36,6 +36,56 @@
 
     <dependencyManagement>
         <dependencies>
+<!--
+            mvn install:install-file -DgroupId=com.stk -DartifactId=ojdbc14 -Dversion=1.0 -Dpackaging=jar -Dfile=D:\share\workspace\stk123\common\libs\ojdbc14.jar
+            mvn install:install-file -DgroupId=com.stk -DartifactId=commons-digester -Dversion=1.0 -Dpackaging=jar -Dfile=D:\share\workspace\stk123\common\libs\commons-digester.jar
+            mvn install:install-file -DgroupId=com.stk -DartifactId=IKAnalyzer2012FF_u1 -Dversion=1.0 -Dpackaging=jar -Dfile=D:\share\workspace\stk123\common\libs\IKAnalyzer2012FF_u1.jar
+            mvn install:install-file -DgroupId=com.stk -DartifactId=jdom -Dversion=1.0 -Dpackaging=jar -Dfile=D:\share\workspace\stk123\common\libs\jdom.jar
+            mvn install:install-file -DgroupId=com.stk -DartifactId=json-lib -Dversion=1.0 -Dpackaging=jar -Dfile=D:\share\workspace\stk123\common\libs\json-lib.jar
+            mvn install:install-file -DgroupId=com.stk -DartifactId=poi-scratchpad-3.11-20141221 -Dversion=1.0 -Dpackaging=jar -Dfile=D:\share\workspace\stk123\common\libs\poi-scratchpad-3.11-20141221.jar
+            mvn install:install-file -DgroupId=com.stk -DartifactId=spring-mobile-device-2.0.0.M3 -Dversion=1.0 -Dpackaging=jar -Dfile=D:\share\workspace\stk123\common\libs\spring-mobile-device-2.0.0.M3.jar
+            mvn install:install-file -DgroupId=com.stk -DartifactId=xstream -Dversion=1.0 -Dpackaging=jar -Dfile=D:\share\workspace\stk123\common\libs\xstream.jar
+-->
+            <dependency>
+                <groupId>com.stk</groupId>
+                <artifactId>commons-digester</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.stk</groupId>
+                <artifactId>IKAnalyzer2012FF_u1</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.stk</groupId>
+                <artifactId>jdom</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.stk</groupId>
+                <artifactId>json-lib</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.stk</groupId>
+                <artifactId>ojdbc14</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.stk</groupId>
+                <artifactId>poi-scratchpad-3.11-20141221</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.stk</groupId>
+                <artifactId>spring-mobile-device-2.0.0.M3</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.stk</groupId>
+                <artifactId>xstream</artifactId>
+                <version>1.0</version>
+            </dependency>
 
             <!-- datasource -->
             <dependency>

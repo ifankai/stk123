@@ -1,7 +1,7 @@
 package com.stk.web;
 
-import com.stk123.model.app.RequestResult;
-import com.stk123.model.app.XqPost;
+import com.stk.model.RequestResult;
+import com.stk.model.XqPost;
 import com.stk.repository.XqPostRepository;
 import com.stk.service.XqService;
 import lombok.extern.apachecommons.CommonsLog;

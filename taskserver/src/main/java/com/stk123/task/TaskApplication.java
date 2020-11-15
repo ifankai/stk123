@@ -1,6 +1,8 @@
 package com.stk123.task;
 
+import com.stk123.task.quartz.job.ResearchReportJob;
 import com.stk123.task.quartz.job.XueqiuStockArticleJob;
+import com.stk123.task.quartz.job.XueqiuUserJob;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -35,6 +37,18 @@ public class TaskApplication {
     @Scheduled(cron = "0 0/1 * ? * *")
     public void xueqiuStockArticleJob() throws Exception {
         xueqiuStockArticleJob.execute(null);
+    }
+
+    XueqiuUserJob xueqiuUserJob = new XueqiuUserJob();
+    @Scheduled(cron = "0 0 3 ? * SAT")
+    public void xueqiuUserJob() throws Exception {
+        xueqiuUserJob.execute(null);
+    }
+
+    ResearchReportJob researchReportJob = new ResearchReportJob();
+    @Scheduled(cron = "0 30 1/2 ? * *")
+    public void researchReportJob() throws Exception {
+        researchReportJob.execute(null);
     }
 
     @Scheduled(cron = "0 0 0 ? * *")
