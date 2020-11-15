@@ -1,9 +1,9 @@
-package com.stk.web;
+package com.stk123.app.web;
 
-import com.stk.model.RequestResult;
-import com.stk.model.XqPost;
-import com.stk.repository.XqPostRepository;
-import com.stk.service.XqService;
+import com.stk123.app.model.RequestResult;
+import com.stk123.app.model.XqPost;
+import com.stk123.app.repository.XqPostRepository;
+import com.stk123.app.service.XqService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;

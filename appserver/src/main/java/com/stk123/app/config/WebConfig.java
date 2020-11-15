@@ -1,4 +1,4 @@
-package com.stk.config;
+package com.stk123.app.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.catalina.filters.RemoteIpFilter;

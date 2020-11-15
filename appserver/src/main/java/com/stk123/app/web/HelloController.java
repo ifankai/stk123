@@ -1,4 +1,4 @@
-package com.stk.web;
+package com.stk123.app.web;
 
 import java.util.Locale;
 

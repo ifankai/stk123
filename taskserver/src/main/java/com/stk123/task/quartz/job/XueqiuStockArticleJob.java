@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.util.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.stk.model.XqPost;
+import com.stk123.app.model.XqPost;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.lang.StringUtils;
