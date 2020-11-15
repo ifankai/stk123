@@ -1,13 +1,11 @@
 package com.stk.web;
 
-import com.stk.model.RequestResult;
-import com.stk.model.XqPost;
+import com.stk123.model.app.RequestResult;
+import com.stk123.model.app.XqPost;
 import com.stk.repository.XqPostRepository;
 import com.stk.service.XqService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.thymeleaf.util.StringUtils;
@@ -48,7 +46,7 @@ public class XqController {
                 xqService.updateToRead(list);
             }*/
         }else if(StringUtils.equals(type, "read")) {
-            list = xqPostRepository.findByIsReadOrderByInsertDateDesc(true);
+            list = xqPostRepository.findTop20ByIsReadOrderByInsertDateDesc(true);
         }else if(StringUtils.equals(type, "favorite")) {
             list = xqPostRepository.findByIsFavoriteOrderByFavoriteDateDesc(true);
         }

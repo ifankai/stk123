@@ -24,6 +24,7 @@
         <module>service</module>
         <module>taskserver</module>
         <module>webserver</module>
+        <module>appserver</module>
     </modules>
 
     <properties>

@@ -1,6 +1,6 @@
 package com.stk.repository;
 
-import com.stk.model.XqPost;
+import com.stk123.model.app.XqPost;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,7 +11,7 @@ public interface XqPostRepository extends JpaRepository<XqPost, Long> {
 
     List<XqPost> findAllByOrderByInsertDateDesc();
 
-    List<XqPost> findByIsReadOrderByInsertDateDesc(Boolean isRead);
+    List<XqPost> findTop20ByIsReadOrderByInsertDateDesc(Boolean isRead);
 
     List<XqPost> findByIsFavoriteOrderByFavoriteDateDesc(Boolean isFavorite);
 

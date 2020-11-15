@@ -1,4 +1,4 @@
-package com.stk.model;
+package com.stk123.model.app;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -40,6 +40,9 @@ public class XqPost implements Serializable {
 
     @Column
     private Integer replyCount;
+
+    @Column
+    private Integer followersCount;
 
     @Column
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
