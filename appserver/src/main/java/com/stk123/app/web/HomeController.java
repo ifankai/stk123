@@ -1,4 +1,4 @@
-package com.stk.web;
+package com.stk123.app.web;
 
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.stereotype.Controller;
