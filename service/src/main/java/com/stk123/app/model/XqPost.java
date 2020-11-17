@@ -37,10 +37,7 @@ public class XqPost implements Serializable {
     private Date createdAt;
 
     @Column
-    private Integer replyCount;
-
-    @Column
-    private Integer followersCount;
+    private Integer replyCount; //评论数
 
     @Column
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
@@ -69,5 +66,8 @@ public class XqPost implements Serializable {
 
     @Column
     private String userAvatar;
+
+    @Column
+    private Integer followersCount; //粉丝数
 
 }
