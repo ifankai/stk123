@@ -26,6 +26,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -46,6 +47,7 @@ import com.stk123.common.CommonConstant;
 //import net.sf.jsqlparser.statement.insert.Insert;
 //import net.sf.jsqlparser.statement.update.Update;
 import oracle.sql.CLOB;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * @author fankai
@@ -213,6 +215,10 @@ public final class JdbcUtils {
 		List params = new ArrayList();
 		params.add(param1);
 		return load(conn,sql,params,resultClass,null);
+	}
+
+	public static <T> T load(Connection conn,String sql,Class resultClass, Object... params) {
+		return load(conn, sql, Arrays.asList(params), resultClass,null);
 	}
 	
 	public static <T> T load(Connection conn,int cnt, String sql, List params, Class resultClass) {

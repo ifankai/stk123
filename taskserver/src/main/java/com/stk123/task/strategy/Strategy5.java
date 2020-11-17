@@ -12,7 +12,7 @@ import com.stk123.model.K.MACD;
 import com.stk123.service.ServiceUtils;
 import com.stk123.common.util.EmailUtils;
 import com.stk123.common.util.JdbcUtils;
-import com.stk123.task.schedule.TaskUtils;
+import com.stk123.task.tool.TaskUtils;
 
 public class Strategy5 extends Strategy {
 	

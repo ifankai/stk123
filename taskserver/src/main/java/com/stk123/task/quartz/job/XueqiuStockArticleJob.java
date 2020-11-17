@@ -5,6 +5,7 @@ import java.util.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stk123.app.model.XqPost;
+import com.stk123.model.Text;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.lang.StringUtils;
@@ -154,6 +155,19 @@ public class XueqiuStockArticleJob implements Job {
 							ids.add(a.id);
 							insertText(conn, code, a);
 
+							String followersCount = (String)((Map)art.get("user")).get("followers_count");
+							if(StringUtils.isNotEmpty(followersCount)){
+								int fc = Integer.valueOf(followersCount);
+								if(fc < 100){
+									continue;
+								}
+							}
+
+							int cnt = Text.countByTitle(conn, a.title, 30);
+							if(cnt > 1){
+								continue;
+							}
+
                             XqPost xqPost = new XqPost();
                             xqPost.setId(Long.valueOf((String)art.get("id")));
                             xqPost.setTitle((String) art.get("title"));
@@ -163,9 +177,7 @@ public class XueqiuStockArticleJob implements Job {
                             if(createDate != null) xqPost.setCreatedAt(new Date(Long.parseLong(createDate)));
                             xqPost.setReplyCount(Integer.valueOf((String)art.get("reply_count")));
 
-                            String followersCount = (String)((Map)art.get("user")).get("followers_count");
-                            if(followersCount != null) xqPost.setFollowersCount(Integer.valueOf(followersCount));
-
+							if(followersCount != null) xqPost.setFollowersCount(Integer.valueOf(followersCount));
                             xqPost.setUserId(Long.valueOf((String)art.get("user_id")));
                             xqPost.setUserName((String) ((Map)art.get("user")).get("screen_name"));
                             xqPost.setUserAvatar(StringUtils.split((String) ((Map)art.get("user")).get("profile_image_url"), ",")[1]);

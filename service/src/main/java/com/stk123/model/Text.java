@@ -102,5 +102,9 @@ public class Text {
 		}
 		return ret;
 	}
+
+	public static Integer countByTitle(Connection conn, String title, int days){
+		return JdbcUtils.load(conn, "select count(1) from stk_text where title=? and insert_time>(sysdate-?)", Integer.class, title, days);
+	}
 	
 }

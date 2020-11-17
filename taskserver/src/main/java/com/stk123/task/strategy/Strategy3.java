@@ -10,7 +10,7 @@ import com.stk123.model.Ene;
 import com.stk123.model.Index;
 import com.stk123.model.K;
 import com.stk123.common.util.EmailUtils;
-import com.stk123.task.schedule.TaskUtils;
+import com.stk123.task.tool.TaskUtils;
 
 public class Strategy3 extends Strategy {
 	
