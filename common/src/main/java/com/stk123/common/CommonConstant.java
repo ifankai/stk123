@@ -171,6 +171,12 @@ public interface CommonConstant {
 	//----default user id---//
 	public final static int DEFAULT_USER_ID = 1;
 
-	
+
+
+	//-----websocket-------//
+	public static final String WS_TOPIC = "/topic/greetings";
+	public static final String WS_ENDPOINT = "/websocket-endpoint";
+	public static final String WS_PREFIX = "/ws";
+	public static final String WS_MAPPING = "/query";
 }
 
