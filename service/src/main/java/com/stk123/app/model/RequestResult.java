@@ -24,6 +24,7 @@ public class RequestResult<T> implements Serializable {
         return new RequestResult(true, data);
     }
 
+    public RequestResult(){}
 
     public RequestResult(boolean success){
         this.success = success;

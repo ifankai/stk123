@@ -5,11 +5,13 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class ClientMessage {
+public class ClientMessage<T> {
 
     private String type;
 
     private String messageId;
+
+    private T data;
 
     public ClientMessage() {
     }

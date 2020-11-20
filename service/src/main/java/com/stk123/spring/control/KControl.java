@@ -26,7 +26,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.util.*;
 
-@Controller
+@Controller("kControl")
 @RequestMapping("/k")
 @CommonsLog
 public class KControl {
