@@ -1,6 +1,7 @@
 package com.stk123.app.web.exception;
 
 import com.stk123.app.model.RequestResult;
+import com.stk123.service.ExceptionUtils;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -16,6 +17,13 @@ public class GlobalExceptionHandler {
     public RequestResult exceptionHandler(Exception e){
         log.error("全局异常信息:", e);
         return new RequestResult(false, e.getMessage());
+    }
+
+    @ExceptionHandler(NullPointerException.class)
+    @ResponseBody
+    public RequestResult nullPointerExceptionHandler(Exception e){
+        log.error("全局异常信息:", e);
+        return new RequestResult(false, ExceptionUtils.getExceptionAsString(e));
     }
 
 }
