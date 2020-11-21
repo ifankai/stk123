@@ -1,7 +1,7 @@
 package com.stk123.task;
 
 import com.stk123.task.ws.StkWebSocketClient;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -16,10 +16,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.PostConstruct;
+
 @SpringBootApplication
 @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class})  //https://github.com/spring-projects/spring-boot/tree/v2.1.3.RELEASE/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure
 @EnableScheduling
-@Log4j2
+@CommonsLog
 @Configuration
 public class TaskApplication {
 
@@ -74,12 +76,17 @@ public class TaskApplication {
 //    }
 
 
+    @PostConstruct
     @Scheduled(cron = "0 0/1 * ? * *")
-    public void webSocketIsConnected() throws Exception {
+    public void webSocketIsConnected() {
         boolean isConnected = stkWebSocketClient.isConnected();
         log.info("Websocket is Connected:"+isConnected);
         if(!isConnected){
-            stkWebSocketClient.init();
+            try {
+                stkWebSocketClient.init();
+            } catch (Exception e) {
+                log.error("stkWebSocketClient.init()", e);
+            }
         }
     }
 }

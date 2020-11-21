@@ -1,5 +1,6 @@
 package com.stk123.spring.service;
 
+import com.stk123.spring.support.jpa.MyJpaResultTransformer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.SQLQuery;
@@ -73,10 +74,11 @@ public class BaseService implements ApplicationContextAware {
     public <T> List<T> list(String sql, Class<T> dto) {
         Session session = em.unwrap(Session.class);
         SQLQuery q = session.createSQLQuery(sql);
-        //q.setResultTransformer(Transformers.aliasToBean(dto));
-        //q.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
-        //q.setResultTransformer(new MyJpaResultTransformer(dto));
-        return q.list();
+//        q.setResultTransformer(Transformers.aliasToBean(dto));
+//        q.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+        q.setResultTransformer(new MyJpaResultTransformer(dto));
+        List<T> list = q.list();
+        return list;
     }
 
     public <T> T uniqueResult(String sql, Class<T> dto) {

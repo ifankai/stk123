@@ -36,6 +36,8 @@ public class StkWebSocketClient {
 
     @Value("${stk.appserver.ip}")
     private String ip;
+    @Value("${stk.appserver.port}")
+    private String port;
 
     public StkWebSocketClient() {}
 
@@ -46,7 +48,8 @@ public class StkWebSocketClient {
 
         SockJsClient sockJsClient = new SockJsClient(transports);
         WebSocketStompClient stompClient = new WebSocketStompClient(sockJsClient);
-        String url = "ws://"+ip+":8080" + CommonConstant.WS_ENDPOINT;
+        stompClient.setMessageConverter(new MappingJackson2MessageConverter());
+        String url = "ws://"+ip+":"+port + CommonConstant.WS_ENDPOINT;
 
         session = stompClient.connect(url, myStompSessionHandler).get();
     }
@@ -60,27 +63,6 @@ public class StkWebSocketClient {
             return session.isConnected();
         }
         return false;
-    }
-
-    public static void main(String[] args) throws Exception {
-//        StkWebSocketClient.init();
-//
-//        //发送消息
-//        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-//        for (; ; ) {
-//            System.out.print("Client" + " >> ");
-//            System.out.flush();
-//            String line = in.readLine();
-//            if (line == null) {
-//                break;
-//            }
-//            if (line.length() == 0) {
-//                continue;
-//            }
-//            ClientMessage msg = new ClientMessage("","", "From client : I have a new name [" + line + "]");
-//            StkWebSocketClient.send(msg);
-//        }
-        //session.disconnect();
     }
 
 }
