@@ -256,6 +256,12 @@
                 <version>2.7.2</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-core</artifactId>
+                <version>5.4.24.Final</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

@@ -2,6 +2,7 @@ package com.stk123.spring;
 
 import com.alibaba.druid.pool.DruidDataSourceFactory;
 import com.stk123.common.util.ConfigUtils;
+import com.stk123.common.util.JWhich;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,11 @@ public class SpringConfiguration {
 
     public SpringConfiguration() {
         log.info("SpringConfiguration容器启动初始化。。。");
+        try {
+            log.info(JWhich.which("oracle.jdbc.driver.T4CConnection"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     static class DBConfig {

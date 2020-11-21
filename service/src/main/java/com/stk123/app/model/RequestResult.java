@@ -19,7 +19,6 @@ public class RequestResult<T> implements Serializable {
     private Integer code; //error code, update number, counter
     private T data;
 
-
     public static <T> RequestResult<T> success(T data) {
         return new RequestResult(true, data);
     }

@@ -1,5 +1,6 @@
 package com.stk123.spring.control;
 
+import com.stk123.app.model.RequestResult;
 import com.stk123.model.Index;
 import com.stk123.model.K;
 import com.stk123.spring.dto.StkDto;
@@ -63,7 +64,7 @@ public class KControl {
      */
     @RequestMapping("/show/{codes}")
     @ResponseBody
-    public List<StkDto> show(@PathVariable("codes")String codes){
+    public RequestResult<List<StkDto>> show(@PathVariable("codes")String codes){
         //log.info("codes:"+codes);
         List<StkDto> list = new ArrayList<StkDto>();
         if(!StringUtils.isEmpty(codes)) {
@@ -84,12 +85,13 @@ public class KControl {
                 list.add(stk);
             }
         }
-        return list;
+        return RequestResult.success(list);
     }
+
 
     @RequestMapping("/xueqiu/{name}")
     @ResponseBody
-    public List<StkDto> xueqiu(@PathVariable("name")String name) throws Exception {
+    public RequestResult<List<StkDto>> xueqiu(@PathVariable("name")String name) throws Exception {
         Set<String> codes = XueqiuService.getFollowStks(name);
         return show(StringUtils.join(codes, ","));
     }

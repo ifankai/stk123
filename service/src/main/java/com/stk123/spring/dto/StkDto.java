@@ -3,9 +3,12 @@ package com.stk123.spring.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.persistence.Entity;
+import java.io.Serializable;
+
 @Setter
 @Getter
-public class StkDto {
+public class StkDto  implements Serializable {
 
     private String code;
     private String name;

@@ -2,19 +2,21 @@ package com.stk123.app.web;
 
 import com.stk123.app.model.RequestResult;
 import com.stk123.common.CommonConstant;
+import com.stk123.common.util.JWhich;
 import com.stk123.model.ws.ClientMessage;
 import com.stk123.model.ws.ServerMessage;
 import lombok.extern.apachecommons.CommonsLog;
+import org.apache.commons.lang3.StringUtils;
 import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.HandlerMapping;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -36,20 +38,35 @@ public class WebsocketController {
         String uuid = clientMessage.getMessageId();
         clientMessageMap.put(uuid, clientMessage);
         latch.get(uuid).countDown();
-        return new ServerMessage(null, uuid, "init connection");
+        ServerMessage serverMessage = new ServerMessage();
+        serverMessage.setMessageId(uuid);
+        serverMessage.setData("init connection");
+        return serverMessage;
     }
 
-    @RequestMapping("/ws/{type}")
+    @RequestMapping("/ws/**")
     @ResponseBody
-    public RequestResult hello(@PathVariable String type) throws InterruptedException {
-        log.info("hello start:"+type);
+    public RequestResult wsGet(HttpServletRequest request
+                              //,@RequestParam(required=false) Map<String,String> params
+    ) throws Exception {
+        String mvcPath = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+        log.info(mvcPath);
+
+        String type = StringUtils.substringAfter(mvcPath, "/ws/");
         String uuid = UUID.randomUUID().toString();
-        template.convertAndSend(CommonConstant.WS_TOPIC, new ServerMessage(type.replace("|","/"), uuid, "Hello, test" ));
+        ServerMessage serverMessage = new ServerMessage();
+        serverMessage.setType(type);
+        serverMessage.setMessageId(uuid);
+        serverMessage.setRequestMethod(RequestMethod.GET);
+        serverMessage.setData(request.getQueryString());
+        Map<String, Object> headers = new HashMap<>();
+        headers.put("messageId", uuid);
+        template.convertAndSend(CommonConstant.WS_TOPIC, serverMessage, headers);
         CountDownLatch cdl = new CountDownLatch(1);
         latch.put(uuid, cdl);
         cdl.await();
-        log.info("hello end:"+uuid);
-        return RequestResult.success(clientMessageMap.get(uuid).getData());
+//        log.info("wsGet end:"+uuid);
+        return clientMessageMap.get(uuid).getData();
     }
 
 }

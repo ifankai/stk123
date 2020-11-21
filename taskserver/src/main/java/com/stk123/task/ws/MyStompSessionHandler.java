@@ -1,6 +1,7 @@
 package com.stk123.task.ws;
 
 import com.stk123.common.CommonConstant;
+import com.stk123.model.ws.ClientMessage;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
@@ -17,9 +18,6 @@ public class MyStompSessionHandler extends StompSessionHandlerAdapter {
     @Autowired
     private StkStompFrameHandler stkStompFrameHandler;
 
-    public MyStompSessionHandler() {
-    }
-
     @Override
     public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
         log.info("Websocket Connected!");
@@ -28,7 +26,14 @@ public class MyStompSessionHandler extends StompSessionHandlerAdapter {
 
     public void handleException(StompSession session, @Nullable StompCommand command,
                                 StompHeaders headers, byte[] payload, Throwable exception) {
-        exception.printStackTrace();
+        log.info(headers);
+        log.info(new String(payload));
+        log.error("MyStompSessionHandler.handleException", exception);
+        ClientMessage cm = new ClientMessage();
+        cm.setMessageId(headers.getFirst("messageId"));
+        cm.setData(exception.getMessage());
+        log.info(cm);
+        session.send(StkWebSocketClient.SEND_URL, cm);
     }
 
     private void subscribeTopic(String topic, StompSession session) {
