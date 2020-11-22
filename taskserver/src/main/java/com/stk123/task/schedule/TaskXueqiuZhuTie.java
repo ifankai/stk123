@@ -14,13 +14,13 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 
 import com.stk123.model.bo.StkDictionary;
-import com.stk123.service.ServiceUtils;
+import com.stk123.util.ServiceUtils;
 import com.stk123.service.XueqiuService;
-import com.stk123.service.baidu.BaiDuHi;
+import com.stk123.util.baidu.BaiDuHi;
 import com.stk123.common.db.TableTools;
 import com.stk123.common.util.ConfigUtils;
 import com.stk123.common.util.EmailUtils;
-import com.stk123.service.HttpUtils;
+import com.stk123.util.HttpUtils;
 import com.stk123.common.util.JsonUtils;
 import com.stk123.service.DictService;
 

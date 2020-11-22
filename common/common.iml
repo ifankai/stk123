@@ -28,7 +28,7 @@
     <orderEntry type="library" name="Maven: com.stk:IKAnalyzer2012FF_u1:1.0" level="project" />
     <orderEntry type="library" name="Maven: com.stk:jdom:1.0" level="project" />
     <orderEntry type="library" name="Maven: com.stk:json-lib:1.0" level="project" />
-    <orderEntry type="library" name="Maven: com.stk:ojdbc14:1.0" level="project" />
+    <orderEntry type="library" name="Maven: com.stk:ojdbc6:1.0" level="project" />
     <orderEntry type="library" name="Maven: com.stk:poi-scratchpad-3.11-20141221:1.0" level="project" />
     <orderEntry type="library" name="Maven: com.stk:spring-mobile-device-2.0.0.M3:1.0" level="project" />
     <orderEntry type="library" name="Maven: com.stk:xstream:1.0" level="project" />

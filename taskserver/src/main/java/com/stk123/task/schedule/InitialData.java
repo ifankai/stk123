@@ -1,16 +1,26 @@
 package com.stk123.task.schedule;
 
-import java.net.URLEncoder;
-import java.sql.Connection;
-import java.sql.Timestamp;
-import java.util.*;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.stk123.service.*;
-import com.stk123.spring.SpringUtils;
-import com.stk123.spring.jpa.entity.StkDataIndustryPeEntity;
-import com.stk123.spring.service.IndustryService;
+import com.stk123.common.CommonConstant;
+import com.stk123.common.db.TableTools;
+import com.stk123.common.db.util.DBUtil;
+import com.stk123.common.db.util.sequence.SequenceUtils;
 import com.stk123.common.util.*;
+import com.stk123.common.util.collection.Name2Value;
+import com.stk123.entity.StkDataIndustryPeEntity;
+import com.stk123.model.Index;
+import com.stk123.model.Industry;
+import com.stk123.model.News;
+import com.stk123.model.Text;
+import com.stk123.model.bo.*;
+import com.stk123.model.bo.cust.StkFnDataCust;
+import com.stk123.model.dto.HexunIndustryConception;
+import com.stk123.model.dto.SinaMeiGu;
+import com.stk123.service.DictService;
+import com.stk123.service.IndustryService;
+import com.stk123.util.ExceptionUtils;
+import com.stk123.util.HttpUtils;
+import com.stk123.util.ServiceUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -20,47 +30,37 @@ import org.htmlparser.Node;
 import org.htmlparser.nodes.TagNode;
 import org.htmlparser.tags.LinkTag;
 import org.htmlparser.tags.TableTag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import com.stk123.model.bo.Stk;
-import com.stk123.model.bo.StkDictionary;
-import com.stk123.model.bo.StkFnType;
-import com.stk123.model.bo.StkHolder;
-import com.stk123.model.bo.StkIndustry;
-import com.stk123.model.bo.StkIndustryType;
-import com.stk123.model.bo.StkOrganization;
-import com.stk123.model.bo.cust.StkFnDataCust;
-import com.stk123.model.dto.HexunIndustryConception;
-import com.stk123.model.dto.SinaMeiGu;
-import com.stk123.model.Index;
-import com.stk123.model.Industry;
-import com.stk123.model.News;
-import com.stk123.model.Text;
-import com.stk123.common.db.TableTools;
-import com.stk123.common.db.util.DBUtil;
-import com.stk123.common.db.util.sequence.SequenceUtils;
-import com.stk123.common.util.collection.Name2Value;
-import com.stk123.common.CommonConstant;
-import com.stk123.service.DictService;
+import java.net.URLEncoder;
+import java.sql.Connection;
+import java.sql.Timestamp;
+import java.util.*;
 
 
 /**
  * 初始化行业数据，盈利预期数据，财务数据 等
  * http://wwtnews.windin.com/WUDS/web/F9/Stock/WEST/EPS/EarningsForecast.aspx?WindCode=002275.sz
  */
-@SuppressWarnings({ "unchecked", "rawtypes" })
+@Component
 public class InitialData {
 
-    private static final Log log = LogFactory.getLog(InitialData.class);
+    private  final Log log = LogFactory.getLog(InitialData.class);
 
-	private static int fnYearFrom = ServiceUtils.YEAR - 3;
-	private static List<String> infos = new ArrayList<String>();
-	private static List<Name2Value> awesomefunds = new ArrayList<Name2Value>();
+    @Autowired
+    private IndustryService industryService;
 
-	private static List<Name2Value> awesomePersons = new ArrayList<Name2Value>();
+	private  int fnYearFrom = ServiceUtils.YEAR - 3;
+	private  List<String> infos = new ArrayList<String>();
+	private  List<Name2Value> awesomefunds = new ArrayList<Name2Value>();
 
-	public static void main(String[] args) throws Exception {
+	private  List<Name2Value> awesomePersons = new ArrayList<Name2Value>();
+
+	public  void main(String[] args) throws Exception {
 		ConfigUtils.setPropsFromResource(TableTools.class,"db.properties");
 		Connection conn = null;
+        InitialData initialData = new InitialData();
 		try{
 			conn = DBUtil.getConnection();
 			int market = 1;//default A stock
@@ -72,11 +72,11 @@ public class InitialData {
 				}
 			}
 			if(market == 1){
-				initialAStock(conn);
+                initialData.initialAStock(conn);
 
-				initialHKStock(conn);
+                initialData.initialHKStock(conn);
 			}else if(market == 2){
-				initialUStock(conn);
+                initialData.initialUStock(conn);
 			}
 
 		}finally{
@@ -85,11 +85,28 @@ public class InitialData {
 		}
 	}
 
-	public static void initialUStock(Connection conn) throws Exception {
+	public void run(int market) throws Exception {
+        ConfigUtils.setPropsFromResource(TableTools.class,"db.properties");
+        Connection conn = null;
+        try{
+            conn = DBUtil.getConnection();
+            if(market == 1){
+                initialAStock(conn);
+                initialHKStock(conn);
+            }else if(market == 2){
+                initialUStock(conn);
+            }
+        }finally{
+            if(conn != null)conn.close();
+            CacheUtils.close();
+        }
+    }
+
+	public void initialUStock(Connection conn) throws Exception {
 		try{
 			infos.clear();
-			InitialData.initUStkFromSina(conn, true);
-			InitialData.initUStkFromSina(conn, false);
+			initUStkFromSina(conn, true);
+			initUStkFromSina(conn, false);
 			//InitialData.initUStkFromXueQiu(conn);
 			//InitialData.initUStkFromEasymoney(conn);//更新中概股
 		}catch(Exception e){
@@ -132,10 +149,10 @@ public class InitialData {
 	}
 
 
-	public static void initialAStock(Connection conn) throws Exception {
+	public void initialAStock(Connection conn) throws Exception {
 		try{
 			infos.clear();
-			InitialData.initialStk(conn,ServiceUtils.now);
+			//InitialData.initialStk(conn,ServiceUtils.now);
 		}catch(Exception e){
 			EmailUtils.send("Initial A Stock initial Data Error", e);
 			e.printStackTrace();
@@ -143,23 +160,23 @@ public class InitialData {
 
         try{
             //InitialData.initialIndustryFromCnIndex(conn, 14);
-            InitialData.initialIndustryFromCsindex_zjh(conn, 7);
-            InitialData.initialIndustryFromCsindex_zz1(conn);
+            initialIndustryFromCsindex_zjh(conn, 7);
+            initialIndustryFromCsindex_zz1(conn);
         }catch(Exception e){
             EmailUtils.send("Initial A Stock Industry csindex Data Error", e);
             e.printStackTrace();
         }
 
 		try{
-			InitialData.updateIndustryFromHexun(conn);
+			updateIndustryFromHexun(conn);
 		}catch(Exception e){
 			EmailUtils.send("Initial A Stock Industry Data Error", e);
 			e.printStackTrace();
 		}
 
 		try{
-			InitialData.initialIndustryFrom10jqka(conn,"gn");
-			InitialData.initialIndustryFrom10jqka(conn,"thshy");
+			initialIndustryFrom10jqka(conn,"gn");
+			initialIndustryFrom10jqka(conn,"thshy");
 		}catch(Exception e){
 			EmailUtils.send("Initial A Stock Industry Data Error", e);
 			e.printStackTrace();
@@ -167,7 +184,7 @@ public class InitialData {
 
 		try{
 			//牛基列表
-			InitialData.initAwesomeFund();
+			initAwesomeFund();
 			//牛散
 			List<StkDictionary> aps = DictService.getDictionary(DictService.NIUSAN);
 			for(StkDictionary sd : aps){
@@ -206,7 +223,7 @@ public class InitialData {
 					//主力持仓
 					//InitialData.initOwnership(conn, index, "mh");
 					//十大流通股东
-					InitialData.initOwnership(conn, index);
+					initOwnership(conn, index);
 
 				}catch(Exception e){
 					ExceptionUtils.insertLog(conn, stk.getCode(), e);
@@ -250,7 +267,7 @@ public class InitialData {
 
 				try{
 					//限售解禁
-					InitialData.updateRestricted(conn, index);
+					updateRestricted(conn, index);
 				}catch(Exception e){
 					ExceptionUtils.insertLog(conn, stk.getCode(), e);
 					e.printStackTrace();
@@ -276,7 +293,7 @@ public class InitialData {
 	/**
 	 *	初始化港股
 	 */
-	public static void initialHKStock(Connection conn) throws Exception {
+	public void initialHKStock(Connection conn) throws Exception {
 		int pageCnt = 1;
 		while(true){
 			//http://quote.eastmoney.com/center/list.html#50_1
@@ -351,7 +368,7 @@ public class InitialData {
 
 	/***************************************** US Stock *****************************************/
 
-	public static void initialUStkStatus(Connection conn, String code) throws Exception{
+	public  void initialUStkStatus(Connection conn, String code) throws Exception{
 		String page = HttpUtils.get("http://qt.gtimg.cn/&q=us"+code, "GBK");
 		if(page.contains("pv_none_match")){
 			List params = new ArrayList();
@@ -363,8 +380,8 @@ public class InitialData {
 
 	/***************************************** A Stock *****************************************/
 
-	public static void initialStk(Connection conn,Date now) throws Exception {
-		String[] ss = InitialData.getAllStocksCode().split(",");
+	public  void initialStk(Connection conn,Date now) throws Exception {
+		String[] ss = getAllStocksCode().split(",");
 		List params = new ArrayList();
 		StringBuffer sb = new StringBuffer();
 		for(int i=0;i<ss.length;i++){
@@ -402,7 +419,7 @@ public class InitialData {
 							JdbcUtils.insert(conn, sql, params);
 						}
 						try{
-							updateStkStaticInfo(conn,code);
+							updateStkInfo(conn,code);
 						}catch(Exception e){
 							ExceptionUtils.insertLog(conn, code, e);
 						}
@@ -413,7 +430,7 @@ public class InitialData {
 		}
 	}
 
-	public static void updateIndustryFromQQ(Connection conn, Index index) throws Exception {
+	public  void updateIndustryFromQQ(Connection conn, Index index) throws Exception {
 		String page = HttpUtils.get("http://stock.finance.qq.com/corp1/profile.php?zqdm="+index.getCode(), null, "GBK");
 		Node node = HtmlUtils.getNodeByText(page, null, "所属板块");
 		List<Node> nodes = HtmlUtils.getNodeListByTagName(node.getNextSibling().getNextSibling(), "a");
@@ -453,7 +470,7 @@ public class InitialData {
 		}
 	}
 
-	public static void updateIndustryFromHexun(Connection conn) throws Exception {
+	public  void updateIndustryFromHexun(Connection conn) throws Exception {
 		List params = new ArrayList();
 		String page = HttpUtils.get("http://quote.hexun.com/js/conception.ashx", null, "GBK");
 		List<HexunIndustryConception> inds = JsonUtils.getList4Json(StringUtils.substringBetween(page, "conceptionData=", ";"), HexunIndustryConception.class);
@@ -500,7 +517,7 @@ public class InitialData {
 	}
 
 	//同花顺概念板块
-	public static void initialIndustryFrom10jqka(Connection conn, String category) throws Exception {
+	public  void initialIndustryFrom10jqka(Connection conn, String category) throws Exception {
 		System.out.println("initialIndustryFrom10jqka");
 		String source = "10jqka_"+category;
 		List params = new ArrayList();
@@ -581,7 +598,7 @@ public class InitialData {
 	//证监会行业-个股，市盈率
 	//http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zjh1&date=2020-08-07
 	//http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zz1&date=2020-08-05
-	public static void initialIndustryFromCsindex_zjh(Connection conn, int n) throws Exception {
+	public void initialIndustryFromCsindex_zjh(Connection conn, int n) throws Exception {
 		String page = HttpUtils.get("http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zjh1&date="+ServiceUtils.formatDate(ServiceUtils.addDayOfWorking(ServiceUtils.now, -1), ServiceUtils.sf_ymd), "utf-8");
 		//System.out.println(page);
 		List<Node> tables = HtmlUtils.getNodeListByTagNameAndAttribute(page, null, "table", "class", "list-div-table");
@@ -655,8 +672,10 @@ public class InitialData {
 						String sdate = ServiceUtils.formatDate(date, ServiceUtils.sf_ymd2);
 						String pe = StringUtils.trim(tds.get(2).toPlainTextString());
 						if(NumberUtils.isNumber(pe)) {
-							IndustryService industryService = SpringUtils.getBean(IndustryService.class);
-							StkDataIndustryPeEntity entity = industryService.findStkDataIndustryPe(indIdMap.get(code), sdate);
+							//IndustryService industryService = SpringUtils.getBean(IndustryService.class);
+                            industryService.updatePe(indIdMap.get(code), sdate, Double.parseDouble(pe), null, null);
+
+							/*StkDataIndustryPeEntity entity = industryService.findStkDataIndustryPe();
 							if(entity == null){
 								entity = new StkDataIndustryPeEntity();
 								entity.setIndustryId(indIdMap.get(code));
@@ -666,7 +685,7 @@ public class InitialData {
 							}else{
 								entity.setPe(Double.parseDouble(pe));
 							}
-							industryService.save(entity);
+							industryService.save(entity);*/
 						}
 					}
 				}
@@ -697,18 +716,9 @@ public class InitialData {
 						String sdate = ServiceUtils.formatDate(date, ServiceUtils.sf_ymd2);
 						String pe = StringUtils.trim(tds.get(2).toPlainTextString());
 						if(NumberUtils.isNumber(pe)) {
-							IndustryService industryService = SpringUtils.getBean(IndustryService.class);
-							StkDataIndustryPeEntity entity = industryService.findStkDataIndustryPe(indIdMap.get(code), sdate);
-							if(entity == null){
-								entity = new StkDataIndustryPeEntity();
-								entity.setIndustryId(indIdMap.get(code));
-								entity.setPeDate(sdate);
-								entity.setPeTtm(Double.parseDouble(pe));
-								entity.setInsertTime(ServiceUtils.getTime());
-							}else{
-								entity.setPeTtm(Double.parseDouble(pe));
-							}
-							industryService.save(entity);
+//							IndustryService industryService = SpringUtils.getBean(IndustryService.class);
+                            industryService.updatePe(indIdMap.get(code), sdate, null, Double.parseDouble(pe), null);
+
 						}
 					}
 				}
@@ -739,18 +749,9 @@ public class InitialData {
 						String sdate = ServiceUtils.formatDate(date, ServiceUtils.sf_ymd2);
 						String pe = StringUtils.trim(tds.get(2).toPlainTextString());
 						if(NumberUtils.isNumber(pe)) {
-							IndustryService industryService = SpringUtils.getBean(IndustryService.class);
-							StkDataIndustryPeEntity entity = industryService.findStkDataIndustryPe(indIdMap.get(code), sdate);
-							if(entity == null){
-								entity = new StkDataIndustryPeEntity();
-								entity.setIndustryId(indIdMap.get(code));
-								entity.setPeDate(sdate);
-								entity.setPb(Double.parseDouble(pe));
-								entity.setInsertTime(ServiceUtils.getTime());
-							}else{
-								entity.setPb(Double.parseDouble(pe));
-							}
-							industryService.save(entity);
+//							IndustryService industryService = SpringUtils.getBean(IndustryService.class);
+                            industryService.updatePe(indIdMap.get(code), sdate, null, null, Double.parseDouble(pe));
+
 						}
 					}
 				}
@@ -781,7 +782,7 @@ public class InitialData {
 						String sdate = ServiceUtils.formatDate(date, ServiceUtils.sf_ymd2);
 						String pe = StringUtils.trim(tds.get(2).toPlainTextString());
 						if(NumberUtils.isNumber(pe)) {
-							IndustryService industryService = SpringUtils.getBean(IndustryService.class);
+//							IndustryService industryService = SpringUtils.getBean(IndustryService.class);
 							StkDataIndustryPeEntity entity = industryService.findStkDataIndustryPe(indIdMap.get(code), sdate);
 							if(entity == null){
 								entity = new StkDataIndustryPeEntity();
@@ -801,7 +802,7 @@ public class InitialData {
 	}
 
 	//中证行业-个股，市盈率
-	public static void initialIndustryFromCsindex_zz1(Connection conn) throws Exception {
+	public  void initialIndustryFromCsindex_zz1(Connection conn) throws Exception {
 		String page = HttpUtils.get("http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zz1&date="+ServiceUtils.formatDate(ServiceUtils.addDayOfWorking(ServiceUtils.now, -1), ServiceUtils.sf_ymd), "utf-8");
 		//System.out.println(page);
 		List<Node> tables = HtmlUtils.getNodeListByTagNameAndAttribute(page, null, "table", "class", "list-div-table");
@@ -857,7 +858,7 @@ public class InitialData {
 	}
 
 	//巨潮 pe
-	public static void initialIndustryFromCnIndex(Connection conn, int n) throws Exception {
+	public  void initialIndustryFromCnIndex(Connection conn, int n) throws Exception {
 		List params = new ArrayList();
 		Date date = ServiceUtils.now;
 		String page = null;
@@ -985,11 +986,11 @@ public class InitialData {
 		}
 	}
 
-	private static Map<Integer,Integer> industryTypeMap = new HashMap<Integer,Integer>();
+	private  Map<Integer,Integer> industryTypeMap = new HashMap<Integer,Integer>();
 	/**
 	 * 归类：成长，潜力，反转
 	 */
-	public static void upateStkFnType(Connection conn, Index index) throws Exception{
+	public  void upateStkFnType(Connection conn, Index index) throws Exception{
 		List params = new ArrayList();
 		params.add(index.getCode());
 		StkIndustry si = JdbcUtils.load(conn, "select * from stk_industry where code=? and industry in (select id from stk_industry_type where source='my_industry_fntype')",params, StkIndustry.class);
@@ -1047,7 +1048,7 @@ public class InitialData {
 	 * f84:  总股本
 	 * f189: 上市时间
 	 */
-	public static void updateStkStaticInfo(Connection conn,String code) throws Exception {
+	public  void updateStkInfo(Connection conn,String code) throws Exception {
 		List params = new ArrayList();
 		String page = HttpUtils.get("http://push2.eastmoney.com/api/qt/stock/get?ut=&invt=2&fltt=2&fields=f84,f189&secid="+(Index.getLocation(code)==Index.SZ?"0.":"1.")+code+"&cb=jQuery&_="+new Date().getTime(), null, "GBK");
         //System.out.println(page);
@@ -1072,7 +1073,7 @@ public class InitialData {
 		}
 	}
 
-	public static void updateStkF9(Connection conn, Index index) throws Exception {
+	public  void updateStkF9(Connection conn, Index index) throws Exception {
 		String page = HttpUtils.get("http://emweb.securities.eastmoney.com/PC_HSF10/CoreConception/CoreConceptionAjax?code="+(index.getLoc()==1?Index.SH_LOWER:Index.SZ_LOWER+index.getCode()), null, "utf-8");
 		//System.out.println(page);
 		Map map = JsonUtils.testJson(page);
@@ -1099,7 +1100,7 @@ public class InitialData {
 	}
 
 	//http://www.windin.com/home/stock/html_wind/000002.SH.shtml
-	public static void updateStkInfoFromWind(Connection conn,Index index,Date now,List<StkFnType> fnTypes) throws Exception {
+	public  void updateStkInfoFromWind(Connection conn,Index index,Date now,List<StkFnType> fnTypes) throws Exception {
 		String code = index.getCode();
 		String name = index.getName();
 		String loc = ServiceUtils.getStkLocation(code);
@@ -1286,7 +1287,7 @@ public class InitialData {
 	}
 
 	//牛基
-	public static void initAwesomeFund() throws Exception {
+	public  void initAwesomeFund() throws Exception {
 		//一年期牛基排行前20
 		//http://vip.stock.finance.sina.com.cn/fund_center/index.html#hbphgpx
 		//http://vip.stock.finance.sina.com.cn/fund_center/data/jsonp.php/IO.XSRV2.CallbackList['hLfu5s99aaIUp7D4']/NetValueReturn_Service.NetValueReturnOpen?page=1&num=40&sort=form_year&asc=0&ccode=&type2=2&type3=
@@ -1318,7 +1319,7 @@ public class InitialData {
 		}
 	}
 
-	public static void initHolderFrom10jqka(Connection conn, Index index)  throws Exception {
+	public  void initHolderFrom10jqka(Connection conn, Index index)  throws Exception {
 		String code = index.getCode();
 		List params = new ArrayList();
 		String page = HttpUtils.get("http://basic.10jqka.com.cn/"+index.getCode()+"/holder.html", null, "gbk");
@@ -1380,7 +1381,7 @@ public class InitialData {
 	 * http://basic.10jqka.com.cn/000001/holder.html
 	 */
 	//流通股东
-	public static void initOwnership(Connection conn, Index index)  throws Exception {
+	public  void initOwnership(Connection conn, Index index)  throws Exception {
 		String page = HttpUtils.get("http://basic.10jqka.com.cn/"+index.getCode()+"/holder.html", null, "gbk");
 		//System.out.println("initOwnership="+page);
 		Node div = HtmlUtils.getNodeByAttribute(page, null, "id", "bd_list1");
@@ -1501,7 +1502,7 @@ public class InitialData {
 
 
 	//初始化fn data,包括2005年后所有数据
-	public static void initFnData(Connection conn,Date now,Index index,List<StkFnType> fnTypes) throws Exception {
+	public  void initFnData(Connection conn,Date now,Index index,List<StkFnType> fnTypes) throws Exception {
 		List params = new ArrayList();
 		String code = index.getCode();
 		if(index.getMarket() == 1){//A Stock
@@ -1593,12 +1594,12 @@ public class InitialData {
 		}
 	}
 
-	public static void initFnDataTTM(Connection conn,Date now,Index index,List<StkFnType> fnTypes) throws Exception {
-		InitialData.initFnDataTTM(conn, now, index, fnTypes, "quarter");
+	public  void initFnDataTTM(Connection conn,Date now,Index index,List<StkFnType> fnTypes) throws Exception {
+		initFnDataTTM(conn, now, index, fnTypes, "quarter");
 	}
 
 	//update最近4个季度fn data
-	public static void initFnDataTTM(Connection conn,Date now,Index index,List<StkFnType> fnTypes, String type) throws Exception {
+	public  void initFnDataTTM(Connection conn,Date now,Index index,List<StkFnType> fnTypes, String type) throws Exception {
 		List params = new ArrayList();
 		String code = index.getCode();
 		if(index.getMarket() == 1){//A Stock
@@ -1916,7 +1917,7 @@ public class InitialData {
 		}
 	}
 
-	private static String getAllStocksCode(){
+	private  String getAllStocksCode(){
 		StringBuffer sb = new StringBuffer(1024);
 		for(int i=0;i<=999;i++){
 			sb.append("sh600"+StringUtils.leftPad(""+i, 3, '0')+",");
@@ -1949,7 +1950,7 @@ public class InitialData {
 	}
 
 
-	public static void initUStkFromSina(Connection conn, boolean flag) throws Exception {
+	public  void initUStkFromSina(Connection conn, boolean flag) throws Exception {
 		int pageNum = 1;
 		List params = new ArrayList();
 		if(flag){
@@ -2093,7 +2094,7 @@ public class InitialData {
 		}
 	}
 
-	private static void initUStkFromXueQiu(Connection conn) throws Exception {
+	private  void initUStkFromXueQiu(Connection conn) throws Exception {
 		String page = HttpUtils.get("http://xueqiu.com/hq/US", "GBK");
 		String text = "{"+StringUtils.substringBetween(page, "stockList.searchResult={", "};")+"}";
 		//System.out.println(text);
@@ -2158,7 +2159,7 @@ public class InitialData {
 				}
 				double totalCapital = Double.parseDouble(totalCap)*n;
 				System.out.println(code+","+name+","+totalCapital+","+profile);
-				InitialData.createStk(conn, code, name, String.valueOf(totalCapital), profile);
+				createStk(conn, code, name, String.valueOf(totalCapital), profile);
 
 				params.clear();
 				params.add(code);
@@ -2176,7 +2177,7 @@ public class InitialData {
 		}
 	}
 
-	public static void initUStkFromEasymoney(Connection conn) throws Exception {
+	public  void initUStkFromEasymoney(Connection conn) throws Exception {
 		String page = HttpUtils.get("http://nufm.dfcfw.com/EM_Finance2014NumericApplication/JS.aspx?type=CT&cmd=C.__28CHINA&sty=MPICTTA&sortType=C&sortRule=-1&page=1&pageSize=200&js=var%20quote_123%3d"+URLEncoder.encode("{rank:[(x)],pages:(pc)}","utf-8")+"&token=44c9d251add88e27b65ed86506f6e5da&jsName=quote_123&_g=0.051958891308406585", null);
 		String strStks = StringUtils.substringBetween(page, "{rank:", ",pages:");
 		List<String> stks = JsonUtils.testJsonArray(strStks);
@@ -2191,7 +2192,7 @@ public class InitialData {
 	}
 
 
-	public static void createStk(Connection conn,String code,String name,String totalCapital,String companyProfile) {
+	public  void createStk(Connection conn,String code,String name,String totalCapital,String companyProfile) {
 		List params = new ArrayList();
 		params.clear();
 		params.add(code);
@@ -2226,7 +2227,7 @@ public class InitialData {
 		}
 	}
 
-	public static void updateRestricted(Connection conn, Index index) throws Exception{
+	public  void updateRestricted(Connection conn, Index index) throws Exception{
 		String page = HttpUtils.get("http://vip.stock.finance.sina.com.cn/q/go.php/vInvestConsult/kind/xsjj/index.phtml?symbol="+(index.getLoc()==1?Index.SH_LOWER:Index.SZ_LOWER+index.getCode()), "gbk");
 		//System.out.println(page);
 		Node table = HtmlUtils.getNodeByAttribute(page, null, "id", "dataTable");
@@ -2250,7 +2251,7 @@ public class InitialData {
 	}
 
 
-	public static void initUStkFromFinviz(Connection conn) throws Exception {
+	public  void initUStkFromFinviz(Connection conn) throws Exception {
 		int r = 1;
 		List params = new ArrayList();
 		while(true){

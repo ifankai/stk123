@@ -1,6 +1,6 @@
 package com.stk123.task.quartz.job;
 
-import com.stk123.service.ServiceUtils;
+import com.stk123.util.ServiceUtils;
 
 public class XueqiuUser {
 	public String name;

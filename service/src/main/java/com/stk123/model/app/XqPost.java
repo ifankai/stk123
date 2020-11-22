@@ -1,4 +1,4 @@
-package com.stk123.app.model;
+package com.stk123.model.app;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;

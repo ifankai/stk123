@@ -26,7 +26,7 @@ import org.apache.commons.beanutils.converters.ShortConverter;
 
 import com.stk123.model.bo.StkUser;
 import com.stk123.model.User;
-import com.stk123.service.ServiceUtils;
+import com.stk123.util.ServiceUtils;
 import com.stk123.common.db.connection.Pool;
 import com.stk123.common.util.CacheUtils;
 import com.stk123.web.core.config.ActionConfig;

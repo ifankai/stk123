@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Set;
 
 import com.stk123.common.util.HtmlUtils;
-import com.stk123.service.HttpUtils;
+import com.stk123.util.HttpUtils;
 import com.stk123.common.util.JsonUtils;
-import com.stk123.service.ServiceUtils;
+import com.stk123.util.ServiceUtils;
 import com.stk123.common.util.*;
 import org.apache.commons.lang.StringUtils;
 import org.htmlparser.Node;

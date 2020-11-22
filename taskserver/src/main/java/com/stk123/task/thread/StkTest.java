@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.stk123.model.bo.Stk;
 import com.stk123.model.Index;
-import com.stk123.service.ServiceUtils;
+import com.stk123.util.ServiceUtils;
 import com.stk123.common.db.TableTools;
 import com.stk123.common.db.connection.ConnectionPool;
 import com.stk123.common.util.ConfigUtils;

@@ -16,7 +16,7 @@ import com.stk123.model.bo.cust.StkEarningsNoticeCust;
 import com.stk123.model.Index;
 import com.stk123.model.Industry;
 import com.stk123.model.User;
-import com.stk123.service.ServiceUtils;
+import com.stk123.util.ServiceUtils;
 import com.stk123.common.util.JdbcUtils;
 import com.stk123.common.util.JsonUtils;
 import com.stk123.common.CommonConstant;

@@ -1,6 +1,6 @@
-package com.stk123.service.ik;
+package com.stk123.util.ik;
 
-import com.stk123.service.ServiceUtils;
+import com.stk123.util.ServiceUtils;
 import com.stk123.model.bo.Stk;
 import com.stk123.model.bo.StkText;
 import com.stk123.common.db.TableTools;

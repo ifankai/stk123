@@ -9,10 +9,10 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-import com.stk123.service.ServiceUtils;
-import com.stk123.service.baidu.BaiduSearch;
+import com.stk123.util.ServiceUtils;
+import com.stk123.util.baidu.BaiduSearch;
 import com.stk123.common.util.EmailUtils;
-import com.stk123.service.ExceptionUtils;
+import com.stk123.util.ExceptionUtils;
 import com.stk123.common.util.collection.Name2Value;
 
 public class BaiduNewsSearchJob implements Job {

@@ -27,7 +27,7 @@ import com.stk123.model.Index;
 import com.stk123.model.Keyword;
 import com.stk123.model.Label;
 import com.stk123.model.User;
-import com.stk123.service.ServiceUtils;
+import com.stk123.util.ServiceUtils;
 import com.stk123.common.db.util.sequence.SequenceUtils;
 import com.stk123.common.ik.DocumentField;
 import com.stk123.web.ik.WebIKUtils;

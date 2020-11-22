@@ -10,12 +10,12 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
 import com.stk123.model.Text;
-import com.stk123.service.ServiceUtils;
+import com.stk123.util.ServiceUtils;
 import com.stk123.common.db.util.DBUtil;
 import com.stk123.common.util.EmailUtils;
-import com.stk123.service.ExceptionUtils;
+import com.stk123.util.ExceptionUtils;
 import com.stk123.common.util.HtmlUtils;
-import com.stk123.service.HttpUtils;
+import com.stk123.util.HttpUtils;
 
 public class ResearchReportJob implements Job {
 

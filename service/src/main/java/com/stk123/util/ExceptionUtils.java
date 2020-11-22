@@ -1,6 +1,6 @@
-package com.stk123.service;
+package com.stk123.util;
 
-import com.stk123.service.ik.StringSimilarUtils;
+import com.stk123.util.ik.StringSimilarUtils;
 import com.stk123.model.bo.StkErrorLog;
 import com.stk123.common.util.JdbcUtils;
 

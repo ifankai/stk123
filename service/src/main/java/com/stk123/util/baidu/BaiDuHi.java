@@ -1,4 +1,4 @@
-package com.stk123.service.baidu;
+package com.stk123.util.baidu;
 
 import java.util.ArrayList;
 import java.util.List;

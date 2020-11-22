@@ -10,9 +10,9 @@ import java.util.Map;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
 
-import com.stk123.service.ServiceUtils;
+import com.stk123.util.ServiceUtils;
 import com.stk123.common.util.EmailUtils;
-import com.stk123.service.HttpUtils;
+import com.stk123.util.HttpUtils;
 
 @CommonsLog
 public class TradeUtils {

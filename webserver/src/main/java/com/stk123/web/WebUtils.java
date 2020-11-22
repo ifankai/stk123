@@ -22,7 +22,7 @@ import com.stk123.model.bo.StkUser;
 import com.stk123.model.bo.cust.StkFnDataCust;
 import com.stk123.model.Index;
 import com.stk123.model.User;
-import com.stk123.service.ServiceUtils;
+import com.stk123.util.ServiceUtils;
 import com.stk123.common.util.MyCacheUtils;
 import com.stk123.common.html.HtmlTable;
 import com.stk123.common.html.HtmlTd;

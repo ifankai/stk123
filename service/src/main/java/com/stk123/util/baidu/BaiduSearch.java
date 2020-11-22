@@ -1,4 +1,4 @@
-package com.stk123.service.baidu;
+package com.stk123.util.baidu;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -14,10 +14,10 @@ import org.apache.commons.httpclient.NoHttpResponseException;
 import org.apache.commons.lang.StringUtils;
 import org.htmlparser.Node;
 
-import com.stk123.service.ServiceUtils;
+import com.stk123.util.ServiceUtils;
 import com.stk123.common.util.EmailUtils;
 import com.stk123.common.util.HtmlUtils;
-import com.stk123.service.HttpUtils;
+import com.stk123.util.HttpUtils;
 import com.stk123.common.CommonConstant;
 
 

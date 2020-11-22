@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.util.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.stk123.app.model.XqPost;
+import com.stk123.model.app.XqPost;
 import com.stk123.model.Text;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.httpclient.Header;
@@ -15,14 +15,14 @@ import org.quartz.JobExecutionException;
 
 import com.stk123.model.bo.Stk;
 import com.stk123.model.Index;
-import com.stk123.service.ServiceUtils;
+import com.stk123.util.ServiceUtils;
 import com.stk123.service.XueqiuService;
 import com.stk123.common.db.util.CloseUtil;
 import com.stk123.common.db.util.DBUtil;
 import com.stk123.common.db.util.sequence.SequenceUtils;
 import com.stk123.common.util.ChineseUtils;
 import com.stk123.common.util.EmailUtils;
-import com.stk123.service.HttpUtils;
+import com.stk123.util.HttpUtils;
 import com.stk123.common.util.JdbcUtils;
 import com.stk123.common.util.JsonUtils;
 /**

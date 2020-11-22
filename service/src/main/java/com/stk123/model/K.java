@@ -10,8 +10,8 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.stk123.model.bo.StkKline;
-import com.stk123.service.ServiceUtils;
-import com.stk123.service.HttpUtils;
+import com.stk123.util.ServiceUtils;
+import com.stk123.util.HttpUtils;
 import com.stk123.common.util.collection.IntRange2IntMap;
 
 

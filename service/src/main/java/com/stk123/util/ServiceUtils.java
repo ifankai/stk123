@@ -1,17 +1,11 @@
-package com.stk123.service;
+package com.stk123.util;
 
 import com.stk123.common.CommonConstant;
-import com.stk123.model.bo.StkEarningsNotice;
-import com.stk123.model.bo.StkImportInfo;
-import com.stk123.model.bo.StkRestricted;
-import com.stk123.model.bo.cust.StkFnDataCust;
-import com.stk123.service.baidu.BaiduSearch;
+import com.stk123.util.baidu.BaiduSearch;
 import com.stk123.model.Index;
 import com.stk123.model.IndexUtils;
 import com.stk123.common.CommonUtils;
-import com.stk123.common.db.util.DBUtil;
 import com.stk123.common.html.HtmlA;
-import com.stk123.common.html.HtmlTd;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 

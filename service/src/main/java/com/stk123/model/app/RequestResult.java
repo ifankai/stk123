@@ -1,4 +1,4 @@
-package com.stk123.app.model;
+package com.stk123.model.app;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
@@ -21,6 +21,10 @@ public class RequestResult<T> implements Serializable {
 
     public static <T> RequestResult<T> success(T data) {
         return new RequestResult(true, data);
+    }
+
+    public static <T> RequestResult<T> failure(T data) {
+        return new RequestResult(false, data);
     }
 
     public RequestResult(){}

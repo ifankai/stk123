@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.stk123.service.ServiceUtils;
-import com.stk123.service.HttpUtils;
+import com.stk123.util.ServiceUtils;
+import com.stk123.util.HttpUtils;
 import com.stk123.common.util.JsonUtils;
 
 public class JobUtils {

@@ -8,12 +8,12 @@ import java.util.Map;
 
 import com.stk123.model.bo.Stk;
 import com.stk123.model.bo.StkFnType;
-import com.stk123.service.ServiceUtils;
+import com.stk123.util.ServiceUtils;
 import com.stk123.model.Index;
 import com.stk123.common.db.TableTools;
 import com.stk123.common.db.util.DBUtil;
 import com.stk123.common.util.ConfigUtils;
-import com.stk123.service.HttpUtils;
+import com.stk123.util.HttpUtils;
 import com.stk123.common.util.JdbcUtils;
 import com.stk123.common.util.JsonUtils;
 import com.stk123.task.schedule.InitialData;
@@ -23,6 +23,7 @@ public class UStkTools {
 	public static void main(String[] args) throws Exception {
 		ConfigUtils.setPropsFromResource(TableTools.class, "db.properties");
 		Connection conn = null;
+        InitialData initialData = new InitialData();
 		try {
 			//HttpUtils.NO_OF_RETRY = 10;
 			conn = DBUtil.getConnection();
@@ -58,7 +59,7 @@ public class UStkTools {
 					}*/
 					
 					indexs.add(index);
-					InitialData.initFnDataTTM(conn,ServiceUtils.now,index,fnTypes);
+                    initialData.initFnDataTTM(conn,ServiceUtils.now,index,fnTypes);
 					
 					//index.initKLineToday();
 					//index.initKLines();

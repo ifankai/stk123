@@ -1,6 +1,6 @@
 package com.stk123.app.repository;
 
-import com.stk123.app.model.XqPost;
+import com.stk123.model.app.XqPost;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -10,10 +10,10 @@ import org.quartz.JobExecutionException;
 
 import com.stk123.model.bo.StkDataPpi;
 import com.stk123.model.bo.StkDataPpiType;
-import com.stk123.service.ServiceUtils;
+import com.stk123.util.ServiceUtils;
 import com.stk123.common.db.util.DBUtil;
 import com.stk123.common.util.EmailUtils;
-import com.stk123.service.ExceptionUtils;
+import com.stk123.util.ExceptionUtils;
 import com.stk123.common.util.JdbcUtils;
 
 public class PPIIndexNewHighJob implements Job {

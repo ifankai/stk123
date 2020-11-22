@@ -8,6 +8,7 @@ import com.stk123.common.util.JsonUtils;
 import com.stk123.model.xueqiu.Follower;
 import com.stk123.model.xueqiu.Portfolio;
 import com.stk123.model.xueqiu.Stock;
+import com.stk123.util.HttpUtils;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
