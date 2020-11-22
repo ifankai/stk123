@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.stk123.task.quartz.job.t.K;
 import com.stk123.task.quartz.job.t.Share;
-import com.stk123.service.ServiceUtils;
+import com.stk123.util.ServiceUtils;
 import com.stk123.common.util.collection.Name2Value;
 
 /**

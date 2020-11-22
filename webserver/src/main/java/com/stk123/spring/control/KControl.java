@@ -1,12 +1,12 @@
 package com.stk123.spring.control;
 
-import com.stk123.app.model.RequestResult;
+import com.stk123.model.app.RequestResult;
 import com.stk123.model.Index;
 import com.stk123.model.K;
 import com.stk123.spring.dto.StkDto;
 import com.stk123.spring.service.IndexService;
 import com.stk123.spring.service.IndustryService;
-import com.stk123.service.ServiceUtils;
+import com.stk123.util.ServiceUtils;
 import com.stk123.service.XueqiuService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;

@@ -23,9 +23,9 @@ import com.stk123.model.bo.Stk;
 import com.stk123.model.bo.StkInternetSearch;
 import com.stk123.model.Index;
 import com.stk123.common.db.connection.ConnectionPool;
-import com.stk123.service.ExceptionUtils;
+import com.stk123.util.ExceptionUtils;
 import com.stk123.common.util.HtmlUtils;
-import com.stk123.service.HttpUtils;
+import com.stk123.util.HttpUtils;
 
 
 public class ThreadPoolUtils {

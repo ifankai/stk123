@@ -11,8 +11,8 @@ import com.stk123.model.bo.Stk;
 import com.stk123.model.Index;
 import com.stk123.common.db.util.DBUtil;
 import com.stk123.common.util.EmailUtils;
-import com.stk123.service.ExceptionUtils;
-import com.stk123.service.HttpUtils;
+import com.stk123.util.ExceptionUtils;
+import com.stk123.util.HttpUtils;
 import com.stk123.common.util.JdbcUtils;
 import com.stk123.common.util.JsonUtils;
 

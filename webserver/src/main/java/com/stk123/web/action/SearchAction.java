@@ -15,7 +15,7 @@ import org.apache.lucene.index.IndexableField;
 
 import com.stk123.model.Index;
 import com.stk123.model.User;
-import com.stk123.service.ServiceUtils;
+import com.stk123.util.ServiceUtils;
 import com.stk123.common.ik.DocumentField;
 import com.stk123.common.ik.DocumentType;
 import com.stk123.web.ik.Search;

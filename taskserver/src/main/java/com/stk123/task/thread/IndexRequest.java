@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.stk123.model.Index;
 import com.stk123.common.db.connection.ConnectionPool;
-import com.stk123.service.ExceptionUtils;
+import com.stk123.util.ExceptionUtils;
 
 
 public class IndexRequest implements Request {

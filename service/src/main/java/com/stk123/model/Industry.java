@@ -9,9 +9,9 @@ import java.util.Map;
 
 import com.stk123.common.util.EmailUtils;
 import com.stk123.common.util.HtmlUtils;
-import com.stk123.service.HttpUtils;
+import com.stk123.util.HttpUtils;
 import com.stk123.common.util.*;
-import com.stk123.service.ExceptionUtils;
+import com.stk123.util.ExceptionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.htmlparser.Node;
 import org.htmlparser.tags.TableTag;

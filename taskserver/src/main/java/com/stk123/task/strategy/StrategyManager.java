@@ -14,7 +14,7 @@ import org.apache.commons.io.IOUtils;
 import com.stk123.model.Index;
 import com.stk123.model.IndexUtils;
 import com.stk123.model.K;
-import com.stk123.service.ServiceUtils;
+import com.stk123.util.ServiceUtils;
 import com.stk123.service.XueqiuService;
 import com.stk123.common.db.util.CloseUtil;
 import com.stk123.common.db.util.DBUtil;

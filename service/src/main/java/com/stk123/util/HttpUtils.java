@@ -1,4 +1,4 @@
-package com.stk123.service;
+package com.stk123.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,7 +7,7 @@ import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
 
-import com.stk123.service.ik.StringSimilarUtils;
+import com.stk123.util.ik.StringSimilarUtils;
 import com.stk123.model.bo.StkErrorLog;
 import com.stk123.common.db.util.CloseUtil;
 import com.stk123.common.db.util.DBUtil;

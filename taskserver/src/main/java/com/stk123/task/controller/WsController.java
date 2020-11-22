@@ -1,6 +1,6 @@
 package com.stk123.task.controller;
 
-import com.stk123.app.model.RequestResult;
+import com.stk123.model.app.RequestResult;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.web.bind.annotation.*;
 

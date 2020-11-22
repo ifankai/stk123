@@ -1,7 +1,7 @@
 <%@page import="com.stk123.common.util.JdbcUtils"%>
 <%@ page import="java.util.List" %>
 <%@ page import="com.stk123.service.*" %>
-<%@ page import="com.stk123.service.baidu.*" %>
+<%@ page import="com.stk123.util.baidu.*" %>
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@include file="/common/import.jsp" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">

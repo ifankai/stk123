@@ -7,7 +7,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import com.stk123.service.ServiceUtils;
+import com.stk123.util.ServiceUtils;
 import com.stk123.model.Index;
 import com.stk123.model.IndexContext;
 import com.stk123.model.K;
@@ -18,7 +18,7 @@ import org.apache.commons.lang.StringUtils;
 import com.stk123.model.bo.Stk;
 import com.stk123.model.bo.StkFnType;
 import com.stk123.common.db.util.DBUtil;
-import com.stk123.service.HttpUtils;
+import com.stk123.util.HttpUtils;
 import com.stk123.common.util.JdbcUtils;
 import com.stk123.common.util.JsonUtils;
 import com.stk123.common.util.pdf.PDFUtils;
@@ -43,7 +43,8 @@ public class AStkTools {
 		try {
 			conn = DBUtil.getConnection();
 			IndexContext context = new IndexContext();
-			InitialData.initialIndustryFromCsindex_zjh(conn, 7);
+            InitialData initialData = new InitialData();
+			initialData.initialIndustryFromCsindex_zjh(conn, 7);
 			//InitialData.updateIndustryFromHexun(conn);
 			//InitialData.initialIndustryFrom10jqka(conn,"thshy");
 			//InitialKLine.strategy(conn, false);

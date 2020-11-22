@@ -10,7 +10,7 @@ import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.stk123.service.ServiceUtils;
+import com.stk123.util.ServiceUtils;
 
 public class SetXueqiuCookieToProperties {
 	

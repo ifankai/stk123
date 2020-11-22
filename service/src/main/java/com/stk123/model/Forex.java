@@ -11,12 +11,12 @@ import org.apache.commons.lang.StringUtils;
 import org.htmlparser.tags.TableTag;
 
 import com.stk123.model.bo.po.StkKlinePO;
-import com.stk123.service.ServiceUtils;
+import com.stk123.util.ServiceUtils;
 import com.stk123.common.db.TableTools;
 import com.stk123.common.db.util.DBUtil;
 import com.stk123.common.util.ConfigUtils;
 import com.stk123.common.util.HtmlUtils;
-import com.stk123.service.HttpUtils;
+import com.stk123.util.HttpUtils;
 import com.stk123.common.util.JdbcUtils;
 
 

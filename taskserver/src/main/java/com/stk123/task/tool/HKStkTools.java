@@ -7,7 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.stk123.model.bo.Stk;
-import com.stk123.service.ServiceUtils;
+import com.stk123.util.ServiceUtils;
 import com.stk123.model.Index;
 import com.stk123.model.IndexContext;
 import com.stk123.common.db.util.DBUtil;

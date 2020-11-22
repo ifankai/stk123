@@ -1,4 +1,4 @@
-package com.stk123.service;
+package com.stk123.util;
 
 import java.sql.Connection;
 import java.util.List;

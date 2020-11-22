@@ -16,9 +16,10 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.stk123.service.*;
 import com.stk123.common.util.*;
 import com.stk123.task.tool.TaskUtils;
+import com.stk123.util.ExceptionUtils;
+import com.stk123.util.HttpUtils;
 import org.apache.commons.lang.StringUtils;
 import org.htmlparser.Node;
 import org.htmlparser.tags.LinkTag;
@@ -42,9 +43,10 @@ import com.stk123.common.db.connection.ConnectionPool;
 import com.stk123.common.db.util.DBUtil;
 import com.stk123.common.util.collection.IntRange2IntMap;
 import com.stk123.common.CommonConstant;
+import org.springframework.stereotype.Component;
 
 
-@SuppressWarnings({ "unchecked", "rawtypes" })
+@Component
 public class InitialKLine {
 	
 	private static Logger logger = LoggerFactory.getLogger(InitialKLine.class);
@@ -71,76 +73,80 @@ public class InitialKLine {
 	public static Set<Index> flowStks = new HashSet<Index>();
 	
 	public static void main(String[] args) throws Exception {
-		System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");//fix JDK1.7 error:java.lang.IllegalArgumentException: Comparison method violates its general contract!
-		//System.setProperty("java.io.tmpdir", System.getProperty("java.io.tmpdir")+File.separator+"CN");
-		ConfigUtils.setPropsFromResource(TableTools.class,"db.properties");
-		ConfigUtils.setProp("sql_select_show", "N");
-		Connection conn = null;
-		try{
-			int market = 1;//default A stock
-			if(args != null && args.length > 0){
-				for(String arg : args){
-					if("US".equals(arg)){
-						market = 2;
-						System.setProperty("java.io.tmpdir", System.getProperty("java.io.tmpdir")+File.separator+"US");
-					}
-					if("initonly".equalsIgnoreCase(arg)){
-						initonly = true;
-					}
-					if("analyse".equalsIgnoreCase(arg)){
-						analyse = true;
-					}
-				}
-			}
-			long start = System.currentTimeMillis();
-			conn = DBUtil.getConnection();
-			CacheUtils.DISABLE = true;
-			Index.KLineWhereClause = Index.KLINE_20140101;
-			Index.FNDateWhereClause = Index.FNDate_20140101;
-			if(market == 1){
-				//------------- A --------------//
-				try{
-					JdbcUtils.delete(conn, "delete from stk_kline where kline_date>to_char(sysdate,'yyyymmdd')",null);
-					initAStock(conn);
-					JdbcUtils.delete(conn, "delete from stk_kline where kline_date>to_char(sysdate,'yyyymmdd')",null);
-					
-					//下载沪深300市盈率xls数据
-					String url = "http://www.csindex.com.cn/sseportal/ps/zhs/hqjt/csi/Csi300Perf.xls";
-					HttpUtils.download(url,null, ConfigUtils.getProp("initial_csi300")/*"d:\\share\\download\\"*/, "Csi300Perf_"+TaskUtils.getToday()+".xls");
-				}catch(Exception e){
-					EmailUtils.send("Initial A Stock K Line Error", ExceptionUtils.getExceptionAsString(e));
-				}
-				
-				//------------- HK --------------//
-				try{
-					initHKStock(conn);
-				}catch(Exception e){
-					EmailUtils.send("Initial HK Stock K Line Error", ExceptionUtils.getExceptionAsString(e));
-				}
-				
-				//sync to www.stk123.cn
-				//ScreenerAction.refreshStkSearchMview(conn);
-				//Sync.run();
-				
-			}else if(market == 2){
-				try{
-					Index.KLineWhereClause = Index.KLINE_20140101;
-					initUStock(conn);
-				}catch(Exception e){
-					EmailUtils.send("Initial US Stock K Line Error", ExceptionUtils.getExceptionAsString(e));
-				}
-			}
-			//monitor task
-			//Monitor.run(conn, Monitor.TYPE_KLINE);
-			
-			long end = System.currentTimeMillis();
-			System.out.println("InitialKLine time:"+((end-start)/1000D));
-		}finally{
-			if(conn != null)conn.close();
-			CacheUtils.close();
-		}
-				
+        InitialKLine initialKLine = new InitialKLine();
+		initialKLine.run(args);
 	}
+
+	public void run(String... args) throws Exception {
+        System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");//fix JDK1.7 error:java.lang.IllegalArgumentException: Comparison method violates its general contract!
+        //System.setProperty("java.io.tmpdir", System.getProperty("java.io.tmpdir")+File.separator+"CN");
+        ConfigUtils.setPropsFromResource(TableTools.class,"db.properties");
+        ConfigUtils.setProp("sql_select_show", "N");
+        Connection conn = null;
+        try{
+            int market = 1;//default A stock
+            if(args != null && args.length > 0){
+                for(String arg : args){
+                    if("US".equals(arg)){
+                        market = 2;
+                        System.setProperty("java.io.tmpdir", System.getProperty("java.io.tmpdir")+File.separator+"US");
+                    }
+                    if("initonly".equalsIgnoreCase(arg)){
+                        initonly = true;
+                    }
+                    if("analyse".equalsIgnoreCase(arg)){
+                        analyse = true;
+                    }
+                }
+            }
+            long start = System.currentTimeMillis();
+            conn = DBUtil.getConnection();
+            CacheUtils.DISABLE = true;
+            Index.KLineWhereClause = Index.KLINE_20140101;
+            Index.FNDateWhereClause = Index.FNDate_20140101;
+            if(market == 1){
+                //------------- A --------------//
+                try{
+                    JdbcUtils.delete(conn, "delete from stk_kline where kline_date>to_char(sysdate,'yyyymmdd')",null);
+                    initAStock(conn);
+                    JdbcUtils.delete(conn, "delete from stk_kline where kline_date>to_char(sysdate,'yyyymmdd')",null);
+
+                    //下载沪深300市盈率xls数据
+                    String url = "http://www.csindex.com.cn/sseportal/ps/zhs/hqjt/csi/Csi300Perf.xls";
+                    HttpUtils.download(url,null, ConfigUtils.getProp("initial_csi300")/*"d:\\share\\download\\"*/, "Csi300Perf_"+TaskUtils.getToday()+".xls");
+                }catch(Exception e){
+                    EmailUtils.send("Initial A Stock K Line Error", ExceptionUtils.getExceptionAsString(e));
+                }
+
+                //------------- HK --------------//
+                try{
+                    initHKStock(conn);
+                }catch(Exception e){
+                    EmailUtils.send("Initial HK Stock K Line Error", ExceptionUtils.getExceptionAsString(e));
+                }
+
+                //sync to www.stk123.cn
+                //ScreenerAction.refreshStkSearchMview(conn);
+                //Sync.run();
+
+            }else if(market == 2){
+                try{
+                    Index.KLineWhereClause = Index.KLINE_20140101;
+                    initUStock(conn);
+                }catch(Exception e){
+                    EmailUtils.send("Initial US Stock K Line Error", ExceptionUtils.getExceptionAsString(e));
+                }
+            }
+            //monitor task
+            //Monitor.run(conn, Monitor.TYPE_KLINE);
+
+            long end = System.currentTimeMillis();
+            System.out.println("InitialKLine time:"+((end-start)/1000D));
+        }finally{
+            if(conn != null)conn.close();
+            CacheUtils.close();
+        }
+    }
 	
 	public static void initHKStock(Connection conn) throws Exception {
 		try{

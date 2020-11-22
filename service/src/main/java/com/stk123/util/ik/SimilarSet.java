@@ -1,4 +1,4 @@
-package com.stk123.service.ik;
+package com.stk123.util.ik;
 
 import java.util.*;
 

@@ -1,4 +1,4 @@
-<%@ page import="com.stk123.service.ServiceUtils" %>
+<%@ page import="com.stk123.util.ServiceUtils" %>
 <%@ page import="com.stk123.service.DictService" %>
 <%@ page import="com.stk123.service.StkService" %>
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" errorPage="/common/error.jsp"%>

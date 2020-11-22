@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.stk123.service.ik.IKUtils;
+import com.stk123.util.ik.IKUtils;
 import com.stk123.common.ik.DocumentField;
 import com.stk123.common.ik.DocumentType;
 import org.apache.commons.io.IOUtils;
@@ -48,7 +48,7 @@ import org.wltea.analyzer.lucene.IKAnalyzer;
 
 import com.stk123.model.bo.Stk;
 import com.stk123.model.bo.StkText;
-import com.stk123.service.ServiceUtils;
+import com.stk123.util.ServiceUtils;
 import com.stk123.common.db.TableTools;
 import com.stk123.common.db.connection.Pool;
 import com.stk123.common.db.util.DBUtil;

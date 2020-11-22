@@ -1,10 +1,9 @@
 package com.stk123.task.ws;
 
-import com.stk123.app.model.RequestResult;
+import com.stk123.model.app.RequestResult;
 import com.stk123.model.ws.ClientMessage;
 import com.stk123.model.ws.ServerMessage;
 import lombok.extern.apachecommons.CommonsLog;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.client.RestTemplate;
 
 import java.lang.reflect.Type;
-import java.util.Map;
 
 @CommonsLog
 @Component
@@ -42,8 +40,12 @@ public class StkStompFrameHandler implements StompFrameHandler {
                 if(sm.getData() != null){
                     url = url + "?" + sm.getData();
                 }
-                requestResult = restTemplate.getForObject(url, RequestResult.class);
-                log.info("restTemplate url:" + url + ", result:" + requestResult);
+                try {
+                    requestResult = restTemplate.getForObject(url, RequestResult.class);
+                    log.info("restTemplate url:" + url + ", result:" + requestResult);
+                }catch(Exception e){
+                    requestResult = RequestResult.failure(e.getMessage());
+                }
             }
             ClientMessage cm = new ClientMessage();
             cm.setType(sm.getType());

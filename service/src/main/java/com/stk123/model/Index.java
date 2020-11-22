@@ -1,9 +1,9 @@
 package com.stk123.model;
 
 import com.stk123.common.CommonConstant;
-import com.stk123.service.ExceptionUtils;
-import com.stk123.service.HttpUtils;
-import com.stk123.service.ServiceUtils;
+import com.stk123.util.ExceptionUtils;
+import com.stk123.util.HttpUtils;
+import com.stk123.util.ServiceUtils;
 import com.stk123.service.XueqiuService;
 import com.stk123.model.K.Condition;
 import com.stk123.model.bo.*;
