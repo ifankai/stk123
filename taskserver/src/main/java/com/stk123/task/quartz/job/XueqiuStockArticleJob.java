@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.util.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.stk123.model.app.XqPost;
+import com.stk123.entity.StkXqPostEntity;
 import com.stk123.model.Text;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.httpclient.Header;
@@ -168,7 +168,7 @@ public class XueqiuStockArticleJob implements Job {
 								continue;
 							}
 
-                            XqPost xqPost = new XqPost();
+                            StkXqPostEntity xqPost = new StkXqPostEntity();
                             xqPost.setId(Long.valueOf((String)art.get("id")));
                             xqPost.setTitle((String) art.get("title"));
                             xqPost.setText((String) art.get("description"));

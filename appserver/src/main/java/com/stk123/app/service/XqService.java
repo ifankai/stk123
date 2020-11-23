@@ -1,6 +1,6 @@
 package com.stk123.app.service;
 
-import com.stk123.model.app.XqPost;
+import com.stk123.entity.StkXqPostEntity;
 import com.stk123.app.repository.XqPostRepository;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ public class XqService {
     private XqPostRepository xqPostRepository;
 
     @Async
-    public void updateToRead(List<XqPost> list) {
+    public void updateToRead(List<StkXqPostEntity> list) {
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {

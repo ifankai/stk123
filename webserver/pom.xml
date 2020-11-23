@@ -343,44 +343,44 @@
                  2.spring-boot:repackage 重新打包jar/war包为可执行包
                  3.spring-boot:start 和spring-boot:stop 管理Spring Boot 应用的生命周期(即集成测试)
                  -->
-                <plugin>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-maven-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>repackage</goal>
-                            </goals>
-                            <configuration>
-                                <classifier>spring-boot</classifier>
-                                <mainClass>
-                                    org.baeldung.executable.ExecutableMavenJar
-                                </mainClass>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
+                <!--<plugin>-->
+                    <!--<groupId>org.springframework.boot</groupId>-->
+                    <!--<artifactId>spring-boot-maven-plugin</artifactId>-->
+                    <!--<executions>-->
+                        <!--<execution>-->
+                            <!--<goals>-->
+                                <!--<goal>repackage</goal>-->
+                            <!--</goals>-->
+                            <!--<configuration>-->
+                                <!--<classifier>spring-boot</classifier>-->
+                                <!--<mainClass>-->
+                                    <!--org.baeldung.executable.ExecutableMavenJar-->
+                                <!--</mainClass>-->
+                            <!--</configuration>-->
+                        <!--</execution>-->
+                    <!--</executions>-->
+                <!--</plugin>-->
 
                 <!-- tomcat7:deploy -->
-                <plugin>
-                    <groupId>org.apache.tomcat.maven</groupId>
-                    <artifactId>tomcat7-maven-plugin</artifactId>
-                    <version>2.0</version>
-                    <executions>
-                        <execution>
-                            <id>tomcat-run</id>
-                            <goals>
-                                <goal>exec-war-only</goal>
-                            </goals>
-                            <phase>package</phase>
-                            <configuration>
-                                <path>/</path>
-                                <enableNaming>false</enableNaming>
-                                <finalName>webapp.jar</finalName>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
+                <!--<plugin>-->
+                    <!--<groupId>org.apache.tomcat.maven</groupId>-->
+                    <!--<artifactId>tomcat7-maven-plugin</artifactId>-->
+                    <!--<version>2.0</version>-->
+                    <!--<executions>-->
+                        <!--<execution>-->
+                            <!--<id>tomcat-run</id>-->
+                            <!--<goals>-->
+                                <!--<goal>exec-war-only</goal>-->
+                            <!--</goals>-->
+                            <!--<phase>package</phase>-->
+                            <!--<configuration>-->
+                                <!--<path>/</path>-->
+                                <!--<enableNaming>false</enableNaming>-->
+                                <!--<finalName>webapp.jar</finalName>-->
+                            <!--</configuration>-->
+                        <!--</execution>-->
+                    <!--</executions>-->
+                <!--</plugin>-->
 
             </plugins>
         </pluginManagement>

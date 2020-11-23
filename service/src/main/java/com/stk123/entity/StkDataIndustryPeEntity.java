@@ -12,7 +12,6 @@ import java.sql.Time;
 public class StkDataIndustryPeEntity {
 
     @Id
-    @Basic
     @Column(name = "INDUSTRY_ID", nullable = true, precision = 0)
     private Integer industryId;
 

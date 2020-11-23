@@ -1,6 +1,6 @@
 package com.stk123.task.ws;
 
-import com.stk123.model.app.RequestResult;
+import com.stk123.model.RequestResult;
 import com.stk123.model.ws.ClientMessage;
 import com.stk123.model.ws.ServerMessage;
 import lombok.extern.apachecommons.CommonsLog;

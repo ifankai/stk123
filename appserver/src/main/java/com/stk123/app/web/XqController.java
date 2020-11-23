@@ -1,7 +1,7 @@
 package com.stk123.app.web;
 
-import com.stk123.model.app.RequestResult;
-import com.stk123.model.app.XqPost;
+import com.stk123.model.RequestResult;
+import com.stk123.entity.StkXqPostEntity;
 import com.stk123.app.repository.XqPostRepository;
 import com.stk123.app.service.XqService;
 import lombok.extern.apachecommons.CommonsLog;
@@ -31,7 +31,7 @@ public class XqController {
     @ResponseBody
     public RequestResult query(@PathVariable(value = "type", required = false)String type){
         log.info("query.....");
-        List<XqPost> list = null;
+        List<StkXqPostEntity> list = null;
         if(type == null || StringUtils.equals(type, "all") || StringUtils.equals(type, "unread")) {
             list = xqPostRepository.queryTop5ByIsReadFalseOrderByInsertDateAsc();
             if (!CollectionUtils.isEmpty(list)) {
@@ -56,7 +56,7 @@ public class XqController {
     @RequestMapping("/favorite/{id}/{isFavorite}")
     @ResponseBody
     public RequestResult favorite(@PathVariable("id")Long id, @PathVariable("isFavorite")int isFavorite){
-        XqPost post = xqPostRepository.getOne(id);
+        StkXqPostEntity post = xqPostRepository.getOne(id);
         post.setIsFavorite(isFavorite == 1);
         xqPostRepository.save(post);
         return RequestResult.SUCCESS;
@@ -65,18 +65,18 @@ public class XqController {
 
     @RequestMapping(value = "/post", method = RequestMethod.POST)
     @ResponseBody
-    public RequestResult save(@RequestBody XqPost post){
+    public RequestResult save(@RequestBody StkXqPostEntity post){
         post.setInsertDate(new Date());
-        XqPost result = xqPostRepository.save(post);
+        StkXqPostEntity result = xqPostRepository.save(post);
         return result != null ? RequestResult.SUCCESS : RequestResult.FAIL;
     }
 
     @RequestMapping(value = "/posts", method = RequestMethod.POST)
     @ResponseBody
-    public RequestResult saveAll(@RequestBody XqPost[] posts){
-        List<XqPost> list = Arrays.asList(posts);
+    public RequestResult saveAll(@RequestBody StkXqPostEntity[] posts){
+        List<StkXqPostEntity> list = Arrays.asList(posts);
         list.forEach(post -> post.setInsertDate(new Date()));
-        List<XqPost> result = xqPostRepository.saveAll(list);
+        List<StkXqPostEntity> result = xqPostRepository.saveAll(list);
         return result != null ? RequestResult.SUCCESS : RequestResult.FAIL;
     }
 

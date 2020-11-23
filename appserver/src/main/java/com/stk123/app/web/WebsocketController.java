@@ -1,6 +1,6 @@
 package com.stk123.app.web;
 
-import com.stk123.model.app.RequestResult;
+import com.stk123.model.RequestResult;
 import com.stk123.common.CommonConstant;
 import com.stk123.model.ws.ClientMessage;
 import com.stk123.model.ws.ServerMessage;
@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 @Controller
 @CommonsLog
@@ -62,8 +63,8 @@ public class WebsocketController {
         template.convertAndSend(CommonConstant.WS_TOPIC, serverMessage, headers);
         CountDownLatch cdl = new CountDownLatch(1);
         latch.put(uuid, cdl);
-        cdl.await();
-//        log.info("wsGet end:"+uuid);
+        cdl.await(60, TimeUnit.SECONDS);
+        latch.remove(uuid);
         return clientMessageMap.get(uuid).getData();
     }
 
