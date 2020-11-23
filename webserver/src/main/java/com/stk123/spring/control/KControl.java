@@ -1,6 +1,6 @@
 package com.stk123.spring.control;
 
-import com.stk123.model.app.RequestResult;
+import com.stk123.model.RequestResult;
 import com.stk123.model.Index;
 import com.stk123.model.K;
 import com.stk123.spring.dto.StkDto;

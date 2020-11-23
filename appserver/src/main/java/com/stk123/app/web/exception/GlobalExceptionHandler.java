@@ -1,6 +1,6 @@
 package com.stk123.app.web.exception;
 
-import com.stk123.model.app.RequestResult;
+import com.stk123.model.RequestResult;
 import com.stk123.util.ExceptionUtils;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.web.bind.annotation.ExceptionHandler;

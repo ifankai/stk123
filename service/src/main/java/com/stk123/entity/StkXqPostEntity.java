@@ -1,13 +1,10 @@
-package com.stk123.model.app;
+package com.stk123.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -18,7 +15,7 @@ import java.util.Date;
 @Table(name = "stk_xq_post")
 @Getter
 @Setter
-public class XqPost implements Serializable {
+public class StkXqPostEntity implements Serializable {
 
     private static final long serialVersionUID = -8183781904281168174L;
 
@@ -70,4 +67,7 @@ public class XqPost implements Serializable {
     @Column
     private Integer followersCount; //粉丝数
 
+    @OneToOne
+    @JoinColumn(name = "ID")
+    private StkTextEntity stkTextEntity;
 }
