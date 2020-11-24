@@ -36,7 +36,7 @@ public interface StkTextRepository extends JpaRepository<StkTextEntity, Long> {
 
 
     default List<TextDto> findAllTextByDto(String code, Integer type) {
-        String sql = "select t.id as id,t.title as title from stk_text t left join stk_xq_post p " +
+        String sql = "select t.id,t.title,t.insert_time from stk_text t left join stk_xq_post p " +
                      "on t.id=p.id where t.code=? and t.type=? order by t.insert_time desc";
         return BaseService.getInstance().list(sql, TextDto.class, code, type);
     }

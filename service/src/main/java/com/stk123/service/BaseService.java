@@ -98,7 +98,8 @@ public class BaseService implements ApplicationContextAware {
 
         //Expected type: java.lang.Long, actual value: java.math.BigDecimal
 //        q.addScalar("num", StandardBasicTypes.LONG);
-        session.getSessionFactory().getTypeHelper().heuristicType("long");
+
+        //session.getSessionFactory().getTypeHelper().heuristicType("long");
 
         List<T> list = q.list();
         return list;
@@ -112,8 +113,18 @@ public class BaseService implements ApplicationContextAware {
     }
 
     public <T> T uniqueResult(String sql, Class<T> dto) {
+        return uniqueResult(sql, dto, null);
+    }
+
+    public <T> T uniqueResult(String sql, Class<T> dto, Object... params) {
         Session session = em.unwrap(Session.class);
-        SQLQuery q = session.createSQLQuery(sql);
+        NativeQuery q = session.createSQLQuery(sql);
+        if(params!=null){
+            for(int i=0,len=params.length;i<len;i++){
+                Object param=params[i];
+                q.setParameter(i+1, param);
+            }
+        }
         q.setResultTransformer(Transformers.aliasToBean(dto));
         return (T) q.uniqueResult();
     }

@@ -549,7 +549,7 @@ create sequence s_keyword_link_id
 　　CACHE 10;
 
 create table stk_text(
-	id number(8),
+	id number(8), 
   type number(4),  --短文：1，长文：2
 	code varchar2(20),
 	code_type number(6), -- 1: stock  2: industry ...
@@ -883,6 +883,25 @@ create table stk_strategy(
 );
 create sequence s_strategy_id INCREMENT BY 1 START WITH 1000 NOMAXVALUE NOCYCLE CACHE 10;
 alter table stk_strategy add constraint pk_strategy_id primary key (id);
+
+create table stk_xq_post(
+  id number(8),
+  title varchar2(1000),
+  text varchar2(4000),
+  created_at date,
+  reply_count number(6),
+  insert_date date,
+  is_favorite number(1) default 0,
+  favorite_date date,
+  is_read number(1) default 0,
+  read_date date,
+  user_id number(10),
+  user_name varchar2(100),
+  user_avatar varchar2(200),
+  followers_count number(8)
+);
+alter table stk_xq_post add constraint pk_xq_post_id primary key (id);
+
 
 select * from tab where tname like 'STK_%';
 
@@ -2781,3 +2800,6 @@ alter system set processes = 300 scope = spfile;
 select * from stk_index_node where disp_order >= 0 order by node_level asc,disp_order asc
 
 select * from stk_data_industry_pe order by pe_date desc;
+
+
+select * from stk_text where id=10614950 for update;
