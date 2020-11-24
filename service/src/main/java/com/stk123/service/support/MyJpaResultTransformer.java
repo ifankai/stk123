@@ -10,6 +10,7 @@ import org.hibernate.property.access.internal.PropertyAccessStrategyMapImpl;
 import org.hibernate.property.access.spi.Setter;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.transform.AliasToBeanResultTransformer;
+import org.hibernate.type.StandardBasicTypes;
 import org.hibernate.type.Type;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -57,25 +58,27 @@ public class MyJpaResultTransformer extends AliasToBeanResultTransformer {
         {
             if(!isInitialized)
                 initialize(aliases);
-            else
-                check(aliases);
+//            else
+//                check(aliases);
             result = resultClass.newInstance();
-            for(int i = 0; i < aliases.length; i++)
+            for(int i = 0; i < this.aliases.length; i++)
                 if(setters[i] != null) {
                     // To fix issue: Expected type: java.lang.Long, actual value: java.math.BigDecimal
 //                    if(tuple[i] instanceof BigDecimal && setters[i].getMethod().getParameterTypes()[0] == Long.class) {
 //                        setters[i].set(result, new Long(tuple[i].toString()), null);
 //                    }else {
-                    try {
-                        Annotation scalar = result.getClass().getDeclaredField(aliases[i]).getAnnotation(Scalar.class);
-                        if(scalar != null){
-                            Class clazz = result.getClass().getDeclaredField(aliases[i]).getType();
-                            Type type = sessionFactory.getTypeHelper().heuristicType(clazz.getName());
-                            query.addScalar(aliases[i], type);
-                        }
-                    } catch (NoSuchFieldException e) {
-                        throw new HibernateException((new StringBuilder()).append("Could not find ").append(aliases[i]).append(" in resultclass: ").append(resultClass.getName()).toString());
-                    }
+
+//                    try {
+//                        Annotation scalar = result.getClass().getDeclaredField(aliases[i]).getAnnotation(Scalar.class);
+//                        if(scalar != null){
+//                            Class clazz = result.getClass().getDeclaredField(aliases[i]).getType();
+//                            Type type = sessionFactory.getTypeHelper().heuristicType(clazz.getName());
+//                            query.addScalar(aliases[i], type);
+//                        }
+//                    } catch (NoSuchFieldException e) {
+//                        throw new HibernateException((new StringBuilder()).append("Could not find ").append(aliases[i]).append(" in resultclass: ").append(resultClass.getName()).toString());
+//                    }
+
                     setters[i].set(result, tuple[i], null);
 //                    }
                 }

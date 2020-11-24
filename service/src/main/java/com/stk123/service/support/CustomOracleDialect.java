@@ -1,17 +1,28 @@
-package com.stk123.entity;
+package com.stk123.service.support;
 
+import org.hibernate.HibernateException;
+import org.hibernate.MappingException;
 import org.hibernate.dialect.Oracle12cDialect;
 import org.hibernate.type.StandardBasicTypes;
 
 import java.sql.Types;
+import java.util.Map;
 
 public class CustomOracleDialect extends Oracle12cDialect {
 
-//    public CustomOracleDialect(){
-//        super();
-//        System.out.println("CustomOracleDialect instance");
+    public CustomOracleDialect(){
+        super();
 //        registerHibernateType( Types.NUMERIC, StandardBasicTypes.LONG.getName() );
-//    }
+    }
+
+    public String getHibernateTypeName(int code, int length, int precision, int scale) throws HibernateException {
+        String result = super.getHibernateTypeName( code, length, precision, scale );
+        if(code == Types.NUMERIC){
+            if(scale == 0) result = "long";
+            else if(scale > 0 && precision < 10) result = "double";
+        }
+        return result;
+    }
 
     @Override
     public String getQuerySequencesString() {
