@@ -1,14 +1,19 @@
 package com.stk123.entity;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Time;
+import java.util.Date;
 
 @Entity
 @Table(name = "STK_DATA_INDUSTRY_PE")
 @IdClass(StkDataIndustryPeEntity.CompositeKey.class)
+@Setter
+@Getter
 public class StkDataIndustryPeEntity {
 
     @Id
@@ -33,7 +38,7 @@ public class StkDataIndustryPeEntity {
 
     @Basic
     @Column(name = "INSERT_TIME", nullable = true)
-    private Time insertTime;
+    private Date insertTime;
 
     @Basic
     @Column(name = "PB", nullable = true, precision = 2)
@@ -47,83 +52,6 @@ public class StkDataIndustryPeEntity {
     @JoinColumn(name = "INDUSTRY_ID", insertable = false, updatable = false)
     private StkIndustryTypeEntity stkIndustryTypeEntity;
 
-    public Integer getIndustryId() {
-        return industryId;
-    }
-
-    public void setIndustryId(Integer industryId) {
-        this.industryId = industryId;
-    }
-
-    public String getPeDate() {
-        return peDate;
-    }
-
-    public void setPeDate(String peDate) {
-        this.peDate = peDate;
-    }
-
-
-    public Integer getType() {
-        return type;
-    }
-
-    public void setType(Integer type) {
-        this.type = type;
-    }
-
-
-    public Double getPe() {
-        return pe;
-    }
-
-    public void setPe(Double pe) {
-        this.pe = pe;
-    }
-
-
-    public Double getPeTtm() {
-        return peTtm;
-    }
-
-    public void setPeTtm(Double peTtm) {
-        this.peTtm = peTtm;
-    }
-
-
-    public Time getInsertTime() {
-        return insertTime;
-    }
-
-    public void setInsertTime(Time insertTime) {
-        this.insertTime = insertTime;
-    }
-
-
-    public Double getPb() {
-        return pb;
-    }
-
-    public void setPb(Double pb) {
-        this.pb = pb;
-    }
-
-
-    public Double getAdr() {
-        return adr;
-    }
-
-    public void setAdr(Double adr) {
-        this.adr = adr;
-    }
-
-    public StkIndustryTypeEntity getStkIndustryTypeEntity() {
-        return stkIndustryTypeEntity;
-    }
-
-    public void setStkIndustryTypeEntity(StkIndustryTypeEntity stkIndustryTypeEntity) {
-        this.stkIndustryTypeEntity = stkIndustryTypeEntity;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -156,6 +84,7 @@ public class StkDataIndustryPeEntity {
             this.industryId = industryId;
             this.peDate = peDate;
         }
+
     }
 }
 

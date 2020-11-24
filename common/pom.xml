@@ -39,7 +39,7 @@
         </dependency>
         <dependency>
             <groupId>com.stk</groupId>
-            <artifactId>ojdbc6</artifactId>
+            <artifactId>ojdbc8</artifactId>
         </dependency>
         <dependency>
             <groupId>com.stk</groupId>

@@ -21,6 +21,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="common" />
+    <orderEntry type="library" name="Maven: com.stk:ojdbc8:1.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.pdfbox:pdfbox:1.8.6" level="project" />
     <orderEntry type="library" name="Maven: org.apache.pdfbox:fontbox:1.8.6" level="project" />
     <orderEntry type="library" name="Maven: org.apache.pdfbox:jempbox:1.8.6" level="project" />
