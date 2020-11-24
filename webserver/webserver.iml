@@ -32,7 +32,7 @@
     <orderEntry type="library" name="Maven: com.stk:IKAnalyzer2012FF_u1:1.0" level="project" />
     <orderEntry type="library" name="Maven: com.stk:jdom:1.0" level="project" />
     <orderEntry type="library" name="Maven: com.stk:json-lib:1.0" level="project" />
-    <orderEntry type="library" name="Maven: com.stk:ojdbc6:1.0" level="project" />
+    <orderEntry type="library" name="Maven: com.stk:ojdbc8:1.0" level="project" />
     <orderEntry type="library" name="Maven: com.stk:poi-scratchpad-3.11-20141221:1.0" level="project" />
     <orderEntry type="library" name="Maven: com.stk:spring-mobile-device-2.0.0.M3:1.0" level="project" />
     <orderEntry type="library" name="Maven: com.stk:xstream:1.0" level="project" />
@@ -47,6 +47,7 @@
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.2.3" level="project" />
     <orderEntry type="library" name="Maven: javax.annotation:javax.annotation-api:1.3.2" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.yaml:snakeyaml:1.23" level="project" />
+    <orderEntry type="library" name="Maven: com.stk:ojdbc6:1.0" level="project" />
     <orderEntry type="module" module-name="taskserver" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-websocket:2.1.3.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-websocket:5.1.5.RELEASE" level="project" />

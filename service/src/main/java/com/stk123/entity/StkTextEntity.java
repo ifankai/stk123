@@ -1,23 +1,23 @@
 package com.stk123.entity;
 
-import com.stk123.common.util.JdbcUtils;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
+import java.io.Serializable;
+import java.util.Date;
 
 @Entity
-@Table(name = "STK_TEXT", schema = "STK", catalog = "")
+@Table(name = "STK_TEXT")
 @Setter
 @Getter
-public class StkTextEntity {
+public class StkTextEntity implements Serializable {
 
     @Id
     @Column(name="ID")
     @GeneratedValue(strategy =GenerationType.SEQUENCE, generator="s_text_id")
     @SequenceGenerator(name="s_text_id", sequenceName="s_text_id")
-    private Integer id;
+    private Long id;
 
     @Column(name="TYPE")
     private Integer type;
@@ -35,20 +35,21 @@ public class StkTextEntity {
     private String text;
 
     @Column(name="INSERT_TIME")
-    private Timestamp insertTime;
+    private Date insertTime;
 
     @Column(name="UPDATE_TIME")
-    private Timestamp updateTime;
+    private Date updateTime;
 
     @Column(name="DISP_ORDER")
     private Integer dispOrder;
 
     @Column(name="USER_ID")
-    private Integer userId;
+    private Long userId;
 
     @Column(name="SUB_TYPE")
     private Integer subType;
 
     @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="ID")
     private StkXqPostEntity stkXqPostEntity;
 }

@@ -1,5 +1,6 @@
 package com.stk123.task;
 
+import com.stk123.common.util.Arrays;
 import com.stk123.task.quartz.job.ResearchReportJob;
 import com.stk123.task.quartz.job.XueqiuStockArticleJob;
 import com.stk123.task.quartz.job.XueqiuUserJob;
@@ -7,8 +8,10 @@ import com.stk123.task.schedule.InitialData;
 import com.stk123.task.schedule.InitialKLine;
 import com.stk123.task.ws.StkWebSocketClient;
 import lombok.extern.apachecommons.CommonsLog;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -22,18 +25,21 @@ import javax.annotation.PostConstruct;
 public class TaskCofig {
 
     @Autowired
-    TaskScheduler taskScheduler;
+    private Environment environment;
+
+    @Autowired
+    private TaskScheduler taskScheduler;
 
     @Autowired
     private ThreadPoolTaskScheduler scheduler;
 
     @Autowired
-    StkWebSocketClient stkWebSocketClient;
+    private StkWebSocketClient stkWebSocketClient;
 
     @Autowired
-    InitialData initialData;
+    private InitialData initialData;
     @Autowired
-    InitialKLine initialKLine;
+    private InitialKLine initialKLine;
 
 
     @PostConstruct
@@ -64,7 +70,9 @@ public class TaskCofig {
     XueqiuStockArticleJob xueqiuStockArticleJob = new XueqiuStockArticleJob();
     @Scheduled(cron = "0 0/1 * ? * *")
     public void xueqiuStockArticleJob() throws Exception {
-        xueqiuStockArticleJob.execute(null);
+        if(!ArrayUtils.contains(environment.getActiveProfiles(), "company")) {
+            xueqiuStockArticleJob.execute(null);
+        }
     }
 
     XueqiuUserJob xueqiuUserJob = new XueqiuUserJob();

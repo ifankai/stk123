@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "STK_INDUSTRY_TYPE", schema = "STK", catalog = "")
+@Table(name = "STK_INDUSTRY_TYPE")
 public class StkIndustryTypeEntity {
     private int id;
     private String name;

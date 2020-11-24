@@ -39,6 +39,7 @@
         <dependencies>
 <!--
             mvn install:install-file -DgroupId=com.stk -DartifactId=ojdbc14 -Dversion=1.0 -Dpackaging=jar -Dfile=D:\share\workspace\stk123\common\libs\ojdbc14.jar
+            mvn install:install-file -DgroupId=com.stk -DartifactId=ojdbc8 -Dversion=1.0 -Dpackaging=jar -Dfile=D:\share\workspace\stk123\common\libs\ojdbc8.jar
             mvn install:install-file -DgroupId=com.stk -DartifactId=ojdbc6 -Dversion=1.0 -Dpackaging=jar -Dfile=D:\share\workspace\stk123\common\libs\ojdbc6.jar
             mvn install:install-file -DgroupId=com.stk -DartifactId=commons-digester -Dversion=1.0 -Dpackaging=jar -Dfile=D:\share\workspace\stk123\common\libs\commons-digester.jar
             mvn install:install-file -DgroupId=com.stk -DartifactId=IKAnalyzer2012FF_u1 -Dversion=1.0 -Dpackaging=jar -Dfile=D:\share\workspace\stk123\common\libs\IKAnalyzer2012FF_u1.jar
@@ -76,6 +77,11 @@
             <dependency>
                 <groupId>com.stk</groupId>
                 <artifactId>ojdbc6</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.stk</groupId>
+                <artifactId>ojdbc8</artifactId>
                 <version>1.0</version>
             </dependency>
             <dependency>
