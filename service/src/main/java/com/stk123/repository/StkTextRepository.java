@@ -35,10 +35,10 @@ public interface StkTextRepository extends JpaRepository<StkTextEntity, Long> {
     List<Object> findAllWithMapResult(@Param("code")String code, @Param("type")Integer type);
 
 
+    final String sql_findAllTextByDto = "select t.id,t.title,t.insert_time from stk_text t left join stk_xq_post p " +
+            "on t.id=p.id where t.code=? and t.type=? order by t.insert_time desc";
     default List<TextDto> findAllTextByDto(String code, Integer type) {
-        String sql = "select t.id,t.title,t.insert_time from stk_text t left join stk_xq_post p " +
-                     "on t.id=p.id where t.code=? and t.type=? order by t.insert_time desc";
-        return BaseService.getInstance().list(sql, TextDto.class, code, type);
+        return BaseService.getInstance().list(sql_findAllTextByDto, TextDto.class, code, type);
     }
 
     @Query(value = "select t.* from stk_text t left join stk_xq_post p " +
