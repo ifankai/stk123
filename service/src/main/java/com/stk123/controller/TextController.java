@@ -41,9 +41,9 @@ public class TextController {
         //Map<Long, StkTextEntity> result = stkTextRepository.findAllMap(code, type);
 //        Collection<StkTextEntity> result = stkTextRepository.findAllByCodeAndTypeOrderByInsertTimeDesc(code, type, StkTextEntity.class);
 
-//        List<Object> result = stkTextRepository.findAllWithMapResult(code, type);
+        List<Object> result = stkTextRepository.findAllWithMapResult(code, type);
 
-        List<TextDto> result = stkTextRepository.findAllTextByDto(code, type);
+//        List<TextDto> result = stkTextRepository.findAllTextByDto(code, type);
         return RequestResult.success(result);
     }
 
