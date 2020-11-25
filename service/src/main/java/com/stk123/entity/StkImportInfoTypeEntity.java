@@ -4,8 +4,8 @@ import javax.persistence.*;
 import java.util.Collection;
 import java.util.Objects;
 
-@Entity
-@Table(name = "STK_IMPORT_INFO_TYPE", schema = "STK", catalog = "")
+//@Entity
+@Table(name = "STK_IMPORT_INFO_TYPE")
 public class StkImportInfoTypeEntity {
     private long type;
     private String name;
@@ -70,12 +70,12 @@ public class StkImportInfoTypeEntity {
         return Objects.hash(type, name, matchPattern, notMatchPattern);
     }
 
-    @OneToMany(mappedBy = "stkImportInfoTypeByType")
-    public Collection<StkImportInfoEntity> getStkImportInfosByType() {
-        return stkImportInfosByType;
-    }
-
-    public void setStkImportInfosByType(Collection<StkImportInfoEntity> stkImportInfosByType) {
-        this.stkImportInfosByType = stkImportInfosByType;
-    }
+//    @OneToMany(mappedBy = "stkImportInfoTypeByType")
+//    public Collection<StkImportInfoEntity> getStkImportInfosByType() {
+//        return stkImportInfosByType;
+//    }
+//
+//    public void setStkImportInfosByType(Collection<StkImportInfoEntity> stkImportInfosByType) {
+//        this.stkImportInfosByType = stkImportInfosByType;
+//    }
 }

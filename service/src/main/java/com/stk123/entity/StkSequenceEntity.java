@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "STK_SEQUENCE", schema = "STK", catalog = "")
+@Table(name = "STK_SEQUENCE")
 public class StkSequenceEntity {
     private String seqName;
     private Integer seqValue;

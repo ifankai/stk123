@@ -1,14 +1,11 @@
 package com.stk123.entity;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.sql.Time;
 import java.util.Objects;
 
 @Entity
-@Table(name = "STK_INTERNET_SEARCH", schema = "STK", catalog = "")
+@Table(name = "STK_INTERNET_SEARCH")
 public class StkInternetSearchEntity {
     private Long searchSource;
     private String searchUrl;
@@ -17,7 +14,7 @@ public class StkInternetSearchEntity {
     private Long status;
     private String desc1;
 
-    @Basic
+    @Id
     @Column(name = "SEARCH_SOURCE", nullable = true, precision = 0)
     public Long getSearchSource() {
         return searchSource;

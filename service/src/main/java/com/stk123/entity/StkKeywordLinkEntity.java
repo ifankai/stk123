@@ -4,8 +4,8 @@ import javax.persistence.*;
 import java.sql.Time;
 import java.util.Objects;
 
-@Entity
-@Table(name = "STK_KEYWORD_LINK", schema = "STK", catalog = "")
+//@Entity
+@Table(name = "STK_KEYWORD_LINK")
 public class StkKeywordLinkEntity {
     private long id;
     private String code;
@@ -106,13 +106,13 @@ public class StkKeywordLinkEntity {
         return Objects.hash(id, code, codeType, keywordId, boost, linkType, insertTime);
     }
 
-    @ManyToOne
-    @JoinColumn(name = "KEYWORD_ID", referencedColumnName = "ID")
-    public StkKeywordEntity getStkKeywordByKeywordId() {
-        return stkKeywordByKeywordId;
-    }
-
-    public void setStkKeywordByKeywordId(StkKeywordEntity stkKeywordByKeywordId) {
-        this.stkKeywordByKeywordId = stkKeywordByKeywordId;
-    }
+//    @ManyToOne
+//    @JoinColumn(name = "KEYWORD_ID", referencedColumnName = "ID")
+//    public StkKeywordEntity getStkKeywordByKeywordId() {
+//        return stkKeywordByKeywordId;
+//    }
+//
+//    public void setStkKeywordByKeywordId(StkKeywordEntity stkKeywordByKeywordId) {
+//        this.stkKeywordByKeywordId = stkKeywordByKeywordId;
+//    }
 }

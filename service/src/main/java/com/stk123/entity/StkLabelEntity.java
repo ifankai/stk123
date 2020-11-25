@@ -5,8 +5,8 @@ import java.sql.Time;
 import java.util.Collection;
 import java.util.Objects;
 
-@Entity
-@Table(name = "STK_LABEL", schema = "STK", catalog = "")
+//@Entity
+@Table(name = "STK_LABEL")
 public class StkLabelEntity {
     private long id;
     private String name;
@@ -83,12 +83,12 @@ public class StkLabelEntity {
         return Objects.hash(id, name, insertTime, updateTime, userId);
     }
 
-    @OneToMany(mappedBy = "stkLabelByLabelId")
-    public Collection<StkLabelTextEntity> getStkLabelTextsById() {
-        return stkLabelTextsById;
-    }
-
-    public void setStkLabelTextsById(Collection<StkLabelTextEntity> stkLabelTextsById) {
-        this.stkLabelTextsById = stkLabelTextsById;
-    }
+//    @OneToMany(mappedBy = "stkLabelByLabelId")
+//    public Collection<StkLabelTextEntity> getStkLabelTextsById() {
+//        return stkLabelTextsById;
+//    }
+//
+//    public void setStkLabelTextsById(Collection<StkLabelTextEntity> stkLabelTextsById) {
+//        this.stkLabelTextsById = stkLabelTextsById;
+//    }
 }

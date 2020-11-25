@@ -1,15 +1,13 @@
 package com.stk123.entity;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Time;
 import java.util.Objects;
 
 @Entity
-@Table(name = "STK_DATA_EASTMONEY_GUBA", schema = "STK", catalog = "")
-public class StkDataEastmoneyGubaEntity {
+@Table(name = "STK_DATA_EASTMONEY_GUBA")
+public class StkDataEastmoneyGubaEntity implements Serializable {
     private String code;
     private String insertDate;
     private Long numClick;
@@ -17,7 +15,7 @@ public class StkDataEastmoneyGubaEntity {
     private Long numTotal;
     private Time insertTime;
 
-    @Basic
+    @Id
     @Column(name = "CODE", nullable = true, length = 10)
     public String getCode() {
         return code;
@@ -27,7 +25,7 @@ public class StkDataEastmoneyGubaEntity {
         this.code = code;
     }
 
-    @Basic
+    @Id
     @Column(name = "INSERT_DATE", nullable = true, length = 8)
     public String getInsertDate() {
         return insertDate;

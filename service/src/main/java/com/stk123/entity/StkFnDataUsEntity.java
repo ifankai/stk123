@@ -1,12 +1,13 @@
 package com.stk123.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Time;
 import java.util.Objects;
 
 @Entity
-@Table(name = "STK_FN_DATA_US", schema = "STK", catalog = "")
-public class StkFnDataUsEntity {
+@Table(name = "STK_FN_DATA_US")
+public class StkFnDataUsEntity implements Serializable {
     private String code;
     private Long type;
     private String fnDate;
@@ -17,7 +18,7 @@ public class StkFnDataUsEntity {
     private StkEntity stkByCode;
     private StkFnTypeEntity stkFnTypeByType;
 
-    @Basic
+    @Id
     @Column(name = "CODE", nullable = true, length = 10)
     public String getCode() {
         return code;
@@ -27,7 +28,7 @@ public class StkFnDataUsEntity {
         this.code = code;
     }
 
-    @Basic
+    @Id
     @Column(name = "TYPE", nullable = true, precision = 0)
     public Long getType() {
         return type;
@@ -37,7 +38,7 @@ public class StkFnDataUsEntity {
         this.type = type;
     }
 
-    @Basic
+    @Id
     @Column(name = "FN_DATE", nullable = true, length = 8)
     public String getFnDate() {
         return fnDate;
@@ -107,23 +108,23 @@ public class StkFnDataUsEntity {
         return Objects.hash(code, type, fnDate, fnValue, insertTime, updateTime, fiscalYearEnds);
     }
 
-    @ManyToOne
-    @JoinColumn(name = "CODE", referencedColumnName = "CODE")
-    public StkEntity getStkByCode() {
-        return stkByCode;
-    }
-
-    public void setStkByCode(StkEntity stkByCode) {
-        this.stkByCode = stkByCode;
-    }
-
-    @ManyToOne
-    @JoinColumn(name = "TYPE", referencedColumnName = "TYPE")
-    public StkFnTypeEntity getStkFnTypeByType() {
-        return stkFnTypeByType;
-    }
-
-    public void setStkFnTypeByType(StkFnTypeEntity stkFnTypeByType) {
-        this.stkFnTypeByType = stkFnTypeByType;
-    }
+//    @ManyToOne
+//    @JoinColumn(name = "CODE", referencedColumnName = "CODE")
+//    public StkEntity getStkByCode() {
+//        return stkByCode;
+//    }
+//
+//    public void setStkByCode(StkEntity stkByCode) {
+//        this.stkByCode = stkByCode;
+//    }
+//
+//    @ManyToOne
+//    @JoinColumn(name = "TYPE", referencedColumnName = "TYPE")
+//    public StkFnTypeEntity getStkFnTypeByType() {
+//        return stkFnTypeByType;
+//    }
+//
+//    public void setStkFnTypeByType(StkFnTypeEntity stkFnTypeByType) {
+//        this.stkFnTypeByType = stkFnTypeByType;
+//    }
 }

@@ -4,8 +4,8 @@ import javax.persistence.*;
 import java.sql.Time;
 import java.util.Objects;
 
-@Entity
-@Table(name = "STK_SYNC", schema = "STK", catalog = "")
+//@Entity
+@Table(name = "STK_SYNC")
 public class StkSyncEntity {
     private long id;
     private Long taskId;

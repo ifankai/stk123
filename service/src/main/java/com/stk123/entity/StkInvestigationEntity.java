@@ -5,7 +5,7 @@ import java.sql.Time;
 import java.util.Objects;
 
 @Entity
-@Table(name = "STK_INVESTIGATION", schema = "STK", catalog = "")
+@Table(name = "STK_INVESTIGATION")
 public class StkInvestigationEntity {
     private long id;
     private String code;

@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.Objects;
 
 @Entity
-@Table(name = "STK", schema = "STK")
+@Table(name = "STK")
 public class StkEntity {
     private String code;
     private String name;
@@ -274,111 +274,111 @@ public class StkEntity {
         return Objects.hash(code, name, insertTime, listingDate, totalCapital, status, statusDate, earningExpect, earningExpectDate, companyProfile, saleLimit, market, yearEnd, nextQuarterEarning, nextEarning, cate, f9, address, hot, fnCurrency);
     }
 
-    @OneToMany(mappedBy = "stkByCode")
-    public Collection<StkBillboardEntity> getStkBillboardsByCode() {
-        return stkBillboardsByCode;
-    }
-
-    public void setStkBillboardsByCode(Collection<StkBillboardEntity> stkBillboardsByCode) {
-        this.stkBillboardsByCode = stkBillboardsByCode;
-    }
-
-    @OneToMany(mappedBy = "stkByCode")
-    public Collection<StkEarningsForecastEntity> getStkEarningsForecastsByCode() {
-        return stkEarningsForecastsByCode;
-    }
-
-    public void setStkEarningsForecastsByCode(Collection<StkEarningsForecastEntity> stkEarningsForecastsByCode) {
-        this.stkEarningsForecastsByCode = stkEarningsForecastsByCode;
-    }
-
-    @OneToMany(mappedBy = "stkByCode")
-    public Collection<StkEarningsNoticeEntity> getStkEarningsNoticesByCode() {
-        return stkEarningsNoticesByCode;
-    }
-
-    public void setStkEarningsNoticesByCode(Collection<StkEarningsNoticeEntity> stkEarningsNoticesByCode) {
-        this.stkEarningsNoticesByCode = stkEarningsNoticesByCode;
-    }
-
-    @OneToMany(mappedBy = "stkByCode")
-    public Collection<StkFnDataEntity> getStkFnDataByCode() {
-        return stkFnDataByCode;
-    }
-
-    public void setStkFnDataByCode(Collection<StkFnDataEntity> stkFnDataByCode) {
-        this.stkFnDataByCode = stkFnDataByCode;
-    }
-
-    @OneToMany(mappedBy = "stkByCode")
-    public Collection<StkFnDataHkEntity> getStkFnDataHksByCode() {
-        return stkFnDataHksByCode;
-    }
-
-    public void setStkFnDataHksByCode(Collection<StkFnDataHkEntity> stkFnDataHksByCode) {
-        this.stkFnDataHksByCode = stkFnDataHksByCode;
-    }
-
-    @OneToMany(mappedBy = "stkByCode")
-    public Collection<StkFnDataUsEntity> getStkFnDataUsByCode() {
-        return stkFnDataUsByCode;
-    }
-
-    public void setStkFnDataUsByCode(Collection<StkFnDataUsEntity> stkFnDataUsByCode) {
-        this.stkFnDataUsByCode = stkFnDataUsByCode;
-    }
-
-    @OneToMany(mappedBy = "stkByCode")
-    public Collection<StkHolderEntity> getStkHoldersByCode() {
-        return stkHoldersByCode;
-    }
-
-    public void setStkHoldersByCode(Collection<StkHolderEntity> stkHoldersByCode) {
-        this.stkHoldersByCode = stkHoldersByCode;
-    }
-
-    @OneToMany(mappedBy = "stkByCode")
-    public Collection<StkImportInfoEntity> getStkImportInfosByCode() {
-        return stkImportInfosByCode;
-    }
-
-    public void setStkImportInfosByCode(Collection<StkImportInfoEntity> stkImportInfosByCode) {
-        this.stkImportInfosByCode = stkImportInfosByCode;
-    }
-
-    @OneToMany(mappedBy = "stkByCode")
-    public Collection<StkIndustryEntity> getStkIndustriesByCode() {
-        return stkIndustriesByCode;
-    }
-
-    public void setStkIndustriesByCode(Collection<StkIndustryEntity> stkIndustriesByCode) {
-        this.stkIndustriesByCode = stkIndustriesByCode;
-    }
-
-    @OneToMany(mappedBy = "stkByCode")
-    public Collection<StkInfoLogEntity> getStkInfoLogsByCode() {
-        return stkInfoLogsByCode;
-    }
-
-    public void setStkInfoLogsByCode(Collection<StkInfoLogEntity> stkInfoLogsByCode) {
-        this.stkInfoLogsByCode = stkInfoLogsByCode;
-    }
-
-    @OneToMany(mappedBy = "stkByCode")
-    public Collection<StkKlineEntity> getStkKlinesByCode() {
-        return stkKlinesByCode;
-    }
-
-    public void setStkKlinesByCode(Collection<StkKlineEntity> stkKlinesByCode) {
-        this.stkKlinesByCode = stkKlinesByCode;
-    }
-
-    @OneToMany(mappedBy = "stkByCode")
-    public Collection<StkKlineHkEntity> getStkKlineHksByCode() {
-        return stkKlineHksByCode;
-    }
-
-    public void setStkKlineHksByCode(Collection<StkKlineHkEntity> stkKlineHksByCode) {
-        this.stkKlineHksByCode = stkKlineHksByCode;
-    }
+//    @OneToMany(mappedBy = "stkByCode")
+//    public Collection<StkBillboardEntity> getStkBillboardsByCode() {
+//        return stkBillboardsByCode;
+//    }
+//
+//    public void setStkBillboardsByCode(Collection<StkBillboardEntity> stkBillboardsByCode) {
+//        this.stkBillboardsByCode = stkBillboardsByCode;
+//    }
+//
+//    @OneToMany(mappedBy = "stkByCode")
+//    public Collection<StkEarningsForecastEntity> getStkEarningsForecastsByCode() {
+//        return stkEarningsForecastsByCode;
+//    }
+//
+//    public void setStkEarningsForecastsByCode(Collection<StkEarningsForecastEntity> stkEarningsForecastsByCode) {
+//        this.stkEarningsForecastsByCode = stkEarningsForecastsByCode;
+//    }
+//
+//    @OneToMany(mappedBy = "stkByCode")
+//    public Collection<StkEarningsNoticeEntity> getStkEarningsNoticesByCode() {
+//        return stkEarningsNoticesByCode;
+//    }
+//
+//    public void setStkEarningsNoticesByCode(Collection<StkEarningsNoticeEntity> stkEarningsNoticesByCode) {
+//        this.stkEarningsNoticesByCode = stkEarningsNoticesByCode;
+//    }
+//
+//    @OneToMany(mappedBy = "stkByCode")
+//    public Collection<StkFnDataEntity> getStkFnDataByCode() {
+//        return stkFnDataByCode;
+//    }
+//
+//    public void setStkFnDataByCode(Collection<StkFnDataEntity> stkFnDataByCode) {
+//        this.stkFnDataByCode = stkFnDataByCode;
+//    }
+//
+//    @OneToMany(mappedBy = "stkByCode")
+//    public Collection<StkFnDataHkEntity> getStkFnDataHksByCode() {
+//        return stkFnDataHksByCode;
+//    }
+//
+//    public void setStkFnDataHksByCode(Collection<StkFnDataHkEntity> stkFnDataHksByCode) {
+//        this.stkFnDataHksByCode = stkFnDataHksByCode;
+//    }
+//
+//    @OneToMany(mappedBy = "stkByCode")
+//    public Collection<StkFnDataUsEntity> getStkFnDataUsByCode() {
+//        return stkFnDataUsByCode;
+//    }
+//
+//    public void setStkFnDataUsByCode(Collection<StkFnDataUsEntity> stkFnDataUsByCode) {
+//        this.stkFnDataUsByCode = stkFnDataUsByCode;
+//    }
+//
+//    @OneToMany(mappedBy = "stkByCode")
+//    public Collection<StkHolderEntity> getStkHoldersByCode() {
+//        return stkHoldersByCode;
+//    }
+//
+//    public void setStkHoldersByCode(Collection<StkHolderEntity> stkHoldersByCode) {
+//        this.stkHoldersByCode = stkHoldersByCode;
+//    }
+//
+//    @OneToMany(mappedBy = "stkByCode")
+//    public Collection<StkImportInfoEntity> getStkImportInfosByCode() {
+//        return stkImportInfosByCode;
+//    }
+//
+//    public void setStkImportInfosByCode(Collection<StkImportInfoEntity> stkImportInfosByCode) {
+//        this.stkImportInfosByCode = stkImportInfosByCode;
+//    }
+//
+//    @OneToMany(mappedBy = "stkByCode")
+//    public Collection<StkIndustryEntity> getStkIndustriesByCode() {
+//        return stkIndustriesByCode;
+//    }
+//
+//    public void setStkIndustriesByCode(Collection<StkIndustryEntity> stkIndustriesByCode) {
+//        this.stkIndustriesByCode = stkIndustriesByCode;
+//    }
+//
+//    @OneToMany(mappedBy = "stkByCode")
+//    public Collection<StkInfoLogEntity> getStkInfoLogsByCode() {
+//        return stkInfoLogsByCode;
+//    }
+//
+//    public void setStkInfoLogsByCode(Collection<StkInfoLogEntity> stkInfoLogsByCode) {
+//        this.stkInfoLogsByCode = stkInfoLogsByCode;
+//    }
+//
+//    @OneToMany(mappedBy = "stkByCode")
+//    public Collection<StkKlineEntity> getStkKlinesByCode() {
+//        return stkKlinesByCode;
+//    }
+//
+//    public void setStkKlinesByCode(Collection<StkKlineEntity> stkKlinesByCode) {
+//        this.stkKlinesByCode = stkKlinesByCode;
+//    }
+//
+//    @OneToMany(mappedBy = "stkByCode")
+//    public Collection<StkKlineHkEntity> getStkKlineHksByCode() {
+//        return stkKlineHksByCode;
+//    }
+//
+//    public void setStkKlineHksByCode(Collection<StkKlineHkEntity> stkKlineHksByCode) {
+//        this.stkKlineHksByCode = stkKlineHksByCode;
+//    }
 }

@@ -1,20 +1,17 @@
 package com.stk123.entity;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.sql.Time;
 import java.util.Objects;
 
 @Entity
-@Table(name = "STK_ERROR_LOG", schema = "STK", catalog = "")
+@Table(name = "STK_ERROR_LOG")
 public class StkErrorLogEntity {
     private String code;
     private String error;
     private Time insertTime;
 
-    @Basic
+    @Id
     @Column(name = "CODE", nullable = true, length = 10)
     public String getCode() {
         return code;

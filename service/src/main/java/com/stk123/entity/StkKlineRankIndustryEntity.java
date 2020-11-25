@@ -4,8 +4,8 @@ import javax.persistence.*;
 import java.util.Collection;
 import java.util.Objects;
 
-@Entity
-@Table(name = "STK_KLINE_RANK_INDUSTRY", schema = "STK", catalog = "")
+//@Entity
+@Table(name = "STK_KLINE_RANK_INDUSTRY")
 public class StkKlineRankIndustryEntity {
     private long rankId;
     private Long industryId;
@@ -95,22 +95,22 @@ public class StkKlineRankIndustryEntity {
         return Objects.hash(rankId, industryId, rankDate, rankDays, changePercent, rank);
     }
 
-    @ManyToOne
-    @JoinColumn(name = "INDUSTRY_ID", referencedColumnName = "ID")
-    public StkIndustryTypeEntity getStkIndustryTypeByIndustryId() {
-        return stkIndustryTypeByIndustryId;
-    }
-
-    public void setStkIndustryTypeByIndustryId(StkIndustryTypeEntity stkIndustryTypeByIndustryId) {
-        this.stkIndustryTypeByIndustryId = stkIndustryTypeByIndustryId;
-    }
-
-    @OneToMany(mappedBy = "stkKlineRankIndustryByRankId")
-    public Collection<StkKlineRankIndustryStockEntity> getStkKlineRankIndustryStocksByRankId() {
-        return stkKlineRankIndustryStocksByRankId;
-    }
-
-    public void setStkKlineRankIndustryStocksByRankId(Collection<StkKlineRankIndustryStockEntity> stkKlineRankIndustryStocksByRankId) {
-        this.stkKlineRankIndustryStocksByRankId = stkKlineRankIndustryStocksByRankId;
-    }
+//    @ManyToOne
+//    @JoinColumn(name = "INDUSTRY_ID", referencedColumnName = "ID")
+//    public StkIndustryTypeEntity getStkIndustryTypeByIndustryId() {
+//        return stkIndustryTypeByIndustryId;
+//    }
+//
+//    public void setStkIndustryTypeByIndustryId(StkIndustryTypeEntity stkIndustryTypeByIndustryId) {
+//        this.stkIndustryTypeByIndustryId = stkIndustryTypeByIndustryId;
+//    }
+//
+//    @OneToMany(mappedBy = "stkKlineRankIndustryByRankId")
+//    public Collection<StkKlineRankIndustryStockEntity> getStkKlineRankIndustryStocksByRankId() {
+//        return stkKlineRankIndustryStocksByRankId;
+//    }
+//
+//    public void setStkKlineRankIndustryStocksByRankId(Collection<StkKlineRankIndustryStockEntity> stkKlineRankIndustryStocksByRankId) {
+//        this.stkKlineRankIndustryStocksByRankId = stkKlineRankIndustryStocksByRankId;
+//    }
 }

@@ -1,14 +1,12 @@
 package com.stk123.entity;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
-@Table(name = "STK_DICTIONARY", schema = "STK", catalog = "")
-public class StkDictionaryEntity {
+@Table(name = "STK_DICTIONARY")
+public class StkDictionaryEntity implements Serializable {
     private Long type;
     private String key;
     private String text;
@@ -19,7 +17,7 @@ public class StkDictionaryEntity {
     private String param4;
     private String param5;
 
-    @Basic
+    @Id
     @Column(name = "TYPE", nullable = true, precision = 0)
     public Long getType() {
         return type;
@@ -29,7 +27,7 @@ public class StkDictionaryEntity {
         this.type = type;
     }
 
-    @Basic
+    @Id
     @Column(name = "KEY", nullable = true, length = 40)
     public String getKey() {
         return key;

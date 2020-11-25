@@ -4,8 +4,8 @@ import javax.persistence.*;
 import java.sql.Time;
 import java.util.Objects;
 
-@Entity
-@Table(name = "STK_LABEL_TEXT", schema = "STK", catalog = "")
+//@Entity
+@Table(name = "STK_LABEL_TEXT")
 public class StkLabelTextEntity {
     private long id;
     private Long labelId;

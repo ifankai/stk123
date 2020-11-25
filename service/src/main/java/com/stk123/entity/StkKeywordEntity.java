@@ -5,8 +5,8 @@ import java.sql.Time;
 import java.util.Collection;
 import java.util.Objects;
 
-@Entity
-@Table(name = "STK_KEYWORD", schema = "STK", catalog = "")
+//@Entity
+@Table(name = "STK_KEYWORD")
 public class StkKeywordEntity {
     private long id;
     private String name;
@@ -83,12 +83,12 @@ public class StkKeywordEntity {
         return Objects.hash(id, name, boost, insertTime, status);
     }
 
-    @OneToMany(mappedBy = "stkKeywordByKeywordId")
-    public Collection<StkKeywordLinkEntity> getStkKeywordLinksById() {
-        return stkKeywordLinksById;
-    }
-
-    public void setStkKeywordLinksById(Collection<StkKeywordLinkEntity> stkKeywordLinksById) {
-        this.stkKeywordLinksById = stkKeywordLinksById;
-    }
+//    @OneToMany(mappedBy = "stkKeywordByKeywordId")
+//    public Collection<StkKeywordLinkEntity> getStkKeywordLinksById() {
+//        return stkKeywordLinksById;
+//    }
+//
+//    public void setStkKeywordLinksById(Collection<StkKeywordLinkEntity> stkKeywordLinksById) {
+//        this.stkKeywordLinksById = stkKeywordLinksById;
+//    }
 }

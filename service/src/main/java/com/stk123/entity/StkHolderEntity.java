@@ -1,17 +1,18 @@
 package com.stk123.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
-@Table(name = "STK_HOLDER", schema = "STK", catalog = "")
-public class StkHolderEntity {
+@Table(name = "STK_HOLDER")
+public class StkHolderEntity implements Serializable {
     private String code;
     private String fnDate;
     private Long holder;
     private StkEntity stkByCode;
 
-    @Basic
+    @Id
     @Column(name = "CODE", nullable = true, length = 10)
     public String getCode() {
         return code;
@@ -21,7 +22,7 @@ public class StkHolderEntity {
         this.code = code;
     }
 
-    @Basic
+    @Id
     @Column(name = "FN_DATE", nullable = true, length = 8)
     public String getFnDate() {
         return fnDate;
@@ -57,13 +58,13 @@ public class StkHolderEntity {
         return Objects.hash(code, fnDate, holder);
     }
 
-    @ManyToOne
-    @JoinColumn(name = "CODE", referencedColumnName = "CODE")
-    public StkEntity getStkByCode() {
-        return stkByCode;
-    }
-
-    public void setStkByCode(StkEntity stkByCode) {
-        this.stkByCode = stkByCode;
-    }
+//    @ManyToOne
+//    @JoinColumn(name = "CODE", referencedColumnName = "CODE")
+//    public StkEntity getStkByCode() {
+//        return stkByCode;
+//    }
+//
+//    public void setStkByCode(StkEntity stkByCode) {
+//        this.stkByCode = stkByCode;
+//    }
 }

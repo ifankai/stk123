@@ -1,17 +1,18 @@
 package com.stk123.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 
-@Entity
-@Table(name = "STK_KLINE_RANK_INDUSTRY_STOCK", schema = "STK", catalog = "")
-public class StkKlineRankIndustryStockEntity {
+//@Entity
+@Table(name = "STK_KLINE_RANK_INDUSTRY_STOCK")
+public class StkKlineRankIndustryStockEntity implements Serializable {
     private Long rankId;
     private String code;
     private Long changePercent;
     private StkKlineRankIndustryEntity stkKlineRankIndustryByRankId;
 
-    @Basic
+    @Id
     @Column(name = "RANK_ID", nullable = true, precision = 0)
     public Long getRankId() {
         return rankId;
@@ -21,7 +22,7 @@ public class StkKlineRankIndustryStockEntity {
         this.rankId = rankId;
     }
 
-    @Basic
+    @Id
     @Column(name = "CODE", nullable = true, length = 10)
     public String getCode() {
         return code;
@@ -57,13 +58,13 @@ public class StkKlineRankIndustryStockEntity {
         return Objects.hash(rankId, code, changePercent);
     }
 
-    @ManyToOne
-    @JoinColumn(name = "RANK_ID", referencedColumnName = "RANK_ID")
-    public StkKlineRankIndustryEntity getStkKlineRankIndustryByRankId() {
-        return stkKlineRankIndustryByRankId;
-    }
-
-    public void setStkKlineRankIndustryByRankId(StkKlineRankIndustryEntity stkKlineRankIndustryByRankId) {
-        this.stkKlineRankIndustryByRankId = stkKlineRankIndustryByRankId;
-    }
+//    @ManyToOne
+//    @JoinColumn(name = "RANK_ID", referencedColumnName = "RANK_ID")
+//    public StkKlineRankIndustryEntity getStkKlineRankIndustryByRankId() {
+//        return stkKlineRankIndustryByRankId;
+//    }
+//
+//    public void setStkKlineRankIndustryByRankId(StkKlineRankIndustryEntity stkKlineRankIndustryByRankId) {
+//        this.stkKlineRankIndustryByRankId = stkKlineRankIndustryByRankId;
+//    }
 }

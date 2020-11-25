@@ -4,8 +4,8 @@ import javax.persistence.*;
 import java.sql.Time;
 import java.util.Objects;
 
-@Entity
-@Table(name = "STK_IMPORT_INFO", schema = "STK", catalog = "")
+//@Entity
+@Table(name = "STK_IMPORT_INFO")
 public class StkImportInfoEntity {
     private int id;
     private String code;
@@ -143,23 +143,23 @@ public class StkImportInfoEntity {
         return Objects.hash(id, code, type, insertTime, careFlag, info, title, urlSource, urlTarget, infoCreateTime);
     }
 
-    @ManyToOne
-    @JoinColumn(name = "CODE", referencedColumnName = "CODE")
-    public StkEntity getStkByCode() {
-        return stkByCode;
-    }
-
-    public void setStkByCode(StkEntity stkByCode) {
-        this.stkByCode = stkByCode;
-    }
-
-    @ManyToOne
-    @JoinColumn(name = "TYPE", referencedColumnName = "TYPE")
-    public StkImportInfoTypeEntity getStkImportInfoTypeByType() {
-        return stkImportInfoTypeByType;
-    }
-
-    public void setStkImportInfoTypeByType(StkImportInfoTypeEntity stkImportInfoTypeByType) {
-        this.stkImportInfoTypeByType = stkImportInfoTypeByType;
-    }
+//    @ManyToOne
+//    @JoinColumn(name = "CODE", referencedColumnName = "CODE")
+//    public StkEntity getStkByCode() {
+//        return stkByCode;
+//    }
+//
+//    public void setStkByCode(StkEntity stkByCode) {
+//        this.stkByCode = stkByCode;
+//    }
+//
+//    @ManyToOne
+//    @JoinColumn(name = "TYPE", referencedColumnName = "TYPE")
+//    public StkImportInfoTypeEntity getStkImportInfoTypeByType() {
+//        return stkImportInfoTypeByType;
+//    }
+//
+//    public void setStkImportInfoTypeByType(StkImportInfoTypeEntity stkImportInfoTypeByType) {
+//        this.stkImportInfoTypeByType = stkImportInfoTypeByType;
+//    }
 }

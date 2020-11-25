@@ -4,8 +4,8 @@ import javax.persistence.*;
 import java.sql.Time;
 import java.util.Objects;
 
-@Entity
-@Table(name = "STK_INFO_LOG", schema = "STK", catalog = "")
+//@Entity
+@Table(name = "STK_INFO_LOG")
 public class StkInfoLogEntity {
     private String code;
     private String source;
@@ -14,7 +14,7 @@ public class StkInfoLogEntity {
     private Time insertTime;
     private StkEntity stkByCode;
 
-    @Basic
+    @Id
     @Column(name = "CODE", nullable = true, length = 10)
     public String getCode() {
         return code;
@@ -82,13 +82,13 @@ public class StkInfoLogEntity {
         return Objects.hash(code, source, description, url, insertTime);
     }
 
-    @ManyToOne
-    @JoinColumn(name = "CODE", referencedColumnName = "CODE")
-    public StkEntity getStkByCode() {
-        return stkByCode;
-    }
-
-    public void setStkByCode(StkEntity stkByCode) {
-        this.stkByCode = stkByCode;
-    }
+//    @ManyToOne
+//    @JoinColumn(name = "CODE", referencedColumnName = "CODE")
+//    public StkEntity getStkByCode() {
+//        return stkByCode;
+//    }
+//
+//    public void setStkByCode(StkEntity stkByCode) {
+//        this.stkByCode = stkByCode;
+//    }
 }

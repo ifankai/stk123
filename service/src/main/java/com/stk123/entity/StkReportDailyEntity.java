@@ -1,15 +1,13 @@
 package com.stk123.entity;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Time;
 import java.util.Objects;
 
 @Entity
-@Table(name = "STK_REPORT_DAILY", schema = "STK", catalog = "")
-public class StkReportDailyEntity {
+@Table(name = "STK_REPORT_DAILY")
+public class StkReportDailyEntity implements Serializable {
     private Long type;
     private String reportDate;
     private String code;
@@ -17,7 +15,7 @@ public class StkReportDailyEntity {
     private Time insertTime;
     private String remark2;
 
-    @Basic
+    @Id
     @Column(name = "TYPE", nullable = true, precision = 0)
     public Long getType() {
         return type;
@@ -27,7 +25,7 @@ public class StkReportDailyEntity {
         this.type = type;
     }
 
-    @Basic
+    @Id
     @Column(name = "REPORT_DATE", nullable = true, length = 10)
     public String getReportDate() {
         return reportDate;

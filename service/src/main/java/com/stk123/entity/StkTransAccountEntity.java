@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "STK_TRANS_ACCOUNT", schema = "STK", catalog = "")
+@Table(name = "STK_TRANS_ACCOUNT")
 public class StkTransAccountEntity {
     private long id;
     private String weekStartDate;

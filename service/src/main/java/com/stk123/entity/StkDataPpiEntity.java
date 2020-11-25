@@ -1,19 +1,20 @@
 package com.stk123.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Time;
 import java.util.Objects;
 
 @Entity
-@Table(name = "STK_DATA_PPI", schema = "STK", catalog = "")
-public class StkDataPpiEntity {
+@Table(name = "STK_DATA_PPI")
+public class StkDataPpiEntity implements Serializable {
     private Long typeId;
     private String ppiDate;
     private Long value;
     private Time insertTime;
     private StkDataPpiTypeEntity stkDataPpiTypeByTypeId;
 
-    @Basic
+    @Id
     @Column(name = "TYPE_ID", nullable = true, precision = 0)
     public Long getTypeId() {
         return typeId;
@@ -23,7 +24,7 @@ public class StkDataPpiEntity {
         this.typeId = typeId;
     }
 
-    @Basic
+    @Id
     @Column(name = "PPI_DATE", nullable = true, length = 10)
     public String getPpiDate() {
         return ppiDate;

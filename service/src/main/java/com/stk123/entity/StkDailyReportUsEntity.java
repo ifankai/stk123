@@ -1,13 +1,10 @@
 package com.stk123.entity;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "STK_DAILY_REPORT_US", schema = "STK", catalog = "")
+@Table(name = "STK_DAILY_REPORT_US")
 public class StkDailyReportUsEntity {
     private String reportDate;
     private Long result1;
@@ -16,7 +13,7 @@ public class StkDailyReportUsEntity {
     private Long result4;
     private Long result5;
 
-    @Basic
+    @Id
     @Column(name = "REPORT_DATE", nullable = true, length = 10)
     public String getReportDate() {
         return reportDate;

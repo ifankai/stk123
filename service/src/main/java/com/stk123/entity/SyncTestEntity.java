@@ -1,21 +1,18 @@
 package com.stk123.entity;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.sql.Time;
 import java.util.Objects;
 
 @Entity
-@Table(name = "SYNC_TEST", schema = "STK", catalog = "")
+@Table(name = "SYNC_TEST")
 public class SyncTestEntity {
     private Long id;
     private String name;
     private String msg;
     private Time insertTime;
 
-    @Basic
+    @Id
     @Column(name = "ID", nullable = true, precision = 0)
     public Long getId() {
         return id;

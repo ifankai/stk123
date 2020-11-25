@@ -1,15 +1,13 @@
 package com.stk123.entity;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Time;
 import java.util.Objects;
 
 @Entity
-@Table(name = "STK_CAPITAL_FLOW", schema = "STK", catalog = "")
-public class StkCapitalFlowEntity {
+@Table(name = "STK_CAPITAL_FLOW")
+public class StkCapitalFlowEntity implements Serializable {
     private String code;
     private String flowDate;
     private Long mainAmount;
@@ -24,7 +22,7 @@ public class StkCapitalFlowEntity {
     private Long smallPercent;
     private Time insertTime;
 
-    @Basic
+    @Id
     @Column(name = "CODE", nullable = true, length = 10)
     public String getCode() {
         return code;
@@ -34,7 +32,7 @@ public class StkCapitalFlowEntity {
         this.code = code;
     }
 
-    @Basic
+    @Id
     @Column(name = "FLOW_DATE", nullable = true, length = 8)
     public String getFlowDate() {
         return flowDate;
