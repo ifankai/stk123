@@ -41,6 +41,12 @@ public class TaskCofig {
     @Autowired
     private InitialKLine initialKLine;
 
+    @Scheduled(initialDelay = 1, fixedDelay = Integer.MAX_VALUE)
+    public void main() throws Exception {
+        //researchReportJob();
+        //initialKLineCN();
+    }
+
 
     @PostConstruct
     @Scheduled(cron = "0 0/1 * ? * *")
