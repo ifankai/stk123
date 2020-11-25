@@ -21,24 +21,25 @@ import java.util.Arrays;
 @CommonsLog
 public class MyJpaResultTransformer extends AliasToBeanResultTransformer {
 
+    private static final long serialVersionUID = 1L;
+
     @Autowired
     private SessionFactory sessionFactory;
 
     private NativeQuery query;
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
 
-    public <T> MyJpaResultTransformer(NativeQuery query, Class<T> resultClass)
-    {
+    private final Class resultClass;
+    private boolean isInitialized;
+    private String aliases[];
+    private Setter setters[];
+
+
+    public <T> MyJpaResultTransformer(NativeQuery query, Class<T> resultClass) {
         super(resultClass);
-        if(resultClass == null)
-        {
+        if (resultClass == null) {
             throw new IllegalArgumentException("resultClass cannot be null");
-        } else
-        {
+        } else {
             isInitialized = false;
             this.query = query;
             this.resultClass = resultClass;
@@ -46,23 +47,20 @@ public class MyJpaResultTransformer extends AliasToBeanResultTransformer {
         }
     }
 
-    public boolean isTransformedValueATupleElement(String aliases[], int tupleLength)
-    {
+    public boolean isTransformedValueATupleElement(String aliases[], int tupleLength) {
         return false;
     }
 
-    public Object transformTuple(Object tuple[], String aliases[])
-    {
+    public Object transformTuple(Object tuple[], String aliases[]) {
         Object result;
-        try
-        {
-            if(!isInitialized)
+        try {
+            if (!isInitialized)
                 initialize(aliases);
 //            else
 //                check(aliases);
             result = resultClass.newInstance();
-            for(int i = 0; i < this.aliases.length; i++)
-                if(setters[i] != null) {
+            for (int i = 0; i < this.aliases.length; i++)
+                if (setters[i] != null) {
                     // To fix issue: Expected type: java.lang.Long, actual value: java.math.BigDecimal
 //                    if(tuple[i] instanceof BigDecimal && setters[i].getMethod().getParameterTypes()[0] == Long.class) {
 //                        setters[i].set(result, new Long(tuple[i].toString()), null);
@@ -83,13 +81,9 @@ public class MyJpaResultTransformer extends AliasToBeanResultTransformer {
 //                    }
                 }
 
-        }
-        catch(InstantiationException e)
-        {
+        } catch (InstantiationException e) {
             throw new HibernateException((new StringBuilder()).append("Could not instantiate resultclass: ").append(resultClass.getName()).toString());
-        }
-        catch(IllegalAccessException e)
-        {
+        } catch (IllegalAccessException e) {
             throw new HibernateException((new StringBuilder()).append("Could not instantiate resultclass: ").append(resultClass.getName()).toString());
         }
         return result;
@@ -101,49 +95,42 @@ public class MyJpaResultTransformer extends AliasToBeanResultTransformer {
                 PropertyAccessStrategyFieldImpl.INSTANCE,
                 PropertyAccessStrategyMapImpl.INSTANCE
         );
-        this.aliases = new String[ aliases.length ];
-        setters = new Setter[ aliases.length ];
-        for ( int i = 0; i < aliases.length; i++ ) {
-            String alias = aliases[ i ];
-            if ( alias != null ) {
+        this.aliases = new String[aliases.length];
+        setters = new Setter[aliases.length];
+        for (int i = 0; i < aliases.length; i++) {
+            String alias = aliases[i];
+            if (alias != null) {
                 alias = UnderlineToCamelUtils.underlineToCamel(alias.toLowerCase());
-                this.aliases[ i ] = alias;
-                setters[ i ] = propertyAccessStrategy.buildPropertyAccess( resultClass, alias ).getSetter();
+                this.aliases[i] = alias;
+                setters[i] = propertyAccessStrategy.buildPropertyAccess(resultClass, alias).getSetter();
             }
         }
         isInitialized = true;
     }
 
-    private void check(String aliases[])
-    {
-        if(!Arrays.equals(aliases, this.aliases))
+    private void check(String aliases[]) {
+        if (!Arrays.equals(aliases, this.aliases))
             throw new IllegalStateException((new StringBuilder()).append("aliases are different from what is cached; aliases=").append(Arrays.asList(aliases)).append(" cached=").append(Arrays.asList(this.aliases)).toString());
         else
             return;
     }
 
-    public boolean equals(Object o)
-    {
-        if(this == o)
+    public boolean equals(Object o) {
+        if (this == o)
             return true;
-        if(o == null || getClass() != o.getClass())
+        if (o == null || getClass() != o.getClass())
             return false;
-        MyJpaResultTransformer that = (MyJpaResultTransformer)o;
-        if(!resultClass.equals(that.resultClass))
+        MyJpaResultTransformer that = (MyJpaResultTransformer) o;
+        if (!resultClass.equals(that.resultClass))
             return false;
         return Arrays.equals(aliases, that.aliases);
     }
 
-    public int hashCode()
-    {
+    public int hashCode() {
         int result = resultClass.hashCode();
         result = 31 * result + (aliases == null ? 0 : Arrays.hashCode(aliases));
         return result;
     }
 
-    private final Class resultClass;
-    private boolean isInitialized;
-    private String aliases[];
-    private Setter setters[];
 
 }
