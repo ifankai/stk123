@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Objects;
 
 @Entity
-@Table(name = "STK_FN_TYPE", schema = "STK", catalog = "")
+@Table(name = "STK_FN_TYPE")
 public class StkFnTypeEntity {
     private long type;
     private String name;
@@ -192,30 +192,30 @@ public class StkFnTypeEntity {
         return Objects.hash(type, name, nameAlias, source, status, market, isPercent, currencyUnitAdjust, dispName, dispOrder, reCalc, tab, precision, colspan);
     }
 
-    @OneToMany(mappedBy = "stkFnTypeByType")
-    public Collection<StkFnDataEntity> getStkFnDataByType() {
-        return stkFnDataByType;
-    }
-
-    public void setStkFnDataByType(Collection<StkFnDataEntity> stkFnDataByType) {
-        this.stkFnDataByType = stkFnDataByType;
-    }
-
-    @OneToMany(mappedBy = "stkFnTypeByType")
-    public Collection<StkFnDataHkEntity> getStkFnDataHksByType() {
-        return stkFnDataHksByType;
-    }
-
-    public void setStkFnDataHksByType(Collection<StkFnDataHkEntity> stkFnDataHksByType) {
-        this.stkFnDataHksByType = stkFnDataHksByType;
-    }
-
-    @OneToMany(mappedBy = "stkFnTypeByType")
-    public Collection<StkFnDataUsEntity> getStkFnDataUsByType() {
-        return stkFnDataUsByType;
-    }
-
-    public void setStkFnDataUsByType(Collection<StkFnDataUsEntity> stkFnDataUsByType) {
-        this.stkFnDataUsByType = stkFnDataUsByType;
-    }
+//    @OneToMany(mappedBy = "stkFnTypeByType")
+//    public Collection<StkFnDataEntity> getStkFnDataByType() {
+//        return stkFnDataByType;
+//    }
+//
+//    public void setStkFnDataByType(Collection<StkFnDataEntity> stkFnDataByType) {
+//        this.stkFnDataByType = stkFnDataByType;
+//    }
+//
+//    @OneToMany(mappedBy = "stkFnTypeByType")
+//    public Collection<StkFnDataHkEntity> getStkFnDataHksByType() {
+//        return stkFnDataHksByType;
+//    }
+//
+//    public void setStkFnDataHksByType(Collection<StkFnDataHkEntity> stkFnDataHksByType) {
+//        this.stkFnDataHksByType = stkFnDataHksByType;
+//    }
+//
+//    @OneToMany(mappedBy = "stkFnTypeByType")
+//    public Collection<StkFnDataUsEntity> getStkFnDataUsByType() {
+//        return stkFnDataUsByType;
+//    }
+//
+//    public void setStkFnDataUsByType(Collection<StkFnDataUsEntity> stkFnDataUsByType) {
+//        this.stkFnDataUsByType = stkFnDataUsByType;
+//    }
 }

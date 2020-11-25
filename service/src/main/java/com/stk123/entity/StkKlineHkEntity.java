@@ -1,11 +1,12 @@
 package com.stk123.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
-@Table(name = "STK_KLINE_HK", schema = "STK", catalog = "")
-public class StkKlineHkEntity {
+@Table(name = "STK_KLINE_HK")
+public class StkKlineHkEntity implements Serializable {
     private String code;
     private String klineDate;
     private Long open;
@@ -24,7 +25,7 @@ public class StkKlineHkEntity {
     private Long percentage;
     private StkEntity stkByCode;
 
-    @Basic
+    @Id
     @Column(name = "CODE", nullable = true, length = 10)
     public String getCode() {
         return code;
@@ -34,7 +35,7 @@ public class StkKlineHkEntity {
         this.code = code;
     }
 
-    @Basic
+    @Id
     @Column(name = "KLINE_DATE", nullable = true, length = 8)
     public String getKlineDate() {
         return klineDate;
@@ -213,13 +214,13 @@ public class StkKlineHkEntity {
         return Objects.hash(code, klineDate, open, close, lastClose, high, low, volumn, amount, closeChange, hsl, peTtm, peLyr, psTtm, pbTtm, percentage);
     }
 
-    @ManyToOne
-    @JoinColumn(name = "CODE", referencedColumnName = "CODE")
-    public StkEntity getStkByCode() {
-        return stkByCode;
-    }
-
-    public void setStkByCode(StkEntity stkByCode) {
-        this.stkByCode = stkByCode;
-    }
+//    @ManyToOne
+//    @JoinColumn(name = "CODE", referencedColumnName = "CODE")
+//    public StkEntity getStkByCode() {
+//        return stkByCode;
+//    }
+//
+//    public void setStkByCode(StkEntity stkByCode) {
+//        this.stkByCode = stkByCode;
+//    }
 }

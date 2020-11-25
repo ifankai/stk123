@@ -4,8 +4,8 @@ import javax.persistence.*;
 import java.util.Collection;
 import java.util.Objects;
 
-@Entity
-@Table(name = "STK_ORGANIZATION", schema = "STK", catalog = "")
+//@Entity
+@Table(name = "STK_ORGANIZATION")
 public class StkOrganizationEntity {
     private long id;
     private String name;

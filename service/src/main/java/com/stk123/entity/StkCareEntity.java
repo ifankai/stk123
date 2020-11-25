@@ -1,15 +1,13 @@
 package com.stk123.entity;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Time;
 import java.util.Objects;
 
 @Entity
-@Table(name = "STK_CARE", schema = "STK", catalog = "")
-public class StkCareEntity {
+@Table(name = "STK_CARE")
+public class StkCareEntity implements Serializable {
     private String code;
     private String type;
     private String info;
@@ -20,7 +18,7 @@ public class StkCareEntity {
     private String param1;
     private String param2;
 
-    @Basic
+    @Id
     @Column(name = "CODE", nullable = true, length = 10)
     public String getCode() {
         return code;
@@ -30,7 +28,7 @@ public class StkCareEntity {
         this.code = code;
     }
 
-    @Basic
+    @Id
     @Column(name = "TYPE", nullable = true, length = 100)
     public String getType() {
         return type;

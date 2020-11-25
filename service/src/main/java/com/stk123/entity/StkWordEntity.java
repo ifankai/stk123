@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "STK_WORD", schema = "STK", catalog = "")
+@Table(name = "STK_WORD")
 public class StkWordEntity {
     private int id;
     private boolean type;

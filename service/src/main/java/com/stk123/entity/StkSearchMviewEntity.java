@@ -1,14 +1,12 @@
 package com.stk123.entity;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
-@Table(name = "STK_SEARCH_MVIEW", schema = "STK", catalog = "")
-public class StkSearchMviewEntity {
+@Table(name = "STK_SEARCH_MVIEW")
+public class StkSearchMviewEntity implements Serializable {
     private String code;
     private String name;
     private Boolean market;
@@ -65,7 +63,7 @@ public class StkSearchMviewEntity {
     private Long forecastPeThisYear;
     private Long forecastPeNextYear;
 
-    @Basic
+    @Id
     @Column(name = "CODE", nullable = true, length = 10)
     public String getCode() {
         return code;
@@ -75,7 +73,7 @@ public class StkSearchMviewEntity {
         this.code = code;
     }
 
-    @Basic
+    @Id
     @Column(name = "NAME", nullable = true, length = 100)
     public String getName() {
         return name;

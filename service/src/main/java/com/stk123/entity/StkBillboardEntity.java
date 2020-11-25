@@ -1,11 +1,12 @@
 package com.stk123.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
-@Table(name = "STK_BILLBOARD", schema = "STK", catalog = "")
-public class StkBillboardEntity {
+@Table(name = "STK_BILLBOARD")
+public class StkBillboardEntity implements Serializable {
     private String code;
     private String transDate;
     private Long deptId;
@@ -19,7 +20,7 @@ public class StkBillboardEntity {
     private StkEntity stkByCode;
     private StkDeptTypeEntity stkDeptTypeByDeptId;
 
-    @Basic
+    @Id
     @Column(name = "CODE", nullable = true, length = 10)
     public String getCode() {
         return code;
@@ -29,7 +30,7 @@ public class StkBillboardEntity {
         this.code = code;
     }
 
-    @Basic
+    @Id
     @Column(name = "TRANS_DATE", nullable = true, length = 10)
     public String getTransDate() {
         return transDate;
@@ -142,23 +143,23 @@ public class StkBillboardEntity {
         return Objects.hash(code, transDate, deptId, buyAmount, buyRatio, sellAmount, sellRatio, netAmount, buySell, seq);
     }
 
-    @ManyToOne
-    @JoinColumn(name = "CODE", referencedColumnName = "CODE")
-    public StkEntity getStkByCode() {
-        return stkByCode;
-    }
-
-    public void setStkByCode(StkEntity stkByCode) {
-        this.stkByCode = stkByCode;
-    }
-
-    @ManyToOne
-    @JoinColumn(name = "DEPT_ID", referencedColumnName = "DEPT_ID")
-    public StkDeptTypeEntity getStkDeptTypeByDeptId() {
-        return stkDeptTypeByDeptId;
-    }
-
-    public void setStkDeptTypeByDeptId(StkDeptTypeEntity stkDeptTypeByDeptId) {
-        this.stkDeptTypeByDeptId = stkDeptTypeByDeptId;
-    }
+//    @ManyToOne
+//    @JoinColumn(name = "CODE", referencedColumnName = "CODE")
+//    public StkEntity getStkByCode() {
+//        return stkByCode;
+//    }
+//
+//    public void setStkByCode(StkEntity stkByCode) {
+//        this.stkByCode = stkByCode;
+//    }
+//
+//    @ManyToOne
+//    @JoinColumn(name = "DEPT_ID", referencedColumnName = "DEPT_ID")
+//    public StkDeptTypeEntity getStkDeptTypeByDeptId() {
+//        return stkDeptTypeByDeptId;
+//    }
+//
+//    public void setStkDeptTypeByDeptId(StkDeptTypeEntity stkDeptTypeByDeptId) {
+//        this.stkDeptTypeByDeptId = stkDeptTypeByDeptId;
+//    }
 }

@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Objects;
 
 @Entity
-@Table(name = "STK_DEPT_TYPE", schema = "STK", catalog = "")
+@Table(name = "STK_DEPT_TYPE")
 public class StkDeptTypeEntity {
     private long deptId;
     private String deptName;
@@ -46,12 +46,12 @@ public class StkDeptTypeEntity {
         return Objects.hash(deptId, deptName);
     }
 
-    @OneToMany(mappedBy = "stkDeptTypeByDeptId")
-    public Collection<StkBillboardEntity> getStkBillboardsByDeptId() {
-        return stkBillboardsByDeptId;
-    }
-
-    public void setStkBillboardsByDeptId(Collection<StkBillboardEntity> stkBillboardsByDeptId) {
-        this.stkBillboardsByDeptId = stkBillboardsByDeptId;
-    }
+//    @OneToMany(mappedBy = "stkDeptTypeByDeptId")
+//    public Collection<StkBillboardEntity> getStkBillboardsByDeptId() {
+//        return stkBillboardsByDeptId;
+//    }
+//
+//    public void setStkBillboardsByDeptId(Collection<StkBillboardEntity> stkBillboardsByDeptId) {
+//        this.stkBillboardsByDeptId = stkBillboardsByDeptId;
+//    }
 }

@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "STK_INDEX_NODE", schema = "STK", catalog = "")
+@Table(name = "STK_INDEX_NODE")
 public class StkIndexNodeEntity {
     private long id;
     private Long parentId;

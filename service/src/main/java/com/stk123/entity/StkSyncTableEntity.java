@@ -1,18 +1,15 @@
 package com.stk123.entity;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Objects;
 
-@Entity
-@Table(name = "STK_SYNC_TABLE", schema = "STK", catalog = "")
+//@Entity
+@Table(name = "STK_SYNC_TABLE")
 public class StkSyncTableEntity {
     private String name;
     private String pk;
 
-    @Basic
+    @Id
     @Column(name = "NAME", nullable = true, length = 200)
     public String getName() {
         return name;

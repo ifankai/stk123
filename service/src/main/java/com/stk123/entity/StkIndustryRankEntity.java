@@ -1,11 +1,12 @@
 package com.stk123.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
-@Table(name = "STK_INDUSTRY_RANK", schema = "STK", catalog = "")
-public class StkIndustryRankEntity {
+@Table(name = "STK_INDUSTRY_RANK")
+public class StkIndustryRankEntity implements Serializable {
     private Long industryId;
     private Long period;
     private String rankDate;
@@ -14,7 +15,7 @@ public class StkIndustryRankEntity {
     private String rankDesc;
     private StkIndustryTypeEntity stkIndustryTypeByIndustryId;
 
-    @Basic
+    @Id
     @Column(name = "INDUSTRY_ID", nullable = true, precision = 0)
     public Long getIndustryId() {
         return industryId;
@@ -24,7 +25,7 @@ public class StkIndustryRankEntity {
         this.industryId = industryId;
     }
 
-    @Basic
+    @Id
     @Column(name = "PERIOD", nullable = true, precision = 0)
     public Long getPeriod() {
         return period;
@@ -93,13 +94,13 @@ public class StkIndustryRankEntity {
         return Objects.hash(industryId, period, rankDate, rank, closeChange, rankDesc);
     }
 
-    @ManyToOne
-    @JoinColumn(name = "INDUSTRY_ID", referencedColumnName = "ID")
-    public StkIndustryTypeEntity getStkIndustryTypeByIndustryId() {
-        return stkIndustryTypeByIndustryId;
-    }
-
-    public void setStkIndustryTypeByIndustryId(StkIndustryTypeEntity stkIndustryTypeByIndustryId) {
-        this.stkIndustryTypeByIndustryId = stkIndustryTypeByIndustryId;
-    }
+//    @ManyToOne
+//    @JoinColumn(name = "INDUSTRY_ID", referencedColumnName = "ID")
+//    public StkIndustryTypeEntity getStkIndustryTypeByIndustryId() {
+//        return stkIndustryTypeByIndustryId;
+//    }
+//
+//    public void setStkIndustryTypeByIndustryId(StkIndustryTypeEntity stkIndustryTypeByIndustryId) {
+//        this.stkIndustryTypeByIndustryId = stkIndustryTypeByIndustryId;
+//    }
 }

@@ -1,14 +1,12 @@
 package com.stk123.entity;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
-@Table(name = "STK_KLINE_US", schema = "STK", catalog = "")
-public class StkKlineUsEntity {
+@Table(name = "STK_KLINE_US")
+public class StkKlineUsEntity implements Serializable {
     private String code;
     private String klineDate;
     private Long open;
@@ -26,7 +24,7 @@ public class StkKlineUsEntity {
     private Long pbTtm;
     private Long psTtm;
 
-    @Basic
+    @Id
     @Column(name = "CODE", nullable = true, length = 10)
     public String getCode() {
         return code;
@@ -36,7 +34,7 @@ public class StkKlineUsEntity {
         this.code = code;
     }
 
-    @Basic
+    @Id
     @Column(name = "KLINE_DATE", nullable = true, length = 8)
     public String getKlineDate() {
         return klineDate;

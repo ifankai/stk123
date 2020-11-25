@@ -1,21 +1,19 @@
 package com.stk123.entity;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
-@Table(name = "STK_RESTRICTED", schema = "STK", catalog = "")
-public class StkRestrictedEntity {
+@Table(name = "STK_RESTRICTED")
+public class StkRestrictedEntity implements Serializable {
     private String code;
     private String reportDate;
     private String listingDate;
     private Long banAmount;
     private Long banMarketValue;
 
-    @Basic
+    @Id
     @Column(name = "CODE", nullable = true, length = 10)
     public String getCode() {
         return code;
@@ -25,7 +23,7 @@ public class StkRestrictedEntity {
         this.code = code;
     }
 
-    @Basic
+    @Id
     @Column(name = "REPORT_DATE", nullable = true, length = 10)
     public String getReportDate() {
         return reportDate;

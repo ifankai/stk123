@@ -5,7 +5,7 @@ import java.sql.Time;
 import java.util.Objects;
 
 @Entity
-@Table(name = "SYNC_LOG", schema = "STK", catalog = "")
+@Table(name = "SYNC_LOG")
 public class SyncLogEntity {
     private long id;
     private Time insertTime;

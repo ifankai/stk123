@@ -5,8 +5,8 @@ import java.sql.Time;
 import java.util.Collection;
 import java.util.Objects;
 
-@Entity
-@Table(name = "STK_SYNC_TASK", schema = "STK", catalog = "")
+//@Entity
+@Table(name = "STK_SYNC_TASK")
 public class StkSyncTaskEntity {
     private long id;
     private String name;

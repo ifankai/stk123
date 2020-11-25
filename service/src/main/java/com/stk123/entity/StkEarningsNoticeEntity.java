@@ -1,12 +1,13 @@
 package com.stk123.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Time;
 import java.util.Objects;
 
 @Entity
-@Table(name = "STK_EARNINGS_NOTICE", schema = "STK", catalog = "")
-public class StkEarningsNoticeEntity {
+@Table(name = "STK_EARNINGS_NOTICE")
+public class StkEarningsNoticeEntity implements Serializable {
     private String code;
     private String fnDate;
     private String detail;
@@ -19,7 +20,7 @@ public class StkEarningsNoticeEntity {
     private Time insertTime;
     private StkEntity stkByCode;
 
-    @Basic
+    @Id
     @Column(name = "CODE", nullable = true, length = 10)
     public String getCode() {
         return code;
@@ -29,7 +30,7 @@ public class StkEarningsNoticeEntity {
         this.code = code;
     }
 
-    @Basic
+    @Id
     @Column(name = "FN_DATE", nullable = true, length = 10)
     public String getFnDate() {
         return fnDate;
@@ -142,13 +143,13 @@ public class StkEarningsNoticeEntity {
         return Objects.hash(code, fnDate, detail, erLow, erHigh, erType, lastAmount, noticeDate, realDate, insertTime);
     }
 
-    @ManyToOne
-    @JoinColumn(name = "CODE", referencedColumnName = "CODE")
-    public StkEntity getStkByCode() {
-        return stkByCode;
-    }
-
-    public void setStkByCode(StkEntity stkByCode) {
-        this.stkByCode = stkByCode;
-    }
+//    @ManyToOne
+//    @JoinColumn(name = "CODE", referencedColumnName = "CODE")
+//    public StkEntity getStkByCode() {
+//        return stkByCode;
+//    }
+//
+//    public void setStkByCode(StkEntity stkByCode) {
+//        this.stkByCode = stkByCode;
+//    }
 }

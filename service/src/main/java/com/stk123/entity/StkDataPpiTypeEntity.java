@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Objects;
 
 @Entity
-@Table(name = "STK_DATA_PPI_TYPE", schema = "STK", catalog = "")
+@Table(name = "STK_DATA_PPI_TYPE")
 public class StkDataPpiTypeEntity {
     private long id;
     private String name;
@@ -70,12 +70,12 @@ public class StkDataPpiTypeEntity {
         return Objects.hash(id, name, parentId, url);
     }
 
-    @OneToMany(mappedBy = "stkDataPpiTypeByTypeId")
-    public Collection<StkDataPpiEntity> getStkDataPpisById() {
-        return stkDataPpisById;
-    }
-
-    public void setStkDataPpisById(Collection<StkDataPpiEntity> stkDataPpisById) {
-        this.stkDataPpisById = stkDataPpisById;
-    }
+//    @OneToMany(mappedBy = "stkDataPpiTypeByTypeId")
+//    public Collection<StkDataPpiEntity> getStkDataPpisById() {
+//        return stkDataPpisById;
+//    }
+//
+//    public void setStkDataPpisById(Collection<StkDataPpiEntity> stkDataPpisById) {
+//        this.stkDataPpisById = stkDataPpisById;
+//    }
 }

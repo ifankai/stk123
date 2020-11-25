@@ -1,15 +1,13 @@
 package com.stk123.entity;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Time;
 import java.util.Objects;
 
 @Entity
-@Table(name = "STK_SEARCH_CONDITION", schema = "STK", catalog = "")
-public class StkSearchConditionEntity {
+@Table(name = "STK_SEARCH_CONDITION")
+public class StkSearchConditionEntity implements Serializable {
     private Long id;
     private String type;
     private String name;
@@ -17,7 +15,7 @@ public class StkSearchConditionEntity {
     private Time insertTime;
     private Time updateTime;
 
-    @Basic
+    @Id
     @Column(name = "ID", nullable = true, precision = 0)
     public Long getId() {
         return id;
@@ -27,7 +25,7 @@ public class StkSearchConditionEntity {
         this.id = id;
     }
 
-    @Basic
+    @Id
     @Column(name = "TYPE", nullable = true, length = 20)
     public String getType() {
         return type;

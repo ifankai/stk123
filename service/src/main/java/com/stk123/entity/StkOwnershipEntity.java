@@ -1,11 +1,12 @@
 package com.stk123.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 
-@Entity
-@Table(name = "STK_OWNERSHIP", schema = "STK", catalog = "")
-public class StkOwnershipEntity {
+//@Entity
+@Table(name = "STK_OWNERSHIP")
+public class StkOwnershipEntity implements Serializable {
     private String code;
     private String fnDate;
     private Long orgId;
@@ -15,7 +16,7 @@ public class StkOwnershipEntity {
     private Long numChangeRate;
     private StkOrganizationEntity stkOrganizationByOrgId;
 
-    @Basic
+    @Id
     @Column(name = "CODE", nullable = true, length = 10)
     public String getCode() {
         return code;
@@ -25,7 +26,7 @@ public class StkOwnershipEntity {
         this.code = code;
     }
 
-    @Basic
+    @Id
     @Column(name = "FN_DATE", nullable = true, length = 8)
     public String getFnDate() {
         return fnDate;

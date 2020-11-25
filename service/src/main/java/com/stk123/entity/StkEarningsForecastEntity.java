@@ -1,12 +1,13 @@
 package com.stk123.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Time;
 import java.util.Objects;
 
 @Entity
-@Table(name = "STK_EARNINGS_FORECAST", schema = "STK", catalog = "")
-public class StkEarningsForecastEntity {
+@Table(name = "STK_EARNINGS_FORECAST")
+public class StkEarningsForecastEntity implements Serializable {
     private String code;
     private String forecastYear;
     private Long forecastNetProfit;
@@ -14,7 +15,7 @@ public class StkEarningsForecastEntity {
     private Long pe;
     private StkEntity stkByCode;
 
-    @Basic
+    @Id
     @Column(name = "CODE", nullable = true, length = 10)
     public String getCode() {
         return code;
@@ -24,7 +25,7 @@ public class StkEarningsForecastEntity {
         this.code = code;
     }
 
-    @Basic
+    @Id
     @Column(name = "FORECAST_YEAR", nullable = true, length = 10)
     public String getForecastYear() {
         return forecastYear;
@@ -82,13 +83,13 @@ public class StkEarningsForecastEntity {
         return Objects.hash(code, forecastYear, forecastNetProfit, insertTime, pe);
     }
 
-    @ManyToOne
-    @JoinColumn(name = "CODE", referencedColumnName = "CODE")
-    public StkEntity getStkByCode() {
-        return stkByCode;
-    }
-
-    public void setStkByCode(StkEntity stkByCode) {
-        this.stkByCode = stkByCode;
-    }
+//    @ManyToOne
+//    @JoinColumn(name = "CODE", referencedColumnName = "CODE")
+//    public StkEntity getStkByCode() {
+//        return stkByCode;
+//    }
+//
+//    public void setStkByCode(StkEntity stkByCode) {
+//        this.stkByCode = stkByCode;
+//    }
 }
