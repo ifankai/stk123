@@ -48,7 +48,7 @@ public class XueqiuService {
 		}
 		if(cookies == null || cookies.length() == 0){
 			try {
-				ConfigUtils.setConfigFile("D:/share/workspace/stk123/xueqiu.cookie.properties");
+				ConfigUtils.getPropertiesFromClassPath("xueqiu.cookie.properties");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

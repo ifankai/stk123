@@ -1,32 +1,27 @@
-package com.stk123.service;
+package com.stk123.repository;
 
 import com.stk123.service.support.MyJpaResultTransformer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Hibernate;
-import org.hibernate.SQLQuery;
 import org.hibernate.Session;
-import org.hibernate.dialect.Dialect;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.transform.Transformers;
-import org.hibernate.type.StandardBasicTypes;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.support.Repositories;
 import org.springframework.stereotype.Service;
-import sun.security.jca.GetInstance;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.List;
 
-@Service("baseService")
-public class BaseService implements ApplicationContextAware {
+@Service("baseRepository")
+public class BaseRepository implements ApplicationContextAware {
 
-    protected static final Log log = LogFactory.getLog(BaseService.class.getClass());
+    protected static final Log log = LogFactory.getLog(BaseRepository.class.getClass());
 
     private static ApplicationContext appContext;
 
@@ -37,10 +32,10 @@ public class BaseService implements ApplicationContextAware {
     @PersistenceContext
     public EntityManager em;
 
-    public BaseService(){}
+    public BaseRepository(){}
 
-    public static BaseService getInstance() {
-        return (BaseService) getApplicationContext().getBean("baseService");
+    public static BaseRepository getInstance() {
+        return (BaseRepository) getApplicationContext().getBean("baseRepository");
     }
 
     public static ApplicationContext getApplicationContext() {

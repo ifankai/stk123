@@ -57,7 +57,7 @@ public class XqController {
     @ResponseBody
     public RequestResult favorite(@PathVariable("id")Long id, @PathVariable("isFavorite")int isFavorite){
         StkXqPostEntity post = xqPostRepository.getOne(id);
-        post.setIsFavorite(isFavorite == 1);
+        post.setIsFavorite(isFavorite);
         xqPostRepository.save(post);
         return RequestResult.SUCCESS;
     }

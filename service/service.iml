@@ -51,7 +51,6 @@
     <orderEntry type="library" name="Maven: technology.tabula:tabula:1.0.4" level="project" />
     <orderEntry type="library" name="Maven: org.locationtech.jts:jts-core:1.17.0" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.25" level="project" />
-    <orderEntry type="library" name="Maven: org.slf4j:slf4j-simple:1.7.25" level="project" />
     <orderEntry type="library" name="Maven: org.bouncycastle:bcprov-jdk15on:1.66" level="project" />
     <orderEntry type="library" name="Maven: org.bouncycastle:bcmail-jdk15on:1.66" level="project" />
     <orderEntry type="library" name="Maven: org.bouncycastle:bcpkix-jdk15on:1.66" level="project" />

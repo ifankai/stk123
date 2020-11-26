@@ -1,24 +1,31 @@
 package com.stk123.repository;
 
 import com.stk123.entity.StkTextEntity;
-import com.stk123.model.dto.TextDto;
-import com.stk123.model.xueqiu.Post;
-import com.stk123.service.BaseService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.stk123.model.text.TextDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+/**
+ * https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query-methods.query-creation
+ */
 
 @Repository
 public interface StkTextRepository extends JpaRepository<StkTextEntity, Long> {
 
     List<StkTextEntity> findAllByCodeAndTypeOrderByInsertTimeDesc(String code, Integer type);
+
+    List<StkTextEntity> queryTop5ByReadDateNullOrderByInsertTimeAsc();
+
+    List<StkTextEntity> findTop20ByReadDateNotNullOrderByInsertTimeDesc();
+
+    List<StkTextEntity> findAllByFavoriteDateNotNullOrderByFavoriteDateDesc();
+
 
     //转化为 Map
     default Map<Long, StkTextEntity> findAllMap(String code, Integer type) {
@@ -35,14 +42,14 @@ public interface StkTextRepository extends JpaRepository<StkTextEntity, Long> {
     List<Object> findAllWithMapResult(@Param("code")String code, @Param("type")Integer type);
 
 
-    final String sql_findAllTextByDto = "select t.id,t.title,t.insert_time from stk_text t left join stk_xq_post p " +
+    final String sql_findAllTextByDto = "select * from stk_text t left join stk_xq_post p " +
             "on t.id=p.id where t.code=? and t.type=? order by t.insert_time desc";
-    default List<TextDto> findAllTextByDto(String code, Integer type) {
-        return BaseService.getInstance().list(sql_findAllTextByDto, TextDto.class, code, type);
+    default List<TextDto> findAllByCodeAndTypeOrderByInsertTimeDesc2Dto(String code, Integer type) {
+        return BaseRepository.getInstance().list(sql_findAllTextByDto, TextDto.class, code, type);
     }
 
-    @Query(value = "select t.* from stk_text t left join stk_xq_post p " +
-            "on t.id=p.id where t.code=:code and t.type=:type order by t.insert_time desc", nativeQuery = true)
-    <T> Collection<T> findAllByCodeAndTypeOrderByInsertTimeDesc(@Param("code")String code, @Param("type")Integer type, Class<T> clazz);
+//    @Query(value = "select t.* from stk_text t left join stk_xq_post p " +
+//            "on t.id=p.id where t.code=:code and t.type=:type order by t.insert_time desc", nativeQuery = true)
+//    <T> Collection<T> findAllByCodeAndTypeOrderByInsertTimeDesc(@Param("code")String code, @Param("type")Integer type, Class<T> clazz);
 
 }

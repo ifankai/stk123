@@ -10,6 +10,8 @@ import com.stk123.common.db.util.sequence.SequenceUtils;
 import com.stk123.common.util.JdbcUtils;
 
 public class Text {
+
+	public final static int TYPE_XUEQIU = 3;
 	
 	public final static int SUB_TYPE_EARNING_FORECAST = 10;
 	public final static int SUB_TYPE_ORG_BUY_WITHIN_60 = 20;

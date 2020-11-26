@@ -568,6 +568,25 @@ create index idx_text__user_id on stk_text (user_id);
 create index idx_text__sub_type on stk_text (sub_type);
 create sequence s_text_id INCREMENT BY 1 START WITH 100000 NOMAXVALUE NOCYCLE CACHE 10;
 
+alter table stk_text modify user_id number(12);
+comment on column stk_text.user_id is '发帖人id';
+alter table stk_text add user_name varchar2(50);
+comment on column stk_text.user_name is '发帖人名字';
+alter table stk_text add user_avatar varchar2(200);
+comment on column stk_text.user_avatar is '发帖人头像url';
+alter table stk_text add post_id number(12);
+comment on column stk_text.post_id is '帖子id';
+alter table stk_text add followers_count number(8);
+comment on column stk_text.followers_count is '粉丝数';
+alter table stk_text add created_at date;
+comment on column stk_text.created_at is '发帖时间';
+alter table stk_text add reply_count number(6);
+comment on column stk_text.reply_count is '评论数';
+alter table stk_text add favorite_date date;
+comment on column stk_text.favorite_date is '收藏时间';
+alter table stk_text add read_date date;
+comment on column stk_text.favorite_date is '阅读时间';
+
 
 create table stk_data_industry_pe(
   industry_id number(6),

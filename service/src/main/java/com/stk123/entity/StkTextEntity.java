@@ -1,5 +1,7 @@
 package com.stk123.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,6 +13,7 @@ import java.util.Date;
 @Table(name = "STK_TEXT")
 @Setter
 @Getter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class StkTextEntity implements Serializable {
 
     @Id
@@ -34,9 +37,11 @@ public class StkTextEntity implements Serializable {
     @Column(name="TEXT")
     private String text;
 
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     @Column(name="INSERT_TIME")
     private Date insertTime;
 
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     @Column(name="UPDATE_TIME")
     private Date updateTime;
 
@@ -49,7 +54,30 @@ public class StkTextEntity implements Serializable {
     @Column(name="SUB_TYPE")
     private Integer subType;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="ID")
-    private StkXqPostEntity stkXqPostEntity;
+    @Column(name="user_name")
+    private String userName;
+
+    @Column(name = "user_avatar")
+    private String userAvatar;
+
+    @Column(name = "followers_count")
+    private Integer followersCount;
+
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
+    @Column(name = "created_at")
+    private Date createdAt;
+
+    @Column(name = "post_id")
+    private Long postId;
+
+    @Column(name = "reply_count")
+    private Integer replyCount;
+
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
+    @Column(name = "favorite_date")
+    private Date favoriteDate;
+
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
+    @Column(name = "read_date")
+    private Date readDate;
 }

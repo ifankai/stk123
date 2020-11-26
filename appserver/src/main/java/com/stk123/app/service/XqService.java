@@ -26,7 +26,7 @@ public class XqService {
         }
         log.info("异步调用：updateToRead");
         list.forEach(item -> {
-            item.setIsRead(true);
+            item.setIsRead(1);
             item.setReadDate(new Date());
         });
         xqPostRepository.saveAll(list);

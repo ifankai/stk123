@@ -2,6 +2,7 @@ package com.stk123.service.support;
 
 import lombok.extern.apachecommons.CommonsLog;
 import org.hibernate.HibernateException;
+import org.hibernate.PropertyNotFoundException;
 import org.hibernate.SessionFactory;
 import org.hibernate.property.access.internal.PropertyAccessStrategyBasicImpl;
 import org.hibernate.property.access.internal.PropertyAccessStrategyChainedImpl;
@@ -102,7 +103,11 @@ public class MyJpaResultTransformer extends AliasToBeanResultTransformer {
             if (alias != null) {
                 alias = UnderlineToCamelUtils.underlineToCamel(alias.toLowerCase());
                 this.aliases[i] = alias;
-                setters[i] = propertyAccessStrategy.buildPropertyAccess(resultClass, alias).getSetter();
+                try {
+                    setters[i] = propertyAccessStrategy.buildPropertyAccess(resultClass, alias).getSetter();
+                }catch (PropertyNotFoundException e){
+                    log.warn(e.getMessage());
+                }
             }
         }
         isInitialized = true;
