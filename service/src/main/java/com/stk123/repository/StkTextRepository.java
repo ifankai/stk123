@@ -26,6 +26,9 @@ public interface StkTextRepository extends JpaRepository<StkTextEntity, Long> {
 
     List<StkTextEntity> findAllByFavoriteDateNotNullOrderByFavoriteDateDesc();
 
+    @Query(value = "select count(1) from stk_text where code=:code and post_id=:postId", nativeQuery = true)
+    Integer existingByCodeAndPostId(@Param("code")String code, @Param("postId")Long postId);
+
 
     //转化为 Map
     default Map<Long, StkTextEntity> findAllMap(String code, Integer type) {

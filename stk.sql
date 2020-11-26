@@ -588,6 +588,7 @@ alter table stk_text add read_date date;
 comment on column stk_text.favorite_date is '阅读时间';
 
 
+
 create table stk_data_industry_pe(
   industry_id number(6),
   pe_date varchar2(8),
@@ -2599,10 +2600,11 @@ select * from stk_fn_data where code='603998';
 
 select * from stk_restricted where code='002732';
 
-select * from stk_text where code='002052' order by id desc;
+select * from stk_text order by insert_time desc;
+
 
 select * from stk where code='300145';
-select * from stk_kline where  code='603970' order by kline_date desc;
+select * from stk_kline where  code='000001' order by kline_date desc;
 select count(1) from stk_kline where kline_date='20180830';
 select median(pb_ttm) from stk_kline where kline_date='20180905';
 select median(pe_ttm) from stk_kline where kline_date='20180905';
