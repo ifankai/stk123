@@ -21,7 +21,7 @@ public class XueqiuUser {
     private int friends_count;
     private String gender;
     private long id;
-    private int last_comment_id;
+//    private int last_comment_id;
     private int last_status_id;
     private String photo_domain;
     private String profile;

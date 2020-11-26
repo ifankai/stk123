@@ -36,7 +36,7 @@ public class StkStompFrameHandler implements StompFrameHandler {
         if(sm.getType() != null) {
             RequestResult requestResult = null;
             if(sm.getRequestMethod() == RequestMethod.GET) {
-                String url = "http://localhost:80/"+sm.getType();
+                String url = "http://localhost:8088/"+sm.getType();
                 if(sm.getData() != null){
                     url = url + "?" + sm.getData();
                 }
@@ -46,6 +46,8 @@ public class StkStompFrameHandler implements StompFrameHandler {
                 }catch(Exception e){
                     requestResult = RequestResult.failure(e.getMessage());
                 }
+            }else if(sm.getRequestMethod() == RequestMethod.POST) {
+                requestResult = RequestResult.failure("Http method post TODO...");
             }
             ClientMessage cm = new ClientMessage();
             cm.setType(sm.getType());

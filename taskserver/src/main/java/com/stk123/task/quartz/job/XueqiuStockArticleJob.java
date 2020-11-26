@@ -49,6 +49,8 @@ public class XueqiuStockArticleJob implements Job {
 
 	@Autowired
 	private TextService textService;
+	@Autowired
+    private StkTextRepository stkTextRepository;
 
 	@Override
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {
@@ -116,7 +118,7 @@ public class XueqiuStockArticleJob implements Job {
 
         String url = "https://xueqiu.com/query/v1/symbol/search/status?count=100&comment=0&symbol="+scode+"&hl=0&source=all&sort=&page=1&q=";
 		String page = HttpUtils.get(url,null, requestHeaders, "gb2312");
-		System.out.println(page);
+//		System.out.println(page);
 		List<StkTextEntity> results = new ArrayList<StkTextEntity>();
 		if("400".equals(page)){
 			return results;
@@ -126,7 +128,7 @@ public class XueqiuStockArticleJob implements Job {
 //		Map map = JsonUtils.testJson(page);
 		ObjectMapper objectMapper = new ObjectMapper();
 		XueqiuPostRoot xueqiuPostRoot = objectMapper.readValue(page, XueqiuPostRoot.class);
-		log.info(xueqiuPostRoot);
+		//log.info(xueqiuPostRoot);
 
 //		List<Map> arts = (List<Map>)map.get("list");
 		List<XueqiuPost> list = xueqiuPostRoot.getList();
@@ -157,6 +159,8 @@ public class XueqiuStockArticleJob implements Job {
 					if(replyCount >= 10){
 
 						if(!ids.contains(post.getId())) {
+                            if(stkTextRepository.existingByCodeAndPostId(code, post.getId()) > 0) continue;
+
 							StkTextEntity stkTextEntity = new StkTextEntity();
 							stkTextEntity.setUserId(post.getUser_id());
 							stkTextEntity.setUserName(post.getUser().getScreen_name());
@@ -164,7 +168,7 @@ public class XueqiuStockArticleJob implements Job {
 							stkTextEntity.setCreatedAt(new Date(post.getCreated_at()));
 							stkTextEntity.setPostId(post.getId());
 							stkTextEntity.setTitle(title);
-							stkTextEntity.setTitle(text);
+							stkTextEntity.setText(text);
 							stkTextEntity.setType(TextConstant.TYPE_XUEQIU);
 							stkTextEntity.setSubType(TextConstant.SUB_TYPE_XUEQIU_DEFAUTL);
 							stkTextEntity.setInsertTime(new Date());
