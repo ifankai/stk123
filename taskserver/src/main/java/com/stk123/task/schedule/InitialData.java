@@ -672,20 +672,7 @@ public class InitialData {
 						String sdate = ServiceUtils.formatDate(date, ServiceUtils.sf_ymd2);
 						String pe = StringUtils.trim(tds.get(2).toPlainTextString());
 						if(NumberUtils.isNumber(pe)) {
-							//IndustryService industryService = SpringUtils.getBean(IndustryService.class);
-                            industryService.updatePe(indIdMap.get(code), sdate, Double.parseDouble(pe), null, null);
-
-							/*StkDataIndustryPeEntity entity = industryService.findStkDataIndustryPe();
-							if(entity == null){
-								entity = new StkDataIndustryPeEntity();
-								entity.setIndustryId(indIdMap.get(code));
-								entity.setPeDate(sdate);
-								entity.setPe(Double.parseDouble(pe));
-								entity.setInsertTime(ServiceUtils.getTime());
-							}else{
-								entity.setPe(Double.parseDouble(pe));
-							}
-							industryService.save(entity);*/
+                            industryService.updatePe(indIdMap.get(code), sdate, Double.parseDouble(pe));
 						}
 					}
 				}
@@ -716,8 +703,7 @@ public class InitialData {
 						String sdate = ServiceUtils.formatDate(date, ServiceUtils.sf_ymd2);
 						String pe = StringUtils.trim(tds.get(2).toPlainTextString());
 						if(NumberUtils.isNumber(pe)) {
-//							IndustryService industryService = SpringUtils.getBean(IndustryService.class);
-                            industryService.updatePe(indIdMap.get(code), sdate, null, Double.parseDouble(pe), null);
+                            industryService.updatePettm(indIdMap.get(code), sdate, Double.parseDouble(pe));
 
 						}
 					}
@@ -749,8 +735,7 @@ public class InitialData {
 						String sdate = ServiceUtils.formatDate(date, ServiceUtils.sf_ymd2);
 						String pe = StringUtils.trim(tds.get(2).toPlainTextString());
 						if(NumberUtils.isNumber(pe)) {
-//							IndustryService industryService = SpringUtils.getBean(IndustryService.class);
-                            industryService.updatePe(indIdMap.get(code), sdate, null, null, Double.parseDouble(pe));
+                            industryService.updatePb(indIdMap.get(code), sdate, Double.parseDouble(pe));
 
 						}
 					}
@@ -782,18 +767,7 @@ public class InitialData {
 						String sdate = ServiceUtils.formatDate(date, ServiceUtils.sf_ymd2);
 						String pe = StringUtils.trim(tds.get(2).toPlainTextString());
 						if(NumberUtils.isNumber(pe)) {
-//							IndustryService industryService = SpringUtils.getBean(IndustryService.class);
-							StkDataIndustryPeEntity entity = industryService.findStkDataIndustryPe(indIdMap.get(code), sdate);
-							if(entity == null){
-								entity = new StkDataIndustryPeEntity();
-								entity.setIndustryId(indIdMap.get(code));
-								entity.setPeDate(sdate);
-								entity.setAdr(Double.parseDouble(pe));
-								entity.setInsertTime(ServiceUtils.getTime());
-							}else{
-								entity.setAdr(Double.parseDouble(pe));
-							}
-							industryService.save(entity);
+							industryService.updateAdr(indIdMap.get(code), sdate, Double.parseDouble(pe));
 						}
 					}
 				}

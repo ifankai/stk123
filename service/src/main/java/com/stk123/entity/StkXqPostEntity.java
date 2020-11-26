@@ -41,14 +41,14 @@ public class StkXqPostEntity implements Serializable {
     private Date insertDate; //post记录创建时间
 
     @Column(columnDefinition = "number(1) default 0")
-    private Boolean isFavorite = false;
+    private Integer isFavorite = 0;
 
     @Column
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     private Date favoriteDate;
 
     @Column(columnDefinition = "number(1) default 0")
-    private Boolean isRead = false;
+    private Integer isRead = 0;
 
     @Column
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)

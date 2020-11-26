@@ -40,6 +40,8 @@ public class TaskCofig {
     private InitialData initialData;
     @Autowired
     private InitialKLine initialKLine;
+    @Autowired
+    private XueqiuStockArticleJob xueqiuStockArticleJob;
 
     @Scheduled(initialDelay = 1, fixedDelay = Integer.MAX_VALUE)
     public void main() throws Exception {
@@ -73,7 +75,6 @@ public class TaskCofig {
     }
 
 
-    XueqiuStockArticleJob xueqiuStockArticleJob = new XueqiuStockArticleJob();
     @Scheduled(cron = "0 0/1 * ? * *")
     public void xueqiuStockArticleJob() throws Exception {
         if(!ArrayUtils.contains(environment.getActiveProfiles(), "company")) {

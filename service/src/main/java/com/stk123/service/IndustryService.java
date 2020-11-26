@@ -2,6 +2,7 @@ package com.stk123.service;
 
 import com.stk123.entity.StkDataIndustryPeEntity;
 import com.stk123.entity.StkIndustryTypeEntity;
+import com.stk123.repository.BaseRepository;
 import com.stk123.repository.StkDataIndustryPeRepository;
 import com.stk123.repository.StkIndustryTypRepository;
 import com.stk123.util.ServiceUtils;
@@ -12,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Calendar;
 
 @Service
-public class IndustryService extends BaseService {
+public class IndustryService {
 
     public IndustryService(){}
 
@@ -55,7 +56,7 @@ public class IndustryService extends BaseService {
     }
 
     @Transactional
-    public StkDataIndustryPeEntity updatePe(Integer industryId, String peDate, Double pe, Double peTtm, Double pb) {
+    public StkDataIndustryPeEntity update(Integer industryId, String peDate, Double pe, Double peTtm, Double pb, Double adr) {
         StkDataIndustryPeEntity entity = findStkDataIndustryPe(industryId, peDate);
         if(entity == null){
             entity = new StkDataIndustryPeEntity();
@@ -66,7 +67,21 @@ public class IndustryService extends BaseService {
         if(pe != null) entity.setPe(pe);
         if(peTtm != null) entity.setPeTtm(peTtm);
         if(pb != null) entity.setPb(pb);
-        return save(entity);
+        if(adr != null) entity.setAdr(adr);
+        return stkDataIndustryPeRepository.save(entity);
+    }
+
+    public StkDataIndustryPeEntity updatePe(Integer industryId, String peDate, Double pe) {
+        return update(industryId, peDate, pe, null, null, null);
+    }
+    public StkDataIndustryPeEntity updatePettm(Integer industryId, String peDate, Double pettm) {
+        return update(industryId, peDate, null, pettm, null, null);
+    }
+    public StkDataIndustryPeEntity updatePb(Integer industryId, String peDate, Double pb) {
+        return update(industryId, peDate, null, null, pb, null);
+    }
+    public StkDataIndustryPeEntity updateAdr(Integer industryId, String peDate, Double adr) {
+        return update(industryId, peDate, null, null, null, adr);
     }
 
 }

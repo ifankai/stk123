@@ -74,6 +74,11 @@ public class ConfigUtils {
         	CloseUtil.close(fis);
         }
 	}
+
+	public static Properties getPropertiesFromClassPath(String resName) throws Exception {
+		setPropsFromResource(null, resName);
+		return props;
+	}
 	
 	/**
 第一：前面有 “/”
