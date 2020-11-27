@@ -15,7 +15,6 @@ public class RequestResult<T> implements Serializable {
     public static RequestResult FAIL = new RequestResult(false);
 
     private Boolean success;
-    private String msg;
     private Integer code; //error code, update number, counter
     private T data;
 
@@ -31,11 +30,6 @@ public class RequestResult<T> implements Serializable {
 
     public RequestResult(boolean success){
         this.success = success;
-    }
-
-    public RequestResult(boolean success, String msg){
-        this.success = success;
-        this.msg = msg;
     }
 
     public RequestResult(boolean success, T data){
