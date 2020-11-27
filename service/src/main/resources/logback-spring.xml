@@ -17,7 +17,8 @@
     <conversionRule conversionWord="wex" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter" />
     <conversionRule conversionWord="wEx" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" />
     <!-- 彩色日志格式 -->
-    <property name="CONSOLE_LOG_PATTERN" value="${CONSOLE_LOG_PATTERN:-%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
+    <property name="CONSOLE_LOG_PATTERN" value="${CONSOLE_LOG_PATTERN:-%clr(%d{yy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(-){faint} %clr([%10.10t]){faint} %clr(%-40.40logger{39}){cyan} %5.5L%clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
+    <property name="CONSOLE_LOG_PATTERN_STK123" value="${CONSOLE_LOG_PATTERN_STK123:-%clr(%d{yy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(-){faint} %clr([%10.10t]){faint} %clr(%-40.40logger{39}){red} %5.5L%clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
 
 
     <!--输出到控制台-->
@@ -28,6 +29,18 @@
         </filter>
         <encoder>
             <Pattern>${CONSOLE_LOG_PATTERN}</Pattern>
+            <!-- 设置字符集 -->
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="CONSOLE_STK123" class="ch.qos.logback.core.ConsoleAppender">
+        <!--此日志appender是为开发使用，只配置最底级别，控制台输出的日志级别是大于或等于此级别的日志信息-->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>info</level>
+        </filter>
+        <encoder>
+            <Pattern>${CONSOLE_LOG_PATTERN_STK123}</Pattern>
             <!-- 设置字符集 -->
             <charset>UTF-8</charset>
         </encoder>
@@ -197,5 +210,10 @@
             <appender-ref ref="WARN_FILE" />
         </root>
     </springProfile>
+
+
+    <logger name="com.stk123" level="info" additivity="false">
+        <appender-ref ref="CONSOLE_STK123"/>
+    </logger>
 
 </configuration>

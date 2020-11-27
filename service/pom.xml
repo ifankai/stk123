@@ -190,6 +190,31 @@
                 <artifactId>maven-project-info-reports-plugin</artifactId>
                 <version>3.0.0</version>
             </plugin>
+
+            <!-- typescript-generator   mvn process-classes -->
+            <plugin>
+                <groupId>cz.habarta.typescript-generator</groupId>
+                <artifactId>typescript-generator-maven-plugin</artifactId>
+                <version>1.25.322</version>
+                <executions>
+                    <execution>
+                        <id>generate</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <phase>process-classes</phase>
+                        <configuration>
+                            <jsonLibrary>jackson2</jsonLibrary>
+                            <classes>
+                                <class>com.stk123.entity.StkTextEntity</class>
+                                <class>com.stk123.model.RequestResult</class>
+                            </classes>
+                            <outputFile>src/main/typescript/typescript.d.ts</outputFile>
+                            <outputKind>module</outputKind>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>

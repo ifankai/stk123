@@ -3,6 +3,7 @@ package com.stk123.app;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 
@@ -14,6 +15,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
  */
 @SpringBootApplication
 @EnableAutoConfiguration
+@EntityScan({"com.stk123.entity"})
 @EnableAsync
 public class StkMobileApplication {
 
