@@ -3,10 +3,13 @@ package com.stk123.common.util;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.Cache;
+//import net.sf.ehcache.Cache;
+//import net.sf.ehcache.CacheManager;
+//import net.sf.ehcache.Element;
 import org.springframework.util.ResourceUtils;
 
 public class CacheUtils {
@@ -24,51 +27,83 @@ public class CacheUtils {
     public final static String KEY_INDUSTRY_STK = "industry.";
     public final static String KEY_STKS_COLUMN_NAMES = "stksColumnNames";//多股同列显示的列名key
     public final static String KEY_INDEX_TREE = "indexTree";
+    private final static String STOCK = "stock";
+    private final static String FOREVER = "forever";
 	
     //one day key
     public final static String KEY_ONE_DAY = "oneday";
     
 	private static final String path = "ehcache.xml";  
-    private static CacheManager manager;
+//    private static CacheManager manager;
     private static final String DOT = ".";
-  
-    static{
-        try {
-            URL url = ResourceUtils.getURL("classpath:" + path);
-            manager = CacheManager.create(url);
-            for (String name : manager.getCacheNames()) {
-                //System.out.println(name);
-            }
-            //System.out.println(System.getProperty("java.io.tmpdir"));
-        }catch (Exception e){
 
-        }
-    }  
+    private static Map<String, Cache> ALL_CACHE = new HashMap<>();
+
+//    static{
+//        try {
+//            URL url = ResourceUtils.getURL("classpath:" + path);
+//            manager = CacheManager.create(url);
+//            for (String name : manager.getCacheNames()) {
+//                //System.out.println(name);
+//            }
+//            //System.out.println(System.getProperty("java.io.tmpdir"));
+//        }catch (Exception e){
+//
+//        }
+//    }
+    static {
+        Cache<String, Object> cache_6_hours = Caffeine.newBuilder().expireAfterWrite(6, TimeUnit.HOURS).maximumSize(10_000).build();
+        Cache<String, Object> cache_oneday = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.DAYS).maximumSize(10_000).build();
+        Cache<String, Object> cache_forever = Caffeine.newBuilder().maximumSize(10_000).build();
+
+        ALL_CACHE.put(KEY_STK_STOCK, cache_6_hours);
+        ALL_CACHE.put(KEY_STK_INDUSTRY, cache_6_hours);
+        ALL_CACHE.put(KEY_STK_K, cache_6_hours);
+        ALL_CACHE.put(KEY_STK_FN, cache_6_hours);
+        ALL_CACHE.put(STOCK, cache_6_hours);
+
+        ALL_CACHE.put(KEY_FN_TYPE, cache_forever);
+        ALL_CACHE.put(KEY_FN_TYPE_DISPLAY, cache_forever);
+        ALL_CACHE.put(KEY_INDUSTRY_TYPE, cache_forever);
+        ALL_CACHE.put(KEY_INDUSTRY_STK, cache_forever);
+        ALL_CACHE.put(KEY_STKS_COLUMN_NAMES, cache_forever);
+        ALL_CACHE.put(KEY_INDEX_TREE, cache_forever);
+        ALL_CACHE.put(FOREVER, cache_forever);
+
+        ALL_CACHE.put(KEY_ONE_DAY, cache_oneday);
+
+    }
     
     public static void close(){
-    	if(manager != null)manager.shutdown();
+//    	if(manager != null)manager.shutdown();
+        for(Cache cache : ALL_CACHE.values()){
+            cache.invalidateAll();
+        }
     }
   
     public static void put(String cacheName, String key, Object value) {  
-        Cache cache = manager.getCache(cacheName);  
-        Element element = new Element(key, value);  
-        cache.put(element);
-        //System.out.println("cache count="+cache.getSize());
-    }  
+//        Cache cache = manager.getCache(cacheName);
+//        Element element = new Element(key, value);
+//        cache.put(element);
+        ALL_CACHE.get(cacheName).put(key, value);
+    }
   
     public static Object get(String cacheName, String key) {  
-        Cache cache = manager.getCache(cacheName); 
-        Element element = cache.get(key);
-        return element == null ? null : element.getObjectValue();  
+//        Cache cache = manager.getCache(cacheName);
+//        Element element = cache.get(key);
+//        return element == null ? null : element.getObjectValue();
+        return ALL_CACHE.get(cacheName).getIfPresent(key);
     }  
   
     public static Cache getCache(String cacheName) {  
-        return manager.getCache(cacheName);  
+//        return manager.getCache(cacheName);
+        return ALL_CACHE.get(cacheName);
     }  
   
     public static void remove(String cacheName, String key) {  
-        Cache cache = manager.getCache(cacheName);  
-        cache.remove(key);  
+//        Cache cache = manager.getCache(cacheName);
+//        cache.remove(key);
+        ALL_CACHE.get(cacheName).invalidate(key);
     }
     
     //tree structure cache
@@ -149,7 +184,7 @@ public class CacheUtils {
     public static boolean DISABLE = false;
     
     //--------stock cache--------//
-    private final static String STOCK = "stock";
+
     public static void putByCode(String code, String path, Object value) {
     	if(!DISABLE){
     		CacheUtils.putTree(STOCK, code + DOT + path, value);
@@ -165,7 +200,7 @@ public class CacheUtils {
     
     
     //------forever cache-------//
-    private final static String FOREVER = "forever";
+
     public static void putForever(String path, Object value) {
     	if(!DISABLE){
     		CacheUtils.putTree(FOREVER, path, value);
@@ -191,17 +226,17 @@ public class CacheUtils {
 		//指定ehcache.xml的位置  
         URL url = ResourceUtils.getURL("classpath:ehcache.xml");
 		System.out.println(url.getPath());
-		CacheManager manager = CacheManager.create(url);
-		for(String name : manager.getCacheNames()){
-			System.out.println(name);
-		}
+//		CacheManager manager = CacheManager.create(url);
+//		for(String name : manager.getCacheNames()){
+//			System.out.println(name);
+//		}
 	    
 	    CacheUtils.putByCode("000997", "name", "新大陆");
 	    for(int i=0;i<1000;i++){
 	    	CacheUtils.putByCode("000997"+i, "name", "新大陆"+i);
 	    }
 	    System.out.println(CacheUtils.getByCode("000997100", "name"));
-	    manager.shutdown();
+//	    manager.shutdown();
 	}
 
 }

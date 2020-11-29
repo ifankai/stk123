@@ -16,10 +16,12 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.stk123.common.db.util.CloseUtil;
 import com.stk123.common.util.*;
 import com.stk123.task.tool.TaskUtils;
 import com.stk123.util.ExceptionUtils;
 import com.stk123.util.HttpUtils;
+import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
 import org.htmlparser.Node;
 import org.htmlparser.tags.LinkTag;
@@ -47,6 +49,7 @@ import org.springframework.stereotype.Component;
 
 
 @Component
+@CommonsLog
 public class InitialKLine {
 	
 	private static Logger logger = LoggerFactory.getLogger(InitialKLine.class);
@@ -77,24 +80,25 @@ public class InitialKLine {
 		initialKLine.run(args);
 	}
 
-	public void run(String... args) throws Exception {
+	public void run(String... args) {
         System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");//fix JDK1.7 error:java.lang.IllegalArgumentException: Comparison method violates its general contract!
         //System.setProperty("java.io.tmpdir", System.getProperty("java.io.tmpdir")+File.separator+"CN");
-        ConfigUtils.setPropsFromResource(TableTools.class,"db.properties");
+
         ConfigUtils.setProp("sql_select_show", "N");
         Connection conn = null;
-        try{
+        try {
+            ConfigUtils.setPropsFromResource(TableTools.class, "db.properties");
             int market = 1;//default A stock
-            if(args != null && args.length > 0){
-                for(String arg : args){
-                    if("US".equals(arg)){
+            if (args != null && args.length > 0) {
+                for (String arg : args) {
+                    if ("US".equals(arg)) {
                         market = 2;
-                        System.setProperty("java.io.tmpdir", System.getProperty("java.io.tmpdir")+File.separator+"US");
+                        System.setProperty("java.io.tmpdir", System.getProperty("java.io.tmpdir") + File.separator + "US");
                     }
-                    if("initonly".equalsIgnoreCase(arg)){
+                    if ("initonly".equalsIgnoreCase(arg)) {
                         initonly = true;
                     }
-                    if("analyse".equalsIgnoreCase(arg)){
+                    if ("analyse".equalsIgnoreCase(arg)) {
                         analyse = true;
                     }
                 }
@@ -104,24 +108,24 @@ public class InitialKLine {
             CacheUtils.DISABLE = true;
             Index.KLineWhereClause = Index.KLINE_20140101;
             Index.FNDateWhereClause = Index.FNDate_20140101;
-            if(market == 1){
+            if (market == 1) {
                 //------------- A --------------//
-                try{
-                    JdbcUtils.delete(conn, "delete from stk_kline where kline_date>to_char(sysdate,'yyyymmdd')",null);
+                try {
+                    JdbcUtils.delete(conn, "delete from stk_kline where kline_date>to_char(sysdate,'yyyymmdd')", null);
                     initAStock(conn);
-                    JdbcUtils.delete(conn, "delete from stk_kline where kline_date>to_char(sysdate,'yyyymmdd')",null);
+                    JdbcUtils.delete(conn, "delete from stk_kline where kline_date>to_char(sysdate,'yyyymmdd')", null);
 
                     //下载沪深300市盈率xls数据
                     String url = "http://www.csindex.com.cn/sseportal/ps/zhs/hqjt/csi/Csi300Perf.xls";
-                    HttpUtils.download(url,null, ConfigUtils.getProp("initial_csi300")/*"d:\\share\\download\\"*/, "Csi300Perf_"+TaskUtils.getToday()+".xls");
-                }catch(Exception e){
+                    HttpUtils.download(url, null, ConfigUtils.getProp("initial_csi300")/*"d:\\share\\download\\"*/, "Csi300Perf_" + TaskUtils.getToday() + ".xls");
+                } catch (Exception e) {
                     EmailUtils.send("Initial A Stock K Line Error", ExceptionUtils.getExceptionAsString(e));
                 }
 
                 //------------- HK --------------//
-                try{
+                try {
                     initHKStock(conn);
-                }catch(Exception e){
+                } catch (Exception e) {
                     EmailUtils.send("Initial HK Stock K Line Error", ExceptionUtils.getExceptionAsString(e));
                 }
 
@@ -129,11 +133,11 @@ public class InitialKLine {
                 //ScreenerAction.refreshStkSearchMview(conn);
                 //Sync.run();
 
-            }else if(market == 2){
-                try{
+            } else if (market == 2) {
+                try {
                     Index.KLineWhereClause = Index.KLINE_20140101;
                     initUStock(conn);
-                }catch(Exception e){
+                } catch (Exception e) {
                     EmailUtils.send("Initial US Stock K Line Error", ExceptionUtils.getExceptionAsString(e));
                 }
             }
@@ -141,9 +145,11 @@ public class InitialKLine {
             //Monitor.run(conn, Monitor.TYPE_KLINE);
 
             long end = System.currentTimeMillis();
-            System.out.println("InitialKLine time:"+((end-start)/1000D));
+            System.out.println("InitialKLine time:" + ((end - start) / 1000D));
+        }catch (Exception e){
+            log.error("InitialKLine", e);
         }finally{
-            if(conn != null)conn.close();
+            CloseUtil.close(conn);
             CacheUtils.close();
         }
     }
@@ -367,21 +373,22 @@ public class InitialKLine {
 			params.add(today);
 			params.add(today);
 			int i = JdbcUtils.insert(conn, "insert into stk_pe(id,report_date) select ?,? from dual where not exists (select 1 from stk_pe where report_date=?)", params);
-			
-			
-			System.out.println("calculate peg."+new Date());
+
+
+            //log.info("calculate peg."+today);
 			//peg(today, context.indexs);
-			
+
+            log.info("calculate pe/pb:"+today);
 			params.clear();
 			params.add(today);
 			Double totalPE = JdbcUtils.load("select avg(pe_ttm) from stk_kline where kline_date=? and pe_ttm is not null and pe_ttm>3 and pe_ttm<200", params, Double.class);
-			totalPE = TaskUtils.numberFormat(totalPE, 2);
+			if(totalPE != null)totalPE = TaskUtils.numberFormat(totalPE, 2);
 			Double totalPB = JdbcUtils.load("select avg(pb_ttm) from stk_kline where kline_date=? and pb_ttm is not null and pb_ttm>0 and pb_ttm<30", params, Double.class);
-			totalPB = TaskUtils.numberFormat(totalPB, 2);
+            if(totalPB != null)totalPB = TaskUtils.numberFormat(totalPB, 2);
 			Double midPB = JdbcUtils.load("select median(pb_ttm) from stk_kline where kline_date=? and pb_ttm is not null and pb_ttm>0 and pb_ttm<30", params, Double.class);
-			midPB = TaskUtils.numberFormat(midPB, 2);
+            if(midPB != null)midPB = TaskUtils.numberFormat(midPB, 2);
 			Double midPE = JdbcUtils.load("select median(pe_ttm) from stk_kline where kline_date=? and pe_ttm is not null and pe_ttm>3 and pe_ttm<200", params, Double.class);
-			midPE = TaskUtils.numberFormat(midPE, 2);
+            if(midPE != null)midPE = TaskUtils.numberFormat(midPE, 2);
 			
 			if(i >= 1){
 				params.clear();
@@ -393,8 +400,8 @@ public class InitialKLine {
 				JdbcUtils.update(conn, "update stk_pe set total_pe=?,total_pb=?,mid_pb=?,mid_pe=? where id=?", params);
 				System.gc();
 			}
-			
-			
+
+            log.info("update pe/pb ntile:"+today);
 			IndexContext context = new IndexContext();
 			IndexContext contextYesterday = new IndexContext();
 			for(Stk stk : stks){
@@ -402,19 +409,19 @@ public class InitialKLine {
 				context.indexs.add(index);
 				contextYesterday.indexs.add(index);
 				//更新非公开发行，员工持股价格溢价率
-				NoticeRobot.updateRate(conn, index);
+				//NoticeRobot.updateRate(conn, index);
 				
 				//跟新pe/pb ntile
 				index.updateNtile();
 			}
 			
-			System.out.println("策略 at:"+new Date());
+			log.info("策略 at:"+today);
 			strategy(conn,false);
-			
-			System.out.println("时间窗口 at:"+new Date());
+
+            log.info("时间窗口 at:"+today);
 			timeWindow(conn, today);
-			
-			System.out.println("行业分析");
+
+            log.info("行业分析");
 			checkIndustry(conn, today, "10jqka_gn");
 			checkIndustry(conn, today, "10jqka_thshy");
 			

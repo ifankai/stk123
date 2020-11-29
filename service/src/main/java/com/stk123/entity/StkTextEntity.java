@@ -37,6 +37,9 @@ public class StkTextEntity implements Serializable {
     @Column(name="TEXT")
     private String text;
 
+    @Column(name="TEXT_DESC")
+    private String textDesc;
+
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     @Column(name="INSERT_TIME")
     private Date insertTime;

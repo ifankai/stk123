@@ -2,17 +2,21 @@ package com.stk123.repository;
 
 import com.stk123.entity.StkTextEntity;
 import com.stk123.model.text.TextDto;
+import jnr.ffi.annotations.In;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
  * https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query-methods.query-creation
+ * https://blog.csdn.net/xiang__liu/article/details/80900817
  */
 
 @Repository
@@ -20,15 +24,20 @@ public interface StkTextRepository extends JpaRepository<StkTextEntity, Long> {
 
     List<StkTextEntity> findAllByCodeAndTypeOrderByInsertTimeDesc(String code, Integer type);
 
-    List<StkTextEntity> queryTop5ByReadDateNullOrderByInsertTimeAsc();
+    List<StkTextEntity> queryTop5ByTypeAndReadDateNullAndCreatedAtGreaterThanOrderByInsertTimeAsc(Integer type, Date createdAt);
 
-    List<StkTextEntity> findTop20ByReadDateNotNullOrderByInsertTimeDesc();
+    Integer countByTypeAndReadDateNullAndCreatedAtGreaterThan(Integer type, Date createdAt);
 
-    List<StkTextEntity> findAllByFavoriteDateNotNullOrderByFavoriteDateDesc();
+    List<StkTextEntity> findTop20ByTypeAndReadDateNotNullOrderByInsertTimeDesc(Integer type);
+
+    List<StkTextEntity> findAllByTypeAndFavoriteDateNotNullOrderByFavoriteDateDesc(Integer type);
 
     @Query(value = "select count(1) from stk_text where code=:code and post_id=:postId", nativeQuery = true)
     Integer existingByCodeAndPostId(@Param("code")String code, @Param("postId")Long postId);
 
+    @Modifying
+    @Query(value = "update stk_text set read_date = sysdate where id in (:id)", nativeQuery = true)
+    void updateAll2Readed(@Param("id") List<Long> ids);
 
     //转化为 Map
     default Map<Long, StkTextEntity> findAllMap(String code, Integer type) {

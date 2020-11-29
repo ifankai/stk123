@@ -6,8 +6,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.stk123.common.db.util.CloseUtil;
 import com.stk123.util.ServiceUtils;
 import com.stk123.service.XueqiuService;
+import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
 
 import com.stk123.model.bo.Stk;
@@ -17,7 +19,10 @@ import com.stk123.common.db.util.DBUtil;
 import com.stk123.common.util.ConfigUtils;
 import com.stk123.util.HttpUtils;
 import com.stk123.common.util.JdbcUtils;
+import org.springframework.stereotype.Component;
 
+@Component
+@CommonsLog
 public class XueqiuFollow {
 
 	/**
@@ -25,30 +30,36 @@ public class XueqiuFollow {
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {
-		ConfigUtils.setPropsFromResource(TableTools.class, "db.properties");
-		Connection conn = null;
-		try {
-			conn = DBUtil.getConnection();
-			List<Stk> stks = JdbcUtils.list(conn, "select code,name from stk order by code", Stk.class);
-			Map<String, String> cookies = XueqiuService.getCookies();
-			System.out.println(cookies);
-			for(Stk stk : stks){
-				try{
-					Index index = new Index(conn,stk.getCode(),stk.getName());
-					System.out.println("xueqiu followers:"+index.getCode());
-					//update雪球关注人数
-					updateStkFollows(conn,index,cookies);
-				}catch(Exception e){
-					e.printStackTrace();
-					//throw e;
-				}
-				Thread.currentThread().sleep(15000);
-			}
-		} finally {
-			if (conn != null) conn.close();
-		}
-
+        XueqiuFollow xueqiuFollow = new XueqiuFollow();
+        xueqiuFollow.run();
 	}
+
+	public void run() {
+        Connection conn = null;
+        try {
+            ConfigUtils.setPropsFromResource(TableTools.class, "db.properties");
+            conn = DBUtil.getConnection();
+            List<Stk> stks = JdbcUtils.list(conn, "select code,name from stk order by code", Stk.class);
+            Map<String, String> cookies = XueqiuService.getCookies();
+            System.out.println(cookies);
+            for (Stk stk : stks) {
+                try {
+                    Index index = new Index(conn, stk.getCode(), stk.getName());
+                    System.out.println("xueqiu followers:" + index.getCode());
+                    //update雪球关注人数
+                    updateStkFollows(conn, index, cookies);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    //throw e;
+                }
+                Thread.currentThread().sleep(15000);
+            }
+        }catch (Exception e){
+
+        } finally {
+            CloseUtil.close(conn);
+        }
+    }
 	
 	public static void updateStkFollows(Connection conn, Index index, Map<String, String> requestHeaders) throws Exception {
 		String code = index.getCode();

@@ -6,9 +6,11 @@ import com.stk123.repository.StkTextRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TextService extends BaseRepository {
@@ -16,6 +18,7 @@ public class TextService extends BaseRepository {
     private StkTextRepository stkTextRepository;
 
     @Async
+    @Transactional
     public void updateToRead(List<StkTextEntity> list) {
         try {
             Thread.sleep(1000);
@@ -23,9 +26,10 @@ public class TextService extends BaseRepository {
             e.printStackTrace();
         }
         log.info("异步调用：updateToRead");
-        list.forEach(item -> {
-            item.setReadDate(new Date());
-        });
-        stkTextRepository.saveAll(list);
+//        list.forEach(item -> {
+//            item.setReadDate(new Date());
+//        });
+//        stkTextRepository.saveAll(list);
+        stkTextRepository.updateAll2Readed(list.stream().map((item) -> item.getId()).collect(Collectors.toList()));
     }
 }

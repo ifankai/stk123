@@ -20,7 +20,7 @@ import com.stk123.common.util.JsonUtils;
 public class XueqiuUserJob implements Job {
 
 	@Override
-	public void execute(JobExecutionContext arg0) throws JobExecutionException {
+	public void execute(JobExecutionContext arg0) {
 		System.out.println("XueqiuUserJob executing...");
 		try {
 			initUser("1287305957");//雪球访谈

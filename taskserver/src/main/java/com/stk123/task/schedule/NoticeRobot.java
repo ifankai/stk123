@@ -14,6 +14,7 @@ import com.stk123.util.HttpUtils;
 import com.stk123.util.ServiceUtils;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -24,24 +25,32 @@ import com.stk123.model.K;
 import com.stk123.model.News;
 import com.stk123.model.Text;
 import com.stk123.common.db.util.DBUtil;
+import org.springframework.stereotype.Component;
 
 /**
  * 公告 机器人
  */
+@Component
+@CommonsLog
 public class NoticeRobot {
 
 	public static void main(String[] args) {
-		try{
-			run();
-		}catch(Exception e){
-			StringWriter aWriter = new StringWriter();
-			e.printStackTrace(new PrintWriter(aWriter));
-			EmailUtils.send("NoticeRobot Error", aWriter.getBuffer().toString());
-			e.printStackTrace();
-		}
+        NoticeRobot noticeRobot = new NoticeRobot();
+        noticeRobot.run();
 	}
 
-	public static void run() throws Exception {
+	public void run() {
+        try{
+            run0();
+        }catch(Exception e){
+            StringWriter aWriter = new StringWriter();
+            e.printStackTrace(new PrintWriter(aWriter));
+            EmailUtils.send("NoticeRobot Error", aWriter.getBuffer().toString());
+            log.error("NoticeRobot Error", e);
+        }
+    }
+
+	public static void run0() throws Exception {
 		Connection conn = null;
 		try {
 			conn = DBUtil.getConnection();
@@ -148,7 +157,7 @@ public class NoticeRobot {
         String stock = index.getCode() + (index.getLoc() == Index.SH ? "%2Cgssh0": "%2Cgssz0") + index.getCode();
         String body = "stock="+stock+"&tabName=fulltext&pageSize=30&pageNum=1&column="+column+"&category=&plate=sz&seDate=&searchkey=&secid=&sortName=&sortType=&isHLtitle=true";
         String page = HttpUtils.post("http://www.cninfo.com.cn/new/hisAnnouncement/query", body, "UTF-8");
-        System.out.println(page);
+        //System.out.println(page);
         if("404".equals(page)){
             return ;
         }
