@@ -1,4 +1,4 @@
-// Generated using typescript-generator version 1.25.322 on 2020-11-27 12:04:28.
+// Generated using typescript-generator version 1.25.322 on 2020-11-29 15:17:33.
 
 export interface StkTextEntity extends Serializable {
     id: number;
@@ -7,6 +7,7 @@ export interface StkTextEntity extends Serializable {
     codeType: number;
     title: string;
     text: string;
+    textDesc: string;
     insertTime: Date;
     updateTime: Date;
     dispOrder: number;
@@ -24,9 +25,18 @@ export interface StkTextEntity extends Serializable {
 
 export interface RequestResult<T> extends Serializable {
     success: boolean;
-    msg: string;
     code: number;
     data: T;
+}
+
+export interface PageRoot<T> extends Serializable {
+    about: string;
+    count: number;
+    key: string;
+    list: T[];
+    perPage: number;
+    maxPage: number;
+    page: number;
 }
 
 export interface Serializable {

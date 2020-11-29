@@ -20,7 +20,7 @@ import com.stk123.util.HttpUtils;
 public class ResearchReportJob implements Job {
 
 	@Override
-	public void execute(JobExecutionContext arg0) throws JobExecutionException {
+	public void execute(JobExecutionContext arg0){
 		try{
 			System.out.println("ResearchReportJob executing...");
 			getReportByType("1",Text.SUB_TYPE_COMPANY_RESEARCH);

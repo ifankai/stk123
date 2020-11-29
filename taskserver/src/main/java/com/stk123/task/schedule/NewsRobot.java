@@ -16,6 +16,7 @@ import com.stk123.common.util.HtmlUtils;
 import com.stk123.util.HttpUtils;
 import com.stk123.util.ServiceUtils;
 import com.stk123.common.util.*;
+import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
 import org.htmlparser.Node;
 import org.htmlparser.tags.Span;
@@ -29,7 +30,10 @@ import com.stk123.model.Industry;
 import com.stk123.model.News;
 import com.stk123.common.db.util.DBUtil;
 import com.stk123.common.CommonConstant;
+import org.springframework.stereotype.Component;
 
+@Component
+@CommonsLog
 public class NewsRobot {
 	
 	private static Date InitialDate = null;
@@ -43,26 +47,29 @@ public class NewsRobot {
 	}
 
 	public static void main(String[] args) throws Exception {
-		try{
-			runCN(InitialDate);
-
-		}catch(Exception e){
-			StringWriter aWriter = new StringWriter();
-			e.printStackTrace(new PrintWriter(aWriter));
-			EmailUtils.send("NewsRobot CN Error", aWriter.getBuffer().toString());
-			e.printStackTrace();
-		}
-		
-		try{
-			runHK(InitialDate);
-			
-		}catch(Exception e){
-			StringWriter aWriter = new StringWriter();
-			e.printStackTrace(new PrintWriter(aWriter));
-			EmailUtils.send("NewsRobot HK Error", aWriter.getBuffer().toString());
-			e.printStackTrace();
-		}
+        NewsRobot newsRobot = new NewsRobot();
+		newsRobot.run();
 	}
+
+    public void run() {
+        try{
+            runCN(InitialDate);
+        }catch(Exception e){
+            StringWriter aWriter = new StringWriter();
+            e.printStackTrace(new PrintWriter(aWriter));
+            EmailUtils.send("NewsRobot CN Error", aWriter.getBuffer().toString());
+            log.error("NewsRobot CN Error", e);
+        }
+
+        try{
+            runHK(InitialDate);
+        }catch(Exception e){
+            StringWriter aWriter = new StringWriter();
+            e.printStackTrace(new PrintWriter(aWriter));
+            EmailUtils.send("NewsRobot HK Error", aWriter.getBuffer().toString());
+            log.error("NewsRobot HK Error", e);
+        }
+    }
 	
 	public static void runHK(Date date) throws Exception {
 		Connection conn = null;

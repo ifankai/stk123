@@ -586,7 +586,8 @@ alter table stk_text add favorite_date date;
 comment on column stk_text.favorite_date is '收藏时间';
 alter table stk_text add read_date date;
 comment on column stk_text.favorite_date is '阅读时间';
-
+alter table stk_text add text_desc varchar2(4000);
+comment on column stk_text.text_desc is '帖子摘要';
 
 
 create table stk_data_industry_pe(
@@ -2824,3 +2825,7 @@ select * from stk_data_industry_pe order by pe_date desc;
 
 
 select * from stk_text where id=10614950 for update;
+select * from stk_text order by insert_time desc;
+
+
+select avg(pe_ttm) from stk_kline where kline_date='20201127' and pe_ttm is not null and pe_ttm>3 and pe_ttm<200

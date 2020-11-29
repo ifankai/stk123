@@ -16,24 +16,14 @@
  */
 package com.stk123.common.db.util;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.Writer;
+import lombok.extern.apachecommons.CommonsLog;
+
+import java.io.*;
 import java.net.Socket;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-
+@CommonsLog
 public class CloseUtil {
-    private static final Log log = LogFactory.getLog(CloseUtil.class) ;
 
     /**
      * 关闭给定的输入流. <BR>

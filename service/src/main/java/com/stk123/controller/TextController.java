@@ -2,11 +2,14 @@ package com.stk123.controller;
 
 import com.stk123.entity.StkTextEntity;
 import com.stk123.model.RequestResult;
+import com.stk123.model.dto.PageRoot;
+import com.stk123.model.text.TextConstant;
 import com.stk123.model.text.TextDto;
 import com.stk123.repository.StkTextRepository;
 import com.stk123.service.TextService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
@@ -28,28 +31,29 @@ public class TextController {
 
     @RequestMapping(value = {"","/{type}"}, method = RequestMethod.GET)
     @ResponseBody
-    public RequestResult queryByType(@PathVariable(value = "type", required = false)String type){
+    public RequestResult queryByType(@PathVariable(value = "type", required = false)String type,
+                                     @RequestParam(value = "createAtAfter", required = false)Long createAtAfter){
         log.info("query....." + type);
         List<StkTextEntity> list = null;
+        Integer count = null;
         if(type == null || StringUtils.equals(type, "all") || StringUtils.equals(type, "unread")) {
-            list = stkTextRepository.queryTop5ByReadDateNullOrderByInsertTimeAsc();
+            if(createAtAfter == null){
+                createAtAfter = DateUtils.addYears(new Date(), -1).getTime();
+            }
+            Date date = new Date(createAtAfter);
+            list = stkTextRepository.queryTop5ByTypeAndReadDateNullAndCreatedAtGreaterThanOrderByInsertTimeAsc(TextConstant.TYPE_XUEQIU, date);
             if (!CollectionUtils.isEmpty(list)) {
                 //必须放在一个单独的class里，不然 @Async 不生效
                 textService.updateToRead(list);
             }
+            count = stkTextRepository.countByTypeAndReadDateNullAndCreatedAtGreaterThan(TextConstant.TYPE_XUEQIU, date);
             Collections.reverse(list);
-        /*}else if(StringUtils.equals(type, "unread")){
-            list = xqPostRepository.findByIsReadOrderByInsertDateDesc(false);
-            if (!CollectionUtils.isEmpty(list)) {
-
-                xqService.updateToRead(list);
-            }*/
         }else if(StringUtils.equals(type, "read")) {
-            list = stkTextRepository.findTop20ByReadDateNotNullOrderByInsertTimeDesc();
+            list = stkTextRepository.findTop20ByTypeAndReadDateNotNullOrderByInsertTimeDesc(TextConstant.TYPE_XUEQIU);
         }else if(StringUtils.equals(type, "favorite")) {
-            list = stkTextRepository.findAllByFavoriteDateNotNullOrderByFavoriteDateDesc();
+            list = stkTextRepository.findAllByTypeAndFavoriteDateNotNullOrderByFavoriteDateDesc(TextConstant.TYPE_XUEQIU);
         }
-        return RequestResult.success(list);
+        return RequestResult.success(PageRoot.unPageable(list, count));
     }
 
     @RequestMapping("/favorite/{id}/{isFavorite}")

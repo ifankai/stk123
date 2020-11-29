@@ -5,6 +5,7 @@ import com.stk123.model.ws.ClientMessage;
 import com.stk123.model.ws.ServerMessage;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,11 @@ import java.lang.reflect.Type;
 @CommonsLog
 @Component
 public class StkStompFrameHandler implements StompFrameHandler {
+
+    @Value("${stk.service.ip}")
+    private String serviceIp;
+    @Value("${stk.service.port}")
+    private String servicePort;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -36,7 +42,7 @@ public class StkStompFrameHandler implements StompFrameHandler {
         if(sm.getType() != null) {
             RequestResult requestResult = null;
             if(sm.getRequestMethod() == RequestMethod.GET) {
-                String url = "http://localhost:8088/"+sm.getType();
+                String url = "http://"+serviceIp+":"+servicePort+"/"+sm.getType();
                 if(sm.getData() != null){
                     url = url + "?" + sm.getData();
                 }

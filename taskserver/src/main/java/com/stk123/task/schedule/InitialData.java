@@ -3,6 +3,7 @@ package com.stk123.task.schedule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stk123.common.CommonConstant;
 import com.stk123.common.db.TableTools;
+import com.stk123.common.db.util.CloseUtil;
 import com.stk123.common.db.util.DBUtil;
 import com.stk123.common.db.util.sequence.SequenceUtils;
 import com.stk123.common.util.*;
@@ -21,6 +22,7 @@ import com.stk123.service.IndustryService;
 import com.stk123.util.ExceptionUtils;
 import com.stk123.util.HttpUtils;
 import com.stk123.util.ServiceUtils;
+import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -44,9 +46,8 @@ import java.util.*;
  * http://wwtnews.windin.com/WUDS/web/F9/Stock/WEST/EPS/EarningsForecast.aspx?WindCode=002275.sz
  */
 @Component
+@CommonsLog
 public class InitialData {
-
-    private  final Log log = LogFactory.getLog(InitialData.class);
 
     @Autowired
     private IndustryService industryService;
@@ -85,19 +86,21 @@ public class InitialData {
 		}
 	}
 
-	public void run(int market) throws Exception {
-        ConfigUtils.setPropsFromResource(TableTools.class,"db.properties");
+	public void run(int market) {
         Connection conn = null;
-        try{
+        try {
+            ConfigUtils.setPropsFromResource(TableTools.class, "db.properties");
             conn = DBUtil.getConnection();
-            if(market == 1){
+            if (market == 1) {
                 initialAStock(conn);
                 initialHKStock(conn);
-            }else if(market == 2){
+            } else if (market == 2) {
                 initialUStock(conn);
             }
+        }catch (Exception e){
+            log.error("InitialData", e);
         }finally{
-            if(conn != null)conn.close();
+            CloseUtil.close(conn);
             CacheUtils.close();
         }
     }

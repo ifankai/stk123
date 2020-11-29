@@ -236,23 +236,18 @@
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.8.0</version>
-                    <configuration>
+                    <!--<configuration>
                         <compilerArguments>
                             <extdirs>${third.libs}</extdirs>
                         </compilerArguments>
                         <showWarnings>false</showWarnings>
-                    </configuration>
-                </plugin>
-
-                <plugin>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.22.1</version>
+                    </configuration>-->
                 </plugin>
 
                 <plugin>
                     <artifactId>maven-war-plugin</artifactId>
                     <version>3.2.2</version>
-                    <configuration>
+<!--                    <configuration>
                         <webResources>
                             <resource>
                                 <directory>${third.libs}</directory>
@@ -262,7 +257,7 @@
                                 </includes>
                             </resource>
                         </webResources>
-                    </configuration>
+                    </configuration>-->
                 </plugin>
 
                 <plugin>
@@ -274,13 +269,13 @@
                     <version>2.8.2</version>
                 </plugin>
 
-                <plugin>
+                <!--<plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-antrun-plugin</artifactId>
                     <version>3.0.0</version>
                     <executions>
                         <execution>
-                            <!-- mvn antrun:run@ant-execute -->
+                            &lt;!&ndash; mvn antrun:run@ant-execute &ndash;&gt;
                             <id>ant-execute</id>
                             <phase>compile</phase>
                             <configuration>
@@ -297,11 +292,11 @@
 
                                     <jar destfile="./stk.jar" basedir="target/classes" includes="**" >
                                         <manifest>
-                                            <!--指定main-class-->
-                                            <!--<attribute name="Main-Class" value="demo.SayHello" />-->
-                                            <!--指定Class-Path-->
-                                            <!--<attribute name="Class-Path" value="D:\share\workspace\stk123\webserver\target\webserver\WEB-INF\lib">-->
-                                            <!--</attribute>-->
+                                            &lt;!&ndash;指定main-class&ndash;&gt;
+                                            &lt;!&ndash;<attribute name="Main-Class" value="demo.SayHello" />&ndash;&gt;
+                                            &lt;!&ndash;指定Class-Path&ndash;&gt;
+                                            &lt;!&ndash;<attribute name="Class-Path" value="D:\share\workspace\stk123\webserver\target\webserver\WEB-INF\lib">&ndash;&gt;
+                                            &lt;!&ndash;</attribute>&ndash;&gt;
                                         </manifest>
 
                                     </jar>
@@ -312,7 +307,7 @@
                             </goals>
                         </execution>
                     </executions>
-                </plugin>
+                </plugin>-->
 
 
                 <!--<plugin>-->

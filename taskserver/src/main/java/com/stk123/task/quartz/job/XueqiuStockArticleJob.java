@@ -53,7 +53,7 @@ public class XueqiuStockArticleJob implements Job {
     private StkTextRepository stkTextRepository;
 
 	@Override
-	public void execute(JobExecutionContext arg0) throws JobExecutionException {
+	public void execute(JobExecutionContext arg0) {
 		Connection conn = null;
 		try {
 			conn = DBUtil.getConnection();
@@ -169,6 +169,7 @@ public class XueqiuStockArticleJob implements Job {
 							stkTextEntity.setPostId(post.getId());
 							stkTextEntity.setTitle(title);
 							stkTextEntity.setText(text);
+							stkTextEntity.setTextDesc(post.getDescription());
 							stkTextEntity.setType(TextConstant.TYPE_XUEQIU);
 							stkTextEntity.setSubType(TextConstant.SUB_TYPE_XUEQIU_DEFAUTL);
 							stkTextEntity.setInsertTime(new Date());

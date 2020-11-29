@@ -1480,7 +1480,6 @@ public class Index {
 	/**
 	 * kline_date>='20100101'
 	 * @param flag true:前复权 false:不复权
-	 * @param loc sh:1, sz:2
 	 * @throws Exception
 	 */
 	public LinkedList<K> getKs(boolean flag) throws Exception {

@@ -18,6 +18,9 @@ public class MyStompSessionHandler extends StompSessionHandlerAdapter {
     @Autowired
     private StkStompFrameHandler stkStompFrameHandler;
 
+    @Autowired
+    private StkWebSocketClient stkWebSocketClient;
+
     @Override
     public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
         log.info("Websocket Connected!");
@@ -34,6 +37,12 @@ public class MyStompSessionHandler extends StompSessionHandlerAdapter {
         cm.setData(exception.getMessage());
         log.info(cm);
         session.send(StkWebSocketClient.SEND_URL, cm);
+
+        try {
+            stkWebSocketClient.init();
+        } catch (Exception e) {
+            log.error("stkWebSocketClient init error", e);
+        }
     }
 
     private void subscribeTopic(String topic, StompSession session) {
