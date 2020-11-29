@@ -1,222 +1,100 @@
 package com.stk123.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.stereotype.Component;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
 @Table(name = "STK_KLINE")
+@IdClass(StkKlineEntity.CompositeKey.class)
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@Setter
+@Getter
 public class StkKlineEntity implements Serializable {
-    private String code;
-    private String klineDate;
-    private Long open;
-    private Long close;
-    private Long lastClose;
-    private Long high;
-    private Long low;
-    private Long volumn;
-    private Long amount;
-    private Long closeChange;
-    private Long hsl;
-    private Long peTtm;
-    private Long peLyr;
-    private Long percentage;
-    private Long psTtm;
-    private Long pbTtm;
-    private Byte peNtile;
-    private Byte pbNtile;
-    private Byte psNtile;
-    private StkEntity stkByCode;
-
     @Id
     @Column(name = "CODE", nullable = true, length = 10)
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
+    private String code;
 
     @Id
     @Column(name = "KLINE_DATE", nullable = true, length = 8)
-    public String getKlineDate() {
-        return klineDate;
-    }
-
-    public void setKlineDate(String klineDate) {
-        this.klineDate = klineDate;
-    }
+    private String klineDate;
 
     @Basic
     @Column(name = "OPEN", nullable = true, precision = 2)
-    public Long getOpen() {
-        return open;
-    }
-
-    public void setOpen(Long open) {
-        this.open = open;
-    }
+    private Double open;
 
     @Basic
     @Column(name = "CLOSE", nullable = true, precision = 2)
-    public Long getClose() {
-        return close;
-    }
-
-    public void setClose(Long close) {
-        this.close = close;
-    }
+    private Double close;
 
     @Basic
     @Column(name = "LAST_CLOSE", nullable = true, precision = 2)
-    public Long getLastClose() {
-        return lastClose;
-    }
-
-    public void setLastClose(Long lastClose) {
-        this.lastClose = lastClose;
-    }
+    private Double lastClose;
 
     @Basic
     @Column(name = "HIGH", nullable = true, precision = 2)
-    public Long getHigh() {
-        return high;
-    }
-
-    public void setHigh(Long high) {
-        this.high = high;
-    }
+    private Double high;
 
     @Basic
     @Column(name = "LOW", nullable = true, precision = 2)
-    public Long getLow() {
-        return low;
-    }
-
-    public void setLow(Long low) {
-        this.low = low;
-    }
+    private Double low;
 
     @Basic
     @Column(name = "VOLUMN", nullable = true, precision = 2)
-    public Long getVolumn() {
-        return volumn;
-    }
-
-    public void setVolumn(Long volumn) {
-        this.volumn = volumn;
-    }
+    private Double volumn;
 
     @Basic
     @Column(name = "AMOUNT", nullable = true, precision = 2)
-    public Long getAmount() {
-        return amount;
-    }
-
-    public void setAmount(Long amount) {
-        this.amount = amount;
-    }
+    private Double amount;
 
     @Basic
     @Column(name = "CLOSE_CHANGE", nullable = true, precision = 6)
-    public Long getCloseChange() {
-        return closeChange;
-    }
-
-    public void setCloseChange(Long closeChange) {
-        this.closeChange = closeChange;
-    }
+    private Double closeChange;
 
     @Basic
     @Column(name = "HSL", nullable = true, precision = 2)
-    public Long getHsl() {
-        return hsl;
-    }
-
-    public void setHsl(Long hsl) {
-        this.hsl = hsl;
-    }
+    private Double hsl;
 
     @Basic
     @Column(name = "PE_TTM", nullable = true, precision = 2)
-    public Long getPeTtm() {
-        return peTtm;
-    }
-
-    public void setPeTtm(Long peTtm) {
-        this.peTtm = peTtm;
-    }
+    private Double peTtm;
 
     @Basic
     @Column(name = "PE_LYR", nullable = true, precision = 2)
-    public Long getPeLyr() {
-        return peLyr;
-    }
-
-    public void setPeLyr(Long peLyr) {
-        this.peLyr = peLyr;
-    }
+    private Double peLyr;
 
     @Basic
     @Column(name = "PERCENTAGE", nullable = true, precision = 2)
-    public Long getPercentage() {
-        return percentage;
-    }
-
-    public void setPercentage(Long percentage) {
-        this.percentage = percentage;
-    }
+    private Double percentage;
 
     @Basic
     @Column(name = "PS_TTM", nullable = true, precision = 2)
-    public Long getPsTtm() {
-        return psTtm;
-    }
-
-    public void setPsTtm(Long psTtm) {
-        this.psTtm = psTtm;
-    }
+    private Double psTtm;
 
     @Basic
     @Column(name = "PB_TTM", nullable = true, precision = 2)
-    public Long getPbTtm() {
-        return pbTtm;
-    }
-
-    public void setPbTtm(Long pbTtm) {
-        this.pbTtm = pbTtm;
-    }
+    private Double pbTtm;
 
     @Basic
     @Column(name = "PE_NTILE", nullable = true, precision = 0)
-    public Byte getPeNtile() {
-        return peNtile;
-    }
-
-    public void setPeNtile(Byte peNtile) {
-        this.peNtile = peNtile;
-    }
+    private Integer peNtile;
 
     @Basic
     @Column(name = "PB_NTILE", nullable = true, precision = 0)
-    public Byte getPbNtile() {
-        return pbNtile;
-    }
-
-    public void setPbNtile(Byte pbNtile) {
-        this.pbNtile = pbNtile;
-    }
+    private Integer pbNtile;
 
     @Basic
     @Column(name = "PS_NTILE", nullable = true, precision = 0)
-    public Byte getPsNtile() {
-        return psNtile;
-    }
+    private Integer psNtile;
 
-    public void setPsNtile(Byte psNtile) {
-        this.psNtile = psNtile;
-    }
+    //private StkEntity stkByCode;
+
 
     @Override
     public boolean equals(Object o) {
@@ -246,7 +124,6 @@ public class StkKlineEntity implements Serializable {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(code, klineDate, open, close, lastClose, high, low, volumn, amount, closeChange, hsl, peTtm, peLyr, percentage, psTtm, pbTtm, peNtile, pbNtile, psNtile);
     }
 
@@ -259,4 +136,13 @@ public class StkKlineEntity implements Serializable {
 //    public void setStkByCode(StkEntity stkByCode) {
 //        this.stkByCode = stkByCode;
 //    }
+
+    @Data
+    public static class CompositeKey implements Serializable {
+        private String code;
+        private String klineDate;
+
+        public CompositeKey(){}
+
+    }
 }
