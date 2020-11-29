@@ -2826,6 +2826,11 @@ select * from stk_data_industry_pe order by pe_date desc;
 
 select * from stk_text where id=10614950 for update;
 select * from stk_text order by insert_time desc;
+update stk_text set read_date = null where id=10615159;
 
 
-select avg(pe_ttm) from stk_kline where kline_date='20201127' and pe_ttm is not null and pe_ttm>3 and pe_ttm<200
+select avg(pe_ttm) from stk_kline where kline_date='20201127' and pe_ttm is not null and pe_ttm>3 and pe_ttm<200;
+
+select * from stk_import_info order by insert_time desc;
+
+select * from stk_xueqiu_user;
