@@ -50,7 +50,7 @@ public class StkStompFrameHandler implements StompFrameHandler {
                     requestResult = restTemplate.getForObject(url, RequestResult.class);
                     log.info("restTemplate url:" + url + ", result:" + requestResult);
                 }catch(Exception e){
-                    log.error(e);
+                    log.error(url, e);
                     requestResult = RequestResult.failure(e.getMessage());
                 }
             }else if(sm.getRequestMethod() == RequestMethod.POST) {
