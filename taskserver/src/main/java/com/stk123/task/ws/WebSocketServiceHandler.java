@@ -16,7 +16,7 @@ import java.lang.reflect.Type;
 
 @CommonsLog
 @Component
-public class StkStompFrameHandler implements StompFrameHandler {
+public class WebSocketServiceHandler implements StompFrameHandler {
 
     @Value("${stk.service.ip}")
     private String serviceIp;
@@ -47,8 +47,9 @@ public class StkStompFrameHandler implements StompFrameHandler {
                     url = url + "?" + sm.getData();
                 }
                 try {
+                    log.info("restTemplate request url:" + url);
                     requestResult = restTemplate.getForObject(url, RequestResult.class);
-                    log.info("restTemplate url:" + url + ", result:" + requestResult);
+                    log.info("restTemplate result:" + requestResult);
                 }catch(Exception e){
                     log.error(url, e);
                     requestResult = RequestResult.failure(e.getMessage());

@@ -1,6 +1,5 @@
 package com.stk123.task;
 
-import com.stk123.common.util.Arrays;
 import com.stk123.task.quartz.job.ResearchReportJob;
 import com.stk123.task.quartz.job.XueqiuStockArticleJob;
 import com.stk123.task.quartz.job.XueqiuUserJob;

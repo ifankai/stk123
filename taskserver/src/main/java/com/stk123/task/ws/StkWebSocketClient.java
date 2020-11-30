@@ -2,7 +2,6 @@ package com.stk123.task.ws;
 
 import com.stk123.common.CommonConstant;
 import com.stk123.model.ws.ClientMessage;
-import com.stk123.model.ws.ServerMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
@@ -15,14 +14,8 @@ import org.springframework.web.socket.sockjs.client.SockJsClient;
 import org.springframework.web.socket.sockjs.client.Transport;
 import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ThreadLocalRandom;
 
 @Component
 public class StkWebSocketClient {
@@ -32,7 +25,7 @@ public class StkWebSocketClient {
     private StompSession session;
 
     @Autowired
-    private MyStompSessionHandler myStompSessionHandler;
+    private WebSocketSessionHandler myStompSessionHandler;
 
     @Value("${stk.appserver.ip}")
     private String ip;
