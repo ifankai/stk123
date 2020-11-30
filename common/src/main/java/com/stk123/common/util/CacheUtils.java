@@ -52,9 +52,9 @@ public class CacheUtils {
 //        }
 //    }
     static {
-        Cache<String, Object> cache_6_hours = Caffeine.newBuilder().expireAfterWrite(6, TimeUnit.HOURS).maximumSize(10_000).build();
-        Cache<String, Object> cache_oneday = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.DAYS).maximumSize(10_000).build();
-        Cache<String, Object> cache_forever = Caffeine.newBuilder().maximumSize(10_000).build();
+        Cache<String, Object> cache_6_hours = Caffeine.newBuilder().expireAfterWrite(6, TimeUnit.HOURS).maximumSize(1_000).build();
+        Cache<String, Object> cache_oneday = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.DAYS).maximumSize(1_000).build();
+        Cache<String, Object> cache_forever = Caffeine.newBuilder().maximumSize(1_000).build();
 
         ALL_CACHE.put(KEY_STK_STOCK, cache_6_hours);
         ALL_CACHE.put(KEY_STK_INDUSTRY, cache_6_hours);

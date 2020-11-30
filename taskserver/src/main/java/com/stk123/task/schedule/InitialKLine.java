@@ -106,8 +106,8 @@ public class InitialKLine {
             long start = System.currentTimeMillis();
             conn = DBUtil.getConnection();
             CacheUtils.DISABLE = true;
-            Index.KLineWhereClause = Index.KLINE_20140101;
-            Index.FNDateWhereClause = Index.FNDate_20140101;
+            Index.KLineWhereClause = Index.KLINE_20180101;
+            Index.FNDateWhereClause = Index.FNDate_20160101;
             if (market == 1) {
                 //------------- A --------------//
                 try {
@@ -145,7 +145,7 @@ public class InitialKLine {
             //Monitor.run(conn, Monitor.TYPE_KLINE);
 
             long end = System.currentTimeMillis();
-            System.out.println("InitialKLine time:" + ((end - start) / 1000D));
+            log.info("InitialKLine time:" + ((end - start) / 1000D));
         }catch (Exception e){
             log.error("InitialKLine", e);
         }finally{
@@ -180,7 +180,7 @@ public class InitialKLine {
 			}
 			
 			String today = JdbcUtils.load("select kline_date from (select kline_date from stk_kline_us where code='.DJI' order by kline_date desc) where rownum=1", String.class);
-			System.out.println("today="+today);
+			log.info("today="+today);
 			
 			stks = JdbcUtils.list(conn, "select code,name from stk_us order by code", Stk.class);
 			if(!analyse){
@@ -218,7 +218,7 @@ public class InitialKLine {
 			JdbcUtils.update(conn, "update stk_daily_report_us set result_2=? where report_date=?", params);
 			EmailUtils.send("[美股]平均PE,日期:"+today+",中概:"+avgPE+",平均:"+avgPE2, "中概平均PE:"+avgPE+"<br>美股平均PE:"+avgPE2);
 			
-			System.out.println(".............. US ...................");
+			log.info(".............. US ...................");
 			List<Index> indexs = new ArrayList<Index>();
 			for(Stk stk : stks){
 				Index index = new Index(conn,stk.getCode(),stk.getName());
@@ -228,7 +228,7 @@ public class InitialKLine {
 				indexs.add(index);
 			}
 			
-			System.out.println("1.创新高选股法");
+			log.info("1.创新高选股法");
 			List<Index> newHighs = IndexUtils.getNewHighs(indexs, today, DAYS_OF_250);
 			/*if(newHighs.size() > 0){
 				Collections.sort(newHighs, new Comparator<Index>(){
@@ -249,37 +249,37 @@ public class InitialKLine {
 				EmailUtils.send("[美股]创"+DAYS_OF_120+"日新高股,总计:"+newHighs.size()+",日期:"+today, StkUtils.createHtmlTable(today, newHighs));
 			}*/
 			
-			System.out.println("2.黄金三角选股法");
+			log.info("2.黄金三角选股法");
 			//checkUSGoldTriangle(today, indexs);
 			
-			System.out.println("3.K线缠绕选股法");
+			log.info("3.K线缠绕选股法");
 			//checkUSKIntersect(today, indexs);
 			
-			System.out.println("4.突破下降趋势选股法");
+			log.info("4.突破下降趋势选股法");
 			//checkUSKUpTrendLine(today, indexs);
 			
-			System.out.println("4.[周线]趋势线突破");
+			log.info("4.[周线]趋势线突破");
 			//checkWeeklyTrandLine(today, indexs);
 			
-			System.out.println("10.[月线]趋势线突破");
+			log.info("10.[月线]趋势线突破");
 			//checkMonthlyTrandLine(today, indexs);
 			
-			System.out.println("5.天量后缩量");
+			log.info("5.天量后缩量");
 			//checkHugeVolumeLittleVolume(indexs, today, 2);
 			
-			System.out.println("6.MACD一品抄底");
+			log.info("6.MACD一品抄底");
 			//checkYiPinChaoDiMACD(conn, today, indexs, 2);
 			
-			System.out.println("7.二品抄底-买入时机");
+			log.info("7.二品抄底-买入时机");
 			//checkErPinChaoDi(conn, today, indexs, 2, true, false);
 			
-			System.out.println("7.[周线]二品抄底-买入时机");
+			log.info("7.[周线]二品抄底-买入时机");
 			//checkErPinChaoDi(conn, today, indexs, 2, true, true);
 			
-			System.out.println("8.[周线]MACD粘合");
+			log.info("8.[周线]MACD粘合");
 			//checkMACDWeekly(today, indexs);
 			
-			System.out.println("10.周线6连阴后macd背离");
+			log.info("10.周线6连阴后macd背离");
 			
 		}catch(Exception e){
 			EmailUtils.send("Initial US Stock K Line Error", e);
@@ -298,7 +298,7 @@ public class InitialKLine {
 			try{
 				List<Stk> stks = JdbcUtils.list(conn, "select code,name from stk where market=1 and cate=2 order by code", Stk.class);
 				for(Stk stk : stks){
-					System.out.println(stk.getCode());
+					log.info(stk.getCode());
 					sk = stk;
 					Index sh = new Index(conn,stk.getCode());
 					if(flag){
@@ -316,7 +316,7 @@ public class InitialKLine {
 			try{
 				List<Stk> stks = JdbcUtils.list(conn, "select code,name from stk where market=1 and cate=4 order by code", Stk.class);
 				for(Stk stk : stks){
-					System.out.println(stk.getCode());
+					log.info(stk.getCode());
 					sk = stk;
 					Index sh = new Index(conn,stk.getCode());
 					sh.initKLine();
@@ -338,9 +338,9 @@ public class InitialKLine {
 		try{
 			List<Stk> stks = JdbcUtils.list(conn, "select code,name from stk_cn order by code", Stk.class);
 			if(!analyse){
-				System.out.println("initKLines..........");
+				log.info("initKLines..........");
 				initKLines(stks, flag, 4);
-				System.out.println("initKLines..........end");
+				log.info("initKLines..........end");
 				if(!flag){
 					EmailUtils.send("周六数据同步完成！！！","...");
 					return;
@@ -358,7 +358,7 @@ public class InitialKLine {
 				
 				System.gc();
 			}
-			System.out.println(".............. A ................");
+			log.info(".............. A ................");
 			if(initonly)return;
 			
 			//---------------------------------
@@ -431,40 +431,40 @@ public class InitialKLine {
 			mgr.execute();*/
 			
 			//List<Index> newHighs = new ArrayList<Index>();
-			System.out.println("1.0.创200日新高");
+			log.info("1.0.创200日新高");
 			List<Index> newHighs = IndexUtils.getNewHighs(context.indexs, today, DAYS_OF_200);
 			if(newHighs.size() > 0){
 				EmailUtils.sendAndReport("创"+ DAYS_OF_200 +"日新高股,总计:"+newHighs.size()+",日期:"+today, TaskUtils.createHtmlTable(today, newHighs));
 			}
-            System.out.println("1.0.创100日新高");
+            log.info("1.0.创100日新高");
 			newHighs = IndexUtils.getNewHighs(context.indexs, today, DAYS_OF_100);
 			if(newHighs.size() > 0){
 				EmailUtils.sendAndReport("创"+ DAYS_OF_100 +"日新高股,总计:"+newHighs.size()+",日期:"+today, TaskUtils.createHtmlTable(today, newHighs));
 			}
 
-			System.out.println("1.1.接近200日新高");
+			log.info("1.1.接近200日新高");
 			List<Index> closeNewHighs = IndexUtils.getNearNewHighs(context.indexs, today, DAYS_OF_200);
 			if(closeNewHighs.size() > 0){
 				EmailUtils.sendAndReport("接近"+ DAYS_OF_200 +"日新高股,总计:"+closeNewHighs.size()+",日期:"+today, TaskUtils.createHtmlTable(today, closeNewHighs));
 			}
-			System.out.println("1.2.接近100日新高");
+			log.info("1.2.接近100日新高");
 			closeNewHighs = IndexUtils.getNearNewHighs(context.indexs, today, DAYS_OF_100);
 			if(closeNewHighs.size() > 0){
 				EmailUtils.sendAndReport("接近"+ DAYS_OF_100 +"日新高股,总计:"+closeNewHighs.size()+",日期:"+today, TaskUtils.createHtmlTable(today, closeNewHighs));
 			}
 
-			System.out.println("1.3.接近500日新高且K线缠绕");
+			log.info("1.3.接近500日新高且K线缠绕");
 			closeNewHighs = IndexUtils.getCloseNewHighsAndInteract(context.indexs, today, DAYS_OF_500);
 			if(closeNewHighs.size() > 0){
 				EmailUtils.sendAndReport("接近"+ DAYS_OF_500 +"日新高且K线缠绕股,总计:"+closeNewHighs.size()+",日期:"+today, TaskUtils.createHtmlTable(today, closeNewHighs));
 			}
 
-            System.out.println("1.4.创250日新低");
+            log.info("1.4.创250日新低");
             List<Index> newLows = IndexUtils.getNewLows(context.indexs, today, DAYS_OF_250);
             if(newLows.size() > 0){
                 EmailUtils.sendAndReport("创"+ DAYS_OF_200 +"日新低股,总计:"+newLows.size()+",日期:"+today, TaskUtils.createHtmlTable(today, newLows));
             }
-            System.out.println("1.4.创600日新低");
+            log.info("1.4.创600日新低");
             newLows = IndexUtils.getNewLows(context.indexs, today, DAYS_OF_600);
             if(newLows.size() > 0){
                 EmailUtils.sendAndReport("创"+ DAYS_OF_600 +"日新低股,总计:"+newLows.size()+",日期:"+today, TaskUtils.createHtmlTable(today, newLows));
@@ -532,20 +532,20 @@ public class InitialKLine {
 			}
 			*/
 			System.gc();
-			//System.out.println("5.沧州老张选股法");
+			//log.info("5.沧州老张选股法");
 			//checkStkByLaoZhang(conn, context, contextYesterday, newHighs);
 			
-			//System.out.println("6.250日底部箱体突破股票，箱体最低到突破(最高)涨幅不超过60%");
+			//log.info("6.250日底部箱体突破股票，箱体最低到突破(最高)涨幅不超过60%");
 			//checkStkCreate250DaysBoxHigh(conn, context);
 			
-			//System.out.println("7.短线60日股票强度排行");
+			//log.info("7.短线60日股票强度排行");
 			//check60DaysRS(conn, context, contextYesterday);
 			
 			//8.rank k line
 			//K today = sh.getK();
 			//rankIndustryByK(conn, today.getDate(), "cnindex");
 			
-			//System.out.println("9.回补前期跳空缺口");
+			//log.info("9.回补前期跳空缺口");
 			/*List<Index> gaps = IndexUtils.getUpGaps(context.indexs,today , 250, 30);
 			if(gaps.size() > 0){
 				StringBuffer sb = new StringBuffer();
@@ -555,29 +555,29 @@ public class InitialKLine {
 				EmailUtils.sendAndReport("回补前期跳空缺口，总共："+gaps.size()+",日期:"+today, StkUtils.createHtmlTable(today, gaps));
 			}*/
 			
-			System.out.println("10.K线缠绕");
+			log.info("10.K线缠绕");
 			//checkKIntersect(today, context);
 			
-			//System.out.println("12.南京高人战法");
+			//log.info("12.南京高人战法");
 			//checkCreateHighStk(context);
 			
-			System.out.println("13.突破600日天量");
+			log.info("13.突破600日天量");
 			//checkHighHugeVolume(context);
 			
-			//System.out.println("14.天量后缩量");
+			//log.info("14.天量后缩量");
 			//checkHugeVolumeLittleVolume(context.indexs, today, 1);
 			
 			//15.王朋选股
 			//checkWangPeng(context);
 			
-			System.out.println("16.王朋选股优化");
+			log.info("16.王朋选股优化");
 			//checkWangPeng1(context);
 			//checkWangPeng2(context);
 			
-			System.out.println("17.价格低于前高，量超前量");
+			log.info("17.价格低于前高，量超前量");
 			//checkVolumeGreaterThanLastVolume(today, context, 0.8);
 			
-			System.out.println("18.一品抄底-MACD");
+			log.info("18.一品抄底-MACD");
 			int cnt = checkYiPinChaoDiMACD(conn, today, context.indexs, 1);
 			if(i >= 1){
 				params.clear();
@@ -586,7 +586,7 @@ public class InitialKLine {
 				JdbcUtils.update(conn, "update stk_pe set result_4=? where report_date=?", params);
 			}
 			
-			System.out.println("18.一品抄底-底部");
+			log.info("18.一品抄底-底部");
 			cnt = checkYpcdDiBu(conn, today, context.indexs, 1);
 			if(i >= 1){
 				params.clear();
@@ -595,7 +595,7 @@ public class InitialKLine {
 				JdbcUtils.update(conn, "update stk_pe set result_3=? where report_date=?", params);
 			}
 			
-			System.out.println("19.二品抄底-买入时机");
+			log.info("19.二品抄底-买入时机");
 			try{
 				List<Index> rslts = checkErPinChaoDi(conn, today, context.indexs, 1, true, false);
 				if(i >= 1){
@@ -608,19 +608,19 @@ public class InitialKLine {
 				EmailUtils.send("二品抄底-买入时机 - eror", e);
 			}
 			
-			System.out.println("20.一品抄底-大势已去");
+			log.info("20.一品抄底-大势已去");
 			//checkYiPinChaoDiDaShiYiQu(conn, today, context.indexs);
 			
-			System.out.println("21.连续涨停后开板");
+			log.info("21.连续涨停后开板");
 			//checkKaiBan(today, context.indexs);
 			
-			System.out.println("22.连续涨停后马上开板股");
+			log.info("22.连续涨停后马上开板股");
 			//checkMaybeKaiBan(today, context.indexs);
 			
-			System.out.println("23.连续涨停，开板后，新高股");
+			log.info("23.连续涨停，开板后，新高股");
 			//checkKaiBanXinGao(today, context.indexs);
 			
-			System.out.println("24.资金流入且离底部不远");
+			log.info("24.资金流入且离底部不远");
 			//checkChaoDiAndFlow(conn, today);
 			
 			
@@ -660,7 +660,7 @@ public class InitialKLine {
 			
 			
 			
-			System.out.println("2.check growth stk average pe "+new Date());
+			log.info("2.check growth stk average pe "+new Date());
 			//2.check growth stk average pe
 			//String htmlMsg = IndexUtils.reportGrowthPE(conn, context, today);
 			
@@ -669,7 +669,7 @@ public class InitialKLine {
 			int pbCnt = 0;
 			Industry myInd = Industry.getIndustry(conn, "1783");
 			for(Index gIdx : myInd.getIndexs()){
-				System.out.println("growth stock="+gIdx.getCode());
+				log.info("growth stock="+gIdx.getCode());
 				Double pe = gIdx.getPETTM(today);
 				if(pe == null || pe == 0 || pe < 5 || pe > 200){
 					continue;
@@ -683,7 +683,7 @@ public class InitialKLine {
 				context.indexsGrowth.add(gIdx);
 				gtotalPE += pe;
 			}
-			System.out.println("=====");
+			log.info("=====");
 			Collections.sort(context.indexsGrowth, new Comparator<Index>(){
 				public int compare(Index arg0, Index arg1) {
 					double d0 = arg0.changePercent;
@@ -734,7 +734,7 @@ public class InitialKLine {
 							";成长股平均PE:"+context.averagePE+",PB:"+context.averagePB+",日期:"+today,
 					TaskUtils.createHtmlTable(null, pe) + "<br>" + peAndpeg + htmlMsg);
 			
-			System.out.println("更新非公开发行，员工持股价格溢价率");
+			log.info("更新非公开发行，员工持股价格溢价率");
 			for(Index index : context.indexs){
 				//更新非公开发行，员工持股价格溢价率
 				NoticeRobot.updateRate(conn, index);
@@ -742,11 +742,11 @@ public class InitialKLine {
 				//盈利预期PE
 				index.updateEarningsForecastPE();
 			}
-			System.out.println("Initial A Stock K Line End.");
+			log.info("Initial A Stock K Line End.");
 		}catch(Exception e){
 			e.printStackTrace();
 			ExceptionUtils.insertLog(conn, e);
-			logger.error(ExceptionUtils.getExceptionAsString(e));
+			logger.error("initAStock", e);
 			EmailUtils.send("Initial A Stock K Line Error - InitialKLine", e);
 		}
 	}
@@ -819,7 +819,7 @@ public class InitialKLine {
 			List<Index> indexs = ind.getIndexs();
 			if(indexs.size() > RANK_STK_SAMPLE){
 				for(final int n : RANK_STK_DAYS){
-					//System.out.println(n);
+					//log.info(n);
 					Collections.sort(indexs, new Comparator<Index>(){
 						public int compare(Index arg0, Index arg1) {
 							try{
@@ -914,7 +914,7 @@ public class InitialKLine {
 						try{
 							conn = ConnectionPool.getInstance().getConnection();
 							index = new Index(conn, stk.getCode());
-							System.out.println("initKLines=="+index.getCode());
+							log.info("initKLines=="+index.getCode());
 							if(flag){
 								index.initKLine();
 							}else{
@@ -950,7 +950,7 @@ public class InitialKLine {
 
 		while(true){
 			page = HttpUtils.get("http://stock.finance.sina.com.cn/usstock/api/jsonp.php/IO.XSRV2.CallbackList"+URLEncoder.encode("['f0j3ltzVzdo2Fo4p']","utf-8")+"/US_CategoryService.getList?page="+pageNum+"&num=60&sort=&asc=0&market=&id=", null, "GBK");
-			//System.out.println(page);
+			//log.info(page);
 			Map<String, Class> m = new HashMap<String, Class>();
 	        m.put("data", Map.class);
 			SinaMeiGu meiGu = (SinaMeiGu)JsonUtils.getObject4Json(StringUtils.substringBetween(page, "((", "));"), SinaMeiGu.class, m);
@@ -1269,16 +1269,16 @@ public class InitialKLine {
 					if((highK.getOpen()-highK.getClose())/highK.getClose() <= 0.08){//最高点那天不能是大阴线
 						K startK2 = endK.before(120);
 						K highK2 = index.getKByHHV(startK2.getDate(), endK.getDate());
-						//System.out.println("highK="+highK.getDate());
+						//log.info("highK="+highK.getDate());
 						if(highK.getDate().equals(highK2.getDate())){
 							K lowK = index.getKByLLV(highK.before(5).getDate(), highK.getDate());
 							K highK3 = index.getKByHHV(endK.before(30).getDate(),lowK.getDate());
-							//System.out.println("highK3="+highK3.getDate());
+							//log.info("highK3="+highK3.getDate());
 							if((highK.getHigh() - highK3.getHigh())/highK3.getHigh() > 0.15){
 								double percent = (highK.getClose()-lowK.getClose())/lowK.getOpen();
-								//System.out.println(percent);
+								//log.info(percent);
 								if(percent >= 0.15){
-									//System.out.println(index.getCode()+","+index.getName());
+									//log.info(index.getCode()+","+index.getName());
 									results.add(index);
 								}
 							}
@@ -1299,7 +1299,7 @@ public class InitialKLine {
 			K todayK = index.getK(today);
 			if(!index.isStop(today) && todayK != null && !todayK.isUpLimit() && index.getKs().size() > 600){
 				K k = index.getKByHVV(today, 600);
-				//System.out.println(k.getDate()+","+k.getHigh());
+				//log.info(k.getDate()+","+k.getHigh());
 				K day = index.getK(today);
 				if(index.getDaysBetween(k.getDate(), today) > 30 && k.getHigh() < day.getHigh() && k.getHigh() > day.before(1).getHigh()){
 					results.add(index);
@@ -1395,18 +1395,18 @@ public class InitialKLine {
 			K highK = index.getKByHHV(startK.getDate(), todayK.getDate());
 			K lowK = index.getKByLLV(startK.getDate(), todayK.getDate());
 			
-			//System.out.println((lowK.getClose() * 3)+","+highK.getClose());
+			//log.info((lowK.getClose() * 3)+","+highK.getClose());
 			if(lowK.getClose() * 3 >= highK.getClose()){//箱体
 				K k = index.getKByHVV(todayK.getDate(), 500);
-				//System.out.println("highK="+k.getDate());
+				//log.info("highK="+k.getDate());
 				int betweenDays = index.getDaysBetween(k.getDate(), today);
 				if(betweenDays < 120 && betweenDays > 60){ 
 					K k2 = k.after(4).getMax(K.Volumn, 5, K.MA, 5);
 					double ma = k2.getMA(K.Volumn, 5);
 					double maToday = todayK.getMA(K.Volumn, 5);
-					//System.out.println("ma="+ma+",maToday="+maToday);
+					//log.info("ma="+ma+",maToday="+maToday);
 					if(ma/maToday >= 8){
-						//System.out.println(index.getCode()+","+index.getName());
+						//log.info(index.getCode()+","+index.getName());
 						index.changePercent = ma/maToday;
 						return true;
 					}
@@ -1423,18 +1423,18 @@ public class InitialKLine {
 			K highK = index.getKByHHV(startK.getDate(), todayK.getDate());
 			K lowK = index.getKByLLV(startK.getDate(), todayK.getDate());
 			
-			//System.out.println((lowK.getClose() * 2.5)+","+highK.getClose());
+			//log.info((lowK.getClose() * 2.5)+","+highK.getClose());
 			if(lowK.getClose() * 2.5 >= highK.getClose()){//箱体
 				K k = index.getKByHVV(todayK.getDate(), 120);
-				//System.out.println("highK="+k.getDate());
+				//log.info("highK="+k.getDate());
 				int betweenDays = index.getDaysBetween(k.getDate(), today);
 				if(betweenDays <= 60){
 					K k2 = k.after(4).getMax(K.Volumn, 5, K.MA, 5);
 					double ma = k2.getMA(K.Volumn, 5);
 					double maToday = todayK.getMA(K.Volumn, 5);
-					//System.out.println("short ma="+ma+",maToday="+maToday+",ma/maToday="+(ma/maToday));
+					//log.info("short ma="+ma+",maToday="+maToday+",ma/maToday="+(ma/maToday));
 					if(ma/maToday >= flag){
-						//System.out.println(index.getCode()+","+index.getName());
+						//log.info(index.getCode()+","+index.getName());
 						index.changePercent = ma/maToday;
 						return true;
 					}
@@ -1451,19 +1451,19 @@ public class InitialKLine {
 			K highK = index.getKByHHV(startK.getDate(), todayK.getDate());
 			K lowK = index.getKByLLV(startK.getDate(), todayK.getDate());
 			
-			//System.out.println((lowK.getClose() * 2.5)+","+highK.getClose());
+			//log.info((lowK.getClose() * 2.5)+","+highK.getClose());
 			if(lowK.getClose() * 2 >= highK.getClose()){//箱体
 				K k = index.getKByHVV(todayK.getDate(), 30);
-				//System.out.println("highK="+k.getDate());
+				//log.info("highK="+k.getDate());
 				int betweenDays = index.getDaysBetween(k.getDate(), today);
 				if(betweenDays <= 30){
 					K k2 = k.after(4).getMax(K.Volumn, 5, K.MA, 5);
 					if(k2 != null){
 						double ma = k2.getMA(K.Volumn, 5);
 						double maToday = todayK.getMA(K.Volumn, 5);
-						//System.out.println("short ma="+ma+",maToday="+maToday+",ma/maToday="+(ma/maToday));
+						//log.info("short ma="+ma+",maToday="+maToday+",ma/maToday="+(ma/maToday));
 						if(ma/maToday >= flag){
-							//System.out.println(index.getCode()+","+index.getName());
+							//log.info(index.getCode()+","+index.getName());
 							index.changePercent = ma/maToday;
 							return true;
 						}
@@ -1504,7 +1504,7 @@ public class InitialKLine {
 					/*double ma10 = todayK.getMA(K.Close, 10);
 					double absChange = Math.abs((todayK.getClose() - ma10)/ma10);
 					if(absChange <= 0.01){*/
-						//System.out.println(index.getCode()+","+index.getName());
+						//log.info(index.getCode()+","+index.getName());
 						double ma250 = todayK.getMA(K.Close, 250);
 						index.changePercent = (todayK.getClose() - ma250)/ma250;
 						indexs.add(index);
@@ -1563,7 +1563,7 @@ public class InitialKLine {
 					double ma10 = todayK.getMA(K.Close, 10);
 					double absChange = Math.abs((todayK.getClose() - ma10)/ma10);
 					if(absChange <= 0.03){
-						//System.out.println(index.getCode()+","+index.getName());
+						//log.info(index.getCode()+","+index.getName());
 						double ma250 = todayK.getMA(K.Close, 250);
 						index.changePercent = (todayK.getClose() - ma250)/ma250;
 						indexs.add(index);
@@ -1597,7 +1597,7 @@ public class InitialKLine {
 					return false;
 				}
 			});
-			//System.out.println(k);
+			//log.info(k);
 			if(k != null){
 				//判断有没有长上影线，有则排除
 				int ds = index.getDaysBetween(k.getDate(), today);
@@ -1611,10 +1611,10 @@ public class InitialKLine {
 						return false;
 					}
 				});
-				//System.out.println(k3);
+				//log.info(k3);
 				if(k3 == null){
 					double ma10 = todayK.getMA(K.Close, 10);
-					//System.out.println(ma10+","+todayK.getClose());
+					//log.info(ma10+","+todayK.getClose());
 					K kv = index.getKByHVV(k.after(3).getDate(), 6);
 					//最大量必须是阳线
 					if(kv.getOpen() > kv.getClose())continue;
@@ -1625,7 +1625,7 @@ public class InitialKLine {
 							&& todayK.getClose() >= ma10 * 0.96
 							&& todayK.getClose() <= ma10 * 1.20){
 						K k2 = index.isKIntersect(today, 60);
-						//System.out.println(k2);
+						//log.info(k2);
 						if(k2 != null){
 							K k4 = index.getKByHVV(k2.getDate(), today);
 							ds = index.getDaysBetween(k4.getDate(), k.getDate());
@@ -1640,9 +1640,9 @@ public class InitialKLine {
 									return false;
 								}
 							});
-							//System.out.println(ds+","+kv);
+							//log.info(ds+","+kv);
 							if(ds >= 3 && todayK.getClose() < kv.getClose())continue;
-							//System.out.println(index.getCode()+","+index.getName()+",k intersect="+k2.getDate());
+							//log.info(index.getCode()+","+index.getName()+",k intersect="+k2.getDate());
 							ds = index.getDaysBetween(k2.getDate(), today);
 							/*ds = index.getKCountWithCondition(k2.getDate(), today, new K.Condition(){
 								public boolean pass(K k) {
@@ -1652,7 +1652,7 @@ public class InitialKLine {
 									return false;
 								}
 							});*/
-							//System.out.println(index.getCode()+","+ds+","+k2.getDate()+",");
+							//log.info(index.getCode()+","+ds+","+k2.getDate()+",");
 							index.changePercent = ds;
 							indexs.add(index);
 						}
@@ -1712,18 +1712,18 @@ public class InitialKLine {
 		if(todayK != null && !index.isStop(today)){
 			//List<K> ks = index.getKsHistoryHigh(today, 120, 50);
 			List<K> ks = index.getKsHistoryHighPoint(today, m, n);
-			//System.out.println("ks="+ks);
+			//log.info("ks="+ks);
 			if(ks != null && ks.size() > 0){
 				K k = ks.get(ks.size()-1);
 				K lowK = index.getKByLCV(k.getDate(), today);
 				if(lowK != null) {
 					K highK = index.getKByHHV(lowK.getDate(), today);
-					//System.out.println("k="+k.getDate()+",lowk="+lowK.getDate()+",highk="+highK.getDate());
+					//log.info("k="+k.getDate()+",lowk="+lowK.getDate()+",highk="+highK.getDate());
 					if(highK.getHigh() < k.getHigh() && todayK.getClose() < k.getClose() && todayK.getClose() >= (lowK.getClose() + k.getClose())/2){
 						double sum = k.after(5).getSUM(K.Volumn, x);
 						double sum2 = todayK.getSUM(K.Volumn, x);
 						if(sum * flag <= sum2){
-							//System.out.println(index.getCode()+","+index.getName()+",k="+k.getDate()+","+sum+","+sum2);
+							//log.info(index.getCode()+","+index.getName()+",k="+k.getDate()+","+sum+","+sum2);
 							index.changePercent = sum/sum2 * Math.pow(todayK.getClose()/k.getHigh(),5);
 							return true;
 						}
@@ -1910,7 +1910,7 @@ public class InitialKLine {
 				continue;
 			}
 			double macd = getMACD(k);
-			//System.out.println(k.getDate()+"="+macd);
+			//log.info(k.getDate()+"="+macd);
 			if(macd >= 4){
 				K yk = k.before(1);
 				double ymacd = getMACD(yk);
@@ -1949,7 +1949,7 @@ public class InitialKLine {
 								return false;
 							}
 						});
-						//System.out.println(cnt);
+						//log.info(cnt);
 						if(cnt == 0){
 							cnt = k.getKCountWithCondition(10, new K.Condition() {
 								@Override
@@ -1958,11 +1958,11 @@ public class InitialKLine {
 									return false;
 								}
 							});
-							//System.out.println(cnt);
+							//log.info(cnt);
 							if(cnt >= 5){
 								double trend = getTrend(k);
 								if(trend < 25){
-									//System.out.println(index.getCode()+","+index.getName()+"="+macd);
+									//log.info(index.getCode()+","+index.getName()+"="+macd);
 									results.add(index);
 								}
 							}
@@ -2060,7 +2060,7 @@ public class InitialKLine {
 				double ytrend = InitialKLine.getTrend(k);
 				double yhorse = InitialKLine.getHorse(k);
 				if(ytrend > trend && yhorse > horse){
-					//System.out.println(k.getDate()+"="+trend+","+horse);
+					//log.info(k.getDate()+"="+trend+","+horse);
 					results.add(index);
 				}
 			}
@@ -2091,7 +2091,7 @@ public class InitialKLine {
 				double d = InitialKLine.maiRuShiJi(index, k.getDate());
 				double yd = InitialKLine.maiRuShiJi(index, k.before(1).getDate());;
 				if(d < 5 && d - yd >= 3){
-					//System.out.println(k.getDate()+"="+d);
+					//log.info(k.getDate()+"="+d);
 					if(market == 2){
 						index.changePercent = index.getK().getSlopeOfMA(30, 5);
 					}else{
@@ -2121,7 +2121,7 @@ public class InitialKLine {
 						return (int)((o2.changePercent - o1.changePercent)*10000);
 					}});
 				/*for(Index index : results){
-					System.out.println(index.getCode()+","+index.getName()+",change="+index.changePercent);
+					log.info(index.getCode()+","+index.getName()+",change="+index.changePercent);
 				}*/
 				EmailUtils.send("[美股]"+(weekly?"[周线]":"")+"二品抄底-买入时机,个数："+results.size()+",日期:"+today,TaskUtils.createHtmlTable(today, results));
 			}
@@ -2156,8 +2156,8 @@ public class InitialKLine {
 			//J:=3*K-2*D;
 			double v = 3*y - 2*z;
 			/*if(v <= 5){
-				//System.out.println(index.getCode()+","+index.getName()+"="+v);
-				System.out.println(today+"="+v);
+				//log.info(index.getCode()+","+index.getName()+"="+v);
+				log.info(today+"="+v);
 			}*/
 			return v;
 		}
@@ -2213,7 +2213,7 @@ public class InitialKLine {
 	public static void checkWeeklyTrandLine(String today, List<Index> indexs) throws Exception {
 		List<Index> results = new ArrayList<Index>();
 		for(Index index : indexs){
-			//System.out.println(index.getCode());
+			//log.info(index.getCode());
 			K todayK = index.getK(today);
 			if(todayK != null && !index.isStop(today) && todayK.getClose() > 3 
 					&& !todayK.isNoVolumeOrNoChange()){
@@ -2233,7 +2233,7 @@ public class InitialKLine {
 					return (int)((o2.changePercent - o1.changePercent)*10000);
 				}});
 			/*for(Index index : results){
-				System.out.println(index.getCode()+","+index.getName()+",change="+index.changePercent);
+				log.info(index.getCode()+","+index.getName()+",change="+index.changePercent);
 			}*/
 			EmailUtils.send("[美股][周线]趋势线突破,个数："+results.size()+",日期:"+today,TaskUtils.createHtmlTable(today, results));
 		}
@@ -2242,7 +2242,7 @@ public class InitialKLine {
 	public static void checkMonthlyTrandLine(String today, List<Index> indexs) throws Exception {
 		List<Index> results = new ArrayList<Index>();
 		for(Index index : indexs){
-			//System.out.println(index.getCode());
+			//log.info(index.getCode());
 			K todayK = index.getK(today);
 			if(todayK != null && !index.isStop(today) && todayK.getClose() > 3 
 					&& !todayK.isNoVolumeOrNoChange()){
@@ -2262,7 +2262,7 @@ public class InitialKLine {
 					return (int)((o2.changePercent - o1.changePercent)*10000);
 				}});
 			/*for(Index index : results){
-				System.out.println(index.getCode()+","+index.getName()+",change="+index.changePercent);
+				log.info(index.getCode()+","+index.getName()+",change="+index.changePercent);
 			}*/
 			EmailUtils.send("[美股][月线]趋势线突破,个数："+results.size()+",日期:"+today,TaskUtils.createHtmlTable(today, results));
 		}
@@ -2271,7 +2271,7 @@ public class InitialKLine {
 	public static void checkMACDWeekly(String today, List<Index> indexs) throws Exception {
 		List<Index> results = new ArrayList<Index>();
 		for(Index index : indexs){
-			//System.out.println(index.getCode());
+			//log.info(index.getCode());
 			K todayK = index.getK(today);
 			if(todayK != null && !index.isStop(today) && todayK.getClose() > 3 
 					&& !todayK.isNoVolumeOrNoChange()){
@@ -2280,7 +2280,7 @@ public class InitialKLine {
 					K k = ks.get(0);
 					K.MACD m = k.getMACD();
 					K.MACD my = k.before(1).getMACD();
-					//System.out.println(k.getDate()+","+k.getMACD());
+					//log.info(k.getDate()+","+k.getMACD());
 					double d = Math.abs(m.dea-m.dif);
 					if(m.macd <= 0.4 && m.macd >= -0.3 
 							&& ((m.dea >= m.dif && d <= 0.3) || (m.dea < m.dif && d <= 0.2 && m.macd > my.macd)) 
@@ -2319,7 +2319,7 @@ public class InitialKLine {
 						((ky.getHCV(10) != ky.getClose() && !ky.isUpLimit()) || ky.isUpLimit())
 						&& k.getOpen() != k.getClose()
 					  ){
-						//System.out.println(index.getCode()+","+index.getName());
+						//log.info(index.getCode()+","+index.getName());
 						results.add(index);
 					}
 				}
@@ -2352,7 +2352,7 @@ public class InitialKLine {
 				results.add(node.toHtml());
 			}
 		}
-		System.out.println(results);
+		log.info(results);
 	}
 	
 	public static void checkChaoDiAndFlow(Connection conn,String today) throws Exception{
@@ -2477,7 +2477,7 @@ public class InitialKLine {
 					x ++;
 				}
 			}else{
-				//System.out.println(index.getCode()+","+index.getName());
+				//log.info(index.getCode()+","+index.getName());
 			}
 		}
 		
@@ -2690,7 +2690,7 @@ public class InitialKLine {
 		//创120日新高后回抽20日均线
 		List<List<String>> table2 = buildIndustryTable(results, date10);
 		/*for(Index index : results){
-			System.out.println(index.getName());
+			log.info(index.getName());
 		}*/
 		
 		results.clear();
@@ -2841,7 +2841,7 @@ public class InitialKLine {
 		for(K k1 : kks){
 			dates.add(k1.getDate());
 		}
-		//System.out.println(dates);
+		//log.info(dates);
 		
 		k = index.getK(today).before(1);
 		int vv = 0;
@@ -2858,7 +2858,7 @@ public class InitialKLine {
 			}
 			int flag = (v-vv)>=2||(v2-vv2)>=2?(v-vv)+(v2-vv2):0;
 			//String log = k.getDate()+",count1="+v+",diff1="+(v-vv)+",count2="+v2+",diff2="+(v2-vv2)+", result="+flag;
-			//System.out.println(log);
+			//log.info(log);
 			
 			TimeWindowResult tw = new TimeWindowResult();
 			tw.date = k.getDate();

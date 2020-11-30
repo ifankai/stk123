@@ -27,7 +27,7 @@ public class KController {
     @ResponseBody
     public RequestResult<List<StkKlineEntity>> getKs(@PathVariable("code")String code,
                                                      @RequestParam(value = "type", required = false, defaultValue = "1")int type,
-                                                     @RequestParam(value = "days", required = false, defaultValue = "1000")int days,
+                                                     @RequestParam(value = "days", required = false, defaultValue = "100")int days,
                                                      @RequestParam(value = "fromDate", required = false)String fromDate,
                                                      @RequestParam(value = "toDate", required = false)String toDate) throws Exception {
         List<StkKlineEntity> ks = null;

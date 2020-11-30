@@ -64,6 +64,7 @@ public class Index {
 	public final static String KLINE_20150101 = "and kline_date>='20150101'";
 	public final static String KLINE_20160101 = "and kline_date>='20160101'";
 	public final static String KLINE_20170101 = "and kline_date>='20170101'";
+    public final static String KLINE_20180101 = "and kline_date>='20180101'";
 	
 	public static String getKlineDateAsWhereClause(int days) {
 		Date date = ServiceUtils.addDay(new Date(), days);
@@ -72,11 +73,12 @@ public class Index {
 	}
 	
 	// "and kline_date>='" + StkUtils.formatDate(StkUtils.addDay(StkUtils.now, -900),StkUtils.sf_ymd2)+"'";
-	public static String KLineWhereClause = KLINE_20130101; 
+	public static String KLineWhereClause = KLINE_20180101;
 	
 	public final static String FNDate_1 = "and fn_date>='20120101'";
 	public final static String FNDate_20130101 = "and fn_date>='20130101'";
 	public final static String FNDate_20140101 = "and fn_date>='20140101'";
+    public final static String FNDate_20160101 = "and fn_date>='20160101'";
 	public static String FNDateWhereClause = "";
 	
 	private Connection conn = null;
