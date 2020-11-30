@@ -121,10 +121,12 @@ public interface CommonConstant {
 	
 	//----number----//
 	public final static String NUMBER_ZERO = "0";
+	public final static String NUMBER_01 = "01";
 	public final static String NUMBER_ONE = "1";
 	public final static String NUMBER_TWO = "2";
 	public final static String NUMBER_SIX = "6";
 	public final static String NUMBER_NINE = "9";
+	public final static String NUMBER_99 = "99";
 	public final static String NUMBER_TWELVE = "12";
 
 	//----date format------//

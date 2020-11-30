@@ -14,15 +14,15 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static com.stk123.model.core.Bar.TypeCalc.MA;
-import static com.stk123.model.core.Bar.TypeValue.C;
-import static com.stk123.model.core.Bar.TypeValue.V;
+import static com.stk123.model.core.Bar.EnumCalculationMethod.MA;
+import static com.stk123.model.core.Bar.EnumValue.C;
+import static com.stk123.model.core.Bar.EnumValue.V;
 
 @Data
 @NoArgsConstructor
 public class Bar implements Serializable, Cloneable {
 
-	public enum TypeValue {
+	public enum EnumValue {
 		CLOSE,C,
 		OPEN,O,
 		HIGH,H,
@@ -32,7 +32,7 @@ public class Bar implements Serializable, Cloneable {
 		HSL
 	}
 
-	public enum TypeCalc {
+	public enum EnumCalculationMethod {
 		MA, SUM
 	}
 
@@ -44,6 +44,7 @@ public class Bar implements Serializable, Cloneable {
 	private double low;
 	private double volume;
 	private double amount;
+	private double lastClose; //昨日收盘价
 	private double change; //涨跌幅
 	private double hsl; //换手率
 
@@ -70,42 +71,25 @@ public class Bar implements Serializable, Cloneable {
      * @param lastKLine,
      * @param flag,
      */
-	public Bar(boolean restoration, int market, StkKlineEntity kline, Bar barBefore, Bar barAfter){
-		if(kline == null)return;
-		if(barAfter == null || market == 2 || market == 3 || !restoration){
-			this.setDate(kline.getKlineDate());
-			this.setOpen(kline.getOpen());
-			this.setClose(kline.getClose());
-			this.setHigh(kline.getHigh());
-			this.setLow(kline.getLow());
-			this.setVolume(kline.getVolumn());
-			this.setAmount(kline.getAmount()==null?0:kline.getAmount());
-			this.setChange(kline.getCloseChange()==null?0:kline.getCloseChange());
-			this.setHsl(kline.getHsl()==null?0:kline.getHsl());
-		}else{
-			this.setDate(kline.getKlineDate());
-			double tmpCloseChanged = barAfter.getClose()/barAfter.getChange()*kline.getCloseChange()/kline.getClose();
-            tmpCloseChanged = barAfter.getClose()/barAfter.getChange()/kline.getClose();
-
-			this.setOpen(ServiceUtils.numberFormat(kline.getOpen() * tmpCloseChanged, 2));
-			this.setClose(ServiceUtils.numberFormat(kline.getClose() * tmpCloseChanged, 2));
-			this.setHigh(ServiceUtils.numberFormat(kline.getHigh() * tmpCloseChanged, 2));
-			this.setLow(ServiceUtils.numberFormat(kline.getLow() * tmpCloseChanged, 2));
-			this.setVolume(kline.getVolumn());
-			this.setAmount(kline.getAmount()==null?0:kline.getAmount());
-			this.setChange(kline.getCloseChange()==null?0:kline.getCloseChange());
-			this.setHsl(kline.getHsl()==null?0:kline.getHsl());
-		}
-		if(barBefore != null) {
-			this.setBefore(barBefore);
-			barBefore.setAfter(this);
-		}
-		if(barAfter != null) {
-			this.setAfter(barAfter);
-			barAfter.setBefore(this);
-		}
+	public Bar(StkKlineEntity kline){
+		this.setDate(kline.getKlineDate());
+		this.setOpen(kline.getOpen());
+		this.setClose(kline.getClose());
+		this.setHigh(kline.getHigh());
+		this.setLow(kline.getLow());
+		this.setVolume(kline.getVolumn());
+		this.setAmount(kline.getAmount()==null?0:kline.getAmount());
+		this.setChange(kline.getPercentage()==null?0:kline.getPercentage());
+		this.setLastClose(kline.getLastClose());
+		this.setHsl(kline.getHsl()==null?0:kline.getHsl());
 	}
 
+	public boolean after(Bar bar) {
+		return this.date.compareTo(bar.getDate()) > 0;
+	}
+	public boolean before(Bar bar) {
+		return this.date.compareTo(bar.getDate()) < 0;
+	}
 
 	//n=0是当天
 	public Bar before(int n){
@@ -129,7 +113,7 @@ public class Bar implements Serializable, Cloneable {
 		return after(1);
 	}
 
-	public double getValue(TypeValue type) {
+	public double getValue(EnumValue type) {
 		switch (type) {
 			case C:
 			case CLOSE:
@@ -167,7 +151,7 @@ public class Bar implements Serializable, Cloneable {
 	 * @return
 	 * @throws Exception
 	 */
-	public double getValue(TypeValue typeValue, TypeCalc typeCalc, int days) throws Exception {
+	public double getValue(EnumValue typeValue, EnumCalculationMethod typeCalc, int days) throws Exception {
 		switch (typeCalc) {
 			case MA:
 				return this.getMA(typeValue, days);
@@ -224,7 +208,7 @@ public class Bar implements Serializable, Cloneable {
 		return (v-kv)/kv;
 	}
 
-	public double getChange(int days, TypeValue typeValue) throws Exception{
+	public double getChange(int days, EnumValue typeValue) throws Exception{
 		return this.getChange(days, bar -> bar.getValue(typeValue));
 	}
 
@@ -244,7 +228,7 @@ public class Bar implements Serializable, Cloneable {
 
 
 
-	public double getMA(TypeValue type, int days) throws Exception {
+	public double getMA(EnumValue type, int days) throws Exception {
 		double total = 0.0;
 		int tmp = days;
 		for(int i=0;i<days;i++){
@@ -271,7 +255,7 @@ public class Bar implements Serializable, Cloneable {
 	}
 
 
-	public double getSUM(TypeValue type, int days) throws Exception {
+	public double getSUM(EnumValue type, int days) throws Exception {
 		double total = 0.0;
 		for(int i=0;i<days;i++){
 			Bar k = this.before(i);
@@ -283,7 +267,7 @@ public class Bar implements Serializable, Cloneable {
 		return ServiceUtils.numberFormat(total,2);
 	}
 
-	public Bar getMax(TypeValue typeValue, int days, TypeCalc typeCalc, int days2) throws Exception {
+	public Bar getMax(EnumValue typeValue, int days, EnumCalculationMethod typeCalc, int days2) throws Exception {
 		double max = 0.0;
 		Bar ret = null;
 		for(int i=0;i<days;i++){
@@ -467,11 +451,11 @@ public class Bar implements Serializable, Cloneable {
 		this.ene = ene;
 	}*/
 
-	public final double getEMA(TypeValue typeValue, int n)  {
+	public final double getEMA(EnumValue typeValue, int n)  {
 		return this.getEMA(typeValue, n, 2);
 	}
 
-	public final double getEMA(TypeValue typeValue, final int n, final int m) {
+	public final double getEMA(EnumValue typeValue, final int n, final int m) {
 		List<Double> list = new ArrayList<Double>();
 		int j = 0;
 		Bar k = this;
