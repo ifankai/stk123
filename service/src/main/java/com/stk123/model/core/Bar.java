@@ -44,7 +44,7 @@ public class Bar implements Serializable, Cloneable {
 	private double low;
 	private double volume;
 	private double amount;
-	private double adjusted; //涨跌幅
+	private double change; //涨跌幅
 	private double hsl; //换手率
 
 	private Bar before;
@@ -80,12 +80,12 @@ public class Bar implements Serializable, Cloneable {
 			this.setLow(kline.getLow());
 			this.setVolume(kline.getVolumn());
 			this.setAmount(kline.getAmount()==null?0:kline.getAmount());
-			this.setAdjusted(kline.getCloseChange()==null?0:kline.getCloseChange());
+			this.setChange(kline.getCloseChange()==null?0:kline.getCloseChange());
 			this.setHsl(kline.getHsl()==null?0:kline.getHsl());
 		}else{
 			this.setDate(kline.getKlineDate());
-			double tmpCloseChanged = barAfter.getClose()/barAfter.getAdjusted()*kline.getCloseChange()/kline.getClose();
-            tmpCloseChanged = barAfter.getClose()/barAfter.getAdjusted()/kline.getClose();
+			double tmpCloseChanged = barAfter.getClose()/barAfter.getChange()*kline.getCloseChange()/kline.getClose();
+            tmpCloseChanged = barAfter.getClose()/barAfter.getChange()/kline.getClose();
 
 			this.setOpen(ServiceUtils.numberFormat(kline.getOpen() * tmpCloseChanged, 2));
 			this.setClose(ServiceUtils.numberFormat(kline.getClose() * tmpCloseChanged, 2));
@@ -93,7 +93,7 @@ public class Bar implements Serializable, Cloneable {
 			this.setLow(ServiceUtils.numberFormat(kline.getLow() * tmpCloseChanged, 2));
 			this.setVolume(kline.getVolumn());
 			this.setAmount(kline.getAmount()==null?0:kline.getAmount());
-			this.setAdjusted(kline.getCloseChange()==null?0:kline.getCloseChange());
+			this.setChange(kline.getCloseChange()==null?0:kline.getCloseChange());
 			this.setHsl(kline.getHsl()==null?0:kline.getHsl());
 		}
 		if(barBefore != null) {
@@ -218,22 +218,22 @@ public class Bar implements Serializable, Cloneable {
 		return result;
 	}
 
-	public double getAdjusted(int days, Function<Bar, Double> func) throws Exception{
+	public double getChange(int days, Function<Bar, Double> func) throws Exception{
 		double v = func.apply(this);
 		double kv = this.getRef(days, func);
 		return (v-kv)/kv;
 	}
 
-	public double getAdjusted(int days, TypeValue typeValue) throws Exception{
-		return this.getAdjusted(days, bar -> bar.getValue(typeValue));
+	public double getChange(int days, TypeValue typeValue) throws Exception{
+		return this.getChange(days, bar -> bar.getValue(typeValue));
 	}
 
 	public double getAdjustedOfClose() throws Exception{
-		return this.getAdjusted(1, C);
+		return this.getChange(1, C);
 	}
 
 	public double getAdjustedOfClose(int n) throws Exception{
-		return this.getAdjusted(n, C);
+		return this.getChange(n, C);
 	}
 
 
