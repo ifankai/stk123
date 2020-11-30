@@ -52,9 +52,9 @@ public class BarSeries {
                 bar.setHigh(ServiceUtils.numberFormat(bar.getHigh() * restorationChange, 2));
                 bar.setLow(ServiceUtils.numberFormat(bar.getLow() * restorationChange, 2));
             }
-            Bar after = bar.getAfter();
-            if(after != null && after.getLastClose() == bar.getClose()) {
-                double factor = after.getClose() / (1 + after.getChange()) / after.getLastClose(); //复权因子
+            Bar before = bar.getBefore();
+            if(before != null && before.getClose() == bar.getLastClose()) {
+                double factor = bar.getClose() / (1 + bar.getChange()) / before.getClose(); //复权因子
                 restorationChange = factor * restorationChange;
             }
         }
