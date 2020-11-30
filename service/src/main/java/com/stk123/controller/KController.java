@@ -1,6 +1,7 @@
 package com.stk123.controller;
 
 import com.stk123.entity.StkKlineEntity;
+import com.stk123.model.RequestResult;
 import com.stk123.repository.StkKlineRepository;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
@@ -24,11 +25,11 @@ public class KController {
 
     @RequestMapping("/{code}")
     @ResponseBody
-    public List<StkKlineEntity> getKs(@PathVariable("code")String code,
-                                      @RequestParam(value = "type", required = false, defaultValue = "1")int type,
-                                      @RequestParam(value = "days", required = false, defaultValue = "1000")int days,
-                                      @RequestParam(value = "fromDate", required = false)String fromDate,
-                                      @RequestParam(value = "toDate", required = false)String toDate) throws Exception {
+    public RequestResult<List<StkKlineEntity>> getKs(@PathVariable("code")String code,
+                                                     @RequestParam(value = "type", required = false, defaultValue = "1")int type,
+                                                     @RequestParam(value = "days", required = false, defaultValue = "1000")int days,
+                                                     @RequestParam(value = "fromDate", required = false)String fromDate,
+                                                     @RequestParam(value = "toDate", required = false)String toDate) throws Exception {
         List<StkKlineEntity> ks = null;
         switch (type){
             case 1:
@@ -36,7 +37,7 @@ public class KController {
             case 3:
                 ks = stkKlineRepository.queryTopNByCodeOrderByKlineDateDesc(code, days);
         }
-        return ks;
+        return RequestResult.success(ks);
     }
 
 }
