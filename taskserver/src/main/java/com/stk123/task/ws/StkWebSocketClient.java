@@ -49,7 +49,7 @@ public class StkWebSocketClient {
         SockJsClient sockJsClient = new SockJsClient(transports);
         WebSocketStompClient stompClient = new WebSocketStompClient(sockJsClient);
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
-        String url = "ws://"+ip+":"+port + CommonConstant.WS_ENDPOINT;
+        String url = "ws://"+ip+":"+port + "/" +CommonConstant.WS_ENDPOINT;
 
         session = stompClient.connect(url, myStompSessionHandler).get();
     }
