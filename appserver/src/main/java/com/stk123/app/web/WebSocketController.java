@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 @Controller
 @CommonsLog
-public class WebsocketController {
+public class WebSocketController {
 
     @Autowired
     private SimpMessagingTemplate template;

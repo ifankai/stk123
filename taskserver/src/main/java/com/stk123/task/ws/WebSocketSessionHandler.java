@@ -13,10 +13,10 @@ import org.springframework.stereotype.Component;
 
 @CommonsLog
 @Component
-public class MyStompSessionHandler extends StompSessionHandlerAdapter {
+public class WebSocketSessionHandler extends StompSessionHandlerAdapter {
 
     @Autowired
-    private StkStompFrameHandler stkStompFrameHandler;
+    private WebSocketServiceHandler stkStompFrameHandler;
 
     @Autowired
     private StkWebSocketClient stkWebSocketClient;
@@ -24,31 +24,28 @@ public class MyStompSessionHandler extends StompSessionHandlerAdapter {
     @Override
     public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
         log.info("Websocket Connected!");
-        subscribeTopic(CommonConstant.WS_TOPIC, session);
+        session.subscribe(CommonConstant.WS_TOPIC, stkStompFrameHandler);
     }
 
+    @Override
     public void handleException(StompSession session, @Nullable StompCommand command,
                                 StompHeaders headers, byte[] payload, Throwable exception) {
-        log.info(headers);
-        log.info(new String(payload));
+        log.error(headers);
+        log.error(new String(payload));
         log.error("MyStompSessionHandler.handleException", exception);
         ClientMessage cm = new ClientMessage();
         cm.setMessageId(headers.getFirst("messageId"));
         cm.setData(exception.getMessage());
-        log.info(cm);
-        session.send(StkWebSocketClient.SEND_URL, cm);
-
-        try {
-            stkWebSocketClient.init();
-        } catch (Exception e) {
-            log.error("stkWebSocketClient init error", e);
+        if(!session.isConnected()) {
+            try {
+                stkWebSocketClient.init();
+            } catch (Exception e) {
+                log.error("stkWebSocketClient init error", e);
+                return ;
+            }
         }
+        session.send(StkWebSocketClient.SEND_URL, cm);
     }
-
-    private void subscribeTopic(String topic, StompSession session) {
-        session.subscribe(topic, stkStompFrameHandler);
-    }
-
 
 
 }
