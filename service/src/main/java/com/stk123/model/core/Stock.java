@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import java.util.List;
+import java.util.Objects;
 
 import static com.stk123.model.core.Stock.EnumCity.SH;
 import static com.stk123.model.core.Stock.EnumCity.SZ;
@@ -18,12 +19,64 @@ import static com.stk123.model.core.Stock.EnumMarket.US;
 @Data
 public class Stock {
 
-    enum EnumMarket {
-        CN, HK, US
+    public enum EnumMarket {
+        CN(1), HK(3), US(2);
+
+        private Integer market;
+
+        EnumMarket(Integer market){
+            this.market = market;
+        }
+
+        public Integer getMarket(){
+            return this.market;
+        }
+
+        /**
+         * @param name 1|2|3|cn|us|hk
+         * @return
+         */
+        public static EnumMarket getMarket(String name){
+            for(EnumMarket em : EnumMarket.values()){
+                if(em.name().equalsIgnoreCase(name) || name.equals(em.getMarket().toString())){
+                    return em;
+                }
+            }
+            return null;
+        }
+        public static EnumMarket getMarket(Integer market){
+            for(EnumMarket em : EnumMarket.values()){
+                if(em.getMarket().intValue() == market.intValue()){
+                    return em;
+                }
+            }
+            return null;
+        }
     }
 
-    enum EnumCity {
+    public enum EnumCity {
         SH, SZ
+    }
+
+    public enum EnumCate {
+        STOCK(1), INDEX(2), FUND(3), INDEX_10jqka(4);
+
+        private Integer cate;
+
+        EnumCate(Integer cate){
+            this.cate = cate;
+        }
+
+        public Integer getCate(){return this.cate;}
+
+        public static EnumCate getCate(Integer cate) {
+            for(EnumCate em : EnumCate.values()){
+                if(em.getCate().intValue() == cate.intValue()){
+                    return em;
+                }
+            }
+            return null;
+        }
     }
 
     private String code;

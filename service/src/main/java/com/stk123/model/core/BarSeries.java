@@ -11,7 +11,7 @@ import static com.stk123.model.core.BarSeries.EnumPeriod.DAY;
 @Data
 public class BarSeries {
 
-    enum EnumPeriod {
+    public enum EnumPeriod {
         DAY, WEEK, MONTH
     }
 
