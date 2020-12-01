@@ -1,245 +1,117 @@
 package com.stk123.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Time;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Objects;
 
 @Entity
 @Table(name = "STK")
-public class StkEntity {
-    private String code;
-    private String name;
-    private Time insertTime;
-    private String listingDate;
-    private Long totalCapital;
-    private Long status;
-    private Time statusDate;
-    private String earningExpect;
-    private Time earningExpectDate;
-    private String companyProfile;
-    private String saleLimit;
-    private Boolean market;
-    private String yearEnd;
-    private String nextQuarterEarning;
-    private Long nextEarning;
-    private Boolean cate;
-    private String f9;
-    private String address;
-    private Long hot;
-    private String fnCurrency;
-    private Collection<StkBillboardEntity> stkBillboardsByCode;
-    private Collection<StkEarningsForecastEntity> stkEarningsForecastsByCode;
-    private Collection<StkEarningsNoticeEntity> stkEarningsNoticesByCode;
-    private Collection<StkFnDataEntity> stkFnDataByCode;
-    private Collection<StkFnDataHkEntity> stkFnDataHksByCode;
-    private Collection<StkFnDataUsEntity> stkFnDataUsByCode;
-    private Collection<StkHolderEntity> stkHoldersByCode;
-    private Collection<StkImportInfoEntity> stkImportInfosByCode;
-    private Collection<StkIndustryEntity> stkIndustriesByCode;
-    private Collection<StkInfoLogEntity> stkInfoLogsByCode;
-    private Collection<StkKlineEntity> stkKlinesByCode;
-    private Collection<StkKlineHkEntity> stkKlineHksByCode;
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@Setter
+@Getter
+public class StkEntity implements Serializable {
+
+    private static final long serialVersionUID = 8946771678849352372L;
 
     @Id
     @Column(name = "CODE", nullable = false, length = 10)
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
+    private String code;
 
     @Basic
     @Column(name = "NAME", nullable = true, length = 100)
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    private String name;
 
     @Basic
     @Column(name = "INSERT_TIME", nullable = true)
-    public Time getInsertTime() {
-        return insertTime;
-    }
-
-    public void setInsertTime(Time insertTime) {
-        this.insertTime = insertTime;
-    }
+    private Date insertTime;
 
     @Basic
     @Column(name = "LISTING_DATE", nullable = true, length = 8)
-    public String getListingDate() {
-        return listingDate;
-    }
-
-    public void setListingDate(String listingDate) {
-        this.listingDate = listingDate;
-    }
+    private String listingDate;
 
     @Basic
     @Column(name = "TOTAL_CAPITAL", nullable = true, precision = 2)
-    public Long getTotalCapital() {
-        return totalCapital;
-    }
-
-    public void setTotalCapital(Long totalCapital) {
-        this.totalCapital = totalCapital;
-    }
+    private Long totalCapital;
 
     @Basic
     @Column(name = "STATUS", nullable = true, precision = 0)
-    public Long getStatus() {
-        return status;
-    }
-
-    public void setStatus(Long status) {
-        this.status = status;
-    }
+    private Integer status;
 
     @Basic
     @Column(name = "STATUS_DATE", nullable = true)
-    public Time getStatusDate() {
-        return statusDate;
-    }
-
-    public void setStatusDate(Time statusDate) {
-        this.statusDate = statusDate;
-    }
+    private Date statusDate;
 
     @Basic
     @Column(name = "EARNING_EXPECT", nullable = true, length = 4000)
-    public String getEarningExpect() {
-        return earningExpect;
-    }
-
-    public void setEarningExpect(String earningExpect) {
-        this.earningExpect = earningExpect;
-    }
+    private String earningExpect;
 
     @Basic
     @Column(name = "EARNING_EXPECT_DATE", nullable = true)
-    public Time getEarningExpectDate() {
-        return earningExpectDate;
-    }
-
-    public void setEarningExpectDate(Time earningExpectDate) {
-        this.earningExpectDate = earningExpectDate;
-    }
+    private Date earningExpectDate;
 
     @Basic
     @Column(name = "COMPANY_PROFILE", nullable = true)
-    public String getCompanyProfile() {
-        return companyProfile;
-    }
-
-    public void setCompanyProfile(String companyProfile) {
-        this.companyProfile = companyProfile;
-    }
+    private String companyProfile;
 
     @Basic
     @Column(name = "SALE_LIMIT", nullable = true)
-    public String getSaleLimit() {
-        return saleLimit;
-    }
-
-    public void setSaleLimit(String saleLimit) {
-        this.saleLimit = saleLimit;
-    }
+    private String saleLimit;
 
     @Basic
     @Column(name = "MARKET", nullable = true, precision = 0)
-    public Boolean getMarket() {
-        return market;
-    }
-
-    public void setMarket(Boolean market) {
-        this.market = market;
-    }
+    private Integer market;
 
     @Basic
     @Column(name = "YEAR_END", nullable = true, length = 4)
-    public String getYearEnd() {
-        return yearEnd;
-    }
-
-    public void setYearEnd(String yearEnd) {
-        this.yearEnd = yearEnd;
-    }
+    private String yearEnd;
 
     @Basic
     @Column(name = "NEXT_QUARTER_EARNING", nullable = true, length = 4000)
-    public String getNextQuarterEarning() {
-        return nextQuarterEarning;
-    }
-
-    public void setNextQuarterEarning(String nextQuarterEarning) {
-        this.nextQuarterEarning = nextQuarterEarning;
-    }
+    private String nextQuarterEarning;
 
     @Basic
     @Column(name = "NEXT_EARNING", nullable = true, precision = 2)
-    public Long getNextEarning() {
-        return nextEarning;
-    }
-
-    public void setNextEarning(Long nextEarning) {
-        this.nextEarning = nextEarning;
-    }
+    private Double nextEarning;
 
     @Basic
     @Column(name = "CATE", nullable = true, precision = 0)
-    public Boolean getCate() {
-        return cate;
-    }
-
-    public void setCate(Boolean cate) {
-        this.cate = cate;
-    }
+    private Integer cate;
 
     @Basic
     @Column(name = "F9", nullable = true)
-    public String getF9() {
-        return f9;
-    }
-
-    public void setF9(String f9) {
-        this.f9 = f9;
-    }
+    private String f9;
 
     @Basic
     @Column(name = "ADDRESS", nullable = true, length = 30)
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
+    private String address;
 
     @Basic
     @Column(name = "HOT", nullable = true, precision = 0)
-    public Long getHot() {
-        return hot;
-    }
-
-    public void setHot(Long hot) {
-        this.hot = hot;
-    }
+    private Integer hot;
 
     @Basic
     @Column(name = "FN_CURRENCY", nullable = true, length = 4)
-    public String getFnCurrency() {
-        return fnCurrency;
-    }
+    private String fnCurrency;
+//    private Collection<StkBillboardEntity> stkBillboardsByCode;
+//    private Collection<StkEarningsForecastEntity> stkEarningsForecastsByCode;
+//    private Collection<StkEarningsNoticeEntity> stkEarningsNoticesByCode;
+//    private Collection<StkFnDataEntity> stkFnDataByCode;
+//    private Collection<StkFnDataHkEntity> stkFnDataHksByCode;
+//    private Collection<StkFnDataUsEntity> stkFnDataUsByCode;
+//    private Collection<StkHolderEntity> stkHoldersByCode;
+//    private Collection<StkImportInfoEntity> stkImportInfosByCode;
+//    private Collection<StkIndustryEntity> stkIndustriesByCode;
+//    private Collection<StkInfoLogEntity> stkInfoLogsByCode;
+//    private Collection<StkKlineEntity> stkKlinesByCode;
+//    private Collection<StkKlineHkEntity> stkKlineHksByCode;
 
-    public void setFnCurrency(String fnCurrency) {
-        this.fnCurrency = fnCurrency;
-    }
 
     @Override
     public boolean equals(Object o) {

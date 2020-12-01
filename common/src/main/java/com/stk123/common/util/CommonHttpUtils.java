@@ -330,6 +330,7 @@ public class CommonHttpUtils {
                     sb.append(str);
                 }
                 response = sb.toString();
+                br.close();
             }else{
                 response = String.valueOf(getMethod.getStatusCode());
             }

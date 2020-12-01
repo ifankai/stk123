@@ -81,7 +81,7 @@ public class InitialKLine {
 	}
 
 	public void run(String... args) {
-        System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");//fix JDK1.7 error:java.lang.IllegalArgumentException: Comparison method violates its general contract!
+        //System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");//fix JDK1.7 error:java.lang.IllegalArgumentException: Comparison method violates its general contract!
         //System.setProperty("java.io.tmpdir", System.getProperty("java.io.tmpdir")+File.separator+"CN");
 
         ConfigUtils.setProp("sql_select_show", "N");
@@ -414,16 +414,28 @@ public class InitialKLine {
 				//跟新pe/pb ntile
 				index.updateNtile();
 			}
-			
-			log.info("策略 at:"+today);
-			strategy(conn,false);
 
-            log.info("时间窗口 at:"+today);
-			timeWindow(conn, today);
+			try {
+                log.info("策略 at:" + today);
+                strategy(conn, false);
+            }catch (Exception e){
+			    log.error("strategy", e);
+            }
 
+            try{
+                log.info("时间窗口 at:"+today);
+                timeWindow(conn, today);
+            }catch (Exception e){
+                log.error("timeWindow", e);
+            }
+
+            try{
             log.info("行业分析");
-			checkIndustry(conn, today, "10jqka_gn");
-			checkIndustry(conn, today, "10jqka_thshy");
+                checkIndustry(conn, today, "10jqka_gn");
+                checkIndustry(conn, today, "10jqka_thshy");
+            }catch (Exception e){
+                log.error("checkIndustry", e);
+            }
 			
 			//策略模型选股
 			/*StrategyManager mgr = new StrategyManager(conn, today);
