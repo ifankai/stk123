@@ -2605,7 +2605,7 @@ select * from stk_text order by insert_time desc;
 
 
 select * from stk where code='300145';
-select * from stk_kline where  code='000001' order by kline_date desc;
+select * from stk_kline where  code='600007' order by kline_date desc;
 select count(1) from stk_kline where kline_date='20180830';
 select median(pb_ttm) from stk_kline where kline_date='20180905';
 select median(pe_ttm) from stk_kline where kline_date='20180905';
@@ -2834,3 +2834,6 @@ select avg(pe_ttm) from stk_kline where kline_date='20201127' and pe_ttm is not 
 select * from stk_import_info order by insert_time desc;
 
 select * from stk_xueqiu_user;
+select * from (select * from stk_kline t where code='000863' order by kline_date desc) where rownum <= 1000;
+
+select * from stk_kline t where kline_date='20201201';
