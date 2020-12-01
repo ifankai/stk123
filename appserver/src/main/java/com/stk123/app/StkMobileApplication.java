@@ -15,7 +15,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
  */
 @SpringBootApplication
 @EnableAutoConfiguration
-@EntityScan({"com.stk123.entity"})
+//@EntityScan({"com.stk123.entity"})
 @EnableAsync
 public class StkMobileApplication {
 

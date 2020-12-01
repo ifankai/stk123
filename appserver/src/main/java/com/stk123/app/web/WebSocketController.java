@@ -33,7 +33,7 @@ public class WebSocketController {
 
     @MessageMapping(CommonConstant.WS_MAPPING)
     @SendTo(CommonConstant.WS_TOPIC)
-    public ServerMessage greeting(ClientMessage<RequestResult> clientMessage) throws Exception {
+    public ServerMessage receive(ClientMessage<RequestResult> clientMessage) throws Exception {
         String uuid = clientMessage.getMessageId();
         clientMessageMap.put(uuid, clientMessage);
         latch.get(uuid).countDown();
@@ -63,9 +63,13 @@ public class WebSocketController {
         template.convertAndSend(CommonConstant.WS_TOPIC, serverMessage, headers);
         CountDownLatch cdl = new CountDownLatch(1);
         latch.put(uuid, cdl);
-        cdl.await(60, TimeUnit.SECONDS);
+        cdl.await(30, TimeUnit.SECONDS);
         latch.remove(uuid);
-        return clientMessageMap.get(uuid).getData();
+        ClientMessage<RequestResult> result = clientMessageMap.get(uuid);
+        if(result == null){
+            return RequestResult.failure("Timeout after 30 seconds.");
+        }
+        return result.getData();
     }
 
 }
