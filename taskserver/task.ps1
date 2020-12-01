@@ -4,4 +4,4 @@ copy-item -Force D:\share\workspace\stk123\taskserver\target\taskserver-1.0.0-ex
 
 cd D:\share\workspace\stk123\taskserver
 
-java -Xms1024m -Xmx2048m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=D:\dump -jar D:\share\workspace\stk123\taskserver\taskserver.jar
+java -Xms1024m -Xmx4096m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=D:\dump -jar D:\share\workspace\stk123\taskserver\taskserver.jar
