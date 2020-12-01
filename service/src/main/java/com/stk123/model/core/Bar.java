@@ -1059,7 +1059,7 @@ public class Bar implements Serializable, Cloneable {
 	 * ----------------------override-----------------------------
 	 */
 	private String string(){
-		return "date:"+date+",open:"+open+",close:"+close+",high:"+high+",low:"+low;
+		return "date:"+date+",open:"+open+",close:"+close+",high:"+high+",low:"+low+",change:"+change+",lastClose:"+lastClose;
 	}
 	@Override
 	public String toString() {

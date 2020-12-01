@@ -13,3 +13,6 @@ web/WEB-INF/classes/**
 SetXueqiuCookieToProperties.exe
 xueqiu.cookie.properties
 **/target/**
+*.hprof
+service.jar
+taskserver.jar

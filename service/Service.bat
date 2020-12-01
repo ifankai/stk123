@@ -1,7 +1,7 @@
 @echo off
 title Service
 
-copy /y D:\share\workspace\stk123\service\target\service-1.0.0-exec.jar D:\share\workspace\stk123\service\service.jar
+copy /y %root_dir%target\service-1.0.0-exec.jar %root_dir%service.jar
 
 set root_dir=%~dp0
 
