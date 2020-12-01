@@ -16,3 +16,5 @@ xueqiu.cookie.properties
 *.hprof
 service.jar
 taskserver.jar
+webserver.jar
+typescript.d.ts
