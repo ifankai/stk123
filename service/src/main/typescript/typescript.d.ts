@@ -1,4 +1,4 @@
-// Generated using typescript-generator version 1.25.322 on 2020-11-30 14:45:20.
+// Generated using typescript-generator version 1.25.322 on 2020-12-01 11:30:49.
 
 export interface StkTextEntity extends Serializable {
     id: number;

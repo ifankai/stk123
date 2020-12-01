@@ -11,6 +11,9 @@ import org.springframework.web.socket.server.standard.ServletServerContainerFact
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+    private static final int MAX_MESSAGE_SIZE = 64 * 1024 * 100;
+    private static final long MAX_IDLE = 60 * 60 * 1000;
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic");
@@ -22,8 +25,19 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint(CommonConstant.WS_ENDPOINT).withSockJS();
     }
 
-    private static final int MAX_MESSAGE_SIZE = 20 * 1024;
-    private static final long MAX_IDLE = 60 * 60 * 1000;
+    /*
+    The solution for WebSocket size limitation: 添加下面2个方法，并设置MAX_MESSAGE_SIZE
+    configureWebSocketTransport
+    createServletServerContainerFactoryBean
+    具体是哪个方法起作用还有待验证
+     */
+
+    @Override
+    public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
+        registration.setMessageSizeLimit(MAX_MESSAGE_SIZE); // default : 64 * 1024
+        registration.setSendTimeLimit(20 * 10000); // default : 10 * 10000
+        registration.setSendBufferSizeLimit(10 * MAX_MESSAGE_SIZE); // default : 512 * 1024
+    }
 
     @Bean
     public ServletServerContainerFactoryBean createServletServerContainerFactoryBean() {
