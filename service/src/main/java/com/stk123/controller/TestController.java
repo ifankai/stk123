@@ -41,17 +41,17 @@ public class TestController {
 
     public void similer() {
 
-        FilterExample example = new FilterExample("Example 603096");
-        Filter<BarSeries, Similar> filter1 = (bs) -> {
-            Bar today = bs.getFirst();
+        FilterExample<Bar, Similar> example = new FilterExample("Example 603096");
+        Filter<Bar, Similar> filter1 = (bar) -> {
+            Bar today = bar;
             Bar today4 = today.before(4);
             double change = today4.getChange(80, Bar.EnumValue.C);
             System.out.println("similar1 change=="+change);
             return new SimilarBetween(change*100,-50.0, -30.0);
         };
         example.addFilter(filter1);
-        Filter<BarSeries, Similar> filter2 = (bs) -> {
-            Bar today = bs.getFirst();
+        Filter<Bar, Similar> filter2 = (bar) -> {
+            Bar today = bar;
             Bar today4 = today.before(4);
             double today4Volume = today4.getVolume();
             if(today4.getClose() < today4.getLastClose()){
