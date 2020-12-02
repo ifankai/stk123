@@ -1,7 +1,6 @@
 package com.stk123.model.core.similar;
 
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Comparator;
