@@ -5,12 +5,12 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class FunctionWraper<T> {
-    private T function;
+public class FilterWraper<B, S> {
+    private Filter<B, S> filter;
     private int counter;
 
-    public FunctionWraper(T function){
-        this.function = function;
+    public FilterWraper(Filter<B, S> filter){
+        this.filter = filter;
         this.counter = 0;
     }
 
