@@ -4,18 +4,8 @@ public interface Similar {
 
     boolean similar();
 
-    Similar FALSE = new Similar() {
-        @Override
-        public boolean similar() {
-            return false;
-        }
-    };
+    Similar FALSE = () -> false;
 
-    Similar TRUE = new Similar() {
-        @Override
-        public boolean similar() {
-            return true;
-        }
-    };
+    Similar TRUE = () -> true;
 
 }

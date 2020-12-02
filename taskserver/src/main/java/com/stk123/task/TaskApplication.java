@@ -53,6 +53,7 @@ public class TaskApplication {
         String task = environment.getProperty(TaskCondition.taskNeedToRun);
         if(task != null){
             tasks.runSingleTask();
+            System.exit(0);
         }
     }
 }
