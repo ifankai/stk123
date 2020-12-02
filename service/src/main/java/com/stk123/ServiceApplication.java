@@ -2,10 +2,6 @@ package com.stk123;
 
 import com.stk123.entity.StkKlineEntity;
 import com.stk123.model.RequestResult;
-import com.stk123.model.core.*;
-import com.stk123.model.core.similar.SimilarBetween;
-import com.stk123.model.core.similar.SimilarEquals;
-import com.stk123.model.core.similar.SimilarExample;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +16,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -30,7 +24,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
-import java.util.function.Function;
 
 @SpringBootApplication
 @EnableAutoConfiguration
