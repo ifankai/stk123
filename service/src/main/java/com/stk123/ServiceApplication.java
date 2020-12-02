@@ -2,10 +2,11 @@ package com.stk123;
 
 import com.stk123.entity.StkKlineEntity;
 import com.stk123.model.RequestResult;
-import com.stk123.model.core.Bar;
-import com.stk123.model.core.BarSeries;
+import com.stk123.model.core.*;
+import com.stk123.model.core.similar.SimilarBetween;
+import com.stk123.model.core.similar.SimilarEquals;
+import com.stk123.model.core.similar.SimilarExample;
 import lombok.extern.apachecommons.CommonsLog;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -19,7 +20,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
@@ -29,8 +29,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
+import java.util.function.Function;
 
 @SpringBootApplication
 @EnableAutoConfiguration
@@ -48,8 +48,6 @@ public class ServiceApplication implements ApplicationContextAware {
     @Autowired
     Environment environment;
 
-    @Autowired
-    private RestTemplate restTemplate;
 
     public static void main(String[] args) throws Exception {
         SpringApplication.run(ServiceApplication.class, args);
@@ -68,11 +66,12 @@ public class ServiceApplication implements ApplicationContextAware {
         return new RestTemplate(factory);
     }
 
+    ParameterizedTypeReference<RequestResult<List<StkKlineEntity>>> typeRef = new ParameterizedTypeReference<RequestResult<List<StkKlineEntity>>>() {};
+
     @EventListener(ApplicationReadyEvent.class)
     public void doSomethingAfterStartup() {
         System.out.println("doSomethingAfterStartup..........");
-        /*ParameterizedTypeReference<RequestResult<List<StkKlineEntity>>> typeRef = new ParameterizedTypeReference<RequestResult<List<StkKlineEntity>>>() {};
-        ResponseEntity<RequestResult<List<StkKlineEntity>>> responseEntity =
+        /*ResponseEntity<RequestResult<List<StkKlineEntity>>> responseEntity =
                 restTemplate.exchange("http://81.68.255.181:8080/ws/k/000863?days=100", HttpMethod.GET, null, typeRef);
         BarSeries bs = new BarSeries();
         for(StkKlineEntity stkKlineEntity : responseEntity.getBody().getData()) {
@@ -83,6 +82,7 @@ public class ServiceApplication implements ApplicationContextAware {
         }
         System.out.println(bs);*/
     }
+
 
 
     @Scheduled(cron = "0 0 0 ? * *")

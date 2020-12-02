@@ -66,6 +66,11 @@ public class BarSeries {
         return this;
     }
 
+    public Bar getFirst(){
+        return list.peekFirst();
+    }
+
+
     @Override
     public String toString(){
         StringBuilder sb = new StringBuilder();
@@ -74,5 +79,9 @@ public class BarSeries {
             sb.append(bar.toString()).append("\n");
         }
         return sb.toString();
+    }
+
+    public static void main(String[] args) {
+
     }
 }

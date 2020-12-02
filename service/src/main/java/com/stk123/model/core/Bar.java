@@ -15,8 +15,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static com.stk123.model.core.Bar.EnumCalculationMethod.MA;
-import static com.stk123.model.core.Bar.EnumValue.C;
-import static com.stk123.model.core.Bar.EnumValue.V;
+import static com.stk123.model.core.Bar.EnumValue.*;
 
 @Data
 @NoArgsConstructor
@@ -99,6 +98,13 @@ public class Bar implements Serializable, Cloneable {
 		}
 		return tmp;
 	}
+	public Bar before(String date){
+		Bar tmp = this;
+		while(date.compareTo(tmp.date) < 0 && tmp.before != null){
+			tmp = tmp.before;
+		}
+		return tmp;
+	}
 	public Bar after(int n){
 		Bar tmp = this;
 		while(n-- > 0 && tmp != null && tmp.after != null){
@@ -151,7 +157,7 @@ public class Bar implements Serializable, Cloneable {
 	 * @return
 	 * @throws Exception
 	 */
-	public double getValue(EnumValue typeValue, EnumCalculationMethod typeCalc, int days) throws Exception {
+	public double getValue(EnumValue typeValue, EnumCalculationMethod typeCalc, int days) {
 		switch (typeCalc) {
 			case MA:
 				return this.getMA(typeValue, days);
@@ -202,33 +208,36 @@ public class Bar implements Serializable, Cloneable {
 		return result;
 	}
 
-	public double getChange(int days, Function<Bar, Double> func) throws Exception{
+	public double getChange(int days, Function<Bar, Double> func) {
 		double v = func.apply(this);
 		double kv = this.getRef(days, func);
 		return (v-kv)/kv;
 	}
 
-	public double getChange(int days, EnumValue typeValue) throws Exception{
+	/**
+	 * 得到days前和今天 EnumValue的涨跌幅
+	 */
+	public double getChange(int days, EnumValue typeValue) {
 		return this.getChange(days, bar -> bar.getValue(typeValue));
 	}
 
-	public double getAdjustedOfClose() throws Exception{
+	public double getAdjustedOfClose() {
 		return this.getChange(1, C);
 	}
 
-	public double getAdjustedOfClose(int n) throws Exception{
+	public double getAdjustedOfClose(int n) {
 		return this.getChange(n, C);
 	}
 
 
-	public double getRef(int days, Function<Bar, Double> func) throws Exception{
+	public double getRef(int days, Function<Bar, Double> func) {
 		return func.apply(this.before(days));
 	}
 
 
 
 
-	public double getMA(EnumValue type, int days) throws Exception {
+	public double getMA(EnumValue type, int days) {
 		double total = 0.0;
 		int tmp = days;
 		for(int i=0;i<days;i++){
@@ -255,7 +264,7 @@ public class Bar implements Serializable, Cloneable {
 	}
 
 
-	public double getSUM(EnumValue type, int days) throws Exception {
+	public double getSUM(EnumValue type, int days) {
 		double total = 0.0;
 		for(int i=0;i<days;i++){
 			Bar k = this.before(i);
@@ -267,7 +276,7 @@ public class Bar implements Serializable, Cloneable {
 		return ServiceUtils.numberFormat(total,2);
 	}
 
-	public Bar getMax(EnumValue typeValue, int days, EnumCalculationMethod typeCalc, int days2) throws Exception {
+	public Bar getMax(EnumValue typeValue, int days, EnumCalculationMethod typeCalc, int days2) {
 		double max = 0.0;
 		Bar ret = null;
 		for(int i=0;i<days;i++){
@@ -284,120 +293,65 @@ public class Bar implements Serializable, Cloneable {
 		return ret;
 	}
 
+
+	/**
+	 * lowest
+	 */
+	public Bar getLowestBar(int n, EnumValue ev){
+		double value = 0.0;
+		Bar ret = this;
+		Bar k = this;
+		for(int i=0;i<n;i++){
+			double tmp = k.getValue(ev);
+			if(value > tmp || value == 0.0){
+				value = tmp;
+				ret = k;
+			}
+			k = k.before(1);
+		}
+		return ret;
+	}
+	public Double getLowest(int n, EnumValue ev){
+		return this.getLowestBar(n, ev).getValue(ev);
+	}
+
+
+	/**
+	 * highest
+	 */
+	public Bar getHighestBar(int n, EnumValue ev){
+		double value = 0.0;
+		Bar k = this;
+		Bar ret = null;
+		for(int i=0;i<n;i++){
+			double tmp = k.getHigh();
+			if(value < tmp || value == 0.0){
+				value = tmp;
+				ret = k;
+			}
+			k = k.before(1);
+		}
+		return ret;
+	}
+	public Double getHighest(int n, EnumValue ev){
+		return this.getHighestBar(n, ev).getValue(ev);
+	}
+
+
+
 	//low的低点
+	@Deprecated
 	public double getLLV(int n){
-		double value = 0.0;
-		Bar k = this;
-		for(int i=0;i<n;i++){
-			double tmp = k.getLow();
-			if(value > tmp || value == 0.0){
-				value = tmp;
-			}
-			k = k.before(1);
-		}
-		return value;
-	}
-
-	//low的低点
-	public Bar getKByLLV(int n){
-		double value = 0.0;
-		Bar ret = this;
-		Bar k = this;
-		for(int i=0;i<n;i++){
-			double tmp = k.getLow();
-			if(value > tmp || value == 0.0){
-				value = tmp;
-				ret = k;
-			}
-			k = k.before(1);
-		}
-		return ret;
-	}
-	//volume的低点
-	public Bar getKByLVV(int n){
-		double value = 0.0;
-		Bar ret = this;
-		Bar k = this;
-		for(int i=0;i<n;i++){
-			double tmp = k.getVolume();
-			if(value > tmp || value == 0.0){
-				value = tmp;
-				ret = k;
-			}
-			k = k.before(1);
-		}
-		return ret;
+		return this.getLowest(n, L);
 	}
 
 	//high的高点
+	@Deprecated
 	public double getHHV(int n){
-		double value = 0.0;
-		Bar k = this;
-		for(int i=0;i<n;i++){
-			double tmp = k.getHigh();
-			if(value < tmp || value == 0.0){
-				value = tmp;
-			}
-			k = k.before(1);
-		}
-		return value;
+		return this.getHighest(n, H);
 	}
-	//high的高点
-	public Bar getKByHHV(int n){
-		double value = 0.0;
-		Bar k = this;
-		Bar ret = null;
-		for(int i=0;i<n;i++){
-			double tmp = k.getHigh();
-			if(value < tmp || value == 0.0){
-				value = tmp;
-				ret = k;
-			}
-			k = k.before(1);
-		}
-		return ret;
-	}
-	//close的高点
-	public double getHCV(int n) throws Exception {
-		double value = 0.0;
-		Bar k = this;
-		for(int i=0;i<n;i++){
-			double tmp = k.getClose();
-			if(value < tmp || value == 0.0){
-				value = tmp;
-			}
-			k = k.before(1);
-		}
-		return value;
-	}
-	//volume的高点
-	public double getHVV(int n) throws Exception {
-		double value = 0.0;
-		Bar k = this;
-		for(int i=0;i<n;i++){
-			double tmp = k.getVolume();
-			if(value < tmp || value == 0.0){
-				value = tmp;
-			}
-			k = k.before(1);
-		}
-		return value;
-	}
-	//volume的高点
-	public Bar getKByHVV(int n) throws Exception {
-		double value = 0.0;
-		Bar k = this;
-		Bar ret = null;
-		for(int i=0;i<n;i++){
-			double tmp = k.getVolume();
-			if(value < tmp || value == 0.0){
-				value = tmp;
-				ret = k;
-			}
-			k = k.before(1);
-		}
-		return ret;
-	}
+
+
 
 	/*public Ene getEne() throws Exception {
 		return this.getEne(null);
@@ -657,7 +611,7 @@ public class Bar implements Serializable, Cloneable {
 			if(k.getDate().compareTo(end.getDate()) >= 0){
 				break;
 			}
-			Bar low = k.after(n).getKByLLV(2*n);
+			Bar low = k.after(n).getLowestBar(2*n, EnumValue.L);
 			//K low = this.getLLV(k.before(n).getDate(),k.after(n).getDate());
 			if(k.getDate().equals(low.getDate())){
 				lowPoints.add(k);
@@ -1013,16 +967,16 @@ public class Bar implements Serializable, Cloneable {
 	 * @param n
 	 * @return
 	 */
-	public boolean isHHK(int n){
-		Bar high = this.after(n).getKByHHV(n*2+1);
+	public boolean isHighestBeforeAndAfter(int n){
+		Bar high = this.after(n).getHighestBar(n*2+1, H);
 		if(this.dateEquals(high)){
 			return true;
 		}else{
-			high = this.after((int)(n*2-Math.round(n*0.618))).getKByHHV(n*2+1);
+			high = this.after((int)(n*2-Math.round(n*0.618))).getHighestBar(n*2+1, H);
 			if(this.dateEquals(high)){
 				return true;
 			}else{
-				high = this.after((int)(n*2-Math.round(n*1.382))).getKByHHV(n*2+1);
+				high = this.after((int)(n*2-Math.round(n*1.382))).getHighestBar(n*2+1, H);
 				if(this.dateEquals(high)){
 					return true;
 				}
@@ -1036,16 +990,16 @@ public class Bar implements Serializable, Cloneable {
 	 * @param n
 	 * @return
 	 */
-	public boolean isLLK(int n){
-		Bar high = this.after(n).getKByLLV(n*2+1);
+	public boolean isLowestBeforeAndAfter(int n){
+		Bar high = this.after(n).getLowestBar(n*2+1, L);
 		if(this.dateEquals(high)){
 			return true;
 		}else{
-			high = this.after((int)(n*2-Math.round(n*0.618))).getKByLLV(n*2+1);
+			high = this.after((int)(n*2-Math.round(n*0.618))).getLowestBar(n*2+1, L);
 			if(this.dateEquals(high)){
 				return true;
 			}else{
-				high = this.after((int)(n*2-Math.round(n*1.382))).getKByLLV(n*2+1);
+				high = this.after((int)(n*2-Math.round(n*1.382))).getLowestBar(n*2+1, L);
 				if(this.dateEquals(high)){
 					return true;
 				}
