@@ -4,11 +4,7 @@ import com.stk123.entity.StkKlineEntity;
 import com.stk123.model.RequestResult;
 import com.stk123.model.core.Bar;
 import com.stk123.model.core.BarSeries;
-import com.stk123.model.core.Stock;
-import com.stk123.model.core.similar.Filter;
-import com.stk123.model.core.similar.SimilarResult;
-import com.stk123.model.core.similar.SimilarBetween;
-import com.stk123.model.core.similar.FilterExample;
+import com.stk123.model.core.similar.*;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -50,7 +46,7 @@ public class TestController {
             Bar today4 = today.before(4);
             double change = today4.getChange(80, Bar.EnumValue.C);
             System.out.println("similar1 change=="+change);
-            return new SimilarBetween(change*100,-50.0, -30.0);
+            return new SimilarEquals(change*100,-35.0, 5.0);
         };
         example.addFilter((bs)->bs.getFirst(), filter1);
         Filter<BarSeries> filter2 = (bs) -> {
@@ -65,17 +61,17 @@ public class TestController {
             System.out.println("similar2 =="+today4Volume/minVolume);
             return new SimilarBetween(today4Volume/minVolume,7, 10);
         };
-        example.addFilter((bs)->bs, filter2);
+        example.addFilter(filter2);
 
 
         BarSeries bs = getBarSeries("603096");
-        Bar bar = bs.getFirst().before("20201109");
-        System.out.println(bar);
-        boolean r = example.test(bs);
-        System.out.println("code=603096, isSimilar="+r);
+        bs.setFirstBarFrom("20201109");
+        System.out.println(bs.getFirst());
+        FilterResult fr1 = example.test(bs);
+        System.out.println("code=603096, "+ fr1);
         bs = getBarSeries("600600");
-        r = example.test(bs);
-        System.out.println("code=600600, isSimilar="+r);
+        FilterResult fr2 = example.test(bs);
+        System.out.println("code=600600, "+ fr2);
 
 
     }

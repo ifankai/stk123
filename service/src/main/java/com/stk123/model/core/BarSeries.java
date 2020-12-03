@@ -70,6 +70,15 @@ public class BarSeries {
         return list.peekFirst();
     }
 
+    public void setFirstBarFrom(String date){
+        Bar first = this.getFirst();
+        while(first != null && first.getDate().compareTo(date) > 0){
+            this.list.poll();
+            first = this.getFirst();
+            first.setAfter(null);
+        }
+    }
+
 
     @Override
     public String toString(){

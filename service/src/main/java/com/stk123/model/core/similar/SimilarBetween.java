@@ -1,6 +1,7 @@
 package com.stk123.model.core.similar;
 
-public class SimilarBetween<V extends Number & Comparable, U extends Number & Comparable> implements SimilarResult {
+public class SimilarBetween<V extends Number & Comparable, U extends Number & Comparable>
+        implements SimilarResult {
 
     private V value;
     private U min;
@@ -17,4 +18,12 @@ public class SimilarBetween<V extends Number & Comparable, U extends Number & Co
         return value.compareTo(min.doubleValue()) > 0 && value.compareTo(max.doubleValue()) < 0;
     }
 
+    @Override
+    public String toString() {
+        return "SimilarBetween{" +
+                "value=" + String.format("%.2f", value) +
+                ", min=" + min +
+                ", max=" + max +
+                '}';
+    }
 }
