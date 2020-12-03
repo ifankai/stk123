@@ -2,6 +2,7 @@ package com.stk123;
 
 import com.stk123.entity.StkKlineEntity;
 import com.stk123.model.RequestResult;
+import com.stk123.ws.StkWebSocketClient;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,8 @@ public class ServiceApplication implements ApplicationContextAware {
     @Autowired
     Environment environment;
 
+    @Autowired
+    private StkWebSocketClient stkWebSocketClient;
 
     public static void main(String[] args) throws Exception {
         SpringApplication.run(ServiceApplication.class, args);
@@ -57,6 +60,20 @@ public class ServiceApplication implements ApplicationContextAware {
         factory.setReadTimeout(5000);//单位为ms
         factory.setConnectTimeout(5000);//单位为ms
         return new RestTemplate(factory);
+    }
+
+    @EventListener(ApplicationReadyEvent.class)
+    @Scheduled(cron = "0 0/1 * ? * *")
+    public void webSocketIsConnected() {
+        boolean isConnected = stkWebSocketClient.isConnected();
+        log.info("Websocket is Connected:"+isConnected);
+        if(!isConnected){
+            try {
+                stkWebSocketClient.init();
+            } catch (Exception e) {
+                log.error("stkWebSocketClient.init()", e);
+            }
+        }
     }
 
     ParameterizedTypeReference<RequestResult<List<StkKlineEntity>>> typeRef = new ParameterizedTypeReference<RequestResult<List<StkKlineEntity>>>() {};
