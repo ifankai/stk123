@@ -1,36 +1,15 @@
 package com.stk123.task;
 
-import com.stk123.task.config.TaskCondition;
 import com.stk123.task.quartz.job.ResearchReportJob;
 import com.stk123.task.quartz.job.XueqiuStockArticleJob;
 import com.stk123.task.quartz.job.XueqiuUserJob;
 import com.stk123.task.schedule.*;
-import com.stk123.task.ws.StkWebSocketClient;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.ArrayUtils;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.annotation.Condition;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.event.EventListener;
 import org.springframework.core.env.Environment;
-import org.springframework.core.type.AnnotatedTypeMetadata;
-import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
-import java.lang.annotation.Annotation;
 
 @Component
 @CommonsLog
@@ -38,9 +17,6 @@ public class Tasks {
 
     @Autowired
     private Environment environment;
-
-    @Autowired
-    private StkWebSocketClient stkWebSocketClient;
 
     @Autowired
     private InitialData initialData;
@@ -76,21 +52,6 @@ public class Tasks {
         //researchReportJob();
         //initialKLineCN();
     }
-
-    @EventListener(ApplicationReadyEvent.class)
-    @Scheduled(cron = "0 0/1 * ? * *")
-    public void webSocketIsConnected() {
-        boolean isConnected = stkWebSocketClient.isConnected();
-        log.info("Websocket is Connected:"+isConnected);
-        if(!isConnected){
-            try {
-                stkWebSocketClient.init();
-            } catch (Exception e) {
-                log.error("stkWebSocketClient.init()", e);
-            }
-        }
-    }
-
 
 
     @Scheduled(cron = "0 0/1 * ? * *") //每分钟1次

@@ -1,4 +1,4 @@
-package com.stk123.task.ws;
+package com.stk123.ws;
 
 import com.stk123.model.RequestResult;
 import com.stk123.model.ws.ClientMessage;
