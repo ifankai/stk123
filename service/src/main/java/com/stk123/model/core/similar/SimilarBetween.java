@@ -1,6 +1,6 @@
 package com.stk123.model.core.similar;
 
-public class SimilarBetween<V extends Number & Comparable, U extends Number & Comparable> implements Similar {
+public class SimilarBetween<V extends Number & Comparable, U extends Number & Comparable> implements SimilarResult {
 
     private V value;
     private U min;
