@@ -5,9 +5,12 @@ import com.stk123.model.RequestResult;
 import com.stk123.model.core.Bar;
 import com.stk123.model.core.BarSeries;
 import com.stk123.model.core.similar.*;
+import com.stk123.repository.StkKlineRepository;
 import lombok.extern.apachecommons.CommonsLog;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -28,6 +31,12 @@ public class TestController {
     @Autowired
     private RestTemplate restTemplate;
 
+    @Autowired
+    private Environment environment;
+
+    @Autowired
+    private StkKlineRepository stkKlineRepository;
+
 
     @RequestMapping(value = "/test")
     @ResponseBody
@@ -45,7 +54,6 @@ public class TestController {
             Bar today = bar;
             Bar today4 = today.before(4);
             double change = today4.getChange(80, Bar.EnumValue.C);
-            System.out.println("similar1 change=="+change);
             return new SimilarEquals(change*100,-35.0, 5.0);
         };
         example.addFilter((bs)->bs.getFirst(), filter1);
@@ -57,8 +65,6 @@ public class TestController {
                 return SimilarResult.FALSE;
             }
             double minVolume = today4.getLowest(10, Bar.EnumValue.V);
-            System.out.println("similar2 minVolume=="+minVolume);
-            System.out.println("similar2 =="+today4Volume/minVolume);
             return new SimilarBetween(today4Volume/minVolume,7, 10);
         };
         example.addFilter(filter2);
@@ -77,12 +83,21 @@ public class TestController {
     }
 
     public BarSeries getBarSeries(String code) {
-        ResponseEntity<RequestResult<List<StkKlineEntity>>> responseEntity =
-                restTemplate.exchange("http://81.68.255.181:8080/ws/k/"+code+"?days=100", HttpMethod.GET, null, typeRef);
         BarSeries bs = new BarSeries();
-        for(StkKlineEntity stkKlineEntity : responseEntity.getBody().getData()) {
-            Bar bar = new Bar(stkKlineEntity);
-            bs.add(bar);
+        if(ArrayUtils.contains(environment.getActiveProfiles(), "company")) {
+            ResponseEntity<RequestResult<List<StkKlineEntity>>> responseEntity =
+                    restTemplate.exchange("http://81.68.255.181:8080/ws/k/" + code + "?days=100", HttpMethod.GET, null, typeRef);
+
+            for (StkKlineEntity stkKlineEntity : responseEntity.getBody().getData()) {
+                Bar bar = new Bar(stkKlineEntity);
+                bs.add(bar);
+            }
+        }else{
+            List<StkKlineEntity> list = stkKlineRepository.queryTopNByCodeOrderByKlineDateDesc(500, code);
+            for (StkKlineEntity stkKlineEntity : list) {
+                Bar bar = new Bar(stkKlineEntity);
+                bs.add(bar);
+            }
         }
         return bs;
     }

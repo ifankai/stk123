@@ -11,6 +11,6 @@ import java.util.List;
 @Repository
 public interface StkKlineRepository extends JpaRepository<StkKlineEntity, StkKlineEntity.CompositeKey> {
 
-    @Query(value = "select * from (select * from stk_kline t where code=:code order by kline_date desc) where rownum <= :rn", nativeQuery = true)
-    List<StkKlineEntity> queryTopNByCodeOrderByKlineDateDesc(@Param("code")String code, @Param("rn")Integer rn);
+    @Query(value = "select * from (select * from stk_kline t where code = :code order by kline_date desc) where rownum <= :rn", nativeQuery = true)
+    List<StkKlineEntity> queryTopNByCodeOrderByKlineDateDesc(@Param("rn")Integer rn, @Param("code")String code);
 }
