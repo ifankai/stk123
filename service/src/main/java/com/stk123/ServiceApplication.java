@@ -13,6 +13,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
@@ -29,7 +30,6 @@ import java.util.List;
 @SpringBootApplication
 @EnableAutoConfiguration
 @EnableJpaRepositories
-@EnableAsync
 @EnableScheduling
 @CommonsLog
 public class ServiceApplication implements ApplicationContextAware {
@@ -37,13 +37,11 @@ public class ServiceApplication implements ApplicationContextAware {
     private ApplicationContext context;
 
     @Autowired
-    private ThreadPoolTaskScheduler scheduler;
-
-    @Autowired
     Environment environment;
 
     @Autowired
     private StkWebSocketClient stkWebSocketClient;
+
 
     public static void main(String[] args) throws Exception {
         SpringApplication.run(ServiceApplication.class, args);
@@ -62,12 +60,12 @@ public class ServiceApplication implements ApplicationContextAware {
         return new RestTemplate(factory);
     }
 
-    @EventListener(ApplicationReadyEvent.class)
-    @Scheduled(cron = "0 0/1 * ? * *")
+    //@EventListener(ApplicationReadyEvent.class)
+    @Scheduled(cron = "${service.schedule.websocket.cron}")
     public void webSocketIsConnected() {
         boolean isConnected = stkWebSocketClient.isConnected();
-        log.info("Websocket is Connected:"+isConnected);
-        if(!isConnected){
+        log.info("Websocket is Connected:" + isConnected);
+        if (!isConnected) {
             try {
                 stkWebSocketClient.init();
             } catch (Exception e) {
@@ -76,28 +74,16 @@ public class ServiceApplication implements ApplicationContextAware {
         }
     }
 
-    ParameterizedTypeReference<RequestResult<List<StkKlineEntity>>> typeRef = new ParameterizedTypeReference<RequestResult<List<StkKlineEntity>>>() {};
 
     @EventListener(ApplicationReadyEvent.class)
     public void doSomethingAfterStartup() {
         System.out.println("doSomethingAfterStartup..........");
-        /*ResponseEntity<RequestResult<List<StkKlineEntity>>> responseEntity =
-                restTemplate.exchange("http://81.68.255.181:8080/ws/k/000863?days=100", HttpMethod.GET, null, typeRef);
-        BarSeries bs = new BarSeries();
-        for(StkKlineEntity stkKlineEntity : responseEntity.getBody().getData()) {
-            Bar bar = new Bar(stkKlineEntity);
-//            System.out.println(bar);
-            bs.add(bar);
-//            System.out.println("==="+bar);
-        }
-        System.out.println(bs);*/
-    }
 
+    }
 
 
     @Scheduled(cron = "0 0 0 ? * *")
     public void exit(){
-        scheduler.shutdown();
         SpringApplication.exit(this.context, () -> 0);
     }
 }
