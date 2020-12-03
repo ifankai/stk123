@@ -6,8 +6,8 @@ package com.stk123.model.core.similar;
  * @param <R>
  */
 @FunctionalInterface
-public interface Filter<T, R> {
+public interface Filter<B> {
 
-    R apply(T t);
+    SimilarResult apply(B t);
 
 }

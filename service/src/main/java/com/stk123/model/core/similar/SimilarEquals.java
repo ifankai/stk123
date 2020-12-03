@@ -2,7 +2,7 @@ package com.stk123.model.core.similar;
 
 import java.util.function.BiPredicate;
 
-public class SimilarEquals<V extends Comparable> implements Similar {
+public class SimilarEquals<V extends Comparable> implements SimilarResult {
 
     private V v;
     private V u;
