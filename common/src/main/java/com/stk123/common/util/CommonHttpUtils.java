@@ -100,10 +100,10 @@ public class CommonHttpUtils {
         client = new HttpClient(connectionManager);
         //client = new HttpClient(simpleConnectionManager);
 
-        System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
-        System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
-        //System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire", "error");
-        System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "error");
+//        System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
+//        System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
+//        //System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire", "error");
+//        System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "error");
     }
 
     public static HttpClient getHttpClient(){

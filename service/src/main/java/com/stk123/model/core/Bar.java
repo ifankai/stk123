@@ -35,6 +35,7 @@ public class Bar implements Serializable, Cloneable {
 		MA, SUM
 	}
 
+    private String code;
 	private String date;
 	private LocalDateTime ts;
 	private double open;
@@ -71,6 +72,7 @@ public class Bar implements Serializable, Cloneable {
      * @param flag,
      */
 	public Bar(StkKlineEntity kline){
+	    this.setCode(kline.getCode());
 		this.setDate(kline.getKlineDate());
 		this.setOpen(kline.getOpen());
 		this.setClose(kline.getClose());

@@ -49,7 +49,7 @@ public class WebSocketServiceHandler implements StompFrameHandler {
                 try {
                     log.info("restTemplate request url:" + url);
                     requestResult = restTemplate.getForObject(url, RequestResult.class);
-                    log.info("restTemplate result:" + requestResult);
+                    log.info("restTemplate result:" + requestResult.getSuccess());
                 }catch(Exception e){
                     log.error(url, e);
                     requestResult = RequestResult.failure(e.getMessage());

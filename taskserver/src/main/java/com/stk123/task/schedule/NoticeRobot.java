@@ -1,14 +1,18 @@
 package com.stk123.task.schedule;
 
-import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.sql.Connection;
-import java.util.*;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.stk123.common.util.*;
+import com.stk123.common.db.util.DBUtil;
+import com.stk123.common.util.ConfigUtils;
+import com.stk123.common.util.EmailUtils;
+import com.stk123.common.util.FileType;
+import com.stk123.common.util.JdbcUtils;
 import com.stk123.common.util.pdf.PDFUtils;
+import com.stk123.model.Index;
+import com.stk123.model.K;
+import com.stk123.model.News;
+import com.stk123.model.Text;
+import com.stk123.model.bo.Stk;
+import com.stk123.model.bo.StkMonitor;
 import com.stk123.util.ExceptionUtils;
 import com.stk123.util.HttpUtils;
 import com.stk123.util.ServiceUtils;
@@ -17,15 +21,13 @@ import lombok.Setter;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-
-import com.stk123.model.bo.Stk;
-import com.stk123.model.bo.StkMonitor;
-import com.stk123.model.Index;
-import com.stk123.model.K;
-import com.stk123.model.News;
-import com.stk123.model.Text;
-import com.stk123.common.db.util.DBUtil;
 import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.sql.Connection;
+import java.util.*;
 
 /**
  * 公告 机器人
@@ -35,11 +37,13 @@ import org.springframework.stereotype.Component;
 public class NoticeRobot {
 
 	public static void main(String[] args) {
+        log.info("main................");
         NoticeRobot noticeRobot = new NoticeRobot();
         noticeRobot.run();
 	}
 
 	public void run() {
+	    log.info("NoticeRobot...................................");
         try{
             run0();
         }catch(Exception e){
@@ -157,7 +161,7 @@ public class NoticeRobot {
         String stock = index.getCode() + (index.getLoc() == Index.SH ? "%2Cgssh0": "%2Cgssz0") + index.getCode();
         String body = "stock="+stock+"&tabName=fulltext&pageSize=30&pageNum=1&column="+column+"&category=&plate=sz&seDate=&searchkey=&secid=&sortName=&sortType=&isHLtitle=true";
         String page = HttpUtils.post("http://www.cninfo.com.cn/new/hisAnnouncement/query", body, "UTF-8");
-        //System.out.println(page);
+        //log.info(page);
         if("404".equals(page)){
             return ;
         }
