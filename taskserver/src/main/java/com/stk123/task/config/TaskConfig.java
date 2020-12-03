@@ -19,11 +19,11 @@ public class TaskConfig implements ApplicationContextAware {
 
     private ApplicationContext context;
 
-    @Autowired
-    private TaskScheduler taskScheduler;
-
-    @Autowired
-    private ThreadPoolTaskScheduler scheduler;
+//    @Autowired
+//    private TaskScheduler taskScheduler;
+//
+//    @Autowired
+//    private ThreadPoolTaskScheduler scheduler;
 
     @Override
     public void setApplicationContext(ApplicationContext ctx) throws BeansException {
@@ -33,7 +33,6 @@ public class TaskConfig implements ApplicationContextAware {
 
     @Scheduled(cron = "0 0 0 ? * *")  //每天0点shutdown
     public void exit(){
-        scheduler.shutdown();
         SpringApplication.exit(this.context, () -> 0);
     }
 }
