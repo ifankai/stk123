@@ -21,8 +21,8 @@ public class FilterResult {
     public double getSortableSumValue(){
         double ret = 0;
         for(FilterSimilarResult result : filterSimilarResults){
-            if(result.isPass() && result.getSimilarResult() instanceof Sortable){
-                Sortable sortable = (Sortable)result.getSimilarResult();
+            if(result.isPass() && result.getSimilar() instanceof Sortable){
+                Sortable sortable = (Sortable)result.getSimilar();
                 ret += sortable.getValue();
             }
         }

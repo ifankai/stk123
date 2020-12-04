@@ -1,4 +1,4 @@
-package com.stk123.model.text;
+package com.stk123.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
