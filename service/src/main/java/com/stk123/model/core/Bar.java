@@ -18,7 +18,6 @@ import static com.stk123.model.core.Bar.EnumCalculationMethod.MA;
 import static com.stk123.model.core.Bar.EnumValue.*;
 
 @Data
-@NoArgsConstructor
 public class Bar implements Serializable, Cloneable {
 
 	public enum EnumValue {
@@ -62,6 +61,8 @@ public class Bar implements Serializable, Cloneable {
 		JSON_INCLUDE_FIELDS.add("volume");
 		JSON_INCLUDE_FIELDS.add("amount");
 	}
+
+	public Bar(){}
 
     /**
      *
