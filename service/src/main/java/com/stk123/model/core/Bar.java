@@ -18,7 +18,6 @@ import static com.stk123.model.core.Bar.EnumCalculationMethod.MA;
 import static com.stk123.model.core.Bar.EnumValue.*;
 
 @Data
-@NoArgsConstructor
 public class Bar implements Serializable, Cloneable {
 
 	public enum EnumValue {
@@ -63,6 +62,8 @@ public class Bar implements Serializable, Cloneable {
 		JSON_INCLUDE_FIELDS.add("amount");
 	}
 
+	public Bar(){}
+
     /**
      *
      * @param restoration, 股价复权, true:前复权 false:不复权 000863
@@ -92,6 +93,13 @@ public class Bar implements Serializable, Cloneable {
 		return this.date.compareTo(bar.getDate()) < 0;
 	}
 
+	public Bar before(){
+		return this.getBefore();
+	}
+	public Bar yesterday(){
+		return this.getBefore();
+	}
+
 	//n=0是当天
 	public Bar before(int n){
 		Bar tmp = this;
@@ -114,11 +122,12 @@ public class Bar implements Serializable, Cloneable {
 		}
 		return tmp;
 	}
-	public Bar yesterday(){
-		return before(1);
+
+	public Bar after() {
+		return this.getAfter();
 	}
 	public Bar tomorrow(){
-		return after(1);
+		return this.getAfter();
 	}
 
 	public double getValue(EnumValue type) {

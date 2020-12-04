@@ -15,7 +15,7 @@ public class FilterExample<X> {
 
     @Getter
     private String name;
-    private List<FilterWrapper<X, ?>> filters = new ArrayList<>();
+    private List<FilterExecutor<X, ?>> filters = new ArrayList<>();
 
     public FilterExample(String name) {
         this.name = name;
@@ -26,7 +26,7 @@ public class FilterExample<X> {
      * @param filter
      */
     public void addFilter(String name, Function<X, ?> function, Filter<?> filter){
-        this.filters.add(new FilterWrapper(name, function, filter));
+        this.filters.add(new FilterExecutor(name, function, filter));
     }
     public void addFilter(String name, Filter<?> filter){
         addFilter(name, (x)->x, filter);
@@ -40,10 +40,10 @@ public class FilterExample<X> {
 
     public FilterResult test(X x) {
         //把通过数量少的放前面，以便优化性能
-        filters.sort(Comparator.comparingInt(FilterWrapper::getCounterPassed));
+        filters.sort(Comparator.comparingInt(FilterExecutor::getCounterPassed));
 
         FilterResult results = new FilterResult();
-        for(FilterWrapper<X, ?> filterWrapper : filters){
+        for(FilterExecutor<X, ?> filterWrapper : filters){
             if(!filterWrapper.test(x)) {
                 results.addFilterResult(new FilterSimilarResult(false, filterWrapper.getResult()));
                 results.setPass(false);

@@ -1,10 +1,8 @@
 package com.stk123.model.core.similar;
 
-import org.apache.commons.lang.math.NumberUtils;
-
 import java.util.function.BiPredicate;
 
-public class SimilarEquals<V extends Number & Comparable> implements SimilarResult, Sortable {
+public class SimilarEquals<V extends Number & Comparable> implements Similar, Sortable {
 
     private V value;
     private V target;
