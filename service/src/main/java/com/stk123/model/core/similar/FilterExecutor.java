@@ -8,7 +8,7 @@ import java.util.function.Function;
  * @param <X> X类型是从FilterExample传过来的，FilterWrapper构造函数第一个参数定义：如何从 X 得到 B。
  * @param <B>
  */
-public class FilterWrapper<X, B> {
+public class FilterExecutor<X, B> {
 
     private String name;
     private Filter<B> filter;
@@ -17,9 +17,9 @@ public class FilterWrapper<X, B> {
     private int counterPassed;
     private boolean pass;
     @Getter
-    private SimilarResult result;
+    private Similar result;
 
-    public FilterWrapper(String name, Function<X, B> function, Filter<B> filter){
+    public FilterExecutor(String name, Function<X, B> function, Filter<B> filter){
         this.name = name;
         this.function = function;
         this.filter = filter;

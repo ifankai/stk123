@@ -8,22 +8,22 @@ import lombok.Setter;
 public class FilterSimilarResult {
 
     private boolean pass;
-    private SimilarResult similarResult;
+    private Similar similar;
 
     public FilterSimilarResult(boolean pass){
         this(pass, null);
     }
 
-    public FilterSimilarResult(boolean pass, SimilarResult similarResult){
+    public FilterSimilarResult(boolean pass, Similar similar){
         this.pass = pass;
-        this.similarResult = similarResult;
+        this.similar = similar;
     }
 
     @Override
     public String toString() {
         return "FilterSimilarResult{" +
                 "pass=" + pass +
-                ", similarResult=" + similarResult +
+                ", similar=" + similar +
                 '}';
     }
 }

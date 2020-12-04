@@ -20,6 +20,7 @@ public class BarSeries {
     private EnumPeriod typePeriod = DAY; //默认周期是day
 
     private LinkedList<Bar> list = new LinkedList();
+    private Bar first;
 
 
     public BarSeries(){
@@ -67,15 +68,20 @@ public class BarSeries {
     }
 
     public Bar getFirst(){
-        return list.peekFirst();
+        if(this.first != null) return first;
+        return list.peek();
     }
 
     public void setFirstBarFrom(String date){
+        if(date == null) {
+            this.first = null;
+            return;
+        }
         Bar first = this.getFirst();
         while(first != null && first.getDate().compareTo(date) > 0){
-            this.list.poll();
-            first = this.getFirst();
-            first.setAfter(null);
+            //this.list.poll();
+            this.first = this.first.before();
+            //first.setAfter(null);
         }
     }
 

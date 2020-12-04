@@ -1,8 +1,7 @@
 package com.stk123.repository;
 
 import com.stk123.entity.StkTextEntity;
-import com.stk123.model.text.TextDto;
-import jnr.ffi.annotations.In;
+import com.stk123.model.dto.TextDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

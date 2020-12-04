@@ -1,4 +1,4 @@
-package com.stk123.model.text;
+package com.stk123.model.constant;
 
 public class TextConstant {
 

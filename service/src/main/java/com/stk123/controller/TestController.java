@@ -7,6 +7,7 @@ import com.stk123.model.core.BarSeries;
 import com.stk123.model.core.similar.*;
 import com.stk123.repository.StkKlineRepository;
 import lombok.extern.apachecommons.CommonsLog;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -18,15 +19,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Controller
 @RequestMapping
 @CommonsLog
 public class TestController {
 
-    ParameterizedTypeReference<RequestResult<List<StkKlineEntity>>> typeRef = new ParameterizedTypeReference<RequestResult<List<StkKlineEntity>>>() {};
+    ParameterizedTypeReference<RequestResult<LinkedHashMap<String, List<StkKlineEntity>>>> typeRef = new ParameterizedTypeReference() {};
 
     @Autowired
     private RestTemplate restTemplate;
@@ -47,8 +47,6 @@ public class TestController {
 
     public void similer() {
 
-
-
         FilterExample<BarSeries> example = new FilterExample("Example 603096");
         Filter<Bar> filter1 = (bar) -> {
             Bar today = bar;
@@ -62,44 +60,59 @@ public class TestController {
             Bar today4 = today.before(4);
             double today4Volume = today4.getVolume();
             if(today4.getClose() < today4.getLastClose()){
-                return SimilarResult.FALSE;
+                return Similar.FALSE;
             }
             double minVolume = today4.getLowest(10, Bar.EnumValue.V);
             return new SimilarBetween(today4Volume/minVolume,7, 10);
         };
         example.addFilter(filter2);
 
+        BarSeries bs603096 = this.getBarSeries(100, "603096");
+        bs603096.setFirstBarFrom("20201109");
+        System.out.println(bs603096.getFirst());
+        FilterResult fr = example.test(bs603096);
+        System.out.println("code=603096, FilterResult=" + fr);
 
-        BarSeries bs = getBarSeries("603096");
-        bs.setFirstBarFrom("20201109");
-        System.out.println(bs.getFirst());
-        FilterResult fr1 = example.test(bs);
-        System.out.println("code=603096, "+ fr1);
-        bs = getBarSeries("600600");
-        FilterResult fr2 = example.test(bs);
-        System.out.println("code=600600, "+ fr2);
-
+        LinkedHashMap<String, BarSeries> bss = getBarSeriesList(100, "603096","600600");
+        for(Map.Entry<String, BarSeries> entry : bss.entrySet()) {
+            BarSeries bs = entry.getValue();
+            FilterResult fr1 = example.test(bs);
+            System.out.println("code="+entry.getKey() + ", FilterResult=" + fr1);
+        }
 
     }
 
-    public BarSeries getBarSeries(String code) {
-        BarSeries bs = new BarSeries();
-        if(ArrayUtils.contains(environment.getActiveProfiles(), "company")) {
-            ResponseEntity<RequestResult<List<StkKlineEntity>>> responseEntity =
-                    restTemplate.exchange("http://81.68.255.181:8080/ws/k/" + code + "?days=100", HttpMethod.GET, null, typeRef);
+    public BarSeries getBarSeries(int count, String code) {
+        LinkedHashMap<String, BarSeries> result = this.getBarSeriesList(count, code);
+        return result.values().iterator().next();
+    }
 
-            for (StkKlineEntity stkKlineEntity : responseEntity.getBody().getData()) {
-                Bar bar = new Bar(stkKlineEntity);
-                bs.add(bar);
+    public LinkedHashMap<String, BarSeries> getBarSeriesList(int count, String... codes) {
+        LinkedHashMap<String,BarSeries> results = new LinkedHashMap<>();
+        if(ArrayUtils.contains(environment.getActiveProfiles(), "company")) {
+            ResponseEntity<RequestResult<LinkedHashMap<String, List<StkKlineEntity>>>> responseEntity =
+                    restTemplate.exchange("http://81.68.255.181:8080/ws/k/" + StringUtils.join(codes, ",") + "?days="+count, HttpMethod.GET, null, typeRef);
+
+            for (Map.Entry<String, List<StkKlineEntity>> entry : responseEntity.getBody().getData().entrySet()) {
+                BarSeries bs = new BarSeries();
+                for(StkKlineEntity stkKlineEntity : entry.getValue()) {
+                    Bar bar = new Bar(stkKlineEntity);
+                    bs.add(bar);
+                }
+                results.put(entry.getKey(), bs);
             }
         }else{
-            List<StkKlineEntity> list = stkKlineRepository.queryTopNByCodeOrderByKlineDateDesc(500, code);
-            for (StkKlineEntity stkKlineEntity : list) {
-                Bar bar = new Bar(stkKlineEntity);
-                bs.add(bar);
+            for(String code : codes) {
+                List<StkKlineEntity> list = stkKlineRepository.queryTopNByCodeOrderByKlineDateDesc(count, code);
+                BarSeries bs = new BarSeries();
+                for (StkKlineEntity stkKlineEntity : list) {
+                    Bar bar = new Bar(stkKlineEntity);
+                    bs.add(bar);
+                }
+                results.put(code, bs);
             }
         }
-        return bs;
+        return results;
     }
 
 }

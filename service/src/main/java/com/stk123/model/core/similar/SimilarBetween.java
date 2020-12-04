@@ -1,7 +1,7 @@
 package com.stk123.model.core.similar;
 
 public class SimilarBetween<V extends Number & Comparable, U extends Number & Comparable>
-        implements SimilarResult {
+        implements Similar {
 
     private V value;
     private U min;
