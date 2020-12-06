@@ -45,7 +45,7 @@ public class TestController {
     StkRepository stkRepository;
 
     @Autowired
-    TestSimilarTask testSimilarTask;
+    StrategyBacktesting testSimilarTask;
 
 
     @RequestMapping(value = "/test")
@@ -57,17 +57,22 @@ public class TestController {
         Stock stock = new Stock("603096","").buildBarSeries(bss.get("603096"));
 
         List<Stock> stocks = new ArrayList<>();
-        //stock.getBarSeries().setFirstBarFrom("20201109");
         stocks.add(stock);
 
-        testSimilarTask.run(stocks, "20201101", "20201120");
+        StrategyBacktesting strategyBacktesting = new StrategyBacktesting();
+        strategyBacktesting.addStrategy(strategyBacktesting.example1());
+        strategyBacktesting.addStrategy(strategyBacktesting.example2());
+        strategyBacktesting.test(stocks);
+
+        //testSimilarTask.test(stocks, "20201101", "20201120");
+        strategyBacktesting.test(stocks, "20201101", "20201120");
 
         return RequestResult.success(new Date());
     }
 
     public void similer() {
 
-        Example<BarSeries> example = new Example("Example 603096", BarSeries.class);
+        Strategy<BarSeries> example = new Strategy("Example 603096", BarSeries.class);
         Filter<Bar> filter1 = (bar) -> {
             Bar today = bar;
             Bar today4 = today.before(4);
@@ -90,14 +95,14 @@ public class TestController {
         BarSeries bs603096 = this.getBarSeries(100, "603096");
         bs603096.setFirstBarFrom("20201109");
         System.out.println(bs603096.getFirst());
-        ResultSet fr = example.test(bs603096);
+        StrategyResult fr = example.test(bs603096);
         System.out.println("code=603096, FilterResult=" + fr);
 
         LinkedHashMap<String, BarSeries> bss = getBarSeriesList(100, "603096","600600");
         for(Map.Entry<String, BarSeries> entry : bss.entrySet()) {
             BarSeries bs = entry.getValue();
             //log.info(bs);
-            ResultSet fr1 = example.test(bs);
+            StrategyResult fr1 = example.test(bs);
             System.out.println("code="+entry.getKey() + ", FilterResult=" + fr1);
         }
 

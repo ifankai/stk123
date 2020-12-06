@@ -9,15 +9,15 @@ import java.util.List;
 
 @Setter
 @Getter
-public class ResultSet {
-    private String exampleName;
+public class StrategyResult {
+    private Strategy strategy;
     private boolean pass;
     private List<FilterResult> filterResults = new ArrayList<>();
     private FilterResult expectFilterResult; //用于存放 pass为true时，对未来期望的过滤结果，比如：期望未来10天内涨幅达到20%
 
-    public ResultSet(String name){
-        this.exampleName = name;
-    }
+  /*  public ResultSet(String strategyName){
+        this.strategyName = strategyName;
+    }*/
 
     public void addFilterResult(FilterResult filterResult){
         this.filterResults.add(filterResult);
@@ -36,8 +36,8 @@ public class ResultSet {
 
     @Override
     public String toString() {
-        return "ResultSet{" +
-                "exampleName='" + exampleName + '\'' +
+        return "StrategyResult{" +
+                "strategy.name='" + strategy.getName() + '\'' +
                 ", pass=" + pass +
                 ", filterResults=" + filterResults +
                 ", expectFilterResult=" + expectFilterResult +

@@ -1,8 +1,8 @@
 package com.stk123.model.core;
 
 import com.stk123.common.CommonConstant;
-import com.stk123.model.core.filter.Example;
-import com.stk123.model.core.filter.ResultSet;
+import com.stk123.model.core.filter.Strategy;
+import com.stk123.model.core.filter.StrategyResult;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
@@ -132,29 +132,18 @@ public class Stock {
         return this;
     }
 
-    public ResultSet similar(Example example) {
-        if(example.getXClass().isAssignableFrom(Stock.class)) {
-            return example.test(this);
-        }else if(example.getXClass().isAssignableFrom(BarSeries.class)){
-            return this.getBarSeries().similar(example);
-        }else if(example.getXClass().isAssignableFrom(Bar.class)){
-            return example.test(this.getBarSeries().getFirst());
+/*
+    public List<StrategyResult> similar(Strategy strategy, String startDate, String endDate) {
+        List<StrategyResult> resultSets = new ArrayList<>();
+        if(strategy.getXClass().isAssignableFrom(Stock.class)) {
+            resultSets.add(strategy.test(this));
+        }else if(strategy.getXClass().isAssignableFrom(BarSeries.class)){
+            resultSets.addAll(this.getBarSeries().test(strategy, startDate, endDate));
+        }else if(strategy.getXClass().isAssignableFrom(Bar.class)){
+            resultSets.add(strategy.test(this.getBarSeries().getFirst()));
         }else {
-            throw new RuntimeException("Not support X generic class: "+example.getXClass());
-        }
-    }
-
-    public List<ResultSet> similar(Example example, String startDate, String endDate) {
-        List<ResultSet> resultSets = new ArrayList<>();
-        if(example.getXClass().isAssignableFrom(Stock.class)) {
-            resultSets.add(example.test(this));
-        }else if(example.getXClass().isAssignableFrom(BarSeries.class)){
-            resultSets.addAll(this.getBarSeries().similar(example, startDate, endDate));
-        }else if(example.getXClass().isAssignableFrom(Bar.class)){
-            resultSets.add(example.test(this.getBarSeries().getFirst()));
-        }else {
-            throw new RuntimeException("Not support X generic class: "+example.getXClass());
+            throw new RuntimeException("Not support X generic class: "+strategy.getXClass());
         }
         return resultSets;
-    }
+    }*/
 }

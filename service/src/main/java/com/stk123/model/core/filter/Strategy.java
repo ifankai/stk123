@@ -13,7 +13,7 @@ import java.util.function.Function;
  * @param <X> 定义传入的比较对象，可以是Stock，BarSeries，Bar etc.
  *            然后在addFilter第一个参数中定义如何得到Filter里的类型？（？可以是Stock，BarSeries，Bar etc.）
  */
-public class Example<X> {
+public class Strategy<X> {
 
     @Getter
     private String name;
@@ -22,11 +22,11 @@ public class Example<X> {
     private List<FilterWrapper<X, ?>> filterWrappers = new ArrayList<>();
     private FilterWrapper<X, X> expectFilterWrapper;
 
-    public Example(String name, Class<X> xClass) {
+    public Strategy(String name, Class<X> xClass) {
         this.name = name;
         this.xClass = xClass;
     }
-    public Example(String name, Class<X> xClass, Filter<X> expectFilter) {
+    public Strategy(String name, Class<X> xClass, Filter<X> expectFilter) {
         this(name, xClass);
         this.expectFilterWrapper = new FilterWrapper(null, x->x, expectFilter);
     }
@@ -55,11 +55,12 @@ public class Example<X> {
         this.expectFilterWrapper = new FilterWrapper(null, x->x, expectFilter);
     }
 
-    public ResultSet test(X x) {
+    public StrategyResult test(X x) {
         //把通过数量少的放前面，以便优化性能
         filterWrappers.sort(Comparator.comparingInt(FilterWrapper::getCounterPassed));
 
-        ResultSet resultSet = new ResultSet(this.name);
+        StrategyResult resultSet = new StrategyResult();
+        resultSet.setStrategy(this);
         for(FilterWrapper<X, ?> filterWrapper : filterWrappers){
             if(!filterWrapper.execute(x)) {
                 FilterResult fr = filterWrapper.getResult();
@@ -88,7 +89,7 @@ public class Example<X> {
 
     @Override
     public String toString() {
-        return "Example{" +
+        return "Strategy{" +
                 "name='" + name + '\'' +
                 ", filters=" + filterWrappers +
                 '}';
