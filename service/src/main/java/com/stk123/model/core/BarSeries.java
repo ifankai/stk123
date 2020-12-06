@@ -1,9 +1,8 @@
 package com.stk123.model.core;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.stk123.model.core.filter.Example;
-import com.stk123.model.core.filter.Filter;
-import com.stk123.model.core.filter.ResultSet;
+import com.stk123.model.core.filter.Strategy;
+import com.stk123.model.core.filter.StrategyResult;
 import com.stk123.model.json.View;
 import com.stk123.util.ServiceUtils;
 import lombok.Data;
@@ -110,27 +109,6 @@ public class BarSeries {
             }
         }
         return first;
-    }
-
-    public ResultSet similar(Example<BarSeries> example){
-        return example.test(this);
-    }
-    public List<ResultSet> similar(Example<BarSeries> example, String startDate, String endDate) {
-        String date = startDate;
-        Bar endBar = this.getFirst().before(endDate);
-        Bar first = this.setFirstBarFrom(date);
-        List<ResultSet> results = new ArrayList<>();
-        if(first != null) {
-            Bar bar = first;
-            do {
-                ResultSet resultSet = example.test(this);
-                results.add(resultSet);
-                bar = bar.after();
-                if (bar == null) break;
-                this.setFirstBarFrom(bar.getDate());
-            } while (bar.dateBeforeOrEquals(endBar));
-        }
-        return results;
     }
 
 

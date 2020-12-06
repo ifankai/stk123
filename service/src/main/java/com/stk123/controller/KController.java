@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.entity.StkKlineEntity;
 import com.stk123.model.RequestResult;
 import com.stk123.model.core.BarSeries;
-import com.stk123.model.core.filter.Example;
+import com.stk123.model.core.filter.Strategy;
 import com.stk123.model.json.View;
 import com.stk123.repository.StkKlineRepository;
 import com.stk123.util.ServiceUtils;
@@ -60,13 +60,13 @@ public class KController {
                 }*/
                 results = stkKlineRepository.queryTopNByCodeListOrderByKlineDateDesc(days, Arrays.asList(codes));
         }
-        Example<BarSeries> example = new Example<>("", BarSeries.class);
+        Strategy<BarSeries> example = new Strategy<>("", BarSeries.class);
         System.out.println("example:====="+example.getClass().getTypeName());
 
         Type mySuperclass = example.getClass().getTypeParameters()[0];
         System.out.println("mySuperclass:====="+ mySuperclass.getTypeName());
 
-        System.out.println("example:====="+ org.springframework.core.GenericTypeResolver.resolveType(mySuperclass, Example.class));
+        System.out.println("example:====="+ org.springframework.core.GenericTypeResolver.resolveType(mySuperclass, Strategy.class));
         System.out.println("example:====="+example.getClass().getTypeParameters()[0].getClass());
         return RequestResult.success(results);
     }
