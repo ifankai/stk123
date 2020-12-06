@@ -1,13 +1,8 @@
 package com.stk123.model.core;
 
 import com.stk123.common.CommonConstant;
-import com.stk123.model.core.filter.Strategy;
-import com.stk123.model.core.filter.StrategyResult;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.stk123.model.core.Stock.EnumCity.SH;
 import static com.stk123.model.core.Stock.EnumCity.SZ;
@@ -132,18 +127,5 @@ public class Stock {
         return this;
     }
 
-/*
-    public List<StrategyResult> similar(Strategy strategy, String startDate, String endDate) {
-        List<StrategyResult> resultSets = new ArrayList<>();
-        if(strategy.getXClass().isAssignableFrom(Stock.class)) {
-            resultSets.add(strategy.test(this));
-        }else if(strategy.getXClass().isAssignableFrom(BarSeries.class)){
-            resultSets.addAll(this.getBarSeries().test(strategy, startDate, endDate));
-        }else if(strategy.getXClass().isAssignableFrom(Bar.class)){
-            resultSets.add(strategy.test(this.getBarSeries().getFirst()));
-        }else {
-            throw new RuntimeException("Not support X generic class: "+strategy.getXClass());
-        }
-        return resultSets;
-    }*/
+
 }

@@ -1,6 +1,6 @@
-package com.stk123.model.core.filter.result;
+package com.stk123.model.strategy.result;
 
-import com.stk123.model.core.filter.Sortable;
+import com.stk123.model.strategy.Sortable;
 
 import java.util.function.BiPredicate;
 

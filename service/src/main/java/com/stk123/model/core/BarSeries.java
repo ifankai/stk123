@@ -1,15 +1,11 @@
 package com.stk123.model.core;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.stk123.model.core.filter.Strategy;
-import com.stk123.model.core.filter.StrategyResult;
 import com.stk123.model.json.View;
 import com.stk123.util.ServiceUtils;
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 
 import static com.stk123.model.core.BarSeries.EnumPeriod.DAY;
 
@@ -102,13 +98,16 @@ public class BarSeries {
                     first = this.first = first.before();
                     //first.setAfter(null);
                 }
+                if(first.getDate().compareTo(date) < 0) {
+                    this.first = this.first.after();
+                }
             }else {
                 while (first.getDate().compareTo(date) < 0) {
                     first = this.first = first.after();
                 }
             }
         }
-        return first;
+        return this.first;
     }
 
 

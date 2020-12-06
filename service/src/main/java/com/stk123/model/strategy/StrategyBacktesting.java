@@ -1,11 +1,11 @@
-package com.stk123.model.core.filter;
+package com.stk123.model.strategy;
 
 import com.stk123.model.core.Bar;
 import com.stk123.model.core.BarSeries;
 import com.stk123.model.core.Stock;
-import com.stk123.model.core.filter.result.FilterResult;
-import com.stk123.model.core.filter.result.FilterResultBetween;
-import com.stk123.model.core.filter.result.FilterResultEquals;
+import com.stk123.model.strategy.result.FilterResult;
+import com.stk123.model.strategy.result.FilterResultBetween;
+import com.stk123.model.strategy.result.FilterResultEquals;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -41,9 +41,8 @@ public class StrategyBacktesting {
 
     public List<StrategyResult> test(Stock stock, String startDate, String endDate) {
         BarSeries bs = stock.getBarSeries();
-        String date = startDate;
         Bar endBar = bs.getFirst().before(endDate);
-        Bar first = bs.setFirstBarFrom(date);
+        Bar first = bs.setFirstBarFrom(startDate);
         List<StrategyResult> results = new ArrayList<>();
         if(first != null) {
             Bar bar = first;
@@ -89,14 +88,16 @@ public class StrategyBacktesting {
     }
 
     public Strategy<BarSeries> example1() {
-        Strategy<BarSeries> example = new Strategy("Strategy 603096", BarSeries.class);
+        Strategy<BarSeries> example = new Strategy<>("Strategy 603096", BarSeries.class);
+
         Filter<Bar> filter1 = (bar) -> {
             Bar today = bar;
             Bar today4 = today.before(4);
             double change = today4.getChange(80, Bar.EnumValue.C);
             return new FilterResultEquals(change*100,-35.0, 5.0).addResult(today.getDate());
         };
-        example.addFilter("filter1111",(bs)->bs.getFirst(), filter1);
+        example.addFilter("filter1111",BarSeries::getFirst, filter1);
+
         Filter<BarSeries> filter2 = (bs) -> {
             Bar today = bs.getFirst();
             Bar today4 = today.before(4);
@@ -108,6 +109,7 @@ public class StrategyBacktesting {
             return new FilterResultBetween(today4Volume/minVolume,7, 10).addResult(today.getDate());
         };
         example.addFilter("filter222",filter2);
+
         example.setExpectFilter((bs) -> {
             Bar today = bs.getFirst();
             Bar tomorrwo10 = today.after(10);
@@ -118,7 +120,7 @@ public class StrategyBacktesting {
     }
 
     public Strategy<Stock> example2() {
-        Strategy<Stock> example = new Strategy("Example 222222", Stock.class);
+        Strategy<Stock> example = new Strategy<>("Example 222222", Stock.class);
         Filter<Stock> filter1 = (stock) -> {
             String code = stock.getCode();
             if(StringUtils.startsWith(code,"300")){

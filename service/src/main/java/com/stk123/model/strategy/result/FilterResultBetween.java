@@ -1,4 +1,4 @@
-package com.stk123.model.core.filter.result;
+package com.stk123.model.strategy.result;
 
 public class FilterResultBetween<V extends Number & Comparable, U extends Number & Comparable, T>
         extends FilterResult {

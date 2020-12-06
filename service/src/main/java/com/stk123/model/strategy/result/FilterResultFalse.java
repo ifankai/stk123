@@ -1,15 +1,15 @@
-package com.stk123.model.core.filter.result;
+package com.stk123.model.strategy.result;
 
-public class FilterResultTrue extends FilterResult {
+public class FilterResultFalse extends FilterResult {
 
     @Override
     public boolean isPass() {
-        return true;
+        return false;
     }
 
     @Override
     public String toString() {
-        return "FilterResultTrue{" +
+        return "FilterResultFalse{" +
                 "pass=" + pass +
                 ", result='" + result + '\'' +
                 '}';

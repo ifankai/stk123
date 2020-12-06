@@ -1,7 +1,6 @@
-package com.stk123.model.core.filter.result;
+package com.stk123.model.strategy.result;
 
-import com.stk123.model.core.filter.Filter;
-import com.stk123.model.core.filter.result.FilterResult;
+import com.stk123.model.strategy.Filter;
 import lombok.Getter;
 
 import java.util.function.Function;

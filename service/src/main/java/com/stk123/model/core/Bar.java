@@ -7,7 +7,6 @@ import com.stk123.entity.StkKlineEntity;
 import com.stk123.model.json.View;
 import com.stk123.util.ServiceUtils;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.text.ParseException;
