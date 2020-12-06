@@ -5,10 +5,13 @@ import com.stk123.model.RequestResult;
 import com.stk123.model.core.Bar;
 import com.stk123.model.core.BarSeries;
 import com.stk123.model.core.Stock;
-import com.stk123.model.core.filter.*;
-import com.stk123.model.core.filter.result.FilterResult;
-import com.stk123.model.core.filter.result.FilterResultBetween;
-import com.stk123.model.core.filter.result.FilterResultEquals;
+import com.stk123.model.strategy.Filter;
+import com.stk123.model.strategy.Strategy;
+import com.stk123.model.strategy.StrategyBacktesting;
+import com.stk123.model.strategy.StrategyResult;
+import com.stk123.model.strategy.result.FilterResult;
+import com.stk123.model.strategy.result.FilterResultBetween;
+import com.stk123.model.strategy.result.FilterResultEquals;
 import com.stk123.repository.StkKlineRepository;
 import com.stk123.repository.StkRepository;
 import lombok.extern.apachecommons.CommonsLog;
@@ -44,14 +47,10 @@ public class TestController {
     @Autowired
     StkRepository stkRepository;
 
-    @Autowired
-    StrategyBacktesting testSimilarTask;
-
 
     @RequestMapping(value = "/test")
     @ResponseBody
     public RequestResult test(){
-        //similer();
 
         LinkedHashMap<String, BarSeries> bss = getBarSeriesList(100, "603096","600600");
         Stock stock = new Stock("603096","").buildBarSeries(bss.get("603096"));
@@ -64,49 +63,11 @@ public class TestController {
         strategyBacktesting.addStrategy(strategyBacktesting.example2());
         strategyBacktesting.test(stocks);
 
-        //testSimilarTask.test(stocks, "20201101", "20201120");
         strategyBacktesting.test(stocks, "20201101", "20201120");
 
         return RequestResult.success(new Date());
     }
 
-    public void similer() {
-
-        Strategy<BarSeries> example = new Strategy("Example 603096", BarSeries.class);
-        Filter<Bar> filter1 = (bar) -> {
-            Bar today = bar;
-            Bar today4 = today.before(4);
-            double change = today4.getChange(80, Bar.EnumValue.C);
-            return new FilterResultEquals(change*100,-35.0, 5.0).addResult(today.getDate());
-        };
-        example.addFilter((bs)->bs.getFirst(), filter1);
-        Filter<BarSeries> filter2 = (bs) -> {
-            Bar today = bs.getFirst();
-            Bar today4 = today.before(4);
-            double today4Volume = today4.getVolume();
-            if(today4.getClose() < today4.getLastClose()){
-                return FilterResult.FALSE(today);
-            }
-            double minVolume = today4.getLowest(10, Bar.EnumValue.V);
-            return new FilterResultBetween(today4Volume/minVolume,7, 10);
-        };
-        example.addFilter(filter2);
-
-        BarSeries bs603096 = this.getBarSeries(100, "603096");
-        bs603096.setFirstBarFrom("20201109");
-        System.out.println(bs603096.getFirst());
-        StrategyResult fr = example.test(bs603096);
-        System.out.println("code=603096, FilterResult=" + fr);
-
-        LinkedHashMap<String, BarSeries> bss = getBarSeriesList(100, "603096","600600");
-        for(Map.Entry<String, BarSeries> entry : bss.entrySet()) {
-            BarSeries bs = entry.getValue();
-            //log.info(bs);
-            StrategyResult fr1 = example.test(bs);
-            System.out.println("code="+entry.getKey() + ", FilterResult=" + fr1);
-        }
-
-    }
 
     public BarSeries getBarSeries(int count, String code) {
         LinkedHashMap<String, BarSeries> result = this.getBarSeriesList(count, code);

@@ -1,4 +1,4 @@
-package com.stk123.model.core.filter;
+package com.stk123.model.strategy;
 
 public interface Sortable {
 

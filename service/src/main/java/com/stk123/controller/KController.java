@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.entity.StkKlineEntity;
 import com.stk123.model.RequestResult;
 import com.stk123.model.core.BarSeries;
-import com.stk123.model.core.filter.Strategy;
+import com.stk123.model.strategy.Strategy;
 import com.stk123.model.json.View;
 import com.stk123.repository.StkKlineRepository;
 import com.stk123.util.ServiceUtils;
