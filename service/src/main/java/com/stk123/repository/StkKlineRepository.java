@@ -21,10 +21,10 @@ public interface StkKlineRepository extends JpaRepository<StkKlineEntity, StkKli
 
 
     String sql_queryTopNByCodeListOrderByKlineDateDesc =
-            "select code,kline_date as date,open,close,high,low,volumn as volume,amount,last_close,percentage as change,hsl from (select t.*, rank() over(partition by t.code order by t.kline_date desc) as rn " +
-            "from stk_kline t where t.code in ('?')) where rm <= ?";
+            "select code,kline_date as \"date\",open,close,high,low,volumn as volume,amount,last_close,percentage as change,hsl from (select t.*, rank() over(partition by t.code order by t.kline_date desc) as rn " +
+            "from stk_kline t where t.code in (:1)) where rn <= :2";
     default LinkedHashMap<String, BarSeries> queryTopNByCodeListOrderByKlineDateDesc(Integer rn, List<String> codes) {
-        List<Bar> list = BaseRepository.getInstance().list(sql_queryTopNByCodeListOrderByKlineDateDesc, Bar.class, StringUtils.join(codes, "','"), rn);
+        List<Bar> list = BaseRepository.getInstance().list(sql_queryTopNByCodeListOrderByKlineDateDesc, Bar.class, codes, rn);
         LinkedHashMap<String, BarSeries> result = new LinkedHashMap<>(codes.size());
         for(String code : codes) {
             result.put(code, new BarSeries());

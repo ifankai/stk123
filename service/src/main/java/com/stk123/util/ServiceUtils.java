@@ -15,8 +15,22 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-@SuppressWarnings({ "unchecked", "rawtypes" })
 public class ServiceUtils extends CommonUtils {
+
+    public static <T extends Enum<?>> T searchEnum(Class<T> enumClass, String search, T defaultIfNull) {
+        /*for (T each : enumeration.getEnumConstants()) {
+            if (each.name().compareToIgnoreCase(search) == 0) {
+                return each;
+            }
+        }
+        return null;*/
+        return Arrays.stream(enumClass.getEnumConstants())
+                .filter(e -> e.name().equalsIgnoreCase(search)).findAny().orElse(defaultIfNull==null?null:defaultIfNull);
+    }
+
+    public static <T extends Enum<?>> T searchEnum(Class<T> enumClass, String search) {
+        return searchEnum(enumClass, search, null);
+    }
 
 
     public static void main(String[] args) throws Exception {

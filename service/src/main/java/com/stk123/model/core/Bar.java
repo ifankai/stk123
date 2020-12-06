@@ -1,12 +1,16 @@
 package com.stk123.model.core;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.common.util.collection.IntRange2IntMap;
 import com.stk123.entity.StkKlineEntity;
+import com.stk123.model.json.View;
 import com.stk123.util.ServiceUtils;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,32 +39,30 @@ public class Bar implements Serializable, Cloneable {
 	}
 
     private String code;
+    @JsonProperty("d")@JsonView(View.Default.class)
 	private String date;
 	private LocalDateTime ts;
+    @JsonProperty("o")@JsonView(View.Default.class)
 	private double open;
+    @JsonProperty("c")@JsonView(View.Default.class)
 	private double close;
+    @JsonProperty("h")@JsonView(View.Default.class)
 	private double high;
+    @JsonProperty("l")@JsonView(View.Default.class)
 	private double low;
+    @JsonProperty("v")@JsonView(View.Default.class)
 	private double volume;
+    @JsonProperty("a")@JsonView(View.Default.class)
 	private double amount;
+    @JsonProperty("lc")@JsonView(View.Default.class)
 	private double lastClose; //昨日收盘价
+    @JsonProperty("p")@JsonView(View.Default.class)
 	private double change; //涨跌幅
 	private double hsl; //换手率
 
 	private Bar before;
 	private Bar after;
 
-
-	public final static List<String> JSON_INCLUDE_FIELDS = new ArrayList<String>();
-	static{
-		JSON_INCLUDE_FIELDS.add("date");
-		JSON_INCLUDE_FIELDS.add("open");
-		JSON_INCLUDE_FIELDS.add("close");
-		JSON_INCLUDE_FIELDS.add("high");
-		JSON_INCLUDE_FIELDS.add("low");
-		JSON_INCLUDE_FIELDS.add("volume");
-		JSON_INCLUDE_FIELDS.add("amount");
-	}
 
 	public Bar(){}
 
@@ -100,10 +102,20 @@ public class Bar implements Serializable, Cloneable {
 		return this.getBefore();
 	}
 
+	public Bar go(int n) {
+	    if(n == 0){
+	        return this;
+        }else if(n > 0){
+	        return before(n);
+        }else{
+	        return after(n);
+        }
+    }
+
 	//n=0是当天
 	public Bar before(int n){
 		Bar tmp = this;
-		while(n-- > 0 && tmp != null && tmp.before != null){
+		while(n-- > 0 && tmp.before != null){
 			tmp = tmp.before;
 		}
 		return tmp;
@@ -117,7 +129,7 @@ public class Bar implements Serializable, Cloneable {
 	}
 	public Bar after(int n){
 		Bar tmp = this;
-		while(n-- > 0 && tmp != null && tmp.after != null){
+		while(n-- > 0 && tmp.after != null){
 			tmp = tmp.after;
 		}
 		return tmp;
@@ -157,6 +169,11 @@ public class Bar implements Serializable, Cloneable {
 		}
 	}
 
+
+    public double getValue(int days, Function<Bar, Double> func) {
+        return func.apply(this.go(days));
+    }
+
 	/*public double getValue(TypeValue typeValue) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
 		return Double.parseDouble(BeanUtils.getProperty(this, typeValue.name().toLowerCase()));
 	}*/
@@ -181,31 +198,7 @@ public class Bar implements Serializable, Cloneable {
 	}
 
 
-
-	/*public interface Calc<T> {
-		public T calc(Bar k, T d);
-	}*/
-
-	/*public <T> T getValue(int n, Calc<T> func){
-		Bar k = this;
-		T result = null;
-		while(true){
-			if(func != null){
-				result = func.calc(k, result);
-			}
-			if(n++ == 0){
-				if(func != null){
-					return result;
-				}
-				return (T)k;
-			}
-			k = k.before;
-			if(k == null)break;
-		}
-		return null;
-	}*/
-
-	public <R, T> R getValue(int n, Function<Bar, R> func) {
+	public <R> R each(int n, Function<Bar, R> func) {
 		R result;
 		Bar k = this;
 		while(true) {
@@ -221,8 +214,9 @@ public class Bar implements Serializable, Cloneable {
 
 	public double getChange(int days, Function<Bar, Double> func) {
 		double v = func.apply(this);
-		double kv = this.getRef(days, func);
-		return (v-kv)/kv;
+		if(days == 0)return 0;
+		double kv = this.getValue(days, func);
+		return days > 0 ? (v-kv)/kv : (kv-v)/v;
 	}
 
 	/**
@@ -231,20 +225,6 @@ public class Bar implements Serializable, Cloneable {
 	public double getChange(int days, EnumValue typeValue) {
 		return this.getChange(days, bar -> bar.getValue(typeValue));
 	}
-
-	public double getAdjustedOfClose() {
-		return this.getChange(1, C);
-	}
-
-	public double getAdjustedOfClose(int n) {
-		return this.getChange(n, C);
-	}
-
-
-	public double getRef(int days, Function<Bar, Double> func) {
-		return func.apply(this.before(days));
-	}
-
 
 
 
@@ -668,7 +648,7 @@ public class Bar implements Serializable, Cloneable {
 	public boolean getYpcd() throws Exception {
 		Bar yk = this.before(1);
 		double a2 = (this.getHorse() - yk.getHorse())/yk.getHorse() * 100;
-		double ya2 = this.getRef(1, k -> {
+		double ya2 = this.getValue(1, k -> {
 				Bar yk1 = k.before(1);
 				return (k.getHorse() - yk1.getHorse())/yk1.getHorse() * 100;
 			});
@@ -946,19 +926,25 @@ public class Bar implements Serializable, Cloneable {
 	/**
 	 * 得到n日均线在days内的斜率(涨/跌幅)
 	 */
-	public double getSlopeOfMA(int n, int days) throws Exception {
+	public double getSlopeOfMA(int n, int days) {
 		double ma = this.getMA(C, n);
 		Bar k = this.before(days);
 		double ma1 = k.getMA(C, n);
 		return (ma - ma1)/ma1;
 	}
 	
-	public boolean dateBefore(Bar k) throws Exception{
-		Date d1 = ServiceUtils.sf_ymd2.parse(this.getDate());
-		Date d2 = ServiceUtils.sf_ymd2.parse(k.getDate());
+	public boolean dateBefore(Bar k) {
+        Date d1 = null;
+        Date d2 = null;
+        try {
+            d1 = ServiceUtils.sf_ymd2.parse(this.getDate());
+            d2 = ServiceUtils.sf_ymd2.parse(k.getDate());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 		return d1.before(d2);
 	}
-	public boolean dateBeforeOrEquals(Bar k) throws Exception{
+	public boolean dateBeforeOrEquals(Bar k) {
 		return this.dateEquals(k) || this.dateBefore(k);
 	}
 	public boolean dateAfter(Bar k) throws Exception{
@@ -1024,7 +1010,7 @@ public class Bar implements Serializable, Cloneable {
 	 * ----------------------override-----------------------------
 	 */
 	private String string(){
-		return "date:"+date+",open:"+open+",close:"+close+",high:"+high+",low:"+low+",change:"+change+",lastClose:"+lastClose;
+		return "code:"+code+",date:"+date+",open:"+open+",close:"+close+",high:"+high+",low:"+low+",change:"+change+",lastClose:"+lastClose;
 	}
 	@Override
 	public String toString() {

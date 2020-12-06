@@ -1,23 +1,25 @@
-package com.stk123.model.core.similar;
+package com.stk123.model.core.filter.result;
+
+import com.stk123.model.core.filter.Sortable;
 
 import java.util.function.BiPredicate;
 
-public class SimilarEquals<V extends Number & Comparable> implements Similar, Sortable {
+public class FilterResultEquals<V extends Number & Comparable, R> extends FilterResult implements Sortable {
 
     private V value;
     private V target;
     private V tolerance; //上下容忍数值
     private BiPredicate biPredicate;
 
-    public SimilarEquals(V value, V target) {
-        this(value, target, null, null);
+    public FilterResultEquals(V value, V target) {
+        this(value, target, null);
     }
 
-    public SimilarEquals(V value, V target, V tolerance){
+    public FilterResultEquals(V value, V target, V tolerance){
         this(value, target, tolerance, null);
     }
 
-    public SimilarEquals(V value,V target, V tolerance, BiPredicate<V, V> biPredicate){
+    public FilterResultEquals(V value, V target, V tolerance, BiPredicate<V, V> biPredicate){
         this.value = value;
         this.target = target;
         this.tolerance = tolerance;
@@ -25,7 +27,7 @@ public class SimilarEquals<V extends Number & Comparable> implements Similar, So
     }
 
     @Override
-    public boolean similar() {
+    public boolean isPass() {
         if(tolerance == null){
             return value.doubleValue() == target.doubleValue();
         }
@@ -44,10 +46,14 @@ public class SimilarEquals<V extends Number & Comparable> implements Similar, So
 
     @Override
     public String toString() {
-        return "SimilarEquals{" +
-                "value=" + String.format("%.2f", value) +
+        return "FilterResultEquals{" +
+                "filterName=" + this.getFilterName() +
+                ", pass=" + pass +
+                ", value=" + String.format("%.2f", value) +
                 ", target=" + target +
                 ", tolerance=" + tolerance +
+                //", biPredicate=" + biPredicate +
+                ", result=" + result +
                 '}';
     }
 }

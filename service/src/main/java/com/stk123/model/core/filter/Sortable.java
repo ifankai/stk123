@@ -1,4 +1,4 @@
-package com.stk123.model.core.similar;
+package com.stk123.model.core.filter;
 
 public interface Sortable {
 

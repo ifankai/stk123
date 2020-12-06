@@ -18,8 +18,9 @@ public class CustomOracleDialect extends Oracle12cDialect {
     public String getHibernateTypeName(int code, int length, int precision, int scale) throws HibernateException {
         String result = super.getHibernateTypeName( code, length, precision, scale );
         if(code == Types.NUMERIC){
+//            System.out.println("length:"+length+",precision:"+precision+",scale:"+scale);
             if(scale == 0) result = "long";
-            else if(scale > 0 && precision < 10) result = "double";
+            else if(scale > 0 && precision <= 16) result = "double";
         }
         return result;
     }

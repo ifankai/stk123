@@ -4,6 +4,7 @@ import lombok.extern.apachecommons.CommonsLog;
 import org.hibernate.HibernateException;
 import org.hibernate.PropertyNotFoundException;
 import org.hibernate.SessionFactory;
+import org.hibernate.internal.util.ReflectHelper;
 import org.hibernate.property.access.internal.PropertyAccessStrategyBasicImpl;
 import org.hibernate.property.access.internal.PropertyAccessStrategyChainedImpl;
 import org.hibernate.property.access.internal.PropertyAccessStrategyFieldImpl;
@@ -11,16 +12,12 @@ import org.hibernate.property.access.internal.PropertyAccessStrategyMapImpl;
 import org.hibernate.property.access.spi.Setter;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.transform.AliasToBeanResultTransformer;
-import org.hibernate.type.StandardBasicTypes;
-import org.hibernate.type.Type;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.lang.annotation.Annotation;
-import java.math.BigDecimal;
 import java.util.Arrays;
 
 @CommonsLog
-public class MyJpaResultTransformer extends AliasToBeanResultTransformer {
+public class CustomJpaResultTransformer extends AliasToBeanResultTransformer {
 
     private static final long serialVersionUID = 1L;
 
@@ -36,7 +33,7 @@ public class MyJpaResultTransformer extends AliasToBeanResultTransformer {
     private Setter setters[];
 
 
-    public <T> MyJpaResultTransformer(NativeQuery query, Class<T> resultClass) {
+    public <T> CustomJpaResultTransformer(NativeQuery query, Class<T> resultClass) {
         super(resultClass);
         if (resultClass == null) {
             throw new IllegalArgumentException("resultClass cannot be null");
@@ -77,6 +74,8 @@ public class MyJpaResultTransformer extends AliasToBeanResultTransformer {
 //                    } catch (NoSuchFieldException e) {
 //                        throw new HibernateException((new StringBuilder()).append("Could not find ").append(aliases[i]).append(" in resultclass: ").append(resultClass.getName()).toString());
 //                    }
+
+                    if (tuple[i] == null && ReflectHelper.findField( resultClass, this.aliases[i]).getType().isPrimitive()) continue;
 
                     setters[i].set(result, tuple[i], null);
 //                    }
@@ -125,7 +124,7 @@ public class MyJpaResultTransformer extends AliasToBeanResultTransformer {
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-        MyJpaResultTransformer that = (MyJpaResultTransformer) o;
+        CustomJpaResultTransformer that = (CustomJpaResultTransformer) o;
         if (!resultClass.equals(that.resultClass))
             return false;
         return Arrays.equals(aliases, that.aliases);

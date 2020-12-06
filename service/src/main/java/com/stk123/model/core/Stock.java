@@ -1,14 +1,13 @@
 package com.stk123.model.core;
 
 import com.stk123.common.CommonConstant;
-import com.stk123.entity.StkKlineEntity;
-import com.stk123.model.Index;
+import com.stk123.model.core.filter.Example;
+import com.stk123.model.core.filter.ResultSet;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import static com.stk123.model.core.Stock.EnumCity.SH;
 import static com.stk123.model.core.Stock.EnumCity.SZ;
@@ -88,6 +87,10 @@ public class Stock {
 
     public Stock() {}
 
+    public Stock(String code, String name){
+        this(code, name, null);
+    }
+
     public Stock(String code, String name, BarSeries barSeries) {
         this.code = code;
         this.name = name;
@@ -114,9 +117,7 @@ public class Stock {
         this.barSeries = barSeries;
     }
 
-    public Stock(String code, String name) {
-        this(code, name, null);
-    }
+
 
     public static EnumCity getCity(String code){
         if(code.startsWith(CommonConstant.NUMBER_SIX) || code.startsWith(CommonConstant.NUMBER_99)){
@@ -124,5 +125,36 @@ public class Stock {
         }else{
             return SZ;
         }
+    }
+
+    public Stock buildBarSeries(BarSeries barSeries) {
+        this.barSeries = barSeries;
+        return this;
+    }
+
+    public ResultSet similar(Example example) {
+        if(example.getXClass().isAssignableFrom(Stock.class)) {
+            return example.test(this);
+        }else if(example.getXClass().isAssignableFrom(BarSeries.class)){
+            return this.getBarSeries().similar(example);
+        }else if(example.getXClass().isAssignableFrom(Bar.class)){
+            return example.test(this.getBarSeries().getFirst());
+        }else {
+            throw new RuntimeException("Not support X generic class: "+example.getXClass());
+        }
+    }
+
+    public List<ResultSet> similar(Example example, String startDate, String endDate) {
+        List<ResultSet> resultSets = new ArrayList<>();
+        if(example.getXClass().isAssignableFrom(Stock.class)) {
+            resultSets.add(example.test(this));
+        }else if(example.getXClass().isAssignableFrom(BarSeries.class)){
+            resultSets.addAll(this.getBarSeries().similar(example, startDate, endDate));
+        }else if(example.getXClass().isAssignableFrom(Bar.class)){
+            resultSets.add(example.test(this.getBarSeries().getFirst()));
+        }else {
+            throw new RuntimeException("Not support X generic class: "+example.getXClass());
+        }
+        return resultSets;
     }
 }
