@@ -1,12 +1,15 @@
 package com.stk123.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.stk123.model.json.View;
 import lombok.Data;
 
 import java.io.Serializable;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonView(View.Default.class)
 public class RequestResult<T> implements Serializable {
 
     private static final long serialVersionUID = -5478950010968748377L;

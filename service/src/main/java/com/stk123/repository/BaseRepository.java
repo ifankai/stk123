@@ -1,6 +1,6 @@
 package com.stk123.repository;
 
-import com.stk123.service.support.MyJpaResultTransformer;
+import com.stk123.service.support.CustomJpaResultTransformer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import java.util.Collection;
 import java.util.List;
 
 @Service("baseRepository")
@@ -83,13 +84,19 @@ public class BaseRepository implements ApplicationContextAware {
         NativeQuery q = session.createSQLQuery(sql);
         if(params!=null){
             for(int i=0,len=params.length;i<len;i++){
-                Object param=params[i];
-                q.setParameter(i+1, param);
+                Object param = params[i];
+                if(param instanceof Object[]) {
+                    q.setParameterList(String.valueOf(i + 1), (Object[]) param);
+                } else if(param instanceof Collection){
+                    q.setParameterList(String.valueOf(i + 1), (Collection) param);
+                } else {
+                    q.setParameter(String.valueOf(i + 1), param);
+                }
             }
         }
 //        q.setResultTransformer(Transformers.aliasToBean(dto));
 //        q.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
-        q.setResultTransformer(new MyJpaResultTransformer(q, dto));
+        q.setResultTransformer(new CustomJpaResultTransformer(q, dto));
 
         //Expected type: java.lang.Long, actual value: java.math.BigDecimal
 //        q.addScalar("num", StandardBasicTypes.LONG);
@@ -103,7 +110,7 @@ public class BaseRepository implements ApplicationContextAware {
     public <T> NativeQuery<T> getNativeQuery(String sql, Class<T> dto) {
         Session session = em.unwrap(Session.class);
         NativeQuery q = session.createSQLQuery(sql);
-        q.setResultTransformer(new MyJpaResultTransformer(q, dto));
+        q.setResultTransformer(new CustomJpaResultTransformer(q, dto));
         return q;
     }
 

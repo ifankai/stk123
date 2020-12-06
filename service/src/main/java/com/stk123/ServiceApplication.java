@@ -89,10 +89,11 @@ public class ServiceApplication implements ApplicationContextAware {
     }
 
 
-    @Scheduled(cron = "0 0 0 ? * *")
+    //直接使用kill process后，不在使用这个方法
+    /*@Scheduled(cron = "0 0 0 ? * *")
     public void exit(){
         SpringApplication.exit(this.context, () -> 0);
-    }
+    }*/
 
 
     private static String getProcessId(final String fallback) {

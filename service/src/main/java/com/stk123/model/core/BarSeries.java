@@ -1,8 +1,14 @@
 package com.stk123.model.core;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.stk123.model.core.filter.Example;
+import com.stk123.model.core.filter.Filter;
+import com.stk123.model.core.filter.ResultSet;
+import com.stk123.model.json.View;
 import com.stk123.util.ServiceUtils;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -12,13 +18,25 @@ import static com.stk123.model.core.BarSeries.EnumPeriod.DAY;
 public class BarSeries {
 
     public enum EnumPeriod {
-        DAY, WEEK, MONTH
+        DAY,D, WEEK,W, MONTH,M;
+
+        public static EnumPeriod getPeriod(String name){
+            for(EnumPeriod em : EnumPeriod.values()){
+                if(em.name().equalsIgnoreCase(name)){
+                    return em;
+                }
+            }
+            return null;
+        }
+
     }
 
     private boolean restoration = true; //是否前复权，默认为true
     private double restorationChange = 1; //
-    private EnumPeriod typePeriod = DAY; //默认周期是day
+//    @JsonView(View.Default.class)
+    private EnumPeriod period = DAY; //默认周期是day
 
+    @JsonView(View.Default.class)
     private LinkedList<Bar> list = new LinkedList();
     private Bar first;
 
@@ -72,24 +90,54 @@ public class BarSeries {
         return list.peek();
     }
 
-    public void setFirstBarFrom(String date){
+    public Bar setFirstBarFrom(String date){
         if(date == null) {
             this.first = null;
-            return;
+            return null;
         }
         Bar first = this.getFirst();
-        while(first != null && first.getDate().compareTo(date) > 0){
-            //this.list.poll();
-            this.first = this.first.before();
-            //first.setAfter(null);
+        if(first != null) {
+            if(first.getDate().compareTo(date) > 0) {
+                while (first.getDate().compareTo(date) > 0) {
+                    //this.list.poll();
+                    first = this.first = first.before();
+                    //first.setAfter(null);
+                }
+            }else {
+                while (first.getDate().compareTo(date) < 0) {
+                    first = this.first = first.after();
+                }
+            }
         }
+        return first;
+    }
+
+    public ResultSet similar(Example<BarSeries> example){
+        return example.test(this);
+    }
+    public List<ResultSet> similar(Example<BarSeries> example, String startDate, String endDate) {
+        String date = startDate;
+        Bar endBar = this.getFirst().before(endDate);
+        Bar first = this.setFirstBarFrom(date);
+        List<ResultSet> results = new ArrayList<>();
+        if(first != null) {
+            Bar bar = first;
+            do {
+                ResultSet resultSet = example.test(this);
+                results.add(resultSet);
+                bar = bar.after();
+                if (bar == null) break;
+                this.setFirstBarFrom(bar.getDate());
+            } while (bar.dateBeforeOrEquals(endBar));
+        }
+        return results;
     }
 
 
     @Override
     public String toString(){
         StringBuilder sb = new StringBuilder();
-        sb.append("restoration=" + restoration).append(", restorationChange=" + restorationChange).append(", typePeriod=" + typePeriod).append("\n");
+        sb.append("restoration=" + restoration).append(", restorationChange=" + restorationChange).append(", period=" + period).append("\n");
         for(Bar bar : list){
             sb.append(bar.toString()).append("\n");
         }
