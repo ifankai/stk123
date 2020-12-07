@@ -31,7 +31,7 @@
 		<ftp.host>81.68.255.181</ftp.host>
 		<ftp.path>/var/stk</ftp.path>
 		<ftp.username>root</ftp.username>
-		<ftp.password>***REMOVED***</ftp.password>
+		<ftp.password>M5Pbg;Ln2W[pe6</ftp.password>
 		<ftp.depends>yes</ftp.depends>
 		<ftp.verbose>no</ftp.verbose>
 	</properties>

@@ -172,8 +172,8 @@ public class EmailUtils {
 	        message.setText(text);
 	        message.setContent(text, "text/html;charset=utf-8");
 	        Transport transport = ssn.getTransport("smtp");
-	        //transport.connect("smtp.gmail.com", "ifankai", "***REMOVED***");
-	        transport.connect("209.85.201.111", "ifankai", "***REMOVED***");
+	        //transport.connect("smtp.gmail.com", "ifankai", "181302kevin");
+	        transport.connect("209.85.201.111", "ifankai", "181302kevin");
 	        transport.sendMessage(message, message
 	                .getRecipients(Message.RecipientType.TO));
 	        transport.close();
@@ -232,7 +232,7 @@ public class EmailUtils {
         Authenticator authenticator = new Authenticator(){
 		    public PasswordAuthentication getPasswordAuthentication()
 		    {
-		     return new PasswordAuthentication("ifankai@aliyun.com", "***REMOVED***"); //发件人邮件用户名、密码
+		     return new PasswordAuthentication("ifankai@aliyun.com", "181302kevin"); //发件人邮件用户名、密码
 		    }
 		   };
         javax.mail.Session sendMailSession = javax.mail.Session.getDefaultInstance(properties, authenticator);
@@ -271,7 +271,7 @@ public class EmailUtils {
         Authenticator authenticator = new Authenticator(){
 		    public PasswordAuthentication getPasswordAuthentication()
 		    {
-		     return new PasswordAuthentication(ADDRESS_126, "181302fankai"); //密码:***REMOVED***
+		     return new PasswordAuthentication(ADDRESS_126, "181302fankai"); //密码:181302kevin
 		    }
 		   };
         javax.mail.Session sendMailSession = javax.mail.Session.getDefaultInstance(properties, authenticator);
@@ -311,7 +311,7 @@ public class EmailUtils {
         Authenticator authenticator = new Authenticator(){
 		    public PasswordAuthentication getPasswordAuthentication()
 		    {
-		     return new PasswordAuthentication("13816923931@139.com", "***REMOVED***"); //发件人邮件用户名、密码
+		     return new PasswordAuthentication("13816923931@139.com", "181302kevin"); //发件人邮件用户名、密码
 		    }
 		   };
         javax.mail.Session sendMailSession = javax.mail.Session.getDefaultInstance(properties, authenticator);

@@ -25,7 +25,7 @@ public class BaiDuHi {
         
         //login in
         //spec.find.a().with.id("username").set("ifankai@aliyun.com");
-        //spec.find.a().with.id("password").set("***REMOVED***");
+        //spec.find.a().with.id("password").set("181302kevin");
         
         //click ifankai
         spec.find.div().with.title("ifankai").click();
@@ -52,7 +52,7 @@ public class BaiDuHi {
 	        //System.out.println(spec.source());  
 	        //login
 	        //spec.find.a().with.id("username").set("ifankai@aliyun.com");
-	        //spec.find.a().with.id("password").set("***REMOVED***");
+	        //spec.find.a().with.id("password").set("181302kevin");
 	        //click ifankai
 	        spec.find.div().with.title("ifankai").click();
 	        //send message

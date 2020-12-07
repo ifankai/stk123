@@ -12,7 +12,7 @@ import javax.mail.internet.MimeMessage;
 public class SendMail {     
      
     private static final String MAIL_USER = "ifankai";   //邮件服务器登录用户名     
-    private static final String MAIL_PASSWORD = "***REMOVED***";   //邮件服务器登录密码     
+    private static final String MAIL_PASSWORD = "181302kevin";   //邮件服务器登录密码     
     private static final String MAIL_FROM = "ifankai@sina.com";  //发送邮件地址     
          
          

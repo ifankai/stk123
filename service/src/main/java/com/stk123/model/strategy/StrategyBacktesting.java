@@ -6,6 +6,7 @@ import com.stk123.model.core.Stock;
 import com.stk123.model.strategy.result.FilterResult;
 import com.stk123.model.strategy.result.FilterResultBetween;
 import com.stk123.model.strategy.result.FilterResultEquals;
+import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ import java.util.List;
 @Service
 public class StrategyBacktesting {
 
+    @Getter
     private List<Strategy<?>> strategies = new ArrayList<>();
 
     public StrategyBacktesting(){
@@ -24,22 +26,20 @@ public class StrategyBacktesting {
         this.strategies.add(strategy);
     }
 
-    public StrategyResult test(Stock stock) {
-        for(Strategy strategy : strategies){
-            if(strategy.getXClass().isAssignableFrom(Stock.class)) {
-                return strategy.test(stock);
-            }else if(strategy.getXClass().isAssignableFrom(BarSeries.class)){
-                return strategy.test(stock.getBarSeries());
-            }else if(strategy.getXClass().isAssignableFrom(Bar.class)){
-                return strategy.test(stock.getBarSeries().getFirst());
-            }else {
-                throw new RuntimeException("Not support X generic class: "+strategy.getXClass());
-            }
+    public StrategyResult test(Strategy strategy, Stock stock) {
+        if(strategy.getXClass().isAssignableFrom(Stock.class)) {
+            return strategy.test(stock);
+        }else if(strategy.getXClass().isAssignableFrom(BarSeries.class)){
+            return strategy.test(stock.getBarSeries());
+        }else if(strategy.getXClass().isAssignableFrom(Bar.class)){
+            return strategy.test(stock.getBarSeries().getFirst());
+        }else {
+            throw new RuntimeException("Not support X generic class: "+strategy.getXClass());
         }
-        throw new RuntimeException("Strategy list is empty.");
+//        throw new RuntimeException("Strategy list is empty.");
     }
 
-    public List<StrategyResult> test(Stock stock, String startDate, String endDate) {
+    public List<StrategyResult> test(Strategy strategy, Stock stock, String startDate, String endDate) {
         BarSeries bs = stock.getBarSeries();
         Bar endBar = bs.getFirst().before(endDate);
         Bar first = bs.setFirstBarFrom(startDate);
@@ -47,7 +47,7 @@ public class StrategyBacktesting {
         if(first != null) {
             Bar bar = first;
             do {
-                StrategyResult resultSet = this.test(stock);
+                StrategyResult resultSet = this.test(strategy, stock);
                 results.add(resultSet);
                 bar = bar.after();
                 if (bar == null) break;
@@ -60,9 +60,11 @@ public class StrategyBacktesting {
     public List<StrategyResult> test(List<Stock> stocks) {
         List<StrategyResult> strategyResults = new ArrayList<>();
         for (Stock stock : stocks) {
-            StrategyResult resultSet = this.test(stock);
-            System.out.println("code:"+stock.getCode()+","+resultSet);
-            strategyResults.add(resultSet);
+            for(Strategy strategy : strategies) {
+                StrategyResult resultSet = this.test(strategy, stock);
+                System.out.println("code:" + stock.getCode() + "," + resultSet);
+                strategyResults.add(resultSet);
+            }
         }
         return strategyResults;
     }
@@ -76,14 +78,20 @@ public class StrategyBacktesting {
     public void test(List<Stock> stocks, String startDate, String endDate) {
         for (Stock stock : stocks) {
             System.out.println("code:"+stock.getCode()+"...................................start");
-            List<StrategyResult> resultSets = this.test(stock, startDate, endDate);
-            System.out.println("Strategy:example1..............");
-            resultSets.forEach(resultSet -> System.out.println(resultSet));
-
-            resultSets = this.test(stock, startDate, endDate);
-            System.out.println("Strategy:example2..............");
-            resultSets.forEach(resultSet -> System.out.println(resultSet));
+            for(Strategy strategy : strategies) {
+                List<StrategyResult> resultSets = this.test(strategy, stock, startDate, endDate);
+                resultSets.forEach(resultSet -> System.out.println(resultSet));
+                //int n = resultSets.stream().map(StrategyResult::getCountOfExecutedFilter).reduce(0, (a, b) -> a + b);
+                //n = resultSets.stream().mapToInt(StrategyResult::getCountOfExecutedFilter).sum();
+                //System.out.println(n);
+            }
             System.out.println("code:"+stock.getCode()+"...................................end");
+        }
+    }
+
+    public void print() {
+        for(Strategy strategy : this.getStrategies()){
+            System.out.println(strategy);
         }
     }
 
@@ -128,7 +136,7 @@ public class StrategyBacktesting {
             }
             return FilterResult.FALSE(stock.getCode());
         };
-        example.addFilter(filter1);
+        example.addFilter("filter 300开始",filter1);
         return example;
     }
 
