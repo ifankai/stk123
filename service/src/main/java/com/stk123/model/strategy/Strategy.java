@@ -1,7 +1,7 @@
 package com.stk123.model.strategy;
 
 import com.stk123.model.strategy.result.FilterResult;
-import com.stk123.model.strategy.result.FilterWrapper;
+import com.stk123.model.strategy.result.FilterExecutor;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -19,8 +19,8 @@ public class Strategy<X> {
     private String name;
     @Getter
     private Class<X> xClass;
-    private List<FilterWrapper<X, ?>> filterWrappers = new ArrayList<>();
-    private FilterWrapper<X, X> expectFilterWrapper;
+    private List<FilterExecutor<X, ?>> filterExecutors = new ArrayList<>();
+    private FilterExecutor<X, X> expectFilterExecutor;
 
     public Strategy(String name, Class<X> xClass) {
         this.name = name;
@@ -28,7 +28,7 @@ public class Strategy<X> {
     }
     public Strategy(String name, Class<X> xClass, Filter<X> expectFilter) {
         this(name, xClass);
-        this.expectFilterWrapper = new FilterWrapper(null, x->x, expectFilter);
+        this.expectFilterExecutor = new FilterExecutor(null, x->x, expectFilter);
     }
 
     /**
@@ -36,7 +36,7 @@ public class Strategy<X> {
      * @param filter
      */
     public void addFilter(String name, Function<X, ?> function, Filter<?> filter){
-        this.filterWrappers.add(new FilterWrapper(name, function, filter));
+        this.filterExecutors.add(new FilterExecutor(name, function, filter));
     }
     public void addFilter(String name, Filter<?> filter){
         addFilter(name, (x)->x, filter);
@@ -52,32 +52,35 @@ public class Strategy<X> {
      * @TODO 可以增加多个expect filter
      */
     public void setExpectFilter(Filter<X> expectFilter){
-        this.expectFilterWrapper = new FilterWrapper(null, x->x, expectFilter);
+        this.expectFilterExecutor = new FilterExecutor(null, x->x, expectFilter);
     }
 
     public StrategyResult test(X x) {
+        //把不通过数量多的放前面，以便优化性能
+        //filterExecutors.sort(Comparator.comparing(FilterExecutor::getCounterNotPassed, Comparator.reverseOrder()));
+
         //把通过数量少的放前面，以便优化性能
-        filterWrappers.sort(Comparator.comparingInt(FilterWrapper::getCounterPassed));
+        filterExecutors.sort(Comparator.comparingInt(FilterExecutor::getCounterPassed));
 
         StrategyResult resultSet = new StrategyResult();
         resultSet.setStrategy(this);
-        for(FilterWrapper<X, ?> filterWrapper : filterWrappers){
+        for(FilterExecutor<X, ?> filterWrapper : filterExecutors){
             if(!filterWrapper.execute(x)) {
                 FilterResult fr = filterWrapper.getResult();
-                fr.setFilterWrapper(filterWrapper);
+                fr.setFilterExecutor(filterWrapper);
                 resultSet.addFilterResult(fr);
                 resultSet.setPass(false);
                 return resultSet;
             }
             FilterResult fr = filterWrapper.getResult();
-            fr.setFilterWrapper(filterWrapper);
+            fr.setFilterExecutor(filterWrapper);
             resultSet.addFilterResult(fr);
         }
         resultSet.setPass(true);
-        if(expectFilterWrapper != null){
-            expectFilterWrapper.execute(x);
-            FilterResult efr = expectFilterWrapper.getResult();
-            efr.setFilterWrapper(expectFilterWrapper);
+        if(expectFilterExecutor != null){
+            expectFilterExecutor.execute(x);
+            FilterResult efr = expectFilterExecutor.getResult();
+            efr.setFilterExecutor(expectFilterExecutor);
             resultSet.setExpectFilterResult(efr);
         }
         return resultSet;
@@ -87,11 +90,23 @@ public class Strategy<X> {
         return this.test(function.apply(x));
     }*/
 
+    public int getCountOfExecutedFilter() {
+        int count = 0;
+        for(FilterExecutor<X, ?> filterExecutor : this.filterExecutors){
+            count += filterExecutor.getCounterPassedAndNotPassed();
+        }
+        return count;
+    }
+
     @Override
     public String toString() {
-        return "Strategy{" +
-                "name='" + name + '\'' +
-                ", filters=" + filterWrappers +
-                '}';
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("策略[%s]调用所有过滤器调用总次数：%d\n", this.name, this.getCountOfExecutedFilter()));
+        sb.append("其中：\n");
+        for(FilterExecutor<X, ?> filterExecutor : this.filterExecutors) {
+            sb.append(String.format("  过滤器[%s]调用总次数：%d, 通过：%d,未通过：%d,\n",
+                    filterExecutor.getName(), filterExecutor.getCounterPassedAndNotPassed(), filterExecutor.getCounterPassed(), filterExecutor.getCounterNotPassed()));
+        }
+        return sb.toString();
     }
 }

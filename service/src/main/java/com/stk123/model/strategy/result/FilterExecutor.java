@@ -9,7 +9,7 @@ import java.util.function.Function;
  * @param <X> X类型是从FilterExample传过来的，FilterWrapper构造函数第一个参数定义：如何从 X 得到 B。
  * @param <B>
  */
-public class FilterWrapper<X, B> {
+public class FilterExecutor<X, B> {
 
     @Getter
     private String name;
@@ -17,11 +17,13 @@ public class FilterWrapper<X, B> {
     private Function<X, B> function;
     @Getter
     private int counterPassed;
+    @Getter
+    private int counterNotPassed;
     private boolean pass;
     @Getter
     private FilterResult result;
 
-    public FilterWrapper(String name, Function<X, B> function, Filter<B> filter){
+    public FilterExecutor(String name, Function<X, B> function, Filter<B> filter){
         this.name = name;
         this.function = function;
         this.filter = filter;
@@ -32,9 +34,16 @@ public class FilterWrapper<X, B> {
         B bar = function.apply(b); //这里是吧 X 转为 B 类型，B一般是Bar，BarSeries，也可以是Stock本身
         result = filter.filter(bar);
         this.pass = result.pass();
-        if(!this.pass) return false;
+        if(!this.pass) {
+            this.counterNotPassed++;
+            return false;
+        }
         this.counterPassed++;
         return true;
+    }
+
+    public int getCounterPassedAndNotPassed() {
+        return this.counterNotPassed + this.counterPassed;
     }
 
 }

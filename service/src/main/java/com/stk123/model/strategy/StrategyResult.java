@@ -1,5 +1,6 @@
 package com.stk123.model.strategy;
 
+import com.stk123.model.strategy.result.FilterExecutor;
 import com.stk123.model.strategy.result.FilterResult;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,8 +10,8 @@ import java.util.List;
 
 @Setter
 @Getter
-public class StrategyResult {
-    private Strategy strategy;
+public class StrategyResult<X> {
+    private Strategy<X> strategy;
     private boolean pass;
     private List<FilterResult> filterResults = new ArrayList<>();
     private FilterResult expectFilterResult; //用于存放 pass为true时，对未来期望的过滤结果，比如：期望未来10天内涨幅达到20%
@@ -33,6 +34,8 @@ public class StrategyResult {
         }
         return ret;
     }*/
+
+
 
     @Override
     public String toString() {

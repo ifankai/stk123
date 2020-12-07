@@ -43,8 +43,8 @@ public class Trade {
 			K k = context.getK();
 			double red = k.getEpcd_Hxscm();
 			double green = k.getEpcd_Hxxcm();
-			
-			K yk = k.before(1);
+
+            K yk = k.before(1);
 			double yred = yk.getEpcd_Hxscm();
 			double ygreen = yk.getEpcd_Hxxcm();
 			

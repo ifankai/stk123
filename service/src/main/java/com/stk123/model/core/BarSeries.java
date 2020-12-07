@@ -95,7 +95,9 @@ public class BarSeries {
             if(first.getDate().compareTo(date) > 0) {
                 while (first.getDate().compareTo(date) > 0) {
                     //this.list.poll();
-                    first = this.first = first.before();
+                    Bar before = first.before();
+                    if(before == null) break;
+                    first = this.first = before;
                     //first.setAfter(null);
                 }
                 if(first.getDate().compareTo(date) < 0) {
@@ -103,7 +105,9 @@ public class BarSeries {
                 }
             }else {
                 while (first.getDate().compareTo(date) < 0) {
-                    first = this.first = first.after();
+                    Bar after = first.after();
+                    if(after == null) break;
+                    first = this.first = after;
                 }
             }
         }
