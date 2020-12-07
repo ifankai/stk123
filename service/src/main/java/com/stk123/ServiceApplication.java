@@ -1,7 +1,6 @@
 package com.stk123;
 
-import com.stk123.entity.StkKlineEntity;
-import com.stk123.model.RequestResult;
+import com.stk123.util.ServiceUtils;
 import com.stk123.ws.StkWebSocketClient;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.BeansException;
@@ -13,22 +12,16 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.event.EventListener;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.client.RestTemplate;
 
-import java.lang.management.ManagementFactory;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
 
 @SpringBootApplication
 @EnableAutoConfiguration
@@ -49,7 +42,7 @@ public class ServiceApplication implements ApplicationContextAware {
     public static void main(String[] args) throws Exception {
         SpringApplication.run(ServiceApplication.class, args);
 
-        String pid = getProcessId("getProcessId failed.");
+        String pid = ServiceUtils.getProcessId("getProcessId failed.");
         log.info("pid:"+pid);
         Files.write(Paths.get("./pid.txt"), pid.getBytes());
     }
@@ -96,25 +89,5 @@ public class ServiceApplication implements ApplicationContextAware {
     }*/
 
 
-    private static String getProcessId(final String fallback) {
-        // Note: may fail in some JVM implementations
-        // therefore fallback has to be provided
-
-        // something like '<pid>@<hostname>', at least in SUN / Oracle JVMs
-        final String jvmName = ManagementFactory.getRuntimeMXBean().getName();
-        final int index = jvmName.indexOf('@');
-
-        if (index < 1) {
-            // part before '@' empty (index = 0) / '@' not found (index = -1)
-            return fallback;
-        }
-
-        try {
-            return Long.toString(Long.parseLong(jvmName.substring(0, index)));
-        } catch (NumberFormatException e) {
-            // ignore
-        }
-        return fallback;
-    }
 
 }
