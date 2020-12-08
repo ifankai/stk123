@@ -9,6 +9,7 @@ import com.stk123.model.core.Stock;
 import com.stk123.model.json.View;
 import com.stk123.model.strategy.Strategy;
 import com.stk123.model.strategy.StrategyBacktesting;
+import com.stk123.model.strategy.sample.Sample;
 import com.stk123.repository.StkKlineRepository;
 import com.stk123.repository.StkRepository;
 import lombok.extern.apachecommons.CommonsLog;
@@ -61,7 +62,7 @@ public class TestController {
         stocks.add(stock);
 
         StrategyBacktesting strategyBacktesting = new StrategyBacktesting();
-        strategyBacktesting.addStrategy(strategyBacktesting.example1());
+        strategyBacktesting.addStrategy(Sample.strategy_01());
         strategyBacktesting.addStrategy(strategyBacktesting.example2());
         strategyBacktesting.test(stocks);
 

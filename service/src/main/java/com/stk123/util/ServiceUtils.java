@@ -8,6 +8,9 @@ import com.stk123.common.CommonUtils;
 import com.stk123.common.html.HtmlA;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.core.type.filter.AssignableTypeFilter;
 
 import java.lang.management.ManagementFactory;
 import java.text.NumberFormat;
@@ -53,6 +56,29 @@ public class ServiceUtils extends CommonUtils {
             // ignore
         }
         return fallback;
+    }
+
+    /**
+     * 得到packagePath下面所有clazz类的子类，未经测试
+     * @param clazz
+     * @param packagePath "org/example/package"
+     * @return
+     * @throws ClassNotFoundException
+     */
+    public static List<Class> getBeans(Class clazz, String packagePath) throws
+            ClassNotFoundException {
+        ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false);
+        provider.addIncludeFilter(new AssignableTypeFilter(clazz));
+
+        List<Class> results = new ArrayList<>();
+        // scan in org.example.package
+        Set<BeanDefinition> components = provider.findCandidateComponents(packagePath);
+        for (BeanDefinition component : components) {
+            Class cls = Class.forName(component.getBeanClassName());
+            // use class cls found
+            results.add(cls);
+        }
+        return results;
     }
 
 

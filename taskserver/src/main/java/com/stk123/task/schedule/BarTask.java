@@ -1,22 +1,16 @@
 package com.stk123.task.schedule;
 
-import org.springframework.stereotype.Service;
+import com.stk123.task.schedule.core.Task;
 
-@Service
-public class BarTask implements Task {
+public class BarTask extends Task {
 
     @Override
-    public void run(String... args) {
-        System.out.println("run............start"+args);
-        try {
-            while(true) {
-                Thread.sleep(2000);
-                System.out.println("running............");
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    public void execute(String... args) throws Exception {
+        while(true) {
+            Thread.sleep(2000);
+            System.out.println("running............"+Thread.currentThread().getId());
         }
-        System.out.println("run............end");
     }
+
 
 }

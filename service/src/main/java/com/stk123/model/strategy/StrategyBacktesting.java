@@ -83,7 +83,6 @@ public class StrategyBacktesting {
                 resultSets.forEach(resultSet -> System.out.println(resultSet));
                 //int n = resultSets.stream().map(StrategyResult::getCountOfExecutedFilter).reduce(0, (a, b) -> a + b);
                 //n = resultSets.stream().mapToInt(StrategyResult::getCountOfExecutedFilter).sum();
-                //System.out.println(n);
             }
             System.out.println("code:"+stock.getCode()+"...................................end");
         }
