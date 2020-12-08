@@ -43,16 +43,14 @@ public abstract class Task {
         try {
             status = EnumStatus.RUNNING;
             execute(args);
-
-            status = EnumStatus.NOT_RUNNING;
-            log.info("task............end");
-            this.endTime = LocalDateTime.now();
             taskResult = TaskResult.success();
         } catch(Exception e){
             log.error(e);
-            status = EnumStatus.NOT_RUNNING;
-            this.endTime = LocalDateTime.now();
             taskResult = TaskResult.failure(e.getMessage());
+        } finally {
+            this.endTime = LocalDateTime.now();
+            status = EnumStatus.NOT_RUNNING;
+            log.info("task............end");
         }
     }
 
