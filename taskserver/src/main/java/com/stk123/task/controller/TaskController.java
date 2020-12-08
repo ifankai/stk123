@@ -73,8 +73,8 @@ public class TaskController {
     public RequestResult runTask(@PathVariable("name") String name, @PathVariable(value = "args",
             required = false) String args){
         Task task = (Task) Class.forName(name).newInstance();
-        taskContainer.start(task, StringUtils.split(args == null ? "" : args, " "));
-        return RequestResult.success();
+        taskContainer.start(task, StringUtils.split(args == null ? "" : args, ","));
+        return RequestResult.success(task.getId());
     }
 
     @SneakyThrows

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.ScheduledFuture;
+import java.util.stream.Collectors;
 
 @Service
 @CommonsLog
@@ -45,24 +46,32 @@ public class TaskContainer {
             log.info("Task cannot stop.");
             return false;
         }
-        Task task = this.getTaskById(id);
-        task.stop("Stop manually.");
         return future.cancel(true);
     }
 
     private void clean(Task task) {
         List<Task> tasks = this.getTask(task.getClass());
-        boolean success = task.getTaskResult().getSuccess();
-        for(Task t : tasks) {
-            if(t.getTaskResult() != null && t.getTaskResult().getSuccess() == success){
-                this.tasks.remove(t);
+        if(tasks.size() > 1){
+            List<Task> tasksSucc = tasks.stream().filter(task1 -> task1.getTaskResult()!=null && task1.getTaskResult().getSuccess()).collect(Collectors.toList());
+            tasksSucc.sort(Comparator.comparingLong(Task::getEndTimeToLong));
+            for (int i=0; i<tasksSucc.size()-1; i++) {
+                final String id = tasksSucc.get(i).getId();
+                this.tasks.removeIf(task1 -> task1.getId().equals(id));
+            }
+            List<Task> tasksFail = tasks.stream().filter(task1 -> task1.getTaskResult()!=null && !task1.getTaskResult().getSuccess()).collect(Collectors.toList());
+            tasksSucc.sort(Comparator.comparingLong(Task::getEndTimeToLong));
+            for (int i=0; i<tasksFail.size()-1; i++) {
+                final String id = tasksFail.get(i).getId();
+                this.tasks.removeIf(task1 -> task1.getId().equals(id));
             }
         }
-        scheduledTasks.remove(task.getId());
+        if(!task.isCanStop()) {
+            scheduledTasks.remove(task.getId());
+        }
     }
 
     public Task getTaskById(String id){
-        return null;
+        return tasks.stream().filter(task -> task.getId().equals(id)).findFirst().get();
     }
 
     public List<Task> getTask(Class cls) {
