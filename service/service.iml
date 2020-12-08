@@ -9,16 +9,6 @@
         <webroots />
       </configuration>
     </facet>
-    <facet type="jpa" name="JPA">
-      <configuration>
-        <setting name="validation-enabled" value="true" />
-        <setting name="provider-name" value="" />
-        <datasource-mapping>
-          <factory-entry name="entityManagerFactory" value="a2e77d47-cd11-4007-a0ea-0aa37b2c0fce" />
-          <factory-entry name="noname-a.xml@0" value="a2e77d47-cd11-4007-a0ea-0aa37b2c0fce" />
-        </datasource-mapping>
-      </configuration>
-    </facet>
   </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
     <output url="file://$MODULE_DIR$/target/classes" />
