@@ -99,6 +99,11 @@ public class StkEntity implements Serializable {
     @Basic
     @Column(name = "FN_CURRENCY", nullable = true, length = 4)
     private String fnCurrency;
+
+    @Basic
+    @Column(name = "PLACE", nullable = true, precision = 0)
+    private Integer place;
+
 //    private Collection<StkBillboardEntity> stkBillboardsByCode;
 //    private Collection<StkEarningsForecastEntity> stkEarningsForecastsByCode;
 //    private Collection<StkEarningsNoticeEntity> stkEarningsNoticesByCode;

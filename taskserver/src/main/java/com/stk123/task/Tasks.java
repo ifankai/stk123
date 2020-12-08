@@ -33,7 +33,8 @@ public class Tasks {
 
 
     public void runSingleTask() {
-        initialKLine.run("analyse");
+        //initialKLine.run("analyse");
+        initialKLine.run();
     }
 
     /*

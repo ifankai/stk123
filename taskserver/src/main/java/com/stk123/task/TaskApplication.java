@@ -2,6 +2,8 @@ package com.stk123.task;
 
 import com.stk123.task.config.TaskCondition;
 import com.stk123.task.config.TaskConfig;
+
+import com.stk123.util.ServiceUtils;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -17,6 +19,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.client.RestTemplate;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 //@SpringBootApplication(scanBasePackages = {"com.stk123.service","com.stk123.task.ws","com.stk123.task.schedule","com.stk123.entity","com.stk123.repository"})
 @SpringBootApplication(scanBasePackages =
@@ -37,6 +42,10 @@ public class TaskApplication {
 
     public static void main(String[] args) throws Exception {
         SpringApplication.run(TaskApplication.class, args);
+
+        String pid = ServiceUtils.getProcessId("getProcessId failed.");
+        log.info("pid:"+pid);
+        Files.write(Paths.get("./pid.txt"), pid.getBytes());
     }
 
     @Bean

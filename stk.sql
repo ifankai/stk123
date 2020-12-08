@@ -51,6 +51,7 @@ alter table stk add cate number(1) default 1;--1:个股 2:指数  3:基金  4:�
 alter table stk add f9 clob;
 alter table stk add hot number(8) default 0; -- xueqiu follows
 alter table stk add fn_currency varchar2(4); --财务币种
+alter table stk add place number(1); --1:sh 2:sz 3:
 
 create or replace view stk_cn as select * from stk where market=1 and cate=1;
 create or replace view stk_us as select * from stk where market=2 and cate=1 and status=0;
@@ -2836,4 +2837,11 @@ select * from stk_import_info order by insert_time desc;
 select * from stk_xueqiu_user;
 select * from (select * from stk_kline t where code='000863' order by kline_date desc) where rownum <= 1000;
 
+
 select * from stk_kline t where kline_date='20201201';
+select * from stk_kline t where kline_date='20201207';
+
+
+select code,kline_date as "date",open,close,high,low,volumn as volume,amount,last_close,percentage as change,hsl 
+from (select t.*, rank() over(partition by t.code order by t.kline_date desc) as rn from stk_kline t where t.code in ('600600','000863')) where rn <= 100
+
