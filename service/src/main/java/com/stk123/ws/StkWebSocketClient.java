@@ -44,7 +44,7 @@ public class StkWebSocketClient {
         stompClient.setInboundMessageSizeLimit(10 * 1024 * 1024);
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
         String url = "ws://"+ip+":"+port +CommonConstant.WS_ENDPOINT;
-
+        System.out.println("websocket url:"+url);
         session = stompClient.connect(url, myStompSessionHandler).get();
     }
 
