@@ -3,11 +3,17 @@ package com.stk123.task.schedule.core;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.apachecommons.CommonsLog;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+
 @CommonsLog
+@Service
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public abstract class Task {
 
     public enum EnumStatus {

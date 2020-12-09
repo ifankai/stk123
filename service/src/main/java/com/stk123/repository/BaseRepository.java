@@ -131,5 +131,20 @@ public class BaseRepository implements ApplicationContextAware {
         return (T) q.uniqueResult();
     }
 
+    public <T> T findOrCreate(Class<T> entityClass, Object primaryKey) {
+        T entity = em.find(entityClass, primaryKey);
+        if ( entity != null ) {
+            return entity;
+        } else {
+            try {
+                entity = entityClass.newInstance();
+                /* use more reflection to set the pk (probably need a base entity) */
+                return entity;
+            } catch ( Exception e ) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
     /***** hibernate method end *****/
 }

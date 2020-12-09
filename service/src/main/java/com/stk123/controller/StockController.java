@@ -1,16 +1,14 @@
 package com.stk123.controller;
 
-import com.stk123.entity.StkEntity;
 import com.stk123.model.RequestResult;
 import com.stk123.model.core.Stock;
-import com.stk123.model.projection.StockCodeName;
+import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.repository.StkRepository;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
@@ -31,7 +29,7 @@ public class StockController {
         if(em == null){
             return RequestResult.failure("Should not be here.");
         }
-        List<StockCodeName> list = stkRepository.findAllByMarket(em.getMarket(), cate);
+        List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(em.getMarket(), cate);
         return RequestResult.success(list);
     }
 }

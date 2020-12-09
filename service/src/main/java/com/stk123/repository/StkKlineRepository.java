@@ -4,11 +4,14 @@ import com.stk123.entity.StkKlineEntity;
 import com.stk123.model.core.Bar;
 import com.stk123.model.core.BarSeries;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,5 +37,19 @@ public interface StkKlineRepository extends JpaRepository<StkKlineEntity, StkKli
             bs.add(bar);
         }
         return result;
+    }
+
+
+    @Modifying
+    @Query(value = "delete from stk_kline k where k.kline_date > :date", nativeQuery = true)
+    void deleteAllByKlineDateAfter(@Param("date")String date);
+
+    default void deleteAllByKlineDateAfterToday() {
+        this.deleteAllByKlineDateAfter(DateFormatUtils.format(new Date(), "yyyyMMdd"));
+    }
+
+    default StkKlineEntity saveIfNotExisting(StkKlineEntity stkKlineEntity){
+        //TODO
+        return this.save(stkKlineEntity);
     }
 }

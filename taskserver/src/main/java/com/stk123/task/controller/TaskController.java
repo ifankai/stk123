@@ -2,12 +2,14 @@ package com.stk123.task.controller;
 
 import com.stk123.model.RequestResult;
 import com.stk123.model.dto.TaskDto;
+import com.stk123.task.config.SpringApplicationContext;
 import com.stk123.task.schedule.core.Task;
 import com.stk123.task.schedule.core.TaskContainer;
 import lombok.SneakyThrows;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -72,7 +74,8 @@ public class TaskController {
     @RequestMapping(path={"/start/{name}/{args}","/start/{name}"})
     public RequestResult runTask(@PathVariable("name") String name, @PathVariable(value = "args",
             required = false) String args){
-        Task task = (Task) Class.forName(name).newInstance();
+        Task task = SpringApplicationContext.getBeanByForName(name);
+        System.out.println(task.hashCode());
         taskContainer.start(task, StringUtils.split(args == null ? "" : args, ","));
         return RequestResult.success(task.getId());
     }
