@@ -1,4 +1,4 @@
-package com.stk123.task.config;
+package com.stk123.util;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

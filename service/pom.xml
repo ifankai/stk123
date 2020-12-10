@@ -157,6 +157,11 @@
             <version>5.1.11.RELEASE</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

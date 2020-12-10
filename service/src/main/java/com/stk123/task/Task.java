@@ -1,7 +1,6 @@
-package com.stk123.task.schedule.core;
+package com.stk123.task;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -14,7 +13,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 @CommonsLog
 @Service
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public abstract class Task {
+public abstract class Task<R> {
 
     public enum EnumStatus {
         RUNNING, NOT_RUNNING
@@ -32,7 +31,7 @@ public abstract class Task {
     private LocalDateTime endTime;
 
     @Getter
-    private TaskResult taskResult;
+    private TaskResult<?> taskResult;
 
     public Task(){
         this(true);
@@ -49,10 +48,10 @@ public abstract class Task {
         try {
             status = EnumStatus.RUNNING;
             execute(args);
-            taskResult = TaskResult.success();
+            taskResult = TaskResult.success(success(), this);
         } catch(Exception e){
             log.error(e);
-            taskResult = TaskResult.failure(e.getMessage());
+            taskResult = TaskResult.failure(e.getMessage(), this);
         } finally {
             this.endTime = LocalDateTime.now();
             status = EnumStatus.NOT_RUNNING;
@@ -65,6 +64,10 @@ public abstract class Task {
     }
 
     public abstract void execute(String... args) throws Exception;
+
+    public R success(){
+        return null;
+    }
 
     public long getStartTimeToLong(){
         return this.startTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();

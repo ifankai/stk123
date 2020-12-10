@@ -1,9 +1,7 @@
-package com.stk123.task.schedule.core;
+package com.stk123.task;
 
 import lombok.Getter;
 import lombok.extern.apachecommons.CommonsLog;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;

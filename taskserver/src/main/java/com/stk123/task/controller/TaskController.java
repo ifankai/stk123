@@ -2,21 +2,18 @@ package com.stk123.task.controller;
 
 import com.stk123.model.RequestResult;
 import com.stk123.model.dto.TaskDto;
-import com.stk123.task.config.SpringApplicationContext;
-import com.stk123.task.schedule.core.Task;
-import com.stk123.task.schedule.core.TaskContainer;
+import com.stk123.util.SpringApplicationContext;
+import com.stk123.task.Task;
+import com.stk123.task.TaskContainer;
 import lombok.SneakyThrows;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Lookup;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
-import java.util.concurrent.ScheduledFuture;
 
 @RestController
 @CommonsLog

@@ -7,11 +7,11 @@ import com.stk123.model.core.Bar;
 import com.stk123.model.core.BarSeries;
 import com.stk123.model.core.Stock;
 import com.stk123.model.json.View;
-import com.stk123.model.strategy.Strategy;
 import com.stk123.model.strategy.StrategyBacktesting;
 import com.stk123.model.strategy.sample.Sample;
 import com.stk123.repository.StkKlineRepository;
 import com.stk123.repository.StkRepository;
+import com.stk123.service.BacktestingService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -49,11 +50,13 @@ public class TestController {
     private StkKlineRepository stkKlineRepository;
     @Autowired
     StkRepository stkRepository;
+    @Autowired
+    BacktestingService backtestingService;
 
 
     @RequestMapping(value = "/test")
     @ResponseBody
-    public RequestResult test(){
+    public RequestResult test() throws InvocationTargetException, IllegalAccessException {
 
         LinkedHashMap<String, BarSeries> bss = getBarSeriesList(200, "603096","600600");
         Stock stock = new Stock("603096","").buildBarSeries(bss.get("603096"));
@@ -61,13 +64,16 @@ public class TestController {
         List<Stock> stocks = new ArrayList<>();
         stocks.add(stock);
 
-        StrategyBacktesting strategyBacktesting = new StrategyBacktesting();
+        /*StrategyBacktesting strategyBacktesting = new StrategyBacktesting();
+        strategyBacktesting.addStrategy(Sample.strategy_02());
         strategyBacktesting.addStrategy(Sample.strategy_01());
-        strategyBacktesting.addStrategy(strategyBacktesting.example2());
-        strategyBacktesting.test(stocks);
+        //strategyBacktesting.test(stocks);
 
-        strategyBacktesting.test(stocks, "20201101", "20201120");
-        strategyBacktesting.print();
+        strategyBacktesting.test(stocks, "20201101", "20201120");*/
+        //strategyBacktesting.print();
+
+        StrategyBacktesting strategyBacktesting = backtestingService.backtesting(stocks, Arrays.asList(new String[]{"01","02"}), "20201101", "20201120");
+        strategyBacktesting.getStockStrategyResults().get(stock).forEach(e -> System.out.println(e));
 
         return RequestResult.success(new Date());
     }

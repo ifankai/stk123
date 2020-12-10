@@ -168,5 +168,8 @@ public class Stock {
         return this;
     }
 
-
+    @Override
+    public int hashCode(){
+        return this.code.hashCode();
+    }
 }
