@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -19,6 +20,7 @@ public class BarService {
     @Autowired
     private StkKlineRepository stkKlineRepository;
 
+    @Transactional
     public StkKlineEntity saveIfNotExisting(StkKlineEntity stkKlineEntity) {
         Optional<StkKlineEntity> entity = stkKlineRepository.findById(new StkKlineEntity.CompositeKey(stkKlineEntity.getCode(),stkKlineEntity.getKlineDate()));
         if(!entity.isPresent()){

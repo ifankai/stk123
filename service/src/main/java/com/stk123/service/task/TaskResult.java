@@ -1,4 +1,4 @@
-package com.stk123.task;
+package com.stk123.service.task;
 
 import com.stk123.model.RequestResult;
 import lombok.Getter;

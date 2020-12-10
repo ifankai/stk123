@@ -2,9 +2,9 @@ package com.stk123.task.controller;
 
 import com.stk123.model.RequestResult;
 import com.stk123.model.dto.TaskDto;
-import com.stk123.util.SpringApplicationContext;
-import com.stk123.task.Task;
-import com.stk123.task.TaskContainer;
+import com.stk123.service.support.SpringApplicationContext;
+import com.stk123.service.task.Task;
+import com.stk123.service.task.TaskContainer;
 import lombok.SneakyThrows;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.StringUtils;
@@ -12,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.HandlerMapping;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 @RestController
@@ -68,12 +70,13 @@ public class TaskController {
     }
 
     @SneakyThrows
-    @RequestMapping(path={"/start/{name}/{args}","/start/{name}"})
-    public RequestResult runTask(@PathVariable("name") String name, @PathVariable(value = "args",
-            required = false) String args){
+    @RequestMapping(path={"/start/{name}/**","/start/{name}"})
+    public RequestResult runTask(HttpServletRequest request, @PathVariable("name") String name){
+        String mvcPath = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
         Task task = SpringApplicationContext.getBeanByForName(name);
-        System.out.println(task.hashCode());
-        taskContainer.start(task, StringUtils.split(args == null ? "" : args, ","));
+        System.out.println(task.hashCode()+",url="+mvcPath);
+        String params = StringUtils.substringAfter(mvcPath, "/task/start/"+name);
+        taskContainer.start(task, Arrays.stream(StringUtils.split(params, "/")).filter(e -> StringUtils.isNotEmpty(e)).toArray(String[]::new));
         return RequestResult.success(task.getId());
     }
 

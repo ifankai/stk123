@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class BacktestingService {
 
     @Autowired
-    private StkRepository stkRepository;
+    private StockService stockService;
 
     public StrategyBacktesting backtesting(List<String> codes, String... strategies) throws InvocationTargetException, IllegalAccessException {
         StrategyBacktesting strategyBacktesting = new StrategyBacktesting();
@@ -35,8 +35,8 @@ public class BacktestingService {
             strategyBacktesting.addStrategy((Strategy<?>) method.invoke(null, null));
         }
 
-        List<StockBasicProjection> list = stkRepository.findAllByCodes(codes);
-        List<Stock> stocks = list.stream().map(projection -> new Stock(projection)).collect(Collectors.toList());
+        List<Stock> stocks = stockService.buildStockWithBarSeries(200, codes);
+
         strategyBacktesting.test(stocks);
         return strategyBacktesting;
     }

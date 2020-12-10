@@ -1,4 +1,4 @@
-package com.stk123.task;
+package com.stk123.service.task;
 
 import lombok.Getter;
 import lombok.extern.apachecommons.CommonsLog;
@@ -50,7 +50,7 @@ public abstract class Task<R> {
             execute(args);
             taskResult = TaskResult.success(success(), this);
         } catch(Exception e){
-            log.error(e);
+            log.error("task execute error:", e);
             taskResult = TaskResult.failure(e.getMessage(), this);
         } finally {
             this.endTime = LocalDateTime.now();

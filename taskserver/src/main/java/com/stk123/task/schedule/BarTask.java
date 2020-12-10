@@ -6,7 +6,7 @@ import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.repository.StkKlineRepository;
 import com.stk123.repository.StkRepository;
 import com.stk123.service.BarService;
-import com.stk123.task.Task;
+import com.stk123.service.task.Task;
 import com.stk123.task.tool.TaskUtils;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;

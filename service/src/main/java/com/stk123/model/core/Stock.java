@@ -36,6 +36,7 @@ public class Stock {
             return null;
         }
         public static EnumMarket getMarket(Integer market){
+            if(market == null) return null;
             for(EnumMarket em : EnumMarket.values()){
                 if(em.getMarket().intValue() == market.intValue()){
                     return em;
@@ -53,6 +54,7 @@ public class Stock {
         private Integer place;
 
         public static EnumPlace getPlace(Integer place) {
+            if(place == null) return null;
             for(EnumPlace em : EnumPlace.values()){
                 if(em.getPlace().intValue() == place.intValue()){
                     return em;
@@ -70,6 +72,7 @@ public class Stock {
         private Integer cate;
 
         public static EnumCate getCate(Integer cate) {
+            if(cate == null) return null;
             for(EnumCate em : EnumCate.values()){
                 if(em.getCate().intValue() == cate.intValue()){
                     return em;

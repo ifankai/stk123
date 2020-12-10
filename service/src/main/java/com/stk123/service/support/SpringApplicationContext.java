@@ -1,4 +1,4 @@
-package com.stk123.util;
+package com.stk123.service.support;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

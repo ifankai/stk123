@@ -1,5 +1,6 @@
-package com.stk123.task;
+package com.stk123.service.task;
 
+import com.stk123.service.task.Task;
 import lombok.Getter;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +28,7 @@ public class TaskContainer {
             tasks.add(task);
             if(task.isCanStop()) {
                 ScheduledFuture future = taskScheduler.schedule(
-                        () -> task.run(args),
-                        triggerContext -> new Date());
+                        () -> task.run(args), new Date());
                 scheduledTasks.put(task.getId(), future);
             }else{
                 task.run(args);

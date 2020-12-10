@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -44,6 +45,7 @@ public interface StkKlineRepository extends JpaRepository<StkKlineEntity, StkKli
     @Query(value = "delete from stk_kline k where k.kline_date > :date", nativeQuery = true)
     void deleteAllByKlineDateAfter(@Param("date")String date);
 
+    @Transactional
     default void deleteAllByKlineDateAfterToday() {
         this.deleteAllByKlineDateAfter(DateFormatUtils.format(new Date(), "yyyyMMdd"));
     }
