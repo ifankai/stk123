@@ -32,15 +32,15 @@ public class TextController {
     @RequestMapping(value = {"","/{type}"}, method = RequestMethod.GET)
     @ResponseBody
     public RequestResult queryByType(@PathVariable(value = "type", required = false)String type,
-                                     @RequestParam(value = "createAtAfter", required = false)Long createAtAfter){
+                                     @RequestParam(value = "createdAtAfter", required = false)Long createdAtAfter){
         log.info("query....." + type);
         List<StkTextEntity> list = null;
         Integer count = null;
         if(type == null || StringUtils.equals(type, "all") || StringUtils.equals(type, "unread")) {
-            if(createAtAfter == null){
-                createAtAfter = DateUtils.addYears(new Date(), -1).getTime();
+            if(createdAtAfter == null){
+                createdAtAfter = DateUtils.addYears(new Date(), -1).getTime();
             }
-            Date date = new Date(createAtAfter);
+            Date date = new Date(createdAtAfter);
             list = stkTextRepository.queryTop5ByTypeAndReadDateNullAndCreatedAtGreaterThanOrderByInsertTimeAsc(TextConstant.TYPE_XUEQIU, date);
             if (!CollectionUtils.isEmpty(list)) {
                 //必须放在一个单独的class里，不然 @Async 不生效

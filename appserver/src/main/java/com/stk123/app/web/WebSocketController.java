@@ -35,6 +35,7 @@ public class WebSocketController {
     @SendTo(CommonConstant.WS_TOPIC)
     public ServerMessage receive(ClientMessage<RequestResult> clientMessage) throws Exception {
         String uuid = clientMessage.getMessageId();
+        //log.info("client message:"+clientMessage);
         clientMessageMap.put(uuid, clientMessage);
         latch.get(uuid).countDown();
         ServerMessage serverMessage = new ServerMessage();
