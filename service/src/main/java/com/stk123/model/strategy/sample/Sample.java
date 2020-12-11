@@ -10,9 +10,10 @@ import org.apache.commons.lang3.StringUtils;
 public class Sample {
 
     public static Strategy strategy_01() {
-        Strategy<BarSeries> strategy = new Strategy<>("策略603096新经典，一段跌幅后底部放量", BarSeries.class);
-        strategy.addFilter("过去4天到80天的跌幅",BarSeries::getFirst, Filters.filter_001(4,80,-35,5));
-        strategy.addFilter("filter222", Filters.filter_002());
+        Strategy<BarSeries> strategy = new Strategy<>("策略603096新经典20201106，一段跌幅后底部放量", BarSeries.class);
+        strategy.addFilter("过去3天到80天的跌幅", BarSeries::getFirst, Filters.filter_001(3,80,-35,5));
+        strategy.addFilter("底部2天放量3天缩量", Filters.filter_002());
+        strategy.addFilter("今日十字星", BarSeries::getFirst, Filters.filter_003(0.45));
         return strategy;
     }
 

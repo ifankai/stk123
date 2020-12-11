@@ -23,8 +23,8 @@ public class Filters {
             changeOfTarget, double tolerance) {
         return (bar) -> {
             Bar today = bar;
-            Bar today4 = today.before(numberBeforeFirst);
-            double change = today4.getChange(numberBeforeParam1, Bar.EnumValue.C);
+            Bar todayBefore = today.before(numberBeforeFirst);
+            double change = todayBefore.getChange(numberBeforeParam1, Bar.EnumValue.C);
             return new FilterResultEquals(change*100,changeOfTarget, tolerance).addResult(today.getDate());
         };
 
@@ -33,13 +33,28 @@ public class Filters {
     public static Filter<BarSeries> filter_002() {
         return (bs) -> {
             Bar today = bs.getFirst();
-            Bar today4 = today.before(4);
-            double today4Volume = today4.getVolume();
-            if(today4.getClose() < today4.getLastClose()){
-                return FilterResult.FALSE(today.getDate());
+            if(today.getClose() > today.getLastClose()){
+                return FilterResult.FALSE("非阴线");
             }
-            double minVolume = today4.getLowest(10, Bar.EnumValue.V);
-            return new FilterResultBetween(today4Volume/minVolume,7, 10).addResult(today.getDate());
+            double minVolume = today.getLowest(10, Bar.EnumValue.V);
+            return new FilterResultBetween(minVolume,7, 10).addResult(today.getDate());
+        };
+    }
+
+    /**
+     * 今日十字星
+     */
+    public static Filter<Bar> filter_003(double change){
+        return (bar) -> {
+            double p = bar.getChange();
+            if(Math.abs(p) <= Math.abs(change)){
+                if(bar.getLow() < bar.getOpen() && bar.getLow() < bar.getClose()
+                        && bar.getHigh() > bar.getOpen() && bar.getHigh() > bar.getClose()){
+                    return FilterResult.TRUE(bar.getDate());
+                }
+                return FilterResult.FALSE("非十字星");
+            }
+            return FilterResult.FALSE("涨跌幅>"+change);
         };
     }
 }

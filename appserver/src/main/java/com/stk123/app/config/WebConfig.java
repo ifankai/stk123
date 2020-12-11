@@ -54,6 +54,8 @@ public class WebConfig implements WebMvcConfigurer {
         List<MediaType> supportedMediaTypes = new ArrayList<MediaType>();
         MediaType media = new MediaType(MediaType.TEXT_HTML, Charset.forName("UTF-8"));
         supportedMediaTypes.add(media);
+        media = new MediaType(MediaType.APPLICATION_JSON_UTF8, Charset.forName("UTF-8"));
+        supportedMediaTypes.add(media);
         jsonConverter.setSupportedMediaTypes(supportedMediaTypes);
         return jsonConverter;
     }

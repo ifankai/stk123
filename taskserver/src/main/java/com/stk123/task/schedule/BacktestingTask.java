@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @CommonsLog
 @Service
@@ -27,10 +28,27 @@ public class BacktestingTask extends Task {
         String strategies = args[0];
         String codes = args[1];
 
-        strategyBacktesting = backtestingService.backtesting(Arrays.asList(StringUtils.split(codes, ",")) , StringUtils.split(strategies, ","));
+        String startDate = null;
+        String endDate = null;
+        for(String arg : args){
+            if(arg.startsWith("strategy=")){
+                strategies = StringUtils.split(arg, "=")[1];
+            }
+            if(arg.startsWith("code=")){
+                codes = StringUtils.split(arg, "=")[1];
+            }
+            if(arg.startsWith("startDate=")){
+                startDate = StringUtils.split(arg, "=")[1];
+            }
+            if(arg.startsWith("endDate=")){
+                endDate = StringUtils.split(arg, "=")[1];
+            }
+        }
+        strategyBacktesting = backtestingService.backtesting(Arrays.asList(StringUtils.split(codes, ",")),
+                Arrays.asList(StringUtils.split(strategies, ",")), startDate, endDate);
     }
 
     public String success(){
-        return "";
+        return StringUtils.join(this.strategyBacktesting.getStrategies().stream().map(strategy -> strategy.toString()).collect(Collectors.toList()), "\n");
     }
 }

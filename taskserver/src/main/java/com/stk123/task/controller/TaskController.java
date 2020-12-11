@@ -7,15 +7,19 @@ import com.stk123.service.task.Task;
 import com.stk123.service.task.TaskContainer;
 import lombok.SneakyThrows;
 import lombok.extern.apachecommons.CommonsLog;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @CommonsLog
@@ -39,16 +43,19 @@ public class TaskController {
             }else{
                 taskDto = new TaskDto();
                 taskDto.setName(cls);
-                taskDto.setCountOfRunning(1);
+                taskDto.setCountOfRunning(0);
                 taskDtos.add(taskDto);
             }
             if(task.status() == Task.EnumStatus.RUNNING) {
+                taskDto.setCountOfRunning(taskDto.getCountOfRunning()+1);
                 if(taskDto.getStartTime() < task.getStartTimeToLong())
                     taskDto.setStartTime(task.getStartTimeToLong());
             }else{
                 if(task.getTaskResult() != null && task.getTaskResult().getSuccess()){
-                    if(taskDto.getEndTimeSucc() < task.getEndTimeToLong())
+                    if(taskDto.getEndTimeSucc() < task.getEndTimeToLong()) {
                         taskDto.setEndTimeSucc(task.getEndTimeToLong());
+                        taskDto.setSuccMsg(String.valueOf(task.getTaskResult().getData()));
+                    }
                 }else{
                     if(taskDto.getEndTimeFail() < task.getEndTimeToLong()) {
                         taskDto.setEndTimeFail(task.getEndTimeToLong());
@@ -71,12 +78,15 @@ public class TaskController {
 
     @SneakyThrows
     @RequestMapping(path={"/start/{name}/**","/start/{name}"})
-    public RequestResult runTask(HttpServletRequest request, @PathVariable("name") String name){
+    public RequestResult runTask(HttpServletRequest request, @PathVariable("name") String taskName, @RequestParam Map<String,String> allRequestParams){
         String mvcPath = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-        Task task = SpringApplicationContext.getBeanByForName(name);
-        System.out.println(task.hashCode()+",url="+mvcPath);
-        String params = StringUtils.substringAfter(mvcPath, "/task/start/"+name);
-        taskContainer.start(task, Arrays.stream(StringUtils.split(params, "/")).filter(e -> StringUtils.isNotEmpty(e)).toArray(String[]::new));
+        Task task = SpringApplicationContext.getBeanByForName(taskName);
+        String value = StringUtils.substringAfter(mvcPath, "/task/start/"+taskName);
+        List<String> params = Arrays.stream(StringUtils.split(value, "/")).filter(e -> StringUtils.isNotEmpty(e)).collect(Collectors.toList());
+        if(allRequestParams != null)
+            params.addAll(allRequestParams.entrySet().stream().map(e -> e.getKey()+"="+e.getValue()).collect(Collectors.toList()));
+        System.out.println(task.hashCode()+", url="+mvcPath+", params="+params);
+        taskContainer.start(task, params.stream().toArray(String[]::new));
         return RequestResult.success(task.getId());
     }
 

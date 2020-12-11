@@ -65,14 +65,7 @@ public class Bar implements Serializable, Cloneable {
 
 	public Bar(){}
 
-    /**
-     *
-     * @param restoration, 股价复权, true:前复权 false:不复权 000863
-     * @param market
-     * @param kLine,
-     * @param lastKLine,
-     * @param flag,
-     */
+
 	public Bar(StkKlineEntity kline){
 	    this.setCode(kline.getCode());
 		this.setDate(kline.getKlineDate());
@@ -178,16 +171,16 @@ public class Bar implements Serializable, Cloneable {
 	}*/
 
 	/**
-	 * @param valueType open/close/high/low/amount/volume/hsl
-	 * @param calcType ma/sum
-	 * @param days2, type2多少days2的ma/sum
+	 * @param typeValue open/close/high/low/amount/volume/hsl
+	 * @param typeCalc ma/sum
+	 * @param days
 	 * @return
 	 * @throws Exception
 	 */
 	public double getValue(EnumValue typeValue, EnumCalculationMethod typeCalc, int days) {
 		switch (typeCalc) {
 			case MA:
-				return this.getMA(typeValue, days);
+				return this.getMA(days, typeValue);
 			case SUM:
 				return this.getSUM(typeValue, days);
 			default:
@@ -227,7 +220,7 @@ public class Bar implements Serializable, Cloneable {
 
 
 
-	public double getMA(EnumValue type, int days) {
+	public double getMA(int days, EnumValue type) {
 		double total = 0.0;
 		int tmp = days;
 		for(int i=0;i<days;i++){
@@ -378,13 +371,13 @@ public class Bar implements Serializable, Cloneable {
 	}*/
 
 	public double getBIAS(int n) throws Exception{
-		double ma = this.getMA(C, n);
+		double ma = this.getMA(n, C);
 		return (this.getClose() - ma)/ma * 100;
 	}
 
 
 	public double getBIAS4(int m, int n) throws Exception {
-		return (this.getMA(C, m) - this.getMA(C, n)) / this.getMA(C, n) * 100;
+		return (this.getMA(m, C) - this.getMA(n, C)) / this.getMA(n, C) * 100;
 	}
 
 
@@ -503,11 +496,11 @@ public class Bar implements Serializable, Cloneable {
 	/**
 	 * 返回满足条件的Bar的个数
 	 * @param days
-	 * @param condition
+	 * @param predicate
 	 * @return
 	 * @throws Exception
 	 */
-	public int getKCountWithPredicate(int days, Predicate<Bar> predicate) throws Exception {
+	public int getBarCountWithPredicate(int days, Predicate<Bar> predicate) throws Exception {
 		Bar k = this;
 		int cnt = 0;
 		while(k != null){
@@ -525,11 +518,11 @@ public class Bar implements Serializable, Cloneable {
 	/**
 	 * @param days
 	 * @param indent 当满足条件时，k线往前进的天数
-	 * @param condition
+	 * @param predicate
 	 * @return
 	 * @throws Exception
 	 */
-	public int getKCountWithPredicate(int days, int indent, Predicate<Bar> predicate) throws Exception {
+	public int getBarCountWithPredicate(int days, int indent, Predicate<Bar> predicate) throws Exception {
 		Bar k = this;
 		int cnt = 0;
 		while(k != null){
@@ -662,31 +655,31 @@ public class Bar implements Serializable, Cloneable {
 			Bar yk = this.before(1);
 			double ymacd = yk.getYpcdMACD();
 			if(ymacd < 4 && ymacd > -2){
-				int cnt = this.getKCountWithPredicate(10, k -> {
+				int cnt = this.getBarCountWithPredicate(10, k -> {
 						double m = k.getYpcdMACD();
 						if(m >= 5)return true;
 						return false;
 					});
-				int cnt2 = this.getKCountWithPredicate(10, k -> {
+				int cnt2 = this.getBarCountWithPredicate(10, k -> {
 						double m = k.getYpcdMACD();
 						if(m < 3 && m > -3)return true;
 						return false;
 					});
 
 				if(cnt > 0 || cnt2 >= 6){
-					cnt = this.getKCountWithPredicate(8, k -> {
+					cnt = this.getBarCountWithPredicate(8, k -> {
 							double m = k.getYpcdMACD();
 							if(m < -5)return true;
 							return false;
 						});
-					cnt += this.getKCountWithPredicate(20, k -> {
+					cnt += this.getBarCountWithPredicate(20, k -> {
 							double m = k.getYpcdMACD();
 							if(m > 40)return true;
 							return false;
 						});
 					//System.out.println(cnt);
 					if(cnt == 0){
-						cnt = this.getKCountWithPredicate(10, k -> {
+						cnt = this.getBarCountWithPredicate(10, k -> {
 								if(k.getYpcdMACD() > -3)return true;
 								return false;
 							});
@@ -802,8 +795,8 @@ public class Bar implements Serializable, Cloneable {
 				break;
 			
 			Bar yk = k.yesterday();
-			double kv = k.getMA(V, 10);
-			double ykv = yk.getMA(V, 10);
+			double kv = k.getMA(10, V);
+			double ykv = yk.getMA(10, V);
 			if(upCount == 0 && downCount == 0){
 				isUp = (kv >= ykv);
 			}
@@ -891,8 +884,8 @@ public class Bar implements Serializable, Cloneable {
 	 */
 	public double getVolumeMA(int n) throws Exception {
 		Bar kn = this.before(n);
-		double vn = kn.getMA(V, n);
-		double v = this.getMA(V, n);
+		double vn = kn.getMA(n, V);
+		double v = this.getMA(n, V);
 		return v/vn;
 	}
 	
@@ -907,12 +900,12 @@ public class Bar implements Serializable, Cloneable {
 	 */
 	public int getDayOnMaxOfVolumeMA(int n, int days, double times) throws Exception{
 		Bar kvh = this.getMax(V, 5, MA, 5);
-		double v = kvh.getMA(V, n);
+		double v = kvh.getMA(n, V);
 		Bar k = kvh.before(n);
 		int i = 0;
 		do{
 			k = k.before(1);
-			double v1 = k.getMA(V, n);
+			double v1 = k.getMA(n, V);
 			if(v < v1 * times){
 				break;
 			}
@@ -926,9 +919,9 @@ public class Bar implements Serializable, Cloneable {
 	 * 得到n日均线在days内的斜率(涨/跌幅)
 	 */
 	public double getSlopeOfMA(int n, int days) {
-		double ma = this.getMA(C, n);
+		double ma = this.getMA(n, C);
 		Bar k = this.before(days);
-		double ma1 = k.getMA(C, n);
+		double ma1 = k.getMA(n, C);
 		return (ma - ma1)/ma1;
 	}
 	

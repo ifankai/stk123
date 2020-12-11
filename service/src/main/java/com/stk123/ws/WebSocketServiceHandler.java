@@ -23,6 +23,11 @@ public class WebSocketServiceHandler implements StompFrameHandler {
     @Value("${stk.service.port}")
     private String servicePort;
 
+    @Value("${stk.task.ip}")
+    private String taskIp;
+    @Value("${stk.task.port}")
+    private String taskPort;
+
     @Autowired
     private RestTemplate restTemplate;
 
@@ -41,8 +46,14 @@ public class WebSocketServiceHandler implements StompFrameHandler {
         ServerMessage sm = (ServerMessage)payload;
         if(sm.getType() != null) {
             RequestResult requestResult = null;
+            String ip = serviceIp;
+            String port = servicePort;
+            if(sm.getType().startsWith("task")){
+                ip = taskIp;
+                port = taskPort;
+            }
             if(sm.getRequestMethod() == RequestMethod.GET) {
-                String url = "http://"+serviceIp+":"+servicePort+"/"+sm.getType();
+                String url = "http://"+ip+":"+port+"/"+sm.getType();
                 if(sm.getData() != null){
                     url = url + "?" + sm.getData();
                 }

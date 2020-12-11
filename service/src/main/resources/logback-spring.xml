@@ -217,4 +217,8 @@
         <appender-ref ref="INFO_FILE" />
     </logger>
 
+    <logger name="org.springframework.web.client" level="debug" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
 </configuration>
