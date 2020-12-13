@@ -54,15 +54,19 @@ public class BacktestingService {
     public StrategyBacktesting backtesting(List<String> codes, List<String> strategies, String startDate, String endDate) throws InvocationTargetException, IllegalAccessException {
         StrategyBacktesting strategyBacktesting = new StrategyBacktesting();
 
-        Set<Method> methods = ReflectionUtils.getAllMethods(Sample.class, method -> strategies.stream().anyMatch(name -> StringUtils.endsWithIgnoreCase(method.getName(), name)));
+        Set<Method> methods = ReflectionUtils.getAllMethods(Sample.class, method -> strategies.stream().anyMatch(name -> StringUtils.equalsIgnoreCase(method.getName(), "strategy_"+name)));
 
         for (Method method : methods) {
             //strategyBacktesting.addStrategy(Sample.strategy_01());
             strategyBacktesting.addStrategy((Strategy<?>) method.invoke(null, null));
         }
 
-        //List<Stock> stocks = stockService.buildStockWithBarSeries(200, codes);
-        List<Stock> stocks = this.getStocks(200, codes.stream().toArray(String[]::new));
+        List<Stock> stocks ;
+        if(ArrayUtils.contains(environment.getActiveProfiles(), "company")) {
+            stocks = this.getStocks(200, codes.stream().toArray(String[]::new));
+        }else{
+            stocks = stockService.buildStockWithBarSeries(200, codes);
+        }
 
         if(startDate != null && endDate != null){
             strategyBacktesting.test(stocks, startDate, endDate);

@@ -62,6 +62,7 @@ public class TestController {
         stocks.add("603096");
 
         StrategyBacktesting strategyBacktesting = backtestingService.backtesting(stocks, Arrays.asList(new String[]{"01","02"}), "20201101", "20201120");
+        strategyBacktesting.print();
 
         return RequestResult.success(new Date());
     }

@@ -170,26 +170,22 @@ public class Bar implements Serializable, Cloneable {
 		return Double.parseDouble(BeanUtils.getProperty(this, typeValue.name().toLowerCase()));
 	}*/
 
-	/**
-	 * @param typeValue open/close/high/low/amount/volume/hsl
-	 * @param typeCalc ma/sum
-	 * @param days
-	 * @return
-	 * @throws Exception
-	 */
-	public double getValue(EnumValue typeValue, EnumCalculationMethod typeCalc, int days) {
+
+	public double getValue(int days, EnumValue typeValue, EnumCalculationMethod typeCalc) {
 		switch (typeCalc) {
 			case MA:
 				return this.getMA(days, typeValue);
 			case SUM:
-				return this.getSUM(typeValue, days);
+				return this.getSUM(days, typeValue);
 			default:
-				return this.getValue(typeValue);
+			    throw new RuntimeException("not support calc method.");
+				//return this.getValue(typeValue);
 		}
 
 	}
 
 
+	//感觉没什么用？
 	public <R> R each(int n, Function<Bar, R> func) {
 		R result;
 		Bar k = this;
@@ -247,7 +243,7 @@ public class Bar implements Serializable, Cloneable {
 	}
 
 
-	public double getSUM(EnumValue type, int days) {
+	public double getSUM(int days, EnumValue type) {
 		double total = 0.0;
 		for(int i=0;i<days;i++){
 			Bar k = this.before(i);
@@ -259,22 +255,7 @@ public class Bar implements Serializable, Cloneable {
 		return ServiceUtils.numberFormat(total,2);
 	}
 
-	public Bar getMax(EnumValue typeValue, int days, EnumCalculationMethod typeCalc, int days2) {
-		double max = 0.0;
-		Bar ret = null;
-		for(int i=0;i<days;i++){
-			Bar k = this.before(i);
-			if(k == null){
-				continue;
-			}
-			double d = k.getValue(typeValue, typeCalc, days2);
-			if(d > max){
-				ret = k;
-				max = d;
-			}
-		}
-		return ret;
-	}
+
 
 
 	/**
@@ -307,7 +288,7 @@ public class Bar implements Serializable, Cloneable {
 		Bar k = this;
 		Bar ret = null;
 		for(int i=0;i<n;i++){
-			double tmp = k.getHigh();
+			double tmp = k.getValue(ev);
 			if(value < tmp || value == 0.0){
 				value = tmp;
 				ret = k;
@@ -320,7 +301,22 @@ public class Bar implements Serializable, Cloneable {
 		return this.getHighestBar(n, ev).getValue(ev);
 	}
 
-
+    public Bar getHighestBar(int days, EnumValue typeValue, int days2, EnumCalculationMethod typeCalc) {
+        double max = 0.0;
+        Bar ret = null;
+        for(int i=0;i<days;i++){
+            Bar k = this.before(i);
+            if(k == null){
+                continue;
+            }
+            double d = k.getValue(days2, typeValue, typeCalc);
+            if(d > max){
+                ret = k;
+                max = d;
+            }
+        }
+        return ret;
+    }
 
 	//low的低点
 	@Deprecated
@@ -388,11 +384,11 @@ public class Bar implements Serializable, Cloneable {
 		this.ene = ene;
 	}*/
 
-	public final double getEMA(EnumValue typeValue, int n)  {
-		return this.getEMA(typeValue, n, 2);
+	public final double getEMA(int n, EnumValue typeValue)  {
+		return this.getEMA(n, 2, typeValue);
 	}
 
-	public final double getEMA(EnumValue typeValue, final int n, final int m) {
+	public final double getEMA(final int n, final int m, EnumValue typeValue) {
 		List<Double> list = new ArrayList<Double>();
 		int j = 0;
 		Bar k = this;
@@ -467,11 +463,6 @@ public class Bar implements Serializable, Cloneable {
 		return ema;
 	}
 
-
-	public static interface Condition{
-		public boolean pass(Bar k) throws Exception;
-	}
-
 	/**
 	 * 返回满足条件的Bar，否则返回null
 	 * @param days
@@ -479,7 +470,7 @@ public class Bar implements Serializable, Cloneable {
 	 * @return
 	 * @throws Exception
 	 */
-	public Bar getKWithPredicate(int days, Predicate<Bar> predicate) throws Exception {
+	public Bar getBarWithPredicate(int days, Predicate<Bar> predicate) throws Exception {
 		Bar k = this;
 		while(k != null){
 			if(predicate.test(k)){
@@ -563,8 +554,8 @@ public class Bar implements Serializable, Cloneable {
 	 */
 	public MACD getMACD(final int s,final int l, int m) throws Exception {
 		MACD macd = new MACD();
-		double dif = this.getEMA(C, s) - this.getEMA(C, l);
-		double dea = this.getEMA(m, 2, k -> k.getEMA(C, s) - k.getEMA(C, l));
+		double dif = this.getEMA(s, C) - this.getEMA(1, C);
+		double dea = this.getEMA(m, 2, k -> k.getEMA(s, C) - k.getEMA(1, C));
 		macd.dif = dif;
 		macd.dea = dea;
 		macd.macd = (dif - dea) * 2;
@@ -899,7 +890,7 @@ public class Bar implements Serializable, Cloneable {
 	 * 即：n日平均量能连续最高(或者大于times倍)保持天数
 	 */
 	public int getDayOnMaxOfVolumeMA(int n, int days, double times) throws Exception{
-		Bar kvh = this.getMax(V, 5, MA, 5);
+		Bar kvh = this.getHighestBar(5, V, 5, MA);
 		double v = kvh.getMA(n, V);
 		Bar k = kvh.before(n);
 		int i = 0;

@@ -10,7 +10,8 @@ public class FilterResultFalse extends FilterResult {
     @Override
     public String toString() {
         return "FilterResultFalse{" +
-                "pass=" + pass +
+                "filterName=" + super.getFilterName() +
+                ", pass=" + pass +
                 ", result='" + result + '\'' +
                 '}';
     }

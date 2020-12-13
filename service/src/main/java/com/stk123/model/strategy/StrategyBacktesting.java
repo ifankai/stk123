@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Objects;
 
 @CommonsLog
 public class StrategyBacktesting {
@@ -34,6 +35,14 @@ public class StrategyBacktesting {
 
     public void addStrategy(Strategy<?> strategy){
         this.strategies.add(strategy);
+    }
+
+
+    public List<StrategyResult> getStrategyResultByStock(Stock stock) {
+        return stockStrategyResults.get(stock);
+    }
+    public List<StrategyResult> getStrategyResultByStrategy(Strategy strategy) {
+        return Objects.requireNonNull(strategies.stream().filter(strategy1 -> strategy1.getName().equals(strategy.getName())).findFirst().orElse(null)).getStrategyResults();
     }
 
 
@@ -65,7 +74,6 @@ public class StrategyBacktesting {
                 //int n = resultSets.stream().map(StrategyResult::getCountOfExecutedFilter).reduce(0, (a, b) -> a + b);
                 //n = resultSets.stream().mapToInt(StrategyResult::getCountOfExecutedFilter).sum();
                 log.info(strategy.getName()+"...end");
-                System.out.println(strategy);
                 strategyResults.addAll(results);
             }
             this.stockStrategyResults.put(stock, strategyResults);
@@ -101,6 +109,7 @@ public class StrategyBacktesting {
             Bar bar = first;
             do {
                 StrategyResult resultSet = this.test(strategy, stock);
+                resultSet.setDate(bar.getDate());
                 System.out.println(resultSet);
                 strategyResults.add(resultSet);
                 bar = bar.after();

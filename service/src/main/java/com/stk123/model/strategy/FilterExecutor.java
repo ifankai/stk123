@@ -1,8 +1,11 @@
-package com.stk123.model.strategy.result;
+package com.stk123.model.strategy;
 
 import com.stk123.model.strategy.Filter;
+import com.stk123.model.strategy.result.FilterResult;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -19,9 +22,10 @@ public class FilterExecutor<X, B> {
     private int counterPassed;
     @Getter
     private int counterNotPassed;
-    private boolean pass;
+    //@Getter
+    //private boolean pass;
     @Getter
-    private FilterResult result;
+    private List<FilterResult> results = new ArrayList<>();
 
     public FilterExecutor(String name, Function<X, B> function, Filter<B> filter){
         this.name = name;
@@ -30,16 +34,18 @@ public class FilterExecutor<X, B> {
         this.counterPassed = 0;
     }
 
-    public boolean execute(X b) {
+    public FilterResult execute(X b) {
         B bar = function.apply(b); //这里是吧 X 转为 B 类型，B一般是Bar，BarSeries，也可以是Stock本身
-        result = filter.filter(bar);
-        this.pass = result.pass();
-        if(!this.pass) {
+        FilterResult result = filter.filter(bar);
+        result.setFilterExecutor(this);
+        boolean pass = result.pass();
+        results.add(result);
+        if(!pass) {
             this.counterNotPassed++;
-            return false;
+            return result;
         }
         this.counterPassed++;
-        return true;
+        return result;
     }
 
     public int getCounterPassedAndNotPassed() {

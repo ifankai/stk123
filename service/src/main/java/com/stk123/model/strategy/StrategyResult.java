@@ -1,6 +1,5 @@
 package com.stk123.model.strategy;
 
-import com.stk123.model.strategy.result.FilterExecutor;
 import com.stk123.model.strategy.result.FilterResult;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,9 +11,10 @@ import java.util.List;
 @Getter
 public class StrategyResult<X> {
     private Strategy<X> strategy;
-    private boolean pass;
+    //private boolean pass;
     private List<FilterResult> filterResults = new ArrayList<>();
-    private FilterResult expectFilterResult; //用于存放 pass为true时，对未来期望的过滤结果，比如：期望未来10天内涨幅达到20%
+    private List<FilterResult> expectFilterResults = new ArrayList<>(); //未来期望的过滤结果，比如：期望未来10天内涨幅达到20%
+    private String date;
 
   /*  public ResultSet(String strategyName){
         this.strategyName = strategyName;
@@ -22,6 +22,9 @@ public class StrategyResult<X> {
 
     public void addFilterResult(FilterResult filterResult){
         this.filterResults.add(filterResult);
+    }
+    public void addExpectFilterResult(FilterResult filterResult){
+        this.expectFilterResults.add(filterResult);
     }
 
     /*public double getSortableSumValue(){
@@ -40,10 +43,9 @@ public class StrategyResult<X> {
     @Override
     public String toString() {
         return "StrategyResult{" +
-                "strategy.name='" + strategy.getName() + '\'' +
-                ", pass=" + pass +
+                "date=" + date +
                 ", filterResults=" + filterResults +
-                ", expectFilterResult=" + expectFilterResult +
+                ", expectFilterResults=" + expectFilterResults +
                 '}';
     }
 }

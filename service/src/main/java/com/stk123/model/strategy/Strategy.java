@@ -1,7 +1,6 @@
 package com.stk123.model.strategy;
 
 import com.stk123.model.strategy.result.FilterResult;
-import com.stk123.model.strategy.result.FilterExecutor;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -21,6 +20,9 @@ public class Strategy<X> {
     private Class<X> xClass;
     private List<FilterExecutor<X, ?>> filterExecutors = new ArrayList<>();
     private FilterExecutor<X, X> expectFilterExecutor;
+
+    @Getter
+    private List<StrategyResult> strategyResults = new ArrayList<>();
 
     public Strategy(String name, Class<X> xClass) {
         this.name = name;
@@ -51,8 +53,8 @@ public class Strategy<X> {
     /**
      * @TODO 可以增加多个expect filter
      */
-    public void setExpectFilter(Filter<X> expectFilter){
-        this.expectFilterExecutor = new FilterExecutor(null, x->x, expectFilter);
+    public void setExpectFilter(String name, Filter<X> expectFilter){
+        this.expectFilterExecutor = new FilterExecutor(name, x->x, expectFilter);
     }
 
     public StrategyResult test(X x) {
@@ -62,28 +64,25 @@ public class Strategy<X> {
         //把通过数量少的放前面，以便优化性能
         filterExecutors.sort(Comparator.comparingInt(FilterExecutor::getCounterPassed));
 
-        StrategyResult resultSet = new StrategyResult();
-        resultSet.setStrategy(this);
+        StrategyResult strategyResult = new StrategyResult();
+        strategyResult.setStrategy(this);
+        strategyResults.add(strategyResult);
         for(FilterExecutor<X, ?> filterWrapper : filterExecutors){
-            if(!filterWrapper.execute(x)) {
-                FilterResult fr = filterWrapper.getResult();
-                fr.setFilterExecutor(filterWrapper);
-                resultSet.addFilterResult(fr);
-                resultSet.setPass(false);
-                return resultSet;
+            FilterResult filterResult = filterWrapper.execute(x);
+            filterResult.setFilterExecutor(filterWrapper);
+            strategyResult.addFilterResult(filterResult);
+            if(!filterResult.pass()) {
+                //resultSet.setPass(false);
+                return strategyResult;
             }
-            FilterResult fr = filterWrapper.getResult();
-            fr.setFilterExecutor(filterWrapper);
-            resultSet.addFilterResult(fr);
         }
-        resultSet.setPass(true);
+        //resultSet.setPass(true);
         if(expectFilterExecutor != null){
-            expectFilterExecutor.execute(x);
-            FilterResult efr = expectFilterExecutor.getResult();
-            efr.setFilterExecutor(expectFilterExecutor);
-            resultSet.setExpectFilterResult(efr);
+            FilterResult filterResult = expectFilterExecutor.execute(x);
+            filterResult.setFilterExecutor(expectFilterExecutor);
+            strategyResult.addExpectFilterResult(filterResult);
         }
-        return resultSet;
+        return strategyResult;
     }
 
     /*public boolean test(X x, Function<X, X> function) {
@@ -104,8 +103,11 @@ public class Strategy<X> {
         sb.append(String.format("策略[%s]调用所有过滤器调用总次数：%d\n", this.name, this.getCountOfExecutedFilter()));
         sb.append("其中：\n");
         for(FilterExecutor<X, ?> filterExecutor : this.filterExecutors) {
-            sb.append(String.format("  过滤器[%s]调用总次数：%d, 通过：%d,未通过：%d,\n",
+            sb.append(String.format("  过滤器[%s]调用总次数：%d, 通过：%d, 未通过：%d\n",
                     filterExecutor.getName(), filterExecutor.getCounterPassedAndNotPassed(), filterExecutor.getCounterPassed(), filterExecutor.getCounterNotPassed()));
+        }
+        if(expectFilterExecutor != null) {
+            sb.append(String.format("期望过滤器[%s]调用总次数：%d, 通过：%d, 未通过：%d", expectFilterExecutor.getName(), expectFilterExecutor.getCounterPassedAndNotPassed(), expectFilterExecutor.getCounterPassed(), expectFilterExecutor.getCounterNotPassed()));
         }
         return sb.toString();
     }

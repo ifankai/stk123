@@ -1,6 +1,6 @@
 package com.stk123.model.strategy.result;
 
-import lombok.Getter;
+import com.stk123.model.strategy.FilterExecutor;
 import lombok.Setter;
 
 public abstract class FilterResult<R> {

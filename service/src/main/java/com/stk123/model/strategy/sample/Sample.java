@@ -14,6 +14,7 @@ public class Sample {
         strategy.addFilter("过去3天到80天的跌幅", BarSeries::getFirst, Filters.filter_001(3,80,-35,5));
         strategy.addFilter("底部2天放量3天缩量", Filters.filter_002());
         strategy.addFilter("今日十字星", BarSeries::getFirst, Filters.filter_003(0.45));
+        strategy.setExpectFilter("十日内涨幅>12%", Filters.expectFilter(10, 12));
         return strategy;
     }
 

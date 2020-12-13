@@ -10,7 +10,8 @@ public class FilterResultTrue extends FilterResult {
     @Override
     public String toString() {
         return "FilterResultTrue{" +
-                "pass=" + pass +
+                "filterName=" + super.getFilterName() +
+                ", pass=" + pass +
                 ", result='" + result + '\'' +
                 '}';
     }

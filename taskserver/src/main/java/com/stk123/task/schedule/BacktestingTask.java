@@ -46,6 +46,7 @@ public class BacktestingTask extends Task {
         }
         strategyBacktesting = backtestingService.backtesting(Arrays.asList(StringUtils.split(codes, ",")),
                 Arrays.asList(StringUtils.split(strategies, ",")), startDate, endDate);
+        strategyBacktesting.print();
     }
 
     public String success(){
