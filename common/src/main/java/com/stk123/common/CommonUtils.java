@@ -423,6 +423,15 @@ public class CommonUtils {
         return CommonUtils.formatDate(CommonUtils.addDay(CommonUtils.sf_ymd2.parse(yyyyMMdd), -1),CommonUtils.sf_ymd2);
     }
 
+    public static Date parseDate(String date) {
+        try {
+            return CommonUtils.sf_ymd2.parse(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public static String mmddToQuarter(String mmdd){
         if(MMDD_Q1.equals(mmdd)){
             return "Q1";

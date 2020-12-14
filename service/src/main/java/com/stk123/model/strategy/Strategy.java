@@ -22,6 +22,13 @@ public class Strategy<X> {
     private FilterExecutor<X, X> expectFilterExecutor;
 
     @Getter
+    private int countOfAllStrategyResult; //Strategy总共执行次数，即StrategyResult的个数
+    @Getter
+    private int countOfPassedStrategyResult; //Strategy执行通过的次数，即filterExecutors都通过的次数
+    @Getter
+    private int countOfPassedExpectStrategyResult; //expect filter通过次数
+
+    @Getter
     private List<StrategyResult> strategyResults = new ArrayList<>();
 
     public Strategy(String name, Class<X> xClass) {
@@ -58,6 +65,7 @@ public class Strategy<X> {
     }
 
     public StrategyResult test(X x) {
+        countOfAllStrategyResult++;
         //把不通过数量多的放前面，以便优化性能
         //filterExecutors.sort(Comparator.comparing(FilterExecutor::getCounterNotPassed, Comparator.reverseOrder()));
 
@@ -76,11 +84,15 @@ public class Strategy<X> {
                 return strategyResult;
             }
         }
+        countOfPassedStrategyResult++;
         //resultSet.setPass(true);
         if(expectFilterExecutor != null){
             FilterResult filterResult = expectFilterExecutor.execute(x);
             filterResult.setFilterExecutor(expectFilterExecutor);
             strategyResult.addExpectFilterResult(filterResult);
+            if(filterResult.pass()){
+                countOfPassedExpectStrategyResult++;
+            }
         }
         return strategyResult;
     }
@@ -89,7 +101,7 @@ public class Strategy<X> {
         return this.test(function.apply(x));
     }*/
 
-    public int getCountOfExecutedFilter() {
+    public int getCountOfExecutedFilterExecutor() {
         int count = 0;
         for(FilterExecutor<X, ?> filterExecutor : this.filterExecutors){
             count += filterExecutor.getCounterPassedAndNotPassed();
@@ -97,17 +109,25 @@ public class Strategy<X> {
         return count;
     }
 
+    public double getPassRate(){
+        return countOfPassedStrategyResult==0 ? 0 : countOfPassedExpectStrategyResult/countOfPassedStrategyResult * 100;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format("策略[%s]调用所有过滤器调用总次数：%d\n", this.name, this.getCountOfExecutedFilter()));
+        sb.append(String.format("策略[%s]调用所有过滤器调用总次数：%d\n", this.name, this.getCountOfExecutedFilterExecutor()));
         sb.append("其中：\n");
         for(FilterExecutor<X, ?> filterExecutor : this.filterExecutors) {
             sb.append(String.format("  过滤器[%s]调用总次数：%d, 通过：%d, 未通过：%d\n",
-                    filterExecutor.getName(), filterExecutor.getCounterPassedAndNotPassed(), filterExecutor.getCounterPassed(), filterExecutor.getCounterNotPassed()));
+                    filterExecutor.getName(), filterExecutor.getCounterPassedAndNotPassed(),
+                    filterExecutor.getCounterPassed(), filterExecutor.getCounterNotPassed()));
         }
         if(expectFilterExecutor != null) {
-            sb.append(String.format("期望过滤器[%s]调用总次数：%d, 通过：%d, 未通过：%d", expectFilterExecutor.getName(), expectFilterExecutor.getCounterPassedAndNotPassed(), expectFilterExecutor.getCounterPassed(), expectFilterExecutor.getCounterNotPassed()));
+            sb.append(String.format("期望过滤器[%s]调用总次数：%d, 通过：%d, 未通过：%d。通过率：%f",
+                    expectFilterExecutor.getName(), expectFilterExecutor.getCounterPassedAndNotPassed(),
+                    expectFilterExecutor.getCounterPassed(), expectFilterExecutor.getCounterNotPassed(),
+                    this.getPassRate()));
         }
         return sb.toString();
     }

@@ -63,6 +63,13 @@ public class TestController {
 
         StrategyBacktesting strategyBacktesting = backtestingService.backtesting(stocks, Arrays.asList(new String[]{"01","02"}), "20201101", "20201120");
         strategyBacktesting.print();
+        strategyBacktesting.printDetail();
+
+        /*List<Stock> list = backtestingService.getStocks(200, "603096");
+        for(Stock stock : list){
+            stock.buildBarSeriesMonth();
+            stock.getBarSeriesMonth().getList().forEach(e -> System.out.println(e));
+        }*/
 
         return RequestResult.success(new Date());
     }

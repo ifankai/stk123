@@ -21,6 +21,8 @@ import java.util.Objects;
 @CommonsLog
 public class StrategyBacktesting {
 
+    private boolean printDetail = false;
+
     @Getter
     private List<Strategy<?>> strategies = new ArrayList<>();
 
@@ -30,19 +32,14 @@ public class StrategyBacktesting {
     @Getter
     private LinkedHashMap<Stock, List<StrategyResult>> stockStrategyResults = new LinkedHashMap<>();
 
-    public StrategyBacktesting(){
+    public StrategyBacktesting(){}
+
+    public StrategyBacktesting(boolean printDetail){
+        this.printDetail = printDetail;
     }
 
     public void addStrategy(Strategy<?> strategy){
         this.strategies.add(strategy);
-    }
-
-
-    public List<StrategyResult> getStrategyResultByStock(Stock stock) {
-        return stockStrategyResults.get(stock);
-    }
-    public List<StrategyResult> getStrategyResultByStrategy(Strategy strategy) {
-        return Objects.requireNonNull(strategies.stream().filter(strategy1 -> strategy1.getName().equals(strategy.getName())).findFirst().orElse(null)).getStrategyResults();
     }
 
 
@@ -66,25 +63,43 @@ public class StrategyBacktesting {
      */
     public void test(List<Stock> stocks, String startDate, String endDate) {
         for (Stock stock : stocks) {
-            log.info("code:"+stock.getCode()+".................start");
+            info("code:"+stock.getCode()+".................start");
             List<StrategyResult> strategyResults = new ArrayList<>();
             for(Strategy strategy : strategies) {
-                log.info(strategy.getName()+"...start");
+                info(strategy.getName()+"...start");
                 List<StrategyResult> results = this.test(strategy, stock, startDate, endDate);
                 //int n = resultSets.stream().map(StrategyResult::getCountOfExecutedFilter).reduce(0, (a, b) -> a + b);
                 //n = resultSets.stream().mapToInt(StrategyResult::getCountOfExecutedFilter).sum();
-                log.info(strategy.getName()+"...end");
+                info(strategy.getName()+"...end");
                 strategyResults.addAll(results);
             }
             this.stockStrategyResults.put(stock, strategyResults);
-            log.info("code:"+stock.getCode()+"...................end");
+            info("code:"+stock.getCode()+"...................end");
         }
     }
+
+
+    public List<StrategyResult> getStrategyResultByStock(Stock stock) {
+        return stockStrategyResults.get(stock);
+    }
+    public List<StrategyResult> getStrategyResultByStrategy(Strategy strategy) {
+        return Objects.requireNonNull(strategies.stream().filter(strategy1 -> strategy1.getName().equals(strategy.getName())).findFirst().orElse(null)).getStrategyResults();
+    }
+
 
     public void print() {
         for(Strategy strategy : this.getStrategies()){
             System.out.println(strategy);
         }
+    }
+    public void printDetail(){
+        stockStrategyResults.entrySet().stream().forEach(e -> {
+            System.out.println("code:"+e.getKey().getCode()+".................start");
+            e.getValue().stream().forEach(strategyResult -> {
+                System.out.println(strategyResult);
+            });
+            System.out.println("code:"+e.getKey().getCode()+"...................end");
+        });
     }
 
     private StrategyResult test(Strategy strategy, Stock stock) {
@@ -108,10 +123,11 @@ public class StrategyBacktesting {
         if(first != null) {
             Bar bar = first;
             do {
-                StrategyResult resultSet = this.test(strategy, stock);
-                resultSet.setDate(bar.getDate());
-                System.out.println(resultSet);
-                strategyResults.add(resultSet);
+                StrategyResult strategyResult = this.test(strategy, stock);
+                strategyResult.setDate(bar.getDate());
+                strategyResult.setCode(stock.getCode());
+                info(strategyResult);
+                strategyResults.add(strategyResult);
                 bar = bar.after();
                 if (bar == null) break;
                 bs.setFirstBarFrom(bar.getDate());
@@ -121,5 +137,9 @@ public class StrategyBacktesting {
         return strategyResults;
     }
 
-
+    private void info(Object o){
+        if(printDetail){
+            System.out.println(o);
+        }
+    }
 }

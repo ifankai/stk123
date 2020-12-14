@@ -28,4 +28,6 @@ public class StockService {
         LinkedHashMap<String, BarSeries> results = stkKlineRepository.queryTopNByCodeListOrderByKlineDateDesc(count, codes);
         return stocks.stream().map(stock -> stock.buildBarSeries(results.get(stock.getCode()))).collect(Collectors.toList());
     }
+
+
 }

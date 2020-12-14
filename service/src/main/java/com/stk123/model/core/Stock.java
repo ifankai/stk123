@@ -1,11 +1,20 @@
 package com.stk123.model.core;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.common.CommonConstant;
+import com.stk123.model.json.View;
 import com.stk123.model.projection.StockBasicProjection;
+import com.stk123.util.ServiceUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 import static com.stk123.model.core.Stock.EnumPlace.SH;
 import static com.stk123.model.core.Stock.EnumPlace.SZ;
@@ -14,6 +23,7 @@ import static com.stk123.model.core.Stock.EnumMarket.HK;
 import static com.stk123.model.core.Stock.EnumMarket.US;
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Stock {
 
     @AllArgsConstructor
@@ -82,13 +92,24 @@ public class Stock {
         }
     }
 
+    @JsonView(View.Default.class)
     private String code;
+
+    @JsonView(View.Default.class)
     private String name;
+
+    @JsonView(View.Default.class)
     private EnumPlace place;// 1:sh, 2:sz
+
+    @JsonView(View.Default.class)
     private EnumMarket market;// 1:A股, 2:美股, 3:港股
+
+    @JsonView(View.Default.class)
     private EnumCate cate;
 
     private BarSeries barSeries;
+    private BarSeries barSeriesWeek;
+    private BarSeries barSeriesMonth;
 
     public Stock() {}
 
@@ -105,6 +126,13 @@ public class Stock {
 
     public Stock(String code, String name){
         this(code, name, null);
+    }
+
+    public Stock(String code, String name, EnumMarket market, EnumPlace place){
+        this.code = code;
+        this.name = name;
+        this.market = market;
+        this.place = place;
     }
 
     public Stock(String code, String name, BarSeries barSeries) {
@@ -168,6 +196,106 @@ public class Stock {
 
     public Stock buildBarSeries(BarSeries barSeries) {
         this.barSeries = barSeries;
+        return this;
+    }
+    public Stock buildBarSeries(BarSeries barSeries, boolean buildWeek, boolean buildMonth) {
+        this.barSeries = barSeries;
+        if(buildWeek)
+            this.buildBarSeriesWeek();
+        if(buildMonth)
+            this.buildBarSeriesMonth();
+        return this;
+    }
+
+    public Stock buildBarSeriesWeek() {
+        if(this.barSeriesWeek == null) {
+            this.barSeriesWeek = new BarSeries(false);
+            Date a = null;
+            Bar kw = null;
+            for(Bar k : this.barSeries.getList()){
+                Date kd = ServiceUtils.parseDate(k.getDate());
+                Date monday = ((Calendar)DateUtils.iterator(kd, DateUtils.RANGE_WEEK_MONDAY).next()).getTime();
+                if(a == null || monday.compareTo(a) != 0){
+                    if(kw != null){
+                        this.barSeriesWeek.add(kw);
+                    }
+                    kw = new Bar();
+                    kw.setCode(k.getCode());
+                    kw.setDate(k.getDate());
+                    kw.setClose(k.getClose());
+                    kw.setHigh(k.getHigh());
+                    kw.setLow(k.getLow());
+                    kw.setVolume(k.getVolume());
+                    kw.setAmount(k.getAmount());
+                }else{
+                    kw.setOpen(k.getOpen());
+                    kw.setHigh(Math.max(k.getHigh(), kw.getHigh()));
+                    kw.setLow(Math.min(k.getLow(), kw.getLow()));
+                    kw.setVolume(kw.getVolume()+k.getVolume());
+                    kw.setAmount(kw.getAmount()+k.getAmount());
+                }
+                a = monday;
+            }
+            int i = 0;
+            List<Bar> bars = this.barSeriesWeek.getList();
+            for(Bar k : bars){
+                if(i < bars.size()-1){
+                    k.setBefore(bars.get(i+1));
+                    k.setLastClose(k.before().getClose());
+                    k.setChange(ServiceUtils.numberFormat((k.getClose() - k.getLastClose())/k.getLastClose()*100,2));
+                }
+                if(i > 0){
+                    k.setAfter(bars.get(i-1));
+                }
+                i++;
+            }
+        }
+        return this;
+    }
+
+    public Stock buildBarSeriesMonth(){
+        if(this.barSeriesMonth == null) {
+            this.barSeriesMonth = new BarSeries(false);
+            int a = -1;
+            Bar kw = null;
+            for (Bar k : this.barSeries.getList()) {
+                Date kd = ServiceUtils.parseDate(k.getDate());
+                int month = kd.getMonth();
+                if (a == -1 || month != a) {
+                    if (kw != null) {
+                        this.barSeriesMonth.add(kw);
+                    }
+                    kw = new Bar();
+                    kw.setCode(k.getCode());
+                    kw.setDate(k.getDate());
+                    kw.setClose(k.getClose());
+                    kw.setHigh(k.getHigh());
+                    kw.setLow(k.getLow());
+                    kw.setVolume(k.getVolume());
+                    kw.setAmount(k.getAmount());
+                } else {
+                    kw.setOpen(k.getOpen());
+                    kw.setHigh(Math.max(k.getHigh(), kw.getHigh()));
+                    kw.setLow(Math.min(k.getLow(), kw.getLow()));
+                    kw.setVolume(kw.getVolume() + k.getVolume());
+                    kw.setAmount(kw.getAmount()+k.getAmount());
+                }
+                a = month;
+            }
+            int i = 0;
+            List<Bar> bars = this.barSeriesMonth.getList();
+            for (Bar k : bars) {
+                if (i < bars.size() - 1) {
+                    k.setBefore(bars.get(i + 1));
+                    k.setLastClose(k.before().getClose());
+                    k.setChange(ServiceUtils.numberFormat((k.getClose() - k.getLastClose())/k.getLastClose()*100,2));
+                }
+                if (i > 0) {
+                    k.setAfter(bars.get(i - 1));
+                }
+                i++;
+            }
+        }
         return this;
     }
 

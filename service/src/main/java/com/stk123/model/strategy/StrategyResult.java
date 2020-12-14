@@ -15,6 +15,7 @@ public class StrategyResult<X> {
     private List<FilterResult> filterResults = new ArrayList<>();
     private List<FilterResult> expectFilterResults = new ArrayList<>(); //未来期望的过滤结果，比如：期望未来10天内涨幅达到20%
     private String date;
+    private String code;
 
   /*  public ResultSet(String strategyName){
         this.strategyName = strategyName;
@@ -43,7 +44,9 @@ public class StrategyResult<X> {
     @Override
     public String toString() {
         return "StrategyResult{" +
-                "date=" + date +
+                "name=" + strategy.getName() +
+                ", code=" + code +
+                ", date=" + date +
                 ", filterResults=" + filterResults +
                 ", expectFilterResults=" + expectFilterResults +
                 '}';

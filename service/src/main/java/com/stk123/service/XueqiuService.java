@@ -5,21 +5,29 @@ import com.alibaba.fastjson.JSONObject;
 import com.stk123.common.util.ConfigUtils;
 import com.stk123.common.util.HtmlUtils;
 import com.stk123.common.util.JsonUtils;
+import com.stk123.model.projection.StockBasic;
 import com.stk123.model.xueqiu.Follower;
 import com.stk123.model.xueqiu.Portfolio;
 import com.stk123.model.xueqiu.Stock;
 import com.stk123.util.HttpUtils;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.htmlparser.Node;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.util.*;
 
+@Service
 public class XueqiuService {
-	
-	private static String cookies = null; //ConfigUtils.getProp("xueqiu.cookie"); 
+
+	@Setter
+	private static String cookies = null; //ConfigUtils.getProp("xueqiu.cookie");
+
+	private static Map<String,Set<String>> Follows = new HashMap<String, Set<String>>();
 	
 	static{
 		Thread my = new Thread() {
@@ -138,8 +146,7 @@ public class XueqiuService {
 		FileUtils.writeStringToFile(new File("D:\\share\\workspace\\stk123\\mystocks.txt"), StringUtils.join(stks, ","));
 		return stks;
 	}
-	
-	private static Map<String,Set<String>> Follows = new HashMap<String, Set<String>>();
+
 	
 	public static boolean existingXueqiuFollowStk(String tabName, String code) {
 		try {
@@ -258,6 +265,8 @@ public class XueqiuService {
 		return result;
 	}
 
+
+
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 		/*System.out.println("login="+login());
@@ -273,4 +282,71 @@ public class XueqiuService {
 		//XueqiuUtils.getFollowStks();
 	}
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	private static Map<String,Set<com.stk123.model.core.Stock>> GROUPS = new HashMap<String, Set<com.stk123.model.core.Stock>>();
+
+	public Set<com.stk123.model.core.Stock> getStockGroup(String tabName) throws Exception {
+		if(GROUPS.get(tabName) != null){
+			return GROUPS.get(tabName);
+		}
+		Set<com.stk123.model.core.Stock> careA = new LinkedHashSet<com.stk123.model.core.Stock>();
+		Map<String, String> headerRequests = XueqiuService.getCookies();
+		//System.out.println(headerRequests);
+		//headerRequests.put("Content-Type", "application/json;charset=UTF-8");
+		String page = HttpUtils.get("https://xueqiu.com/stock/portfolio/stocks.json?size=1000&pid=10&tuid=6237744859", null, headerRequests, "GBK");
+		//System.out.println(page);
+		if("400".equals(page)){
+			return GROUPS.put(tabName, careA);
+		}
+
+		Map<String, List> map = (Map) JsonUtils.testJson(page);
+		//System.out.println(map.get("portfolios"));
+		for(Object obj : map.get("portfolios")){
+			Map care = (Map)obj;
+			if(tabName.equals(care.get("name"))){
+				for(String s : StringUtils.split((String)care.get("stocks"),",")){
+					boolean isA = StringUtils.startsWithAny(s,new String[]{"SH","SZ"});
+					com.stk123.model.core.Stock stock;
+					if(isA){
+						String code = s.substring(2);
+						String place = s.substring(0, 2);
+						stock = new com.stk123.model.core.Stock(code, null,
+								com.stk123.model.core.Stock.EnumMarket.CN,
+								com.stk123.model.core.Stock.EnumPlace.valueOf(place));
+						careA.add(stock);
+					}else {
+						if(StringUtils.startsWith(s,"HK")){
+							stock = new com.stk123.model.core.Stock(s, null, com.stk123.model.core.Stock.EnumMarket.HK, null);
+						}else {
+							stock = new com.stk123.model.core.Stock(s, null);
+						}
+						careA.add(stock);
+					}
+				};
+			}
+		}
+		if(careA.size() > 0){
+			GROUPS.put(tabName, careA);
+		}
+		return careA;
+	}
 }
