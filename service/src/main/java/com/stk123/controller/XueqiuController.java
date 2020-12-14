@@ -40,8 +40,9 @@ public class XueqiuController {
         String result = null;
         if(value == null){
             result = xueqiuService.getCookies().get("Cookie");
+        }else {
+            xueqiuService.setCookies(value);
         }
-        xueqiuService.setCookies(value);
         return RequestResult.success(result);
     }
 
