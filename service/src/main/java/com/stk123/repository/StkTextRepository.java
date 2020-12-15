@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Repository
 public interface StkTextRepository extends JpaRepository<StkTextEntity, Long> {
 
-    List<StkTextEntity> findAllByCodeOrderByInsertTimeDesc(String code);
+    List<StkTextEntity> findAllByCodeAndCreatedAtGreaterThanOrderByInsertTimeDesc(String code, Date date);
 
     List<StkTextEntity> findAllByCodeAndTypeOrderByInsertTimeDesc(String code, Integer type);
 
