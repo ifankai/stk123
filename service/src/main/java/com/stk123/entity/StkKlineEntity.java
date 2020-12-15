@@ -4,10 +4,7 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
@@ -161,10 +158,10 @@ public class StkKlineEntity implements Serializable {
 //    }
 
     @Data
+    @NoArgsConstructor
     @AllArgsConstructor
     public static class CompositeKey implements Serializable {
         private String code;
         private String klineDate;
-
     }
 }

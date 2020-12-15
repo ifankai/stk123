@@ -1,11 +1,13 @@
 package com.stk123.service.task;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.stk123.model.RequestResult;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class TaskResult<T> extends RequestResult<T> {
 
     private Task task;

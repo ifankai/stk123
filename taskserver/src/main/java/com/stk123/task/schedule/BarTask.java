@@ -110,7 +110,7 @@ public class BarTask extends Task {
                 }
             }
         }catch(Exception e){
-            log.error(e);
+            log.error("error", e);
             EmailUtils.send("[BarTask出错]大盘指数K线下载出错 stk="+scn.getCode(), e);
         }
 
@@ -132,7 +132,7 @@ public class BarTask extends Task {
             });*/
 
         }catch(Exception e){
-            log.error(e);
+            log.error("error", e);
             EmailUtils.send("[BarTask出错]同花顺概念指数K线下载出错 code="+scn.getCode(), e);
         }
 
@@ -153,7 +153,7 @@ public class BarTask extends Task {
                 }
             }
         }catch(Exception e){
-            log.error(e);
+            log.error("error", e);
             EmailUtils.send("[BarTask出错]个股K线下载出错 code="+scn.getCode(), e);
         }
     }
@@ -178,6 +178,8 @@ public class BarTask extends Task {
                     log.error(e);
                     //ExceptionUtils.insertLog(conn, index.getCode(), e);
                     e.printStackTrace();
+                }finally{
+                    countDownLatch.countDown();
                 }
             };
             exec.execute(run);

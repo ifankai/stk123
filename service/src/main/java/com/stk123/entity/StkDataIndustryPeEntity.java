@@ -1,7 +1,6 @@
 package com.stk123.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
@@ -73,18 +72,12 @@ public class StkDataIndustryPeEntity {
         return result;
     }
 
-    @Component
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class CompositeKey implements Serializable {
         private Integer industryId;
         private String peDate;
-
-        public CompositeKey(){}
-
-        public CompositeKey(Integer industryId, String peDate){
-            this.industryId = industryId;
-            this.peDate = peDate;
-        }
-
     }
 }
 

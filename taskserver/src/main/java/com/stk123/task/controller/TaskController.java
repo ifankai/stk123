@@ -54,12 +54,12 @@ public class TaskController {
                 if(task.getTaskResult() != null && task.getTaskResult().getSuccess()){
                     if(taskDto.getEndTimeSucc() < task.getEndTimeToLong()) {
                         taskDto.setEndTimeSucc(task.getEndTimeToLong());
-                        taskDto.setSuccMsg(String.valueOf(task.getTaskResult().getData()));
+                        taskDto.setSuccMsg(task.getTaskResult().getData() == null ? null : task.getTaskResult().getData().toString());
                     }
                 }else{
                     if(taskDto.getEndTimeFail() < task.getEndTimeToLong()) {
                         taskDto.setEndTimeFail(task.getEndTimeToLong());
-                        taskDto.setFailMsg(String.valueOf(task.getTaskResult().getData()));
+                        taskDto.setFailMsg(task.getTaskResult().getData() == null ? null : task.getTaskResult().getData().toString());
                     }
                 }
             }
