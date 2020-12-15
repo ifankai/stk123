@@ -37,6 +37,7 @@ public class XueqiuController {
     @RequestMapping(value = {"/cookie/{value}", "/cookie"})
     @ResponseBody
     public RequestResult cookie(@PathVariable(value = "value", required = false)String value) {
+        System.out.println(value);
         String result = null;
         if(value == null){
             result = xueqiuService.getCookies().get("Cookie");

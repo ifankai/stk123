@@ -21,6 +21,8 @@ import java.util.stream.Collectors;
 @Repository
 public interface StkTextRepository extends JpaRepository<StkTextEntity, Long> {
 
+    List<StkTextEntity> findAllByCodeOrderByInsertTimeDesc(String code);
+
     List<StkTextEntity> findAllByCodeAndTypeOrderByInsertTimeDesc(String code, Integer type);
 
     List<StkTextEntity> queryTop5ByTypeAndReadDateNullAndCreatedAtGreaterThanOrderByInsertTimeAsc(Integer type, Date createdAt);

@@ -32,10 +32,15 @@ public class TextController {
     @RequestMapping(value = {"","/{type}"}, method = RequestMethod.GET)
     @ResponseBody
     public RequestResult queryByType(@PathVariable(value = "type", required = false)String type,
-                                     @RequestParam(value = "createdAtAfter", required = false)Long createdAtAfter){
+                                     @RequestParam(value = "createdAtAfter", required = false)Long createdAtAfter,
+                                     @RequestParam(value = "code", required = false)String code){
         log.info("query....." + type);
         List<StkTextEntity> list = null;
         Integer count = null;
+        if(code != null){
+            list = stkTextRepository.findAllByCodeOrderByInsertTimeDesc(code);
+            return RequestResult.success(PageRoot.unPageable(list, count));
+        }
         if(type == null || StringUtils.equals(type, "all") || StringUtils.equals(type, "unread")) {
             if(createdAtAfter == null){
                 createdAtAfter = DateUtils.addYears(new Date(), -1).getTime();
