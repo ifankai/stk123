@@ -160,6 +160,7 @@ public class StkKlineEntity implements Serializable {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
+    @EqualsAndHashCode
     public static class CompositeKey implements Serializable {
         private String code;
         private String klineDate;

@@ -25,9 +25,9 @@ public interface StkTextRepository extends JpaRepository<StkTextEntity, Long> {
 
     List<StkTextEntity> findAllByCodeAndTypeOrderByInsertTimeDesc(String code, Integer type);
 
-    List<StkTextEntity> queryTop5ByTypeAndReadDateNullAndCreatedAtGreaterThanOrderByInsertTimeAsc(Integer type, Date createdAt);
+    List<StkTextEntity> queryTop5ByTypeAndReadDateNullAndInsertTimeGreaterThanOrderByInsertTimeAsc(Integer type, Date createdAt);
 
-    Integer countByTypeAndReadDateNullAndCreatedAtGreaterThan(Integer type, Date createdAt);
+    Integer countByTypeAndReadDateNullAndInsertTimeGreaterThan(Integer type, Date createdAt);
 
     List<StkTextEntity> findTop20ByTypeAndReadDateNotNullOrderByInsertTimeDesc(Integer type);
 

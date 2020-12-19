@@ -2839,7 +2839,9 @@ select * from (select * from stk_kline t where code='000863' order by kline_date
 
 
 select * from stk_kline t where kline_date='20201201';
-select * from stk_kline t where kline_date='20201207';
+select * from stk_kline t where kline_date='20201215';
+select count(*) from stk_kline t where kline_date='20201215';
+select * from stk_cn;
 
 
 select code,kline_date as "date",open,close,high,low,volumn as volume,amount,last_close,percentage as change,hsl 

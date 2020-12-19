@@ -49,12 +49,12 @@ public class TextController {
         }
         if(type == null || StringUtils.equals(type, "all") || StringUtils.equals(type, "unread")) {
 
-            list = stkTextRepository.queryTop5ByTypeAndReadDateNullAndCreatedAtGreaterThanOrderByInsertTimeAsc(TextConstant.TYPE_XUEQIU, dateAfter);
+            list = stkTextRepository.queryTop5ByTypeAndReadDateNullAndInsertTimeGreaterThanOrderByInsertTimeAsc(TextConstant.TYPE_XUEQIU, dateAfter);
             if (!CollectionUtils.isEmpty(list)) {
                 //必须放在一个单独的class里，不然 @Async 不生效
                 textService.updateToRead(list);
             }
-            count = stkTextRepository.countByTypeAndReadDateNullAndCreatedAtGreaterThan(TextConstant.TYPE_XUEQIU, dateAfter);
+            count = stkTextRepository.countByTypeAndReadDateNullAndInsertTimeGreaterThan(TextConstant.TYPE_XUEQIU, dateAfter);
             Collections.reverse(list);
         }else if(StringUtils.equals(type, "read")) {
             list = stkTextRepository.findTop20ByTypeAndReadDateNotNullOrderByInsertTimeDesc(TextConstant.TYPE_XUEQIU);

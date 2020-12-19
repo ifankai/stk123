@@ -75,6 +75,7 @@ public class StkDataIndustryPeEntity {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
+    @EqualsAndHashCode
     public static class CompositeKey implements Serializable {
         private Integer industryId;
         private String peDate;
