@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -36,6 +37,7 @@ public interface StkKlineRepository extends JpaRepository<StkKlineEntity, StkKli
     String sql_queryTopNByCodeListOrderByKlineDateDesc =
             "select code,kline_date as \"date\",open,close,high,low,volumn as volume,amount,last_close,percentage as change,hsl from (select t.*, rank() over(partition by t.code order by t.kline_date desc) as rn " +
             "from stk_kline t where t.code in (:1)) where rn <= :2";
+    @Transactional
     default LinkedHashMap<String, BarSeries> queryTopNByCodeListOrderByKlineDateDesc(Integer rn, List<String> codes) {
         List<Bar> list = BaseRepository.getInstance().list(sql_queryTopNByCodeListOrderByKlineDateDesc, Bar.class, codes, rn);
         LinkedHashMap<String, BarSeries> result = new LinkedHashMap<>(codes.size());
@@ -49,6 +51,7 @@ public interface StkKlineRepository extends JpaRepository<StkKlineEntity, StkKli
         return result;
     }
 
+    List<StkKlineEntity> findAllByKlineDateAndCodeIn(String klineDate, List<String> codes);
 
     @Modifying
     @Query(value = "delete from stk_kline k where k.kline_date > :date", nativeQuery = true)
@@ -65,11 +68,11 @@ public interface StkKlineRepository extends JpaRepository<StkKlineEntity, StkKli
     }
 
 
-    @Query(value = "select avg(pe_ttm),median(pe_ttm) from stk_kline where kline_date=:kdate and pe_ttm is not null and pe_ttm>3 and pe_ttm<200", nativeQuery = true)
-    Double[] calcAvgMidPeTtm(@Param("kdate") String kdate);
+    @Query(value = "select avg(pe_ttm) as avg_pe_ttm,median(pe_ttm) as mid_pe_ttm from stk_kline where kline_date=:kdate and pe_ttm is not null and pe_ttm>3 and pe_ttm<200", nativeQuery = true)
+    Map<String, BigDecimal> calcAvgMidPeTtm(@Param("kdate") String kdate);
 
-    @Query(value = "select avg(pb_ttm),median(pb_ttm) from stk_kline where kline_date=:kdate and pb_ttm is not null and pb_ttm>0 and pb_ttm<30", nativeQuery = true)
-    Double[] calcAvgMidPbTtm(@Param("kdate") String kdate);
+    @Query(value = "select avg(pb_ttm) as avg_pb_ttm,median(pb_ttm) as mid_pb_ttm from stk_kline where kline_date=:kdate and pb_ttm is not null and pb_ttm>0 and pb_ttm<30", nativeQuery = true)
+    Map<String, BigDecimal> calcAvgMidPbTtm(@Param("kdate") String kdate);
 
 
 }

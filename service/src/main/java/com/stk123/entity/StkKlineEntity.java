@@ -17,6 +17,7 @@ import java.util.Objects;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Setter
 @Getter
+@ToString
 public class StkKlineEntity implements Serializable {
     @Id
     @Column(name = "CODE", nullable = true, length = 10)

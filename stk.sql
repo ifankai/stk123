@@ -344,37 +344,39 @@ alter table stk_import_info
   add constraint fk_import_info__type foreign key (type)
   references stk_import_info_type (type);
 
-create table stk_pe(
-  code varchar2(10),
-  pe_date varchar2(8),
-  pe_lyr number(10,2),
-  pe_ttm number(10,2)
+
+create table STK_PE
+(
+  REPORT_DATE   VARCHAR2(10) not null,
+  REPORT_TEXT   CLOB,
+  AVERAGE_PE    NUMBER(8,2),
+  ENE_UPPER_CNT NUMBER(6),
+  ENE_LOWER_CNT NUMBER(6),
+  UPPER_1       NUMBER(6),
+  LOWER_1       NUMBER(6),
+  BIAS          NUMBER(6,2),
+  ENE_UPPER     NUMBER(6,2),
+  ENE_LOWER     NUMBER(6,2),
+  RESULT_1      NUMBER(8,2), -- 二品抄底-买入时机
+  RESULT_2      NUMBER(8,2), -- 一品抄底-大势已去
+  AVG_PB        NUMBER(8,2), -- 平均pb
+  TOTAL_PE      NUMBER(8,2), --整体pe
+  TOTAL_PB      NUMBER(8,2), --整体pb
+  MID_PB        NUMBER(8,2), --中位pb
+  MID_PE        NUMBER(8,2), --中位pe
+  RESULT_3      NUMBER(8,2),
+  RESULT_4      NUMBER(8,2),
+  RESULT_5      NUMBER(8,2),
+  RESULT_6      NUMBER(8,2),
+  RESULT_7      NUMBER(8,2),
+  RESULT_8      NUMBER(8,2),
+  RESULT_9      NUMBER(8,2),
+  RESULT_10     NUMBER(8,2),
+  RESULT_11     NUMBER(8,2),
+  RESULT_12     NUMBER(8,2)
 );
-alter table stk_pe
-  add constraint fk_pe__code foreign key (code)
-  references stk (code);
-create index idx_pe__code on stk_pe (code);
-alter table stk_pe add (ene_upper_cnt number(6),ene_lower_cnt number(6));
-alter table stk_pe add (upper_1 number(6),lower_1 number(6));
-alter table stk_pe add bias number(6,2);
-alter table stk_pe add (ene_upper number(6,2),ene_lower number(6,2));
-alter table stk_pe add result_1 number(8,2); -- 二品抄底-买入时机
-alter table stk_pe add result_2 number(8,2); -- 一品抄底-大势已去
-alter table stk_pe add avg_pb number(8,2); -- 平均pb
-alter table stk_pe add total_pe number(8,2); --整体pe
-alter table stk_pe add total_pb number(8,2); --整体pb
-alter table stk_pe add mid_pb number(8,2); --中位pb
-alter table stk_pe add mid_pe number(8,2); --中位pe
-alter table stk_pe add result_3 number(8,2);
-alter table stk_pe add result_4 number(8,2);
-alter table stk_pe add result_5 number(8,2);
-alter table stk_pe add result_6 number(8,2);
-alter table stk_pe add result_7 number(8,2);
-alter table stk_pe add result_8 number(8,2);
-alter table stk_pe add result_9 number(8,2);
-alter table stk_pe add result_10 number(8,2);
-alter table stk_pe add result_11 number(8,2);
-alter table stk_pe add result_12 number(8,2);
+alter table stk_pe add constraint pk_pe primary key (report_date);
+
 
 create table stk_earnings_forecast(
   code varchar2(10),
@@ -2839,7 +2841,7 @@ select * from (select * from stk_kline t where code='000863' order by kline_date
 
 
 select * from stk_kline t where kline_date='20201201';
-select * from stk_kline t where kline_date='20201215';
+select * from stk_kline t where kline_date='20201224';
 select count(*) from stk_kline t where kline_date='20201215';
 select * from stk_cn;
 
@@ -2847,3 +2849,10 @@ select * from stk_cn;
 select code,kline_date as "date",open,close,high,low,volumn as volume,amount,last_close,percentage as change,hsl 
 from (select t.*, rank() over(partition by t.code order by t.kline_date desc) as rn from stk_kline t where t.code in ('600600','000863')) where rn <= 100
 
+select * from stk_text stktextent0_ where stktextent0_.type=3 and (stktextent0_.read_date is null) and stktextent0_.created_at>sysdate-2
+
+select * from stk_text where type=3 order by insert_time desc;
+select * from stk_pe order by report_date desc for update;
+
+select avg(pe_ttm) as avg_pe_ttm,median(pe_ttm) as mid_pe_ttm from stk_kline where kline_date='20201224' and pe_ttm is not null and pe_ttm>3 and pe_ttm<200
+select avg(pb_ttm),median(pb_ttm) from stk_kline where kline_date='20201224' and pb_ttm is not null and pb_ttm>0 and pb_ttm<30;

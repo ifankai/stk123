@@ -13,13 +13,9 @@ import java.util.Objects;
 public class StkPeEntity {
 
     @Id
-    @Column(name="ID")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="s_pe_id")
-    @SequenceGenerator(name="s_pe_id", sequenceName="s_pe_id", allocationSize = 1)
-    private Long id;
-
-    @Column(name = "REPORT_DATE", nullable = true, length = 10)
+    @Column(name = "REPORT_DATE", nullable = false, length = 10)
     private String reportDate;
+
     @Column(name = "REPORT_TEXT", nullable = true)
     private String reportText;
     @Column(name = "AVERAGE_PE", nullable = true, precision = 2)
@@ -79,8 +75,7 @@ public class StkPeEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         StkPeEntity that = (StkPeEntity) o;
-        return id == that.id &&
-                Objects.equals(reportDate, that.reportDate) &&
+        return Objects.equals(reportDate, that.reportDate) &&
                 Objects.equals(reportText, that.reportText) &&
                 Objects.equals(averagePe, that.averagePe) &&
                 Objects.equals(eneUpperCnt, that.eneUpperCnt) &&
@@ -112,6 +107,6 @@ public class StkPeEntity {
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, reportDate, reportText, averagePe, eneUpperCnt, eneLowerCnt, upper1, lower1, bias, eneUpper, eneLower, result1, result2, avgPb, totalPe, totalPb, midPb, midPe, result3, result4, result5, result6, result7, result8, result9, result10, result11, result12);
+        return Objects.hash(reportDate, reportText, averagePe, eneUpperCnt, eneLowerCnt, upper1, lower1, bias, eneUpper, eneLower, result1, result2, avgPb, totalPe, totalPb, midPb, midPe, result3, result4, result5, result6, result7, result8, result9, result10, result11, result12);
     }
 }

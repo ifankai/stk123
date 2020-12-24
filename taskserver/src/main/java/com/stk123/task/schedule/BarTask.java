@@ -2,8 +2,8 @@ package com.stk123.task.schedule;
 
 import com.stk123.common.util.EmailUtils;
 import com.stk123.entity.StkIndustryEntity;
+import com.stk123.entity.StkKlineEntity;
 import com.stk123.entity.StkPeEntity;
-import com.stk123.model.bo.StkPe;
 import com.stk123.model.core.BarSeries;
 import com.stk123.model.core.Stock;
 import com.stk123.model.projection.StockBasicProjection;
@@ -16,14 +16,17 @@ import com.stk123.service.task.Task;
 import com.stk123.task.tool.TaskUtils;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -169,7 +172,6 @@ public class BarTask extends Task {
             for (StockBasicProjection stockBasicProjection : list) {
                 try {
                     Stock stk = Stock.build(stockBasicProjection);
-                    System.out.println("sss:"+stk.hashCode());
                     barService.initKLine(stk);
                 } catch (Exception e) {
                     log.error(e);
@@ -188,18 +190,20 @@ public class BarTask extends Task {
 
     public void analyseCN() {
         log.info("calculate pe/pb.");
-        Double[] pe = stkKlineRepository.calcAvgMidPeTtm(today);
-        Double[] pb = stkKlineRepository.calcAvgMidPbTtm(today);
+        Map<String, BigDecimal> pe = stkKlineRepository.calcAvgMidPeTtm(today);
+        Map<String, BigDecimal> pb = stkKlineRepository.calcAvgMidPbTtm(today);
         StkPeEntity stkPeEntity = new StkPeEntity();
-        stkPeEntity.setTotalPe(pe[0]);
-        stkPeEntity.setMidPe(pe[1]);
-        stkPeEntity.setTotalPb(pb[0]);
-        stkPeEntity.setMidPb(pb[1]);
+        stkPeEntity.setReportDate(today);
+        stkPeEntity.setTotalPe(NumberUtils.toDouble(pe.get("AVG_PE_TTM")));
+        stkPeEntity.setMidPe(NumberUtils.toDouble(pe.get("MID_PE_TTM")));
+        stkPeEntity.setTotalPb(NumberUtils.toDouble(pb.get("AVG_PB_TTM")));
+        stkPeEntity.setMidPb(NumberUtils.toDouble(pb.get("AVG_PB_TTM")));
         stkPeRepository.save(stkPeEntity);
 
         List<StkIndustryEntity> inds = stkIndustryRepository.findAllByIndustry(1783L);
         List<String> codes = inds.stream().map(e -> e.getCode()).collect(Collectors.toList());
-        LinkedHashMap<String, BarSeries> list = stkKlineRepository.queryTopNByCodeListOrderByKlineDateDesc(1, codes);
+        List<StkKlineEntity> list = stkKlineRepository.findAllByKlineDateAndCodeIn(today, codes);
+        list.forEach(e -> System.out.println(e));
     }
 
 

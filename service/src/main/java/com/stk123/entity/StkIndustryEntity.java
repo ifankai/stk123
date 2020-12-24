@@ -8,6 +8,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "STK_INDUSTRY")
+@IdClass(StkIndustryEntity.CompositeKey.class)
 @Getter
 @Setter
 public class StkIndustryEntity implements Serializable {
