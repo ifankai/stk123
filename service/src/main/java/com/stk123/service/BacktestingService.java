@@ -7,14 +7,10 @@ import com.stk123.model.core.Bar;
 import com.stk123.model.core.BarSeries;
 import com.stk123.model.core.Stock;
 import com.stk123.model.json.View;
-import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.model.strategy.Strategy;
 import com.stk123.model.strategy.StrategyBacktesting;
-import com.stk123.model.strategy.StrategyResult;
 import com.stk123.model.strategy.sample.Sample;
 import com.stk123.repository.StkKlineRepository;
-import com.stk123.repository.StkRepository;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.reflections.ReflectionUtils;
@@ -65,7 +61,7 @@ public class BacktestingService {
         if(ArrayUtils.contains(environment.getActiveProfiles(), "company")) {
             stocks = this.getStocks(200, codes.stream().toArray(String[]::new));
         }else{
-            stocks = stockService.buildStockWithBarSeries(200, codes);
+            stocks = stockService.buildStocks(200, codes);
         }
 
         if(startDate != null && endDate != null){
@@ -126,7 +122,7 @@ public class BacktestingService {
             results = stkKlineRepository.queryTopNByCodeListOrderByKlineDateDesc(count, Arrays.asList(codes));
         }
 
-        return results.entrySet().stream().map(e -> new Stock(e.getKey(), "").buildBarSeries(e.getValue())).collect(Collectors.toList());
+        return results.entrySet().stream().map(e -> Stock.build(e.getKey(), "", e.getValue())).collect(Collectors.toList());
     }
 
     private LinkedHashMap<String,BarSeries> getListFromJsonOrServer(List<String> codes, Function<List<String>, LinkedHashMap<String,BarSeries>> function) {

@@ -22,11 +22,10 @@ public class StockService {
     private StkKlineRepository stkKlineRepository;
 
     @Transactional
-    public List<Stock> buildStockWithBarSeries(int count, List<String> codes) {
+    public List<Stock> buildStocks(int count, List<String> codes) {
         List<StockBasicProjection> list = stkRepository.findAllByCodes(codes);
-        List<Stock> stocks = list.stream().map(projection -> new Stock(projection)).collect(Collectors.toList());
-        LinkedHashMap<String, BarSeries> results = stkKlineRepository.queryTopNByCodeListOrderByKlineDateDesc(count, codes);
-        return stocks.stream().map(stock -> stock.buildBarSeries(results.get(stock.getCode()))).collect(Collectors.toList());
+        List<Stock> stocks = list.stream().map(projection -> Stock.build(projection)).collect(Collectors.toList());
+        return stocks;
     }
 
 

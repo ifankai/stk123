@@ -102,7 +102,7 @@ public class BarTask extends Task {
             for (StockBasicProjection codeName : list) {
                 log.info(codeName.getCode());
                 scn = codeName;
-                Stock stock = new Stock(codeName);
+                Stock stock = Stock.build(codeName);
                 if(isWorkingDay){
                     barService.initKLines(stock,5);
                 }else{
@@ -119,7 +119,7 @@ public class BarTask extends Task {
             for (StockBasicProjection codeName : list) {
                 log.info(codeName.getCode());
                 scn = codeName;
-                Stock stock = new Stock(codeName);
+                Stock stock = Stock.build(codeName);
                 barService.initKLine(stock);
             }
 
@@ -145,7 +145,7 @@ public class BarTask extends Task {
             list = stkRepository.findStockNotExsitingTodayKline();
             for (StockBasicProjection stockBasicProjection : list) {
                 try {
-                    Stock stk = new Stock(stockBasicProjection);
+                    Stock stk = Stock.build(stockBasicProjection);
                     barService.initKLine(stk);
                 } catch (Exception e) {
                     log.error(e);
@@ -167,7 +167,7 @@ public class BarTask extends Task {
             Runnable run = () -> {
                 Stock stock = null;
                 try{
-                    stock = new Stock(stk);
+                    stock = Stock.build(stk);
                     log.info("initKLines=="+stock.getCode());
                     if(isWorkingDay){
                         barService.initKLine(stock);

@@ -3,14 +3,21 @@ package com.stk123.model.core;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.common.CommonConstant;
+import com.stk123.entity.StkKlineEntity;
 import com.stk123.model.json.View;
 import com.stk123.model.projection.StockBasicProjection;
+import com.stk123.repository.StkKlineRepository;
+import com.stk123.service.support.SpringApplicationContext;
 import com.stk123.util.ServiceUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -24,7 +31,12 @@ import static com.stk123.model.core.Stock.EnumMarket.US;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class Stock {
+
+    @Autowired
+    private StkKlineRepository stkKlineRepository;
 
     @AllArgsConstructor
     public enum EnumMarket {
@@ -111,31 +123,35 @@ public class Stock {
     private BarSeries barSeriesWeek;
     private BarSeries barSeriesMonth;
 
-    public Stock() {}
+    public static Integer BarSeriesRows = 750;
 
-    public Stock(StockBasicProjection stockBasicProjection) {
-        this.code = stockBasicProjection.getCode();
-        this.name = stockBasicProjection.getName();
-        this.market = EnumMarket.getMarket(stockBasicProjection.getMarket());
-        this.cate = EnumCate.getCate(stockBasicProjection.getCate());
-        this.place = EnumPlace.getPlace(stockBasicProjection.getPlace());
-        if(this.market == EnumMarket.CN && this.place == null){
-            setPlace();
-        }
+
+
+    private Stock() {}
+
+    public static Stock build(){
+        return SpringApplicationContext.getBean(Stock.class);
+    }
+    public static Stock build(String code, String name){
+        Stock stock = Stock.build();
+        return stock.set(code, name);
+    }
+    public static Stock build(String code, String name, EnumMarket market, EnumPlace place){
+        Stock stock = Stock.build();
+        return stock.set(code, name, market, place);
+    }
+    public static Stock build(StockBasicProjection stockBasicProjection) {
+        Stock stock = Stock.build();
+        return stock.set(stockBasicProjection);
+    }
+    @Deprecated
+    public static Stock build(String code, String name, BarSeries barSeries) {
+        Stock stock = Stock.build();
+        stock.setBarSeries(barSeries);
+        return stock.set(code, name);
     }
 
-    public Stock(String code, String name){
-        this(code, name, null);
-    }
-
-    public Stock(String code, String name, EnumMarket market, EnumPlace place){
-        this.code = code;
-        this.name = name;
-        this.market = market;
-        this.place = place;
-    }
-
-    public Stock(String code, String name, BarSeries barSeries) {
+    private Stock set(String code, String name) {
         this.code = code;
         this.name = name;
 
@@ -148,8 +164,65 @@ public class Stock {
         }
 
         setPlace();
-        this.barSeries = barSeries;
+        return this;
     }
+    private Stock set(String code, String name, EnumMarket market, EnumPlace place){
+        this.code = code;
+        this.name = name;
+        this.market = market;
+        this.place = place;
+        return this;
+    }
+    private Stock set(StockBasicProjection stockBasicProjection) {
+        this.code = stockBasicProjection.getCode();
+        this.name = stockBasicProjection.getName();
+        this.market = EnumMarket.getMarket(stockBasicProjection.getMarket());
+        this.cate = EnumCate.getCate(stockBasicProjection.getCate());
+        this.place = EnumPlace.getPlace(stockBasicProjection.getPlace());
+        if(this.market == EnumMarket.CN && this.place == null){
+            setPlace();
+        }
+        return this;
+    }
+
+
+//    public Stock(StockBasicProjection stockBasicProjection) {
+//        this.code = stockBasicProjection.getCode();
+//        this.name = stockBasicProjection.getName();
+//        this.market = EnumMarket.getMarket(stockBasicProjection.getMarket());
+//        this.cate = EnumCate.getCate(stockBasicProjection.getCate());
+//        this.place = EnumPlace.getPlace(stockBasicProjection.getPlace());
+//        if(this.market == EnumMarket.CN && this.place == null){
+//            setPlace();
+//        }
+//    }
+
+//    public Stock(String code, String name){
+//        this(code, name, null);
+//    }
+
+//    public Stock(String code, String name, EnumMarket market, EnumPlace place){
+//        this.code = code;
+//        this.name = name;
+//        this.market = market;
+//        this.place = place;
+//    }
+
+//    public Stock(String code, String name, BarSeries barSeries) {
+//        this.code = code;
+//        this.name = name;
+//
+//        boolean isAllNumber = StringUtils.isNumeric(code);
+//
+//        if(code.length() == 5 && isAllNumber){
+//            this.market = HK;
+//        }else{
+//            this.market = isAllNumber ? CN : US;
+//        }
+//
+//        setPlace();
+//        this.barSeries = barSeries;
+//    }
 
     /**
      * @return SH600000
@@ -194,25 +267,38 @@ public class Stock {
         }
     }
 
-    public Stock buildBarSeries(BarSeries barSeries) {
-        this.barSeries = barSeries;
-        return this;
+    public BarSeries getBarSeries(){
+        return this.getBarSeries(Stock.BarSeriesRows);
     }
-    public Stock buildBarSeries(BarSeries barSeries, boolean buildWeek, boolean buildMonth) {
-        this.barSeries = barSeries;
-        if(buildWeek)
-            this.buildBarSeriesWeek();
-        if(buildMonth)
-            this.buildBarSeriesMonth();
-        return this;
+    public BarSeries getBarSeries(Integer rows){
+        if(this.barSeries != null){
+            return this.barSeries;
+        }
+        this.barSeries = stkKlineRepository.queryTopNByCodeOrderByKlineDateDesc(this.code, Stock.BarSeriesRows);
+        return this.barSeries;
+    }
+    public BarSeries getBarSeries(BarSeries.EnumPeriod period){
+        switch (period) {
+            case W:
+            case WEEK:
+                return this.getBarSeriesWeek();
+            case M:
+            case MONTH:
+                return this.getBarSeriesMonth();
+            default:
+                return this.getBarSeries();
+        }
     }
 
-    public Stock buildBarSeriesWeek() {
-        if(this.barSeriesWeek == null) {
+
+    public BarSeries getBarSeriesWeek() {
+        if(this.barSeriesWeek != null)
+            return this.barSeriesWeek;
+        else{
             this.barSeriesWeek = new BarSeries(false);
             Date a = null;
             Bar kw = null;
-            for(Bar k : this.barSeries.getList()){
+            for(Bar k : this.getBarSeries().getList()){
                 Date kd = ServiceUtils.parseDate(k.getDate());
                 Date monday = ((Calendar)DateUtils.iterator(kd, DateUtils.RANGE_WEEK_MONDAY).next()).getTime();
                 if(a == null || monday.compareTo(a) != 0){
@@ -250,15 +336,17 @@ public class Stock {
                 i++;
             }
         }
-        return this;
+        return this.barSeriesWeek;
     }
 
-    public Stock buildBarSeriesMonth(){
-        if(this.barSeriesMonth == null) {
+    public BarSeries getBarSeriesMonth(){
+        if(this.barSeriesMonth != null)
+            return this.barSeriesMonth;
+        else{
             this.barSeriesMonth = new BarSeries(false);
             int a = -1;
             Bar kw = null;
-            for (Bar k : this.barSeries.getList()) {
+            for (Bar k : this.getBarSeries().getList()) {
                 Date kd = ServiceUtils.parseDate(k.getDate());
                 int month = kd.getMonth();
                 if (a == -1 || month != a) {
@@ -296,7 +384,7 @@ public class Stock {
                 i++;
             }
         }
-        return this;
+        return this.barSeriesMonth;
     }
 
     @Override

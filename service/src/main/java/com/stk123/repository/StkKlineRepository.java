@@ -20,8 +20,17 @@ import java.util.Map;
 @Repository
 public interface StkKlineRepository extends JpaRepository<StkKlineEntity, StkKlineEntity.CompositeKey> {
 
-    @Query(value = "select * from (select * from stk_kline t where code = :code order by kline_date desc) where rownum <= :rn", nativeQuery = true)
-    List<StkKlineEntity> queryTopNByCodeOrderByKlineDateDesc(@Param("rn")Integer rn, @Param("code")String code);
+    String sql_queryTopNByCodeOrderByKlineDateDesc =
+            "select code,kline_date as \"date\",open,close,high,low,volumn as volume,amount,last_close,percentage as change,hsl " +
+            "from (select * from stk_kline t where code = :1 order by kline_date desc) where rownum <= :2";
+    default BarSeries queryTopNByCodeOrderByKlineDateDesc(String code, Integer rows) {
+        List<Bar> list = BaseRepository.getInstance().list(sql_queryTopNByCodeOrderByKlineDateDesc, Bar.class, code, rows);
+        BarSeries bs = new BarSeries();
+        for(Bar bar : list){
+            bs.add(bar);
+        }
+        return bs;
+    }
 
 
     String sql_queryTopNByCodeListOrderByKlineDateDesc =
