@@ -1,24 +1,33 @@
 package com.stk123.task.schedule;
 
 import com.stk123.common.util.EmailUtils;
+import com.stk123.entity.StkIndustryEntity;
+import com.stk123.entity.StkPeEntity;
+import com.stk123.model.bo.StkPe;
+import com.stk123.model.core.BarSeries;
 import com.stk123.model.core.Stock;
 import com.stk123.model.projection.StockBasicProjection;
+import com.stk123.repository.StkIndustryRepository;
 import com.stk123.repository.StkKlineRepository;
+import com.stk123.repository.StkPeRepository;
 import com.stk123.repository.StkRepository;
 import com.stk123.service.BarService;
 import com.stk123.service.task.Task;
 import com.stk123.task.tool.TaskUtils;
 import lombok.extern.apachecommons.CommonsLog;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 @CommonsLog
 @Service
@@ -31,8 +40,13 @@ public class BarTask extends Task {
     private StkRepository stkRepository;
     @Autowired
     private BarService barService;
+    @Autowired
+    private StkPeRepository stkPeRepository;
+    @Autowired
+    private StkIndustryRepository stkIndustryRepository;
 
     private final Date now = new Date();
+    private String today = TaskUtils.getToday();//"20160923";
     private int dayOfWeek;
     private boolean isWorkingDay;
     private Stock.EnumMarket market = Stock.EnumMarket.CN; //default A stock
@@ -57,11 +71,16 @@ public class BarTask extends Task {
                     init = false;
                     analyse = true;
                 }
+                if(arg.startsWith("today=")){
+                    today = StringUtils.split(arg, "=")[1];
+                }
             }
         }
 
         dayOfWeek = TaskUtils.getDayOfWeek(now);
         isWorkingDay = (dayOfWeek == 1 || dayOfWeek == 2 || dayOfWeek == 3 || dayOfWeek == 4 || dayOfWeek == 5)?true:false;
+        log.info("today:"+today);
+        log.info("isWorkingDay:"+isWorkingDay);
 
         if(init){
             log.info("----------开始初始化----------");
@@ -84,11 +103,15 @@ public class BarTask extends Task {
     public void init(){
         if (market == Stock.EnumMarket.CN) {
             initCN();
+        }else if(market == Stock.EnumMarket.HK){
+            initHK();
         }
     }
 
     public void analyse(){
-
+        if (market == Stock.EnumMarket.CN) {
+            analyseCN();
+        }
     }
 
 
@@ -146,6 +169,7 @@ public class BarTask extends Task {
             for (StockBasicProjection stockBasicProjection : list) {
                 try {
                     Stock stk = Stock.build(stockBasicProjection);
+                    System.out.println("sss:"+stk.hashCode());
                     barService.initKLine(stk);
                 } catch (Exception e) {
                     log.error(e);
@@ -157,6 +181,27 @@ public class BarTask extends Task {
             EmailUtils.send("[BarTask出错]个股K线下载出错 code="+scn.getCode(), e);
         }
     }
+
+    public void initHK() {
+
+    }
+
+    public void analyseCN() {
+        log.info("calculate pe/pb.");
+        Double[] pe = stkKlineRepository.calcAvgMidPeTtm(today);
+        Double[] pb = stkKlineRepository.calcAvgMidPbTtm(today);
+        StkPeEntity stkPeEntity = new StkPeEntity();
+        stkPeEntity.setTotalPe(pe[0]);
+        stkPeEntity.setMidPe(pe[1]);
+        stkPeEntity.setTotalPb(pb[0]);
+        stkPeEntity.setMidPb(pb[1]);
+        stkPeRepository.save(stkPeEntity);
+
+        List<StkIndustryEntity> inds = stkIndustryRepository.findAllByIndustry(1783L);
+        List<String> codes = inds.stream().map(e -> e.getCode()).collect(Collectors.toList());
+        LinkedHashMap<String, BarSeries> list = stkKlineRepository.queryTopNByCodeListOrderByKlineDateDesc(1, codes);
+    }
+
 
     //多线程 workers
     public void initKLines(List<StockBasicProjection> stks,int numberOfWorker) throws InterruptedException {

@@ -1,319 +1,78 @@
 package com.stk123.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
 @Table(name = "STK_PE")
+@Setter
+@Getter
 public class StkPeEntity {
-    private long id;
-    private String reportDate;
-    private String reportText;
-    private Long averagePe;
-    private Long eneUpperCnt;
-    private Long eneLowerCnt;
-    private Long upper1;
-    private Long lower1;
-    private Long bias;
-    private Long eneUpper;
-    private Long eneLower;
-    private Long result1;
-    private Long result2;
-    private Long avgPb;
-    private Long totalPe;
-    private Long totalPb;
-    private Long midPb;
-    private Long midPe;
-    private Long result3;
-    private Long result4;
-    private Long result5;
-    private Long result6;
-    private Long result7;
-    private Long result8;
-    private Long result9;
-    private Long result10;
-    private Long result11;
-    private Long result12;
 
     @Id
-    @Column(name = "ID", nullable = false, precision = 0)
-    public long getId() {
-        return id;
-    }
+    @Column(name="ID")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="s_pe_id")
+    @SequenceGenerator(name="s_pe_id", sequenceName="s_pe_id", allocationSize = 1)
+    private Long id;
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    @Basic
     @Column(name = "REPORT_DATE", nullable = true, length = 10)
-    public String getReportDate() {
-        return reportDate;
-    }
-
-    public void setReportDate(String reportDate) {
-        this.reportDate = reportDate;
-    }
-
-    @Basic
+    private String reportDate;
     @Column(name = "REPORT_TEXT", nullable = true)
-    public String getReportText() {
-        return reportText;
-    }
-
-    public void setReportText(String reportText) {
-        this.reportText = reportText;
-    }
-
-    @Basic
+    private String reportText;
     @Column(name = "AVERAGE_PE", nullable = true, precision = 2)
-    public Long getAveragePe() {
-        return averagePe;
-    }
-
-    public void setAveragePe(Long averagePe) {
-        this.averagePe = averagePe;
-    }
-
-    @Basic
+    private Double averagePe;
     @Column(name = "ENE_UPPER_CNT", nullable = true, precision = 0)
-    public Long getEneUpperCnt() {
-        return eneUpperCnt;
-    }
-
-    public void setEneUpperCnt(Long eneUpperCnt) {
-        this.eneUpperCnt = eneUpperCnt;
-    }
-
-    @Basic
+    private Long eneUpperCnt;
     @Column(name = "ENE_LOWER_CNT", nullable = true, precision = 0)
-    public Long getEneLowerCnt() {
-        return eneLowerCnt;
-    }
-
-    public void setEneLowerCnt(Long eneLowerCnt) {
-        this.eneLowerCnt = eneLowerCnt;
-    }
-
-    @Basic
+    private Long eneLowerCnt;
     @Column(name = "UPPER_1", nullable = true, precision = 0)
-    public Long getUpper1() {
-        return upper1;
-    }
-
-    public void setUpper1(Long upper1) {
-        this.upper1 = upper1;
-    }
-
-    @Basic
+    private Long upper1;
     @Column(name = "LOWER_1", nullable = true, precision = 0)
-    public Long getLower1() {
-        return lower1;
-    }
-
-    public void setLower1(Long lower1) {
-        this.lower1 = lower1;
-    }
-
-    @Basic
+    private Long lower1;
     @Column(name = "BIAS", nullable = true, precision = 2)
-    public Long getBias() {
-        return bias;
-    }
-
-    public void setBias(Long bias) {
-        this.bias = bias;
-    }
-
-    @Basic
+    private Long bias;
     @Column(name = "ENE_UPPER", nullable = true, precision = 2)
-    public Long getEneUpper() {
-        return eneUpper;
-    }
-
-    public void setEneUpper(Long eneUpper) {
-        this.eneUpper = eneUpper;
-    }
-
-    @Basic
+    private Long eneUpper;
     @Column(name = "ENE_LOWER", nullable = true, precision = 2)
-    public Long getEneLower() {
-        return eneLower;
-    }
-
-    public void setEneLower(Long eneLower) {
-        this.eneLower = eneLower;
-    }
-
-    @Basic
+    private Long eneLower;
     @Column(name = "RESULT_1", nullable = true, precision = 2)
-    public Long getResult1() {
-        return result1;
-    }
-
-    public void setResult1(Long result1) {
-        this.result1 = result1;
-    }
-
-    @Basic
+    private Long result1;
     @Column(name = "RESULT_2", nullable = true, precision = 2)
-    public Long getResult2() {
-        return result2;
-    }
-
-    public void setResult2(Long result2) {
-        this.result2 = result2;
-    }
-
-    @Basic
+    private Long result2;
     @Column(name = "AVG_PB", nullable = true, precision = 2)
-    public Long getAvgPb() {
-        return avgPb;
-    }
-
-    public void setAvgPb(Long avgPb) {
-        this.avgPb = avgPb;
-    }
-
-    @Basic
+    private Double avgPb;
     @Column(name = "TOTAL_PE", nullable = true, precision = 2)
-    public Long getTotalPe() {
-        return totalPe;
-    }
-
-    public void setTotalPe(Long totalPe) {
-        this.totalPe = totalPe;
-    }
-
-    @Basic
+    private Double totalPe;
     @Column(name = "TOTAL_PB", nullable = true, precision = 2)
-    public Long getTotalPb() {
-        return totalPb;
-    }
-
-    public void setTotalPb(Long totalPb) {
-        this.totalPb = totalPb;
-    }
-
-    @Basic
+    private Double totalPb;
     @Column(name = "MID_PB", nullable = true, precision = 2)
-    public Long getMidPb() {
-        return midPb;
-    }
-
-    public void setMidPb(Long midPb) {
-        this.midPb = midPb;
-    }
-
-    @Basic
+    private Double midPb;
     @Column(name = "MID_PE", nullable = true, precision = 2)
-    public Long getMidPe() {
-        return midPe;
-    }
-
-    public void setMidPe(Long midPe) {
-        this.midPe = midPe;
-    }
-
-    @Basic
+    private Double midPe;
     @Column(name = "RESULT_3", nullable = true, precision = 2)
-    public Long getResult3() {
-        return result3;
-    }
-
-    public void setResult3(Long result3) {
-        this.result3 = result3;
-    }
-
-    @Basic
+    private Long result3;
     @Column(name = "RESULT_4", nullable = true, precision = 2)
-    public Long getResult4() {
-        return result4;
-    }
-
-    public void setResult4(Long result4) {
-        this.result4 = result4;
-    }
-
-    @Basic
+    private Long result4;
     @Column(name = "RESULT_5", nullable = true, precision = 2)
-    public Long getResult5() {
-        return result5;
-    }
-
-    public void setResult5(Long result5) {
-        this.result5 = result5;
-    }
-
-    @Basic
+    private Long result5;
     @Column(name = "RESULT_6", nullable = true, precision = 2)
-    public Long getResult6() {
-        return result6;
-    }
-
-    public void setResult6(Long result6) {
-        this.result6 = result6;
-    }
-
-    @Basic
+    private Long result6;
     @Column(name = "RESULT_7", nullable = true, precision = 2)
-    public Long getResult7() {
-        return result7;
-    }
-
-    public void setResult7(Long result7) {
-        this.result7 = result7;
-    }
-
-    @Basic
+    private Long result7;
     @Column(name = "RESULT_8", nullable = true, precision = 2)
-    public Long getResult8() {
-        return result8;
-    }
-
-    public void setResult8(Long result8) {
-        this.result8 = result8;
-    }
-
-    @Basic
+    private Long result8;
     @Column(name = "RESULT_9", nullable = true, precision = 2)
-    public Long getResult9() {
-        return result9;
-    }
-
-    public void setResult9(Long result9) {
-        this.result9 = result9;
-    }
-
-    @Basic
+    private Long result9;
     @Column(name = "RESULT_10", nullable = true, precision = 2)
-    public Long getResult10() {
-        return result10;
-    }
-
-    public void setResult10(Long result10) {
-        this.result10 = result10;
-    }
-
-    @Basic
+    private Long result10;
     @Column(name = "RESULT_11", nullable = true, precision = 2)
-    public Long getResult11() {
-        return result11;
-    }
-
-    public void setResult11(Long result11) {
-        this.result11 = result11;
-    }
-
-    @Basic
+    private Long result11;
     @Column(name = "RESULT_12", nullable = true, precision = 2)
-    public Long getResult12() {
-        return result12;
-    }
+    private Long result12;
 
-    public void setResult12(Long result12) {
-        this.result12 = result12;
-    }
 
     @Override
     public boolean equals(Object o) {

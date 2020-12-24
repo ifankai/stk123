@@ -63,4 +63,13 @@ public interface StkKlineRepository extends JpaRepository<StkKlineEntity, StkKli
         //TODO
         return this.save(stkKlineEntity);
     }
+
+
+    @Query(value = "select avg(pe_ttm),median(pe_ttm) from stk_kline where kline_date=:kdate and pe_ttm is not null and pe_ttm>3 and pe_ttm<200", nativeQuery = true)
+    Double[] calcAvgMidPeTtm(@Param("kdate") String kdate);
+
+    @Query(value = "select avg(pb_ttm),median(pb_ttm) from stk_kline where kline_date=:kdate and pb_ttm is not null and pb_ttm>0 and pb_ttm<30", nativeQuery = true)
+    Double[] calcAvgMidPbTtm(@Param("kdate") String kdate);
+
+
 }

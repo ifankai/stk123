@@ -22,7 +22,6 @@ import com.stk123.model.bo.StkKlineRankIndustry;
 import com.stk123.common.db.connection.Pool;
 
 
-@SuppressWarnings("serial")
 public class Industry implements Serializable {
 	
 	public final static String INDUSTRY_WIND = "wind";
