@@ -11,9 +11,6 @@ import java.util.Objects;
 @Table(name = "STK_KLINE_HK")
 @IdClass(StkKlineHkEntity.CompositeKey.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Setter
-@Getter
-@ToString
-public class StkKlineHkEntity extends StkKlineEntity {
+public class StkKlineHkEntity extends StkKline {
 
 }

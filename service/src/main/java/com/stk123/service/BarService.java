@@ -96,6 +96,7 @@ public class BarService {
 
     private final static String sql_findAllByKlineDateAndCodeIn = "select code,kline_date as \"date\",open,close,high,low,volumn as volume,amount,last_close,percentage as change,hsl,pe_ttm,pb_ttm " +
             "from stk_kline where kline_date=:1 and code in (:2)";
+    @Transactional
     public List<Bar> findAllByKlineDateAndCodeIn(String klineDate, List<String> codes, Stock.EnumMarket market){
         String sql = market.replaceKlineTable(sql_findAllByKlineDateAndCodeIn);
         return BaseRepository.getInstance().list(sql, Bar.class, klineDate, codes);
@@ -121,6 +122,7 @@ public class BarService {
 
     private final static String sql_calcAvgMidPeTtm = "select avg(pe_ttm) as avg_pe_ttm,median(pe_ttm) as mid_pe_ttm " +
             "from stk_kline where kline_date=:1 and pe_ttm is not null and pe_ttm>3 and pe_ttm<200";
+    @Transactional
     public Map<String, BigDecimal> calcAvgMidPeTtm(String kdate, Stock.EnumMarket market){
         String sql = market.replaceKlineTable(sql_calcAvgMidPeTtm);
         return BaseRepository.getInstance().uniqueResult(sql, kdate);
@@ -349,7 +351,7 @@ public class BarService {
                     stkKlineUsEntity.setHigh(high);
                     stkKlineUsEntity.setLow(low);
                     stkKlineUsEntity.setVolumn(volume);
-                    stkKlineUsEntity.setAmount(amount);
+                    //stkKlineUsEntity.setAmount(amount);
                     //stkKlineEntity.setHsl(hsl);
                     stkKlineUsEntity.setPeTtm(pettm);
                     //stkKlineEntity.setPbTtm(pbttm);

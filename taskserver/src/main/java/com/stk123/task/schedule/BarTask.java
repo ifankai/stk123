@@ -208,7 +208,7 @@ public class BarTask extends Task {
         try{
             List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.US, Stock.EnumCate.INDEX);
             log.info("US index K ..........start");
-            initKLines(list, 2);
+            initKLines(list, 1);
             log.info("US index K ..........end");
         }catch(Exception e){
             log.error("error", e);
@@ -219,7 +219,7 @@ public class BarTask extends Task {
         try{
             List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.US, Stock.EnumCate.STOCK);
             log.info("US initKLines..........start");
-            initKLines(list, 4);
+            //initKLines(list, 4);
             log.info("US initKLines..........end");
         }catch(Exception e){
             log.error("error", e);
