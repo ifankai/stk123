@@ -99,20 +99,20 @@ public class StkKlineEntity implements Serializable {
     @JsonIgnore
     private Double pbTtm;
 
-    @Basic
-    @Column(name = "PE_NTILE", nullable = true, precision = 0)
-    @JsonIgnore
-    private Integer peNtile;
-
-    @Basic
-    @Column(name = "PB_NTILE", nullable = true, precision = 0)
-    @JsonIgnore
-    private Integer pbNtile;
-
-    @Basic
-    @Column(name = "PS_NTILE", nullable = true, precision = 0)
-    @JsonIgnore
-    private Integer psNtile;
+//    @Basic
+//    @Column(name = "PE_NTILE", nullable = true, precision = 0)
+//    @JsonIgnore
+//    private Integer peNtile;
+//
+//    @Basic
+//    @Column(name = "PB_NTILE", nullable = true, precision = 0)
+//    @JsonIgnore
+//    private Integer pbNtile;
+//
+//    @Basic
+//    @Column(name = "PS_NTILE", nullable = true, precision = 0)
+//    @JsonIgnore
+//    private Integer psNtile;
 
     //private StkEntity stkByCode;
 
@@ -123,29 +123,12 @@ public class StkKlineEntity implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         StkKlineEntity that = (StkKlineEntity) o;
         return Objects.equals(code, that.code) &&
-                Objects.equals(klineDate, that.klineDate) &&
-                Objects.equals(open, that.open) &&
-                Objects.equals(close, that.close) &&
-                Objects.equals(lastClose, that.lastClose) &&
-                Objects.equals(high, that.high) &&
-                Objects.equals(low, that.low) &&
-                Objects.equals(volumn, that.volumn) &&
-                Objects.equals(amount, that.amount) &&
-                Objects.equals(closeChange, that.closeChange) &&
-                Objects.equals(hsl, that.hsl) &&
-                Objects.equals(peTtm, that.peTtm) &&
-                Objects.equals(peLyr, that.peLyr) &&
-                Objects.equals(percentage, that.percentage) &&
-                Objects.equals(psTtm, that.psTtm) &&
-                Objects.equals(pbTtm, that.pbTtm) &&
-                Objects.equals(peNtile, that.peNtile) &&
-                Objects.equals(pbNtile, that.pbNtile) &&
-                Objects.equals(psNtile, that.psNtile);
+                Objects.equals(klineDate, that.klineDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(code, klineDate, open, close, lastClose, high, low, volumn, amount, closeChange, hsl, peTtm, peLyr, percentage, psTtm, pbTtm, peNtile, pbNtile, psNtile);
+        return Objects.hash(code, klineDate);
     }
 
 //    @ManyToOne

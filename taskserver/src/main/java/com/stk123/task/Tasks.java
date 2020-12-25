@@ -1,5 +1,8 @@
 package com.stk123.task;
 
+import com.stk123.service.support.SpringApplicationContext;
+import com.stk123.service.task.Task;
+import com.stk123.service.task.TaskContainer;
 import com.stk123.task.quartz.job.ResearchReportJob;
 import com.stk123.task.quartz.job.XueqiuStockArticleJob;
 import com.stk123.task.quartz.job.XueqiuUserJob;
@@ -17,6 +20,8 @@ public class Tasks {
 
     @Autowired
     private Environment environment;
+    @Autowired
+    private TaskContainer taskContainer;
 
     @Autowired
     private InitialData initialData;
@@ -31,6 +36,9 @@ public class Tasks {
     @Autowired
     private XueqiuFollow xueqiuFollow;
 
+    public Task createTask(Class<? extends Task> taskClass){
+        return SpringApplicationContext.getBean(taskClass);
+    }
 
     public void runSingleTask() {
         //initialKLine.run("analyse");
@@ -76,11 +84,18 @@ public class Tasks {
 
     @Scheduled(cron = "0 30 15 ? * MON-SAT")
     public void initialKLineCN() {
-        initialKLine.run();
+        //initialKLine.run();
+        taskContainer.start(createTask(BarTask.class));
+    }
+    @Scheduled(cron = "0 30 16 ? * MON-SAT")
+    public void initialKLineHK() {
+        //initialKLine.run();
+        taskContainer.start(createTask(BarTask.class), "HK");
     }
     @Scheduled(cron = "0 30 5 ? * TUE-SAT")
     public void initialKLineUS() {
-        initialKLine.run("US");
+        //initialKLine.run("US");
+        taskContainer.start(createTask(BarTask.class), "US");
     }
 
 

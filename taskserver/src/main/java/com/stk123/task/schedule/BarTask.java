@@ -3,14 +3,13 @@ package com.stk123.task.schedule;
 import com.stk123.common.util.EmailUtils;
 import com.stk123.entity.StkIndustryEntity;
 import com.stk123.entity.StkKlineEntity;
+import com.stk123.entity.StkKlineUsEntity;
 import com.stk123.entity.StkPeEntity;
+import com.stk123.model.core.Bar;
 import com.stk123.model.core.BarSeries;
 import com.stk123.model.core.Stock;
 import com.stk123.model.projection.StockBasicProjection;
-import com.stk123.repository.StkIndustryRepository;
-import com.stk123.repository.StkKlineRepository;
-import com.stk123.repository.StkPeRepository;
-import com.stk123.repository.StkRepository;
+import com.stk123.repository.*;
 import com.stk123.service.BarService;
 import com.stk123.service.task.Task;
 import com.stk123.task.tool.TaskUtils;
@@ -23,10 +22,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -39,6 +35,8 @@ public class BarTask extends Task {
 
     @Autowired
     private StkKlineRepository stkKlineRepository;
+    @Autowired
+    private StkKlineUsRepository stkKlineUsRepository;
     @Autowired
     private StkRepository stkRepository;
     @Autowired
@@ -108,13 +106,22 @@ public class BarTask extends Task {
             initCN();
         }else if(market == Stock.EnumMarket.HK){
             initHK();
+        }else if(market == Stock.EnumMarket.US){
+            initUS();
         }
     }
 
     public void analyse(){
         if (market == Stock.EnumMarket.CN) {
             analyseCN();
+        }else if (market == Stock.EnumMarket.HK) {
+            analyseHK();
+        }else if (market == Stock.EnumMarket.US) {
+            analyseUS();
         }
+
+        //Public analyse
+
     }
 
 
@@ -164,9 +171,9 @@ public class BarTask extends Task {
 
         try {
             List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.STOCK);
-            log.info("initKLines..........start");
+            log.info("CN initKLines..........start");
             initKLines(list, 4);
-            log.info("initKLines..........end");
+            log.info("CN initKLines..........end");
 
             list = stkRepository.findStockNotExsitingTodayKline();
             for (StockBasicProjection stockBasicProjection : list) {
@@ -185,27 +192,135 @@ public class BarTask extends Task {
     }
 
     public void initHK() {
+        try{
+            List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.HK, Stock.EnumCate.STOCK);
+            log.info("HK initKLines..........start");
+            initKLines(list, 4);
+            log.info("HK initKLines..........end");
+        }catch(Exception e){
+            log.error("error", e);
+            EmailUtils.send("Initial HK Stock K Line Error", e);
+        }
+    }
+
+    public void initUS(){
+        log.info("初始化US的大盘指数");
+        try{
+            List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.US, Stock.EnumCate.INDEX);
+            log.info("US index K ..........start");
+            initKLines(list, 2);
+            log.info("US index K ..........end");
+        }catch(Exception e){
+            log.error("error", e);
+            EmailUtils.send("Initial US Index K Line Error", e);
+        }
+
+        log.info("初始化US的个股");
+        try{
+            List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.US, Stock.EnumCate.STOCK);
+            log.info("US initKLines..........start");
+            initKLines(list, 4);
+            log.info("US initKLines..........end");
+        }catch(Exception e){
+            log.error("error", e);
+            EmailUtils.send("Initial US Stock K Line Error", e);
+        }
+
 
     }
 
     public void analyseCN() {
-        log.info("calculate pe/pb.");
-        Map<String, BigDecimal> pe = stkKlineRepository.calcAvgMidPeTtm(today);
-        Map<String, BigDecimal> pb = stkKlineRepository.calcAvgMidPbTtm(today);
-        StkPeEntity stkPeEntity = new StkPeEntity();
+        log.info("1. CN calculate pe/pb.");
+        Map<String, BigDecimal> peMap = stkKlineRepository.calcAvgMidPeTtm(today);
+        Map<String, BigDecimal> pbMap = stkKlineRepository.calcAvgMidPbTtm(today);
+        StkPeEntity stkPeEntity = stkPeRepository.findOrCreateById(today);
         stkPeEntity.setReportDate(today);
-        stkPeEntity.setTotalPe(NumberUtils.toDouble(pe.get("AVG_PE_TTM")));
-        stkPeEntity.setMidPe(NumberUtils.toDouble(pe.get("MID_PE_TTM")));
-        stkPeEntity.setTotalPb(NumberUtils.toDouble(pb.get("AVG_PB_TTM")));
-        stkPeEntity.setMidPb(NumberUtils.toDouble(pb.get("AVG_PB_TTM")));
+        Double totalPE = NumberUtils.toDouble(peMap.get("AVG_PE_TTM"));
+        stkPeEntity.setTotalPe(totalPE);
+        Double midPE = NumberUtils.toDouble(peMap.get("MID_PE_TTM"));
+        stkPeEntity.setMidPe(midPE);
+        Double totalPB = NumberUtils.toDouble(pbMap.get("AVG_PB_TTM"));
+        stkPeEntity.setTotalPb(totalPB);
+        Double midPB = NumberUtils.toDouble(pbMap.get("AVG_PB_TTM"));
+        stkPeEntity.setMidPb(midPB);
         stkPeRepository.save(stkPeEntity);
 
+        log.info("2. check growth stk average pe "+new Date());
         List<StkIndustryEntity> inds = stkIndustryRepository.findAllByIndustry(1783L);
         List<String> codes = inds.stream().map(e -> e.getCode()).collect(Collectors.toList());
-        List<StkKlineEntity> list = stkKlineRepository.findAllByKlineDateAndCodeIn(today, codes);
-        list.forEach(e -> System.out.println(e));
+        List<Bar> list = barService.findAllByKlineDateAndCodeIn(today, codes, Stock.EnumMarket.CN);
+
+        double gtotalPE = 0.0;
+        double gtotalPB = 0.0;
+        int peCnt = 0;
+        int pbCnt = 0;
+        for(Bar bar : list){
+            Double pe = bar.getPeTtm();
+            if(pe != null && pe >= 5 && pe <= 200){
+                peCnt++;
+                gtotalPE += pe;
+            }
+            Double pb = bar.getPbTtm();
+            if(pb != null && pb > 0){
+                pbCnt++;
+                gtotalPB += pb;
+            }
+        }
+        Double averagePE = gtotalPE/peCnt;
+        Double averagePB = gtotalPB/pbCnt;
+
+        stkPeEntity.setAveragePe(averagePE);
+        stkPeEntity.setAvgPb(averagePB);
+        stkPeRepository.save(stkPeEntity);
+
+        String peAndpeg = "市场整体中位PB低点大约是2PB：<br>" +
+                "2008年最低点约1700点附近，中位数市净率约2倍。<br>" +
+                "2012年前后最低点大约2000点，中位数市净率约2倍。<br>" +
+                "2016-2017年前后，大约2366点对应中位数2倍市净率。<br><br>" +
+                "成长股最佳PE投资区间是20PE-50PE。<br>" +
+                "低于20PE而其业绩却超过30%增长的话，要小心业绩陷阱。<br>" +
+                "高于50PE要注意泡沫风险，就不要盲目杀入了。<br>"
+                + TaskUtils.createPEAndPEG()+"<br>";
+
+        List<List<String>> pe = new ArrayList<List<String>>();
+        List<String> pe1 = new ArrayList<String>();
+        pe1.add("");pe1.add("平均PE");pe1.add("中位PE");pe1.add("平均PB");pe1.add("中位PB");pe1.add("统计数");
+        pe.add(pe1);
+        List<String> pe2 = new ArrayList<String>();
+        pe2.add("成长股");pe2.add(String.valueOf(averagePE));pe2.add("");pe2.add(String.valueOf(averagePB));pe2.add("");pe2.add(String.valueOf(peCnt));
+        pe.add(pe2);
+        List<String> pe3 = new ArrayList<String>();
+        pe3.add("全市场");pe3.add(String.valueOf(totalPE));pe3.add(String.valueOf(midPE));pe3.add(String.valueOf(totalPB));pe3.add(String.valueOf(midPB));pe3.add("");
+        pe.add(pe3);
+        EmailUtils.sendAndReport("平均PE:"+totalPE+",中位PE:"+midPE+",整体PB:"+totalPB+",中位PB:"+midPB+
+                        ";成长股平均PE:"+averagePE+",PB:"+averagePB+",日期:"+today,
+                TaskUtils.createHtmlTable(null, pe) + "<br>" + peAndpeg );
     }
 
+
+    public void analyseHK(){
+        Map<String, BigDecimal> peMap = barService.calcAvgMidPeTtm(today, Stock.EnumMarket.HK);
+        StkPeEntity stkPeEntity = stkPeRepository.findOrCreateById(today);
+        stkPeEntity.setReportDate(today);
+        Double avgPe = NumberUtils.toDouble(peMap.get("avg_pe_ttm"));
+        stkPeEntity.setResult7(avgPe);
+        Double midPE = NumberUtils.toDouble(peMap.get("mid_pe_ttm"));
+        stkPeEntity.setResult8(midPE);
+        stkPeRepository.save(stkPeEntity);
+    }
+
+    public void analyseUS(){
+        StkKlineUsEntity stkKlineUsEntity = stkKlineUsRepository.findTop1ByCodeOrderByKlineDateDesc(".DJI");
+        today = stkKlineUsEntity.getKlineDate();
+        Map<String, BigDecimal> peMap = barService.calcAvgMidPeTtm(today, Stock.EnumMarket.US);
+        StkPeEntity stkPeEntity = stkPeRepository.findOrCreateById(today);
+        stkPeEntity.setReportDate(today);
+        Double avgPe = NumberUtils.toDouble(peMap.get("avg_pe_ttm"));
+        stkPeEntity.setResult9(avgPe);
+        Double midPE = NumberUtils.toDouble(peMap.get("mid_pe_ttm"));
+        stkPeEntity.setResult10(midPE);
+        stkPeRepository.save(stkPeEntity);
+    }
 
     //多线程 workers
     public void initKLines(List<StockBasicProjection> stks,int numberOfWorker) throws InterruptedException {

@@ -13,45 +13,12 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Repository
 public interface StkKlineRepository extends JpaRepository<StkKlineEntity, StkKlineEntity.CompositeKey> {
 
-    String sql_queryTopNByCodeOrderByKlineDateDesc =
-            "select code,kline_date as \"date\",open,close,high,low,volumn as volume,amount,last_close,percentage as change,hsl " +
-            "from (select * from stk_kline t where code = :1 order by kline_date desc) where rownum <= :2";
-    default BarSeries queryTopNByCodeOrderByKlineDateDesc(String code, Integer rows) {
-        List<Bar> list = BaseRepository.getInstance().list(sql_queryTopNByCodeOrderByKlineDateDesc, Bar.class, code, rows);
-        BarSeries bs = new BarSeries();
-        for(Bar bar : list){
-            bs.add(bar);
-        }
-        return bs;
-    }
-
-
-    String sql_queryTopNByCodeListOrderByKlineDateDesc =
-            "select code,kline_date as \"date\",open,close,high,low,volumn as volume,amount,last_close,percentage as change,hsl from (select t.*, rank() over(partition by t.code order by t.kline_date desc) as rn " +
-            "from stk_kline t where t.code in (:1)) where rn <= :2";
-    @Transactional
-    default LinkedHashMap<String, BarSeries> queryTopNByCodeListOrderByKlineDateDesc(Integer rn, List<String> codes) {
-        List<Bar> list = BaseRepository.getInstance().list(sql_queryTopNByCodeListOrderByKlineDateDesc, Bar.class, codes, rn);
-        LinkedHashMap<String, BarSeries> result = new LinkedHashMap<>(codes.size());
-        for(String code : codes) {
-            result.put(code, new BarSeries());
-        }
-        for(Bar bar : list){
-            BarSeries bs = result.get(bar.getCode());
-            bs.add(bar);
-        }
-        return result;
-    }
-
-    List<StkKlineEntity> findAllByKlineDateAndCodeIn(String klineDate, List<String> codes);
+    StkKlineEntity findTop1ByCodeOrderByKlineDateDesc(String code);
 
     @Modifying
     @Query(value = "delete from stk_kline k where k.kline_date > :date", nativeQuery = true)
@@ -62,9 +29,13 @@ public interface StkKlineRepository extends JpaRepository<StkKlineEntity, StkKli
         this.deleteAllByKlineDateAfter(DateFormatUtils.format(new Date(), "yyyyMMdd"));
     }
 
+    @Transactional
     default StkKlineEntity saveIfNotExisting(StkKlineEntity stkKlineEntity){
-        //TODO
-        return this.save(stkKlineEntity);
+        Optional<StkKlineEntity> entity = this.findById(new StkKlineEntity.CompositeKey(stkKlineEntity.getCode(),stkKlineEntity.getKlineDate()));
+        if(!entity.isPresent()){
+            return save(stkKlineEntity);
+        }
+        return entity.get();
     }
 
 

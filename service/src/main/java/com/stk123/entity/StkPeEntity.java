@@ -49,25 +49,25 @@ public class StkPeEntity {
     @Column(name = "MID_PE", nullable = true, precision = 2)
     private Double midPe;
     @Column(name = "RESULT_3", nullable = true, precision = 2)
-    private Long result3;
+    private Double result3;
     @Column(name = "RESULT_4", nullable = true, precision = 2)
-    private Long result4;
+    private Double result4;
     @Column(name = "RESULT_5", nullable = true, precision = 2)
-    private Long result5;
+    private Double result5;
     @Column(name = "RESULT_6", nullable = true, precision = 2)
-    private Long result6;
+    private Double result6;
     @Column(name = "RESULT_7", nullable = true, precision = 2)
-    private Long result7;
+    private Double result7;
     @Column(name = "RESULT_8", nullable = true, precision = 2)
-    private Long result8;
+    private Double result8;
     @Column(name = "RESULT_9", nullable = true, precision = 2)
-    private Long result9;
+    private Double result9;
     @Column(name = "RESULT_10", nullable = true, precision = 2)
-    private Long result10;
+    private Double result10;
     @Column(name = "RESULT_11", nullable = true, precision = 2)
-    private Long result11;
+    private Double result11;
     @Column(name = "RESULT_12", nullable = true, precision = 2)
-    private Long result12;
+    private Double result12;
 
 
     @Override

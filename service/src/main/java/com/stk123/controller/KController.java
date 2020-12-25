@@ -7,6 +7,7 @@ import com.stk123.model.core.BarSeries;
 import com.stk123.model.strategy.Strategy;
 import com.stk123.model.json.View;
 import com.stk123.repository.StkKlineRepository;
+import com.stk123.service.BarService;
 import com.stk123.util.ServiceUtils;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
@@ -27,7 +28,7 @@ import java.util.*;
 public class KController {
 
     @Autowired
-    private StkKlineRepository stkKlineRepository;
+    private BarService barService;
 
     /**
      * @return 返回格式： RequestResult:{..., data:["600600":[], "000001":[]]}
@@ -58,7 +59,7 @@ public class KController {
                     ks = stkKlineRepository.queryTopNByCodeOrderByKlineDateDesc(days, c);
                     results.put(c, ks);
                 }*/
-                results = stkKlineRepository.queryTopNByCodeListOrderByKlineDateDesc(days, Arrays.asList(codes));
+                results = barService.queryTopNByCodeListOrderByKlineDateDesc(Arrays.asList(codes), days);
         }
         Strategy<BarSeries> example = new Strategy<>("", BarSeries.class);
         System.out.println("example:====="+example.getClass().getTypeName());

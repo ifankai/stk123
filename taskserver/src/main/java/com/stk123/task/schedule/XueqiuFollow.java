@@ -41,11 +41,10 @@ public class XueqiuFollow {
             conn = DBUtil.getConnection();
             List<Stk> stks = JdbcUtils.list(conn, "select code,name from stk order by code", Stk.class);
             Map<String, String> cookies = XueqiuService.getCookies();
-            System.out.println(cookies);
             for (Stk stk : stks) {
                 try {
                     Index index = new Index(conn, stk.getCode(), stk.getName());
-                    System.out.println("xueqiu followers:" + index.getCode());
+                    log.info("xueqiu followers:" + index.getCode());
                     //update雪球关注人数
                     updateStkFollows(conn, index, cookies);
                 } catch (Exception e) {
@@ -55,7 +54,7 @@ public class XueqiuFollow {
                 Thread.currentThread().sleep(15000);
             }
         }catch (Exception e){
-
+            log.error("error", e);
         } finally {
             CloseUtil.close(conn);
         }

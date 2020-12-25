@@ -18,6 +18,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 @Service("baseRepository")
 public class BaseRepository implements ApplicationContextAware {
@@ -131,6 +132,19 @@ public class BaseRepository implements ApplicationContextAware {
         return (T) q.uniqueResult();
     }
 
+    public Map uniqueResult(String sql, Object... params) {
+        Session session = em.unwrap(Session.class);
+        NativeQuery q = session.createSQLQuery(sql);
+        if(params!=null){
+            for(int i=0,len=params.length;i<len;i++){
+                Object param=params[i];
+                q.setParameter(i+1, param);
+            }
+        }
+        q.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+        return (Map) q.uniqueResult();
+    }
+
     public <T> T findOrCreate(Class<T> entityClass, Object primaryKey) {
         T entity = em.find(entityClass, primaryKey);
         if ( entity != null ) {
@@ -144,6 +158,24 @@ public class BaseRepository implements ApplicationContextAware {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    public int update(String sql, Object... params){
+        Session session = em.unwrap(Session.class);
+        NativeQuery q = session.createSQLQuery(sql);
+        if(params!=null){
+            for(int i=0,len=params.length;i<len;i++){
+                Object param=params[i];
+                q.setParameter(i+1, param);
+            }
+        }
+        return q.executeUpdate();
+    }
+
+    public <T> T saveOrUpdate(T entity){
+        Session session = em.unwrap(Session.class);
+        session.saveOrUpdate(entity);
+        return entity;
     }
 
     /***** hibernate method end *****/

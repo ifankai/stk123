@@ -28,6 +28,19 @@ public class BarSeries {
             return null;
         }
 
+        public <T> T select(T d, T w, T m){
+            switch (this) {
+                case W:
+                case WEEK:
+                    return w;
+                case M:
+                case MONTH:
+                    return m;
+                default:
+                    return d;
+            }
+        }
+
     }
 
     private boolean restoration = true; //是否前复权，默认为true

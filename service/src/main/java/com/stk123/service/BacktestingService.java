@@ -45,7 +45,7 @@ public class BacktestingService {
     @Autowired
     private StockService stockService;
     @Autowired
-    private StkKlineRepository stkKlineRepository;
+    private BarService barService;
 
     public StrategyBacktesting backtesting(List<String> codes, List<String> strategies, String startDate, String endDate) throws InvocationTargetException, IllegalAccessException {
         StrategyBacktesting strategyBacktesting = new StrategyBacktesting();
@@ -61,7 +61,7 @@ public class BacktestingService {
         if(ArrayUtils.contains(environment.getActiveProfiles(), "company")) {
             stocks = this.getStocks(200, codes.stream().toArray(String[]::new));
         }else{
-            stocks = stockService.buildStocks(200, codes);
+            stocks = stockService.buildStocks(codes);
         }
 
         if(startDate != null && endDate != null){
@@ -119,7 +119,7 @@ public class BacktestingService {
                 }
                 results.put(code, bs);
             }*/
-            results = stkKlineRepository.queryTopNByCodeListOrderByKlineDateDesc(count, Arrays.asList(codes));
+            results = barService.queryTopNByCodeListOrderByKlineDateDesc(Arrays.asList(codes), count);
         }
 
         return results.entrySet().stream().map(e -> Stock.build(e.getKey(), "", e.getValue())).collect(Collectors.toList());

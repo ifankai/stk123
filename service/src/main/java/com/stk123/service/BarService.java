@@ -2,32 +2,130 @@ package com.stk123.service;
 
 import com.stk123.common.util.JsonUtils;
 import com.stk123.entity.StkKlineEntity;
+import com.stk123.entity.StkKlineHkEntity;
+import com.stk123.entity.StkKlineUsEntity;
+import com.stk123.model.core.Bar;
+import com.stk123.model.core.BarSeries;
 import com.stk123.model.core.Stock;
+import com.stk123.repository.BaseRepository;
+import com.stk123.repository.StkKlineHkRepository;
 import com.stk123.repository.StkKlineRepository;
+import com.stk123.repository.StkKlineUsRepository;
 import com.stk123.util.HttpUtils;
 import com.stk123.util.ServiceUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class BarService {
 
     @Autowired
     private StkKlineRepository stkKlineRepository;
+    @Autowired
+    private StkKlineHkRepository stkKlineHkRepository;
+    @Autowired
+    private StkKlineUsRepository stkKlineUsRepository;
+    @Autowired
+    private StockService stockService;
+
+
+    public <T> T save(T klineEntity){
+        return BaseRepository.getInstance().save(klineEntity);
+    }
+
+    private final static String sql_queryTopNByCodeOrderByKlineDateDesc =
+            "select code,kline_date as \"date\",open,close,high,low,volumn as volume,amount,last_close,percentage as change,hsl,pe_ttm,pb_ttm " +
+            "from (select * from stk_kline t where code = :1 order by kline_date desc) where rownum <= :2";
+    public BarSeries queryTopNByCodeOrderByKlineDateDesc(String code, Stock.EnumMarket market, Integer rows) {
+        String sql = market.replaceKlineTable(sql_queryTopNByCodeOrderByKlineDateDesc);
+        List<Bar> list = BaseRepository.getInstance().list(sql, Bar.class, code, rows);
+        BarSeries bs = new BarSeries();
+        for(Bar bar : list){
+            bs.add(bar);
+        }
+        return bs;
+    }
+
+    private final static String sql_queryTopNByCodeListOrderByKlineDateDesc =
+            "select code,kline_date as \"date\",open,close,high,low,volumn as volume,amount,last_close,percentage as change,hsl,pe_ttm,pb_ttm from (select t.*, rank() over(partition by t.code order by t.kline_date desc) as rn " +
+            "from stk_kline t where t.code in (:1)) where rn <= :2";
+    @Transactional
+    public LinkedHashMap<String, BarSeries> queryTopNByCodeListOrderByKlineDateDesc(List<String> codes, Stock.EnumMarket market, Integer rows) {
+        String sql = market.replaceKlineTable(sql_queryTopNByCodeListOrderByKlineDateDesc);
+        List<Bar> list = BaseRepository.getInstance().list(sql, Bar.class, codes, rows);
+        LinkedHashMap<String, BarSeries> result = new LinkedHashMap<>(codes.size());
+        for(String code : codes) {
+            result.put(code, new BarSeries());
+        }
+        for(Bar bar : list){
+            BarSeries bs = result.get(bar.getCode());
+            bs.add(bar);
+        }
+        return result;
+    }
 
     @Transactional
-    public StkKlineEntity saveIfNotExisting(StkKlineEntity stkKlineEntity) {
-        Optional<StkKlineEntity> entity = stkKlineRepository.findById(new StkKlineEntity.CompositeKey(stkKlineEntity.getCode(),stkKlineEntity.getKlineDate()));
-        if(!entity.isPresent()){
-            return stkKlineRepository.save(stkKlineEntity);
+    public LinkedHashMap<String, BarSeries> queryTopNByStockListOrderByKlineDateDesc(List<Stock> stocks, Integer rows) {
+        LinkedHashMap<String, BarSeries> result = new LinkedHashMap<>();
+        for(Stock.EnumMarket emStock : Stock.EnumMarket.values()){
+            List<Stock> stockList = stocks.stream().filter(s -> s.getMarket() == emStock).collect(Collectors.toList());
+            List<String> codes = stockList.stream().map(s -> s.getCode()).collect(Collectors.toList());
+            LinkedHashMap<String, BarSeries> map = queryTopNByCodeListOrderByKlineDateDesc(codes, emStock, rows);
+            result.putAll(map);
         }
-        return entity.get();
+        return result;
     }
+
+    @Transactional
+    public LinkedHashMap<String, BarSeries> queryTopNByCodeListOrderByKlineDateDesc(List<String> codes, Integer rows) {
+        List<Stock> stocks = stockService.buildStocks(codes);
+        return this.queryTopNByStockListOrderByKlineDateDesc(stocks, rows);
+    }
+
+
+    private final static String sql_findAllByKlineDateAndCodeIn = "select code,kline_date as \"date\",open,close,high,low,volumn as volume,amount,last_close,percentage as change,hsl,pe_ttm,pb_ttm " +
+            "from stk_kline where kline_date=:1 and code in (:2)";
+    public List<Bar> findAllByKlineDateAndCodeIn(String klineDate, List<String> codes, Stock.EnumMarket market){
+        String sql = market.replaceKlineTable(sql_findAllByKlineDateAndCodeIn);
+        return BaseRepository.getInstance().list(sql, Bar.class, klineDate, codes);
+    }
+
+
+    public <T> T findTop1ByCodeOrderByKlineDateDesc(String code, Class<T> entity){
+        if(entity == StkKlineEntity.class) {
+            return (T) stkKlineRepository.findTop1ByCodeOrderByKlineDateDesc(code);
+        }else if(entity == StkKlineHkEntity.class) {
+            return (T) stkKlineHkRepository.findTop1ByCodeOrderByKlineDateDesc(code);
+        }else if(entity == StkKlineUsEntity.class){
+            return (T) stkKlineUsRepository.findTop1ByCodeOrderByKlineDateDesc(code);
+        }
+        return null;
+    }
+
+    public <T> T findTop1ByCodeOrderByKlineDateDesc(String code, Stock.EnumMarket market){
+        return market.select((T) stkKlineRepository.findTop1ByCodeOrderByKlineDateDesc(code),
+                (T) stkKlineHkRepository.findTop1ByCodeOrderByKlineDateDesc(code),
+                (T) stkKlineUsRepository.findTop1ByCodeOrderByKlineDateDesc(code));
+    }
+
+    private final static String sql_calcAvgMidPeTtm = "select avg(pe_ttm) as avg_pe_ttm,median(pe_ttm) as mid_pe_ttm " +
+            "from stk_kline where kline_date=:1 and pe_ttm is not null and pe_ttm>3 and pe_ttm<200";
+    public Map<String, BigDecimal> calcAvgMidPeTtm(String kdate, Stock.EnumMarket market){
+        String sql = market.replaceKlineTable(sql_calcAvgMidPeTtm);
+        return BaseRepository.getInstance().uniqueResult(sql, kdate);
+    }
+
 
     public void initKLines(Stock stock, int n) throws Exception {
         Date now = new Date();
@@ -64,7 +162,7 @@ public class BarService {
                     stkKlineEntity.setLow(Double.parseDouble(String.valueOf(data.get(5)))/100.0);
                     stkKlineEntity.setVolumn(Double.parseDouble(String.valueOf(data.get(6)))/100.0);
                     stkKlineEntity.setAmount(Double.parseDouble(String.valueOf(data.get(7)))/100.0);
-                    this.saveIfNotExisting(stkKlineEntity);
+                    stkKlineRepository.saveIfNotExisting(stkKlineEntity);
 
                 }
 
@@ -118,7 +216,7 @@ public class BarService {
                         stkKlineEntity.setLow(Double.parseDouble(k[3]));
                         stkKlineEntity.setVolumn(Double.parseDouble(k[5]));
                         stkKlineEntity.setAmount(Double.parseDouble(k[6])/100);
-                        this.saveIfNotExisting(stkKlineEntity);
+                        stkKlineRepository.saveIfNotExisting(stkKlineEntity);
 
 
                    }
@@ -140,7 +238,7 @@ public class BarService {
                     stkKlineEntity.setLow(NumberUtils.createDouble(map.get("9")));
                     stkKlineEntity.setVolumn(NumberUtils.createDouble(map.get("13")));
                     stkKlineEntity.setAmount(map.get("19") == null ? null : NumberUtils.toDouble(map.get("19"))/100);
-                    this.saveIfNotExisting(stkKlineEntity);
+                    stkKlineRepository.saveIfNotExisting(stkKlineEntity);
                 }
 
                 return;
@@ -205,7 +303,7 @@ public class BarService {
                     stkKlineEntity.setPbTtm(pbttm);
                     stkKlineEntity.setPercentage(percentage);
                     //stkKlineEntity.setPsTtm(psttm);
-                    this.saveIfNotExisting(stkKlineEntity);
+                    stkKlineRepository.saveIfNotExisting(stkKlineEntity);
 
                     //this.setCloseChange();
 
@@ -242,22 +340,22 @@ public class BarService {
                     }
                     //System.out.println("date="+date+",lastClose="+lastClose+",open="+open+",close="+close+",high="+high+",low="+low+",volume="+volume+",amount="+amount+",percentage="+percentage+",pettm="+pettm);
 
-                    StkKlineEntity stkKlineEntity = new StkKlineEntity();
-                    stkKlineEntity.setCode(code);
-                    stkKlineEntity.setKlineDate(date);
-                    stkKlineEntity.setOpen(open);
-                    stkKlineEntity.setClose(close);
-                    stkKlineEntity.setLastClose(lastClose);
-                    stkKlineEntity.setHigh(high);
-                    stkKlineEntity.setLow(low);
-                    stkKlineEntity.setVolumn(volume);
-                    stkKlineEntity.setAmount(amount);
+                    StkKlineUsEntity stkKlineUsEntity = new StkKlineUsEntity();
+                    stkKlineUsEntity.setCode(code);
+                    stkKlineUsEntity.setKlineDate(date);
+                    stkKlineUsEntity.setOpen(open);
+                    stkKlineUsEntity.setClose(close);
+                    stkKlineUsEntity.setLastClose(lastClose);
+                    stkKlineUsEntity.setHigh(high);
+                    stkKlineUsEntity.setLow(low);
+                    stkKlineUsEntity.setVolumn(volume);
+                    stkKlineUsEntity.setAmount(amount);
                     //stkKlineEntity.setHsl(hsl);
-                    stkKlineEntity.setPeTtm(pettm);
+                    stkKlineUsEntity.setPeTtm(pettm);
                     //stkKlineEntity.setPbTtm(pbttm);
-                    stkKlineEntity.setPercentage(percentage);
+                    stkKlineUsEntity.setPercentage(percentage);
                     //stkKlineEntity.setPsTtm(psttm);
-                    this.saveIfNotExisting(stkKlineEntity);
+                    stkKlineUsRepository.saveIfNotExisting(stkKlineUsEntity);
 
                     //计算PB
                     /*Double bv = JdbcUtils.first(this.getConnection(), "select fn_value from stk_fn_data_us where type=4013 and code=? order by fn_date desc", params, Double.class);
@@ -298,22 +396,22 @@ public class BarService {
                     }
                     //System.out.println("date="+date+",lastClose="+lastClose+",open="+open+",close="+close+",high="+high+",low="+low+",volume="+volume+",amount="+amount+",percentage="+percentage+",pettm="+pettm);
 
-                    StkKlineEntity stkKlineEntity = new StkKlineEntity();
-                    stkKlineEntity.setCode(code);
-                    stkKlineEntity.setKlineDate(date);
-                    stkKlineEntity.setOpen(open);
-                    stkKlineEntity.setClose(close);
-                    stkKlineEntity.setLastClose(lastClose);
-                    stkKlineEntity.setHigh(high);
-                    stkKlineEntity.setLow(low);
-                    stkKlineEntity.setVolumn(volume);
-                    stkKlineEntity.setAmount(amount);
+                    StkKlineHkEntity stkKlineHkEntity = new StkKlineHkEntity();
+                    stkKlineHkEntity.setCode(code);
+                    stkKlineHkEntity.setKlineDate(date);
+                    stkKlineHkEntity.setOpen(open);
+                    stkKlineHkEntity.setClose(close);
+                    stkKlineHkEntity.setLastClose(lastClose);
+                    stkKlineHkEntity.setHigh(high);
+                    stkKlineHkEntity.setLow(low);
+                    stkKlineHkEntity.setVolumn(volume);
+                    stkKlineHkEntity.setAmount(amount);
                     //stkKlineEntity.setHsl(hsl);
-                    stkKlineEntity.setPeTtm(pettm);
+                    stkKlineHkEntity.setPeTtm(pettm);
                     //stkKlineEntity.setPbTtm(pbttm);
-                    stkKlineEntity.setPercentage(percentage);
+                    stkKlineHkEntity.setPercentage(percentage);
                     //stkKlineEntity.setPsTtm(psttm);
-                    this.saveIfNotExisting(stkKlineEntity);
+                    stkKlineHkRepository.saveIfNotExisting(stkKlineHkEntity);
 
                 }
             }

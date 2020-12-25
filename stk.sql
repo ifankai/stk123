@@ -364,14 +364,14 @@ create table STK_PE
   TOTAL_PB      NUMBER(8,2), --整体pb
   MID_PB        NUMBER(8,2), --中位pb
   MID_PE        NUMBER(8,2), --中位pe
-  RESULT_3      NUMBER(8,2),
+  RESULT_3      NUMBER(8,2), 
   RESULT_4      NUMBER(8,2),
   RESULT_5      NUMBER(8,2),
   RESULT_6      NUMBER(8,2),
-  RESULT_7      NUMBER(8,2),
-  RESULT_8      NUMBER(8,2),
-  RESULT_9      NUMBER(8,2),
-  RESULT_10     NUMBER(8,2),
+  RESULT_7      NUMBER(8,2), --HK average pe
+  RESULT_8      NUMBER(8,2), --HK mid pe
+  RESULT_9      NUMBER(8,2), --US average pe
+  RESULT_10     NUMBER(8,2), --US mid pe
   RESULT_11     NUMBER(8,2),
   RESULT_12     NUMBER(8,2)
 );

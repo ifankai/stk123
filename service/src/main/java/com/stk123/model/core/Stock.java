@@ -7,6 +7,7 @@ import com.stk123.entity.StkKlineEntity;
 import com.stk123.model.json.View;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.repository.StkKlineRepository;
+import com.stk123.service.BarService;
 import com.stk123.service.support.SpringApplicationContext;
 import com.stk123.util.ServiceUtils;
 import lombok.AllArgsConstructor;
@@ -36,14 +37,20 @@ import static com.stk123.model.core.Stock.EnumMarket.US;
 public class Stock {
 
     @Autowired
-    private StkKlineRepository stkKlineRepository;
+    private BarService barService;
 
     @AllArgsConstructor
     public enum EnumMarket {
         CN(1), HK(3), US(2);
 
+        EnumMarket(Integer market){
+            this.market = market;
+            this.klineTable = this.select("stk_kline", "stk_kline_hk", "stk_kline_us");
+        }
         @Getter
         private Integer market;
+        @Getter
+        private String klineTable;
 
         /**
          * @param name 1|2|3|cn|us|hk
@@ -65,6 +72,21 @@ public class Stock {
                 }
             }
             return null;
+        }
+        public <T> T select(T cn, T hk, T us){
+            switch (this){
+                case CN:
+                    return cn;
+                case HK:
+                    return hk;
+                case US:
+                    return us;
+                default:
+                    return null;
+            }
+        }
+        public String replaceKlineTable(String str){
+            return StringUtils.replace(str, "stk_kline", this.getKlineTable());
         }
     }
 
@@ -274,11 +296,12 @@ public class Stock {
         if(this.barSeries != null){
             return this.barSeries;
         }
-        this.barSeries = stkKlineRepository.queryTopNByCodeOrderByKlineDateDesc(this.code, Stock.BarSeriesRows);
+        this.barSeries = barService.queryTopNByCodeOrderByKlineDateDesc(this.code, this.market, Stock.BarSeriesRows);
         return this.barSeries;
     }
     public BarSeries getBarSeries(BarSeries.EnumPeriod period){
-        switch (period) {
+        return period.select(this.getBarSeries(), this.getBarSeriesWeek(), this.getBarSeriesMonth());
+        /*switch (period) {
             case W:
             case WEEK:
                 return this.getBarSeriesWeek();
@@ -287,7 +310,7 @@ public class Stock {
                 return this.getBarSeriesMonth();
             default:
                 return this.getBarSeries();
-        }
+        }*/
     }
 
 
