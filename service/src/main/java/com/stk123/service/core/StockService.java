@@ -1,5 +1,6 @@
 package com.stk123.service.core;
 
+import com.stk123.common.util.PinYin4jUtils;
 import com.stk123.entity.StkEntity;
 import com.stk123.model.core.Stock;
 import com.stk123.model.dto.SearchResult;
@@ -9,14 +10,15 @@ import com.stk123.repository.StkKlineRepository;
 import com.stk123.repository.StkRepository;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,13 +43,20 @@ public class StockService {
 
     @Getter
     @Setter
+    @ToString
     private static class StockCodeAndNameAndPinyin {
         private String code;
         private String name;
         private String pinyin;
+        private String text;
+        private int index;
     }
 
     private static List<StockCodeAndNameAndPinyin> stockCodeAndNameAndPinyinList = null;
+
+    public void clear(){
+        stockCodeAndNameAndPinyinList = null;
+    }
 
     public List<SearchResult> search(String query) {
         if(stockCodeAndNameAndPinyinList == null){
@@ -57,12 +66,53 @@ public class StockService {
                 StockCodeAndNameAndPinyin pinyin = new StockCodeAndNameAndPinyin();
                 pinyin.setCode(projection.getCode());
                 String name = StringUtils.replace(projection.getName(), " ", "");
+                if(name == null) name = projection.getCode();
                 pinyin.setName(name);
 
+                pinyin.setPinyin(String.join("", Arrays.asList(PinYin4jUtils.getHeadByString(name))));
+                pinyin.setText(pinyin.getCode()+pinyin.getName()+pinyin.getPinyin());
+                stockCodeAndNameAndPinyinList.add(pinyin);
             }
         }
-        return null;
 
+        List<StockCodeAndNameAndPinyin> list = new ArrayList<>();
+        for(StockCodeAndNameAndPinyin py : stockCodeAndNameAndPinyinList){
+            int index = StringUtils.indexOfIgnoreCase(py.getText(), query);
+            if(index >= 0){
+                StockCodeAndNameAndPinyin spy = new StockCodeAndNameAndPinyin();
+                spy.setCode(py.code);
+                spy.setName(py.name);
+                spy.setText(py.text);
+                spy.setIndex(index);
+                //System.out.println(spy);
+                if(addPinyinList(list, spy)){
+                    break;
+                }
+            }
+        }
+        List<SearchResult> result = new ArrayList<>();
+        for(StockCodeAndNameAndPinyin py : list){
+            SearchResult sr = new SearchResult();
+            sr.setType("stock");
+            sr.setText(py.getCode()+" - "+py.getName());
+            result.add(sr);
+        }
+        return result;
+
+    }
+
+    private boolean addPinyinList(List<StockCodeAndNameAndPinyin> list, StockCodeAndNameAndPinyin py){
+        if(list.size() < 10){
+            list.add(py);
+        }else{
+            StockCodeAndNameAndPinyin last = list.get(list.size()-1);
+            if(last.index == 0){
+                return true;
+            }
+            list.set(list.size()-1, py);
+        }
+        list.sort(Comparator.comparingInt(StockCodeAndNameAndPinyin::getIndex));
+        return false;
     }
 
 }

@@ -22,10 +22,16 @@ public class SearchController {
 
     @RequestMapping("/{query}")
     @ResponseBody
-    public RequestResult<Collection<SearchResult>> search(@PathVariable("query")Integer query){
-        Collection<SearchResult> list;
+    public RequestResult<Collection<SearchResult>> search(@PathVariable("query")String query){
+        Collection<SearchResult> results = stockService.search(query);
+        return RequestResult.success(results);
+    }
 
-        return RequestResult.success(null);
+    @RequestMapping("/clear/")
+    @ResponseBody
+    public RequestResult<Collection<SearchResult>> clear(){
+        stockService.clear();
+        return RequestResult.success();
     }
 
 }

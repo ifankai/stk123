@@ -171,6 +171,11 @@
             <artifactId>jsqlparser</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.belerweb</groupId>
+            <artifactId>pinyin4j</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
