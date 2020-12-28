@@ -9,7 +9,7 @@ import com.stk123.model.constant.TextConstant;
 import com.stk123.model.xueqiu.XueqiuPost;
 import com.stk123.model.xueqiu.XueqiuPostRoot;
 import com.stk123.repository.StkTextRepository;
-import com.stk123.service.TextService;
+import com.stk123.service.core.TextService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
 import org.quartz.Job;

@@ -1,4 +1,4 @@
-package com.stk123.service;
+package com.stk123.service.core;
 
 import com.stk123.common.util.JsonUtils;
 import com.stk123.entity.StkKlineEntity;
@@ -16,10 +16,6 @@ import com.stk123.util.ServiceUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

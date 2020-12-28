@@ -1,4 +1,4 @@
-package com.stk123.service;
+package com.stk123.service.core;
 
 import com.stk123.model.core.BarSeries;
 import com.stk123.model.core.Stock;

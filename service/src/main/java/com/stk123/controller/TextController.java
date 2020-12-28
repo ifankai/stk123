@@ -6,7 +6,7 @@ import com.stk123.model.dto.PageRoot;
 import com.stk123.model.constant.TextConstant;
 import com.stk123.model.dto.TextDto;
 import com.stk123.repository.StkTextRepository;
-import com.stk123.service.TextService;
+import com.stk123.service.core.TextService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;

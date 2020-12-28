@@ -1,4 +1,4 @@
-package com.stk123.service;
+package com.stk123.service.core;
 
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,7 +10,8 @@ import com.stk123.model.json.View;
 import com.stk123.model.strategy.Strategy;
 import com.stk123.model.strategy.StrategyBacktesting;
 import com.stk123.model.strategy.sample.Sample;
-import com.stk123.repository.StkKlineRepository;
+import com.stk123.service.core.BarService;
+import com.stk123.service.core.StockService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.reflections.ReflectionUtils;

@@ -2,15 +2,13 @@ package com.stk123.task.schedule;
 
 import com.stk123.common.util.EmailUtils;
 import com.stk123.entity.StkIndustryEntity;
-import com.stk123.entity.StkKlineEntity;
 import com.stk123.entity.StkKlineUsEntity;
 import com.stk123.entity.StkPeEntity;
 import com.stk123.model.core.Bar;
-import com.stk123.model.core.BarSeries;
 import com.stk123.model.core.Stock;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.repository.*;
-import com.stk123.service.BarService;
+import com.stk123.service.core.BarService;
 import com.stk123.service.task.Task;
 import com.stk123.task.tool.TaskUtils;
 import lombok.extern.apachecommons.CommonsLog;

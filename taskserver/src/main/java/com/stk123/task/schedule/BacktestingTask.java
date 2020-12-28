@@ -1,7 +1,7 @@
 package com.stk123.task.schedule;
 
 import com.stk123.model.strategy.StrategyBacktesting;
-import com.stk123.service.BacktestingService;
+import com.stk123.service.core.BacktestingService;
 import com.stk123.service.task.Task;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;

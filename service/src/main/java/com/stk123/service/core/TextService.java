@@ -1,4 +1,4 @@
-package com.stk123.service;
+package com.stk123.service.core;
 
 import com.stk123.entity.StkTextEntity;
 import com.stk123.repository.BaseRepository;
