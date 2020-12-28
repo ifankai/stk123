@@ -442,7 +442,7 @@ alter table stk_kline_us add pb_ttm number(10,2);
 alter table stk_kline_us add ps_ttm number(10,2);
 create index IDX_KLINE_M__DATE on STK_KLINE_US (KLINE_DATE) tablespace STK_TABLESPACE_2;
 create index IDX_KLINE_M__CODE_DATE on STK_KLINE_US (CODE, KLINE_DATE) tablespace STK_TABLESPACE_2;
-
+alter table stk_kline_us modify amount number(20,2);
 
 CREATE TABLE STK_KLINE_HK
    (	"CODE" VARCHAR2(10),
@@ -2841,9 +2841,14 @@ select * from (select * from stk_kline t where code='000863' order by kline_date
 
 
 select * from stk_kline t where kline_date='20201201';
-select * from stk_kline t where kline_date='20201224';
+select * from stk_kline t where kline_date='20201225';
+select * from stk_kline_hk where kline_date='20201224';
+select * from stk_kline_us where kline_date='20201224';
+select * from stk_kline_us where code='.INX' order by kline_date desc;
 select count(*) from stk_kline t where kline_date='20201215';
-select * from stk_cn;
+select * from stk where market=2 and cate=2 order by code;
+
+
 
 
 select code,kline_date as "date",open,close,high,low,volumn as volume,amount,last_close,percentage as change,hsl 
@@ -2853,6 +2858,7 @@ select * from stk_text stktextent0_ where stktextent0_.type=3 and (stktextent0_.
 
 select * from stk_text where type=3 order by insert_time desc;
 select * from stk_pe order by report_date desc for update;
+select avg(pe_ttm) as avg_pe_ttm,median(pe_ttm) as mid_pe_ttm from stk_kline_hk where kline_date=? and pe_ttm is not null and pe_ttm>3 and pe_ttm<200
 
 select avg(pe_ttm) as avg_pe_ttm,median(pe_ttm) as mid_pe_ttm from stk_kline where kline_date='20201224' and pe_ttm is not null and pe_ttm>3 and pe_ttm<200
 select avg(pb_ttm),median(pb_ttm) from stk_kline where kline_date='20201224' and pb_ttm is not null and pb_ttm>0 and pb_ttm<30;

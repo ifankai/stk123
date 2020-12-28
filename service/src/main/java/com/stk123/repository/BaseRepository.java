@@ -85,14 +85,7 @@ public class BaseRepository implements ApplicationContextAware {
         NativeQuery q = session.createSQLQuery(sql);
         if(params!=null){
             for(int i=0,len=params.length;i<len;i++){
-                Object param = params[i];
-                if(param instanceof Object[]) {
-                    q.setParameterList(String.valueOf(i + 1), (Object[]) param);
-                } else if(param instanceof Collection){
-                    q.setParameterList(String.valueOf(i + 1), (Collection) param);
-                } else {
-                    q.setParameter(String.valueOf(i + 1), param);
-                }
+                setParameter(q, i, params[i]);
             }
         }
 //        q.setResultTransformer(Transformers.aliasToBean(dto));
@@ -106,6 +99,16 @@ public class BaseRepository implements ApplicationContextAware {
 
         List<T> list = q.list();
         return list;
+    }
+
+    private void setParameter(NativeQuery q, int i, Object param){
+        if(param instanceof Object[]) {
+            q.setParameterList(String.valueOf(i + 1), (Object[]) param);
+        } else if(param instanceof Collection){
+            q.setParameterList(String.valueOf(i + 1), (Collection) param);
+        } else {
+            q.setParameter(String.valueOf(i + 1), param);
+        }
     }
 
     public <T> NativeQuery<T> getNativeQuery(String sql, Class<T> dto) {
@@ -124,8 +127,7 @@ public class BaseRepository implements ApplicationContextAware {
         NativeQuery q = session.createSQLQuery(sql);
         if(params!=null){
             for(int i=0,len=params.length;i<len;i++){
-                Object param=params[i];
-                q.setParameter(i+1, param);
+                setParameter(q, i, params[i]);
             }
         }
         q.setResultTransformer(Transformers.aliasToBean(dto));
@@ -137,8 +139,7 @@ public class BaseRepository implements ApplicationContextAware {
         NativeQuery q = session.createSQLQuery(sql);
         if(params!=null){
             for(int i=0,len=params.length;i<len;i++){
-                Object param=params[i];
-                q.setParameter(i+1, param);
+                setParameter(q, i, params[i]);
             }
         }
         q.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
@@ -165,8 +166,7 @@ public class BaseRepository implements ApplicationContextAware {
         NativeQuery q = session.createSQLQuery(sql);
         if(params!=null){
             for(int i=0,len=params.length;i<len;i++){
-                Object param=params[i];
-                q.setParameter(i+1, param);
+                setParameter(q, i, params[i]);
             }
         }
         return q.executeUpdate();

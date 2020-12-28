@@ -43,12 +43,15 @@ public class Stock {
 
         EnumMarket(Integer market){
             this.market = market;
-            this.klineTable = this.select("stk_kline", "stk_kline_hk", "stk_kline_us");
         }
         @Getter
         private Integer market;
         @Getter
         private String klineTable;
+
+        public String getKlineTable(){
+            return klineTable == null ? this.klineTable = this.select("stk_kline", "stk_kline_hk", "stk_kline_us") : klineTable;
+        }
 
         /**
          * @param name 1|2|3|cn|us|hk
