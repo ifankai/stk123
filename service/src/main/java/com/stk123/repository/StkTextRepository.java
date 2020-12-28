@@ -2,6 +2,7 @@ package com.stk123.repository;
 
 import com.stk123.entity.StkTextEntity;
 import com.stk123.model.dto.TextDto;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -65,4 +66,5 @@ public interface StkTextRepository extends JpaRepository<StkTextEntity, Long> {
 //            "on t.id=p.id where t.code=:code and t.type=:type order by t.insert_time desc", nativeQuery = true)
 //    <T> Collection<T> findAllByCodeAndTypeOrderByInsertTimeDesc(@Param("code")String code, @Param("type")Integer type, Class<T> clazz);
 
+    List<StkTextEntity> findAllByCreatedAtGreaterThanAndTextLikeOrderByCreatedAtDesc(Date date, String text, Pageable pageable);
 }

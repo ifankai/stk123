@@ -3,6 +3,7 @@ package com.stk123.repository;
 import com.stk123.entity.StkEntity;
 import com.stk123.model.core.Stock;
 import com.stk123.model.projection.StockBasicProjection;
+import com.stk123.model.projection.StockCodeNameProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,4 +25,6 @@ public interface StkRepository extends JpaRepository<StkEntity, String> {
     @Query(value = "select code as code,name as name,market as market,cate as cate,place as place from StkEntity where code in (:codes)")
     List<StockBasicProjection> findAllByCodes(@Param("codes") List<String> codes);
 
+    @Query(value = "select code as code,name as name,case when market=1 or market=3 then F_TRANS_PINYIN_CAPITAL(name) else name end pinyin from stk", nativeQuery = true)
+    List<StockCodeNameProjection> findAllByOrderByCode();
 }

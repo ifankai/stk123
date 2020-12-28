@@ -11,6 +11,9 @@ import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,9 +34,14 @@ public class TextController {
 
     @RequestMapping(value = {"","/{type}"}, method = RequestMethod.GET)
     @ResponseBody
-    public RequestResult queryByType(@PathVariable(value = "type", required = false)String type,
-                                     @RequestParam(value = "createdAtAfter", required = false)Long createdAtAfter,
-                                     @RequestParam(value = "code", required = false)String code){
+    public RequestResult<PageRoot<StkTextEntity>>
+                queryByType(@PathVariable(value = "type", required = false)String type,
+                            @RequestParam(value = "createdAtAfter", required = false)Long createdAtAfter,
+                            @RequestParam(value = "code", required = false)String code,
+                            @RequestParam(value = "keyword", required = false)String keyword,
+                            @RequestParam(value = "page", required = false)Integer page,
+                            @RequestParam(value = "perPage", required = false)Integer perPage
+    ){
         log.info("query....." + type);
         List<StkTextEntity> list = null;
         Integer count = null;
@@ -46,6 +54,9 @@ public class TextController {
         if(code != null){
             list = stkTextRepository.findAllByCodeAndCreatedAtGreaterThanOrderByInsertTimeDesc(code, dateAfter);
             return RequestResult.success(PageRoot.unPageable(list, count));
+        }else if(keyword != null){
+            list = stkTextRepository.findAllByCreatedAtGreaterThanAndTextLikeOrderByCreatedAtDesc(dateAfter, keyword, PageRequest.of(page, perPage, Sort.by("createdAt").descending()));
+            return RequestResult.success(PageRoot.pageable(list, page, perPage, count));
         }
         if(type == null || StringUtils.equals(type, "all") || StringUtils.equals(type, "unread")) {
 
