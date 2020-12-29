@@ -54,7 +54,7 @@ public class StockService {
 
     private static List<StockCodeAndNameAndPinyin> stockCodeAndNameAndPinyinList = null;
 
-    public void clear(){
+    public void delete(){
         stockCodeAndNameAndPinyinList = null;
     }
 
@@ -84,7 +84,6 @@ public class StockService {
                 spy.setName(py.name);
                 spy.setText(py.text);
                 spy.setIndex(index);
-                //System.out.println(spy);
                 if(addPinyinList(list, spy)){
                     break;
                 }
@@ -97,6 +96,7 @@ public class StockService {
             sr.setText(py.getCode()+" - "+py.getName());
             result.add(sr);
         }
+        //System.out.println(result);
         return result;
 
     }

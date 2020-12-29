@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Collection;
@@ -27,10 +28,10 @@ public class SearchController {
         return RequestResult.success(results);
     }
 
-    @RequestMapping("/clear/")
+    @RequestMapping(value = "", method = RequestMethod.DELETE)
     @ResponseBody
-    public RequestResult<Collection<SearchResult>> clear(){
-        stockService.clear();
+    public RequestResult<Collection<SearchResult>> delete(){
+        stockService.delete();
         return RequestResult.success();
     }
 

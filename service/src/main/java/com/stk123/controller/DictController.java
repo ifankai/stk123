@@ -9,9 +9,7 @@ import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -24,7 +22,7 @@ public class DictController {
     @Autowired
     private DictService dictService;
 
-    @RequestMapping({"/{type}","/{type}/{key}"})
+    @GetMapping(value = {"/{type}","/{type}/{key}"})
     @ResponseBody
     @JsonView(View.Default.class)
     public RequestResult<Collection<StkDictionaryEntity>> getDict(@PathVariable("type")Integer type,
@@ -36,5 +34,12 @@ public class DictController {
             list = dictService.getDictionaryOrderByParam(type);
         }
         return RequestResult.success(list);
+    }
+
+    @DeleteMapping(value = "")
+    @ResponseBody
+    public RequestResult init(){
+        dictService.init();
+        return RequestResult.success();
     }
 }

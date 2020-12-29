@@ -17,6 +17,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -51,13 +53,6 @@ public class TextController {
         }
         Date dateAfter = new Date(createdAtAfter);
 
-        if(code != null){
-            list = stkTextRepository.findAllByCodeAndCreatedAtGreaterThanOrderByInsertTimeDesc(code, dateAfter);
-            return RequestResult.success(PageRoot.unPageable(list, count));
-        }else if(keyword != null){
-            list = stkTextRepository.findAllByCreatedAtGreaterThanAndTextLikeOrderByCreatedAtDesc(dateAfter, keyword, PageRequest.of(page, perPage, Sort.by("createdAt").descending()));
-            return RequestResult.success(PageRoot.pageable(list, page, perPage, count));
-        }
         if(type == null || StringUtils.equals(type, "all") || StringUtils.equals(type, "unread")) {
 
             list = stkTextRepository.queryTop5ByTypeAndReadDateNullAndInsertTimeGreaterThanOrderByInsertTimeAsc(TextConstant.TYPE_XUEQIU, dateAfter);
@@ -71,6 +66,22 @@ public class TextController {
             list = stkTextRepository.findTop20ByTypeAndReadDateNotNullOrderByInsertTimeDesc(TextConstant.TYPE_XUEQIU);
         }else if(StringUtils.equals(type, "favorite")) {
             list = stkTextRepository.findAllByTypeAndFavoriteDateNotNullOrderByFavoriteDateDesc(TextConstant.TYPE_XUEQIU);
+        }else if(StringUtils.equals(type, "search")) {
+            createdAtAfter = DateUtils.addYears(new Date(), -1).getTime();
+            dateAfter = new Date(createdAtAfter);
+            if (code != null) {
+                list = stkTextRepository.findAllByCodeAndCreatedAtGreaterThanOrderByInsertTimeDesc(code, dateAfter);
+                return RequestResult.success(PageRoot.unPageable(list, count));
+            } else if (keyword != null) {
+                try {
+                    keyword = URLDecoder.decode(keyword, "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                list = stkTextRepository.findAllByCreatedAtGreaterThanAndTextLikeOrderByCreatedAtDesc(dateAfter, "%"+keyword+"%", PageRequest.of(page-1, perPage));
+                System.out.println(list);
+                return RequestResult.success(PageRoot.pageable(list, page, perPage, count));
+            }
         }
         return RequestResult.success(PageRoot.unPageable(list, count));
     }

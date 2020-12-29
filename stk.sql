@@ -2816,7 +2816,7 @@ select sum(rate), name, count(*), sum(rate) / count(*) * 100
 select * from stk_text where code='000671' order by id desc;
 select * from stk where code in ('TSLA','885467');
 select * from stk where hot is null;
-select * from stk_dictionary where type=1006 for update;
+select * from stk_dictionary where type=1200 for update;
 
 select value from v$parameter where name = 'processes';
 select count(*) from v$process;
@@ -2844,7 +2844,7 @@ select * from stk_kline t where kline_date='20201201';
 select * from stk_kline t where kline_date='20201225';
 select * from stk_kline_hk where kline_date='20201224';
 select * from stk_kline_us where kline_date='20201224';
-select * from stk_kline_us where code='.INX' order by kline_date desc;
+select * from stk_kline_us where code='.DJI' order by kline_date desc;
 select count(*) from stk_kline t where kline_date='20201215';
 select * from stk where market=2 and cate=2 order by code;
 
@@ -2862,3 +2862,33 @@ select avg(pe_ttm) as avg_pe_ttm,median(pe_ttm) as mid_pe_ttm from stk_kline_hk 
 
 select avg(pe_ttm) as avg_pe_ttm,median(pe_ttm) as mid_pe_ttm from stk_kline where kline_date='20201224' and pe_ttm is not null and pe_ttm>3 and pe_ttm<200
 select avg(pb_ttm),median(pb_ttm) from stk_kline where kline_date='20201224' and pb_ttm is not null and pb_ttm>0 and pb_ttm<30;
+
+
+select *
+  from (select row_.*, rownum rownum_
+          from (select stktextent0_.id              as id1_36_,
+                       stktextent0_.code            as code2_36_,
+                       stktextent0_.code_type       as code_type3_36_,
+                       stktextent0_.created_at      as created_at4_36_,
+                       stktextent0_.disp_order      as disp_order5_36_,
+                       stktextent0_.favorite_date   as favorite_date6_36_,
+                       stktextent0_.followers_count as followers_count7_36_,
+                       stktextent0_.insert_time     as insert_time8_36_,
+                       stktextent0_.post_id         as post_id9_36_,
+                       stktextent0_.read_date       as read_date10_36_,
+                       stktextent0_.reply_count     as reply_count11_36_,
+                       stktextent0_.sub_type        as sub_type12_36_,
+                       stktextent0_.text            as text13_36_,
+                       stktextent0_.text_desc       as text_desc14_36_,
+                       stktextent0_.title           as title15_36_,
+                       stktextent0_.type            as type16_36_,
+                       stktextent0_.update_time     as update_time17_36_,
+                       stktextent0_.user_avatar     as user_avatar18_36_,
+                       stktextent0_.user_id         as user_id19_36_,
+                       stktextent0_.user_name       as user_name20_36_
+                  from stk_text stktextent0_
+                 where stktextent0_.created_at > sysdate-365
+                   and (stktextent0_.text like '%订单饱满%')
+                 order by stktextent0_.created_at desc) row_
+         where rownum <= 10)
+ where rownum_ > 0

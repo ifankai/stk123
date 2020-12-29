@@ -20,6 +20,7 @@ public class DictService {
 
     @PostConstruct
     public void init(){
+        dict.clear();
         List<StkDictionaryEntity> dicts = stkDictionaryRepository.findAll();
         for(StkDictionaryEntity sd : dicts){
             if(dict.get(sd.getType()) == null){
@@ -38,7 +39,7 @@ public class DictService {
 
     public Collection<StkDictionaryEntity> getDictionaryOrderByParam(Integer type){
         Collection<StkDictionaryEntity> list = getDictionary(type);
-        return list.stream().sorted(Comparator.nullsLast(Comparator.comparing(StkDictionaryEntity::getParam))).collect(Collectors.toList());
+        return list.stream().sorted(Comparator.comparing(StkDictionaryEntity::getParam, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
     }
 
     public StkDictionaryEntity getDictionary(Integer type, String key){
