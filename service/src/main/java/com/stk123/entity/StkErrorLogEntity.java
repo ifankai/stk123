@@ -19,6 +19,9 @@ public class StkErrorLogEntity {
     @Column(name = "CODE", nullable = true, length = 10)
     private String code;
 
+    @Column(name = "TEXT", nullable = true)
+    private String text;
+
     @Column(name = "ERROR", nullable = true)
     private String error;
 

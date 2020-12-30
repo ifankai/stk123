@@ -194,6 +194,7 @@ alter table stk_error_log
   references stk (code);
 alter table stk_error_log disable constraint fk_error_log__code ;
 alter table stk_error_log add id number(8);
+alter table stk_error_log add text varchar2(1000);
 alter table stk_error_log add constraint pk_error_log_id primary key (id);
 create sequence s_error_log_id
 　　INCREMENT BY 1
