@@ -193,6 +193,15 @@ alter table stk_error_log
   add constraint fk_error_log__code foreign key (code)
   references stk (code);
 alter table stk_error_log disable constraint fk_error_log__code ;
+alter table stk_error_log add id number(8);
+alter table stk_error_log add constraint pk_error_log_id primary key (id);
+create sequence s_error_log_id
+　　INCREMENT BY 1
+　　START WITH 100000
+　　NOMAXVALUE
+　　NOCYCLE
+　　CACHE 10;
+
 
 create table stk_industry_type(
   id number(6),

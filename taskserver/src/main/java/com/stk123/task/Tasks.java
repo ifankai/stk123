@@ -85,7 +85,7 @@ public class Tasks {
     @Scheduled(cron = "0 30 15 ? * MON-SAT")
     public void initialKLineCN() {
         //initialKLine.run();
-        taskContainer.start(createTask(BarTask.class));
+        taskContainer.start(createTask(BarTask.class), "CN");
     }
     @Scheduled(cron = "0 30 16 ? * MON-SAT")
     public void initialKLineHK() {

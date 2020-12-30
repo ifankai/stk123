@@ -25,6 +25,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: com.belerweb:pinyin4j:2.5.1" level="project" />
     <orderEntry type="module" module-name="common" />
     <orderEntry type="library" name="Maven: com.stk:commons-digester:1.0" level="project" />
     <orderEntry type="library" name="Maven: com.stk:IKAnalyzer2012FF_u1:1.0" level="project" />

@@ -123,32 +123,13 @@ public class StkEntity implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         StkEntity stkEntity = (StkEntity) o;
-        return Objects.equals(code, stkEntity.code) &&
-                Objects.equals(name, stkEntity.name) &&
-                Objects.equals(insertTime, stkEntity.insertTime) &&
-                Objects.equals(listingDate, stkEntity.listingDate) &&
-                Objects.equals(totalCapital, stkEntity.totalCapital) &&
-                Objects.equals(status, stkEntity.status) &&
-                Objects.equals(statusDate, stkEntity.statusDate) &&
-                Objects.equals(earningExpect, stkEntity.earningExpect) &&
-                Objects.equals(earningExpectDate, stkEntity.earningExpectDate) &&
-                Objects.equals(companyProfile, stkEntity.companyProfile) &&
-                Objects.equals(saleLimit, stkEntity.saleLimit) &&
-                Objects.equals(market, stkEntity.market) &&
-                Objects.equals(yearEnd, stkEntity.yearEnd) &&
-                Objects.equals(nextQuarterEarning, stkEntity.nextQuarterEarning) &&
-                Objects.equals(nextEarning, stkEntity.nextEarning) &&
-                Objects.equals(cate, stkEntity.cate) &&
-                Objects.equals(f9, stkEntity.f9) &&
-                Objects.equals(address, stkEntity.address) &&
-                Objects.equals(hot, stkEntity.hot) &&
-                Objects.equals(fnCurrency, stkEntity.fnCurrency);
+        return Objects.equals(code, stkEntity.code);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(code, name, insertTime, listingDate, totalCapital, status, statusDate, earningExpect, earningExpectDate, companyProfile, saleLimit, market, yearEnd, nextQuarterEarning, nextEarning, cate, f9, address, hot, fnCurrency);
+        return Objects.hash(code);
     }
 
 //    @OneToMany(mappedBy = "stkByCode")

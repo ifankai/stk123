@@ -1,5 +1,6 @@
 package com.stk123.task.schedule;
 
+import com.stk123.common.CommonUtils;
 import com.stk123.common.util.EmailUtils;
 import com.stk123.entity.StkIndustryEntity;
 import com.stk123.entity.StkKlineUsEntity;
@@ -29,7 +30,7 @@ import java.util.stream.Collectors;
 @CommonsLog
 @Service
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class BarTask extends Task {
+public class BarTask extends AbstractTask {
 
     @Autowired
     private StkKlineRepository stkKlineRepository;
@@ -44,84 +45,90 @@ public class BarTask extends Task {
     @Autowired
     private StkIndustryRepository stkIndustryRepository;
 
-    private final Date now = new Date();
-    private String today = TaskUtils.getToday();//"20160923";
-    private int dayOfWeek;
-    private boolean isWorkingDay;
-    private Stock.EnumMarket market = Stock.EnumMarket.CN; //default A stock
-    private boolean init = true;
-    private boolean analyse = true;
-
-    @Override
-    public void execute(String... args) throws Exception {
-        if (args != null && args.length > 0) {
-            for (String arg : args) {
-                if ("US".equalsIgnoreCase(arg)) {
-                    market = Stock.EnumMarket.US;
-                }
-                if ("HK".equalsIgnoreCase(arg)) {
-                    market = Stock.EnumMarket.HK;
-                }
-                if ("init".equalsIgnoreCase(arg)) {
-                    init = true;
-                    analyse = false;
-                }
-                if ("analyse".equalsIgnoreCase(arg)) {
-                    init = false;
-                    analyse = true;
-                }
-                if(arg.startsWith("today=")){
-                    today = StringUtils.split(arg, "=")[1];
-                }
-            }
-        }
-
-        dayOfWeek = TaskUtils.getDayOfWeek(now);
-        isWorkingDay = (dayOfWeek == 1 || dayOfWeek == 2 || dayOfWeek == 3 || dayOfWeek == 4 || dayOfWeek == 5)?true:false;
-        log.info("today:"+today);
-        log.info("isWorkingDay:"+isWorkingDay);
-
-        if(init){
-            log.info("----------开始初始化----------");
-            init();
-            log.info("----------结束初始化----------");
-        }
-        if (!isWorkingDay) {
-            EmailUtils.send("周六数据同步完成！！！", "...");
-            return;
-        }
-
-        if(analyse){
-            log.info("----------开始分析----------");
-            analyse();
-            log.info("----------结束分析----------");
-        }
-
+    public static void main(String[] args) throws Exception {
+        AbstractTask task = new BarTask();
+        task.execute("analyse", "common", "today=20200101");
+        System.out.println(task.today);
     }
 
-    public void init(){
-        if (market == Stock.EnumMarket.CN) {
-            initCN();
-        }else if(market == Stock.EnumMarket.HK){
-            initHK();
-        }else if(market == Stock.EnumMarket.US){
-            initUS();
-        }
+
+//    private boolean init = true;
+//    private boolean analyse = true;
+
+//    @Override
+//    public void execute(String... args) throws Exception {
+//        if (args != null && args.length > 0) {
+//            for (String arg : args) {
+//                if ("US".equalsIgnoreCase(arg)) {
+//                    market = Stock.EnumMarket.US;
+//                }
+//                if ("HK".equalsIgnoreCase(arg)) {
+//                    market = Stock.EnumMarket.HK;
+//                }
+//                if ("init".equalsIgnoreCase(arg)) {
+//                    init = true;
+//                    analyse = false;
+//                }
+//                if ("analyse".equalsIgnoreCase(arg)) {
+//                    init = false;
+//                    analyse = true;
+//                }
+//                if(arg.startsWith("today=")){
+//                    today = StringUtils.split(arg, "=")[1];
+//                }
+//            }
+//        }
+//
+//        log.info("today:"+today);
+//        log.info("isWorkingDay:"+isWorkingDay);
+//
+//        if(init){
+//            log.info("----------开始初始化----------");
+//            init();
+//            log.info("----------结束初始化----------");
+//        }
+//        if (!isWorkingDay) {
+//            EmailUtils.send("周六数据同步完成！！！", "...");
+//            return;
+//        }
+//
+//        if(analyse){
+//            log.info("----------开始分析----------");
+//            analyse();
+//            log.info("----------结束分析----------");
+//        }
+//
+//    }
+//
+//    public void init(){
+//        if (market == Stock.EnumMarket.CN) {
+//            initCN();
+//        }else if(market == Stock.EnumMarket.HK){
+//            initHK();
+//        }else if(market == Stock.EnumMarket.US){
+//            initUS();
+//        }
+//    }
+//
+//    public void analyse(){
+//        if (market == Stock.EnumMarket.CN) {
+//            analyseCN();
+//        }else if (market == Stock.EnumMarket.HK) {
+//            analyseHK();
+//        }else if (market == Stock.EnumMarket.US) {
+//            analyseUS();
+//        }
+//
+//    }
+
+    public void register(){
+        this.register("initCN", () -> initCN());
+        this.register("initHK", this::initHK);
+        this.register("initUS", this::initUS);
+        this.register("analyseCN", this::analyseCN);
+        this.register("analyseHK", this::analyseHK);
+        this.register("analyseUS", this::analyseUS);
     }
-
-    public void analyse(){
-        if (market == Stock.EnumMarket.CN) {
-            analyseCN();
-        }else if (market == Stock.EnumMarket.HK) {
-            analyseHK();
-        }else if (market == Stock.EnumMarket.US) {
-            analyseUS();
-        }
-
-        //Public analyse
-
-    }
-
 
     public void initCN() {
         stkKlineRepository.deleteAllByKlineDateAfterToday();
@@ -271,6 +278,13 @@ public class BarTask extends Task {
         stkPeEntity.setAvgPb(averagePB);
         stkPeRepository.save(stkPeEntity);
 
+        String stotalPE = CommonUtils.numberFormat2Digits(totalPE);
+        String smidPE = CommonUtils.numberFormat2Digits(midPE);
+        String stotalPB = CommonUtils.numberFormat2Digits(totalPB);
+        String smidPB = CommonUtils.numberFormat2Digits(midPB);
+        String saveragePE = CommonUtils.numberFormat2Digits(averagePE);
+        String saveragePB = CommonUtils.numberFormat2Digits(averagePB);
+
         String peAndpeg = "市场整体中位PB低点大约是2PB：<br>" +
                 "2008年最低点约1700点附近，中位数市净率约2倍。<br>" +
                 "2012年前后最低点大约2000点，中位数市净率约2倍。<br>" +
@@ -285,14 +299,14 @@ public class BarTask extends Task {
         pe1.add("");pe1.add("平均PE");pe1.add("中位PE");pe1.add("平均PB");pe1.add("中位PB");pe1.add("统计数");
         pe.add(pe1);
         List<String> pe2 = new ArrayList<String>();
-        pe2.add("成长股");pe2.add(String.valueOf(averagePE));pe2.add("");pe2.add(String.valueOf(averagePB));pe2.add("");pe2.add(String.valueOf(peCnt));
+        pe2.add("成长股");pe2.add(saveragePE);pe2.add("");pe2.add(saveragePB);pe2.add("");pe2.add(String.valueOf(peCnt));
         pe.add(pe2);
         List<String> pe3 = new ArrayList<String>();
-        pe3.add("全市场");pe3.add(String.valueOf(totalPE));pe3.add(String.valueOf(midPE));pe3.add(String.valueOf(totalPB));pe3.add(String.valueOf(midPB));pe3.add("");
+        pe3.add("全市场");pe3.add(stotalPE);pe3.add(smidPE);pe3.add(stotalPB);pe3.add(smidPB);pe3.add("");
         pe.add(pe3);
-        EmailUtils.sendAndReport("平均PE:"+totalPE+",中位PE:"+midPE+",整体PB:"+totalPB+",中位PB:"+midPB+
-                        ";成长股平均PE:"+averagePE+",PB:"+averagePB+",日期:"+today,
-                TaskUtils.createHtmlTable(null, pe) + "<br>" + peAndpeg );
+        EmailUtils.sendAndReport("平均PE:"+ stotalPE +",中位PE:"+smidPE+",整体PB:"+stotalPB+",中位PB:"+smidPB+
+                                      ";成长股平均PE:"+saveragePE+",PB:"+saveragePB+",日期:"+today,
+                                 TaskUtils.createHtmlTable(null, pe) + "<br>" + peAndpeg );
     }
 
 

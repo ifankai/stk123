@@ -46,7 +46,7 @@ public class ExceptionUtils {
 		e.printStackTrace(new PrintWriter(aWriter));
 		params.add(JdbcUtils.createClob(aWriter.getBuffer().toString()));
 		params.add(new Timestamp(new Date().getTime()));
-		JdbcUtils.insert(conn, "insert into stk_error_log(code,error,insert_time) values(?,?,?)", params);
+		JdbcUtils.insert(conn, "insert into stk_error_log(s_error_log_id.nextval,code,error,insert_time) values(?,?,?)", params);
 	}
 
 	public static Exception exception(String msg, Exception e){
