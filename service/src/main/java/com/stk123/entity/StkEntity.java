@@ -38,7 +38,7 @@ public class StkEntity implements Serializable {
 
     @Basic
     @Column(name = "TOTAL_CAPITAL", nullable = true, precision = 2)
-    private Long totalCapital;
+    private Double totalCapital;
 
     @Basic
     @Column(name = "STATUS", nullable = true, precision = 0)

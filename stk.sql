@@ -189,9 +189,9 @@ create table stk_error_log(
   error  clob,
   insert_time date
 );
-alter table stk_error_log
-  add constraint fk_error_log__code foreign key (code)
-  references stk (code);
+-- alter table stk_error_log
+--   add constraint fk_error_log__code foreign key (code)
+--   references stk (code);
 alter table stk_error_log disable constraint fk_error_log__code ;
 alter table stk_error_log add id number(8);
 alter table stk_error_log add text varchar2(1000);
@@ -202,6 +202,7 @@ create sequence s_error_log_id
 　　NOMAXVALUE
 　　NOCYCLE
 　　CACHE 10;
+alter table stk_error_log modify code varchar2(200);
 
 
 create table stk_industry_type(

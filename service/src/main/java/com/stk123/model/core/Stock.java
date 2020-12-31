@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import static com.stk123.model.core.Stock.EnumPlace.SH;
 import static com.stk123.model.core.Stock.EnumPlace.SZ;
@@ -106,6 +107,10 @@ public class Stock {
                 }
             }
             return null;
+        }
+
+        public static boolean isSH(Integer place){
+            return Objects.equals(SH.place, place);
         }
     }
 
