@@ -11,6 +11,7 @@ import com.stk123.common.ik.DocumentType;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -18,12 +19,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.wltea.analyzer.core.IKSegmenter;
@@ -64,13 +60,18 @@ public class StkSearch {
 		IndexWriterConfig iwConfig = WebIKUtils.getConfig();
 		iwConfig.setOpenMode(OpenMode.CREATE_OR_APPEND);
 		IndexWriter iwriter = new IndexWriter(directory, iwConfig);
+
+        FieldType customType1 = new FieldType(TextField.TYPE_STORED);
+        FieldType customType2 = new FieldType(TextField.TYPE_STORED);
+        customType2.setTokenized(false);
+
 		// 写入索引
 		List<Stk> stks = JdbcUtils.list(conn, "select code,name from stk_cn order by code", Stk.class);
 		for(Stk stk : stks){
 			Index index =  new Index(conn,stk.getCode(),stk.getName());
 			Document doc = new Document();
-			doc.add(new Field(DocumentField.ID.value(), index.getCode(), Field.Store.YES, Field.Index.NOT_ANALYZED));
-			doc.add(new Field(DocumentField.TYPE.value(), DocumentType.STK.value(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+			doc.add(new Field(DocumentField.ID.value(), index.getCode(), customType2));
+			doc.add(new Field(DocumentField.TYPE.value(), DocumentType.STK.value(), customType2));
 			//content included: main business, keyword, company profile
 			List<Name2Value> f9 = index.getF9();
 			List<Name2Value> zhuyin = Name2Value.containName(f9, "营");
@@ -130,7 +131,7 @@ public class StkSearch {
 		//System.out.println("high weight words:"+highWeightWords);
 		//String[] fields = new String[]{CONTENT};
 		//Analyzer analyzer = new IKAnalyzer(true);
-		BooleanQuery query = new BooleanQuery();
+		BooleanQuery.Builder query = new BooleanQuery.Builder();
 		/*BooleanClause.Occur[] flags = { 
 				BooleanClause.Occur.SHOULD,
 				BooleanClause.Occur.SHOULD //或
@@ -157,10 +158,11 @@ public class StkSearch {
 					continue;
 				}
 				System.out.print(tKeyWord+",");
-				TermQuery tq = new TermQuery(new Term(fields[i],tKeyWord));
+				Query tq = new TermQuery(new Term(fields[i],tKeyWord));
 				//设置权重
 				if(highWeightWords != null && highWeightWords.contains(tKeyWord)){
-					tq.setBoost(5F);
+					//tq.setBoost(5F);
+                    tq = new BoostQuery(tq, 5F);
 				}
 				query.add(tq, BooleanClause.Occur.SHOULD);
 			}
@@ -168,10 +170,10 @@ public class StkSearch {
 		System.out.println("------------");
 		IndexReader ireader = DirectoryReader.open(directory);
 		IndexSearcher isearcher = new IndexSearcher(ireader);
-		TopDocs topDocs = isearcher.search(query, cnt);
+		TopDocs topDocs = isearcher.search(query.build(), cnt);
 		ScoreDoc[] scoreDocs = topDocs.scoreDocs;
 		List<Document> results = new ArrayList<Document>();
-		for (int i = 0; i < topDocs.totalHits; i++) {
+		for (int i = 0; i < topDocs.totalHits.value; i++) {
 			if(i >= cnt)break;
 			ScoreDoc score = scoreDocs[i];
 			Document targetDoc = isearcher.doc(scoreDocs[i].doc);

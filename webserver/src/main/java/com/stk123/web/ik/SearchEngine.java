@@ -14,6 +14,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -21,14 +22,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.Sort;
-import org.apache.lucene.search.SortField;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.*;
 import org.apache.lucene.search.highlight.Highlighter;
 import org.apache.lucene.search.highlight.QueryScorer;
 import org.apache.lucene.search.highlight.SimpleFragmenter;
@@ -72,13 +66,18 @@ public class SearchEngine {
 		IndexWriterConfig iwConfig = WebIKUtils.getConfig();
 		iwConfig.setOpenMode(OpenMode.CREATE_OR_APPEND);
 		IndexWriter iwriter = new IndexWriter(directory, iwConfig);
+
+        FieldType customType1 = new FieldType(TextField.TYPE_STORED);
+        FieldType customType2 = new FieldType(TextField.TYPE_STORED);
+        customType2.setTokenized(false);
+
 		// 写入索引
 		List<Stk> stks = JdbcUtils.list(conn, "select code,name from stk_cn order by code", Stk.class);
 		for(Stk stk : stks){
 			Index index =  new Index(conn,stk.getCode(),stk.getName());
 			Document doc = new Document();
-			doc.add(new Field(DocumentField.ID.value(), index.getCode(), Field.Store.YES, Field.Index.NOT_ANALYZED));
-			doc.add(new Field(DocumentField.TYPE.value(), DocumentType.STK.value(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+			doc.add(new Field(DocumentField.ID.value(), index.getCode(), customType2));
+			doc.add(new Field(DocumentField.TYPE.value(), DocumentType.STK.value(), customType2));
 			//content included: main business, keyword, company profile
 			String f9 = index.getStock().getF9();
 			doc.add(new TextField(DocumentField.CONTENT.value(), StringUtils.join(index.getKeywordAll(),",")+"<br/>"+f9+
@@ -93,10 +92,11 @@ public class SearchEngine {
 		}
 		
 		List<StkIndustryType> inds = JdbcUtils.list(conn, "select * from stk_industry_type", StkIndustryType.class);
+
 		for(StkIndustryType ind : inds){
 			Document doc = new Document();
-			doc.add(new Field(DocumentField.ID.value(), ind.getId().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
-			doc.add(new Field(DocumentField.TYPE.value(), DocumentType.INDUSTRY.value(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+			doc.add(new Field(DocumentField.ID.value(), ind.getId().toString(), customType2));
+			doc.add(new Field(DocumentField.TYPE.value(), DocumentType.INDUSTRY.value(), customType2));
 			doc.add(new TextField(DocumentField.CONTENT.value(), ind.getName()+"["+ind.getSource()+"]", Field.Store.YES));
 			iwriter.addDocument(doc);
 		}
@@ -127,7 +127,7 @@ public class SearchEngine {
 	 */
 	public List<Document> search(String keyword, DocumentType type, boolean sortByTime, DocumentField[] searchFields, int cnt, List<Name2Value> searchWordsWeight,Set<String> defaultExcludes) throws Exception {
 		System.out.println("search=="+keyword);
-		BooleanQuery query = new BooleanQuery();
+		BooleanQuery.Builder query = new BooleanQuery.Builder();
 		query.setMinimumNumberShouldMatch(1);//下面should必须有至少一个word匹配
 		if(type != null){
 			TermQuery tq = new TermQuery(new Term(DocumentField.TYPE.value(), type.value()));
@@ -147,13 +147,14 @@ public class SearchEngine {
 					continue;
 				}
 				System.out.print(tKeyWord+",");
-				TermQuery tq = new TermQuery(new Term(searchFields[i].value(),tKeyWord));
+				Query tq = new TermQuery(new Term(searchFields[i].value(),tKeyWord));
 				//设置权重
 				if(searchWordsWeight != null){
 					List<Name2Value> weights = Name2Value.containName(searchWordsWeight, tKeyWord);
 					if(searchWordsWeight != null && weights.size() > 0){
-						for(Name2Value weight : weights){
-							tq.setBoost(Float.parseFloat(String.valueOf(weight.getValue())));
+						for(Name2Value<String,Float> weight : weights){
+							//tq.setBoost(Float.parseFloat(String.valueOf(weight.getValue())));
+                            tq = new BoostQuery(tq, weight.getValue());
 						}
 					}
 				}
@@ -166,14 +167,14 @@ public class SearchEngine {
 		TopDocs topDocs = null;
 		if(type == DocumentType.TEXT && sortByTime){
 			Sort sort = new Sort(new SortField[]{new SortField(DocumentField.TIME.value(), SortField.Type.INT, true)});
-			topDocs = isearcher.search(query, cnt, sort);
+			topDocs = isearcher.search(query.build(), cnt, sort);
 		}else{
-			topDocs = isearcher.search(query, cnt);
+			topDocs = isearcher.search(query.build(), cnt);
 		}
 		ScoreDoc[] scoreDocs = topDocs.scoreDocs;
 		List<Document> results = new ArrayList<Document>();
 		Analyzer analyzer = new IKAnalyzer(true);
-		for (int i = 0; i < topDocs.totalHits; i++) {
+		for (int i = 0; i < topDocs.totalHits.value; i++) {
 			if(i >= cnt)break;
 			ScoreDoc score = scoreDocs[i];
 			Document targetDoc = isearcher.doc(scoreDocs[i].doc);
@@ -183,7 +184,7 @@ public class SearchEngine {
 				String text = targetDoc.get(field.value());
 				if (text != null) {
 					SimpleHTMLFormatter simpleHTMLFormatter = new SimpleHTMLFormatter("<font color='red'>", "</font>");
-					Highlighter highlighter = new Highlighter(simpleHTMLFormatter,new QueryScorer(query));
+					Highlighter highlighter = new Highlighter(simpleHTMLFormatter,new QueryScorer(query.build()));
 					highlighter.setTextFragmenter(new SimpleFragmenter(ChineseUtils.length(text)));
 				
 					TokenStream tokenStream = analyzer.tokenStream(field.value(), new StringReader(text));

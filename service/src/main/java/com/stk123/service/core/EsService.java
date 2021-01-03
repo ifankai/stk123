@@ -17,6 +17,11 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.io.IOException;
 
+/**
+ * Boost:
+ * https://www.elastic.co/guide/en/elasticsearch/reference/7.x/mapping-boost.html
+ *
+ */
 @Service
 @CommonsLog
 public class EsService {
@@ -27,7 +32,7 @@ public class EsService {
     protected RestHighLevelClient client;
 
     @Resource
-    private EsProperties elasticsearchProperties;
+    private EsProperties esProperties;
 
     protected static final RequestOptions COMMON_OPTIONS;
 
@@ -44,7 +49,7 @@ public class EsService {
         try {
             CreateIndexRequest request = new CreateIndexRequest(index);
             // Settings for this index
-            request.settings(Settings.builder().put("index.number_of_shards", elasticsearchProperties.getIndex().getNumberOfShards()).put("index.number_of_replicas", elasticsearchProperties.getIndex().getNumberOfReplicas()));
+            request.settings(Settings.builder().put("index.number_of_shards", esProperties.getIndex().getNumberOfShards()).put("index.number_of_replicas", esProperties.getIndex().getNumberOfReplicas()));
 
             CreateIndexResponse createIndexResponse = client.indices().create(request, COMMON_OPTIONS);
 

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -61,11 +63,15 @@ public class WebIKUtils extends IKUtils {
 	public static Set<String> default_excludes = new HashSet<String>();
 	
 	public static Document getDocument(StkText text){
+        FieldType customType1 = new FieldType(TextField.TYPE_STORED);
+        FieldType customType2 = new FieldType(TextField.TYPE_STORED);
+        customType2.setTokenized(false);
+
 		Document doc = new Document();
-		doc.add(new Field(DocumentField.ID.value(), text.getId().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
-		doc.add(new Field(DocumentField.TYPE.value(), DocumentType.TEXT.value(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		doc.add(new Field(DocumentField.ID.value(), text.getId().toString(), customType2));
+		doc.add(new Field(DocumentField.TYPE.value(), DocumentType.TEXT.value(), customType2));
 		if(text.getCode() != null){
-			doc.add(new Field(DocumentField.CODE.value(), text.getCode(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+			doc.add(new Field(DocumentField.CODE.value(), text.getCode(), customType2));
 		}
 		if(text.getTitle() != null){
 			doc.add(new TextField(DocumentField.TITLE.value(), text.getTitle(), Field.Store.YES));
@@ -74,10 +80,10 @@ public class WebIKUtils extends IKUtils {
 		if(time == null){
 			time = text.getInsertTime();
 		}
-		doc.add(new Field(DocumentField.TIME.value(),ServiceUtils.formatDate(time,ServiceUtils.sf_ymd12),Field.Store.YES,Field.Index.ANALYZED));
+		doc.add(new Field(DocumentField.TIME.value(),ServiceUtils.formatDate(time,ServiceUtils.sf_ymd12),customType1));
 		doc.add(new TextField(DocumentField.CONTENT.value(), text.getText(), Field.Store.YES));
-		doc.add(new Field(DocumentField.ORDER.value(), text.getDispOrder().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
-		doc.add(new Field(DocumentField.USERID.value(), text.getUserId().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		doc.add(new Field(DocumentField.ORDER.value(), text.getDispOrder().toString(), customType2));
+		doc.add(new Field(DocumentField.USERID.value(), text.getUserId().toString(), customType2));
 		return doc;
 	}
 	
@@ -149,7 +155,7 @@ public class WebIKUtils extends IKUtils {
 	}
 	
 	public static IndexWriterConfig getConfig(){
-		return new IndexWriterConfig(Version.LUCENE_45, new IKAnalyzer(true));
+		return new IndexWriterConfig(new IKAnalyzer(true));
 	}
 	
 	private final static List<Directory> Directories = new ArrayList<Directory>();
@@ -237,10 +243,15 @@ public class WebIKUtils extends IKUtils {
 		Analyzer analyzer = new IKAnalyzer(true);
 		Directory directory = null;
 		IndexWriter iwriter = null;
-		directory = FSDirectory.open(new File("D:/stock/index"));
-		IndexWriterConfig iwConfig = new IndexWriterConfig(Version.LUCENE_45, analyzer);
+		directory = FSDirectory.open(Paths.get("D:/stock/index"));
+		IndexWriterConfig iwConfig = new IndexWriterConfig(analyzer);
 		iwConfig.setOpenMode(OpenMode.CREATE_OR_APPEND);
 		iwriter = new IndexWriter(directory, iwConfig);
+
+        FieldType customType1 = new FieldType(TextField.TYPE_STORED);
+        FieldType customType2 = new FieldType(TextField.TYPE_STORED);
+        customType2.setTokenized(false);
+
 		// 写入索引
 		Document doc = null;
 		List<Stk> stks = JdbcUtils.list(conn, "select code,name,company_profile from stk_cn order by code", Stk.class);
@@ -248,8 +259,8 @@ public class WebIKUtils extends IKUtils {
 		for(Stk stk : stks){
 			if(stk.getCompanyProfile() != null){
 				doc = new Document();
-				doc.add(new Field("id", stk.getCode(), Field.Store.YES, Field.Index.NOT_ANALYZED));
-				doc.add(new Field("content", stk.getCompanyProfile(), Field.Store.YES, Field.Index.ANALYZED));
+				doc.add(new Field("id", stk.getCode(), customType2));
+				doc.add(new Field("content", stk.getCompanyProfile(), customType1));
 				iwriter.addDocument(doc);
 			}
 		}
@@ -265,18 +276,19 @@ public class WebIKUtils extends IKUtils {
 		IndexReader ireader = null;
 		IndexSearcher isearcher = null;
 		try {
-			directory = FSDirectory.open(new File("D:/stock/index"));
+			directory = FSDirectory.open(Paths.get("D:/stock/index"));
 			
 			ireader = DirectoryReader.open(directory);
 			isearcher = new IndexSearcher(ireader);
 			
-			QueryParser qp = new QueryParser(Version.LUCENE_45, "content", analyzer);// new QueryParser(Version.LUCENE_45, fieldName,analyzer);
+			QueryParser qp = new QueryParser( "content", analyzer);// new QueryParser(Version.LUCENE_45, fieldName,analyzer);
 			qp.setDefaultOperator(QueryParser.OR_OPERATOR);
 			Query query = qp.parse(keyword);
 			
 			// 搜索相似度最高的5条记录
 			TopDocs topDocs = isearcher.search(query, 3);
-			System.out.println("命中：" + topDocs.totalHits+", 最大的评分:"+topDocs.getMaxScore());
+            float maxScore = topDocs.totalHits.value == 0 ? Float.NaN : topDocs.scoreDocs[0].score;
+			System.out.println("命中：" + topDocs.totalHits+", 最大的评分:"+maxScore);
 			// 输出结果
 			ScoreDoc[] scoreDocs = topDocs.scoreDocs;
 	         

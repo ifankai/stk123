@@ -25,7 +25,7 @@ import java.nio.file.Paths;
 
 //@SpringBootApplication(scanBasePackages = {"com.stk123.service","com.stk123.task.ws","com.stk123.task.schedule","com.stk123.entity","com.stk123.repository"})
 @SpringBootApplication(scanBasePackages =
-        {"com.stk123.task","com.stk123.service","com.stk123.controller","com.stk123.entity","com.stk123.repository","com.stk123.model"})
+        {"com.stk123.task","com.stk123.service","com.stk123.controller","com.stk123.entity","com.stk123.repository","com.stk123.model","com.stk123.config"})
 @EnableJpaRepositories ({"com.stk123.entity","com.stk123.repository"})
 @EntityScan({"com.stk123.entity"})
 @Import({TaskConfig.class, Tasks.class})

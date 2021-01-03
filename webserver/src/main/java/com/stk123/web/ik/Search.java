@@ -3,6 +3,7 @@ package com.stk123.web.ik;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -21,14 +23,7 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.MultiReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.Sort;
-import org.apache.lucene.search.SortField;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.*;
 import org.apache.lucene.search.highlight.Highlighter;
 import org.apache.lucene.search.highlight.QueryScorer;
 import org.apache.lucene.search.highlight.SimpleFragmenter;
@@ -55,6 +50,15 @@ import com.stk123.common.util.collection.Name2Value;
 import com.stk123.service.DictService;
 import com.stk123.service.IndexService;
 
+/**
+ * http://makble.com/lucene-index-option-analyzed-vs-not-analyzed
+ *
+ * FieldType type = new FieldType();
+ * type.setTokenized(true);
+ *
+ * This will set it to analyzed. Actually, analyzed is default,
+ * you only need to call setTokenized when you need to set it to false.
+ */
 public class Search {
 
 	public static DocumentField[] SEARCHFIELDS_DEFAULT = new DocumentField[]{DocumentField.TITLE,DocumentField.CONTENT};
@@ -70,7 +74,7 @@ public class Search {
 
 	public Search(int userId) throws IOException{
 		this.userId = userId;
-		this.directoryUser = FSDirectory.open(new File(INDEX_PATH + File.separator + userId));
+		this.directoryUser = FSDirectory.open(Paths.get(INDEX_PATH + File.separator + userId));
 	}
 
 	public static void initStkAndIndustryAndIndex() throws Exception{
@@ -85,11 +89,16 @@ public class Search {
 
 			//stk
 			List<Stk> stks = JdbcUtils.list(conn, "select code,name from stk_cn order by code", Stk.class);
+
+            FieldType customType1 = new FieldType(TextField.TYPE_STORED);
+            FieldType customType2 = new FieldType(TextField.TYPE_STORED);
+            customType2.setTokenized(false);
+
 			for(Stk stk : stks){
 				Index index =  new Index(conn,stk.getCode(),stk.getName());
 				Document doc = new Document();
-				doc.add(new Field(DocumentField.ID.value(), index.getCode(), Field.Store.YES, Field.Index.NOT_ANALYZED));
-				doc.add(new Field(DocumentField.TYPE.value(), DocumentType.STK.value(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+				doc.add(new Field(DocumentField.ID.value(), index.getCode(), customType2));
+				doc.add(new Field(DocumentField.TYPE.value(), DocumentType.STK.value(), customType2));
 				doc.add(new TextField(DocumentField.TITLE.value(), index.getName()+" ["+index.getCode()+"]", Field.Store.YES));
 
 				List<Name2Value> f9 = index.getF9();
@@ -118,8 +127,8 @@ public class Search {
 			List<StkIndustryType> inds = JdbcUtils.list(conn, "select * from stk_industry_type a,stk_dictionary b where a.source=b.key and b.type="+DictService.INDUSTRY_SOURCE, StkIndustryType.class);
 			for(StkIndustryType ind : inds){
 				Document doc = new Document();
-				doc.add(new Field(DocumentField.ID.value(), ind.getId().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
-				doc.add(new Field(DocumentField.TYPE.value(), DocumentType.INDUSTRY.value(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+				doc.add(new Field(DocumentField.ID.value(), ind.getId().toString(), customType2));
+				doc.add(new Field(DocumentField.TYPE.value(), DocumentType.INDUSTRY.value(), customType2));
 				doc.add(new TextField(DocumentField.TITLE.value(), ind.getName()+" ["+DictService.getDict(DictService.INDUSTRY_SOURCE, ind.getSource())+"]", Field.Store.YES));
 				iwriter.addDocument(doc);
 			}
@@ -132,8 +141,8 @@ public class Search {
 			for(TreeNode node : nodes){
 				if(node.getChildren() == null || node.getChildren().size() == 0){
 					Document doc = new Document();
-					doc.add(new Field(DocumentField.ID.value(), String.valueOf(node.getNodeId()), Field.Store.YES, Field.Index.NOT_ANALYZED));
-					doc.add(new Field(DocumentField.TYPE.value(), DocumentType.INDEX.value(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+					doc.add(new Field(DocumentField.ID.value(), String.valueOf(node.getNodeId()), customType2));
+					doc.add(new Field(DocumentField.TYPE.value(), DocumentType.INDEX.value(), customType2));
 					if(node.getParent() != null){
 						doc.add(new TextField(DocumentField.TITLE.value(), node.getName()+" ["+node.getParent().getName()+"]", Field.Store.YES));
 					}else{
@@ -187,7 +196,7 @@ public class Search {
 
 	public static List<Document> search(String keyword, DocumentType type, boolean sortByTime, DocumentField[] searchFields, int start, int end, List<Name2Value> searchWordsWeight,Set<String> defaultExcludes, boolean highLight, String code,TotalCount totalCount, Directory... directorys) throws Exception {
 		//System.out.println("search=="+keyword);
-		BooleanQuery query = new BooleanQuery();
+		BooleanQuery.Builder query = new BooleanQuery.Builder();
 		BooleanQuery.setMaxClauseCount(Integer.MAX_VALUE);
 		//query.setMinimumNumberShouldMatch(1);
 		if(type != null){
@@ -201,7 +210,7 @@ public class Search {
 		if(searchFields == null){
 			searchFields = SEARCHFIELDS_DEFAULT;
 		}
-		BooleanQuery query2 = new BooleanQuery();
+        BooleanQuery.Builder query2 = new BooleanQuery.Builder();
 		query2.setMinimumNumberShouldMatch(1);
 		for(int i=0;i<searchFields.length;i++){
 			IKSegmenter se = new IKSegmenter(new StringReader(keyword),true);
@@ -212,19 +221,20 @@ public class Search {
 					continue;
 				}
 				//System.out.print(tKeyWord+",");
-				TermQuery tq = new TermQuery(new Term(searchFields[i].value(),tKeyWord));
+				Query tq = new TermQuery(new Term(searchFields[i].value(),tKeyWord));
+
 				if(searchWordsWeight != null){
 					List<Name2Value> weights = Name2Value.containName(searchWordsWeight, tKeyWord);
 					if(searchWordsWeight != null && weights.size() > 0){
 						for(Name2Value<String,Float> weight : weights){
-							tq.setBoost(weight.getValue());
+                            tq = new BoostQuery(tq, weight.getValue());
 						}
 					}
 				}
 				query2.add(tq, BooleanClause.Occur.SHOULD);
 			}
 		}
-		query.add(query2, BooleanClause.Occur.MUST);
+		query.add(query2.build(), BooleanClause.Occur.MUST);
 
 		List<IndexReader> readers = new ArrayList<IndexReader>();
 		for(Directory directory : directorys){
@@ -239,18 +249,18 @@ public class Search {
 		TopDocs topDocs = null;
 		if(type == DocumentType.TEXT && sortByTime){
 			Sort sort = new Sort(new SortField[]{new SortField(DocumentField.TIME.value(), SortField.Type.LONG, true)});
-			topDocs = isearcher.search(query, end, sort);
+			topDocs = isearcher.search(query.build(), end, sort);
 		}else{
-			topDocs = isearcher.search(query, end);
+			topDocs = isearcher.search(query.build(), end);
 		}
 		ScoreDoc[] scoreDocs = topDocs.scoreDocs;
 		if(totalCount != null){
-			totalCount.totalCount = topDocs.totalHits;
+			totalCount.totalCount = topDocs.totalHits.value;
 		}
 		List<Document> results = new ArrayList<Document>();
 		if(highLight){
 			Analyzer analyzer = new IKAnalyzer(true);
-			for (int i = 0; i < topDocs.totalHits; i++) {
+			for (int i = 0; i < topDocs.totalHits.value; i++) {
 				if(i < start){
 					continue;
 				}else if(i >= end)break;
@@ -260,7 +270,7 @@ public class Search {
 					String text = targetDoc.get(field.value());
 					if (text != null && (DocumentField.CONTENT.value().equals(field.value()) || DocumentField.TITLE.value().equals(field.value()))) {
 						SimpleHTMLFormatter simpleHTMLFormatter = new SimpleHTMLFormatter(HIGH_LIGHT_BEGIN, HIGH_LIGHT_END);
-						Highlighter highlighter = new Highlighter(simpleHTMLFormatter,new QueryScorer(query));
+						Highlighter highlighter = new Highlighter(simpleHTMLFormatter,new QueryScorer(query.build()));
 						highlighter.setTextFragmenter(new SimpleFragmenter(200));
 
 						String rText = HtmlUtils.removeHTML(text);
@@ -282,7 +292,7 @@ public class Search {
 			}
 			analyzer.close();
 		}else{
-			for (int i = 0; i < topDocs.totalHits; i++) {
+			for (int i = 0; i < topDocs.totalHits.value; i++) {
 				if(i < start){
 					continue;
 				}else if(i >= end)break;
@@ -325,6 +335,6 @@ public class Search {
 	private final static String HIGH_LIGHT_END = "</font>";
 
 	public static class TotalCount{
-		public int totalCount;
+		public long totalCount;
 	}
 }

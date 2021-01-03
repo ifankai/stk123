@@ -108,7 +108,7 @@
             <!--<version>1.0.0</version>-->
         <!--</dependency>-->
 
-        <dependency>
+<!--        <dependency>
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-core</artifactId>
         </dependency>
@@ -119,7 +119,7 @@
         <dependency>
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-highlighter</artifactId>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>commons-httpclient</groupId>
@@ -208,6 +208,11 @@
         <dependency>
             <groupId>org.python</groupId>
             <artifactId>jython</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>elasticsearch</artifactId>
         </dependency>
 
     </dependencies>

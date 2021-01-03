@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.Assert;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +26,7 @@ import java.util.List;
 @EnableConfigurationProperties(EsProperties.class)
 public class EsAutoConfiguration {
 
-    private final EsProperties elasticsearchProperties;
+    private final EsProperties esProperties;
 
     private List<HttpHost> httpHosts = new ArrayList<>();
 
@@ -33,20 +34,20 @@ public class EsAutoConfiguration {
     @ConditionalOnMissingBean
     public RestHighLevelClient restHighLevelClient() {
 
-        List<String> clusterNodes = elasticsearchProperties.getClusterNodes();
+        List<String> clusterNodes = esProperties.getClusterNodes();
         clusterNodes.forEach(node -> {
             try {
                 String[] parts = StringUtils.split(node, ":");
                 Assert.notNull(parts, "Must defined");
                 Assert.state(parts.length == 2, "Must be defined as 'host:port'");
-                httpHosts.add(new HttpHost(parts[0], Integer.parseInt(parts[1]), elasticsearchProperties.getSchema()));
+                httpHosts.add(new HttpHost(parts[0], Integer.parseInt(parts[1]), esProperties.getSchema()));
             } catch (Exception e) {
                 throw new IllegalStateException("Invalid ES nodes " + "property '" + node + "'", e);
             }
         });
         RestClientBuilder builder = RestClient.builder(httpHosts.toArray(new HttpHost[0]));
 
-        return getRestHighLevelClient(builder, elasticsearchProperties);
+        return getRestHighLevelClient(builder, esProperties);
     }
 
 

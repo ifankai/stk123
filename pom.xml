@@ -33,6 +33,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <third.libs>${project.basedir}/common/libs</third.libs>
+        <elasticsearch.version>7.10.1</elasticsearch.version>
     </properties>
 
     <dependencyManagement>
@@ -139,7 +140,7 @@
             <!--<version>1.0.0</version>-->
             <!--</dependency>-->
 
-            <dependency>
+<!--            <dependency>
                 <groupId>org.apache.lucene</groupId>
                 <artifactId>lucene-core</artifactId>
                 <version>4.5.0</version>
@@ -153,7 +154,7 @@
                 <groupId>org.apache.lucene</groupId>
                 <artifactId>lucene-highlighter</artifactId>
                 <version>4.5.0</version>
-            </dependency>
+            </dependency>-->
 
             <dependency>
                 <groupId>commons-httpclient</groupId>
@@ -291,10 +292,33 @@
                 <version>2.5.1</version>
             </dependency>
 
+            <!-- elasticsearch -->
+            <dependency>
+                <groupId>org.elasticsearch</groupId>
+                <artifactId>elasticsearch</artifactId>
+                <version>${elasticsearch.version}</version>
+            </dependency>
+            <!-- elasticsearch-rest-client -->
+            <dependency>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>elasticsearch-rest-client</artifactId>
+                <version>${elasticsearch.version}</version>
+            </dependency>
+            <!-- elasticsearch-rest-high-level-client -->
             <dependency>
                 <groupId>org.elasticsearch.client</groupId>
                 <artifactId>elasticsearch-rest-high-level-client</artifactId>
-                <version>7.10.1</version>
+                <version>${elasticsearch.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.elasticsearch.client</groupId>
+                        <artifactId>elasticsearch-rest-client</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.elasticsearch</groupId>
+                        <artifactId>elasticsearch</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
         </dependencies>

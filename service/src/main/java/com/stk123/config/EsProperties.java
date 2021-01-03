@@ -1,9 +1,6 @@
 package com.stk123.config;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -12,10 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@Builder
 @Component
-@NoArgsConstructor
-@AllArgsConstructor
 @ConfigurationProperties(prefix = "stk.elasticsearch")
 public class EsProperties {
 
