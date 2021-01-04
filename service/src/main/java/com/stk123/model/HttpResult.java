@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import java.io.Serializable;
 
 @Data
-public class HttpResult implements Serializable {
+public class HttpResult<R> implements Serializable {
     private HttpStatus status;
-    private String body;
+    private R body;
 }

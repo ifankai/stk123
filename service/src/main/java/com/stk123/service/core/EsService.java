@@ -45,12 +45,12 @@ public class EsService {
     }
 
 
-    public void createIndexRequest(String index) {
+    public void createIndex(String index) {
         try {
             CreateIndexRequest request = new CreateIndexRequest(index);
             // Settings for this index
             request.settings(Settings.builder().put("index.number_of_shards", esProperties.getIndex().getNumberOfShards()).put("index.number_of_replicas", esProperties.getIndex().getNumberOfReplicas()));
-
+            //request.alias()
             CreateIndexResponse createIndexResponse = client.indices().create(request, COMMON_OPTIONS);
 
             log.info(" whether all of the nodes have acknowledged the request : " + createIndexResponse.isAcknowledged());
