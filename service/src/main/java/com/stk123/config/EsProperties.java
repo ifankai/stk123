@@ -80,6 +80,9 @@ public class EsProperties {
          */
         private Integer numberOfReplicas = 2;
 
+        //所有index的alias
+        private String alias = "index.all";
+
     }
 
     /**

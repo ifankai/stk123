@@ -2,6 +2,7 @@ package com.stk123.controller;
 
 import com.stk123.model.RequestResult;
 import com.stk123.model.dto.SearchResult;
+import com.stk123.service.core.EsService;
 import com.stk123.service.core.StockService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,8 @@ public class SearchController {
 
     @Autowired
     private StockService stockService;
+    @Autowired
+    private EsService esService;
 
     @RequestMapping("/{query}")
     @ResponseBody

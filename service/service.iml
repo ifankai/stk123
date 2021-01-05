@@ -20,29 +20,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: org.elasticsearch:elasticsearch:7.10.1" level="project" />
-    <orderEntry type="library" name="Maven: org.elasticsearch:elasticsearch-core:7.10.1" level="project" />
-    <orderEntry type="library" name="Maven: org.elasticsearch:elasticsearch-secure-sm:7.10.1" level="project" />
-    <orderEntry type="library" name="Maven: org.elasticsearch:elasticsearch-x-content:7.10.1" level="project" />
-    <orderEntry type="library" name="Maven: org.elasticsearch:elasticsearch-geo:7.10.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-core:8.7.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-analyzers-common:8.7.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-backward-codecs:8.7.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-grouping:8.7.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-highlighter:8.7.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-join:8.7.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-memory:8.7.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-misc:8.7.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-queries:8.7.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-queryparser:8.7.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-sandbox:8.7.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-spatial-extras:8.7.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-spatial3d:8.7.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-suggest:8.7.0" level="project" />
-    <orderEntry type="library" name="Maven: org.elasticsearch:elasticsearch-cli:7.10.1" level="project" />
-    <orderEntry type="library" name="Maven: com.carrotsearch:hppc:0.8.1" level="project" />
-    <orderEntry type="library" name="Maven: org.elasticsearch:jna:5.5.0" level="project" />
-    <orderEntry type="library" name="Maven: org.elasticsearch.client:elasticsearch-rest-client:7.10.1" level="project" />
     <orderEntry type="module" module-name="common" />
     <orderEntry type="library" name="Maven: com.stk:IKAnalyzer2012FF_u1:1.0" level="project" />
     <orderEntry type="library" name="Maven: com.stk:ojdbc8:1.0" level="project" />
@@ -208,5 +185,6 @@
     <orderEntry type="library" name="Maven: org.elasticsearch.plugin:rank-eval-client:7.10.1" level="project" />
     <orderEntry type="library" name="Maven: org.elasticsearch.plugin:lang-mustache-client:7.10.1" level="project" />
     <orderEntry type="library" name="Maven: com.github.spullara.mustache.java:compiler:0.9.6" level="project" />
+    <orderEntry type="library" name="Maven: cn.hutool:hutool-all:5.5.6" level="project" />
   </component>
 </module>
