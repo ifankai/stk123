@@ -93,6 +93,16 @@ public class ServiceApplication implements ApplicationContextAware {
             } catch (Exception e) {
                 log.error("stkWebSocketClient.init()", e);
             }
+        }else{
+            try {
+                stkWebSocketClient.test();
+            }catch(Exception e){
+                try {
+                    stkWebSocketClient.init();
+                } catch (Exception e1) {
+                    log.error("stkWebSocketClient.init()", e);
+                }
+            }
         }
     }
 

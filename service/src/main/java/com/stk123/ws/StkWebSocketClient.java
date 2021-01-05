@@ -59,4 +59,15 @@ public class StkWebSocketClient {
         return false;
     }
 
+    public boolean test(){
+        if(session != null){
+            ClientMessage cm = new ClientMessage();
+            cm.setType("hello");
+            cm.setMessageId("hello-id");
+            cm.setData("hello-data");
+            send(cm);
+        }
+        return false;
+    }
+
 }
