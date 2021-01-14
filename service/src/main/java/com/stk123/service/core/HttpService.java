@@ -5,6 +5,7 @@ import com.stk123.common.util.JWhich;
 import com.stk123.model.HttpResult;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jfree.util.Log;
 import org.python.google.common.io.Files;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,7 +96,8 @@ public class HttpService {
             List<Map> list = (List) data.get("list");
             for (Map item : list) {
                 String line = item.get("district") + "|" + item.get("resblock_frame_area") + "|" + item.get("title") + "|" + item.get("address") + "|" + item.get("show_price_info") + "|" + item.get("frame_rooms_desc") + "|" + item.get("reference_total_price") + "|" + item.get("filter_desc") + "|" + "https://sh.fang.ke.com"+item.get("url");
-                lines.add(line);
+                if(StringUtils.startsWith(item.get("filter_desc")+"", "2021"))
+                    lines.add(line);
             }
             //break;
         }

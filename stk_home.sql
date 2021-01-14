@@ -2,6 +2,9 @@
 
 select * from tab;
 
+--查看表空间文件路径
+select tablespace_name,file_id,file_name from dba_data_files order by 1,2;
+
 select tablespace_name,sum(bytes)/1024/1024 || 'M' from dba_free_space group by tablespace_name;
 --查看表的数据大小
 select segment_name, sum(bytes)/1024/1024 Mbytese from user_segments where segment_type='TABLE' group by segment_name order by Mbytese desc;
@@ -101,17 +104,43 @@ select * from user_constraints where table_name like 'STK%' and constraint_name 
 
 select * from user_segments;
 
+81.68.255.181:
+SYS, SYSTEM and PDBADMIN
+password1
+/etc/init.d/oracle-xe-18c start
+/etc/init.d/oracle-xe-18c stop
+
+and set the oracle-xe-18c service to start on boot:
+systemctl daemon-reload
+systemctl enable oracle-xe-18c
+
+--https://mikesmithers.wordpress.com/2019/01/03/installing-and-configuring-oracle-18cxe-on-centos/
+echo $ORACLE_SID
+echo $ORACLE_HOME
+echo $ORACLE_BASE
+echo $PATH
+
+select sys_context('userenv', 'con_name') from dual;
+alter session set container=XEPDB1;
+
+sqlplus system
+sqlplus stk/stkpwd@localhost:1539/xepdb1
+
+
 --create stk table space
 create tablespace stk_tablespace_1 datafile 'D:\oradata\stk_data_1.dbf' size 2048M autoextend on next 200M maxsize 10240M extent management local;
+create tablespace stk_tablespace_2 datafile 'E:\oradata\stk_data_2.dbf' size 2048M autoextend on next 200M maxsize 10240M extent management local;
 create temporary tablespace stk_tablespace_temp tempfile 'D:\oradata\stk_temp.dbf' size 1024M autoextend on next 200M maxsize 10240m extent management local;
 create user stk identified by stkpwd default tablespace stk_tablespace_1 temporary tablespace stk_tablespace_temp;
 grant connect,resource,dba to stk;
-create tablespace stk_tablespace_2 datafile 'E:\oradata\stk_data_2.dbf' size 2048M autoextend on next 200M maxsize 10240M extent management local;
+
 
 select file_name,tablespace_name,status from dba_data_files;
 select tablespace_name,file_name,bytes/1024/1024 file_size,autoextensible,status from dba_temp_files;
 select group#,sequence#,bytes/1024/1024 sizeMB,members,status from v$log;
 select group#,status,type,member from v$logfile;
 
-
-
+--centos:
+create tablespace stk_tablespace_1 datafile '/opt/oracle/oradata/XE/stk_data_1.dbf' size 2048M autoextend on next 200M maxsize 10240M extent management local;
+create tablespace stk_tablespace_2 datafile '/opt/oracle/oradata/XE/stk_data_2.dbf' size 2048M autoextend on next 200M maxsize 10240M extent management local;
+create temporary tablespace stk_tablespace_temp tempfile '/opt/oracle/oradata/XE/stk_temp.dbf' size 1024M autoextend on next 200M maxsize 10240m extent management local;
