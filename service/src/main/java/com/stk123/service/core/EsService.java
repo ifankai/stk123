@@ -2,7 +2,11 @@ package com.stk123.service.core;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.stk123.config.EsProperties;
+import com.stk123.entity.StkTextEntity;
+import com.stk123.model.EsDocument;
+import com.stk123.repository.StkTextRepository;
 import lombok.extern.apachecommons.CommonsLog;
+import org.apache.commons.lang3.time.DateUtils;
 import org.elasticsearch.action.admin.indices.alias.Alias;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
@@ -23,11 +27,12 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -38,6 +43,10 @@ import java.util.function.Function;
 @Service
 @CommonsLog
 public class EsService {
+
+    @Autowired
+    private StkTextRepository stkTextRepository;
+
 
     private final static String[] FETCH_SOURCE_FIELDS_DEFAULT = new String[] {"title", "innerObject.*"};
 
@@ -76,6 +85,7 @@ public class EsService {
         }
     }
 
+
     public void createIndex(String index) {
         try {
             CreateIndexRequest request = new CreateIndexRequest(index);
@@ -83,6 +93,47 @@ public class EsService {
             request.settings(Settings.builder().put("index.number_of_shards", esProperties.getIndex().getNumberOfShards()).put("index.number_of_replicas", esProperties.getIndex().getNumberOfReplicas()));
             Alias alias = new Alias(esProperties.getIndex().getAlias());
             request.alias(alias);
+
+            Map<String, Object> keyword = new HashMap<>();
+            keyword.put("type", "keyword");
+            keyword.put("ignore_above", 256);
+
+            Map<String, Object> properties = new HashMap<>();
+            //type (stock, post, industry)
+            properties.put("type", Collections.singletonMap("type", "keyword"));
+
+            //id
+            properties.put("id", Collections.singletonMap("type", "keyword"));
+
+            //title (name)
+            Map<String, Object> title = new HashMap<>();
+            title.put("type", "text");
+            title.put("analyzer", "ik_smart");
+            title.put("fields", Collections.singletonMap("keyword", keyword));
+            properties.put("title", title);
+
+            //desc
+            Map<String, Object> desc = new HashMap<>();
+            desc.put("type", "text");
+            desc.put("analyzer", "ik_smart");
+            properties.put("desc", desc);
+
+            //content
+            Map<String, Object> content = new HashMap<>();
+            content.put("type", "text");
+            content.put("analyzer", "ik_smart");
+            properties.put("content", content);
+
+            //code
+            properties.put("code", Collections.singletonMap("type", "text"));
+
+            //time
+            properties.put("time", Collections.singletonMap("type", "date"));
+
+            Map<String, Object> mapping = new HashMap<>();
+            mapping.put("properties", properties);
+
+            request.mapping(mapping);
             CreateIndexResponse createIndexResponse = client.indices().create(request, COMMON_OPTIONS);
 
             log.info(" whether all of the nodes have acknowledged the request : " + createIndexResponse.isAcknowledged());
@@ -92,21 +143,21 @@ public class EsService {
         }
     }
 
-    public IndexResponse createDocument(String index, String id, Object object) {
-        IndexRequest indexRequest = new IndexRequest(index).id(id).source(BeanUtil.beanToMap(object), XContentType.JSON);
+    //not set id, es will automatically generated id
+    public IndexResponse createDocument(String index, Object object) {
+        IndexRequest indexRequest = new IndexRequest(index).source(BeanUtil.beanToMap(object), XContentType.JSON);
         try {
             return client.index(indexRequest, COMMON_OPTIONS);
         } catch (IOException e) {
             log.error("createDocument", e);
-            throw new RuntimeException("创建文档 {" + index + "} 失败, ID {"+ id +"}");
+            throw new RuntimeException("创建文档 {" + index + "} 失败");
         }
     }
 
-    public <T> BulkResponse createDocumentByBulk(String index, List<T> list, Function<T, String> fun) {
+    public <T> BulkResponse createDocumentByBulk(String index, List<EsDocument> list) {
         BulkRequest request = new BulkRequest();
         list.forEach(e -> {
-            String id = fun.apply(e);
-            IndexRequest indexRequest = new IndexRequest(index).id(id).source(BeanUtil.beanToMap(e), XContentType.JSON);
+            IndexRequest indexRequest = new IndexRequest(index).source(BeanUtil.beanToMap(e), XContentType.JSON);
             request.add(indexRequest);
         });
         try {
@@ -133,4 +184,26 @@ public class EsService {
         return searchResponse;
     }
 
+
+    public BulkResponse initIndexByBulk(String index) {
+        boolean existing = existingIndex(index);
+        if(existing){
+            deleteIndex(index);
+        }
+        createIndex(index);
+        List<StkTextEntity> list = stkTextRepository.findAllByCodeAndCreatedAtGreaterThanOrderByInsertTimeDesc("600600", DateUtils.addYears(new Date(), -1));
+        List<EsDocument> documents = new ArrayList();
+        list.forEach(e -> {
+            EsDocument esDocument = new EsDocument();
+            esDocument.setType("post");
+            esDocument.setTitle(e.getTitle());
+            esDocument.setDesc(e.getTextDesc());
+            esDocument.setContent(e.getText());
+            esDocument.setId(e.getId().toString());
+            esDocument.setCode(e.getCode());
+            esDocument.setTime(e.getUpdateTime()==null?e.getInsertTime():e.getUpdateTime());
+            documents.add(esDocument);
+        });
+        return createDocumentByBulk(index, documents);
+    }
 }
