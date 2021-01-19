@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping("/es")  //elasticsearch
@@ -21,7 +22,8 @@ public class EsController {
     private EsService esService;
     
     @RequestMapping(value = "/{index}", method = RequestMethod.PUT)
-    public RequestResult createIndex(@PathVariable("index")String index){
+    @ResponseBody
+    public RequestResult initIndex(@PathVariable("index")String index){
         BulkResponse bulkResponse = esService.initIndexByBulk(index);
         //log.info(bulkResponse);
         if(bulkResponse.hasFailures()){
@@ -31,6 +33,7 @@ public class EsController {
     }
 
     @RequestMapping(value = "/{index}")
+    @ResponseBody
     public RequestResult getIndex(@PathVariable("index")String index){
         SearchResponse searchResponse = esService.searchByIndex(index);
         SearchHits searchHits = searchResponse.getHits();

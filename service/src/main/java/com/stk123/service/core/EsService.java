@@ -71,6 +71,7 @@ public class EsService {
         try {
             return client.indices().exists(request, RequestOptions.DEFAULT);
         } catch (IOException e) {
+            e.printStackTrace();
             log.error("existingIndex", e);
             throw new RuntimeException("索引 {" + index + "} 失败："+e.getMessage());
         }
@@ -201,7 +202,7 @@ public class EsService {
             esDocument.setContent(e.getText());
             esDocument.setId(e.getId().toString());
             esDocument.setCode(e.getCode());
-            esDocument.setTime(e.getUpdateTime()==null?e.getInsertTime():e.getUpdateTime());
+            esDocument.setTime(e.getUpdateTime()==null?e.getInsertTime().getTime():e.getUpdateTime().getTime());
             documents.add(esDocument);
         });
         return createDocumentByBulk(index, documents);

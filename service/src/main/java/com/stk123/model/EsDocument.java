@@ -14,5 +14,5 @@ public class EsDocument {
     private String desc;
     private String content;
     private String code;
-    private Date time;
+    private long time;
 }
