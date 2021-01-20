@@ -1,4 +1,4 @@
-package com.stk123.model;
+package com.stk123.model.elasticsearch;
 
 import lombok.Getter;
 import lombok.Setter;

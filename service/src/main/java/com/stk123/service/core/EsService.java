@@ -1,9 +1,10 @@
 package com.stk123.service.core;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.alibaba.fastjson.JSON;
 import com.stk123.config.EsProperties;
 import com.stk123.entity.StkTextEntity;
-import com.stk123.model.EsDocument;
+import com.stk123.model.elasticsearch.*;
 import com.stk123.repository.StkTextRepository;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.time.DateUtils;
@@ -11,7 +12,6 @@ import org.elasticsearch.action.admin.indices.alias.Alias;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
-import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
@@ -22,22 +22,33 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.elasticsearch.client.indices.GetIndexRequest;
-import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.rest.RestStatus;
+import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Function;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Boost:
  * https://www.elastic.co/guide/en/elasticsearch/reference/7.x/mapping-boost.html
+ *
+ * matchQuery：会将搜索词分词，再与目标查询字段进行匹配，若分词中的任意一个词与目标字段匹配上，则可查询到。
+ * termQuery：不会对搜索词进行分词处理，而是作为一个整体与目标字段进行匹配，若完全匹配，则可查询到。
  *
  */
 @Service
@@ -48,7 +59,8 @@ public class EsService {
     private StkTextRepository stkTextRepository;
 
 
-    private final static String[] FETCH_SOURCE_FIELDS_DEFAULT = new String[] {"title", "innerObject.*"};
+    private final static String[] DEFAULT_SEARCH_FIELDS = new String[] {"type", "title", "desc", "content", "code"};
+    private final static String[] DEFAULT_HIGHLIGHT_FIELDS = new String[] {"title", "desc", "content"};
 
     @Resource
     protected RestHighLevelClient client;
@@ -109,6 +121,7 @@ public class EsService {
             //title (name)
             Map<String, Object> title = new HashMap<>();
             title.put("type", "text");
+            title.put("boost", 2);
             title.put("analyzer", "ik_smart");
             title.put("fields", Collections.singletonMap("keyword", keyword));
             properties.put("title", title);
@@ -116,13 +129,13 @@ public class EsService {
             //desc
             Map<String, Object> desc = new HashMap<>();
             desc.put("type", "text");
-            desc.put("analyzer", "ik_smart");
+            desc.put("analyzer", "ik_max_word");//ik_smart
             properties.put("desc", desc);
 
             //content
             Map<String, Object> content = new HashMap<>();
             content.put("type", "text");
-            content.put("analyzer", "ik_smart");
+            content.put("analyzer", "ik_max_word");
             properties.put("content", content);
 
             //code
@@ -169,20 +182,82 @@ public class EsService {
         }
     }
 
+
+    public SearchResult search(String keyword, int page) throws IOException {
+        return search("index.stk", page, 20, keyword, DEFAULT_SEARCH_FIELDS, DEFAULT_HIGHLIGHT_FIELDS);
+    }
+
     //https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-high-search.html
-    public SearchResponse searchByIndex(String index) {
+    public SearchResult search(String index, int page, int pageSize,
+                               String keyword, String[] fieldNames, String[] highlightFields) throws IOException {
+        SearchRequest searchRequest = new SearchRequest(index);
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        MultiMatchQueryBuilder multiMatchQueryBuilder = QueryBuilders.multiMatchQuery(keyword, fieldNames);
+        // must 相当于 与 & =
+        // must not 相当于 非 ~ ！=
+        // should 相当于 或 | or
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+        boolQueryBuilder.must(multiMatchQueryBuilder);
+
+        searchSourceBuilder.query(boolQueryBuilder);
+
+        HighlightBuilder highlightBuilder = new HighlightBuilder();
+        highlightBuilder.preTags("<span style='color:red'>");
+        highlightBuilder.postTags("</span>");
+        highlightBuilder.fragmentSize(10000); //最大高亮分片数
+        highlightBuilder.numOfFragments(0); //从第一个分片获取高亮片段
+        Arrays.stream(highlightFields).forEach(e -> {
+            HighlightBuilder.Field highlightField = new HighlightBuilder.Field(e);
+            highlightBuilder.field(highlightField);
+        });
+
+        searchSourceBuilder.highlighter(highlightBuilder);
+
+        searchSourceBuilder.size(pageSize);
+        searchSourceBuilder.from((page - 1) * pageSize);
+        searchSourceBuilder.timeout(new TimeValue(60, TimeUnit.SECONDS));
+
+        searchSourceBuilder.sort(SortBuilders.scoreSort().order(SortOrder.DESC));
+        searchSourceBuilder.sort(new FieldSortBuilder("time").order(SortOrder.DESC));
+
+        searchRequest.source(searchSourceBuilder);
+        SearchResponse searchResponse = client.search(searchRequest, COMMON_OPTIONS);
+        RestStatus restStatus = searchResponse.status();
+        if (restStatus != RestStatus.OK){
+            return SearchResult.failure(restStatus.getStatus());
+        }
+        List<EsDocument> list = new ArrayList<>();
+        SearchHits hits = searchResponse.getHits();
+        // the total number of hits, must be interpreted in the context of totalHits.relation
+        long totalHits = hits.getTotalHits().value;
+        float maxScore = hits.getMaxScore();
+        log.info("totalHits:"+totalHits+",maxScore:"+maxScore);
+
+        hits.forEach(item -> list.add(JSON.parseObject(item.getSourceAsString(), EsDocument.class)));
+        /*for (SearchHit hit : hits.getHits()) {
+            Map<String, HighlightField> highlightFields = hit.getHighlightFields();
+            HighlightField highlight = highlightFields.get("title");
+            Text[] fragments = highlight.fragments();
+            String fragmentString = fragments[0].string();
+        }*/
+        return SearchResult.success(list);
+    }
+
+    public SearchResult search(String index) throws IOException {
         SearchRequest searchRequest = new SearchRequest(index);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         //searchSourceBuilder.fetchSource(FETCH_SOURCE_FIELDS_DEFAULT, Strings.EMPTY_ARRAY);
         searchSourceBuilder.query(QueryBuilders.matchAllQuery());
         searchRequest.source(searchSourceBuilder);
-        SearchResponse searchResponse = null;
-        try {
-            searchResponse = client.search(searchRequest, COMMON_OPTIONS);
-        } catch (IOException e) {
-            e.printStackTrace();
+        SearchResponse searchResponse = client.search(searchRequest, COMMON_OPTIONS);
+        RestStatus restStatus = searchResponse.status();
+        if (restStatus != RestStatus.OK){
+            return SearchResult.failure(restStatus.getStatus());
         }
-        return searchResponse;
+        SearchHits hits = searchResponse.getHits();
+        List<EsDocument> list = new ArrayList<>();
+        hits.forEach(item -> list.add(JSON.parseObject(item.getSourceAsString(), EsDocument.class)));
+        return SearchResult.success(list);
     }
 
 
