@@ -7,6 +7,7 @@ import com.stk123.model.json.View;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.repository.StkRepository;
 import com.stk123.service.XueqiuService;
+import com.stk123.service.core.StockService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,12 +21,14 @@ import java.util.List;
 import java.util.Set;
 
 @Controller
-@RequestMapping("/s")
+@RequestMapping("/stock")
 @CommonsLog
 public class StockController {
 
     @Autowired
     private StkRepository stkRepository;
+    @Autowired
+    private StockService stockService;
 
 
     @RequestMapping(value = {"/list/{market:1|2|3|cn|us|hk}/{cate}"})
@@ -40,5 +43,9 @@ public class StockController {
         return RequestResult.success(list);
     }
 
-
+    @RequestMapping(value = {"/{code}/info"})
+    @ResponseBody
+    public RequestResult info(@PathVariable(value = "code")String code){
+        return RequestResult.success(stockService.findInfo(code));
+    }
 }

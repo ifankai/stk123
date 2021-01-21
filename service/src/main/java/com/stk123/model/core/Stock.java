@@ -179,6 +179,12 @@ public class Stock {
         return stock.set(code, name);
     }
 
+    /**
+     * 能适应各种类型的code, eg: SH600600, 600600, 02002, BIDU
+     * @param code
+     * @param name
+     * @return
+     */
     private Stock set(String code, String name) {
         this.code = code;
         this.name = name;
@@ -188,7 +194,8 @@ public class Stock {
         if(code.length() == 5 && isAllNumber){
             this.market = HK;
         }else{
-            this.market = isAllNumber ? CN : US;
+            boolean isAllAlpha = StringUtils.isAlpha(code);
+            this.market = isAllAlpha ? US : CN;
         }
 
         setPlace();
@@ -274,8 +281,8 @@ public class Stock {
 
     void setPlace(){
         if(this.market == CN){
-            if(this.code.length() == 8){//01000010 : sh 000010
-                if(this.code.startsWith(CommonConstant.NUMBER_01)){
+            if(this.code.length() == 8){//01000010 or SH000010
+                if(this.code.startsWith(CommonConstant.NUMBER_01) || this.code.startsWith(EnumPlace.SH.name())){
                     this.place = SH;
                 }else{
                     this.place = SZ;

@@ -115,4 +115,12 @@ public class StockService {
         return false;
     }
 
+    /**
+     * @param code SH600600, 600600, 01008, BIDU
+     * @return
+     */
+    public StockBasicProjection findInfo(String code) {
+        Stock stock = Stock.build(code, null);
+        return stkRepository.findByCodeAndMarketAndPlace(stock.getCode(), stock.getMarket().getMarket(), stock.getPlace().getPlace());
+    }
 }

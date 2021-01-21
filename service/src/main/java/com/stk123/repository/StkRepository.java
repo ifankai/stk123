@@ -27,4 +27,7 @@ public interface StkRepository extends JpaRepository<StkEntity, String> {
 
     @Query(value = "select code as code,name as name from stk_cn union all select code as code,name as name from stk_hk where hot > 500 union all select code as code,name as name from stk_us where hot > 500", nativeQuery = true)
     List<StockCodeNameProjection> findAllByOrderByCode();
+
+    @Query(value = "select code as code,name as name,market as market,cate as cate,place as place from StkEntity where code=:code and market=:market and place=:place")
+    StockBasicProjection findByCodeAndMarketAndPlace(@Param("code") String code, @Param("market") Integer market, @Param("place") Integer place);
 }
