@@ -2,7 +2,7 @@
 
 select * from tab;
 
---查看表空间文件路径
+--查看表空间路径
 select tablespace_name,file_id,file_name from dba_data_files order by 1,2;
 
 select tablespace_name,sum(bytes)/1024/1024 || 'M' from dba_free_space group by tablespace_name;
@@ -32,7 +32,7 @@ SELECT D.TABLESPACE_NAME,
  WHERE D.TABLESPACE_NAME = F.TABLESPACE_NAME(+)
 UNION ALL
 
---如果有临时表空间  
+--如果有临时表空间 
 SELECT D.TABLESPACE_NAME,
        SPACE || 'M' "SUM_SPACE(M)",
        BLOCKS SUM_BLOCKS,
@@ -121,8 +121,10 @@ echo $ORACLE_BASE
 echo $PATH
 
 select sys_context('userenv', 'con_name') from dual;
+select con_id, dbid, guid, name , open_mode from v$pdbs;
 alter session set container=XEPDB1;
 
+. oraenv
 sqlplus system
 sqlplus stk/stkpwd@localhost:1539/xepdb1
 

@@ -83,7 +83,7 @@ public class ServiceApplication implements ApplicationContextAware {
     }
 
     //@EventListener(ApplicationReadyEvent.class)
-    @Scheduled(cron = "${service.schedule.websocket.cron}")
+    //@Scheduled(cron = "${service.schedule.websocket.cron}")
     public void webSocketIsConnected() {
         boolean isConnected = stkWebSocketClient.isConnected();
         log.info("Websocket is Connected:" + isConnected);
