@@ -34,6 +34,14 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <third.libs>${project.basedir}/common/libs</third.libs>
         <elasticsearch.version>7.10.1</elasticsearch.version>
+
+        <ftp.host>81.68.255.181</ftp.host>
+        <ftp.path>/var/stk</ftp.path>
+        <ftp.username>root</ftp.username>
+        <ftp.password>M5Pbg;Ln2W[pe6</ftp.password>
+        <ftp.depends>yes</ftp.depends>
+        <ftp.verbose>no</ftp.verbose>
+
     </properties>
 
     <dependencyManagement>

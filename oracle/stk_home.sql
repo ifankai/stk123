@@ -77,6 +77,10 @@ alter system set processes = 300 scope = spfile;
 shutdown immediate;
 startup;
 
+/etc/init.d/oracle-xe-18c stop
+/etc/init.d/oracle-xe-18c start
+
+lsnrctl status
 
 select * from nls_database_parameters where parameter='NLS_CHARACTERSET';
 
