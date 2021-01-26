@@ -18,7 +18,7 @@ public class PageRoot<T> implements Serializable {
     private Integer count;
     private String key;
     private List<T> list;
-    private Integer perPage; //每页数量
+    private Integer pageSize; //每页数量
     private Integer maxPage;
     private Integer page;
 
@@ -35,10 +35,10 @@ public class PageRoot<T> implements Serializable {
         return root;
     }
 
-    public static <T> PageRoot<T> pageable(List<T> list, Integer page, Integer perPage, Integer count) {
+    public static <T> PageRoot<T> pageable(List<T> list, Integer page, Integer pageSize, Integer count) {
         PageRoot root = new PageRoot(list);
         root.setPage(page);
-        root.setPerPage(perPage);
+        root.setPageSize(pageSize);
         root.setCount(count);
         return root;
     }
