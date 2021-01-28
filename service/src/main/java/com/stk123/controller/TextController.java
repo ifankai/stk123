@@ -50,19 +50,23 @@ public class TextController {
         List<StkTextEntity> list = null;
         Integer count = null;
 
+        if(createdAtAfter == null) {
+            createdAtAfter = DateUtils.addYears(new Date(), -1).getTime();
+        }
+        Date dateAfter = new Date(createdAtAfter);
+
         if(type == null || StringUtils.equals(type, "all")) {
             if(insertTimeBefore == null && insertTimeAfter == null) {
-                list = stkTextRepository.findAllByCodeOrderByInsertTimeDesc(code, PageRequest.of(0, pageSize));
+                list = stkTextRepository.findAllByInsertTimeGreaterThanEqualOrderByInsertTimeDesc(dateAfter, PageRequest.of(0, pageSize));
             }else if(insertTimeBefore == null && insertTimeAfter != null){
-                list = stkTextRepository.findAllByCodeInsertTimeGreaterThanOrderByInsertTimeDesc(code, new Date(insertTimeAfter));
+                list = stkTextRepository.findAllByInsertTimeGreaterThanOrderByInsertTimeDesc(new Date(insertTimeAfter));
             }else if(insertTimeBefore != null && insertTimeAfter == null){
-                list = stkTextRepository.findAllByCodeInsertTimeLessThanOrderByInsertTimeDesc(code, new Date(insertTimeBefore), PageRequest.of(0, pageSize));
+                list = stkTextRepository.findAllByInsertTimeLessThanOrderByInsertTimeDesc(new Date(insertTimeBefore), PageRequest.of(0, pageSize));
             }
         }else if(StringUtils.equals(type, "favorite")) {
             list = stkTextRepository.findAllByTypeAndFavoriteDateNotNullOrderByFavoriteDateDesc(TextConstant.TYPE_XUEQIU);
         }else if(StringUtils.equals(type, "search")) {
-            createdAtAfter = DateUtils.addYears(new Date(), -1).getTime();
-            Date dateAfter = new Date(createdAtAfter);
+
             if (code != null) {
                 list = stkTextRepository.findAllByCodeAndCreatedAtGreaterThanOrderByInsertTimeDesc(code, dateAfter);
                 return RequestResult.success(PageRoot.unPageable(list, count));

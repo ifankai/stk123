@@ -22,15 +22,20 @@ import java.util.stream.Collectors;
 @Repository
 public interface StkTextRepository extends JpaRepository<StkTextEntity, Long> {
 
-    List<StkTextEntity> findAllByCodeOrderByInsertTimeDesc(@Param("code")String code, Pageable pageable);
+    List<StkTextEntity> findAllByInsertTimeGreaterThanEqualOrderByInsertTimeDesc(Date date, Pageable pageable);
+
+    List<StkTextEntity> findAllByInsertTimeGreaterThanOrderByInsertTimeDesc(Date date);
+
+    List<StkTextEntity> findAllByInsertTimeLessThanOrderByInsertTimeDesc(Date date, Pageable pageable);
+
+
+    List<StkTextEntity> findAllByCodeOrderByInsertTimeDesc(String code, Pageable pageable);
 
     List<StkTextEntity> findAllByCodeAndCreatedAtGreaterThanOrderByInsertTimeDesc(String code, Date date);
 
-    //@Query("select t from StkTextEntity t where t.code=:code and t.insertTime>:date order by t.insertTime desc")
-    List<StkTextEntity> findAllByCodeInsertTimeGreaterThanOrderByInsertTimeDesc(String code, Date date);
+    List<StkTextEntity> findAllByCodeAndInsertTimeGreaterThanOrderByInsertTimeDesc(String code, Date date);
 
-    //@Query("select t from StkTextEntity t where t.code=:code and t.insertTime<:date order by t.insertTime desc")
-    List<StkTextEntity> findAllByCodeInsertTimeLessThanOrderByInsertTimeDesc(String code, Date date, Pageable pageable);
+    List<StkTextEntity> findAllByCodeAndInsertTimeLessThanOrderByInsertTimeDesc(String code, Date date, Pageable pageable);
 
     List<StkTextEntity> findAllByCodeAndTypeOrderByInsertTimeDesc(String code, Integer type);
 

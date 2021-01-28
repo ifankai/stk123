@@ -150,3 +150,13 @@ select group#,status,type,member from v$logfile;
 create tablespace stk_tablespace_1 datafile '/opt/oracle/oradata/XE/stk_data_1.dbf' size 2048M autoextend on next 200M maxsize 10240M extent management local;
 create tablespace stk_tablespace_2 datafile '/opt/oracle/oradata/XE/stk_data_2.dbf' size 2048M autoextend on next 200M maxsize 10240M extent management local;
 create temporary tablespace stk_tablespace_temp tempfile '/opt/oracle/oradata/XE/stk_temp.dbf' size 1024M autoextend on next 200M maxsize 10240m extent management local;
+
+
+--elasticsearch:
+# please execute the following statements to configure elasticsearch service to start automatically using systemd
+ sudo systemctl daemon-reload
+ sudo systemctl enable elasticsearch.service
+# You can start elasticsearch service by executing
+ sudo systemctl start elasticsearch.service
+ sudo systemctl stop elasticsearch.service
+ 
