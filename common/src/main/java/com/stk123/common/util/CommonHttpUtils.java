@@ -625,11 +625,12 @@ public class CommonHttpUtils {
 		System.out.println(page);*/
 
         //copy /b  E:\downloads\mv\file_name\*.ts  E:\downloads\mv\zzz\file_name.ts
-        //mediaCoder ts转码mp4
+        //C:\Program Files (x86)\MediaCoder ts转码mp4
 
-        downloadMV("https://play.520520bo.com/20200821/1Zr6OizJ/700kb/hls/m7zznwv5042001.ts", "极品韩国BJ女主播19禁 性感大奶极品美胸粉红乳头激情直播第一集", 1);
-        downloadMV("https://play.168168bo.com/20190124/91Wtyarf/700kb/hls/kWowyfxU6164000.ts", "棒子国主播大秀 你用来自慰的是香肠吗", 0);
-        downloadMV("https://play.520520bo.com/20200515/qxtME2Cs/700kb/hls/yrfN4Lv3747000.ts", "韩国高颜值美女 酒店深夜大秀 极品靓乳 非常诱人", 0);
+        downloadMV("https://play.168168bo.com/20181209/tJJUhLUl/700kb/hls/UOqeHuzz6156000.ts", "漂亮小姐姐直播小秀 我就想研究一下她的纹身", 0);
+
+        downloadMV("https://play.520520bo.com/20201015/2hsaU1e9/700kb/hls/zccBs6me5479001.ts", "高颜值妹妹 白色内衣 巨乳肥臀 镜头前秀屁股", 1);
+        downloadMV("https://play.520520bo.com/20200522/zGO357rO/700kb/hls/ib28ovs7002000.ts", "高颜值御姐范 妹子身材 丰满诱人 情趣黑丝大秀 撸点高", 0);
 
 
 

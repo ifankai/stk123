@@ -23,15 +23,18 @@ import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.text.Text;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.rest.RestStatus;
+import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
@@ -226,20 +229,21 @@ public class EsService {
         if (restStatus != RestStatus.OK){
             return SearchResult.failure(restStatus.getStatus());
         }
-        List<EsDocument> list = new ArrayList<>();
+
         SearchHits hits = searchResponse.getHits();
         // the total number of hits, must be interpreted in the context of totalHits.relation
         long totalHits = hits.getTotalHits().value;
         float maxScore = hits.getMaxScore();
         log.info("totalHits:"+totalHits+",maxScore:"+maxScore);
 
-        hits.forEach(item -> list.add(JSON.parseObject(item.getSourceAsString(), EsDocument.class)));
-        /*for (SearchHit hit : hits.getHits()) {
-            Map<String, HighlightField> highlightFields = hit.getHighlightFields();
-            HighlightField highlight = highlightFields.get("title");
-            Text[] fragments = highlight.fragments();
-            String fragmentString = fragments[0].string();
-        }*/
+        List<EsDocument> list = new ArrayList<>();
+        hits.forEach(item -> {
+            Map map = item.getSourceAsMap();
+            Map<String, HighlightField> hlFields = item.getHighlightFields();
+            hlFields.forEach((k, v) -> map.put(k, v.fragments()==null?null:v.fragments()[0].string()));
+            list.add(BeanUtil.toBean(map, EsDocument.class));
+        });
+
         return SearchResult.success(list);
     }
 
