@@ -1,5 +1,7 @@
 package com.stk123.model.strategy;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.stk123.model.json.View;
 import com.stk123.model.strategy.result.FilterResult;
 import lombok.Getter;
 
@@ -13,13 +15,18 @@ import java.util.function.Function;
  *            然后在addFilter第一个参数中定义如何得到Filter里的类型？（？可以是Stock，BarSeries，Bar etc.）
  */
 public class Strategy<X> {
+    @Getter
+    @JsonView(View.Default.class)
+    private String code;
 
     @Getter
+    @JsonView(View.Default.class)
     private String name;
     @Getter
     private Class<X> xClass;
     private List<FilterExecutor<X, ?>> filterExecutors = new ArrayList<>();
     private FilterExecutor<X, X> expectFilterExecutor;
+    private boolean expectFilterExecutorRunOrNot = true;
 
     @Getter
     private int countOfAllStrategyResult; //Strategy总共执行次数，即StrategyResult的个数
@@ -31,12 +38,13 @@ public class Strategy<X> {
     @Getter
     private List<StrategyResult> strategyResults = new ArrayList<>();
 
-    public Strategy(String name, Class<X> xClass) {
+    public Strategy(String code, String name, Class<X> xClass) {
+        this.code = code;
         this.name = name;
         this.xClass = xClass;
     }
-    public Strategy(String name, Class<X> xClass, Filter<X> expectFilter) {
-        this(name, xClass);
+    public Strategy(String code, String name, Class<X> xClass, Filter<X> expectFilter) {
+        this(code, name, xClass);
         this.expectFilterExecutor = new FilterExecutor(null, x->x, expectFilter);
     }
 
@@ -46,6 +54,9 @@ public class Strategy<X> {
      */
     public void addFilter(String name, Function<X, ?> function, Filter<?> filter){
         this.filterExecutors.add(new FilterExecutor(name, function, filter));
+    }
+    public int getFilterCount(){
+        return this.filterExecutors.size();
     }
     public void addFilter(String name, Filter<?> filter){
         addFilter(name, (x)->x, filter);
@@ -62,6 +73,12 @@ public class Strategy<X> {
      */
     public void setExpectFilter(String name, Filter<X> expectFilter){
         this.expectFilterExecutor = new FilterExecutor(name, x->x, expectFilter);
+    }
+    public void setExpectFilterRunOrNot(boolean runOrNot){
+        expectFilterExecutorRunOrNot = runOrNot;
+    }
+    public boolean getExpectFilterRunOrNot(){
+        return expectFilterExecutorRunOrNot;
     }
 
     public StrategyResult test(X x) {
@@ -86,7 +103,7 @@ public class Strategy<X> {
         }
         countOfPassedStrategyResult++;
         //resultSet.setPass(true);
-        if(expectFilterExecutor != null){
+        if(expectFilterExecutorRunOrNot && expectFilterExecutor != null){
             FilterResult filterResult = expectFilterExecutor.execute(x);
             filterResult.setFilterExecutor(expectFilterExecutor);
             strategyResult.addExpectFilterResult(filterResult);
@@ -123,6 +140,15 @@ public class Strategy<X> {
                     filterExecutor.getName(), filterExecutor.getCounterPassedAndNotPassed(),
                     filterExecutor.getCounterPassed(), filterExecutor.getCounterNotPassed()));
         }
+
+        long countOfAllFilterPassed = strategyResults.stream().filter(strategyResult -> strategyResult.isFilterAllPassed()).count();
+        sb.append(String.format("通过所有过滤器次数：%d\n", countOfAllFilterPassed));
+        strategyResults.forEach(strategyResult -> {
+            if(strategyResult.isFilterAllPassed()) {
+                sb.append(strategyResult).append("\n");
+            }
+        });
+
         if(expectFilterExecutor != null) {
             sb.append(String.format("期望过滤器[%s]调用总次数：%d, 通过：%d, 未通过：%d。通过率：%f",
                     expectFilterExecutor.getName(), expectFilterExecutor.getCounterPassedAndNotPassed(),

@@ -27,10 +27,9 @@ public class EsController {
     @RequestMapping(value = "/{index}", method = RequestMethod.PUT)
     @ResponseBody
     public RequestResult initIndex(@PathVariable("index")String index){
-        BulkResponse bulkResponse = esService.initIndexByBulk(index);
-        //log.info(bulkResponse);
-        if(bulkResponse.hasFailures()){
-            return RequestResult.failure(bulkResponse.buildFailureMessage());
+        String errorMsg = esService.initIndexByBulk(index);
+        if(errorMsg != null){
+            return RequestResult.failure(errorMsg);
         }
         return RequestResult.success();
     }
@@ -56,6 +55,18 @@ public class EsController {
         }
         try {
             SearchResult esResult = esService.search(keyword, p);
+            return RequestResult.success(esResult.getResults());
+        } catch (IOException e) {
+            return RequestResult.failure(e.getMessage());
+        }
+    }
+
+    @RequestMapping(value = {"/searchby/{type}/{id}"})
+    @ResponseBody
+    public RequestResult searchByTypeAndId(@PathVariable("type")String type,
+                                           @PathVariable("id")String id) {
+        try {
+            SearchResult esResult = esService.searchByTypeAndId(type, id);
             return RequestResult.success(esResult.getResults());
         } catch (IOException e) {
             return RequestResult.failure(e.getMessage());

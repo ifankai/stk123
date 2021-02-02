@@ -1193,11 +1193,11 @@ public class InitialData {
 							infos.add("[股东人数减少]"+code+","+name+","+info);*/
 
 							params.clear();
-							params.add(SequenceUtils.getSequenceNextValue(SequenceUtils.SEQ_TEXT_ID));
+							//params.add(SequenceUtils.getSequenceNextValue(SequenceUtils.SEQ_TEXT_ID));
 							params.add(index.getCode());
 							params.add(JdbcUtils.createClob(info));
 							params.add(Text.SUB_TYPE_STK_HOLDER_REDUCE);
-							JdbcUtils.insert(conn, "insert into stk_text(id,type,code,code_type,title,text,insert_time,update_time,sub_type) values (?,1,?,1,null,?,sysdate,null,?)", params);
+							JdbcUtils.insert(conn, "insert into stk_text(id,type,code,code_type,title,text,insert_time,update_time,sub_type) values (s_text_id.nextval,1,?,1,null,?,sysdate,null,?)", params);
 						}
 					}
 				}
@@ -1341,11 +1341,11 @@ public class InitialData {
 							infos.add("[股东人数减少]"+code+","+name+","+info);*/
 
 							params.clear();
-							params.add(SequenceUtils.getSequenceNextValue(SequenceUtils.SEQ_TEXT_ID));
+							//params.add(SequenceUtils.getSequenceNextValue(SequenceUtils.SEQ_TEXT_ID));
 							params.add(index.getCode());
 							params.add(JdbcUtils.createClob(info));
 							params.add(Text.SUB_TYPE_STK_HOLDER_REDUCE);
-							JdbcUtils.insert(conn, "insert into stk_text(id,type,code,code_type,title,text,insert_time,update_time,sub_type) values (?,1,?,1,null,?,sysdate,null,?)", params);
+							JdbcUtils.insert(conn, "insert into stk_text(id,type,code,code_type,title,text,insert_time,update_time,sub_type) values (s_text_id.nextval,1,?,1,null,?,sysdate,null,?)", params);
 						}
 					}
 				}
@@ -1452,12 +1452,12 @@ public class InitialData {
 						List<Name2Value> pairs = Name2Value.containName(awesomefunds, org.getName());
 						if(pairs.size() > 0){
 							params.clear();
-							params.add(SequenceUtils.getSequenceNextValue(SequenceUtils.SEQ_TEXT_ID));
+							//params.add(SequenceUtils.getSequenceNextValue(SequenceUtils.SEQ_TEXT_ID));
 							params.add(index.getCode());
 							String content = org.getName() + " - " + date + " - 买入";
 							params.add(JdbcUtils.createClob(content));
 							params.add(pairs.get(0).getValue().equals(1)?Text.SUB_TYPE_NIU_FUND_ONE_YEAR:Text.SUB_TYPE_NIU_FUND_ALL_TIME);
-							JdbcUtils.insert(conn, "insert into stk_text(id,type,code,code_type,title,text,insert_time,update_time,sub_type) values (?,1,?,1,null,?,sysdate,null,?)", params);
+							JdbcUtils.insert(conn, "insert into stk_text(id,type,code,code_type,title,text,insert_time,update_time,sub_type) values (s_text_id.nextval,1,?,1,null,?,sysdate,null,?)", params);
 						}
 
 						List<Name2Value> ap = Name2Value.containName(awesomePersons, org.getName());

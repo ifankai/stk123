@@ -7,6 +7,11 @@ import com.stk123.model.strategy.Filter;
 import com.stk123.model.strategy.result.FilterResult;
 import com.stk123.model.strategy.result.FilterResultBetween;
 import com.stk123.model.strategy.result.FilterResultEquals;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Filters {
 
@@ -19,25 +24,49 @@ public class Filters {
         };
     }
 
+    public static <B> Filter<B> or(Filter<B>... filters){
+        return (bs) -> {
+            List<Object> results = new ArrayList<>();
+            for (Filter<B> filter : filters) {
+                FilterResult filterResult = filter.filter(bs);
+                results.add(filterResult.result());
+                if(filterResult.pass()) return filterResult;
+            }
+            return FilterResult.FALSE("OR[" + StringUtils.join(results, ", ") + "]");
+        };
+    }
+
     /**
-     * 定义：计算从close价格过去numberBeforeParam1天 到 过去numberBeforeFirst天
-     * 的涨跌幅是否等于changeOfTarget，冗余度为 tolerance
+     * 过去numberBeforeFirst天到numberBeforeParam1天的跌幅
      *
-     * @param numberBeforeFirst
-     * @param numberBeforeParam1
-     * @param changeOfTarget
-     * @param tolerance
-     * @return
+     * 定义：计算从close价格过去numberBeforeParam1天 到 过去numberBeforeFirst天
+     * 的涨跌幅是否在min和max之间
      */
-    public static Filter<Bar> filter_001(int numberBeforeFirst, int numberBeforeParam1, double
-            changeOfTarget, double tolerance) {
+    public static Filter<Bar> filter_001_01(int numberBeforeFirst, int numberBeforeParam1, double
+            min, double max) {
         return (bar) -> {
             Bar today = bar;
             Bar todayBefore = today.before(numberBeforeFirst);
             double change = todayBefore.getChange(numberBeforeParam1, Bar.EnumValue.C);
-            return new FilterResultEquals(change*100,changeOfTarget, tolerance).addResult(today.getDate());
+            return new FilterResultBetween(change*100, min, max).addResult("实际涨跌幅：" + change*100);
         };
+    }
 
+    /**
+     * 过去numberBeforeFirst天到numberBeforeParam1天内最高点到低点的跌幅
+     *
+     * 定义：计算从close价格过去numberBeforeParam1天 到 过去numberBeforeFirst天内，最高价到numberBeforeFirst日
+     * 的涨跌幅是否在min和max之间
+     */
+    public static Filter<Bar> filter_001_02(int numberBeforeFirst, int numberBeforeParam1, double
+            min, double max) {
+        return (bar) -> {
+            Bar today = bar;
+            Bar todayBefore = today.before(numberBeforeFirst);
+            Bar highestBar = todayBefore.getHighestBar(numberBeforeParam1, Bar.EnumValue.H);
+            double change = (todayBefore.getClose() - highestBar.getHigh())/highestBar.getHigh();
+            return new FilterResultBetween(change*100, min, max).addResult("实际最高点到低点涨跌幅：" + change*100);
+        };
     }
 
     public static Filter<BarSeries> filter_002() {
@@ -80,6 +109,49 @@ public class Filters {
                 return FilterResult.FALSE("非十字星");
             }
             return FilterResult.FALSE("涨跌幅>"+change);
+        };
+    }
+
+    /**
+     * 一阳吃多阴
+     * @param n 吃掉n根阴线
+     * @return
+     */
+    public static Filter<Bar> filter_004(int n){
+        return (bar) -> {
+            double p = bar.getChange();
+            double close = bar.getClose();
+            if(p > 0){
+                int count = bar.getBarCountWithPredicate(n, k -> k.getClose() < close);
+                if(count >= n){
+                    return FilterResult.TRUE(bar.getDate());
+                }
+                return FilterResult.FALSE("一阳没有吃掉"+n+"个阴线，实际"+count);
+            }
+            return FilterResult.FALSE("今天不是阳线");
+        };
+    }
+
+    /**
+     * 一阳穿过多根均线
+     * @param days 5, 10, 20, 30 ... 日均线
+     * @return
+     */
+    public static Filter<Bar> filter_005(int... days){
+        return (bar) -> {
+            double open = bar.getOpen();
+            double close = bar.getClose();
+            if(open >= close){
+                return FilterResult.FALSE("今天不是阳线");
+            }
+            for(int i=0; i<days.length; i++){
+                int day = days[i];
+                double ma = bar.getMA(day, Bar.EnumValue.C);
+                if(ma < open || ma > close){
+                    return FilterResult.FALSE("没有穿过"+day+"日均线");
+                }
+            };
+            return FilterResult.TRUE(bar.getDate());
         };
     }
 }

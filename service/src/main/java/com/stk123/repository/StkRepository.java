@@ -4,6 +4,7 @@ import com.stk123.entity.StkEntity;
 import com.stk123.model.core.Stock;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.model.projection.StockCodeNameProjection;
+import com.stk123.model.projection.StockProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,6 +12,12 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface StkRepository extends JpaRepository<StkEntity, String> {
+
+    @Query(value = "select code as code,name as name,market as market,cate as cate,place as place,hot as hot from StkEntity where market in (:markets) and cate=:cate and hot>=:hot")
+    List<StockProjection> findAllByMarketAndCateAndHotGreaterThan(@Param("markets") List<Integer> markets, @Param("cate")Integer cate, @Param("hot")Integer hot);
+
+    @Query(value = "select t from StkEntity t where code=:code")
+    StockProjection findByCode(@Param("code")String code);
 
     @Query(value = "select code as code,name as name,market as market,cate as cate,place as place from StkEntity where market=:market and cate=:cate order by code")
     List<StockBasicProjection> findAllByMarketAndCateOrderByCode(@Param("market") Integer market, @Param("cate") Integer cate);

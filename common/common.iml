@@ -99,5 +99,8 @@
     <orderEntry type="library" name="Maven: org.hdrhistogram:HdrHistogram:2.1.9" level="project" />
     <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-api:2.11.2" level="project" />
     <orderEntry type="library" name="Maven: org.elasticsearch:jna:5.5.0" level="project" />
+    <orderEntry type="library" name="Maven: cn.hutool:hutool-all:5.5.6" level="project" />
+    <orderEntry type="library" name="Maven: ch.ethz.ganymed:ganymed-ssh2:build210" level="project" />
+    <orderEntry type="library" name="Maven: org.modelmapper:modelmapper:2.3.9" level="project" />
   </component>
 </module>

@@ -37,10 +37,10 @@ public class KController {
     @ResponseBody
     @JsonView(View.Default.class)
     public RequestResult<LinkedHashMap<String, BarSeries>> getKs(@PathVariable("code")String code,
-                                                                            @PathVariable(value = "period", required = false)String period,
-                                                                             @RequestParam(value = "days", required = false, defaultValue = "100")int days,
-                                                                             @RequestParam(value = "fromDate", required = false)String fromDate,
-                                                                             @RequestParam(value = "toDate", required = false)String toDate) throws Exception {
+                                                                 @PathVariable(value = "period", required = false)String period,
+                                                                 @RequestParam(value = "days", required = false, defaultValue = "100")int days,
+                                                                 @RequestParam(value = "fromDate", required = false)String fromDate,
+                                                                 @RequestParam(value = "toDate", required = false)String toDate) throws Exception {
         List<StkKlineEntity> ks = null;
         String[] codes = StringUtils.split(code, ",");
         LinkedHashMap<String, BarSeries> results = new LinkedHashMap<>();
@@ -60,7 +60,7 @@ public class KController {
                 }*/
                 results = barService.queryTopNByCodeListOrderByKlineDateDesc(Arrays.asList(codes), days);
         }
-        Strategy<BarSeries> example = new Strategy<>("", BarSeries.class);
+        Strategy<BarSeries> example = new Strategy<>("","", BarSeries.class);
         System.out.println("example:====="+example.getClass().getTypeName());
 
         Type mySuperclass = example.getClass().getTypeParameters()[0];

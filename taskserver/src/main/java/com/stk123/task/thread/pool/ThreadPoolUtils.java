@@ -49,7 +49,7 @@ public class ThreadPoolUtils {
 		exec.shutdown();
 	}
 	
-	public static List<Object> run(List<Callable> tasks, int poolSize) throws InterruptedException, ExecutionException {
+	public static <V> List<V> run(List<Callable<V>> tasks, int poolSize) throws InterruptedException, ExecutionException {
 		// 创建一个线程池
 		ExecutorService exec = Executors.newFixedThreadPool(poolSize);
 		// 调用CompletionService的take方法是，会返回按完成顺序放回任务的结果
@@ -59,18 +59,18 @@ public class ThreadPoolUtils {
 		for (int i = 0; i < tasks.size(); i++) {
 			Callable c = tasks.get(i);
 			// 执行任务并获取Future对象
-			Future f = pool.submit(c);
+			Future<V> f = pool.submit(c);
 			//list.add(f);
 		}
-		List<Object> results = new ArrayList<Object>();
+		List<V> results = new ArrayList<>();
 		// 获取所有并发任务的运行结果
 		for (int i = 0; i < tasks.size(); i++) {
 			//从Future对象上获取任务的返回值，并输出到控制台
 			//System.out.println(">>>" + pool.take().get().toString());
-			Future f = pool.take();
+			Future<V> f = pool.take();
 			results.add(f.get());
 		}
-		System.out.println("..................");
+		//System.out.println("..................");
 		// 关闭线程池
 		exec.shutdown();
 		return results;

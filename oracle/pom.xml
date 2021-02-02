@@ -32,27 +32,24 @@
                             <target name="oracle-deploy" description="Use antrun plugin to deploy with SCP and SSH">
                                 <!-- remote host and the command to be executed there -->
 
-                                <echo message="Stopping service ..." />
-                                <sshexec trust="true" failonerror="false"
-                                         host="${ftp.host}" verbose="false"
-                                         username="${ftp.username}"
-                                         password="${ftp.password}"
-                                         command="cd ${ftp.path}; ./service_stop.sh"
-                                         timeout="120000" />
+                                <echo message="export table ..." />
+                                <exec dir="D:\share\workspace\stk123\oracle" executable="cmd">
+                                    <arg line="/c export_text.bat"/>
+                                </exec>
 
                                 <!-- file to be transferred -->
-                                <echo message="Transfering ${project.build.directory}\${project.build.finalName}-exec.${project.packaging} ..." />
+                                <echo message="Transfering dmp file ..." />
                                 <scp trust="true" failonerror="true" verbose="off" sftp="true"
-                                     file="${project.build.directory}\${project.build.finalName}-exec.${project.packaging}"
-                                     todir="${ftp.username}:${ftp.password}@${ftp.host}:${ftp.path}/${project.artifactId}.${project.packaging}" />
+                                     file="D:\share\workspace\stk123\oracle\stk_text.dmp"
+                                     todir="${ftp.username}:${ftp.password}@${ftp.host}:/root/oracle/stk_text.dmp" />
 
                                 <!-- remote host and the command to be executed there -->
-                                <echo message="Starting service ..." />
+                                <echo message="import table ..." />
                                 <sshexec trust="true" failonerror="true"
                                          host="${ftp.host}"
                                          username="${ftp.username}"
                                          password="${ftp.password}"
-                                         command="cd ${ftp.path}; ./service_start.sh"
+                                         command=".oraenv; imp userid=stk/stkpwd@localhost:1539/xepdb1 file='/root/oracle/stk_text.dmp' log='/root/oracle/stk_text.log' full=y ignore=y CONSTRAINTS=y"
                                          timeout="120000" />
                                 <echo message="The deployment is done." />
 

@@ -1,10 +1,8 @@
 package com.stk123.task;
 
-import com.stk123.service.support.SpringApplicationContext;
-import com.stk123.service.task.Task;
+import com.stk123.service.task.TaskBuilder;
 import com.stk123.service.task.TaskContainer;
 import com.stk123.task.quartz.job.ResearchReportJob;
-import com.stk123.task.quartz.job.XueqiuStockArticleJob;
 import com.stk123.task.quartz.job.XueqiuUserJob;
 import com.stk123.task.schedule.*;
 import lombok.extern.apachecommons.CommonsLog;
@@ -32,13 +30,9 @@ public class Tasks {
     @Autowired
     private NewsRobot newsRobot;
     @Autowired
-    private XueqiuStockArticleJob xueqiuStockArticleJob;
-    @Autowired
     private XueqiuFollow xueqiuFollow;
 
-    public Task createTask(Class<? extends Task> taskClass){
-        return SpringApplicationContext.getBean(taskClass);
-    }
+
 
     public void runSingleTask() {
         //initialKLine.run("analyse");
@@ -66,7 +60,16 @@ public class Tasks {
     @Scheduled(cron = "0 0/1 * ? * *") //每分钟1次
     public void xueqiuStockArticleJob() {
         if(!ArrayUtils.contains(environment.getActiveProfiles(), "company")) {
-            xueqiuStockArticleJob.execute(null);
+            //xueqiuStockArticleJob.execute(null);
+            taskContainer.start(XueqiuStockArticleTask.class);
+            //taskContainer.start(TaskBuilder.of(BarTask.class, "HK"), TaskBuilder.of(SyncTask.class, "table=stk_text"));
+        }
+    }
+    @Scheduled(cron = "0 0/10 * ? * *") //每10分钟1次
+    public void syncTask() {
+        if(!ArrayUtils.contains(environment.getActiveProfiles(), "company")) {
+            //xueqiuStockArticleJob.execute(null);
+            taskContainer.start(SyncTask.class, "table=stk_text");
         }
     }
 
@@ -82,26 +85,30 @@ public class Tasks {
         researchReportJob.execute(null);
     }
 
-    @Scheduled(cron = "0 30 15 ? * MON-SAT")
+    /*@Scheduled(cron = "0 30 15 ? * MON-SAT")
     public void initialKLineCN() {
-        //initialKLine.run();
-        taskContainer.start(createTask(BarTask.class), "CN");
-    }
+        taskContainer.start(BarTask.class, "CN");
+    }*/
     @Scheduled(cron = "0 30 16 ? * MON-SAT")
     public void initialKLineHK() {
-        //initialKLine.run();
-        taskContainer.start(createTask(BarTask.class), "HK");
+        //taskContainer.start(BarTask.class, "HK");
+        taskContainer.start(TaskBuilder.of(BarTask.class, "CN"),
+                            TaskBuilder.of(BarTask.class, "HK"),
+                            TaskBuilder.of(BarTask.class, "Kline"),
+                            TaskBuilder.of(SyncTask.class, "table=stk_task_log"));
     }
     @Scheduled(cron = "0 30 5 ? * TUE-SAT")
     public void initialKLineUS() {
         //initialKLine.run("US");
-        taskContainer.start(createTask(BarTask.class), "US");
+        taskContainer.start(BarTask.class, "US");
     }
 
 
     @Scheduled(cron = "0 0 2 ? * MON,FRI")
     public void initialDataCN() {
         initialData.run(1);
+
+        taskContainer.start(StockTask.class, "CN");
     }
     @Scheduled(cron = "0 0 8 ? * TUE,SAT")
     public void initialDataUS() {

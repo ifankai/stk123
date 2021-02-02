@@ -16,6 +16,7 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.HttpAsyncResponseConsumerFactory;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -29,6 +30,7 @@ import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.TermsQueryBuilder;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
@@ -45,6 +47,7 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * Boost:
@@ -58,12 +61,25 @@ import java.util.concurrent.TimeUnit;
 @CommonsLog
 public class EsService {
 
+    public final static String INDEX_STK = "index.stk";
+
+    public final static String FIELD_ID = "id";
+    public final static String FIELD_TYPE = "type";
+    public final static String FIELD_SUB_TYPE = "subType";
+    public final static String FIELD_TITLE = "title";
+    public final static String FIELD_DESC = "desc";
+    public final static String FIELD_CODE = "code";
+    public final static String FIELD_CONTENT = "content";
+    public final static String FIELD_INSERT_TIME = "insertTime";
+    public final static String FIELD_UPDATE_TIME = "updateTime";
+
+
     @Autowired
     private StkTextRepository stkTextRepository;
 
 
-    private final static String[] DEFAULT_SEARCH_FIELDS = new String[] {"type", "title", "desc", "content", "code"};
-    private final static String[] DEFAULT_HIGHLIGHT_FIELDS = new String[] {"title", "desc", "content"};
+    private final static String[] DEFAULT_SEARCH_FIELDS = new String[] {FIELD_TYPE, FIELD_TITLE, FIELD_DESC, FIELD_CONTENT, FIELD_CODE};
+    private final static String[] DEFAULT_HIGHLIGHT_FIELDS = new String[] {FIELD_TITLE, FIELD_DESC, FIELD_CONTENT};
 
     @Resource
     protected RestHighLevelClient client;
@@ -101,6 +117,15 @@ public class EsService {
         }
     }
 
+    protected void updateRequest(String index, String id, Object object) {
+        try {
+            UpdateRequest updateRequest = new UpdateRequest(index, id).doc(BeanUtil.beanToMap(object), XContentType.JSON);
+            client.update(updateRequest, COMMON_OPTIONS);
+        } catch (IOException e) {
+            throw new RuntimeException("更新索引 {" + index + "} 数据 {" + object + "} 失败");
+        }
+    }
+
 
     public void createIndex(String index) {
         try {
@@ -116,10 +141,13 @@ public class EsService {
 
             Map<String, Object> properties = new HashMap<>();
             //type (stock, post, industry)
-            properties.put("type", Collections.singletonMap("type", "keyword"));
+            properties.put(FIELD_TYPE, Collections.singletonMap("type", "keyword"));
+
+            //sub_type
+            properties.put(FIELD_SUB_TYPE, Collections.singletonMap("type", "keyword"));
 
             //id
-            properties.put("id", Collections.singletonMap("type", "keyword"));
+            properties.put(FIELD_ID, Collections.singletonMap("type", "keyword"));
 
             //title (name)
             Map<String, Object> title = new HashMap<>();
@@ -127,25 +155,27 @@ public class EsService {
             title.put("boost", 2);
             title.put("analyzer", "ik_smart");
             title.put("fields", Collections.singletonMap("keyword", keyword));
-            properties.put("title", title);
+            properties.put(FIELD_TITLE, title);
 
             //desc
             Map<String, Object> desc = new HashMap<>();
             desc.put("type", "text");
             desc.put("analyzer", "ik_max_word");//ik_smart
-            properties.put("desc", desc);
+            properties.put(FIELD_DESC, desc);
 
             //content
             Map<String, Object> content = new HashMap<>();
             content.put("type", "text");
             content.put("analyzer", "ik_max_word");
-            properties.put("content", content);
+            properties.put(FIELD_CONTENT, content);
 
             //code
-            properties.put("code", Collections.singletonMap("type", "text"));
+            properties.put(FIELD_CODE, Collections.singletonMap("type", "text"));
 
-            //time
-            properties.put("time", Collections.singletonMap("type", "date"));
+            //insertTime
+            properties.put(FIELD_INSERT_TIME, Collections.singletonMap("type", "date"));
+            //updateTime
+            properties.put(FIELD_UPDATE_TIME, Collections.singletonMap("type", "date"));
 
             Map<String, Object> mapping = new HashMap<>();
             mapping.put("properties", properties);
@@ -161,7 +191,7 @@ public class EsService {
     }
 
     //not set id, es will automatically generated id
-    public IndexResponse createDocument(String index, Object object) {
+    public IndexResponse createDocument(String index, EsDocument object) {
         IndexRequest indexRequest = new IndexRequest(index).source(BeanUtil.beanToMap(object), XContentType.JSON);
         try {
             return client.index(indexRequest, COMMON_OPTIONS);
@@ -169,6 +199,18 @@ public class EsService {
             log.error("createDocument", e);
             throw new RuntimeException("创建文档 {" + index + "} 失败");
         }
+    }
+
+    public IndexResponse createDocumentIfNotExisting(StkTextEntity entity) throws IOException {
+        EsDocument esDocument = stkTextEntityToEsDocument(entity);
+        return createDocumentIfNotExisting(esDocument);
+    }
+
+    public IndexResponse createDocumentIfNotExisting(EsDocument esDocument) throws IOException {
+        SearchResult searchResult = this.searchByTypeAndId(esDocument.getType(), esDocument.getId());
+        if(searchResult.getResults().size() > 0)
+            return null;
+        return createDocument(INDEX_STK, esDocument);
     }
 
     public <T> BulkResponse createDocumentByBulk(String index, List<EsDocument> list) {
@@ -185,14 +227,45 @@ public class EsService {
         }
     }
 
+    public SearchResult searchByTypeAndId(String type, String id) throws IOException {
+        SearchRequest searchRequest = new SearchRequest(INDEX_STK);
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        TermsQueryBuilder termsQueryBuilder1 = QueryBuilders.termsQuery(FIELD_TYPE, type);
+        TermsQueryBuilder termsQueryBuilder2 = QueryBuilders.termsQuery(FIELD_ID, id);
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+        boolQueryBuilder.must(termsQueryBuilder1);
+        boolQueryBuilder.must(termsQueryBuilder2);
+        searchSourceBuilder.query(boolQueryBuilder);
+        searchRequest.source(searchSourceBuilder);
+        SearchResponse searchResponse = client.search(searchRequest, COMMON_OPTIONS);
+        RestStatus restStatus = searchResponse.status();
+        if (restStatus != RestStatus.OK){
+            return SearchResult.failure(restStatus.getStatus());
+        }
+
+        SearchHits hits = searchResponse.getHits();
+        List list = Arrays.stream(hits.getHits()).map(e -> e.getSourceAsMap()).collect(Collectors.toList());
+        return SearchResult.success(list);
+    }
 
     public SearchResult search(String keyword, int page) throws IOException {
-        return search("index.stk", page, 20, keyword, DEFAULT_SEARCH_FIELDS, DEFAULT_HIGHLIGHT_FIELDS);
+        return search(keyword, null, page);
+    }
+
+    /**
+     * @param keyword
+     * @param page 从1开始
+     * @return
+     * @throws IOException
+     */
+    public SearchResult search(String keyword, Map<String,String> otherKeywords, int page) throws IOException {
+        return search(INDEX_STK, page, 10, keyword, otherKeywords, DEFAULT_SEARCH_FIELDS, DEFAULT_HIGHLIGHT_FIELDS);
     }
 
     //https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-high-search.html
     public SearchResult search(String index, int page, int pageSize,
-                               String keyword, String[] fieldNames, String[] highlightFields) throws IOException {
+                               String keyword, Map<String,String> otherKeywords,
+                               String[] fieldNames, String[] highlightFields) throws IOException {
         SearchRequest searchRequest = new SearchRequest(index);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         MultiMatchQueryBuilder multiMatchQueryBuilder = QueryBuilders.multiMatchQuery(keyword, fieldNames);
@@ -201,6 +274,12 @@ public class EsService {
         // should 相当于 或 | or
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
         boolQueryBuilder.must(multiMatchQueryBuilder);
+        if(otherKeywords != null){
+            otherKeywords.entrySet().stream().forEach(e -> {
+                TermsQueryBuilder termsQueryBuilder = QueryBuilders.termsQuery(e.getKey(), e.getValue());
+                boolQueryBuilder.must(termsQueryBuilder);
+            });
+        }
 
         searchSourceBuilder.query(boolQueryBuilder);
 
@@ -221,7 +300,7 @@ public class EsService {
         searchSourceBuilder.timeout(new TimeValue(60, TimeUnit.SECONDS));
 
         searchSourceBuilder.sort(SortBuilders.scoreSort().order(SortOrder.DESC));
-        searchSourceBuilder.sort(new FieldSortBuilder("time").order(SortOrder.DESC));
+        searchSourceBuilder.sort(new FieldSortBuilder(FIELD_INSERT_TIME).order(SortOrder.DESC));
 
         searchRequest.source(searchSourceBuilder);
         SearchResponse searchResponse = client.search(searchRequest, COMMON_OPTIONS);
@@ -264,26 +343,57 @@ public class EsService {
         return SearchResult.success(list);
     }
 
+    public String addDocumentToIndexByBulk(){
+        return initIndexByBulk(INDEX_STK, false, DateUtils.addDays(new Date(), -2));
+    }
 
-    public BulkResponse initIndexByBulk(String index) {
-        boolean existing = existingIndex(index);
-        if(existing){
-            deleteIndex(index);
+    public String initIndexByBulk(){
+        return initIndexByBulk(INDEX_STK, true, DateUtils.addYears(new Date(), -2));
+    }
+
+    public String initIndexByBulk(String index){
+        return initIndexByBulk(index, true, DateUtils.addYears(new Date(), -2));
+    }
+
+    public String initIndexByBulk(String index, boolean deleteAndCreateIndexAtFirst, Date dateAfter) {
+        if(deleteAndCreateIndexAtFirst) {
+            boolean existing = existingIndex(index);
+            if (existing) {
+                deleteIndex(index);
+            }
+            createIndex(index);
         }
-        createIndex(index);
-        List<StkTextEntity> list = stkTextRepository.findAllByCodeAndCreatedAtGreaterThanOrderByInsertTimeDesc("600600", DateUtils.addYears(new Date(), -1));
-        List<EsDocument> documents = new ArrayList();
-        list.forEach(e -> {
-            EsDocument esDocument = new EsDocument();
-            esDocument.setType("post");
-            esDocument.setTitle(e.getTitle());
-            esDocument.setDesc(e.getTextDesc());
-            esDocument.setContent(e.getText());
-            esDocument.setId(e.getId().toString());
-            esDocument.setCode(e.getCode());
-            esDocument.setTime(e.getUpdateTime()==null?e.getInsertTime().getTime():e.getUpdateTime().getTime());
-            documents.add(esDocument);
-        });
-        return createDocumentByBulk(index, documents);
+        List<StkTextEntity> list = stkTextRepository.findAllByInsertTimeGreaterThanEqual(dateAfter);
+        int i=0;
+        for(;;) {
+            List<EsDocument> documents = new ArrayList();
+            int j = i+1000 >= list.size() ? list.size() : i+1000;
+            List<StkTextEntity> subList = list.subList(i, j);
+            subList.forEach(e -> {
+                EsDocument esDocument = stkTextEntityToEsDocument(e);
+                documents.add(esDocument);
+            });
+            BulkResponse bulkResponse = createDocumentByBulk(index, documents);
+            if(bulkResponse.hasFailures()){
+                return bulkResponse.buildFailureMessage();
+            }
+            if(j >= list.size() -1)break;
+            i = j;
+        }
+        return null;
+    }
+
+    private EsDocument stkTextEntityToEsDocument(StkTextEntity e) {
+        EsDocument esDocument = new EsDocument();
+        esDocument.setType("post");
+        esDocument.setSubType(e.getSubType().toString());
+        esDocument.setTitle(e.getTitle());
+        esDocument.setDesc(e.getTextDesc());
+        esDocument.setContent(e.getText());
+        esDocument.setId(e.getId().toString());
+        esDocument.setCode(e.getCode());
+        esDocument.setInsertTime(e.getInsertTime() == null ? null : e.getInsertTime().getTime());
+        esDocument.setUpdateTime(e.getUpdateTime() == null ? null : e.getUpdateTime().getTime());
+        return esDocument;
     }
 }

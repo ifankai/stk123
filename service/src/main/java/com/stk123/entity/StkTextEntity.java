@@ -2,6 +2,7 @@ package com.stk123.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,6 +16,10 @@ import java.util.Date;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StkTextEntity implements Serializable {
+
+/*    @JsonInclude()
+    @Transient
+    private String _type = "post";*/
 
     @Id
     @Column(name="ID")
@@ -35,9 +40,11 @@ public class StkTextEntity implements Serializable {
     private String title;
 
     @Column(name="TEXT")
+    @JsonProperty("content")
     private String text;
 
     @Column(name="TEXT_DESC")
+    @JsonProperty("desc")
     private String textDesc;
 
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)

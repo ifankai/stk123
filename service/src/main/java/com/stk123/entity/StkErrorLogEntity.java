@@ -14,6 +14,8 @@ import java.util.Objects;
 public class StkErrorLogEntity {
     @Id
     @Column(name = "ID")
+    @GeneratedValue(strategy =GenerationType.SEQUENCE, generator="s_error_log_id")
+    @SequenceGenerator(name="s_error_log_id", sequenceName="s_error_log_id", allocationSize = 1)
     private Integer id;
 
     @Column(name = "CODE", nullable = true, length = 10)

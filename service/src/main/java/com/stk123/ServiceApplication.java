@@ -3,6 +3,7 @@ package com.stk123;
 
 import com.stk123.entity.StkKlineEntity;
 import com.stk123.model.RequestResult;
+import com.stk123.service.core.EsService;
 import com.stk123.util.ServiceUtils;
 import com.stk123.ws.StkWebSocketClient;
 import lombok.extern.apachecommons.CommonsLog;
@@ -59,6 +60,9 @@ public class ServiceApplication implements ApplicationContextAware {
     @Autowired
     private StkWebSocketClient stkWebSocketClient;
 
+    @Autowired
+    private EsService esService;
+
 
     public static void main(String[] args) throws Exception {
         SpringApplication.run(ServiceApplication.class, args);
@@ -106,11 +110,22 @@ public class ServiceApplication implements ApplicationContextAware {
         }
     }
 
+//    @Scheduled(cron = "0 0/1 * ? * *")
+//    public void elasticsearchUpdate(){
+//        log.info("update elasticsearch start..........");
+//        //esService.addDocumentToIndexByBulk();
+//        log.info("update elasticsearch end..........");
+//    }
+
 
     @EventListener(ApplicationReadyEvent.class)
     public void doSomethingAfterStartup() {
-        System.out.println("doSomethingAfterStartup..........");
-
+        log.info("init elasticsearch start..........");
+        String errorMsg = esService.initIndexByBulk();
+        if(errorMsg != null){
+            log.error("init elasticsearch error:"+errorMsg);
+        }
+        log.info("init elasticsearch end..........");
     }
 
 

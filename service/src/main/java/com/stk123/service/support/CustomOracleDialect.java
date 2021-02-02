@@ -25,7 +25,7 @@ public class CustomOracleDialect extends Oracle12cDialect {
                 if(length == 0 && precision == 0){
                     result = "big_decimal";
                 }
-            } else if(scale > 0 && precision <= 16)
+            } else if(scale > 0 && precision <= 20)
                 result = "double";
         }
         return result;

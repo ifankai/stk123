@@ -22,12 +22,16 @@ import java.util.stream.Collectors;
 @Repository
 public interface StkTextRepository extends JpaRepository<StkTextEntity, Long> {
 
-    List<StkTextEntity> findAllByInsertTimeGreaterThanEqualOrderByInsertTimeDesc(Date date, Pageable pageable);
+    //all
+    List<StkTextEntity> findAllByInsertTimeGreaterThanEqual(Date date);
+    List<StkTextEntity> findAllByInsertTimeGreaterThanEqualOrderByInsertTimeDescIdDesc(Date date, Pageable pageable);
+    List<StkTextEntity> findAllByIdGreaterThanOrderByInsertTimeDescIdDesc(Long id);
+    List<StkTextEntity> findAllByIdLessThanOrderByInsertTimeDescIdDesc(Long id, Pageable pageable);
 
-    List<StkTextEntity> findAllByInsertTimeGreaterThanOrderByInsertTimeDesc(Date date);
-
-    List<StkTextEntity> findAllByInsertTimeLessThanOrderByInsertTimeDesc(Date date, Pageable pageable);
-
+    //favorite
+    List<StkTextEntity> findAllByFavoriteDateNotNullAndInsertTimeGreaterThanEqualOrderByInsertTimeDescIdDesc(Date date, Pageable pageable);
+    List<StkTextEntity> findAllByFavoriteDateNotNullAndIdGreaterThanOrderByInsertTimeDescIdDesc(Long id);
+    List<StkTextEntity> findAllByFavoriteDateNotNullAndIdLessThanOrderByInsertTimeDescIdDesc(Long id, Pageable pageable);
 
     List<StkTextEntity> findAllByCodeOrderByInsertTimeDesc(String code, Pageable pageable);
 
@@ -47,8 +51,10 @@ public interface StkTextRepository extends JpaRepository<StkTextEntity, Long> {
 
     List<StkTextEntity> findAllByTypeAndFavoriteDateNotNullOrderByFavoriteDateDesc(Integer type);
 
-    @Query(value = "select count(1) from stk_text where code=:code and post_id=:postId", nativeQuery = true)
-    Integer existingByCodeAndPostId(@Param("code")String code, @Param("postId")Long postId);
+    List<StkTextEntity> findAllByIdIn(List ids);
+
+    @Query(value = "select count(1) from stk_text where post_id=:postId", nativeQuery = true)
+    Integer existingByPostId(@Param("postId")Long postId);
 
     @Modifying
     @Query(value = "update stk_text set read_date = sysdate where id in (:id)", nativeQuery = true)

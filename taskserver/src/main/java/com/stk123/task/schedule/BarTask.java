@@ -8,10 +8,14 @@ import com.stk123.entity.StkPeEntity;
 import com.stk123.model.core.Bar;
 import com.stk123.model.core.Stock;
 import com.stk123.model.projection.StockBasicProjection;
+import com.stk123.model.strategy.StrategyBacktesting;
+import com.stk123.model.strategy.StrategyResult;
 import com.stk123.repository.*;
+import com.stk123.service.XueqiuService;
+import com.stk123.service.core.BacktestingService;
 import com.stk123.service.core.BarService;
-import com.stk123.service.task.Task;
 import com.stk123.task.tool.TaskUtils;
+import lombok.Setter;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -32,6 +36,11 @@ import java.util.stream.Collectors;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class BarTask extends AbstractTask {
 
+    @Setter
+    private String startDate;
+    @Setter
+    private String endDate;
+
     @Autowired
     private StkKlineRepository stkKlineRepository;
     @Autowired
@@ -44,6 +53,8 @@ public class BarTask extends AbstractTask {
     private StkPeRepository stkPeRepository;
     @Autowired
     private StkIndustryRepository stkIndustryRepository;
+    @Autowired
+    private BacktestingService backtestingService;
 
     public static void main(String[] args) throws Exception {
         AbstractTask task = new BarTask();
@@ -122,12 +133,13 @@ public class BarTask extends AbstractTask {
 //    }
 
     public void register(){
-        this.register("initCN", () -> initCN());
-        this.register("initHK", this::initHK);
-        this.register("initUS", this::initUS);
-        this.register("analyseCN", this::analyseCN);
-        this.register("analyseHK", this::analyseHK);
-        this.register("analyseUS", this::analyseUS);
+        this.runByName("initCN", () -> initCN());
+        this.runByName("initHK", this::initHK);
+        this.runByName("initUS", this::initUS);
+        this.runByName("analyseCN", this::analyseCN);
+        this.runByName("analyseHK", this::analyseHK);
+        this.runByName("analyseUS", this::analyseUS);
+        this.runByName("analyseKline", this::analyseKline);
     }
 
     public void initCN() {
@@ -363,5 +375,31 @@ public class BarTask extends AbstractTask {
         exec.shutdown();
         countDownLatch.await();
 
+    }
+
+    public void analyseKline(){
+        try {
+            Set<String> list = XueqiuService.getFollowStks("全部");
+//            Set<String> list = XueqiuService.getFollowStks("我的");
+            log.info(list);
+            //01,02 策略在com.stk123.model.strategy.sample.Sample 里定义
+            StrategyBacktesting strategyBacktesting = backtestingService.backtesting(list.stream().collect(Collectors.toList()),
+                    Arrays.asList(StringUtils.split("01,02", ",")), startDate, endDate);
+
+//            backtestingService.backtesting(Arrays.stream("601021".split(",")).collect(Collectors.toList()),
+//                    Arrays.asList(StringUtils.split("01,02", ",")), null, null);
+
+            List<StrategyResult> results = strategyBacktesting.getPassedStrategyResult();
+            if(results.size() > 0){
+                EmailUtils.send("策略发现目标"+results.size()+"个",
+                        StringUtils.join(results.stream().map(strategyResult ->
+                                Stock.build(strategyResult.getCode(), null).getNameAndCode()
+                            ).collect(Collectors.toList()), "<br/>")
+                            + "<br/><br/><br/>"
+                            + strategyBacktesting.getStrategies().toString().replaceAll("\n","<br/>"));
+            }
+        } catch (Exception e) {
+            log.error("analyseKline", e);
+        }
     }
 }

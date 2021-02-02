@@ -33,7 +33,7 @@ public class InternetSearch {
 		final ConnectionPool pool = ConnectionPool.getInstance();
 		try {
 			List<StkInternetSearch> searchs = JdbcUtils.list(pool.getConnection(), "select * from stk_internet_search where status=1 order by search_source", StkInternetSearch.class);
-			List<Callable> tasks = new ArrayList<Callable>();
+			List<Callable<Object>> tasks = new ArrayList<>();
 			for(final StkInternetSearch search : searchs){
 				Callable task = new Callable(){
 					public Object call() throws Exception {

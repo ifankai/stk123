@@ -23,6 +23,7 @@ public class Text {
 	public final static int SUB_TYPE_COMPANY_RESEARCH = 100; //公司调研
 	public final static int SUB_TYPE_INDUSTRY_RESEARCH = 110; //行业分析
 	public final static int SUB_TYPE_STK_REPORT = 200; //年报季报
+    public final static int SUB_TYPE_XUEQIU_NOTICE = 300; //雪球公告
 
 	public static void insert(Connection conn, String code,String content) throws Exception{
 		List params = new ArrayList();

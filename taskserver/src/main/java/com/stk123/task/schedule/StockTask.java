@@ -30,7 +30,7 @@ public class StockTask extends AbstractTask {
 
     @Override
     public void register() {
-        this.register("initCNNewStock", this::initCNNewStock);
+        this.runByName("initCNNewStock", this::initCNNewStock);
     }
 
     public void initCNNewStock() {
@@ -96,7 +96,7 @@ public class StockTask extends AbstractTask {
         String scode = (Stock.EnumPlace.isSH(stkEntity.getPlace())?"1.":"0.") + stkEntity.getCode();
         String url = "http://push2.eastmoney.com/api/qt/stock/get?ut=&invt=2&fltt=2&fields=f84,f189&secid="+ scode +"&cb=jQuery&_="+new Date().getTime();
         String page = httpService.getString(url);
-        System.out.println(page);
+        System.out.println("updateCNStockBasicInfo:"+page);
         String json = StringUtils.substringBetween(page, "(", ")");
         ObjectMapper mapper = new ObjectMapper();
         Map map = mapper.readValue(json, HashMap.class);

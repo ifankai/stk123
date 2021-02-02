@@ -494,14 +494,14 @@ public class Bar implements Serializable, Cloneable {
 	 * @return
 	 * @throws Exception
 	 */
-	public int getBarCountWithPredicate(int days, Predicate<Bar> predicate) throws Exception {
+	public int getBarCountWithPredicate(int days, Predicate<Bar> predicate) {
 		Bar k = this;
 		int cnt = 0;
 		while(k != null){
 			if(predicate.test(k)){
 				cnt ++;
 			}
-			if(days -- <= 1){
+			if(days -- < 1){
 				break;
 			}
 			k = k.before(1);
@@ -524,7 +524,7 @@ public class Bar implements Serializable, Cloneable {
 				cnt ++;
 				k = k.before(indent);
 			}
-			if(days -- <= 1){
+			if(days -- < 1){
 				break;
 			}
 			k = k.before(1);

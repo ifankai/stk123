@@ -5,7 +5,10 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.common.CommonConstant;
 import com.stk123.model.json.View;
 import com.stk123.model.projection.StockBasicProjection;
+import com.stk123.model.projection.StockProjection;
+import com.stk123.repository.StkRepository;
 import com.stk123.service.core.BarService;
+import com.stk123.service.core.StockService;
 import com.stk123.service.support.SpringApplicationContext;
 import com.stk123.util.ServiceUtils;
 import lombok.AllArgsConstructor;
@@ -37,6 +40,8 @@ public class Stock {
 
     @Autowired
     private BarService barService;
+    @Autowired
+    private StkRepository stkRepository;
 
     @AllArgsConstructor
     public enum EnumMarket {
@@ -147,11 +152,15 @@ public class Stock {
     @JsonView(View.Default.class)
     private EnumCate cate;
 
+    private StockProjection stock;
+
     private BarSeries barSeries;
     private BarSeries barSeriesWeek;
     private BarSeries barSeriesMonth;
 
     public static Integer BarSeriesRows = 750;
+
+
 
 
 
@@ -221,49 +230,19 @@ public class Stock {
     }
 
 
-//    public Stock(StockBasicProjection stockBasicProjection) {
-//        this.code = stockBasicProjection.getCode();
-//        this.name = stockBasicProjection.getName();
-//        this.market = EnumMarket.getMarket(stockBasicProjection.getMarket());
-//        this.cate = EnumCate.getCate(stockBasicProjection.getCate());
-//        this.place = EnumPlace.getPlace(stockBasicProjection.getPlace());
-//        if(this.market == EnumMarket.CN && this.place == null){
-//            setPlace();
-//        }
-//    }
-
-//    public Stock(String code, String name){
-//        this(code, name, null);
-//    }
-
-//    public Stock(String code, String name, EnumMarket market, EnumPlace place){
-//        this.code = code;
-//        this.name = name;
-//        this.market = market;
-//        this.place = place;
-//    }
-
-//    public Stock(String code, String name, BarSeries barSeries) {
-//        this.code = code;
-//        this.name = name;
-//
-//        boolean isAllNumber = StringUtils.isNumeric(code);
-//
-//        if(code.length() == 5 && isAllNumber){
-//            this.market = HK;
-//        }else{
-//            this.market = isAllNumber ? CN : US;
-//        }
-//
-//        setPlace();
-//        this.barSeries = barSeries;
-//    }
-
     /**
      * @return SH600000
      */
     public String getCodeWithPlace(){
         return this.place == null ? this.code : this.place.name() + this.code;
+    }
+
+    public String getNameAndCode(){
+        if(StringUtils.isEmpty(name) && stock == null){
+            stock = stkRepository.findByCode(code);
+            this.name = stock.getName();
+        }
+        return this.name + "["+ this.getCodeWithPlace() +"]";
     }
 
     public boolean isMarketCN(){

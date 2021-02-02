@@ -159,4 +159,11 @@ create temporary tablespace stk_tablespace_temp tempfile '/opt/oracle/oradata/XE
 # You can start elasticsearch service by executing
  sudo systemctl start elasticsearch.service
  sudo systemctl stop elasticsearch.service
- 
+--log
+/var/log/elasticsearch
+
+grep "Out of memory" /var/log/messages 
+
+--²é¿´liunxÄÚ´æ
+top
+free -m

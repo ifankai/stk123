@@ -42,7 +42,7 @@ alter table stk modify earning_expect varchar2(4000 char);
 alter table stk add earning_expect_date date;
 alter table stk add company_profile clob;
 alter table stk add sale_limit clob;
-alter table stk add market number(1); --1：A股 2：美股 5：外汇  3:港股
+alter table stk add market number(1); --1：A股 2：美股 3:港股 5：外汇
 alter table stk modify name varchar2(100);
 alter table stk add year_end varchar2(4);
 alter table stk add next_earning number(10,2);
@@ -564,7 +564,7 @@ create sequence s_keyword_link_id
 
 create table stk_text(
 	id number(8), 
-  type number(4),  --短文：1，长文：2
+  type number(4),  --0:收藏文章; 短文:1; 长文:2; 雪球评论:3
 	code varchar2(20),
 	code_type number(6), -- 1: stock  2: industry ...
   title varchar2(1000),
@@ -580,6 +580,7 @@ alter table stk_text add sub_type number(4) default 0; -- see Text.java sub type
 create index idx_text__code_type on stk_text (code,code_type);
 create index idx_text__user_id on stk_text (user_id);
 create index idx_text__sub_type on stk_text (sub_type);
+create index idx_text_insert_time on stk_text (insert_time);
 create sequence s_text_id INCREMENT BY 1 START WITH 100000 NOMAXVALUE NOCYCLE CACHE 10;
 
 alter table stk_text modify user_id number(12);
@@ -936,6 +937,30 @@ create table stk_xq_post(
   followers_count number(8)
 );
 alter table stk_xq_post add constraint pk_xq_post_id primary key (id);
+
+
+drop table stk_task_log;
+create table stk_task_log(
+  id number(8),
+  task_code varchar2(40), 
+  task_name varchar2(100), 
+  task_date varchar2(10),
+  code varchar2(2000),
+  strategy_code varchar2(400),
+  strategy_name varchar2(100),
+  strategy_pass_date varchar2(10),
+  strategy_start_date varchar2(10),
+  strategy_end_date varchar2(10),
+  insert_time date,
+  update_time date,
+  status number(1),
+  error_msg varchar2(1000),
+  task_log clob
+);
+alter table stk_task_log add constraint pk_task_log_id primary key (id);
+create index idx_task_log_task_co_da_st_co on stk_task_log (task_code,task_date,strategy_code);
+create sequence s_task_log_id INCREMENT BY 1 START WITH 100000 NOMAXVALUE NOCYCLE CACHE 10;
+
 
 
 select * from tab where tname like 'STK_%';
@@ -2856,10 +2881,16 @@ select * from stk_kline t where kline_date='20201225';
 select * from stk_kline_hk where kline_date='20201224';
 select * from stk_kline_us where kline_date='20201224';
 select * from stk_kline_us where code='.DJI' order by kline_date desc;
-select count(*) from stk_kline t where kline_date='20201215';
+select count(*) from stk_kline t where kline_date='20210201';
 select * from stk where market=2 and cate=2 order by code;
 
 
+select * from stk_text order by insert_time desc, id desc;
+select * from stk_text where user_id=-1 order by insert_time desc, id desc;
+
+select count(*) from stk_text where insert_time>=sysdate-350;
+
+select s_text_id .nextval from dual;
 
 
 select code,kline_date as "date",open,close,high,low,volumn as volume,amount,last_close,percentage as change,hsl 
@@ -2875,31 +2906,16 @@ select avg(pe_ttm) as avg_pe_ttm,median(pe_ttm) as mid_pe_ttm from stk_kline whe
 select avg(pb_ttm),median(pb_ttm) from stk_kline where kline_date='20201224' and pb_ttm is not null and pb_ttm>0 and pb_ttm<30;
 
 
-select *
-  from (select row_.*, rownum rownum_
-          from (select stktextent0_.id              as id1_36_,
-                       stktextent0_.code            as code2_36_,
-                       stktextent0_.code_type       as code_type3_36_,
-                       stktextent0_.created_at      as created_at4_36_,
-                       stktextent0_.disp_order      as disp_order5_36_,
-                       stktextent0_.favorite_date   as favorite_date6_36_,
-                       stktextent0_.followers_count as followers_count7_36_,
-                       stktextent0_.insert_time     as insert_time8_36_,
-                       stktextent0_.post_id         as post_id9_36_,
-                       stktextent0_.read_date       as read_date10_36_,
-                       stktextent0_.reply_count     as reply_count11_36_,
-                       stktextent0_.sub_type        as sub_type12_36_,
-                       stktextent0_.text            as text13_36_,
-                       stktextent0_.text_desc       as text_desc14_36_,
-                       stktextent0_.title           as title15_36_,
-                       stktextent0_.type            as type16_36_,
-                       stktextent0_.update_time     as update_time17_36_,
-                       stktextent0_.user_avatar     as user_avatar18_36_,
-                       stktextent0_.user_id         as user_id19_36_,
-                       stktextent0_.user_name       as user_name20_36_
-                  from stk_text stktextent0_
-                 where stktextent0_.created_at > sysdate-365
-                   and (stktextent0_.text like '%订单饱满%')
-                 order by stktextent0_.created_at desc) row_
-         where rownum <= 10)
- where rownum_ > 0
+select * from stk_task_log order by id desc;
+delete from stk_task_log;
+
+select * from stk_kline where code='002044' order by kline_date desc;
+update stk_kline_us set amount=null where code='.DJI' and kline_date='20201224'
+
+select * from stk_text where sub_type=300 order by insert_time desc;
+select * from stk_text where sub_type=100 order by insert_time desc;
+
+select * from stk where market=1 order by insert_time desc;
+select * from stk where code='605395'
+
+select * from stk_error_log;

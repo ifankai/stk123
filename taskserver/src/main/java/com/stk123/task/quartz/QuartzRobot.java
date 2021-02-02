@@ -1,14 +1,6 @@
 package com.stk123.task.quartz;
 
-import com.stk123.task.quartz.job.BaiduNewsSearchJob;
-import com.stk123.task.quartz.job.BreakoutTrendLineJob;
-import com.stk123.task.quartz.job.Job1450;
-import com.stk123.task.quartz.job.PPIIndexNewHighJob;
-import com.stk123.task.quartz.job.ResearchReportJob;
-import com.stk123.task.quartz.job.ShutdownJob;
-import com.stk123.task.quartz.job.XueqiuUserLongArticleJob;
-import com.stk123.task.quartz.job.XueqiuStockArticleJob;
-import com.stk123.task.quartz.job.XueqiuUserJob;
+import com.stk123.task.quartz.job.*;
 import com.stk123.task.quartz.job.t.ShortTrade;
 
 public class QuartzRobot {
@@ -31,8 +23,8 @@ public class QuartzRobot {
 		QuartzManager.addJob("OneMinuteJob2",oneMinuteJob,"0 0/1 10,13,14 ? * MON-FRI *");
 		QuartzManager.addJob("OneMinuteJob3",oneMinuteJob,"0 0-30/1 11 ? * MON-FRI *");*/
 		
-		XueqiuStockArticleJob xueqiuStockArticleJob = new XueqiuStockArticleJob();
-		QuartzManager.addJob("XueqiuStockArticleJob",xueqiuStockArticleJob,"0 0/1 * ? * * *");
+//		XueqiuStockArticleJob xueqiuStockArticleJob = new XueqiuStockArticleJob();
+//		QuartzManager.addJob("XueqiuStockArticleJob",xueqiuStockArticleJob,"0 0/1 * ? * * *");
 
 		
 		Job1450 job1450 = new Job1450();

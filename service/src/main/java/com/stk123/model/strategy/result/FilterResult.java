@@ -1,12 +1,16 @@
 package com.stk123.model.strategy.result;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.stk123.model.json.View;
 import com.stk123.model.strategy.FilterExecutor;
 import lombok.Setter;
 
 public abstract class FilterResult<R> {
 
     @Setter
+    @JsonView(View.Default.class)
     private FilterExecutor filterExecutor; //过滤器定义
+    @JsonView(View.Default.class)
     protected Boolean pass;
     protected R result;
 

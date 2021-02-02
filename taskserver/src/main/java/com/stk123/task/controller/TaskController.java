@@ -47,7 +47,7 @@ public class TaskController {
                 taskDtos.add(taskDto);
             }
             if(task.status() == Task.EnumStatus.RUNNING) {
-                taskDto.setCountOfRunning(taskDto.getCountOfRunning()+1);
+                //taskDto.setCountOfRunning(taskDto.getCountOfRunning()+1);
                 if(taskDto.getStartTime() < task.getStartTimeToLong())
                     taskDto.setStartTime(task.getStartTimeToLong());
             }else{
@@ -77,7 +77,7 @@ public class TaskController {
     }
 
     @SneakyThrows
-    @RequestMapping(path={"/start/{name}/**","/start/{name}"})
+    @RequestMapping(path={"/start/{name}", "/start/{name}/**"})
     public RequestResult runTask(HttpServletRequest request, @PathVariable("name") String taskName, @RequestParam Map<String,String> allRequestParams){
         String mvcPath = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
         Task task = SpringApplicationContext.getBeanByForName(taskName);

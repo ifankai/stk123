@@ -19,6 +19,11 @@ import java.util.Set;
 @CommonsLog
 public abstract class AbstractTask extends Task {
 
+    public AbstractTask(){super();}
+    public AbstractTask(boolean canStop){
+        super(canStop);
+    }
+
     protected final Date now = new Date();
     @Setter
     protected String today = TaskUtils.getToday();//"20160923";
@@ -29,8 +34,11 @@ public abstract class AbstractTask extends Task {
     protected Map<String, Object> params = new LinkedHashMap<>();
     protected Map<String, Runnable> methods = new LinkedHashMap<>();
 
-    protected void register(String name, Runnable runnable){
+    protected void runByName(String name, Runnable runnable){
         methods.put(name, runnable);
+    }
+    protected void runAnyway(Runnable runnable){
+        methods.put("run_anyway_"+new Date().getTime(), runnable);
     }
 
     @Override
@@ -55,10 +63,10 @@ public abstract class AbstractTask extends Task {
 
         Set<String> keySet = params.keySet();
         for(Map.Entry<String, Runnable> method : methods.entrySet()){
-            if(keySet.stream().anyMatch(key -> StringUtils.contains(method.getKey(), key))){
-                log.info(method.getKey() + "...start");
+            if(keySet.isEmpty() || StringUtils.startsWith(method.getKey(), "run_anyway_") || keySet.stream().anyMatch(key -> StringUtils.contains(method.getKey(), key))){
+                log.info("["+this.getClass().getSimpleName()+"]" + "...start");
                 method.getValue().run();
-                log.info(method.getKey() + "...end");
+                log.info("["+this.getClass().getSimpleName()+"]" + "...end");
             }
         }
     }

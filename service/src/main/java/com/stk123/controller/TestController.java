@@ -50,6 +50,8 @@ public class TestController {
         strategyBacktesting.print();
         strategyBacktesting.printDetail();
 
+        //System.out.println(strategyBacktesting.getPassedResult());
+
         /*List<Stock> list = backtestingService.getStocks(200, "603096");
         for(Stock stock : list){
             stock.buildBarSeriesMonth();

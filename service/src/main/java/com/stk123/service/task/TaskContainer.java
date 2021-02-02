@@ -1,6 +1,6 @@
 package com.stk123.service.task;
 
-import com.stk123.service.task.Task;
+import com.stk123.service.support.SpringApplicationContext;
 import lombok.Getter;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +16,20 @@ import java.util.stream.Collectors;
 public class TaskContainer {
 
     @Getter
-    private List<Task> tasks = new ArrayList<>();
+    private List<Task> tasks = Collections.synchronizedList(new ArrayList<>());
 
     private final Map<String, ScheduledFuture<?>> scheduledTasks = new HashMap<>();
 
     @Autowired
     private TaskScheduler taskScheduler;
+
+    public Task createTask(Class<? extends Task> taskClass){
+        return SpringApplicationContext.getBean(taskClass);
+    }
+
+    public void start(Class cls, String... args) {
+        start(createTask(cls), args);
+    }
 
     public void start(Task task, String... args) {
         try {
@@ -36,6 +44,24 @@ public class TaskContainer {
         }finally{
             clean(task);
         }
+    }
+
+    public void start(TaskBuilder... taskBuilders){
+
+        ScheduledFuture future = taskScheduler.schedule(
+            () -> {
+                Arrays.stream(taskBuilders).forEach(taskBuilder -> {
+                    Task task = null;
+                    try {
+                        task = createTask(taskBuilder.getTask());
+                        tasks.add(task);
+                        task.run(taskBuilder.getArgs());
+                    }finally{
+                        clean(task);
+                    }
+                });
+            }, new Date());
+
     }
 
     public boolean stop(String id) {

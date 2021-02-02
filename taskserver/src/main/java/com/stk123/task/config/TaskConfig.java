@@ -37,7 +37,7 @@ public class TaskConfig implements ApplicationContextAware {
 
     @Scheduled(cron = "0 0 0 ? * *")  //每天0点shutdown
     public void exit(){
-        SpringApplication.exit(this.context, () -> 0);
+        //SpringApplication.exit(this.context, () -> 0);
     }
 
     /*@Bean("taskNameBean")

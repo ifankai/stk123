@@ -1,5 +1,6 @@
 package com.stk123.service.task;
 
+import com.stk123.util.ExceptionUtils;
 import lombok.Getter;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.context.annotation.Scope;
@@ -22,7 +23,7 @@ public abstract class Task<R> {
     @Getter
     private String id;
     @Getter
-    private boolean canStop;
+    private boolean canStop; //if true, 就是异步
 
     private EnumStatus status = EnumStatus.NOT_RUNNING;
     @Getter
@@ -51,11 +52,11 @@ public abstract class Task<R> {
             taskResult = TaskResult.success(success(), this);
         } catch(Exception e){
             log.error("task execute error:", e);
-            taskResult = TaskResult.failure(e.getMessage(), this);
+            taskResult = TaskResult.failure(ExceptionUtils.getExceptionAsString(e), this);
         } finally {
             this.endTime = LocalDateTime.now();
             status = EnumStatus.NOT_RUNNING;
-            log.info("task............end");
+            log.info("task............end, cost time:"+ (getEndTimeToLong()-getStartTimeToLong())/1000.0 + "s");
         }
     }
 
@@ -66,14 +67,14 @@ public abstract class Task<R> {
     public abstract void execute(String... args) throws Exception;
 
     public R success(){
-        return null;
+        return (R) "";
     }
 
     public long getStartTimeToLong(){
         return this.startTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
     public long getEndTimeToLong(){
-        return this.startTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+        return this.endTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 
 }

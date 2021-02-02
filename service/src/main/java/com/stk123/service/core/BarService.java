@@ -43,6 +43,7 @@ public class BarService {
     private final static String sql_queryTopNByCodeOrderByKlineDateDesc =
             "select code,kline_date as \"date\",open,close,high,low,volumn as volume,amount,last_close,percentage as change,hsl,pe_ttm,pb_ttm " +
             "from (select * from stk_kline t where code = :1 order by kline_date desc) where rownum <= :2";
+    @Transactional
     public BarSeries queryTopNByCodeOrderByKlineDateDesc(String code, Stock.EnumMarket market, Integer rows) {
         String sql = market.replaceKlineTable(sql_queryTopNByCodeOrderByKlineDateDesc);
         List<Bar> list = BaseRepository.getInstance().list(sql, Bar.class, code, rows);

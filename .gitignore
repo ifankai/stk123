@@ -20,3 +20,5 @@ webserver.jar
 typescript.d.ts
 pid.txt
 web.rar
+/oracle/*.dmp
+/oracle/*.log

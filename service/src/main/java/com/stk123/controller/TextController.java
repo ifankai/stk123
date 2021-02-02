@@ -1,15 +1,27 @@
 package com.stk123.controller;
 
+import cn.hutool.core.bean.BeanUtil;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stk123.common.util.BeanMapperUtils;
 import com.stk123.entity.StkTextEntity;
 import com.stk123.model.RequestResult;
 import com.stk123.model.dto.PageRoot;
 import com.stk123.model.constant.TextConstant;
 import com.stk123.model.dto.TextDto;
+import com.stk123.model.elasticsearch.EsDocument;
+import com.stk123.model.elasticsearch.SearchResult;
+import com.stk123.model.projection.StockBasicProjection;
+import com.stk123.repository.StkRepository;
 import com.stk123.repository.StkTextRepository;
+import com.stk123.service.core.EsService;
 import com.stk123.service.core.TextService;
+import lombok.SneakyThrows;
 import lombok.extern.apachecommons.CommonsLog;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,9 +31,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/text")
@@ -30,22 +44,25 @@ public class TextController {
 
     @Autowired
     private StkTextRepository stkTextRepository;
-
     @Autowired
     private TextService textService;
+    @Autowired
+    private EsService esService;
+    @Autowired
+    private StkRepository stkRepository;
 
     @RequestMapping(value = {"","/{type}"}, method = RequestMethod.GET)
     @ResponseBody
-    public RequestResult<PageRoot<StkTextEntity>>
+    public RequestResult<PageRoot<EsDocument>>
                 queryByType(@PathVariable(value = "type", required = false)String type,
                             @RequestParam(value = "createdAtAfter", required = false)Long createdAtAfter,
                             @RequestParam(value = "code", required = false)String code,
                             @RequestParam(value = "keyword", required = false)String keyword,
                             @RequestParam(value = "page", required = false)Integer page,
                             @RequestParam(value = "pageSize", required = false)Integer pageSize,
-                            @RequestParam(value = "insertTimeBefore", required = false)Long insertTimeBefore,
-                            @RequestParam(value = "insertTimeAfter", required = false)Long insertTimeAfter
-    ){
+                            @RequestParam(value = "idBefore", required = false)Long idBefore,
+                            @RequestParam(value = "idAfter", required = false)Long idAfter
+    ) throws Exception {
         log.info("query....." + type);
         List<StkTextEntity> list = null;
         Integer count = null;
@@ -56,32 +73,71 @@ public class TextController {
         Date dateAfter = new Date(createdAtAfter);
 
         if(type == null || StringUtils.equals(type, "all")) {
-            if(insertTimeBefore == null && insertTimeAfter == null) {
-                list = stkTextRepository.findAllByInsertTimeGreaterThanEqualOrderByInsertTimeDesc(dateAfter, PageRequest.of(0, pageSize));
-            }else if(insertTimeBefore == null && insertTimeAfter != null){
-                list = stkTextRepository.findAllByInsertTimeGreaterThanOrderByInsertTimeDesc(new Date(insertTimeAfter));
-            }else if(insertTimeBefore != null && insertTimeAfter == null){
-                list = stkTextRepository.findAllByInsertTimeLessThanOrderByInsertTimeDesc(new Date(insertTimeBefore), PageRequest.of(0, pageSize));
+            if(idBefore == null && idAfter == null) {
+                list = stkTextRepository.findAllByInsertTimeGreaterThanEqualOrderByInsertTimeDescIdDesc(dateAfter, PageRequest.of(0, pageSize));
+            }else if(idBefore == null && idAfter != null){
+                list = stkTextRepository.findAllByIdGreaterThanOrderByInsertTimeDescIdDesc(idAfter);
+            }else if(idBefore != null && idAfter == null){
+                list = stkTextRepository.findAllByIdLessThanOrderByInsertTimeDescIdDesc(idBefore, PageRequest.of(0, pageSize));
             }
         }else if(StringUtils.equals(type, "favorite")) {
-            list = stkTextRepository.findAllByTypeAndFavoriteDateNotNullOrderByFavoriteDateDesc(TextConstant.TYPE_XUEQIU);
-        }else if(StringUtils.equals(type, "search")) {
-
-            if (code != null) {
-                list = stkTextRepository.findAllByCodeAndCreatedAtGreaterThanOrderByInsertTimeDesc(code, dateAfter);
-                return RequestResult.success(PageRoot.unPageable(list, count));
-            } else if (keyword != null) {
+            if(idBefore == null && idAfter == null) {
+                list = stkTextRepository.findAllByFavoriteDateNotNullAndInsertTimeGreaterThanEqualOrderByInsertTimeDescIdDesc(dateAfter, PageRequest.of(0, pageSize));
+            }else if(idBefore == null && idAfter != null){
+                list = stkTextRepository.findAllByFavoriteDateNotNullAndIdGreaterThanOrderByInsertTimeDescIdDesc(idAfter);
+            }else if(idBefore != null && idAfter == null){
+                list = stkTextRepository.findAllByFavoriteDateNotNullAndIdLessThanOrderByInsertTimeDescIdDesc(idAfter, PageRequest.of(0, pageSize));
+            }
+        }/*else if(StringUtils.equals(type, "search")) {
+            if(page == null){
+                page = 1;
+            }
+            if (keyword != null) {
                 try {
                     keyword = URLDecoder.decode(keyword, "UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+
+                    list = new ArrayList<>();
+                    SearchResult searchResult = esService.search(keyword, page);
+                    for(int i=0; i<searchResult.getResults().size(); i++) {
+                        EsDocument esDocument = searchResult.getResults().get(i);
+                        StkTextEntity stkTextEntity = new StkTextEntity();
+                        stkTextEntity.setId(new Long(esDocument.getId()));
+                        stkTextEntity.setCode(esDocument.getCode());
+                        stkTextEntity.setTitle(esDocument.getTitle());
+                        stkTextEntity.setTextDesc(esDocument.getDesc());
+                        stkTextEntity.setText(esDocument.getContent());
+                        stkTextEntity.setInsertTime(new Date(esDocument.getInsertTime()));
+                        stkTextEntity.setUpdateTime(new Date(esDocument.getUpdateTime()));
+
+                        list.add(stkTextEntity);
+                    }
+                } catch (Exception e) {
+                    log.error("textcontroller.query", e);
+                    return RequestResult.failure(PageRoot.unPageable(null, count));
                 }
-                list = stkTextRepository.findAllByCreatedAtGreaterThanAndTextLikeOrderByCreatedAtDesc(dateAfter, "%"+keyword+"%", PageRequest.of(page-1, pageSize));
                 System.out.println(list);
                 return RequestResult.success(PageRoot.pageable(list, page, pageSize, count));
             }
+        }*/
+
+        List<StockBasicProjection> stocks = stkRepository.findAllByCodes(list.stream().map(e -> e.getCode()).collect(Collectors.toList()));
+
+        List<EsDocument> results = new ArrayList<>();
+        for (StkTextEntity stkTextEntity : list) {
+            EsDocument esDocument = BeanMapperUtils.map(stkTextEntity, EsDocument.class, new PropertyMap<StkTextEntity, EsDocument>() {
+                @Override
+                protected void configure() {
+                    map().setDesc(source.getTextDesc());
+                    map().setContent(source.getText());
+                }
+            });
+            esDocument.setType("post");
+            esDocument.setPost(stkTextEntity);
+            esDocument.setStock(stocks.stream().filter(e -> e.getCode().equals(esDocument.getCode())).findFirst().orElse(null));
+            results.add(esDocument);
         }
-        return RequestResult.success(PageRoot.unPageable(list, count));
+
+        return RequestResult.success(PageRoot.unPageable(results, count));
     }
 
     @RequestMapping("/favorite/{id}/{isFavorite}")
