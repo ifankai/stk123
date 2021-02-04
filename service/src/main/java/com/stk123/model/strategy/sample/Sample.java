@@ -22,21 +22,19 @@ public class Sample {
     /**
      http://localhost:8082/task/start/com.stk123.task.schedule.BacktestingTask/?code=002044&strategy=02&startDate=20200101&endDate=20201231
 
-     策略[策略002044新经典20201231，底部一阳吃多阴]调用所有过滤器调用总次数：262
+     策略[策略002044新经典20201231，底部一阳吃多阴，MACD底背离]调用所有过滤器调用总次数：263
      其中：
-       过滤器[一阳穿过5,10日均线]调用总次数：90, 通过：7, 未通过：83
-       过滤器[一阳吃5阴]调用总次数：34, 通过：8, 未通过：26
-       过滤器[过去3天到100天的跌幅[-100,-20] or 过去3天到40天内最高点到低点的跌幅[-100,-30]]调用总次数：138, 通过：8, 未通过：130
-     通过所有过滤器次数：4
-
-     StrategyResult{name=策略002044新经典20201231，底部一阳吃多阴, code=002044, date=20200508, filterResults=[FilterResultTrue{filterName=一阳穿过5,10日均线, pass=true, result='20200508'}, FilterResultTrue{filterName=一阳吃5阴, pass=true, result='20200508'}, FilterResultBetween{filterName=过去3天到100天的跌幅[-100,-20] or 过去3天到40天内最高点到低点的跌幅[-100,-30], pass=true, value=-21.27, min=-100.0, max=-20.0, result=实际涨跌幅：-21.26634549208534}], expectFilterResults=[]}
-     StrategyResult{name=策略002044新经典20201231，底部一阳吃多阴, code=002044, date=20200616, filterResults=[FilterResultTrue{filterName=一阳吃5阴, pass=true, result='20200616'}, FilterResultTrue{filterName=一阳穿过5,10日均线, pass=true, result='20200616'}, FilterResultBetween{filterName=过去3天到100天的跌幅[-100,-20] or 过去3天到40天内最高点到低点的跌幅[-100,-30], pass=true, value=-22.51, min=-100.0, max=-20.0, result=实际涨跌幅：-22.50502344273275}], expectFilterResults=[]}
-     StrategyResult{name=策略002044新经典20201231，底部一阳吃多阴, code=002044, date=20201126, filterResults=[FilterResultTrue{filterName=一阳吃5阴, pass=true, result='20201126'}, FilterResultTrue{filterName=一阳穿过5,10日均线, pass=true, result='20201126'}, FilterResultBetween{filterName=过去3天到100天的跌幅[-100,-20] or 过去3天到40天内最高点到低点的跌幅[-100,-30], pass=true, value=-34.10, min=-100.0, max=-30.0, result=实际最高点到低点涨跌幅：-34.099831744251254}], expectFilterResults=[]}
-     StrategyResult{name=策略002044新经典20201231，底部一阳吃多阴, code=002044, date=20201231, filterResults=[FilterResultTrue{filterName=一阳穿过5,10日均线, pass=true, result='20201231'}, FilterResultTrue{filterName=一阳吃5阴, pass=true, result='20201231'}, FilterResultBetween{filterName=过去3天到100天的跌幅[-100,-20] or 过去3天到40天内最高点到低点的跌幅[-100,-30], pass=true, value=-29.69, min=-100.0, max=-20.0, result=实际涨跌幅：-29.69460688758934}], expectFilterResults=[]}
+       过滤器[一阳吃5阴或阳]调用总次数：22, 通过：5, 未通过：17
+       过滤器[一阳穿过5,10日均线]调用总次数：48, 通过：5, 未通过：43
+       过滤器[MACD和close或ma(60)底背离]调用总次数：151, 通过：6, 未通过：145
+       过滤器[过去3天到100天的跌幅[-100,-20] or 过去3天到40天内最高点到低点的跌幅[-100,-30]]调用总次数：42, 通过：6, 未通过：36
+     通过所有过滤器次数：2
+     StrategyResult{name=策略002044新经典20201231，底部一阳吃多阴（最好MACD底背离）, code=002044, date=20200616, filterResults=[FilterResultTrue{filterName=一阳吃5阴或阳, pass=true, result='20200616'}, FilterResultTrue{filterName=MACD和close或ma(60)底背离, pass=true, result='20200616'}, FilterResultBetween{filterName=过去3天到100天的跌幅[-100,-20] or 过去3天到40天内最高点到低点的跌幅[-100,-30], pass=true, value=-22.51, min=-100.0, max=-20.0, result=实际涨跌幅：-22.50502344273275}, FilterResultTrue{filterName=一阳穿过5,10日均线, pass=true, result='20200616'}], expectFilterResults=[]}
+     StrategyResult{name=策略002044新经典20201231，底部一阳吃多阴（最好MACD底背离）, code=002044, date=20201231, filterResults=[FilterResultTrue{filterName=一阳吃5阴或阳, pass=true, result='20201231'}, FilterResultTrue{filterName=一阳穿过5,10日均线, pass=true, result='20201231'}, FilterResultTrue{filterName=MACD和close或ma(60)底背离, pass=true, result='20201231'}, FilterResultBetween{filterName=过去3天到100天的跌幅[-100,-20] or 过去3天到40天内最高点到低点的跌幅[-100,-30], pass=true, value=-29.69, min=-100.0, max=-20.0, result=实际涨跌幅：-29.69460688758934}], expectFilterResults=[]}
      */
     public static Strategy strategy_02() {
-        Strategy<BarSeries> strategy = new Strategy<>("strategy_02","策略002044新经典20201231，底部一阳吃多阴", BarSeries.class);
-        strategy.addFilter("一阳吃5阴", BarSeries::getFirst, Filters.filter_004(5));
+        Strategy<BarSeries> strategy = new Strategy<>("strategy_02","策略002044新经典20201231，底部一阳吃多阴，MACD底背离）", BarSeries.class);
+        strategy.addFilter("一阳吃5阴或阳", BarSeries::getFirst, Filters.filter_004(5));
         strategy.addFilter("一阳穿过5,10日均线", BarSeries::getFirst, Filters.filter_005(5, 10));
         strategy.addFilter("过去3天到100天的跌幅[-100,-20] or 过去3天到40天内最高点到低点的跌幅[-100,-30]",
                 BarSeries::getFirst,
@@ -45,7 +43,13 @@ public class Sample {
                     Filters.filter_001_02(3,40,-100,-30)
                 ));
         //TODO 可以再加上MACD底背离
+        strategy.addFilter("MACD和close或ma(60)底背离", BarSeries::getFirst, Filters.filter_006(60));
         return strategy;
+    }
+
+    //002538 100天内，最高点在所有均线上达到3次，最低点到达所有均线下达到3次，之后均线缠绕突破买入
+    public static Strategy strategy_03() {
+        return null;
     }
 
     public static Strategy strategy_TEST() {

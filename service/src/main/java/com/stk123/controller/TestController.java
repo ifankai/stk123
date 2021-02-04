@@ -1,7 +1,9 @@
 package com.stk123.controller;
 
 import com.stk123.model.RequestResult;
+import com.stk123.model.core.Bar;
 import com.stk123.model.core.BarSeries;
+import com.stk123.model.core.Stock;
 import com.stk123.model.strategy.StrategyBacktesting;
 import com.stk123.repository.StkKlineRepository;
 import com.stk123.repository.StkRepository;
@@ -43,12 +45,12 @@ public class TestController {
     @ResponseBody
     public RequestResult test() throws InvocationTargetException, IllegalAccessException {
 
-        List<String> stocks = new ArrayList<>();
+        /*List<String> stocks = new ArrayList<>();
         stocks.add("603096");
 
         StrategyBacktesting strategyBacktesting = backtestingService.backtesting(stocks, Arrays.asList(new String[]{"01","02"}), "20201101", "20201120");
         strategyBacktesting.print();
-        strategyBacktesting.printDetail();
+        strategyBacktesting.printDetail();*/
 
         //System.out.println(strategyBacktesting.getPassedResult());
 
@@ -57,6 +59,11 @@ public class TestController {
             stock.buildBarSeriesMonth();
             stock.getBarSeriesMonth().getList().forEach(e -> System.out.println(e));
         }*/
+
+        Stock stock = Stock.build("002044");
+        BarSeries bs = stock.getBarSeries();
+        Bar bar = bs.getFirst().getMACDUpperForkBar(0);
+        System.out.println(bar);
 
         return RequestResult.success(new Date());
     }

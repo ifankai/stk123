@@ -65,12 +65,10 @@ public class ThreadPoolUtils {
 		List<V> results = new ArrayList<>();
 		// 获取所有并发任务的运行结果
 		for (int i = 0; i < tasks.size(); i++) {
-			//从Future对象上获取任务的返回值，并输出到控制台
-			//System.out.println(">>>" + pool.take().get().toString());
+			//从Pool里获取completed任务的返回值
 			Future<V> f = pool.take();
 			results.add(f.get());
 		}
-		//System.out.println("..................");
 		// 关闭线程池
 		exec.shutdown();
 		return results;

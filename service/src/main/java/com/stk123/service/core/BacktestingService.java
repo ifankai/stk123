@@ -54,16 +54,23 @@ public class BacktestingService {
     @Autowired
     private TaskService taskService;
 
-
-    public StrategyBacktesting backtesting(List<String> codes, List<String> strategies, String startDate, String endDate) throws InvocationTargetException, IllegalAccessException {
+    public StrategyBacktesting backtesting(List<String> codes, List<String> strategies, String startDate, String endDate, boolean isIncludeRealtimeBar) throws InvocationTargetException, IllegalAccessException {
         List<Stock> stocks ;
         if(ArrayUtils.contains(environment.getActiveProfiles(), "company")) {
             stocks = this.getStocks(200, codes.stream().toArray(String[]::new));
         }else{
             stocks = stockService.buildStocks(codes);
         }
+        if(isIncludeRealtimeBar){
+            stocks.stream().forEach(stock -> stock.setIncludeRealtimeBar(true));
+        }
 
         return backtestingOnStock(stocks, strategies, startDate, endDate);
+    }
+
+
+    public StrategyBacktesting backtesting(List<String> codes, List<String> strategies, String startDate, String endDate) throws InvocationTargetException, IllegalAccessException {
+        return backtesting(codes, strategies, startDate, endDate, false);
     }
 
     public StrategyBacktesting backtestingOnStock(List<Stock> stocks, List<String> strategies) throws InvocationTargetException, IllegalAccessException {

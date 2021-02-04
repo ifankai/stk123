@@ -10,10 +10,13 @@ import com.stk123.repository.StkRepository;
 import com.stk123.service.core.BarService;
 import com.stk123.service.core.StockService;
 import com.stk123.service.support.SpringApplicationContext;
+import com.stk123.util.HttpUtils;
 import com.stk123.util.ServiceUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +38,7 @@ import static com.stk123.model.core.Stock.EnumMarket.US;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Component
+@CommonsLog
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class Stock {
 
@@ -158,8 +162,13 @@ public class Stock {
     private BarSeries barSeriesWeek;
     private BarSeries barSeriesMonth;
 
-    public static Integer BarSeriesRows = 750;
+    @Getter@Setter //是否包含今天最新的k线价格，用于交易时间实时监控
+    private boolean isIncludeRealtimeBar = false;
 
+    /**
+     * static field
+     */
+    public static Integer BarSeriesRows = 750;
 
 
 
@@ -168,6 +177,10 @@ public class Stock {
 
     public static Stock build(){
         return SpringApplicationContext.getBean(Stock.class);
+    }
+    public static Stock build(String code){
+        Stock stock = Stock.build();
+        return stock.set(code, null);
     }
     public static Stock build(String code, String name){
         Stock stock = Stock.build();
@@ -231,7 +244,7 @@ public class Stock {
 
 
     /**
-     * @return SH600000
+     * @return SH600000, 03323, APPL
      */
     public String getCodeWithPlace(){
         return this.place == null ? this.code : this.place.name() + this.code;
@@ -289,6 +302,9 @@ public class Stock {
             return this.barSeries;
         }
         this.barSeries = barService.queryTopNByCodeOrderByKlineDateDesc(this.code, this.market, Stock.BarSeriesRows);
+        if(isIncludeRealtimeBar){
+            buildBarRealTime();
+        }
         return this.barSeries;
     }
     public BarSeries getBarSeries(BarSeries.EnumPeriod period){
@@ -401,6 +417,70 @@ public class Stock {
         }
         return this.barSeriesMonth;
     }
+
+    public Stock buildBarRealTime() {
+        if(this.isMarketUS()) {
+            return this;
+        }
+        String scode = this.getCode();
+        if(this.isMarketCN()){
+            scode = this.getCodeWithPlace().toLowerCase();
+        }else if(this.isMarketHK()){
+            scode = "hk"+this.getCode();
+        }
+        String page = null;
+        try {
+            page = HttpUtils.get("http://hq.sinajs.cn/list="+scode, null, "GBK");
+        } catch (Exception e) {
+            log.error("setBarRealTime", e);
+            return this;
+        }
+        log.info("buildBarRealTime:"+page);
+        String[] str = page.split(";");
+        for(int j=0;j<str.length;j++){
+            String s = str[j];
+            if(this.isMarketCN() && s.length() > 40){
+                //String code = org.apache.commons.lang.StringUtils.substringBefore(s, "=");
+                //code = org.apache.commons.lang.StringUtils.substring(code, code.length()-8);
+                s = org.apache.commons.lang.StringUtils.substringBetween(s, "\"", "\"");
+                String[] ss = s.split(",");
+                Bar k = new Bar();
+                k.setCode(code);
+                k.setOpen(Double.parseDouble(ss[1]));
+                k.setLastClose(Double.parseDouble(ss[2]));
+                k.setClose(Double.parseDouble(ss[3]));
+                k.setHigh(Double.parseDouble(ss[4]));
+                k.setLow(Double.parseDouble(ss[5]));
+                k.setVolume(Double.parseDouble(ss[8]));
+                k.setAmount(Double.parseDouble(ss[9]));
+                k.setDate(org.apache.commons.lang.StringUtils.replace(ss[30], "-", ""));
+
+                this.getBarSeries().addToFirst(k);
+                //System.out.println(this.getBarSeries());
+                return this;
+            }else if(this.isMarketHK() && s.length() > 12){
+                s = org.apache.commons.lang.StringUtils.substringBetween(s, "\"", "\"");
+                String[] ss = s.split(",");
+                Bar k = new Bar();
+                k.setCode(code);
+                k.setOpen(Double.parseDouble(ss[2]));
+                k.setLastClose(Double.parseDouble(ss[3]));
+                k.setClose(Double.parseDouble(ss[6]));
+                k.setHigh(Double.parseDouble(ss[4]));
+                k.setLow(Double.parseDouble(ss[5]));
+                k.setVolume(Double.parseDouble(ss[12]));
+                k.setAmount(Double.parseDouble(ss[11]));
+                k.setDate(org.apache.commons.lang.StringUtils.replace(ss[17], "/", ""));
+
+                this.getBarSeries().addToFirst(k);
+                //System.out.println(this.getBarSeries());
+                return this;
+            }
+        }
+        return this;
+    }
+
+
 
     @Override
     public int hashCode(){

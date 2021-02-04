@@ -7,12 +7,14 @@ import com.stk123.entity.StkKlineEntity;
 import com.stk123.model.json.View;
 import com.stk123.util.ServiceUtils;
 import lombok.Data;
+import lombok.ToString;
 
 import java.io.Serializable;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -65,6 +67,8 @@ public class Bar implements Serializable, Cloneable {
 	private Bar before;
 	private Bar after;
 
+	private MACD macd;
+	private EMA ema;
 
 	public Bar(){}
 
@@ -391,53 +395,158 @@ public class Bar implements Serializable, Cloneable {
 		return this.getEMA(n, 2, typeValue);
 	}
 
-	public final double getEMA(final int n, final int m, EnumValue typeValue) {
-		List<Double> list = new ArrayList<Double>();
-		int j = 0;
-		Bar k = this;
-		int total = n * 10;//TODO　具体怎么定这个数字不清楚
-		while(true){
-			list.add(k.getValue(typeValue));
-			if(j++ > total)break;
-			k = k.before(1);
-		}
-		Double x = m / (n + 1.0);// 计算出序数
-		Double ema = list.get(list.size()-1);// 第一天ema等于当天收盘价
-		for (int i = list.size()-1; i >= 0 ; i--) {
-			// 第二天以后，当天收盘 收盘价乘以系数再加上昨天EMA乘以系数-1
-			ema = list.get(i) * x + ema * (1 - x);
-		}
-		return ema;
-	}
+	public static class EMA{
+	    private HashMap<String, Double> emas = new HashMap<>();
+	    public Double getEMA(int n){
+	        return emas.get(n + C.name());
+        }
+        public Double getEMA(int n, String s){
+            return emas.get(n + s);
+        }
+        public void setEMA(int n, String s, double value){
+	        emas.put(n + s, value);
+        }
+    }
 
+    public double getEMA(int n){
+	    return this.getEMA(n, 2, C);
+    }
+
+    public final double getEMA(final int n, final int m, EnumValue typeValue) {
+        if(ema != null){
+            Double d = ema.getEMA(n, typeValue.name());
+            if(d != null) {
+                return d;
+            }
+        }
+
+        Bar bar = this.before(n * 10);
+        if(bar != null) {
+            double emaValue = bar.getValue(typeValue);
+            while (true) {
+                bar = bar.after();
+                if(bar == null){
+                    break;
+                }
+                // EMA（12） = 前一日EMA（12） * 11/13 + 今日收盘价 * 2/13
+                emaValue = emaValue * (n-1d) / (n+1d) + bar.getValue(typeValue) * m / (n+1d);
+                if(bar.ema == null){
+                    bar.ema = new EMA();
+                }
+                bar.ema.setEMA(n, typeValue.name(), emaValue);
+            }
+        }
+        return this.ema.getEMA(n, typeValue.name());
+    }
+
+    //这个方法没有测试过。。。
 	public final double getEMA(final int n, final int m, Function<Bar, Double> func) {
-		List<Double> list = new ArrayList<Double>();
-		int j = 0;
-		Bar k = this;
-		int total = n * 10;//TODO　具体怎么定这个数字不清楚
-		while(true){
-			list.add(func.apply(k));
-			if(j++ > total)break;
-			k = k.before(1);
-		}
-		Double x = m / (n + 1.0);// 计算出序数
-		Double ema = list.get(list.size()-1);// 第一天ema等于当天收盘价
-		for (int i = list.size()-1; i >= 0 ; i--) {
-			// 第二天以后，当天收盘 收盘价乘以系数再加上昨天EMA乘以系数-1
-			ema = list.get(i) * x + ema * (1 - x);
-		}
-		return ema;
+        if(ema != null){
+            Double d = ema.getEMA(n, func.getClass().getName());
+            if(d != null) {
+                return d;
+            }
+        }
+
+        Bar bar = this.before(n * 10);
+        if(bar != null) {
+            double emaValue = func.apply(bar);
+            while (true) {
+                bar = bar.after();
+                if(bar == null){
+                    break;
+                }
+                // EMA（12） = 前一日EMA（12） * 11/13 + 今日收盘价 * 2/13
+                emaValue = emaValue * (n-1d) / (n+1d) + func.apply(bar) * m / (n+1d);
+                if(bar.ema == null){
+                    bar.ema = new EMA();
+                }
+                bar.ema.setEMA(n, func.getClass().getName(), emaValue);
+            }
+        }
+        return this.ema.getEMA(n, func.getClass().getName());
 	}
 
 	public final double getEMA(final int n, Function<Bar, Double> func) {
 		return this.getEMA(n, 2, func);
 	}
 
+    @ToString
+    public static class MACD{
+        public double dif;
+        public double dea;
+        public double macd;
+    }
 
+    /**
+     * DIF:EMA(CLOSE,SHORT)-EMA(CLOSE,LONG);
+     * DEA:EMA(DIF,MID);
+     * MACD:(DIF-DEA)*2,COLORSTICK;
+     * @return
+     */
+    public MACD getMACD(final int s,final int l, int m) {
+        if(macd != null){
+            return macd;
+        }
 
-	/*public static interface Calculator{
-		public double calc(Bar k) throws Exception;
-	}*/
+        double emas = 0;
+        double emal = 0;
+        double dif = 0;
+        double dea = 0;
+
+        Bar bar = this.before(s * 10);
+        if(bar != null) {
+            emas = emal = bar.getValue(C);
+            while (true) {
+                bar = bar.after();
+                if(bar == null){
+                    break;
+                }
+                // EMA（12） = 前一日EMA（12） * 11/13 + 今日收盘价 * 2/13
+                emas = emas * (s-1d) / (s+1d) + bar.getValue(C) * 2d / (s+1d);
+                // EMA（26） = 前一日EMA（26） * 25/27 + 今日收盘价 * 2/27
+                emal = emal * (l-1d) / (l+1d) + bar.getValue(C) * 2d / (l+1d);
+
+                // DIF = EMA（12） - EMA（26） 。
+                // 今日DEA = （前一日DEA * 8/10 + 今日DIF X 2/10）
+                // 用（DIF-DEA）*2即为MACD柱状图。
+                dif = emas - emal;
+                dea = dea * (m-1d) / (m+1d) + dif * 2d / (m+1d);
+                macd = new MACD();
+                macd.dif = dif;
+                macd.dea = dea;
+                macd.macd = (dif - dea) * 2d;
+                bar.macd = macd;
+            }
+        }
+        return this.macd;
+    }
+
+    public MACD getMACD() {
+        return getMACD(12, 26, 9);
+    }
+
+    /**
+     * MACD金叉，得到day天bar之前第一个macd金叉bar
+     * @return
+     */
+    public Bar getMACDUpperForkBar(int day){
+        Bar bar = this.before(day);
+        while (bar != null){
+            MACD macd = bar.getMACD();
+            //System.out.println(bar.date+", macd:"+macd);
+            if(macd.dif > macd.dea){
+                Bar before = bar.before();
+                MACD macdBefore = before.getMACD();
+                if(macdBefore.dif < macdBefore.dea){
+                    return bar;
+                }
+            }
+            bar = bar.before();
+        }
+        return null;
+    }
+
 
 	/**
 	 * Calculate EMA/EXPMA
@@ -549,35 +658,6 @@ public class Bar implements Serializable, Cloneable {
 		return false;
 	}
 
-	/**
-	 * DIF:EMA(CLOSE,SHORT)-EMA(CLOSE,LONG);
-	 * DEA:EMA(DIF,MID);
-	 * MACD:(DIF-DEA)*2,COLORSTICK;
-	 * @return
-	 */
-	public MACD getMACD(final int s,final int l, int m) throws Exception {
-		MACD macd = new MACD();
-		double dif = this.getEMA(s, C) - this.getEMA(1, C);
-		double dea = this.getEMA(m, 2, k -> k.getEMA(s, C) - k.getEMA(1, C));
-		macd.dif = dif;
-		macd.dea = dea;
-		macd.macd = (dif - dea) * 2;
-		return macd;
-	}
-
-	public MACD getMACD() throws Exception {
-		return getMACD(12, 26, 9);
-	}
-
-	public class MACD{
-		public double dif;
-		public double dea;
-		public double macd;
-
-		public String toString(){
-			return "dif="+dif+",dea="+dea+",macd="+macd;
-		}
-	}
 
 	public List<Bar> getHistoryLowPoint(int days, int n) throws Exception{
 		List<Bar> lowPoints = new ArrayList<Bar>();

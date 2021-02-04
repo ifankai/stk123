@@ -71,7 +71,7 @@ public class StrategyBacktesting {
             for(Strategy strategy : strategies) {
                 strategy.setExpectFilterRunOrNot(false); //不关注expectFilter，即不用跑expectFilter，用于每天task
                 Callable<StrategyResult> task = () -> {
-                    System.out.println("run ............................ "+Thread.currentThread().getId());
+                    //sSystem.out.println("run ............................ "+Thread.currentThread().getId());
                     return this.test(strategy, stock);
                 };
                 tasks.add(task);
@@ -85,7 +85,7 @@ public class StrategyBacktesting {
     public void test_single_thread(List<Stock> stocks, String startDate, String endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
-        this.codes = StringUtils.join(stocks.stream().map(s -> s.getCode()).collect(Collectors.toList()),",");
+        this.codes = StringUtils.join(stocks.stream().map(Stock::getCode).collect(Collectors.toList()),",");
         for (Stock stock : stocks) {
             //info("code:"+stock.getCode()+".................start");
             List<StrategyResult> strategyResults = new ArrayList<>();
@@ -110,7 +110,7 @@ public class StrategyBacktesting {
     public void test(List<Stock> stocks, String startDate, String endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
-        this.codes = StringUtils.join(stocks.stream().map(s -> s.getCode()).collect(Collectors.toList()),",");
+        this.codes = StringUtils.join(stocks.stream().map(Stock::getCode).collect(Collectors.toList()),",");
 
         List<Callable<List<StrategyResult>>> tasks = new ArrayList<>();
         for (Stock stock : stocks) {
@@ -240,15 +240,12 @@ public class StrategyBacktesting {
         // 获取所有并发任务的运行结果
         for (int i = 0; i < tasks.size(); i++) {
             //从Future对象上获取任务的返回值，并输出到控制台
-            //System.out.println(">>>" + pool.take().get().toString());
             Future<V> f = null;
             try {
                 f = pool.take();
                 results.add(f.get());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                log.error("StrategyBacktesting.run", e);
             }
         }
         // 关闭线程池

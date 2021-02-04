@@ -1,5 +1,6 @@
 package com.stk123.model.strategy.sample;
 
+import com.stk123.model.K;
 import com.stk123.model.core.Bar;
 import com.stk123.model.core.BarSeries;
 import com.stk123.model.core.Bars;
@@ -113,9 +114,8 @@ public class Filters {
     }
 
     /**
-     * 一阳吃多阴
-     * @param n 吃掉n根阴线
-     * @return
+     * 一阳吃掉前面多根K线
+     * @param n 吃掉前面n根K线
      */
     public static Filter<Bar> filter_004(int n){
         return (bar) -> {
@@ -135,7 +135,6 @@ public class Filters {
     /**
      * 一阳穿过多根均线
      * @param days 5, 10, 20, 30 ... 日均线
-     * @return
      */
     public static Filter<Bar> filter_005(int... days){
         return (bar) -> {
@@ -152,6 +151,28 @@ public class Filters {
                 }
             };
             return FilterResult.TRUE(bar.getDate());
+        };
+    }
+
+    /**
+     * MACD底背离[MACD.dif和（close或ma(n)）背离]
+     */
+    public static Filter<Bar> filter_006(int n){
+        return (bar) -> {
+            Bar.MACD macd = bar.getMACD();
+            Bar.MACD macdBefore = bar.before().getMACD();
+            if(macd.macd < 0 && macd.macd > macdBefore.macd){
+                Bar forkBar = bar.getMACDUpperForkBar(5);
+                Bar forkBarBefore = forkBar.before();
+                if(forkBarBefore.getMACD().dif < bar.before().getMACD().dif
+                        && (forkBarBefore.getClose() > bar.before().getClose()
+                        || forkBarBefore.getMA(n, Bar.EnumValue.C) > bar.before().getMA(n, Bar.EnumValue.C) ) ){
+                    return FilterResult.TRUE(bar.getDate());
+                }else{
+                    return FilterResult.FALSE("MACD没有背离");
+                }
+            }
+            return FilterResult.FALSE("MACD.macd值没有减小");
         };
     }
 }

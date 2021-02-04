@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.model.json.View;
 import com.stk123.util.ServiceUtils;
 import lombok.Data;
+import lombok.Getter;
 import org.apache.commons.lang3.time.DateUtils;
 
 import java.text.ParseException;
@@ -13,7 +14,6 @@ import java.util.LinkedList;
 
 import static com.stk123.model.core.BarSeries.EnumPeriod.DAY;
 
-@Data
 public class BarSeries {
 
     public enum EnumPeriod {
@@ -48,7 +48,7 @@ public class BarSeries {
 //    @JsonView(View.Default.class)
     private EnumPeriod period = DAY; //默认周期是day
 
-    @JsonView(View.Default.class)
+    @JsonView(View.Default.class) @Getter
     private LinkedList<Bar> list = new LinkedList();
     private Bar first;
 
@@ -95,6 +95,13 @@ public class BarSeries {
             }
         }
         return this;
+    }
+
+    public void addToFirst(Bar bar) {
+        Bar f = this.getFirst();
+        bar.setBefore(f);
+        f.setAfter(bar);
+        this.list.addFirst(bar);
     }
 
     public Bar getFirst(){

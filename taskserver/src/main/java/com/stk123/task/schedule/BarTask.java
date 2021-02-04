@@ -33,13 +33,13 @@ import java.util.stream.Collectors;
 
 @CommonsLog
 @Service
+@Setter
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class BarTask extends AbstractTask {
 
-    @Setter
     private String startDate;
-    @Setter
     private String endDate;
+    private String realtime;
 
     @Autowired
     private StkKlineRepository stkKlineRepository;
@@ -380,11 +380,11 @@ public class BarTask extends AbstractTask {
     public void analyseKline(){
         try {
             Set<String> list = XueqiuService.getFollowStks("全部");
-//            Set<String> list = XueqiuService.getFollowStks("我的");
+            //Set<String> list = XueqiuService.getFollowStks("我的");
             log.info(list);
             //01,02 策略在com.stk123.model.strategy.sample.Sample 里定义
             StrategyBacktesting strategyBacktesting = backtestingService.backtesting(list.stream().collect(Collectors.toList()),
-                    Arrays.asList(StringUtils.split("01,02", ",")), startDate, endDate);
+                    Arrays.asList(StringUtils.split("01,02", ",")), startDate, endDate, realtime!=null);
 
 //            backtestingService.backtesting(Arrays.stream("601021".split(",")).collect(Collectors.toList()),
 //                    Arrays.asList(StringUtils.split("01,02", ",")), null, null);
@@ -393,9 +393,9 @@ public class BarTask extends AbstractTask {
             if(results.size() > 0){
                 EmailUtils.send("策略发现目标"+results.size()+"个",
                         StringUtils.join(results.stream().map(strategyResult ->
-                                Stock.build(strategyResult.getCode(), null).getNameAndCode()
+                                Stock.build(strategyResult.getCode(), null).getNameAndCode()+ ", 策略：" + strategyResult.getStrategy().getName()
                             ).collect(Collectors.toList()), "<br/>")
-                            + "<br/><br/><br/>"
+                            + "<br/><br/><br/>--------------------------------------------------------"
                             + strategyBacktesting.getStrategies().toString().replaceAll("\n","<br/>"));
             }
         } catch (Exception e) {

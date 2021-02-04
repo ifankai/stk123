@@ -2899,7 +2899,7 @@ from (select t.*, rank() over(partition by t.code order by t.kline_date desc) as
 select * from stk_text stktextent0_ where stktextent0_.type=3 and (stktextent0_.read_date is null) and stktextent0_.created_at>sysdate-2
 
 select * from stk_text where type=3 order by insert_time desc;
-select * from stk_pe order by report_date desc for update;
+select * from stk _pe order by report_date desc for update;
 select avg(pe_ttm) as avg_pe_ttm,median(pe_ttm) as mid_pe_ttm from stk_kline_hk where kline_date=? and pe_ttm is not null and pe_ttm>3 and pe_ttm<200
 
 select avg(pe_ttm) as avg_pe_ttm,median(pe_ttm) as mid_pe_ttm from stk_kline where kline_date='20201224' and pe_ttm is not null and pe_ttm>3 and pe_ttm<200
@@ -2907,7 +2907,7 @@ select avg(pb_ttm),median(pb_ttm) from stk_kline where kline_date='20201224' and
 
 
 select * from stk_task_log order by id desc;
-delete from stk_task_log;
+--delete from stk_task_log;
 
 select * from stk_kline where code='002044' order by kline_date desc;
 update stk_kline_us set amount=null where code='.DJI' and kline_date='20201224'

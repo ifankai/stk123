@@ -33,6 +33,7 @@ public class BacktestingTask extends AbstractTask {
     private String code;
     private String startDate = null;
     private String endDate = null;
+    private String realtime = null;
 
     @Autowired
     private BacktestingService backtestingService;
@@ -48,7 +49,7 @@ public class BacktestingTask extends AbstractTask {
     public void execute() {
         try {
             StrategyBacktesting strategyBacktesting = backtestingService.backtesting(Arrays.asList(StringUtils.split(code, ",")),
-                    Arrays.asList(StringUtils.split(strategy, ",")), startDate, endDate);
+                    Arrays.asList(StringUtils.split(strategy, ",")), startDate, endDate, realtime != null);
 
         } catch (Exception e) {
             log.error("BacktestingTask", e);

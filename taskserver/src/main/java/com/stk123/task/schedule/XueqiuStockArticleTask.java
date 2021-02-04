@@ -181,7 +181,12 @@ public class XueqiuStockArticleTask extends AbstractTask {
                             results.add(stkTextEntity);
                             ids.add(post.getId());
                             //stkTextRepository.save(stkTextEntity);
-                            textService.save(stkTextEntity);
+                            try {
+                                textService.save(stkTextEntity);
+                            }catch (Exception e){
+                                log.info(stkTextEntity);
+                                log.error("",e);
+                            }
                         }
 
                     }
