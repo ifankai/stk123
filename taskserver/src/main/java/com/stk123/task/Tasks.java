@@ -5,6 +5,7 @@ import com.stk123.service.task.TaskContainer;
 import com.stk123.task.quartz.job.ResearchReportJob;
 import com.stk123.task.quartz.job.XueqiuUserJob;
 import com.stk123.task.schedule.*;
+import com.stk123.task.tool.TaskUtils;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -130,4 +131,8 @@ public class Tasks {
         xueqiuFollow.run();
     }
 
+    @Scheduled(cron = "0 0 2 ? * SUN") //每周日凌晨2点
+    public void backupDatabase(){
+        TaskUtils.cmd("D:\\share\\workspace\\stk123\\oracle\\export_stk.bat");
+    }
 }

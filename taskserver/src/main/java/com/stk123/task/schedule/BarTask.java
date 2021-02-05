@@ -380,23 +380,32 @@ public class BarTask extends AbstractTask {
     public void analyseKline(){
         try {
             Set<String> list = XueqiuService.getFollowStks("全部");
+            if(list.isEmpty()){
+                EmailUtils.send("雪球抓取自选股失败", "雪球抓取自选股失败");
+                return;
+            }
             //Set<String> list = XueqiuService.getFollowStks("我的");
             log.info(list);
             //01,02 策略在com.stk123.model.strategy.sample.Sample 里定义
             StrategyBacktesting strategyBacktesting = backtestingService.backtesting(list.stream().collect(Collectors.toList()),
-                    Arrays.asList(StringUtils.split("01,02", ",")), startDate, endDate, realtime!=null);
+                    Arrays.asList(StringUtils.split("01,02a,02b", ",")), startDate, endDate, realtime!=null);
 
 //            backtestingService.backtesting(Arrays.stream("601021".split(",")).collect(Collectors.toList()),
 //                    Arrays.asList(StringUtils.split("01,02", ",")), null, null);
 
             List<StrategyResult> results = strategyBacktesting.getPassedStrategyResult();
             if(results.size() > 0){
-                EmailUtils.send("策略发现目标"+results.size()+"个",
-                        StringUtils.join(results.stream().map(strategyResult ->
-                                Stock.build(strategyResult.getCode(), null).getNameAndCode()+ ", 策略：" + strategyResult.getStrategy().getName()
-                            ).collect(Collectors.toList()), "<br/>")
-                            + "<br/><br/><br/>--------------------------------------------------------"
-                            + strategyBacktesting.getStrategies().toString().replaceAll("\n","<br/>"));
+                StringBuffer sb = new StringBuffer();
+                results.stream().forEach(strategyResult -> {
+                    sb.append(Stock.build(strategyResult.getCode(), null).getNameAndCode()+ ", 策略：" + strategyResult.getStrategy().getName() + ", 日期：" + strategyResult.getDate());
+                    sb.append("<br/>");
+                });
+                sb.append("<br/><br/>--------------------------------------------------------<br/>");
+                strategyBacktesting.getStrategies().stream().forEach(strategy -> {
+                    sb.append(strategy.toString().replaceAll("\n","<br/>")).append("<br/>");
+                });
+
+                EmailUtils.send("策略发现"+results.size()+"个标的", sb.toString());
             }
         } catch (Exception e) {
             log.error("analyseKline", e);

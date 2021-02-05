@@ -6,6 +6,8 @@ import com.stk123.common.html.HtmlTable;
 import com.stk123.common.html.HtmlTd;
 import com.stk123.common.html.HtmlTr;
 import com.stk123.common.util.collection.IntRange;
+import lombok.SneakyThrows;
+import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.time.FastDateFormat;
@@ -14,6 +16,9 @@ import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Time;
@@ -23,6 +28,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@CommonsLog
 public class CommonUtils {
 
     public final static SimpleDateFormat sf_ymd = new SimpleDateFormat("yyyy-MM-dd");
@@ -1158,6 +1164,31 @@ public class CommonUtils {
         }
 
         return ret;
+    }
+
+    @SneakyThrows
+    public static void cmd(String command)  {
+        Process process = Runtime.getRuntime().exec("cmd.exe /c " + command);
+        BufferedInputStream bis = null;
+        BufferedReader br = null;
+        try {
+            bis = new BufferedInputStream(process.getInputStream());
+            br = new BufferedReader(new InputStreamReader(bis));
+            String line;
+            while ((line = br.readLine()) != null) {
+                log.info(line);
+            }
+
+            process.waitFor();
+            if (process.exitValue() != 0) {
+                log.info("[error] exit value:" + process.exitValue());
+            }
+        }catch (Exception e){
+            log.error("error command:[" + command + "]", e);
+        }finally {
+            bis.close();
+            br.close();
+        }
     }
 
 }

@@ -12,7 +12,7 @@ public class Sample {
 
     public static Strategy strategy_01() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_01","策略603096新经典20201106，一段跌幅后底部放量", BarSeries.class);
-        strategy.addFilter("过去3天到80天的跌幅", BarSeries::getFirst, Filters.filter_001_01(3,80,-50,-30));
+        strategy.addFilter("过去3天到80天的跌幅", BarSeries::getFirst, Filters.filter_001a(3,80,-50,-30));
         strategy.addFilter("底部2天放量3天缩量", Filters.filter_002());
         strategy.addFilter("今日十字星", BarSeries::getFirst, Filters.filter_003(0.45));
         strategy.setExpectFilter("十日内涨幅>12%", Filters.expectFilter(10, 12));
@@ -32,17 +32,29 @@ public class Sample {
      StrategyResult{name=策略002044新经典20201231，底部一阳吃多阴（最好MACD底背离）, code=002044, date=20200616, filterResults=[FilterResultTrue{filterName=一阳吃5阴或阳, pass=true, result='20200616'}, FilterResultTrue{filterName=MACD和close或ma(60)底背离, pass=true, result='20200616'}, FilterResultBetween{filterName=过去3天到100天的跌幅[-100,-20] or 过去3天到40天内最高点到低点的跌幅[-100,-30], pass=true, value=-22.51, min=-100.0, max=-20.0, result=实际涨跌幅：-22.50502344273275}, FilterResultTrue{filterName=一阳穿过5,10日均线, pass=true, result='20200616'}], expectFilterResults=[]}
      StrategyResult{name=策略002044新经典20201231，底部一阳吃多阴（最好MACD底背离）, code=002044, date=20201231, filterResults=[FilterResultTrue{filterName=一阳吃5阴或阳, pass=true, result='20201231'}, FilterResultTrue{filterName=一阳穿过5,10日均线, pass=true, result='20201231'}, FilterResultTrue{filterName=MACD和close或ma(60)底背离, pass=true, result='20201231'}, FilterResultBetween{filterName=过去3天到100天的跌幅[-100,-20] or 过去3天到40天内最高点到低点的跌幅[-100,-30], pass=true, value=-29.69, min=-100.0, max=-20.0, result=实际涨跌幅：-29.69460688758934}], expectFilterResults=[]}
      */
-    public static Strategy strategy_02() {
-        Strategy<BarSeries> strategy = new Strategy<>("strategy_02","策略002044新经典20201231，底部一阳吃多阴，MACD底背离）", BarSeries.class);
+    public static Strategy strategy_02a() {
+        Strategy<BarSeries> strategy = new Strategy<>("strategy_02a","策略002044新经典20201231，底部一阳吃多阴", BarSeries.class);
         strategy.addFilter("一阳吃5阴或阳", BarSeries::getFirst, Filters.filter_004(5));
         strategy.addFilter("一阳穿过5,10日均线", BarSeries::getFirst, Filters.filter_005(5, 10));
         strategy.addFilter("过去3天到100天的跌幅[-100,-20] or 过去3天到40天内最高点到低点的跌幅[-100,-30]",
                 BarSeries::getFirst,
                 Filter.<Bar>or(
-                    Filters.filter_001_01(3,100,-100,-20),
-                    Filters.filter_001_02(3,40,-100,-30)
+                    Filters.filter_001a(3,100,-100,-20),
+                    Filters.filter_001b(3,40,-100,-30)
                 ));
-        //TODO 可以再加上MACD底背离
+        return strategy;
+    }
+    //比strategy_02a多了MACD底背离
+    public static Strategy strategy_02b() {
+        Strategy<BarSeries> strategy = new Strategy<>("strategy_02b","策略002044新经典20201231，底部一阳吃多阴，MACD底背离", BarSeries.class);
+        strategy.addFilter("一阳吃5阴或阳", BarSeries::getFirst, Filters.filter_004(5));
+        strategy.addFilter("一阳穿过5,10日均线", BarSeries::getFirst, Filters.filter_005(5, 10));
+        strategy.addFilter("过去3天到100天的跌幅[-100,-20] or 过去3天到40天内最高点到低点的跌幅[-100,-30]",
+                BarSeries::getFirst,
+                Filter.<Bar>or(
+                        Filters.filter_001a(3,100,-100,-20),
+                        Filters.filter_001b(3,40,-100,-30)
+                ));
         strategy.addFilter("MACD和close或ma(60)底背离", BarSeries::getFirst, Filters.filter_006(60));
         return strategy;
     }
@@ -53,7 +65,7 @@ public class Sample {
     }
 
     public static Strategy strategy_TEST() {
-        Strategy<Stock> example = new Strategy<>("strategy_02","Strategy 10天内6天阳线", Stock.class);
+        Strategy<Stock> example = new Strategy<>("strategy_TEST","Strategy 10天内6天阳线", Stock.class);
         Filter<Stock> filter1 = (stock) -> {
             String code = stock.getCode();
             if(StringUtils.startsWith(code,"601")){

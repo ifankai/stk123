@@ -3,6 +3,7 @@ package com.stk123.task.schedule;
 import cn.hutool.extra.ssh.JschUtil;
 import com.jcraft.jsch.Session;
 import com.stk123.common.util.ScpUtils;
+import com.stk123.task.tool.TaskUtils;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.apachecommons.CommonsLog;
@@ -61,7 +62,7 @@ public class SyncTask extends AbstractTask {
     public void sync(String tableName, String whereClause){
         String command = getExpCommand(tableName, whereClause);
         log.info(command);
-        cmd(command);
+        TaskUtils.cmd(command);
         uploadFile(tableName);
         command = getImpCommand(tableName);
         log.info(command);
@@ -97,31 +98,6 @@ public class SyncTask extends AbstractTask {
         String command = "source /etc/profile;source ~/.bash_profile;source ~/.bashrc; ";
         command += ". oraenv; imp userid=stk/stkpwd@localhost:1539/xepdb1 file='"+remoteDir+"%s.dmp' log='"+remoteDir+"%s.log' full=y ignore=y CONSTRAINTS=y";
         return String.format(command, tableName, tableName);
-    }
-
-    @SneakyThrows
-    public void cmd(String command)  {
-        Process process = Runtime.getRuntime().exec("cmd.exe /c " + command);
-        BufferedInputStream bis = null;
-        BufferedReader br = null;
-        try {
-            bis = new BufferedInputStream(process.getInputStream());
-            br = new BufferedReader(new InputStreamReader(bis));
-            String line;
-            while ((line = br.readLine()) != null) {
-                log.info(line);
-            }
-
-            process.waitFor();
-            if (process.exitValue() != 0) {
-                log.info("[error] exit value:" + process.exitValue());
-            }
-        }catch (Exception e){
-            log.error("error command:[" + command + "]", e);
-        }finally {
-            bis.close();
-            br.close();
-        }
     }
 
 

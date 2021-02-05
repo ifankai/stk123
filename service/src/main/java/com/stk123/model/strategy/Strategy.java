@@ -153,7 +153,7 @@ public class Strategy<X> {
             sb.append(String.format("期望过滤器[%s]调用总次数：%d, 通过：%d, 未通过：%d。通过率：%f",
                     expectFilterExecutor.getName(), expectFilterExecutor.getCounterPassedAndNotPassed(),
                     expectFilterExecutor.getCounterPassed(), expectFilterExecutor.getCounterNotPassed(),
-                    this.getPassRate()));
+                    this.getPassRate())).append("\n");
         }
         return sb.toString();
     }

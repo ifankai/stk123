@@ -43,7 +43,7 @@ public class Filters {
      * 定义：计算从close价格过去numberBeforeParam1天 到 过去numberBeforeFirst天
      * 的涨跌幅是否在min和max之间
      */
-    public static Filter<Bar> filter_001_01(int numberBeforeFirst, int numberBeforeParam1, double
+    public static Filter<Bar> filter_001a(int numberBeforeFirst, int numberBeforeParam1, double
             min, double max) {
         return (bar) -> {
             Bar today = bar;
@@ -59,7 +59,7 @@ public class Filters {
      * 定义：计算从close价格过去numberBeforeParam1天 到 过去numberBeforeFirst天内，最高价到numberBeforeFirst日
      * 的涨跌幅是否在min和max之间
      */
-    public static Filter<Bar> filter_001_02(int numberBeforeFirst, int numberBeforeParam1, double
+    public static Filter<Bar> filter_001b(int numberBeforeFirst, int numberBeforeParam1, double
             min, double max) {
         return (bar) -> {
             Bar today = bar;

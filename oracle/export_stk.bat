@@ -1,0 +1,1 @@
+exp stk/stkpwd@XE file=D:/share/workspace/stk123/oracle/db_stk.dmp owner=(stk)
