@@ -91,13 +91,18 @@ public class Tasks {
         taskContainer.start(BarTask.class, "CN");
     }*/
     @Scheduled(cron = "0 30 16 ? * MON-SAT")
-    public void initialKLineHK() {
+    public void initialKLine() {
         //taskContainer.start(BarTask.class, "HK");
         taskContainer.start(TaskBuilder.of(BarTask.class, "CN"),
                             TaskBuilder.of(BarTask.class, "HK"),
                             TaskBuilder.of(BarTask.class, "Kline"),
                             TaskBuilder.of(SyncTask.class, "table=stk_task_log"));
     }
+    @Scheduled(cron = "0 45 14 ? * MON-FRI")
+    public void klineRealtime() {
+        taskContainer.start(BarTask.class, "Kline", "realtime=1");
+    }
+
     @Scheduled(cron = "0 30 5 ? * TUE-SAT")
     public void initialKLineUS() {
         //initialKLine.run("US");
