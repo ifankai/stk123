@@ -396,8 +396,9 @@ public class BarTask extends AbstractTask {
             List<StrategyResult> results = strategyBacktesting.getPassedStrategyResult();
             if(results.size() > 0){
                 StringBuffer sb = new StringBuffer();
-                results.stream().forEach(strategyResult -> {
-                    sb.append(Stock.build(strategyResult.getCode(), null).getNameAndCode()+ ", 策略：" + strategyResult.getStrategy().getName() + ", 日期：" + strategyResult.getDate());
+                results.stream().sorted(Comparator.comparing(strategyResult -> strategyResult.getStrategy().getName()))
+                        .forEach(strategyResult -> {
+                    sb.append(CommonUtils.padString(Stock.build(strategyResult.getCode(), null).getNameAndCode(), 17) + ", 日期：" + strategyResult.getDate() + ", 策略：" + strategyResult.getStrategy().getName() );
                     sb.append("<br/>");
                 });
                 sb.append("<br/><br/>--------------------------------------------------------<br/>");
