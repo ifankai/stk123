@@ -3,6 +3,7 @@ package com.stk123.model.core;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.common.CommonConstant;
+import com.stk123.common.CommonUtils;
 import com.stk123.model.json.View;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.model.projection.StockProjection;
@@ -257,6 +258,9 @@ public class Stock {
         }
         return this.name + "["+ this.getCodeWithPlace() +"]";
     }
+    public String getNameAndCodeWithXueqiuLink(){
+        return CommonUtils.wrapLink(this.getNameAndCode(), "https://xueqiu.com/S/"+this.getCodeWithPlace());
+    }
 
     public boolean isMarketCN(){
         return this.market == EnumMarket.CN;
@@ -278,6 +282,9 @@ public class Stock {
                     this.place = SH;
                 }else{
                     this.place = SZ;
+                }
+                if(this.code.startsWith(EnumPlace.SH.name()) || this.code.startsWith(EnumPlace.SZ.name())){
+                    this.code = this.code.substring(2, 8);
                 }
             }else{
                 this.place = getCity(code);

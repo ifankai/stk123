@@ -2,6 +2,7 @@ package com.stk123.task.schedule;
 
 import com.stk123.common.CommonUtils;
 import com.stk123.common.util.EmailUtils;
+import com.stk123.common.util.ListUtils;
 import com.stk123.entity.StkIndustryEntity;
 import com.stk123.entity.StkKlineUsEntity;
 import com.stk123.entity.StkPeEntity;
@@ -10,6 +11,7 @@ import com.stk123.model.core.Stock;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.model.strategy.StrategyBacktesting;
 import com.stk123.model.strategy.StrategyResult;
+import com.stk123.model.xueqiu.Portfolio;
 import com.stk123.repository.*;
 import com.stk123.service.XueqiuService;
 import com.stk123.service.core.BacktestingService;
@@ -17,6 +19,7 @@ import com.stk123.service.core.BarService;
 import com.stk123.task.tool.TaskUtils;
 import lombok.Setter;
 import lombok.extern.apachecommons.CommonsLog;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -379,15 +382,30 @@ public class BarTask extends AbstractTask {
 
     public void analyseKline(){
         try {
-            Set<String> list = XueqiuService.getFollowStks("全部");
-            if(list.isEmpty()){
+            Set<String> allList = new HashSet<>();
+            Set<String> myList = XueqiuService.getFollowStks("全部");
+            if(myList.isEmpty()){
                 EmailUtils.send("雪球抓取自选股失败", "雪球抓取自选股失败");
                 return;
             }
-            //Set<String> list = XueqiuService.getFollowStks("我的");
-            log.info(list);
+            //Set<String> myList = XueqiuService.getFollowStks("我的");
+            log.info(myList);
+            allList.addAll(myList);
+
+            List<Portfolio> portfolios = XueqiuService.getPortfolios("6237744859");
+            for(Portfolio portfolio : portfolios){
+                try {
+                    List<com.stk123.model.xueqiu.Stock> stocks = XueqiuService.getPortfolioStocks(portfolio.getSymbol());
+                    portfolio.setStocks(stocks);
+                    allList.addAll(stocks.stream().map(com.stk123.model.xueqiu.Stock::getCode).collect(Collectors.toList()));
+                }catch (Exception e){
+                    log.error("雪球抓取自选组合失败" , e);
+                }
+            }
+            log.info(allList);
+
             //01,02 策略在com.stk123.model.strategy.sample.Sample 里定义
-            StrategyBacktesting strategyBacktesting = backtestingService.backtesting(list.stream().collect(Collectors.toList()),
+            StrategyBacktesting strategyBacktesting = backtestingService.backtesting(allList.stream().collect(Collectors.toList()),
                     Arrays.asList(StringUtils.split("01,02a,02b", ",")), startDate, endDate, realtime!=null);
 
 //            backtestingService.backtesting(Arrays.stream("601021".split(",")).collect(Collectors.toList()),
@@ -396,11 +414,41 @@ public class BarTask extends AbstractTask {
             List<StrategyResult> results = strategyBacktesting.getPassedStrategyResult();
             if(results.size() > 0){
                 StringBuffer sb = new StringBuffer();
+
+                List<List<String>> datas = new ArrayList<>();
                 results.stream().sorted(Comparator.comparing(strategyResult -> strategyResult.getStrategy().getName()))
                         .forEach(strategyResult -> {
-                    sb.append(CommonUtils.padString(Stock.build(strategyResult.getCode(), null).getNameAndCode(), 17) + ", 日期：" + strategyResult.getDate() + ", 策略：" + strategyResult.getStrategy().getName() );
-                    sb.append("<br/>");
+//                    sb.append(CommonUtils.padString(Stock.build(strategyResult.getCode(), null).getNameAndCode(), 17) + ", 日期：" + strategyResult.getDate() + ", 策略：" + strategyResult.getStrategy().getName() );
+//                    sb.append("<br/>");
+
+                    List<String> sources = new ArrayList<>();
+                    if(myList.contains(strategyResult.getCode())){
+                        sources.add("自选股");
+                    }
+                    for(Portfolio portfolio : portfolios){
+                        List<com.stk123.model.xueqiu.Stock> stocks = portfolio.getStocks();
+                        int i = stocks.stream().filter(stock -> stock.getCode().contains(strategyResult.getCode())).collect(Collectors.toList()).size();
+                        if(i > 0){
+                            sources.add(CommonUtils.wrapLink("["+portfolio.getSymbol()+"]"+portfolio.getName(), "https://xueqiu.com/P/"+portfolio.getSymbol()));
+                        }
+                    }
+
+                    List<String> data = new ArrayList<>();
+                    ListUtils.add(data,
+                            Stock.build(strategyResult.getCode(), null).getNameAndCodeWithXueqiuLink(),
+                            strategyResult.getDate(),
+                            strategyResult.getStrategy().getName(),
+                            StringUtils.join(sources, "<br/>")
+                            );
+                    datas.add(data);
                 });
+
+                List<String> titles = new ArrayList<>();
+                ListUtils.add(titles, "标的", "日期", "策略", "来源");
+                String table = CommonUtils.createHtmlTable(titles, datas);
+                sb.append(table);
+
+
                 sb.append("<br/><br/>--------------------------------------------------------<br/>");
                 strategyBacktesting.getStrategies().stream().forEach(strategy -> {
                     sb.append(strategy.toString().replaceAll("\n","<br/>")).append("<br/>");

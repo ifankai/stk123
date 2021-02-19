@@ -2,6 +2,7 @@ package com.stk123.common.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 public class ListUtils {
@@ -47,5 +48,10 @@ public class ListUtils {
 	
 	public interface Get{
 		public double get(Object o);
+	}
+
+	public static <E> Collection<E> add(Collection collection, E... elements){
+		collection.addAll(Arrays.asList(elements));
+		return collection;
 	}
 }

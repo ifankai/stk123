@@ -203,10 +203,12 @@ public class XueqiuService {
 		return result;
 	}
 
+	//6237744859
 	public static List<Portfolio> getPortfolios(String uid) throws Exception {
-		String url = "https://stock.xueqiu.com/v5/stock/portfolio/stock/list.json?size=1000&category=3&uid="+uid+"&pid=-24";
+		String url = "https://stock.xueqiu.com/v5/stock/portfolio/stock/list.json?size=1000&category=3&uid="+uid+"&pid=-120";
 		Map<String, String> requestHeaders = XueqiuService.getCookies();
 		String html = HttpUtils.get(url,null, requestHeaders,"UTF-8");
+		//System.out.println(html);
 		JSONObject jsonObject = JSON.parseObject(html);
 		List<Portfolio> portfolios = JSONObject.parseArray(jsonObject.getJSONObject("data").getString("stocks"), Portfolio.class);
 
@@ -275,11 +277,13 @@ public class XueqiuService {
 		/*followStks.addAll(XueqiuUtils.getFollowStks("备选"));
 		IOUtils.writeLines(followStks, null, new FileOutputStream(new File("d:\\care.txt")));*/
 		//System.out.println(ConfigUtils.getProp("xueqiu.cookie"));
-		System.out.println(XueqiuService.getFollowStks("全部"));
+		//System.out.println(XueqiuService.getFollowStks("全部"));
 
-        System.out.println(XueqiuService.existingXueqiuFollowStk("全部","002191"));
+        //System.out.println(XueqiuService.existingXueqiuFollowStk("全部","002191"));
 		//XueqiuUtils.getCookies();
 		//XueqiuUtils.getFollowStks();
+		//System.out.println(XueqiuService.getPortfolioStocks("ZH1130729"));
+		System.out.println(getPortfolios("6237744859"));
 	}
 
 
