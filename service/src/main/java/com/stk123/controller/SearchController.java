@@ -59,7 +59,9 @@ public class SearchController {
     public RequestResult<PageRoot<EsDocument>> search(@PathVariable("keyword")String keyword,
                                                       @PathVariable(value = "page", required = false)Integer page,
                                                       @RequestParam(value = EsService.FIELD_TYPE, required = false)String type,
-                                                      @RequestParam(value = EsService.FIELD_SUB_TYPE, required = false)String subType) throws IOException {
+                                                      @RequestParam(value = EsService.FIELD_SUB_TYPE, required = false)String subType,
+                                                      @RequestParam(value = "sort", required = false)String sort
+    ) throws IOException {
         if(page == null) page = 1;
         Map<String, String> otherKeywords = new HashMap<>();
         if(type != null){
@@ -68,9 +70,9 @@ public class SearchController {
         if(subType != null){
             otherKeywords.put(EsService.FIELD_SUB_TYPE, subType);
         }
-        com.stk123.model.elasticsearch.SearchResult result = esService.search(keyword, otherKeywords, page);
+        com.stk123.model.elasticsearch.SearchResult result = esService.search(keyword, otherKeywords, page, "time".equals(sort));
 
-        //post 查询stk_text的详细信息，放到data属性下
+        //post 查询stk_text的详细信息，放到post属性下
         List<EsDocument> postList = result.getResults().stream().filter(e -> "post".equals(e.getType())).collect(Collectors.toList());
         if(!postList.isEmpty()){
             List<StkTextEntity> list = stkTextRepository.findAllByIdIn(postList.stream().map(e -> new Long(e.getId())).collect(Collectors.toList()));

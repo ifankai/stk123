@@ -11,7 +11,13 @@ import org.modelmapper.spi.SourceGetter;
  * modelmapper
  * http://modelmapper.org/getting-started/
  */
-public class BeanMapperUtils {
+public class BeanUtils {
+
+    private final static ModelMapper modelMapper = new ModelMapper();
+
+    public static <S,D> D map(S source, Class<D> destClass){
+        return modelMapper.map(source, destClass);
+    }
 
     public static <S,D,V> D map(S source, Class<D> destClass, SourceGetter<S> sourceGetter, DestinationSetter<D, V> destinationSetter){
         ModelMapper modelMapper = new ModelMapper();
@@ -20,7 +26,7 @@ public class BeanMapperUtils {
         return modelMapper.map(source, destClass);
     }
 
-    public static <S,D,V> D map(S source, Class<D> destClass, PropertyMap<S, D> propertyMap){
+    public static <S,D> D map(S source, Class<D> destClass, PropertyMap<S, D> propertyMap){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.addMappings(propertyMap);
         return modelMapper.map(source, destClass);
@@ -43,11 +49,11 @@ public class BeanMapperUtils {
         a.setAge(10);
 
 
-        B b = BeanMapperUtils.map(a, B.class, src -> src.getCode(), B::setCodeName);
+        B b = BeanUtils.map(a, B.class, src -> src.getCode(), B::setCodeName);
         System.out.println(b);
 
         a.setCode("hahah");
-        b = BeanMapperUtils.map(a, B.class, new PropertyMap<A, B>() {
+        b = BeanUtils.map(a, B.class, new PropertyMap<A, B>() {
             @Override
             protected void configure() {
                 map().setCodeName(source.getCode());

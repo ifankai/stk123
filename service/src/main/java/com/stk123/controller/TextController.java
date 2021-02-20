@@ -1,38 +1,25 @@
 package com.stk123.controller;
 
-import cn.hutool.core.bean.BeanUtil;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.stk123.common.util.BeanMapperUtils;
+import com.stk123.common.util.BeanUtils;
 import com.stk123.entity.StkTextEntity;
 import com.stk123.model.RequestResult;
 import com.stk123.model.dto.PageRoot;
-import com.stk123.model.constant.TextConstant;
 import com.stk123.model.dto.TextDto;
 import com.stk123.model.elasticsearch.EsDocument;
-import com.stk123.model.elasticsearch.SearchResult;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.repository.StkRepository;
 import com.stk123.repository.StkTextRepository;
 import com.stk123.service.core.EsService;
 import com.stk123.service.core.TextService;
-import lombok.SneakyThrows;
 import lombok.extern.apachecommons.CommonsLog;
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -124,7 +111,7 @@ public class TextController {
 
         List<EsDocument> results = new ArrayList<>();
         for (StkTextEntity stkTextEntity : list) {
-            EsDocument esDocument = BeanMapperUtils.map(stkTextEntity, EsDocument.class, new PropertyMap<StkTextEntity, EsDocument>() {
+            EsDocument esDocument = BeanUtils.map(stkTextEntity, EsDocument.class, new PropertyMap<StkTextEntity, EsDocument>() {
                 @Override
                 protected void configure() {
                     map().setDesc(source.getTextDesc());

@@ -258,7 +258,7 @@ public class EsService {
     }
 
     public SearchResult search(String keyword, int page) throws IOException {
-        return search(keyword, null, page);
+        return search(keyword, null, page, false);
     }
 
     /**
@@ -267,14 +267,14 @@ public class EsService {
      * @return
      * @throws IOException
      */
-    public SearchResult search(String keyword, Map<String,String> otherKeywords, int page) throws IOException {
-        return search(INDEX_STK, page, 10, keyword, otherKeywords, DEFAULT_SEARCH_FIELDS, DEFAULT_HIGHLIGHT_FIELDS);
+    public SearchResult search(String keyword, Map<String,String> otherKeywords, int page, boolean orderByTime) throws IOException {
+        return search(INDEX_STK, page, 10, keyword, otherKeywords, DEFAULT_SEARCH_FIELDS, DEFAULT_HIGHLIGHT_FIELDS, orderByTime);
     }
 
     //https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-high-search.html
     public SearchResult search(String index, int page, int pageSize,
                                String keyword, Map<String,String> otherKeywords,
-                               String[] fieldNames, String[] highlightFields) throws IOException {
+                               String[] fieldNames, String[] highlightFields, boolean orderByTime) throws IOException {
         SearchRequest searchRequest = new SearchRequest(index);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         MultiMatchQueryBuilder multiMatchQueryBuilder = QueryBuilders.multiMatchQuery(keyword, fieldNames);
@@ -308,7 +308,9 @@ public class EsService {
         searchSourceBuilder.from((page - 1) * pageSize);
         searchSourceBuilder.timeout(new TimeValue(60, TimeUnit.SECONDS));
 
-        searchSourceBuilder.sort(SortBuilders.scoreSort().order(SortOrder.DESC));
+        if(!orderByTime) {
+            searchSourceBuilder.sort(SortBuilders.scoreSort().order(SortOrder.DESC));
+        }
         searchSourceBuilder.sort(new FieldSortBuilder(FIELD_INSERT_TIME).order(SortOrder.DESC));
 
         searchRequest.source(searchSourceBuilder);
@@ -414,7 +416,7 @@ public class EsService {
         esDocument.setSubType(stock.getMarket().name());
         esDocument.setTitle(stock.getNameAndCodeWithLink()+"["+String.join("", Arrays.asList(PinYin4jUtils.getHeadByString(StringUtils.replace(stock.getName(), " ", ""))))+"]");
         esDocument.setDesc(StringUtils.join(stock.getIndustries().stream().map(IndustryProjection::getName).collect(Collectors.toList()), ","));
-        esDocument.setContent(stock.getStock().getF9());
+        esDocument.setContent(stock.getStock().getF9() + "<br/>" + "TODO 十大流通股东");
         esDocument.setId(stock.getCodeWithPlace());
         esDocument.setCode(stock.getCode());
 //        esDocument.setInsertTime(e.getInsertTime() == null ? null : e.getInsertTime().getTime());

@@ -61,7 +61,6 @@ public class Tasks {
     @Scheduled(cron = "0 0/1 * ? * *") //每分钟1次
     public void xueqiuStockArticleJob() {
         if(!ArrayUtils.contains(environment.getActiveProfiles(), "company")) {
-            //xueqiuStockArticleJob.execute(null);
             taskContainer.start(XueqiuStockArticleTask.class);
             //taskContainer.start(TaskBuilder.of(BarTask.class, "HK"), TaskBuilder.of(SyncTask.class, "table=stk_text"));
         }
@@ -69,7 +68,6 @@ public class Tasks {
     @Scheduled(cron = "0 0/10 * ? * *") //每10分钟1次
     public void syncTask() {
         if(!ArrayUtils.contains(environment.getActiveProfiles(), "company")) {
-            //xueqiuStockArticleJob.execute(null);
             taskContainer.start(SyncTask.class, "table=stk_text");
         }
     }
@@ -86,13 +84,9 @@ public class Tasks {
         researchReportJob.execute(null);
     }
 
-    /*@Scheduled(cron = "0 30 15 ? * MON-SAT")
-    public void initialKLineCN() {
-        taskContainer.start(BarTask.class, "CN");
-    }*/
-    @Scheduled(cron = "0 30 16 ? * MON-SAT")
+
+    @Scheduled(cron = "0 10 16 ? * MON-SAT")
     public void initialKLine() {
-        //taskContainer.start(BarTask.class, "HK");
         taskContainer.start(TaskBuilder.of(BarTask.class, "CN"),
                             TaskBuilder.of(BarTask.class, "HK"),
                             TaskBuilder.of(BarTask.class, "Kline"),
@@ -105,7 +99,6 @@ public class Tasks {
 
     @Scheduled(cron = "0 30 5 ? * TUE-SAT")
     public void initialKLineUS() {
-        //initialKLine.run("US");
         taskContainer.start(BarTask.class, "US");
     }
 
@@ -113,13 +106,13 @@ public class Tasks {
     @Scheduled(cron = "0 0 2 ? * MON,FRI")
     public void initialDataCN() {
         initialData.run(1);
-
         taskContainer.start(StockTask.class, "CN");
     }
     @Scheduled(cron = "0 0 8 ? * TUE,SAT")
     public void initialDataUS() {
         initialData.run(2);
     }
+
 
     @Scheduled(cron = "0 0 20 ? * *") //每天晚上8点，公告
     public void noticeRobot() {
