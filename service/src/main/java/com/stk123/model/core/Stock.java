@@ -1,12 +1,15 @@
 package com.stk123.model.core;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.common.CommonConstant;
 import com.stk123.common.CommonUtils;
 import com.stk123.model.json.View;
+import com.stk123.model.projection.IndustryProjection;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.model.projection.StockProjection;
+import com.stk123.repository.StkIndustryRepository;
 import com.stk123.repository.StkRepository;
 import com.stk123.service.core.BarService;
 import com.stk123.service.core.StockService;
@@ -20,6 +23,7 @@ import lombok.Setter;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -47,6 +51,8 @@ public class Stock {
     private BarService barService;
     @Autowired
     private StkRepository stkRepository;
+    @Autowired
+    private StkIndustryRepository stkIndustryRepository;
 
     @AllArgsConstructor
     public enum EnumMarket {
@@ -158,6 +164,7 @@ public class Stock {
     private EnumCate cate;
 
     private StockProjection stock;
+    private List<IndustryProjection> industries; //行业
 
     private BarSeries barSeries;
     private BarSeries barSeriesWeek;
@@ -195,6 +202,10 @@ public class Stock {
         Stock stock = Stock.build();
         return stock.set(stockBasicProjection);
     }
+    public static Stock build(StockProjection stockProjection) {
+        Stock stock = Stock.build();
+        return stock.set(stockProjection);
+    }
     @Deprecated
     public static Stock build(String code, String name, BarSeries barSeries) {
         Stock stock = Stock.build();
@@ -231,6 +242,10 @@ public class Stock {
         this.place = place;
         return this;
     }
+    private Stock set(StockProjection stockProjection) {
+        this.stock = stockProjection;
+        return set((StockBasicProjection)stockProjection);
+    }
     private Stock set(StockBasicProjection stockBasicProjection) {
         this.code = stockBasicProjection.getCode();
         this.name = stockBasicProjection.getName();
@@ -258,7 +273,7 @@ public class Stock {
         }
         return this.name + "["+ this.getCodeWithPlace() +"]";
     }
-    public String getNameAndCodeWithXueqiuLink(){
+    public String getNameAndCodeWithLink(){
         return CommonUtils.wrapLink(this.getNameAndCode(), "https://xueqiu.com/S/"+this.getCodeWithPlace());
     }
 
@@ -488,6 +503,12 @@ public class Stock {
     }
 
 
+    public List<IndustryProjection> getIndustries(){
+        if(industries == null){
+            return this.industries = stkIndustryRepository.findAllByCode(this.getCode());
+        }
+        return this.industries;
+    }
 
     @Override
     public int hashCode(){

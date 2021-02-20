@@ -83,6 +83,13 @@ public class SearchController {
         }
 
         //stock ...
+        List<EsDocument> stockList = result.getResults().stream().filter(e -> "stock".equals(e.getType())).collect(Collectors.toList());
+        if(!stockList.isEmpty()){
+            List<StockBasicProjection> stocks = stkRepository.findAllByCodes(stockList.stream().map(e -> e.getCode()).collect(Collectors.toList()));
+            stockList.forEach(esDocument -> {
+                esDocument.setStock(stocks.stream().filter(e -> e.getCode().equals(esDocument.getCode())).findFirst().orElse(null));
+            });
+        }
 
         return RequestResult.success(PageRoot.unPageable(result.getResults(), page));
     }

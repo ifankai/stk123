@@ -19,7 +19,6 @@ import com.stk123.service.core.BarService;
 import com.stk123.task.tool.TaskUtils;
 import lombok.Setter;
 import lombok.extern.apachecommons.CommonsLog;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -435,7 +434,7 @@ public class BarTask extends AbstractTask {
 
                     List<String> data = new ArrayList<>();
                     ListUtils.add(data,
-                            Stock.build(strategyResult.getCode(), null).getNameAndCodeWithXueqiuLink(),
+                            Stock.build(strategyResult.getCode(), null).getNameAndCodeWithLink(),
                             strategyResult.getDate(),
                             strategyResult.getStrategy().getName(),
                             StringUtils.join(sources, "<br/>")

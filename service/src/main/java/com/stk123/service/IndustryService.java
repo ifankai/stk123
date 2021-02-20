@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Calendar;
 
 @Service
+@Deprecated
 public class IndustryService {
 
     public IndustryService(){}

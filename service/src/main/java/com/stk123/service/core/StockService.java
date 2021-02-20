@@ -4,8 +4,10 @@ import com.stk123.common.util.PinYin4jUtils;
 import com.stk123.entity.StkEntity;
 import com.stk123.model.core.Stock;
 import com.stk123.model.dto.SearchResult;
+import com.stk123.model.projection.IndustryProjection;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.model.projection.StockCodeNameProjection;
+import com.stk123.model.projection.StockProjection;
 import com.stk123.repository.StkKlineRepository;
 import com.stk123.repository.StkRepository;
 import lombok.Getter;
@@ -28,6 +30,8 @@ public class StockService {
     private StkRepository stkRepository;
     @Autowired
     private StkKlineRepository stkKlineRepository;
+    @Autowired
+    private IndustryService industryService;
 
     @Transactional
     public List<Stock> buildStocks(List<String> codes) {
@@ -39,6 +43,14 @@ public class StockService {
     @Transactional
     public List<Stock> buildStocks(String... codes) {
         return this.buildStocks(Arrays.asList(codes));
+    }
+
+    @Transactional
+    public List<Stock> buildStocksWithIndustries(List<StockProjection> stockProjections) {
+        List<Stock> stocks = stockProjections.stream().map(projection -> Stock.build(projection)).collect(Collectors.toList());
+        Map<String, List<IndustryProjection>> map = industryService.findAllToMap();
+        stocks.forEach(stock -> stock.setIndustries(map.get(stock.getCode())));
+        return stocks;
     }
 
     @Getter

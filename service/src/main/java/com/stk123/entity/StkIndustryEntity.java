@@ -18,8 +18,9 @@ public class StkIndustryEntity implements Serializable {
     private String code;
     @Id
     @Column(name = "INDUSTRY", nullable = true, precision = 0)
-    private Long industry;
+    private Integer industry;
 
+    private StkIndustryTypeEntity stkIndustryTypeEntity;
 
     @Override
     public boolean equals(Object o) {
@@ -42,6 +43,6 @@ public class StkIndustryEntity implements Serializable {
     @EqualsAndHashCode
     public static class CompositeKey implements Serializable {
         private String code;
-        private Long industry;
+        private Integer industry;
     }
 }

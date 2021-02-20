@@ -2,11 +2,18 @@ package com.stk123.service.core;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
+import com.stk123.common.util.PinYin4jUtils;
 import com.stk123.config.EsProperties;
 import com.stk123.entity.StkTextEntity;
-import com.stk123.model.elasticsearch.*;
+import com.stk123.model.core.Stock;
+import com.stk123.model.elasticsearch.EsDocument;
+import com.stk123.model.elasticsearch.SearchResult;
+import com.stk123.model.projection.IndustryProjection;
+import com.stk123.model.projection.StockProjection;
+import com.stk123.repository.StkRepository;
 import com.stk123.repository.StkTextRepository;
 import lombok.extern.apachecommons.CommonsLog;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.elasticsearch.action.admin.indices.alias.Alias;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
@@ -24,7 +31,6 @@ import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.text.Text;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -32,7 +38,6 @@ import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermsQueryBuilder;
 import org.elasticsearch.rest.RestStatus;
-import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
@@ -76,6 +81,10 @@ public class EsService {
 
     @Autowired
     private StkTextRepository stkTextRepository;
+    @Autowired
+    private StkRepository stkRepository;
+    @Autowired
+    private StockService stockService;
 
 
     private final static String[] DEFAULT_SEARCH_FIELDS = new String[] {FIELD_TYPE, FIELD_TITLE, FIELD_DESC, FIELD_CONTENT, FIELD_CODE};
@@ -92,8 +101,8 @@ public class EsService {
     static {
         RequestOptions.Builder builder = RequestOptions.DEFAULT.toBuilder();
 
-        // 默认缓冲限制为100MB，此处修改为30MB。
-        builder.setHttpAsyncResponseConsumerFactory(new HttpAsyncResponseConsumerFactory.HeapBufferedResponseConsumerFactory(30 * 1024 * 1024));
+        // 默认缓冲限制为100MB，此处修改为20MB。
+        builder.setHttpAsyncResponseConsumerFactory(new HttpAsyncResponseConsumerFactory.HeapBufferedResponseConsumerFactory(20 * 1024 * 1024));
         COMMON_OPTIONS = builder.build();
     }
 
@@ -202,7 +211,7 @@ public class EsService {
     }
 
     public IndexResponse createDocumentIfNotExisting(StkTextEntity entity) throws IOException {
-        EsDocument esDocument = stkTextEntityToEsDocument(entity);
+        EsDocument esDocument = convertStkTextEntityToEsDocument(entity);
         return createDocumentIfNotExisting(esDocument);
     }
 
@@ -363,27 +372,79 @@ public class EsService {
             }
             createIndex(index);
         }
-        List<StkTextEntity> list = stkTextRepository.findAllByInsertTimeGreaterThanEqual(dateAfter);
+
+        //stk, type=stock
+
+
+        //stk_text, type=post
+        BulkResponse bulkResponse = initStkText(index, dateAfter);
+        if(bulkResponse.hasFailures()){
+            return bulkResponse.buildFailureMessage();
+        }
+
+        return null;
+    }
+
+    private BulkResponse initStk(String index){
+        List<StockProjection> list = stkRepository.findAllStk();
+        List<Stock> stocks = stockService.buildStocksWithIndustries(list);
         int i=0;
+        BulkResponse bulkResponse;
         for(;;) {
-            List<EsDocument> documents = new ArrayList();
+            ArrayList documents = new ArrayList();
             int j = i+1000 >= list.size() ? list.size() : i+1000;
-            List<StkTextEntity> subList = list.subList(i, j);
+            List<Stock> subList = stocks.subList(i, j);
             subList.forEach(e -> {
-                EsDocument esDocument = stkTextEntityToEsDocument(e);
+                EsDocument esDocument = convertStockToEsDocument(e);
                 documents.add(esDocument);
             });
-            BulkResponse bulkResponse = createDocumentByBulk(index, documents);
+            bulkResponse = createDocumentByBulk(index, documents);
             if(bulkResponse.hasFailures()){
-                return bulkResponse.buildFailureMessage();
+                return bulkResponse;
             }
             if(j >= list.size() -1)break;
             i = j;
         }
-        return null;
+        return bulkResponse;
     }
 
-    private EsDocument stkTextEntityToEsDocument(StkTextEntity e) {
+    private EsDocument convertStockToEsDocument(Stock stock){
+        EsDocument esDocument = new EsDocument();
+        esDocument.setType("stock");
+        esDocument.setSubType(stock.getMarket().name());
+        esDocument.setTitle(stock.getNameAndCodeWithLink()+"["+String.join("", Arrays.asList(PinYin4jUtils.getHeadByString(StringUtils.replace(stock.getName(), " ", ""))))+"]");
+        esDocument.setDesc(StringUtils.join(stock.getIndustries().stream().map(IndustryProjection::getName).collect(Collectors.toList()), ","));
+        esDocument.setContent(stock.getStock().getF9());
+        esDocument.setId(stock.getCodeWithPlace());
+        esDocument.setCode(stock.getCode());
+//        esDocument.setInsertTime(e.getInsertTime() == null ? null : e.getInsertTime().getTime());
+//        esDocument.setUpdateTime(e.getUpdateTime() == null ? null : e.getUpdateTime().getTime());
+        return esDocument;
+    }
+
+    private BulkResponse initStkText(String index, Date dateAfter){
+        List<StkTextEntity> list = stkTextRepository.findAllByInsertTimeGreaterThanEqual(dateAfter);
+        int i=0;
+        BulkResponse bulkResponse;
+        for(;;) {
+            ArrayList documents = new ArrayList();
+            int j = i+1000 >= list.size() ? list.size() : i+1000;
+            List<StkTextEntity> subList = list.subList(i, j);
+            subList.forEach(e -> {
+                EsDocument esDocument = convertStkTextEntityToEsDocument(e);
+                documents.add(esDocument);
+            });
+            bulkResponse = createDocumentByBulk(index, documents);
+            if(bulkResponse.hasFailures()){
+                return bulkResponse;
+            }
+            if(j >= list.size() -1)break;
+            i = j;
+        }
+        return bulkResponse;
+    }
+
+    private EsDocument convertStkTextEntityToEsDocument(StkTextEntity e) {
         EsDocument esDocument = new EsDocument();
         esDocument.setType("post");
         esDocument.setSubType(e.getSubType().toString());
