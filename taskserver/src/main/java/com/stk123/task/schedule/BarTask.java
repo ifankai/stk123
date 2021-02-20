@@ -442,6 +442,8 @@ public class BarTask extends AbstractTask {
                     datas.add(data);
                 });
 
+                datas.stream().sorted(Comparator.comparing(e -> e.get(3).contains("自选股")));
+
                 List<String> titles = new ArrayList<>();
                 ListUtils.add(titles, "标的", "日期", "策略", "来源");
                 String table = CommonUtils.createHtmlTable(titles, datas);
