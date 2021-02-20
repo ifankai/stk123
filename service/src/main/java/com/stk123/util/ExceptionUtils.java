@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
+@Deprecated //use ErrorService to replace
 public class ExceptionUtils {
 
     public final static String ERROR_CODE_999998 = "999998";
@@ -46,7 +47,7 @@ public class ExceptionUtils {
 		e.printStackTrace(new PrintWriter(aWriter));
 		params.add(JdbcUtils.createClob(aWriter.getBuffer().toString()));
 		params.add(new Timestamp(new Date().getTime()));
-		JdbcUtils.insert(conn, "insert into stk_error_log(s_error_log_id.nextval,code,error,insert_time) values(?,?,?)", params);
+		JdbcUtils.insert(conn, "insert into stk_error_log(id,code,error,insert_time) values(s_error_log_id.nextval,?,?,?)", params);
 	}
 
 	public static Exception exception(String msg, Exception e){

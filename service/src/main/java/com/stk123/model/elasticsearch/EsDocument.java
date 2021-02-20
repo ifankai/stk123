@@ -1,16 +1,13 @@
 package com.stk123.model.elasticsearch;
 
+import com.stk123.entity.StkTextEntity;
 import com.stk123.model.projection.StockBasicProjection;
-import com.stk123.model.projection.StockProjection;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
-import java.util.Map;
-
 @Getter
 @Setter
-public class EsDocument<T> {
+public class EsDocument {
     private String type;
     private String subType;
     private String id;
@@ -21,6 +18,6 @@ public class EsDocument<T> {
     private Long insertTime;
     private Long updateTime;
 
-    private T post;
+    private StkTextEntity post;
     private StockBasicProjection stock;
 }
