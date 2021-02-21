@@ -127,7 +127,13 @@ public class Strategy<X> {
     }
 
     public double getPassRate(){
-        return countOfPassedStrategyResult==0 ? 0 : countOfPassedExpectStrategyResult/countOfPassedStrategyResult * 100;
+        return countOfPassedStrategyResult==0 ? 0 : countOfPassedExpectStrategyResult * 100d/countOfPassedStrategyResult;
+    }
+    public String getPassRateString(){
+        return String.format("期望过滤器[%s]调用总次数：%d, 通过：%d, 未通过：%d。通过率：%f%%",
+                expectFilterExecutor.getName(), expectFilterExecutor.getCounterPassedAndNotPassed(),
+                expectFilterExecutor.getCounterPassed(), expectFilterExecutor.getCounterNotPassed(),
+                this.getPassRate());
     }
 
     @Override
@@ -150,7 +156,7 @@ public class Strategy<X> {
         });
 
         if(expectFilterExecutor != null) {
-            sb.append(String.format("期望过滤器[%s]调用总次数：%d, 通过：%d, 未通过：%d。通过率：%f",
+            sb.append(String.format("期望过滤器[%s]调用总次数：%d, 通过：%d, 未通过：%d。通过率：%f%%",
                     expectFilterExecutor.getName(), expectFilterExecutor.getCounterPassedAndNotPassed(),
                     expectFilterExecutor.getCounterPassed(), expectFilterExecutor.getCounterNotPassed(),
                     this.getPassRate())).append("\n");

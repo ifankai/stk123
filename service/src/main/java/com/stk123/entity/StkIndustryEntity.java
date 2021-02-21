@@ -20,6 +20,8 @@ public class StkIndustryEntity implements Serializable {
     @Column(name = "INDUSTRY", nullable = true, precision = 0)
     private Integer industry;
 
+    @OneToOne
+    @JoinColumn(name = "ID")
     private StkIndustryTypeEntity stkIndustryTypeEntity;
 
     @Override

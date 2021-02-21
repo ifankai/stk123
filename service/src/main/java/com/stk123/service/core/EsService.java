@@ -2,6 +2,7 @@ package com.stk123.service.core;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
+import com.stk123.common.util.ChineseUtils;
 import com.stk123.common.util.PinYin4jUtils;
 import com.stk123.config.EsProperties;
 import com.stk123.entity.StkTextEntity;
@@ -14,6 +15,7 @@ import com.stk123.repository.StkRepository;
 import com.stk123.repository.StkTextRepository;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.elasticsearch.action.admin.indices.alias.Alias;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
@@ -161,7 +163,7 @@ public class EsService {
             //title (name)
             Map<String, Object> title = new HashMap<>();
             title.put("type", "text");
-            title.put("boost", 2);
+            title.put("boost", 5);
             title.put("analyzer", "ik_smart");
             title.put("fields", Collections.singletonMap("keyword", keyword));
             properties.put(FIELD_TITLE, title);
@@ -376,7 +378,7 @@ public class EsService {
         }
 
         //stk, type=stock
-
+        initStk(index);
 
         //stk_text, type=post
         BulkResponse bulkResponse = initStkText(index, dateAfter);
@@ -414,9 +416,14 @@ public class EsService {
         EsDocument esDocument = new EsDocument();
         esDocument.setType("stock");
         esDocument.setSubType(stock.getMarket().name());
-        esDocument.setTitle(stock.getNameAndCodeWithLink()+"["+String.join("", Arrays.asList(PinYin4jUtils.getHeadByString(StringUtils.replace(stock.getName(), " ", ""))))+"]");
-        esDocument.setDesc(StringUtils.join(stock.getIndustries().stream().map(IndustryProjection::getName).collect(Collectors.toList()), ","));
-        esDocument.setContent(stock.getStock().getF9() + "<br/>" + "TODO 十大流通股东");
+        //System.out.println(stock.getCode()+","+stock.getName());
+        String pinyin = "";
+        if(stock.getName() != null && ChineseUtils.isContainChinese(stock.getName())){
+            pinyin = "["+String.join("", Arrays.asList(PinYin4jUtils.getHeadByString(StringUtils.replace(stock.getName(), " ", ""))))+"]";
+        }
+        esDocument.setTitle(stock.getNameAndCodeWithLink() + pinyin);
+        esDocument.setDesc(StringUtils.join(stock.getIndustries().stream().map(IndustryProjection::getName).collect(Collectors.toList()), ", "));
+        esDocument.setContent((stock.getStock().getF9()==null?"":stock.getStock().getF9()) + "<br/>" + "TODO 十大流通股东");
         esDocument.setId(stock.getCodeWithPlace());
         esDocument.setCode(stock.getCode());
 //        esDocument.setInsertTime(e.getInsertTime() == null ? null : e.getInsertTime().getTime());

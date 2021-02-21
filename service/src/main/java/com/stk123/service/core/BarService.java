@@ -1,5 +1,6 @@
 package com.stk123.service.core;
 
+import com.stk123.common.CommonUtils;
 import com.stk123.common.util.JsonUtils;
 import com.stk123.entity.StkKlineEntity;
 import com.stk123.entity.StkKlineHkEntity;
@@ -168,6 +169,33 @@ public class BarService {
             }
 
             //setCloseChange();
+        }else if(stock.isMarketUS()){
+            String page = HttpUtils.get("http://stock.finance.sina.com.cn/usstock/api/json.php/US_MinKService.getDailyK?symbol="+stock.getCode().toLowerCase()+"&___qn=3", null, "GBK");
+            //System.out.println(page);
+            if(page == null || "null".equals(page))return;
+            List<Map> ks = JsonUtils.getList4Json(page, Map.class);
+            String fromDate = CommonUtils.formatDate(CommonUtils.addDay(new Date(), -n), CommonUtils.sf_ymd2);
+            for(int i=0; i<ks.size(); i++){
+                Map k = ks.get(i);
+                String date = StringUtils.replace(String.valueOf(k.get("d")), "-", "");
+                if(date.compareTo(startDate) < 0)continue;
+                if(fromDate.compareTo(date) <= 0){
+                    if("0".equals(k.get("v")))continue;
+
+                    StkKlineUsEntity stkKlineEntity = new StkKlineUsEntity();
+                    stkKlineEntity.setCode(code);
+                    stkKlineEntity.setKlineDate(date);
+                    stkKlineEntity.setOpen(Double.parseDouble(String.valueOf(k.get("o"))));
+                    stkKlineEntity.setClose(Double.parseDouble(String.valueOf(k.get("c"))));
+                    stkKlineEntity.setLastClose(Double.parseDouble(String.valueOf(i>=1?ks.get(i-1).get("c"):k.get("o"))));
+                    stkKlineEntity.setHigh(Double.parseDouble(String.valueOf(k.get("h"))));
+                    stkKlineEntity.setLow(Double.parseDouble(String.valueOf(k.get("l"))));
+                    stkKlineEntity.setVolumn(Double.parseDouble(String.valueOf(k.get("v"))));
+                    stkKlineEntity.setAmount(Double.parseDouble(String.valueOf(k.get("a"))));
+                    stkKlineUsRepository.saveIfNotExisting(stkKlineEntity);
+
+                }
+            }
         }
     }
 
@@ -332,7 +360,7 @@ public class BarService {
                     double percentage = Double.parseDouble(ss[32]);
                     double high = Double.parseDouble(ss[33]);
                     double low = Double.parseDouble(ss[34]);
-                    double amount = Double.parseDouble(ss[37]) * 10000;
+                    double amount = Double.parseDouble(ss[37]);
                     double pettm = 0;
                     if(ss[39].length()>0 && ServiceUtils.isAllNumericOrDot(ss[39])){
                         pettm = Double.parseDouble(ss[39]);
@@ -348,7 +376,7 @@ public class BarService {
                     stkKlineUsEntity.setHigh(high);
                     stkKlineUsEntity.setLow(low);
                     stkKlineUsEntity.setVolumn(volume);
-                    //stkKlineUsEntity.setAmount(amount);
+                    stkKlineUsEntity.setAmount(amount);
                     //stkKlineEntity.setHsl(hsl);
                     stkKlineUsEntity.setPeTtm(pettm);
                     //stkKlineEntity.setPbTtm(pbttm);

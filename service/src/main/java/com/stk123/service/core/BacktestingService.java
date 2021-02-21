@@ -54,6 +54,26 @@ public class BacktestingService {
     @Autowired
     private TaskService taskService;
 
+    public StrategyBacktesting backtesting(String code, String strategy, boolean isIncludeRealtimeBar) throws InvocationTargetException, IllegalAccessException {
+        StrategyBacktesting strategyBacktesting = new StrategyBacktesting();
+        Set<Method> methods = ReflectionUtils.getAllMethods(Sample.class, method -> StringUtils.equalsIgnoreCase(method.getName(), "strategy_"+strategy));
+        for (Method method : methods) {
+            System.out.println(method.getName());
+            strategyBacktesting.addStrategy((Strategy<?>) method.invoke(null, null));
+        }
+
+        List<Stock> stocks = stockService.buildStocks(code);
+        Stock stk = stocks.get(0);
+        stk.setBarSeriesRows(Integer.MAX_VALUE);
+        if(isIncludeRealtimeBar){
+            stocks.stream().forEach(stock -> stock.setIncludeRealtimeBar(true));
+        }
+        strategyBacktesting.test(stocks, stk.getBarSeries().getLast().getDate(), stk.getBarSeries().getFirst().getDate());
+        strategyBacktesting.printDetail();
+        strategyBacktesting.print();
+        return strategyBacktesting;
+    }
+
     public StrategyBacktesting backtesting(List<String> codes, List<String> strategies, String startDate, String endDate, boolean isIncludeRealtimeBar) throws InvocationTargetException, IllegalAccessException {
         List<Stock> stocks ;
         if(ArrayUtils.contains(environment.getActiveProfiles(), "company")) {

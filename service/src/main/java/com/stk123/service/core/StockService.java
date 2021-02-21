@@ -35,7 +35,16 @@ public class StockService {
 
     @Transactional
     public List<Stock> buildStocks(List<String> codes) {
-        List<StockBasicProjection> list = stkRepository.findAllByCodes(codes);
+        List<StockBasicProjection> list = new ArrayList<>();
+        int start = 0;
+        while(true){
+            int end = start+1000 >= codes.size() ? codes.size() : start+1000;
+            List<String> subCodes = codes.subList(start, end);
+            List<StockBasicProjection> subList = stkRepository.findAllByCodes(subCodes);
+            list.addAll(subList);
+            if(end >= list.size() -1)break;
+            start = end;
+        }
         List<Stock> stocks = list.stream().map(projection -> Stock.build(projection)).collect(Collectors.toList());
         return stocks;
     }

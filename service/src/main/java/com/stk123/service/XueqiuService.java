@@ -246,7 +246,8 @@ public class XueqiuService {
 	public static List<Stock> getPortfolioStocks(String symbol) throws Exception {
 		String url = "https://xueqiu.com/P/"+symbol;
 		List<Stock> result = new ArrayList<Stock>();
-		String html = HttpUtils.get(url,"UTF-8");
+        Map<String, String> requestHeaders = XueqiuService.getCookies();
+		String html = HttpUtils.get(url, null, requestHeaders,"UTF-8");
 		if(StringUtils.contains(html,"cube-closed.png")){
 			//System.out.println("已关停");
 			return result;
@@ -282,8 +283,8 @@ public class XueqiuService {
         //System.out.println(XueqiuService.existingXueqiuFollowStk("全部","002191"));
 		//XueqiuUtils.getCookies();
 		//XueqiuUtils.getFollowStks();
-		//System.out.println(XueqiuService.getPortfolioStocks("ZH1130729"));
-		System.out.println(getPortfolios("6237744859"));
+		System.out.println(XueqiuService.getPortfolioStocks("SP1006082"));
+		//System.out.println(getPortfolios("6237744859"));
 	}
 
 

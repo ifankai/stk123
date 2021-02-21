@@ -344,6 +344,13 @@ public class CommonUtils {
         return new Pair(min, max);
     }
 
+    public static double max(double... doubles){
+        return org.apache.commons.lang3.math.NumberUtils.max(doubles);
+    }
+    public static double min(double... doubles){
+        return org.apache.commons.lang3.math.NumberUtils.min(doubles);
+    }
+
     public static String getNumberFromString(String str){
         str = StringUtils.replace(str, ",", "");
         Pattern p = Pattern.compile("-?[0-9]*(\\.?)[0-9]*");

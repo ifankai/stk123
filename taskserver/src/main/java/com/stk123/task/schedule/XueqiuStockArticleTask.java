@@ -184,7 +184,7 @@ public class XueqiuStockArticleTask extends AbstractTask {
                             try {
                                 textService.save(stkTextEntity);
                             }catch (Exception e){
-                                log.info(stkTextEntity);
+                                log.info("Error:" + stkTextEntity);
                                 log.error("",e);
                             }
                         }

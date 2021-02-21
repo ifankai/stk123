@@ -1,5 +1,6 @@
 package com.stk123.model.strategy.sample;
 
+import com.stk123.common.CommonUtils;
 import com.stk123.model.K;
 import com.stk123.model.core.Bar;
 import com.stk123.model.core.BarSeries;
@@ -20,7 +21,8 @@ public class Filters {
         return (bs) -> {
             Bar today = bs.getFirst();
             Bar tomorrwo10 = today.after(days);
-            double p = tomorrwo10.getChange(days, Bar.EnumValue.C);
+            double high = tomorrwo10.getHighest(days, Bar.EnumValue.H);
+            double p = (high - today.getClose())/today.getClose();
             return new FilterResultBetween(p*100, change, 1000);
         };
     }
@@ -146,7 +148,7 @@ public class Filters {
             for(int i=0; i<days.length; i++){
                 int day = days[i];
                 double ma = bar.getMA(day, Bar.EnumValue.C);
-                if(ma < open || ma > close){
+                if(ma < open || ma > CommonUtils.min(close, bar.getLastClose())){
                     return FilterResult.FALSE("没有穿过"+day+"日均线");
                 }
             };
@@ -174,5 +176,57 @@ public class Filters {
             }
             return FilterResult.FALSE("MACD.macd值没有减小");
         };
+    }
+
+    /**
+     * 均线线缠绕，均线最大和最小值不超过d%
+     * 且，前days天内放量涨缩量跌
+     */
+    public static Filter<BarSeries> filter_007(double d, int days){
+        return (bs) -> {
+            Bar today = bs.getFirst();
+            double ma5 = today.getMA(5, Bar.EnumValue.C);
+            double ma120 = today.getMA(120, Bar.EnumValue.C);
+            if(Math.abs(ma5 - ma120)/CommonUtils.min(ma5, ma120) > d/100) {
+                return FilterResult.FALSE("不满足K线价差小于"+d+"%");
+            }
+            double ma10 = today.getMA(10, Bar.EnumValue.C);
+            double ma30 = today.getMA(30, Bar.EnumValue.C);
+            double ma60 = today.getMA(60, Bar.EnumValue.C);
+            double ma250 = today.getMA(250, Bar.EnumValue.C);
+            double max = CommonUtils.max(ma5, ma10, ma30, ma60, ma120, ma250);
+            double min = CommonUtils.min(ma5, ma10, ma30, ma60, ma120, ma250);
+
+            double change = (max - min)/min;
+            if(change <= d/100d && ((max > today.getClose() && today.getClose() > min)
+                    ||(max > today.getOpen() && today.getOpen() > min)
+                    ||(max > today.getHigh() && today.getHigh() > min)
+                    ||(max > today.getLow() && today.getLow() > min))
+                    ){
+                if(days != 0){
+                    List<Bar> hisLowPoints = today.getHistoryLowPoint(days, 10);
+                    double lowVolume = hisLowPoints.stream().mapToDouble(Bar::getVolume).sum()/hisLowPoints.size();
+                    /*long cnt = hisLowPoints.stream().filter(bar -> bar.getLow() < min).count();
+                    if(cnt < count){
+                        return FilterResult.FALSE(days+"天内不满足股价最低点低于所有均线"+count+"次，实际"+cnt+"次");
+                    }*/
+                    List<Bar> hisHighPoints = today.getHistoryHighPoint(100, 10);
+                    /*cnt = hisHighPoints.stream().filter(bar -> bar.getHigh() > max).count();
+                    if(cnt < count){
+                        return FilterResult.FALSE(days+"天内不满足股价最高点高于所有均线"+count+"次，实际"+cnt+"次");
+                    }*/
+                    double highVolume = hisHighPoints.stream().mapToDouble(Bar::getVolume).sum()/hisHighPoints.size();
+                    if(hisLowPoints.size() == 0 || hisHighPoints.size() == 0 || highVolume < lowVolume * 2){
+                        return FilterResult.FALSE("不满足放量涨缩量跌");
+                    }
+                }
+                return FilterResult.TRUE(today.getDate());
+            }
+            return FilterResult.FALSE("不满足K线价差小于"+d+"%.");
+        };
+    }
+
+    public static Filter<BarSeries> filter_007(double d){
+        return filter_007(d, 0);
     }
 }

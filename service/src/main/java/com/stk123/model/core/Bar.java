@@ -659,7 +659,7 @@ public class Bar implements Serializable, Cloneable {
 	}
 
 
-	public List<Bar> getHistoryLowPoint(int days, int n) throws Exception{
+	public List<Bar> getHistoryLowPoint(int days, int n) {
 		List<Bar> lowPoints = new ArrayList<Bar>();
 		Bar start = this.before(days);
 		Bar end = this.before(n);
@@ -676,6 +676,22 @@ public class Bar implements Serializable, Cloneable {
 		}
 		return lowPoints;
 	}
+    public List<Bar> getHistoryHighPoint(int days, int n) {
+        List<Bar> highPoints = new ArrayList<Bar>();
+        Bar start = this.before(days);
+        Bar end = this.before(n);
+        Bar k = start;
+        while((k = k.after(1)) != null){
+            if(k.getDate().compareTo(end.getDate()) >= 0){
+                break;
+            }
+            Bar high = k.after(n).getHighestBar(2*n, EnumValue.H);
+            if(k.getDate().equals(high.getDate())){
+                highPoints.add(k);
+            }
+        }
+        return highPoints;
+    }
 
 	//一品抄底-趋势线
 	public double getTrend() {

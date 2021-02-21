@@ -45,7 +45,6 @@ public class StkIndustryTypeEntity {
     private String parentCode;
 
 
-    private List<StkDataIndustryPeEntity> stkDataIndustryPeEntityList;
 
     /**
      *  @fankai: LazyInitializationException: could not initialize proxy - no Session
@@ -53,6 +52,8 @@ public class StkIndustryTypeEntity {
      */
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "INDUSTRY_ID")
+    private List<StkDataIndustryPeEntity> stkDataIndustryPeEntityList;
+
     public List<StkDataIndustryPeEntity> getStkDataIndustryPeEntityList() {
         return stkDataIndustryPeEntityList;
     }

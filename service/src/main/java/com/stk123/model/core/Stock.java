@@ -1,6 +1,5 @@
 package com.stk123.model.core;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.common.CommonConstant;
@@ -12,7 +11,6 @@ import com.stk123.model.projection.StockProjection;
 import com.stk123.repository.StkIndustryRepository;
 import com.stk123.repository.StkRepository;
 import com.stk123.service.core.BarService;
-import com.stk123.service.core.StockService;
 import com.stk123.service.support.SpringApplicationContext;
 import com.stk123.util.HttpUtils;
 import com.stk123.util.ServiceUtils;
@@ -23,7 +21,6 @@ import lombok.Setter;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -34,11 +31,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import static com.stk123.model.core.Stock.EnumMarket.*;
 import static com.stk123.model.core.Stock.EnumPlace.SH;
 import static com.stk123.model.core.Stock.EnumPlace.SZ;
-import static com.stk123.model.core.Stock.EnumMarket.CN;
-import static com.stk123.model.core.Stock.EnumMarket.HK;
-import static com.stk123.model.core.Stock.EnumMarket.US;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -176,7 +171,7 @@ public class Stock {
     /**
      * static field
      */
-    public static Integer BarSeriesRows = 750;
+    public Integer BarSeriesRows = 750;
 
 
 
@@ -317,13 +312,13 @@ public class Stock {
     }
 
     public BarSeries getBarSeries(){
-        return this.getBarSeries(Stock.BarSeriesRows);
+        return this.getBarSeries(this.BarSeriesRows);
     }
     public BarSeries getBarSeries(Integer rows){
         if(this.barSeries != null){
             return this.barSeries;
         }
-        this.barSeries = barService.queryTopNByCodeOrderByKlineDateDesc(this.code, this.market, Stock.BarSeriesRows);
+        this.barSeries = barService.queryTopNByCodeOrderByKlineDateDesc(this.code, this.market, rows);
         if(isIncludeRealtimeBar){
             buildBarRealTime();
         }

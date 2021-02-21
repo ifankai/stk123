@@ -16,10 +16,12 @@ public class BeanUtils {
     private final static ModelMapper modelMapper = new ModelMapper();
 
     public static <S,D> D map(S source, Class<D> destClass){
+        if(source == null) return null;
         return modelMapper.map(source, destClass);
     }
 
     public static <S,D,V> D map(S source, Class<D> destClass, SourceGetter<S> sourceGetter, DestinationSetter<D, V> destinationSetter){
+        if(source == null) return null;
         ModelMapper modelMapper = new ModelMapper();
         TypeMap typeMap = modelMapper.createTypeMap(source.getClass(), destClass);
         typeMap.addMapping(sourceGetter, destinationSetter);
@@ -27,6 +29,7 @@ public class BeanUtils {
     }
 
     public static <S,D> D map(S source, Class<D> destClass, PropertyMap<S, D> propertyMap){
+        if(source == null) return null;
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.addMappings(propertyMap);
         return modelMapper.map(source, destClass);

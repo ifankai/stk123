@@ -5,10 +5,8 @@ import com.stk123.common.CommonConstant;
 import com.stk123.common.db.TableTools;
 import com.stk123.common.db.util.CloseUtil;
 import com.stk123.common.db.util.DBUtil;
-import com.stk123.common.db.util.sequence.SequenceUtils;
 import com.stk123.common.util.*;
 import com.stk123.common.util.collection.Name2Value;
-import com.stk123.entity.StkDataIndustryPeEntity;
 import com.stk123.model.Index;
 import com.stk123.model.Industry;
 import com.stk123.model.News;
@@ -18,7 +16,7 @@ import com.stk123.model.bo.cust.StkFnDataCust;
 import com.stk123.model.dto.HexunIndustryConception;
 import com.stk123.model.dto.SinaMeiGu;
 import com.stk123.service.DictService;
-import com.stk123.service.IndustryService;
+import com.stk123.service.IndustryServiceDeprecated;
 import com.stk123.util.ExceptionUtils;
 import com.stk123.util.HttpUtils;
 import com.stk123.util.ServiceUtils;
@@ -26,8 +24,6 @@ import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.htmlparser.Node;
 import org.htmlparser.nodes.TagNode;
 import org.htmlparser.tags.LinkTag;
@@ -50,7 +46,7 @@ import java.util.*;
 public class InitialData {
 
     @Autowired
-    private IndustryService industryService;
+    private IndustryServiceDeprecated industryService;
 
 	private  int fnYearFrom = ServiceUtils.YEAR - 3;
 	private  List<String> infos = new ArrayList<String>();

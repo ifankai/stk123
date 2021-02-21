@@ -237,8 +237,9 @@ public class BarTask extends AbstractTask {
         log.info("初始化US的个股");
         try{
             List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.US, Stock.EnumCate.STOCK);
+            //List<StockBasicProjection> list = stkRepository.findAllByCodes(Arrays.asList("BIDU"));
             log.info("US initKLines..........start");
-            //initKLines(list, 4);
+            initKLines(list, 4);
             log.info("US initKLines..........end");
         }catch(Exception e){
             log.error("error", e);
@@ -355,14 +356,13 @@ public class BarTask extends AbstractTask {
         ExecutorService exec = Executors.newFixedThreadPool(numberOfWorker);
         for(final StockBasicProjection stk : stks){
             Runnable run = () -> {
-                Stock stock = null;
                 try{
-                    stock = Stock.build(stk);
+                    Stock stock = Stock.build(stk);
                     log.info("initKLines=="+stock.getCode());
                     if(isWorkingDay){
                         barService.initKLine(stock);
                     }else{
-                        barService.initKLines(stock, 30);
+                        barService.initKLines(stock, 20);
                     }
                 }catch(Exception e){
                     log.error(e);
@@ -392,20 +392,26 @@ public class BarTask extends AbstractTask {
             allList.addAll(myList);
 
             List<Portfolio> portfolios = XueqiuService.getPortfolios("6237744859");
+            int k = 1;
             for(Portfolio portfolio : portfolios){
+                log.info(portfolio);
                 try {
                     List<com.stk123.model.xueqiu.Stock> stocks = XueqiuService.getPortfolioStocks(portfolio.getSymbol());
                     portfolio.setStocks(stocks);
                     allList.addAll(stocks.stream().map(com.stk123.model.xueqiu.Stock::getCode).collect(Collectors.toList()));
+                    if(k++ % 10 == 0){
+                        Thread.sleep(15*1000);
+                    }
                 }catch (Exception e){
                     log.error("雪球抓取自选组合失败" , e);
+                    //return;
                 }
             }
             log.info(allList);
 
             //01,02 策略在com.stk123.model.strategy.sample.Sample 里定义
             StrategyBacktesting strategyBacktesting = backtestingService.backtesting(allList.stream().collect(Collectors.toList()),
-                    Arrays.asList(StringUtils.split("01,02a,02b", ",")), startDate, endDate, realtime!=null);
+                    Arrays.asList(StringUtils.split("01,02a,02b,03", ",")), startDate, endDate, realtime!=null);
 
 //            backtestingService.backtesting(Arrays.stream("601021".split(",")).collect(Collectors.toList()),
 //                    Arrays.asList(StringUtils.split("01,02", ",")), null, null);
@@ -415,10 +421,8 @@ public class BarTask extends AbstractTask {
                 StringBuffer sb = new StringBuffer();
 
                 List<List<String>> datas = new ArrayList<>();
-                results.stream().sorted(Comparator.comparing(strategyResult -> strategyResult.getStrategy().getName()))
-                        .forEach(strategyResult -> {
-//                    sb.append(CommonUtils.padString(Stock.build(strategyResult.getCode(), null).getNameAndCode(), 17) + ", 日期：" + strategyResult.getDate() + ", 策略：" + strategyResult.getStrategy().getName() );
-//                    sb.append("<br/>");
+                results.stream().sorted(Comparator.comparing(strategyResult -> strategyResult.getStrategy().getName()));
+                for(StrategyResult strategyResult : results){
 
                     List<String> sources = new ArrayList<>();
                     if(myList.contains(strategyResult.getCode())){
@@ -426,26 +430,31 @@ public class BarTask extends AbstractTask {
                     }
                     for(Portfolio portfolio : portfolios){
                         List<com.stk123.model.xueqiu.Stock> stocks = portfolio.getStocks();
-                        int i = stocks.stream().filter(stock -> stock.getCode().contains(strategyResult.getCode())).collect(Collectors.toList()).size();
-                        if(i > 0){
-                            sources.add(CommonUtils.wrapLink("["+portfolio.getSymbol()+"]"+portfolio.getName(), "https://xueqiu.com/P/"+portfolio.getSymbol()));
+                        if(stocks != null && stocks.size() > 0) {
+                            com.stk123.model.xueqiu.Stock stk = stocks.stream().filter(stock -> stock.getCode() != null && stock.getCode().contains(strategyResult.getCode())).findFirst().orElse(null);
+                            if (stk != null) {
+                                sources.add(CommonUtils.wrapLink("[" + portfolio.getSymbol() + "]" + portfolio.getName(), "https://xueqiu.com/P/" + portfolio.getSymbol()) + " ["+stk.getWeight()+"]");
+                            }
                         }
                     }
+
+                    StrategyBacktesting backtesting = backtestingService.backtesting(strategyResult.getCode(), strategyResult.getStrategy().getCode(), realtime != null);
 
                     List<String> data = new ArrayList<>();
                     ListUtils.add(data,
                             Stock.build(strategyResult.getCode(), null).getNameAndCodeWithLink(),
                             strategyResult.getDate(),
                             strategyResult.getStrategy().getName(),
-                            StringUtils.join(sources, "<br/>")
+                            StringUtils.join(sources, "<br/>"),
+                            backtesting.getStrategies().get(0).getPassRateString()
                             );
                     datas.add(data);
-                });
+                };
 
                 datas.stream().sorted(Comparator.comparing(e -> e.get(3).contains("自选股")));
 
                 List<String> titles = new ArrayList<>();
-                ListUtils.add(titles, "标的", "日期", "策略", "来源");
+                ListUtils.add(titles, "标的", "日期", "策略", "来源", "历史策略回测通过率");
                 String table = CommonUtils.createHtmlTable(titles, datas);
                 sb.append(table);
 

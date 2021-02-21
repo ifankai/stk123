@@ -109,6 +109,10 @@ public class BarSeries {
         return list.peek();
     }
 
+    public Bar getLast(){
+        return list.peekLast();
+    }
+
     public Bar setFirstBarFrom(String date){
         if(date == null) {
             this.first = null;

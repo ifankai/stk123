@@ -14,9 +14,9 @@ import java.util.Calendar;
 
 @Service
 @Deprecated
-public class IndustryService {
+public class IndustryServiceDeprecated {
 
-    public IndustryService(){}
+    public IndustryServiceDeprecated(){}
 
     @Autowired
     private StkDataIndustryPeRepository stkDataIndustryPeRepository;
