@@ -41,10 +41,6 @@ public class StkTextEntity implements Serializable {
     @Column(name="TITLE")
     private String title;
 
-    @Column(name="TEXT")
-    @JsonProperty("content")
-    private String text;
-
     @Column(name="TEXT_DESC")
     @JsonProperty("desc")
     private String textDesc;
@@ -92,4 +88,8 @@ public class StkTextEntity implements Serializable {
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     @Column(name = "read_date")
     private Date readDate;
+
+    @Column(name="TEXT")
+    @JsonProperty("content")
+    private String text;
 }

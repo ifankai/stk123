@@ -56,7 +56,8 @@ public class BacktestingService {
 
     public StrategyBacktesting backtesting(String code, String strategy, boolean isIncludeRealtimeBar) throws InvocationTargetException, IllegalAccessException {
         StrategyBacktesting strategyBacktesting = new StrategyBacktesting();
-        Set<Method> methods = ReflectionUtils.getAllMethods(Sample.class, method -> StringUtils.equalsIgnoreCase(method.getName(), "strategy_"+strategy));
+        Set<Method> methods = ReflectionUtils.getAllMethods(Sample.class,
+                method -> StringUtils.equalsIgnoreCase(method.getName(), "strategy_"+strategy) || StringUtils.equals(method.getName(), strategy));
         for (Method method : methods) {
             System.out.println(method.getName());
             strategyBacktesting.addStrategy((Strategy<?>) method.invoke(null, null));
@@ -101,7 +102,8 @@ public class BacktestingService {
         StrategyBacktesting strategyBacktesting = new StrategyBacktesting();
 
         //Set<Method> methods = ReflectionUtils.getAllMethods(Sample.class, method -> strategies.stream().anyMatch(name -> StringUtils.endsWithIgnoreCase(method.getName(), "strategy_"+name)), ReflectionUtils.withReturnType(Strategy.class));
-        Set<Method> methods = ReflectionUtils.getAllMethods(Sample.class, method -> strategies.stream().anyMatch(name -> StringUtils.equalsIgnoreCase(method.getName(), "strategy_"+name)));
+        Set<Method> methods = ReflectionUtils.getAllMethods(Sample.class,
+                method -> strategies.stream().anyMatch(name -> StringUtils.equalsIgnoreCase(method.getName(), "strategy_"+name)));
         for (Method method : methods) {
             //strategyBacktesting.addStrategy(Sample.strategy_01());
             strategyBacktesting.addStrategy((Strategy<?>) method.invoke(null, null));

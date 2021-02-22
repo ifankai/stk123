@@ -167,6 +167,7 @@ public class Stock {
 
     @Getter@Setter //是否包含今天最新的k线价格，用于交易时间实时监控
     private boolean isIncludeRealtimeBar = false;
+    private boolean isIncludeRealtimeBarDone = false;
 
     /**
      * static field
@@ -436,6 +437,8 @@ public class Stock {
     }
 
     public Stock buildBarRealTime() {
+        if(isIncludeRealtimeBarDone) return this;
+        isIncludeRealtimeBarDone = true;
         if(this.isMarketUS()) {
             return this;
         }

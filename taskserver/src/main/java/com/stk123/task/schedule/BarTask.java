@@ -441,7 +441,7 @@ public class BarTask extends AbstractTask {
                         }
                     }
 
-                    StrategyBacktesting backtesting = backtestingService.backtesting(strategyResult.getCode(), strategyResult.getStrategy().getCode(), realtime != null);
+                    StrategyBacktesting backtesting = backtestingService.backtesting(strategyResult.getCode(), strategyResult.getStrategy().getCode(), false);
 
                     List<String> data = ListUtils.createList(
                             Stock.build(strategyResult.getCode(), null).getNameAndCodeWithLink(),

@@ -67,7 +67,7 @@ public class Filters {
             Bar today = bar;
             Bar todayBefore = today.before(numberBeforeFirst);
             Bar highestBar = todayBefore.getHighestBar(numberBeforeParam1, Bar.EnumValue.H);
-            double change = (todayBefore.getClose() - highestBar.getHigh())/highestBar.getHigh();
+            double change = (todayBefore.getLow() - highestBar.getHigh())/highestBar.getHigh();
             return new FilterResultBetween(change*100, min, max).addResult("实际最高点到低点涨跌幅：" + change*100);
         };
     }
