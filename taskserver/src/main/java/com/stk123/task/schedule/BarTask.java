@@ -17,6 +17,7 @@ import com.stk123.service.XueqiuService;
 import com.stk123.service.core.BacktestingService;
 import com.stk123.service.core.BarService;
 import com.stk123.task.tool.TaskUtils;
+import com.stk123.util.ExceptionUtils;
 import lombok.Setter;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
@@ -469,6 +470,7 @@ public class BarTask extends AbstractTask {
                 EmailUtils.send("策略发现0个标的", "");
             }
         } catch (Exception e) {
+            EmailUtils.send("策略发现标的报错", ExceptionUtils.getExceptionAsString(e));
             log.error("analyseKline", e);
         }
     }

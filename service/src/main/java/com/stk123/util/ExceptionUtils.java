@@ -13,16 +13,17 @@ import java.util.Date;
 import java.util.List;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
-@Deprecated //use ErrorService to replace
 public class ExceptionUtils {
 
     public final static String ERROR_CODE_999998 = "999998";
     public final static String ERROR_CODE_999997 = "999997";
 
+	@Deprecated //use ErrorService to replace
 	public static void insertLog(Connection conn, Exception e){
 		ExceptionUtils.insertLog(conn,"999999", e);
 	}
 
+	@Deprecated //use ErrorService to replace
 	public static boolean insertLogWithSimilarCheck(Connection conn, String specialCode, Exception e) {
         List<StkErrorLog> errors = ExceptionUtils.queryErrors(conn, specialCode);
         String sException = ExceptionUtils.getExceptionAsString(e);
@@ -40,6 +41,7 @@ public class ExceptionUtils {
         return false;
     }
 
+	@Deprecated //use ErrorService to replace
 	public static void insertLog(Connection conn, String code, Exception e){
 		List params = new ArrayList();
 		params.add(code);
@@ -62,6 +64,7 @@ public class ExceptionUtils {
 		return aWriter.getBuffer().toString();
 	}
 
+	@Deprecated //use ErrorService to replace
 	public static List<StkErrorLog> queryErrors(Connection conn, String code) {
 		return JdbcUtils.list(conn,"select * from stk_error_log where code=? order by insert_time desc", code, StkErrorLog.class);
 	}
