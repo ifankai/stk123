@@ -54,4 +54,9 @@ public class ListUtils {
 		collection.addAll(Arrays.asList(elements));
 		return collection;
 	}
+	public static <E> List<E> createList(E... elements){
+		List list = new ArrayList<>();
+		list.addAll(Arrays.asList(elements));
+		return list;
+	}
 }

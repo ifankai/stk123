@@ -17,6 +17,7 @@ import com.stk123.service.XueqiuService;
 import com.stk123.service.core.BacktestingService;
 import com.stk123.service.core.BarService;
 import com.stk123.task.tool.TaskUtils;
+import com.stk123.util.ExceptionUtils;
 import lombok.Setter;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
@@ -409,9 +410,11 @@ public class BarTask extends AbstractTask {
             }
             log.info(allList);
 
-            //01,02 策略在com.stk123.model.strategy.sample.Sample 里定义
-            StrategyBacktesting strategyBacktesting = backtestingService.backtesting(allList.stream().collect(Collectors.toList()),
-                    Arrays.asList(StringUtils.split("01,02a,02b,03", ",")), startDate, endDate, realtime!=null);
+            //策略回测开始    01,02 策略在com.stk123.model.strategy.sample.Sample 里定义
+            StrategyBacktesting strategyBacktesting = backtestingService.backtesting(
+                    new ArrayList<>(allList),
+                    Arrays.asList(StringUtils.split("01,02a,02b,03", ",")),
+                    startDate, endDate, realtime!=null);
 
 //            backtestingService.backtesting(Arrays.stream("601021".split(",")).collect(Collectors.toList()),
 //                    Arrays.asList(StringUtils.split("01,02", ",")), null, null);
@@ -421,7 +424,7 @@ public class BarTask extends AbstractTask {
                 StringBuffer sb = new StringBuffer();
 
                 List<List<String>> datas = new ArrayList<>();
-                results.stream().sorted(Comparator.comparing(strategyResult -> strategyResult.getStrategy().getName()));
+                results = results.stream().sorted(Comparator.comparing(strategyResult -> strategyResult.getStrategy().getName())).collect(Collectors.toList());
                 for(StrategyResult strategyResult : results){
 
                     List<String> sources = new ArrayList<>();
@@ -440,8 +443,7 @@ public class BarTask extends AbstractTask {
 
                     StrategyBacktesting backtesting = backtestingService.backtesting(strategyResult.getCode(), strategyResult.getStrategy().getCode(), realtime != null);
 
-                    List<String> data = new ArrayList<>();
-                    ListUtils.add(data,
+                    List<String> data = ListUtils.createList(
                             Stock.build(strategyResult.getCode(), null).getNameAndCodeWithLink(),
                             strategyResult.getDate(),
                             strategyResult.getStrategy().getName(),
@@ -451,22 +453,24 @@ public class BarTask extends AbstractTask {
                     datas.add(data);
                 };
 
-                datas.stream().sorted(Comparator.comparing(e -> e.get(3).contains("自选股")));
+                datas = datas.stream().sorted(Comparator.comparing(e -> e.get(3).contains("自选股"))).collect(Collectors.toList());;
 
-                List<String> titles = new ArrayList<>();
-                ListUtils.add(titles, "标的", "日期", "策略", "来源", "历史策略回测通过率");
+                List<String> titles = ListUtils.createList("标的", "日期", "策略", "来源", "历史策略回测通过率");
                 String table = CommonUtils.createHtmlTable(titles, datas);
                 sb.append(table);
 
 
                 sb.append("<br/><br/>--------------------------------------------------------<br/>");
-                strategyBacktesting.getStrategies().stream().forEach(strategy -> {
+                strategyBacktesting.getStrategies().forEach(strategy -> {
                     sb.append(strategy.toString().replaceAll("\n","<br/>")).append("<br/>");
                 });
 
                 EmailUtils.send("策略发现"+results.size()+"个标的", sb.toString());
+            }else{
+                EmailUtils.send("策略发现0个标的", "");
             }
         } catch (Exception e) {
+            EmailUtils.send("策略发现标的报错", ExceptionUtils.getExceptionAsString(e));
             log.error("analyseKline", e);
         }
     }
