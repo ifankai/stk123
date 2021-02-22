@@ -465,6 +465,8 @@ public class BarTask extends AbstractTask {
                 });
 
                 EmailUtils.send("策略发现"+results.size()+"个标的", sb.toString());
+            }else{
+                EmailUtils.send("策略发现0个标的", "");
             }
         } catch (Exception e) {
             log.error("analyseKline", e);

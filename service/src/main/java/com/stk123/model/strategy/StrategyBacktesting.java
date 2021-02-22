@@ -147,11 +147,11 @@ public class StrategyBacktesting {
     }
 
     /**
-     * 返回所有通过的条件过滤器（指策略里所有条件过滤器都通过）
+     * 返回通过了所有条件过滤器的结果（指策略里所有条件过滤器都通过）
      */
     public List<StrategyResult> getPassedStrategyResult(){
         List<StrategyResult> passedResults = new ArrayList<>();
-        strategyResults.stream().forEach(strategyResult -> {
+        strategyResults.forEach(strategyResult -> {
             if(strategyResult.isFilterAllPassed()){
                 passedResults.add(strategyResult);
             }
@@ -160,11 +160,11 @@ public class StrategyBacktesting {
     }
 
     /**
-     * 返回所有通过的期望过滤器（指策略里所有期望过滤器都通过，一般只有一条期望过滤器）
+     * 返回通过了所有期望过滤器的结果（指策略里所有期望过滤器都通过，一般只有一条期望过滤器）
      */
     public List<StrategyResult> getPassedStrategyResultForExpectFilter(){
         List<StrategyResult> passedResults = new ArrayList<>();
-        strategyResults.stream().forEach(strategyResult -> {
+        strategyResults.forEach(strategyResult -> {
             List<FilterResult> list = strategyResult.getExpectFilterResults();
             List<FilterResult> passedList = list.stream().filter(r -> r.pass()).collect(Collectors.toList());
             if (!passedList.isEmpty()) {
