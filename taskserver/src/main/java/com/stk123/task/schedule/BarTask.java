@@ -452,7 +452,7 @@ public class BarTask extends AbstractTask {
                     datas.add(data);
                 };
 
-                datas.stream().sorted(Comparator.comparing(e -> e.get(3).contains("自选股")));
+                datas = datas.stream().sorted(Comparator.comparing(e -> e.get(3).contains("自选股"))).collect(Collectors.toList());;
 
                 List<String> titles = new ArrayList<>();
                 ListUtils.add(titles, "标的", "日期", "策略", "来源", "历史策略回测通过率");
