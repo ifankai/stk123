@@ -70,8 +70,10 @@ public class Sample {
     //002538 20200703 100天内，放量涨缩量跌，之后均线缠绕突破买入
     public static Strategy strategy_03() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_03","策略002538司尔特20200703，底部均线缠绕，一阳吃多阴", BarSeries.class);
-        strategy.addFilter("一阳吃5阴或阳", BarSeries::getFirst, Filters.filter_004(5));
-        strategy.addFilter("均线线缠绕，且前100天内放量涨缩量跌", Filters.filter_007(5 , 100));
+        strategy.addFilter("一阳吃5阴或阳", BarSeries::getFirst, Filters.filter_004(4));
+        strategy.addFilter("一阳穿过5,10日均线", BarSeries::getFirst,
+                Filter.<Bar>or(Filters.filter_005(5, 10), Filters.filter_005(20, 30), Filters.filter_005(30, 60)));
+        strategy.addFilter("均线线缠绕，且前100天内放量涨缩量跌", Filters.filter_007(10 , 100));
         strategy.setExpectFilter("60日内涨幅>20%", Filters.expectFilter(60, 20));
         return strategy;
     }

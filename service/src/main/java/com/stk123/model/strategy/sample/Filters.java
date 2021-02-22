@@ -148,7 +148,7 @@ public class Filters {
             for(int i=0; i<days.length; i++){
                 int day = days[i];
                 double ma = bar.getMA(day, Bar.EnumValue.C);
-                if(ma < open || ma > CommonUtils.min(close, bar.getLastClose())){
+                if(ma < CommonUtils.min(open, bar.getLastClose()) || ma > close){
                     return FilterResult.FALSE("没有穿过"+day+"日均线");
                 }
             };
@@ -190,6 +190,10 @@ public class Filters {
             if(Math.abs(ma5 - ma120)/CommonUtils.min(ma5, ma120) > d/100) {
                 return FilterResult.FALSE("不满足K线价差小于"+d+"%");
             }
+            if(today.getSlopeOfMA(1, 60) < 0 && today.getSlopeOfMA(1, 120) < 0){
+                return FilterResult.FALSE("60,120均线都是下降的");
+            }
+
             double ma10 = today.getMA(10, Bar.EnumValue.C);
             double ma30 = today.getMA(30, Bar.EnumValue.C);
             double ma60 = today.getMA(60, Bar.EnumValue.C);
