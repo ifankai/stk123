@@ -17,7 +17,6 @@ import com.stk123.util.ServiceUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -281,7 +280,7 @@ public class Stock {
         return this.place == EnumPlace.SH;
     }
 
-    void setPlace(){
+    private void setPlace(){
         if(this.market == CN){
             if(this.code.length() == 8){//01000010 or SH000010
                 if(this.code.startsWith(CommonConstant.NUMBER_01) || this.code.startsWith(EnumPlace.SH.name())){
