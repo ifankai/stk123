@@ -67,7 +67,7 @@ public class BacktestingService {
         Stock stk = stocks.get(0);
         stk.setBarSeriesRows(Integer.MAX_VALUE);
         if(isIncludeRealtimeBar){
-            stocks.stream().forEach(stock -> stock.setIncludeRealtimeBar(true));
+            stocks.forEach(stock -> stock.setIncludeRealtimeBar(true));
         }
         strategyBacktesting.test(stocks, stk.getBarSeries().getLast().getDate(), stk.getBarSeries().getFirst().getDate());
         strategyBacktesting.printDetail();
@@ -78,12 +78,12 @@ public class BacktestingService {
     public StrategyBacktesting backtesting(List<String> codes, List<String> strategies, String startDate, String endDate, boolean isIncludeRealtimeBar) throws InvocationTargetException, IllegalAccessException {
         List<Stock> stocks ;
         if(ArrayUtils.contains(environment.getActiveProfiles(), "company")) {
-            stocks = this.getStocks(200, codes.stream().toArray(String[]::new));
+            stocks = this.getStocks(200, codes.toArray(new String[0]));
         }else{
             stocks = stockService.buildStocks(codes);
         }
         if(isIncludeRealtimeBar){
-            stocks.stream().forEach(stock -> stock.setIncludeRealtimeBar(true));
+            stocks.forEach(stock -> stock.setIncludeRealtimeBar(true));
         }
 
         return backtestingOnStock(stocks, strategies, startDate, endDate);

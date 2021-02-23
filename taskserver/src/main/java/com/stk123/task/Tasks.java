@@ -92,7 +92,7 @@ public class Tasks {
                             TaskBuilder.of(BarTask.class, "Kline"),
                             TaskBuilder.of(SyncTask.class, "table=stk_task_log"));
     }
-    @Scheduled(cron = "0 45 14 ? * MON-FRI")
+    @Scheduled(cron = "0 30 14 ? * MON-FRI")
     public void klineRealtime() {
         taskContainer.start(BarTask.class, "Kline", "realtime=1");
     }

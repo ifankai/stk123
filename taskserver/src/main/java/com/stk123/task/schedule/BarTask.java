@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class BarTask extends AbstractTask {
 
+    private String code;
     private String startDate;
     private String endDate;
     private String realtime;
@@ -64,76 +65,6 @@ public class BarTask extends AbstractTask {
         task.execute("analyse", "common", "today=20200101");
         System.out.println(task.today);
     }
-
-
-//    private boolean init = true;
-//    private boolean analyse = true;
-
-//    @Override
-//    public void execute(String... args) throws Exception {
-//        if (args != null && args.length > 0) {
-//            for (String arg : args) {
-//                if ("US".equalsIgnoreCase(arg)) {
-//                    market = Stock.EnumMarket.US;
-//                }
-//                if ("HK".equalsIgnoreCase(arg)) {
-//                    market = Stock.EnumMarket.HK;
-//                }
-//                if ("init".equalsIgnoreCase(arg)) {
-//                    init = true;
-//                    analyse = false;
-//                }
-//                if ("analyse".equalsIgnoreCase(arg)) {
-//                    init = false;
-//                    analyse = true;
-//                }
-//                if(arg.startsWith("today=")){
-//                    today = StringUtils.split(arg, "=")[1];
-//                }
-//            }
-//        }
-//
-//        log.info("today:"+today);
-//        log.info("isWorkingDay:"+isWorkingDay);
-//
-//        if(init){
-//            log.info("----------开始初始化----------");
-//            init();
-//            log.info("----------结束初始化----------");
-//        }
-//        if (!isWorkingDay) {
-//            EmailUtils.send("周六数据同步完成！！！", "...");
-//            return;
-//        }
-//
-//        if(analyse){
-//            log.info("----------开始分析----------");
-//            analyse();
-//            log.info("----------结束分析----------");
-//        }
-//
-//    }
-//
-//    public void init(){
-//        if (market == Stock.EnumMarket.CN) {
-//            initCN();
-//        }else if(market == Stock.EnumMarket.HK){
-//            initHK();
-//        }else if(market == Stock.EnumMarket.US){
-//            initUS();
-//        }
-//    }
-//
-//    public void analyse(){
-//        if (market == Stock.EnumMarket.CN) {
-//            analyseCN();
-//        }else if (market == Stock.EnumMarket.HK) {
-//            analyseHK();
-//        }else if (market == Stock.EnumMarket.US) {
-//            analyseUS();
-//        }
-//
-//    }
 
     public void register(){
         this.runByName("initCN", () -> initCN());
@@ -164,7 +95,7 @@ public class BarTask extends AbstractTask {
             }
         }catch(Exception e){
             log.error("error", e);
-            EmailUtils.send("[BarTask出错]大盘指数K线下载出错 stk="+scn.getCode(), e);
+            EmailUtils.send("[BarTask出错]大盘指数K线下载出错 stk="+ (scn != null ? scn.getCode() : null), e);
         }
 
         try{
@@ -186,7 +117,7 @@ public class BarTask extends AbstractTask {
 
         }catch(Exception e){
             log.error("error", e);
-            EmailUtils.send("[BarTask出错]同花顺概念指数K线下载出错 code="+scn.getCode(), e);
+            EmailUtils.send("[BarTask出错]同花顺概念指数K线下载出错 code="+ (scn != null ? scn.getCode() : null), e);
         }
 
         try {
@@ -207,7 +138,7 @@ public class BarTask extends AbstractTask {
             }
         }catch(Exception e){
             log.error("error", e);
-            EmailUtils.send("[BarTask出错]个股K线下载出错 code="+scn.getCode(), e);
+            EmailUtils.send("[BarTask出错]个股K线下载出错 code="+ (scn != null ? scn.getCode() : null), e);
         }
     }
 
@@ -268,7 +199,7 @@ public class BarTask extends AbstractTask {
 
         log.info("2. check growth stk average pe "+new Date());
         List<StkIndustryEntity> inds = stkIndustryRepository.findAllByIndustry(1783L);
-        List<String> codes = inds.stream().map(e -> e.getCode()).collect(Collectors.toList());
+        List<String> codes = inds.stream().map(StkIndustryEntity::getCode).collect(Collectors.toList());
         List<Bar> list = barService.findAllByKlineDateAndCodeIn(today, codes, Stock.EnumMarket.CN);
 
         double gtotalPE = 0.0;
@@ -366,9 +297,7 @@ public class BarTask extends AbstractTask {
                         barService.initKLines(stock, 20);
                     }
                 }catch(Exception e){
-                    log.error(e);
-                    //ExceptionUtils.insertLog(conn, index.getCode(), e);
-                    e.printStackTrace();
+                    log.error("initKLines", e);
                 }finally{
                     countDownLatch.countDown();
                 }
@@ -383,29 +312,35 @@ public class BarTask extends AbstractTask {
     public void analyseKline(){
         try {
             Set<String> allList = new HashSet<>();
-            Set<String> myList = XueqiuService.getFollowStks("全部");
-            if(myList.isEmpty()){
-                EmailUtils.send("雪球抓取自选股失败", "雪球抓取自选股失败");
-                return;
-            }
-            //Set<String> myList = XueqiuService.getFollowStks("我的");
-            log.info(myList);
-            allList.addAll(myList);
+            Set<String> myList = null;
+            List<Portfolio> portfolios = null;
+            if(code != null){
+                allList.addAll(Arrays.asList(StringUtils.split(code, ",")));
+            }else {
+                myList = XueqiuService.getFollowStks("全部");
+                if (myList.isEmpty()) {
+                    EmailUtils.send("雪球抓取自选股失败", "雪球抓取自选股失败");
+                    return;
+                }
+                //Set<String> myList = XueqiuService.getFollowStks("我的");
+                log.info(myList);
+                allList.addAll(myList);
 
-            List<Portfolio> portfolios = XueqiuService.getPortfolios("6237744859");
-            int k = 1;
-            for(Portfolio portfolio : portfolios){
-                log.info(portfolio);
-                try {
-                    List<com.stk123.model.xueqiu.Stock> stocks = XueqiuService.getPortfolioStocks(portfolio.getSymbol());
-                    portfolio.setStocks(stocks);
-                    allList.addAll(stocks.stream().map(com.stk123.model.xueqiu.Stock::getCode).collect(Collectors.toList()));
-                    if(k++ % 10 == 0){
-                        Thread.sleep(15*1000);
+                portfolios = XueqiuService.getPortfolios("6237744859");
+                int k = 1;
+                for (Portfolio portfolio : portfolios) {
+                    log.info(portfolio);
+                    try {
+                        List<com.stk123.model.xueqiu.Stock> stocks = XueqiuService.getPortfolioStocks(portfolio.getSymbol());
+                        portfolio.setStocks(stocks);
+                        allList.addAll(stocks.stream().map(com.stk123.model.xueqiu.Stock::getCode).collect(Collectors.toList()));
+                        if (k++ % 10 == 0) {
+                            Thread.sleep(15 * 1000);
+                        }
+                    } catch (Exception e) {
+                        log.error("雪球抓取自选组合失败", e);
+                        //return;
                     }
-                }catch (Exception e){
-                    log.error("雪球抓取自选组合失败" , e);
-                    //return;
                 }
             }
             log.info(allList);
@@ -416,9 +351,6 @@ public class BarTask extends AbstractTask {
                     Arrays.asList(StringUtils.split("01,02a,02b,03", ",")),
                     startDate, endDate, realtime!=null);
 
-//            backtestingService.backtesting(Arrays.stream("601021".split(",")).collect(Collectors.toList()),
-//                    Arrays.asList(StringUtils.split("01,02", ",")), null, null);
-
             List<StrategyResult> results = strategyBacktesting.getPassedStrategyResult();
             if(results.size() > 0){
                 StringBuffer sb = new StringBuffer();
@@ -428,15 +360,17 @@ public class BarTask extends AbstractTask {
                 for(StrategyResult strategyResult : results){
 
                     List<String> sources = new ArrayList<>();
-                    if(myList.contains(strategyResult.getCode())){
+                    if(myList != null && myList.contains(strategyResult.getCode())){
                         sources.add("自选股");
                     }
-                    for(Portfolio portfolio : portfolios){
-                        List<com.stk123.model.xueqiu.Stock> stocks = portfolio.getStocks();
-                        if(stocks != null && stocks.size() > 0) {
-                            com.stk123.model.xueqiu.Stock stk = stocks.stream().filter(stock -> stock.getCode() != null && stock.getCode().contains(strategyResult.getCode())).findFirst().orElse(null);
-                            if (stk != null) {
-                                sources.add(CommonUtils.wrapLink("[" + portfolio.getSymbol() + "]" + portfolio.getName(), "https://xueqiu.com/P/" + portfolio.getSymbol()) + " ["+stk.getWeight()+"]");
+                    if (portfolios != null) {
+                        for(Portfolio portfolio : portfolios){
+                            List<com.stk123.model.xueqiu.Stock> stocks = portfolio.getStocks();
+                            if(stocks != null && stocks.size() > 0) {
+                                com.stk123.model.xueqiu.Stock stk = stocks.stream().filter(stock -> stock.getCode() != null && stock.getCode().contains(strategyResult.getCode())).findFirst().orElse(null);
+                                if (stk != null) {
+                                    sources.add(CommonUtils.wrapLink("[" + portfolio.getSymbol() + "]" + portfolio.getName(), "https://xueqiu.com/P/" + portfolio.getSymbol()) + " ["+stk.getWeight()+"]");
+                                }
                             }
                         }
                     }
