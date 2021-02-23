@@ -2909,12 +2909,14 @@ select avg(pb_ttm),median(pb_ttm) from stk_kline where kline_date='20201224' and
 select * from stk_task_log order by id desc;
 --delete from stk_task_log;
 
-select * from stk_kline where code='002044' order by kline_date desc;
+select * from stk_kline where code='600521' order by kline_date desc;
+
 update stk_kline_us set amount=null where code='.DJI' and kline_date='20201224';
-select * from stk_kline where code='BIDU' order by kline_date desc;
+select * from stk_kline_us where code='.DJI' order by kline_date desc;
 select * from stk_kline where length(code)>6;
 
-select * from stk_kline_hk where code='06066' order by kline_date desc;
+select * from stk_kline_hk where code='06068' order by kline_date desc;
+update stk_kline_hk set code='06068' where code='060681' and kline_date='20210223';
 
 select * from stk_text where sub_type=300 order by insert_time desc;
 select * from stk_text where sub_type=100 order by insert_time desc;

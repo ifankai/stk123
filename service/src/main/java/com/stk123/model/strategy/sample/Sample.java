@@ -53,7 +53,7 @@ public class Sample {
     }
     //比strategy_02a多了MACD底背离
     public static Strategy strategy_02b() {
-        Strategy<BarSeries> strategy = new Strategy<>("strategy_02b","策略002044新经典20201231，底部一阳吃多阴，MACD底背离", BarSeries.class);
+        Strategy<BarSeries> strategy = new Strategy<>("strategy_02b","策略002044美年健康20201231，底部一阳吃多阴，MACD底背离", BarSeries.class);
         strategy.addFilter("一阳吃5阴或阳", BarSeries::getFirst, Filters.filter_004(5));
         strategy.addFilter("一阳穿过5,10日均线", BarSeries::getFirst, Filters.filter_005(5, 10));
         strategy.addFilter("过去3天到100天的跌幅[-100,-20] or 过去3天到60天内最高点到低点的跌幅[-100,-30]",

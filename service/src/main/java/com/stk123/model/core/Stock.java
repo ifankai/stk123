@@ -467,10 +467,11 @@ public class Stock {
                 k.setLow(Double.parseDouble(ss[5]));
                 k.setVolume(Double.parseDouble(ss[8]));
                 k.setAmount(Double.parseDouble(ss[9]));
+                k.setChange((k.getClose()-k.getLastClose())/k.getLastClose()*100);
                 k.setDate(org.apache.commons.lang.StringUtils.replace(ss[30], "-", ""));
 
                 this.getBarSeries().addToFirst(k);
-                //System.out.println(this.getBarSeries());
+                //System.out.println(this.getBarSeries().getFirst());
                 return this;
             }else if(this.isMarketHK() && s.length() > 12){
                 s = org.apache.commons.lang.StringUtils.substringBetween(s, "\"", "\"");
@@ -484,10 +485,11 @@ public class Stock {
                 k.setLow(Double.parseDouble(ss[5]));
                 k.setVolume(Double.parseDouble(ss[12]));
                 k.setAmount(Double.parseDouble(ss[11]));
+                k.setChange(Double.parseDouble(ss[8]));
                 k.setDate(org.apache.commons.lang.StringUtils.replace(ss[17], "/", ""));
 
                 this.getBarSeries().addToFirst(k);
-                //System.out.println(this.getBarSeries());
+                //System.out.println(this.getBarSeries().getFirst());
                 return this;
             }
         }
