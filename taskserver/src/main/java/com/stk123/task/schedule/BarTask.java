@@ -382,10 +382,10 @@ public class BarTask extends AbstractTask {
                             strategyResult.getDate(),
                             strategyResult.getStrategy().getName(),
                             StringUtils.join(sources, "<br/>"),
-                            backtesting.getStrategies().get(0).getPassRateString()
+                            backtesting.getStrategies().get(0).getPassRateString().replaceAll("]", "]<br/>")
                             );
                     datas.add(data);
-                };
+                }
 
                 datas = datas.stream().sorted(Comparator.comparing(e -> e.get(3).contains("自选股"))).collect(Collectors.toList());;
 

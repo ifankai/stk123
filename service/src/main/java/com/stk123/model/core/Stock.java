@@ -165,15 +165,15 @@ public class Stock {
     private BarSeries barSeriesWeek;
     private BarSeries barSeriesMonth;
 
-    @Getter@Setter //是否包含今天最新的k线价格，用于交易时间实时监控
+    //是否包含今天最新的k线价格，用于交易时间实时监控
     private boolean isIncludeRealtimeBar = false;
     private boolean isIncludeRealtimeBarDone = false;
+
+    public Integer BarSeriesRows = 750;
 
     /**
      * static field
      */
-    public Integer BarSeriesRows = 750;
-
 
 
 
@@ -186,6 +186,7 @@ public class Stock {
         Stock stock = Stock.build();
         return stock.set(code, null);
     }
+    //code, eg: SH600600, 600600, 02002, BIDU
     public static Stock build(String code, String name){
         Stock stock = Stock.build();
         return stock.set(code, name);
@@ -201,12 +202,6 @@ public class Stock {
     public static Stock build(StockProjection stockProjection) {
         Stock stock = Stock.build();
         return stock.set(stockProjection);
-    }
-    @Deprecated
-    public static Stock build(String code, String name, BarSeries barSeries) {
-        Stock stock = Stock.build();
-        stock.setBarSeries(barSeries);
-        return stock.set(code, name);
     }
 
     /**
