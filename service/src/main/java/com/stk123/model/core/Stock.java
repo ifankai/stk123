@@ -309,17 +309,17 @@ public class Stock {
     public BarSeries getBarSeries(){
         return this.getBarSeries(this.BarSeriesRows);
     }
-    public BarSeries getBarSeries(Integer rows){
+    public synchronized BarSeries getBarSeries(Integer rows){
         if(this.barSeries != null){
             return this.barSeries;
         }
         this.barSeries = barService.queryTopNByCodeOrderByKlineDateDesc(this.code, this.market, rows);
-        if(isIncludeRealtimeBar){
+        if (isIncludeRealtimeBar) {
             buildBarRealTime();
         }
         return this.barSeries;
     }
-    public BarSeries getBarSeries(BarSeries.EnumPeriod period){
+    public synchronized BarSeries getBarSeries(BarSeries.EnumPeriod period){
         return period.select(this.getBarSeries(), this.getBarSeriesWeek(), this.getBarSeriesMonth());
         /*switch (period) {
             case W:
@@ -334,7 +334,7 @@ public class Stock {
     }
 
 
-    public BarSeries getBarSeriesWeek() {
+    public synchronized BarSeries getBarSeriesWeek() {
         if(this.barSeriesWeek != null)
             return this.barSeriesWeek;
         else{
@@ -382,7 +382,7 @@ public class Stock {
         return this.barSeriesWeek;
     }
 
-    public BarSeries getBarSeriesMonth(){
+    public synchronized BarSeries getBarSeriesMonth(){
         if(this.barSeriesMonth != null)
             return this.barSeriesMonth;
         else{
@@ -430,7 +430,7 @@ public class Stock {
         return this.barSeriesMonth;
     }
 
-    public Stock buildBarRealTime() {
+    public synchronized Stock buildBarRealTime() {
         if(isIncludeRealtimeBarDone) return this;
         isIncludeRealtimeBarDone = true;
         if(this.isMarketUS()) {
@@ -495,7 +495,7 @@ public class Stock {
     }
 
 
-    public List<IndustryProjection> getIndustries(){
+    public synchronized List<IndustryProjection> getIndustries(){
         if(industries == null){
             return this.industries = stkIndustryRepository.findAllByCode(this.getCode());
         }
