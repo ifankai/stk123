@@ -1,7 +1,5 @@
 package com.stk123.model.strategy.sample;
 
-import cn.hutool.core.math.MathUtil;
-import cn.hutool.core.util.NumberUtil;
 import com.stk123.common.CommonUtils;
 import com.stk123.model.core.Bar;
 import com.stk123.model.core.BarSeries;
@@ -9,8 +7,6 @@ import com.stk123.model.core.Stock;
 import com.stk123.model.strategy.Filter;
 import com.stk123.model.strategy.Strategy;
 import com.stk123.model.strategy.result.FilterResult;
-import org.apache.commons.lang.math.NumberUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
@@ -18,7 +14,7 @@ public class Sample {
 
     public static Strategy strategy_01() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_01","策略603096新经典20201106，一段跌幅后底部放量", BarSeries.class);
-        strategy.addFilter("过去3天到80天的跌幅", BarSeries::getFirst, Filters.filter_001a(3,80,-50,-30));
+        strategy.addFilter("过去3天到80天的跌幅", BarSeries::getFirst, Filters.filter_001b(3,80,-50,-30));
         strategy.addFilter("底部2天放量3天缩量", Filters.filter_002());
         strategy.addFilter("今日十字星", BarSeries::getFirst, Filters.filter_003(0.45));
         strategy.setExpectFilter("10日内涨幅>12%", Filters.expectFilter(10, 12));
@@ -41,7 +37,7 @@ public class Sample {
     public static Strategy strategy_02a() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_02a","策略002044美年健康20201231，底部一阳吃多阴", BarSeries.class);
         strategy.addFilter("一阳吃5阴或阳", BarSeries::getFirst, Filters.filter_004(5));
-        strategy.addFilter("一阳穿过5,10日均线", BarSeries::getFirst, Filters.filter_005(5, 10));
+        strategy.addFilter("一阳穿过5,10日均线", BarSeries::getFirst, Filters.filter_005a(5, 10));
         strategy.addFilter("过去3天到100天的跌幅[-100,-20] or 过去3天到60天内最高点到低点的跌幅[-100,-30]",
                 BarSeries::getFirst,
                 Filter.<Bar>or(
@@ -55,7 +51,7 @@ public class Sample {
     public static Strategy strategy_02b() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_02b","策略002044美年健康20201231，底部一阳吃多阴，MACD底背离", BarSeries.class);
         strategy.addFilter("一阳吃5阴或阳", BarSeries::getFirst, Filters.filter_004(5));
-        strategy.addFilter("一阳穿过5,10日均线", BarSeries::getFirst, Filters.filter_005(5, 10));
+        strategy.addFilter("一阳穿过5,10日均线", BarSeries::getFirst, Filters.filter_005a(5, 10));
         strategy.addFilter("过去3天到100天的跌幅[-100,-20] or 过去3天到60天内最高点到低点的跌幅[-100,-30]",
                 BarSeries::getFirst,
                 Filter.<Bar>or(
@@ -71,8 +67,7 @@ public class Sample {
     public static Strategy strategy_03() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_03","策略002538司尔特20200703，底部均线缠绕，一阳吃多阴", BarSeries.class);
         strategy.addFilter("一阳吃5阴或阳", BarSeries::getFirst, Filters.filter_004(4));
-        strategy.addFilter("一阳穿过5,10日均线", BarSeries::getFirst,
-                Filter.<Bar>or(Filters.filter_005(5, 10), Filters.filter_005(10, 20), Filters.filter_005(20, 30), Filters.filter_005(30, 60)));
+        strategy.addFilter("一阳穿过5, 10, 20, 30, 60日均线中的任何2根", BarSeries::getFirst, Filters.filter_005b(2, 5, 10, 20, 30, 60));
         strategy.addFilter("均线线缠绕，且前100天内放量涨缩量跌", Filters.filter_007(10 , 100));
         strategy.setExpectFilter("60日内涨幅>20%", Filters.expectFilter(60, 20));
         return strategy;

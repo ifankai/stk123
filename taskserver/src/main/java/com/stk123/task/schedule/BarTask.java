@@ -369,7 +369,7 @@ public class BarTask extends AbstractTask {
                             if(stocks != null && stocks.size() > 0) {
                                 com.stk123.model.xueqiu.Stock stk = stocks.stream().filter(stock -> stock.getCode() != null && stock.getCode().contains(strategyResult.getCode())).findFirst().orElse(null);
                                 if (stk != null) {
-                                    sources.add(CommonUtils.wrapLink("[" + portfolio.getSymbol() + "]" + portfolio.getName(), "https://xueqiu.com/P/" + portfolio.getSymbol()) + " ["+stk.getWeight()+"]");
+                                    sources.add(CommonUtils.wrapLink(portfolio.getName(), "https://xueqiu.com/P/" + portfolio.getSymbol()) + " ["+stk.getWeight()+"]");
                                 }
                             }
                         }

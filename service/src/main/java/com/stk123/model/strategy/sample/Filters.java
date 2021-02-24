@@ -27,18 +27,6 @@ public class Filters {
         };
     }
 
-    public static <B> Filter<B> or(Filter<B>... filters){
-        return (bs) -> {
-            List<Object> results = new ArrayList<>();
-            for (Filter<B> filter : filters) {
-                FilterResult filterResult = filter.filter(bs);
-                results.add(filterResult.result());
-                if(filterResult.pass()) return filterResult;
-            }
-            return FilterResult.FALSE("OR[" + StringUtils.join(results, ", ") + "]");
-        };
-    }
-
     /**
      * 过去numberBeforeFirst天到numberBeforeParam1天的跌幅
      *
@@ -138,7 +126,7 @@ public class Filters {
      * 一阳穿过多根均线
      * @param days 5, 10, 20, 30 ... 日均线
      */
-    public static Filter<Bar> filter_005(int... days){
+    public static Filter<Bar> filter_005a(int... days){
         return (bar) -> {
             double open = bar.getOpen();
             double close = bar.getClose();
@@ -153,6 +141,32 @@ public class Filters {
                 }
             };
             return FilterResult.TRUE(bar.getDate());
+        };
+    }
+
+    /**
+     * 一阳穿过多根均线中的任何n根线
+     * @param n 必须穿过n根线
+     * @param days 5, 10, 20, 30 ... 日均线
+     */
+    public static Filter<Bar> filter_005b(int n, int... days){
+        return (bar) -> {
+            double open = CommonUtils.min(bar.getOpen(), bar.getLastClose());
+            double close = bar.getClose();
+            if(open >= close){
+                return FilterResult.FALSE("今天不是阳线");
+            }
+            int count = 0;
+            for (int day : days) {
+                double ma = bar.getMA(day, Bar.EnumValue.C);
+                if (ma > open && ma <= close) {
+                    count++;
+                    if (count >= n) {
+                        return FilterResult.TRUE(bar.getDate());
+                    }
+                }
+            }
+            return FilterResult.FALSE("没有穿过"+ Arrays.toString(days) +"日均线中的任何"+n+"根线, 实际:"+count);
         };
     }
 

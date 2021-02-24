@@ -454,8 +454,6 @@ public class Stock {
         for(int j=0;j<str.length;j++){
             String s = str[j];
             if(this.isMarketCN() && s.length() > 40){
-                //String code = org.apache.commons.lang.StringUtils.substringBefore(s, "=");
-                //code = org.apache.commons.lang.StringUtils.substring(code, code.length()-8);
                 s = org.apache.commons.lang.StringUtils.substringBetween(s, "\"", "\"");
                 String[] ss = s.split(",");
                 Bar k = new Bar();
