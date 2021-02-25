@@ -159,7 +159,7 @@ public class Filters {
             int count = 0;
             for (int day : days) {
                 double ma = bar.getMA(day, Bar.EnumValue.C);
-                if (ma > open && ma <= close) {
+                if (ma >= open && ma <= close) {
                     count++;
                     if (count >= n) {
                         return FilterResult.TRUE(bar.getDate());
@@ -201,26 +201,27 @@ public class Filters {
             Bar today = bs.getFirst();
             double ma5 = today.getMA(5, Bar.EnumValue.C);
             double ma120 = today.getMA(120, Bar.EnumValue.C);
-            if(Math.abs(ma5 - ma120)/CommonUtils.min(ma5, ma120) > d/100) {
-                return FilterResult.FALSE("不满足K线价差小于"+d+"%");
+            double d2 = Math.abs(ma5 - ma120)/CommonUtils.min(ma5, ma120);
+            if(d2 > d/100d) {
+                return FilterResult.FALSE("不满足K线价差小于"+d+"%, 实际::"+(d2*100));
             }
             if(today.getSlopeOfMA(1, 60) < 0 && today.getSlopeOfMA(1, 120) < 0){
                 return FilterResult.FALSE("60,120均线都是下降的");
+            }
+            int cnt = today.getBarCountWithPredicate(30, bar -> bar.getMA(20, Bar.EnumValue.C) > bar.getMA(120, Bar.EnumValue.C));
+            if(cnt < 1){
+                return FilterResult.FALSE("均线空头排列");
             }
 
             double ma10 = today.getMA(10, Bar.EnumValue.C);
             double ma30 = today.getMA(30, Bar.EnumValue.C);
             double ma60 = today.getMA(60, Bar.EnumValue.C);
-            double ma250 = today.getMA(250, Bar.EnumValue.C);
-            double max = CommonUtils.max(ma5, ma10, ma30, ma60, ma120, ma250);
-            double min = CommonUtils.min(ma5, ma10, ma30, ma60, ma120, ma250);
+            //double ma250 = today.getMA(250, Bar.EnumValue.C);
+            double max = CommonUtils.max(ma5, ma10, ma30, ma60, ma120);
+            double min = CommonUtils.min(ma5, ma10, ma30, ma60, ma120);
 
             double change = (max - min)/min;
-            if(change <= d/100d && ((max > today.getClose() && today.getClose() > min)
-                    ||(max > today.getOpen() && today.getOpen() > min)
-                    ||(max > today.getHigh() && today.getHigh() > min)
-                    ||(max > today.getLow() && today.getLow() > min))
-                    ){
+            if(change <= d/100d && today.getLow() < max){
                 if(days != 0){
                     List<Bar> hisLowPoints = today.getHistoryLowPoint(days, 10);
                     double lowVolume = hisLowPoints.stream().mapToDouble(Bar::getVolume).sum()/hisLowPoints.size();
@@ -235,12 +236,12 @@ public class Filters {
                     }*/
                     double highVolume = hisHighPoints.stream().mapToDouble(Bar::getVolume).sum()/hisHighPoints.size();
                     if(hisLowPoints.size() == 0 || hisHighPoints.size() == 0 || highVolume < lowVolume * 2){
-                        return FilterResult.FALSE("不满足放量涨缩量跌");
+                        return FilterResult.FALSE("不满足放量涨缩量跌, 实际:"+ highVolume/lowVolume);
                     }
                 }
                 return FilterResult.TRUE(today.getDate());
             }
-            return FilterResult.FALSE("不满足K线价差小于"+d+"%.");
+            return FilterResult.FALSE("不满足K线价差小于"+d+"%, 实际："+(change*100));
         };
     }
 
