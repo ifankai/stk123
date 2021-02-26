@@ -53,6 +53,10 @@ public class StrategyResult<X> {
         return filterResults.stream().filter(e -> e.pass()).collect(Collectors.toList()).size() == strategy.getFilterCount();
     }
 
+    public boolean isExpectFilterPassed(){
+        return expectFilterResults.stream().filter(e -> e.pass()).collect(Collectors.toList()).size() >= 1;
+    }
+
     @SneakyThrows
     public String toJson(){
         ObjectMapper objectMapper = new ObjectMapper();

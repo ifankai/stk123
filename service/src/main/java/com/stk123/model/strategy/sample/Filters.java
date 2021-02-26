@@ -239,7 +239,7 @@ public class Filters {
                         return FilterResult.FALSE("不满足放量涨缩量跌, 实际:"+ highVolume/lowVolume);
                     }
                 }
-                return FilterResult.TRUE(today.getDate());
+                return FilterResult.TRUE(today.getDate(), today.getDate(), "均线紧缩率(%)", CommonUtils.numberFormat2Digits(change));
             }
             return FilterResult.FALSE("不满足K线价差小于"+d+"%, 实际："+(change*100));
         };

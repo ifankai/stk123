@@ -382,7 +382,8 @@ public class BarTask extends AbstractTask {
                             strategyResult.getDate(),
                             strategyResult.getStrategy().getName(),
                             StringUtils.join(sources, "<br/>"),
-                            backtesting.getStrategies().get(0).getPassRateString().replaceAll("]", "]<br/>")
+                            backtesting.getStrategies().get(0).getPassRateString().replaceAll("]", "]<br/>") +
+                                    (StringUtils.isNotEmpty(backtesting.getStrategies().get(0).getPassedFilterResultLog()) ? "<br/>"+backtesting.getStrategies().get(0).getPassedFilterResultLog() : "")
                             );
                     datas.add(data);
                 }

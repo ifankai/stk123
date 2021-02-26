@@ -21,6 +21,9 @@ public class FilterExecutor<X, B> {
 
     @Getter
     @JsonView(View.Default.class)
+    private String code;
+    @Getter
+    @JsonView(View.Default.class)
     private String name;
     private Filter<B> filter;
     private Function<X, B> function;
@@ -33,7 +36,8 @@ public class FilterExecutor<X, B> {
     @Getter
     private List<FilterResult> results = new ArrayList<>();
 
-    public FilterExecutor(String name, Function<X, B> function, Filter<B> filter){
+    public FilterExecutor(String code, String name, Function<X, B> function, Filter<B> filter){
+        this.code = code;
         this.name = name;
         this.function = function;
         this.filter = filter;
@@ -59,6 +63,7 @@ public class FilterExecutor<X, B> {
         this.counterPassed++;
         return result;
     }
+
 
     public int getCounterPassedAndNotPassed() {
         return this.counterNotPassed + this.counterPassed;

@@ -68,7 +68,7 @@ public class Sample {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_03","策略002538司尔特20200703，底部均线缠绕，一阳吃多阴", BarSeries.class);
         strategy.addFilter("一阳吃5阴或阳", BarSeries::getFirst, Filters.filter_004(4));
         strategy.addFilter("一阳穿过5, 10, 20, 30, 60日均线中的任何2根", BarSeries::getFirst, Filters.filter_005b(2, 5, 10, 20, 30, 60));
-        strategy.addFilter("均线线缠绕，且前100天内放量涨缩量跌", Filters.filter_007(13 , 100));
+        strategy.addFilter("filter_007", "均线线缠绕，且前100天内放量涨缩量跌", Filters.filter_007(13 , 100));
         strategy.setExpectFilter("60日内涨幅>20%", Filters.expectFilter(60, 20));
         return strategy;
     }

@@ -3,12 +3,16 @@ package com.stk123.model.strategy;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.model.json.View;
 import com.stk123.model.strategy.result.FilterResult;
+import com.stk123.model.strategy.result.Table;
 import lombok.Getter;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * @param <X> 定义传入的比较对象，可以是Stock，BarSeries，Bar etc.
@@ -38,6 +42,7 @@ public class Strategy<X> {
     @Getter
     private List<StrategyResult> strategyResults = new ArrayList<>();
 
+
     public Strategy(String code, String name, Class<X> xClass) {
         this.code = code;
         this.name = name;
@@ -45,34 +50,40 @@ public class Strategy<X> {
     }
     public Strategy(String code, String name, Class<X> xClass, Filter<X> expectFilter) {
         this(code, name, xClass);
-        this.expectFilterExecutor = new FilterExecutor(null, x->x, expectFilter);
+        this.expectFilterExecutor = new FilterExecutor(null,null, x->x, expectFilter);
     }
 
     /**
      * @param function 定义 如何从 X 转化为 ? 类型(也就是 Filter里的?)
      * @param filter
      */
-    public void addFilter(String name, Function<X, ?> function, Filter<?> filter){
-        this.filterExecutors.add(new FilterExecutor(name, function, filter));
+    public void addFilter(String code, String name, Function<X, ?> function, Filter<?> filter){
+        this.filterExecutors.add(new FilterExecutor(code, name, function, filter));
     }
+    public void addFilter(String name, Function<X, ?> function, Filter<?> filter){
+        this.filterExecutors.add(new FilterExecutor(null, name, function, filter));
+    }
+    public void addFilter(String code, String name, Filter<?> filter){
+        addFilter(code, name, (x)->x, filter);
+    }
+    public void addFilter(String name, Filter<?> filter){
+        addFilter(null, name, (x)->x, filter);
+    }
+    public void addFilter(Function<X, ?> function, Filter<?> filter){
+        addFilter(null, null, function, filter);
+    }
+    public void addFilter(Filter<?> filter){
+        addFilter(null, null, (x)->x, filter);
+    }
+
     public int getFilterCount(){
         return this.filterExecutors.size();
     }
-    public void addFilter(String name, Filter<?> filter){
-        addFilter(name, (x)->x, filter);
-    }
-    public void addFilter(Function<X, ?> function, Filter<?> filter){
-        addFilter(null, function, filter);
-    }
-    public void addFilter(Filter<?> filter){
-        addFilter(null, (x)->x, filter);
-    }
-
     /**
      * @TODO 可以增加多个expect filter
      */
     public void setExpectFilter(String name, Filter<X> expectFilter){
-        this.expectFilterExecutor = new FilterExecutor(name, x->x, expectFilter);
+        this.expectFilterExecutor = new FilterExecutor(null, name, x->x, expectFilter);
     }
     public void setExpectFilterRunOrNot(boolean runOrNot){
         expectFilterExecutorRunOrNot = runOrNot;
@@ -134,6 +145,28 @@ public class Strategy<X> {
                 expectFilterExecutor.getName(), expectFilterExecutor.getCounterPassedAndNotPassed(),
                 expectFilterExecutor.getCounterPassed(), expectFilterExecutor.getCounterNotPassed(),
                 this.getPassRate());
+    }
+
+    /**
+     * 取得通过策略的过滤器（包括期望过滤器）所记录的log，一些成功的数据。比如，缠绕均线紧缩率，前期跌幅，等等 以供参考
+     */
+    public String getPassedFilterResultLog(){
+        List<StrategyResult> success = strategyResults.stream().filter(strategyResult -> strategyResult.isFilterAllPassed()).collect(Collectors.toList());
+
+        List<FilterResult> frs = new ArrayList<>();
+        for(StrategyResult strategyResult : success){
+            List<FilterResult> results = strategyResult.getFilterResults();
+            for(FilterResult filterResult : results){
+                if(strategyResult.isExpectFilterPassed() && filterResult.log() != null)
+                    frs.add(filterResult);
+            }
+        }
+        if(frs.size() > 0) {
+            Table table = new Table();
+            frs.forEach(filterResult -> table.add(filterResult.log()));
+            return table.toHtml();
+        }
+        return null;
     }
 
     @Override
