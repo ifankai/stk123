@@ -153,7 +153,10 @@ public class Strategy<X> {
     public String getPassedFilterResultLog(){
         List<StrategyResult> success = strategyResults.stream().filter(strategyResult -> strategyResult.isFilterAllPassed()).collect(Collectors.toList());
 
+        StringBuilder sb = new StringBuilder();
         List<FilterResult> frs = new ArrayList<>();
+
+        //通过期望过滤器的
         for(StrategyResult strategyResult : success){
             List<FilterResult> results = strategyResult.getFilterResults();
             for(FilterResult filterResult : results){
@@ -164,9 +167,25 @@ public class Strategy<X> {
         if(frs.size() > 0) {
             Table table = new Table();
             frs.forEach(filterResult -> table.add(filterResult.log()));
-            return table.toHtml();
+            sb.append(table.toHtml());
         }
-        return null;
+
+        //没通过期望过滤器的
+        frs = new ArrayList<>();
+        for(StrategyResult strategyResult : success){
+            List<FilterResult> results = strategyResult.getFilterResults();
+            for(FilterResult filterResult : results){
+                if(!strategyResult.isExpectFilterPassed() && filterResult.log() != null)
+                    frs.add(filterResult);
+            }
+        }
+        if(frs.size() > 0) {
+            Table table = new Table();
+            frs.forEach(filterResult -> table.add(filterResult.log()));
+            sb.append("<br/>");
+            sb.append(table.toHtml());
+        }
+        return sb.toString();
     }
 
     @Override
