@@ -50,11 +50,11 @@ public class StrategyResult<X> {
     }*/
 
     public boolean isFilterAllPassed(){
-        return filterResults.stream().filter(e -> e.pass()).collect(Collectors.toList()).size() == strategy.getFilterCount();
+        return filterResults.stream().filter(FilterResult::pass).count() == strategy.getFilterCount();
     }
 
     public boolean isExpectFilterPassed(){
-        return expectFilterResults.stream().filter(e -> e.pass()).collect(Collectors.toList()).size() >= 1;
+        return expectFilterResults.stream().filter(FilterResult::pass).count() >= 1;
     }
 
     @SneakyThrows

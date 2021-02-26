@@ -151,7 +151,7 @@ public class Strategy<X> {
      * 取得通过策略的过滤器（包括期望过滤器）所记录的log，一些成功的数据。比如，缠绕均线紧缩率，前期跌幅，等等 以供参考
      */
     public String getPassedFilterResultLog(){
-        List<StrategyResult> success = strategyResults.stream().filter(strategyResult -> strategyResult.isFilterAllPassed()).collect(Collectors.toList());
+        List<StrategyResult> success = strategyResults.stream().filter(StrategyResult::isFilterAllPassed).collect(Collectors.toList());
 
         StringBuilder sb = new StringBuilder();
         List<FilterResult> frs = new ArrayList<>();
@@ -199,7 +199,7 @@ public class Strategy<X> {
                     filterExecutor.getCounterPassed(), filterExecutor.getCounterNotPassed()));
         }
 
-        long countOfAllFilterPassed = strategyResults.stream().filter(strategyResult -> strategyResult.isFilterAllPassed()).count();
+        long countOfAllFilterPassed = strategyResults.stream().filter(StrategyResult::isFilterAllPassed).count();
         sb.append(String.format("通过所有过滤器次数：%d\n", countOfAllFilterPassed));
         strategyResults.forEach(strategyResult -> {
             if(strategyResult.isFilterAllPassed()) {
