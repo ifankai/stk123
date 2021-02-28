@@ -348,7 +348,7 @@ public class BarTask extends AbstractTask {
             //策略回测开始    01,02 策略在com.stk123.model.strategy.sample.Sample 里定义
             StrategyBacktesting strategyBacktesting = backtestingService.backtesting(
                     new ArrayList<>(allList),
-                    Arrays.asList(StringUtils.split("01,02a,02b,03,04", ",")),
+                    Arrays.asList(StringUtils.split("01,02a,02b,03,04,05", ",")),
                     startDate, endDate, realtime!=null);
 
             List<StrategyResult> results = strategyBacktesting.getPassedStrategyResult();

@@ -77,7 +77,16 @@ public class Sample {
         return strategy;
     }
 
-    public static Strategy strategy_TEST() { //300464
+    //突破底部平台
+    public static Strategy strategy_05() {//300464
+        Strategy<BarSeries> strategy = new Strategy<>("strategy_05","突破底部平台(05)", BarSeries.class);
+        strategy.addFilter("过去3天到80天的跌幅", BarSeries::getFirst, Filters.filter_001b(3,60,-50,-30));
+        strategy.addFilter("突破底部平台", Filters.filter_009());
+        strategy.setExpectFilter("60日内涨幅>20%", Filters.expectFilter(60, 20));
+        return strategy;
+    }
+
+    public static Strategy strategy_TEST() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_TEST","Strategy TEST", BarSeries.class);
         Filter<BarSeries> filter = (bs) -> {
             Bar today = bs.getFirst();

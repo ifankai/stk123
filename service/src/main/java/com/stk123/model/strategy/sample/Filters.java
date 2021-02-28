@@ -274,4 +274,25 @@ public class Filters {
             return FilterResult.FALSE();
         };
     }
+
+    public static Filter<BarSeries> filter_009() {
+        return (bs) -> {
+            Bar today = bs.getFirst();
+            if(today == null || today.before() == null || today.getChange() > 6) return FilterResult.FALSE("今天涨幅大于6%");
+            double h = today.before().getHighest(10, Bar.EnumValue.C);
+            double l = today.before().getLowest(10, Bar.EnumValue.C);
+
+            double h2 = today.before().getHighest(20, Bar.EnumValue.C);
+            double l2 = today.before().getLowest(20, Bar.EnumValue.C);
+
+            int cnt = today.before().getBarCountWithPredicate(10, bar -> today.getVolume() > bar.getVolume());
+            int cnt2 = today.before().getBarCountWithPredicate(20, bar -> today.getVolume() > bar.getVolume());
+            if( ((h-l)/l < 0.04 && today.getClose() > h && cnt >= 10)
+                    ||((h2-l2)/l2 < 0.1 && today.getClose() > h2 && cnt2 >= 19)
+                    ){
+                return FilterResult.TRUE((h-l)/l + "," + cnt + ", "+cnt2);
+            }
+            return FilterResult.FALSE(cnt + ", "+cnt2);
+        };
+    }
 }
