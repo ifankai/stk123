@@ -343,7 +343,8 @@ create sequence s_import_info_id
 　　NOMAXVALUE
 　　NOCYCLE
 　　CACHE 10;
-create index idx_import_info__code_type on stk_import_info (code,type);
+create index idx_import_info__code on stk_import_info (code);
+create index idx_import_info__type on stk_import_info (type);
 
 
 create table stk_import_info_type(
