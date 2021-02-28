@@ -21,7 +21,7 @@ public class News {
 	private static List<StkImportInfoType> sytemTypes = null;
 	
 	public static List<StkImportInfoType> getTypes() throws Exception{
-		if(newsTypes != null)return newsTypes;
+		//if(newsTypes != null)return newsTypes;
 		Connection conn = null;
 		try{
 			conn = Pool.getPool().getConnection();

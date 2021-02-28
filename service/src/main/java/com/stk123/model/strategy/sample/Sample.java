@@ -86,6 +86,11 @@ public class Sample {
         return strategy;
     }
 
+    //大跌后，有减持，问询函？
+    public static Strategy strategy_06() {
+        return null;
+    }
+
     public static Strategy strategy_TEST() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_TEST","Strategy TEST", BarSeries.class);
         Filter<BarSeries> filter = (bs) -> {

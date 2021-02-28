@@ -343,6 +343,8 @@ create sequence s_import_info_id
 　　NOMAXVALUE
 　　NOCYCLE
 　　CACHE 10;
+create index idx_import_info__code_type on stk_import_info (code,type);
+
 
 create table stk_import_info_type(
   type   number(4),
@@ -2910,10 +2912,10 @@ select avg(pb_ttm),median(pb_ttm) from stk_kline where kline_date='20201224' and
 select * from stk_task_log order by id desc;
 --delete from stk_task_log;
 
-select * from stk_kline where code='600521' order by kline_date desc;
+
 
 update stk_kline_us set amount=null where code='.DJI' and kline_date='20201224';
-select * from stk_kline_us where code='.DJI' order by kline_date desc;
+select * from stk_kline_us where code='CMRX' order by kline_date desc;
 select * from stk_kline where length(code)>6;
 
 select * from stk_kline_hk where code='06837' order by kline_date desc;
@@ -2926,3 +2928,14 @@ select * from stk where market=2 order by insert_time desc;
 select * from stk where code='605395'
 
 select * from stk_error_log;
+
+2021-02-26,12.19,12.19,12.56,11.98,6361449,7798379264.00,4.47,-6.09,-0.79,3.24
+
+2867	601899	20080425	9.98	13.92	7.13	22.00	9.61	971534170.00	10346791205.00	1.000000	0.00	79.43			13.45	37.93			
+select * from stk_kline t where code='000001' order by kline_date desc;
+update stk_kline set last_close=11.35 where code='601899' and kline_date='20210111'
+
+select * from ( select * from stk_text order by insert_time desc ) where rownum <= 20
+
+select * from stk_dictionary where text ='业绩修正';
+select * from stk_import_info _type where type=270 for update;
