@@ -104,7 +104,7 @@ public class EsService {
         RequestOptions.Builder builder = RequestOptions.DEFAULT.toBuilder();
 
         // 默认缓冲限制为100MB，此处修改为20MB。
-        builder.setHttpAsyncResponseConsumerFactory(new HttpAsyncResponseConsumerFactory.HeapBufferedResponseConsumerFactory(20 * 1024 * 1024));
+        builder.setHttpAsyncResponseConsumerFactory(new HttpAsyncResponseConsumerFactory.HeapBufferedResponseConsumerFactory(30 * 1024 * 1024));
         COMMON_OPTIONS = builder.build();
     }
 

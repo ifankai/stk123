@@ -34,7 +34,7 @@ public class CommonUtils {
 
     public final static SimpleDateFormat sf_ymd = new SimpleDateFormat("yyyy-MM-dd");
     public final static SimpleDateFormat sf_ymd2 = new SimpleDateFormat("yyyyMMdd");
-    public final static FastDateFormat fd_ymd2 = FastDateFormat.getInstance("yyyyMMdd");
+    public final static String yyyyMMdd = "yyyyMMdd";
     public final static SimpleDateFormat sf_yyyyMMdd = new SimpleDateFormat("yyyyMMdd");
     public final static SimpleDateFormat sf_ymd3 = new SimpleDateFormat("_yyyy_MM_dd");
     public final static SimpleDateFormat sf_hh = new SimpleDateFormat("HH");
@@ -179,6 +179,8 @@ public class CommonUtils {
 
         System.out.println(padString("益生股份[SZ002458]", 17)+",");
         System.out.println(padString("新开源[SZ300109]", 17)+",");
+
+        System.out.println(parseDate("20201010"));
     }
 
     public static void printStackTrace(){
@@ -439,9 +441,10 @@ public class CommonUtils {
         return CommonUtils.formatDate(CommonUtils.addDay(CommonUtils.sf_ymd2.parse(yyyyMMdd), -1),CommonUtils.sf_ymd2);
     }
 
+    //此方法线程安全
     public static Date parseDate(String date) {
         try {
-            return CommonUtils.sf_ymd2.parse(date);
+            return org.apache.commons.lang3.time.DateUtils.parseDate(date, CommonUtils.yyyyMMdd);
         } catch (ParseException e) {
             e.printStackTrace();
             return null;

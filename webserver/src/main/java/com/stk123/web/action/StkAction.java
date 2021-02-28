@@ -14,6 +14,7 @@ import java.util.concurrent.Executors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.stk123.common.CommonUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 
@@ -239,9 +240,9 @@ public class StkAction {
 			}
 			result.add(k);
 		}
-		String json = JsonUtils.getJsonString4JavaPOJO(result, K.JSON_INCLUDE_FIELDS, CommonConstant.DATE_FORMAT_YYYY_MM_DD);
+		//String json = JsonUtils.getJsonString4JavaPOJO(result, K.JSON_INCLUDE_FIELDS, CommonConstant.DATE_FORMAT_YYYY_MM_DD);
 		//System.out.println(json);
-		sc.setResponse(json);
+		sc.setResponse("");
 	}
 	
 	//历史PE
@@ -578,10 +579,19 @@ public class StkAction {
 		List<StkText> texts = JdbcUtils.list(conn,"select * from stk_text where code=? and type=3 order by insert_time desc" ,params, StkText.class);
 		for(StkText article : texts){
 			List l = new ArrayList();
-			String text = article.getText();
-			String title = StringUtils.substring(text, 0, StringUtils.indexOf(text,"]")+1);
-            String reply = StringUtils.substring(text, StringUtils.lastIndexOf(text,"[")-1, text.length());
-            text = StringUtils.substring(text, StringUtils.indexOf(text,"]")+2, text.length());
+            String text;
+            String title;
+            String reply;
+			if(article.getUserName() != null){
+                text = (article.getTitle()!=null?"<b>"+article.getTitle()+"</b><br/>":"")+article.getTextDesc()+"["+CommonUtils.wrapLink("来源", "https://xueqiu.com/"+article.getUserId()+"/"+article.getPostId()+"") +"]";
+                title = article.getUserName();
+                reply = String.valueOf(article.getReplyCount());
+            }else {
+                text = article.getText();
+                title = StringUtils.substring(text, 0, StringUtils.indexOf(text, "]") + 1);
+                reply = StringUtils.substring(text, StringUtils.lastIndexOf(text, "[") - 1, text.length());
+                text = StringUtils.substring(text, StringUtils.indexOf(text, "]") + 2, text.length());
+            }
 			l.add(title);
 			l.add(text);
 			l.add(reply);

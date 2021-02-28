@@ -14,6 +14,7 @@ import com.stk123.repository.StkKlineRepository;
 import com.stk123.repository.StkKlineUsRepository;
 import com.stk123.util.HttpUtils;
 import com.stk123.util.ServiceUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,7 +134,7 @@ public class BarService {
 
         String code = stock.getCode();
         if(stock.isMarketCN()){
-            if(stock.getCate() == Stock.EnumCate.INDEX || stock.getCate() == Stock.EnumCate.STOCK){
+            if(stock.getCate() == Stock.EnumCate.INDEX){
                 String tmp = null;
                 if(code.length() == 6){
                     tmp = (stock.isPlaceSH()?"sse":"szse") + (code.equals("999999")?"000001":code);
@@ -142,6 +143,7 @@ public class BarService {
                     tmp = (stock.isPlaceSH()?"sse":"ssz") + StringUtils.substring(code, 2, 8);
                 }
 
+                //http://stockdata.stock.hexun.com/gghq_601899.shtml
                 String page = HttpUtils.get("http://webstock.quote.hermes.hexun.com/a/kline?code="+tmp+"&start="+ServiceUtils.getToday()+"150000&number=-1000&type=5&callback=callback", null, "gb2312");
                 //System.out.println(page);
                 List<List> datas = JsonUtils.getList4Json("["+StringUtils.substringBetween(page, "[[", "]]")+"]]", ArrayList.class );
@@ -162,10 +164,13 @@ public class BarService {
                     stkKlineEntity.setLow(Double.parseDouble(String.valueOf(data.get(5)))/100.0);
                     stkKlineEntity.setVolumn(Double.parseDouble(String.valueOf(data.get(6)))/100.0);
                     stkKlineEntity.setAmount(Double.parseDouble(String.valueOf(data.get(7)))/100.0);
+                    stkKlineEntity.setPercentage((stkKlineEntity.getClose()-stkKlineEntity.getLastClose())/stkKlineEntity.getLastClose()*100);
                     stkKlineRepository.saveIfNotExisting(stkKlineEntity);
 
                 }
 
+            }else if(stock.getCate() == Stock.EnumCate.STOCK){
+                updateKline(stock, n);
             }
 
             //setCloseChange();
@@ -192,6 +197,7 @@ public class BarService {
                     stkKlineEntity.setLow(Double.parseDouble(String.valueOf(k.get("l"))));
                     stkKlineEntity.setVolumn(Double.parseDouble(String.valueOf(k.get("v"))));
                     stkKlineEntity.setAmount(Double.parseDouble(String.valueOf(k.get("a"))));
+                    stkKlineEntity.setPercentage((stkKlineEntity.getClose()-stkKlineEntity.getLastClose())/stkKlineEntity.getLastClose()*100);
                     stkKlineUsRepository.saveIfNotExisting(stkKlineEntity);
 
                 }
@@ -265,6 +271,7 @@ public class BarService {
                     stkKlineEntity.setLow(NumberUtils.createDouble(map.get("9")));
                     stkKlineEntity.setVolumn(NumberUtils.createDouble(map.get("13")));
                     stkKlineEntity.setAmount(map.get("19") == null ? null : NumberUtils.toDouble(map.get("19"))/100);
+                    //stkKlineEntity.setPercentage((stkKlineEntity.getClose()-stkKlineEntity.getLastClose())/stkKlineEntity.getLastClose()*100);
                     stkKlineRepository.saveIfNotExisting(stkKlineEntity);
                 }
 
@@ -446,5 +453,59 @@ public class BarService {
     }
 
 
+    public void updateKline(Stock stock, int n) throws Exception {
+        if(stock.isMarketCN()) {
+            boolean isSH = stock.isPlaceSH();
+            String scode = (isSH ? "1." : "0.")+stock.getCode();
+
+            long time = new Date().getTime();
+
+            //http://quote.eastmoney.com/sh601899.html
+            //不复权：fqt=0， 前复权：fqt=1
+            String url = "http://push2his.eastmoney.com/api/qt/stock/kline/get?cb=jQuery112403175572026253872_"+time+
+                    "&fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61" +
+                    "&ut=&klt=101&fqt=1&secid="+scode+"&beg=0&end=20500000&_="+time;
+            String page = HttpUtils.get(url, null, "UTF-8");
+            String klines = StringUtils.substringBetween(page, "\"klines\":[\"", "\"]}");
+            if(StringUtils.isEmpty(klines)) return;
+            //System.out.println(klines);
+            String[] ks = klines.split("\",\"");
+            if(ks.length > 0){
+                String[] k = ks[0].split(",");
+                StkKlineEntity stkKlineEntity = stkKlineRepository.findById(stock.getCode(), StringUtils.replace(k[0],"-",""));
+                if(stkKlineEntity == null || stkKlineEntity.getOpen() != Double.parseDouble(k[1]) || stkKlineEntity.getClose() != Double.parseDouble(k[2])){
+                    n = Integer.MAX_VALUE;
+                }
+            }else{
+                return;
+            }
+            ks = (String[]) ArrayUtils.subarray(ks, ks.length-n, ks.length);
+            double close = 0;
+            int i= 0;
+            for(String kk : ks){
+                //System.out.println(kk);
+                String[] k = kk.split(",");
+                StkKlineEntity stkKlineEntity = new StkKlineEntity();
+                stkKlineEntity.setCode(stock.getCode());
+                stkKlineEntity.setKlineDate(StringUtils.replace(k[0],"-",""));
+                stkKlineEntity.setOpen(Double.parseDouble(k[1]));
+                stkKlineEntity.setClose(Double.parseDouble(k[2]));
+                stkKlineEntity.setLastClose(close==0?null:close);
+                stkKlineEntity.setHigh(Double.parseDouble(k[3]));
+                stkKlineEntity.setLow(Double.parseDouble(k[4]));
+                stkKlineEntity.setVolumn(Double.parseDouble(k[5])*100);
+                stkKlineEntity.setAmount(Double.parseDouble(k[6]));
+                stkKlineEntity.setHsl(Double.parseDouble(k[10]));
+                //stkKlineHkEntity.setPeTtm(pettm);
+                //stkKlineEntity.setPbTtm(pbttm);
+                stkKlineEntity.setPercentage(Double.parseDouble(k[8]));
+                //stkKlineEntity.setPsTtm(psttm);
+                stkKlineRepository.saveOrUpdate(stkKlineEntity);
+
+                close = stkKlineEntity.getClose();
+
+            }
+        }
+    }
 
 }

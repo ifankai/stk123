@@ -2,12 +2,16 @@ package com.stk123.model.core;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.stk123.common.CommonUtils;
+import com.stk123.common.util.AlgorithmUtils;
 import com.stk123.common.util.collection.IntRange2IntMap;
 import com.stk123.entity.StkKlineEntity;
 import com.stk123.model.json.View;
 import com.stk123.util.ServiceUtils;
 import lombok.Data;
 import lombok.ToString;
+import lombok.extern.apachecommons.CommonsLog;
+import org.apache.http.client.utils.DateUtils;
 
 import java.io.Serializable;
 import java.text.ParseException;
@@ -23,6 +27,7 @@ import static com.stk123.model.core.Bar.EnumCalculationMethod.MA;
 import static com.stk123.model.core.Bar.EnumValue.*;
 
 @Data
+@CommonsLog
 public class Bar implements Serializable, Cloneable {
 
 	public enum EnumValue {
@@ -610,7 +615,7 @@ public class Bar implements Serializable, Cloneable {
 			if(predicate.test(k)){
 				cnt ++;
 			}
-			if(days -- < 1){
+			if(--days < 1){
 				break;
 			}
 			k = k.before(1);
@@ -633,7 +638,7 @@ public class Bar implements Serializable, Cloneable {
 				cnt ++;
 				k = k.before(indent);
 			}
-			if(days -- < 1){
+			if(--days < 1){
 				break;
 			}
 			k = k.before(1);
@@ -1019,10 +1024,10 @@ public class Bar implements Serializable, Cloneable {
         Date d1 = null;
         Date d2 = null;
         try {
-            d1 = ServiceUtils.sf_ymd2.parse(this.getDate());
-            d2 = ServiceUtils.sf_ymd2.parse(k.getDate());
-        } catch (ParseException e) {
-            e.printStackTrace();
+            d1 = CommonUtils.parseDate(this.getDate());
+            d2 = CommonUtils.parseDate(k.getDate());
+        } catch (Exception e) {
+            log.error(this.getDate()+","+k.getDate(), e);
         }
 		return d1.before(d2);
 	}
@@ -1030,8 +1035,8 @@ public class Bar implements Serializable, Cloneable {
 		return this.dateEquals(k) || this.dateBefore(k);
 	}
 	public boolean dateAfter(Bar k) throws Exception{
-		Date d1 = ServiceUtils.sf_ymd2.parse(this.getDate());
-		Date d2 = ServiceUtils.sf_ymd2.parse(k.getDate());
+		Date d1 = CommonUtils.parseDate(this.getDate());
+		Date d2 = CommonUtils.parseDate(k.getDate());
 		return d1.after(d2);
 	}
 	public boolean dateAfterOrEquals(Bar k) throws Exception{
@@ -1086,8 +1091,98 @@ public class Bar implements Serializable, Cloneable {
 			return false;
 		}
 	}
-	
-	
+
+	public boolean isBreakTrendLine(int m, int n, double percent){
+        List<Bar> ks = this.getHistoryHighPoint(m, n);
+		/*for(K k : ks){
+			System.out.println("=="+k.getDate());
+		}*/
+        Bar hk = null;
+        Bar lk = null;
+        if(ks != null && ks.size() >= 2){
+            List list = zhuhe(ks);
+            for(int i = list.size()-1;i>=0;i--){
+                List<Bar> ksTmp = (List)list.get(i);
+                hk = ksTmp.get(0);
+                lk = ksTmp.get(1);
+                //System.out.println("i="+i+",hk="+hk.getDate()+",lk="+lk.getDate());
+                if(hk.getHigh() > lk.getHigh() * (1+percent)){
+                    int days = this.getDaysBetween(hk.getDate(), lk.getDate());
+                    double d = hk.getHigh() - lk.getHigh();
+                    //System.out.println("d="+d+",days="+days);
+                    if(d < 0) continue;
+                    double decreasePerDay = d/hk.getHigh()/days;
+                    //System.out.println("decreasePerDay="+decreasePerDay);
+                    int days2 = this.getDaysBetween(lk.getDate(), date);
+                    //System.out.println("day2=="+days2+",hk="+hk.getDate()+",lk="+lk.getDate()+",date="+date);
+                    double trendLineValue = lk.getHigh()*Math.pow(1-decreasePerDay, days2)*0.97;
+                    double ytrendLineValue = lk.getHigh()*Math.pow(1-decreasePerDay, days2-1)*0.97;
+                    Bar curK = this.before(date);
+                    //System.out.println(curK.getDate()+","+curK.getHigh()+">="+trendLineValue+","+curK.before(1).getHigh()+"<"+ytrendLineValue);
+                    if(curK.getClose() >= trendLineValue && curK.before(1).getHigh() < ytrendLineValue){
+                        //this.changePercent = (hk.getClose()-curK.getClose())/hk.getClose();
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    public int getDaysBetween(String startDate, String endDate) {
+        int days = 0;
+        if(startDate.compareTo(endDate) > 0){
+            String tmp = startDate;
+            startDate = endDate;
+            endDate = tmp;
+        }
+        Bar tmpK = this.before(startDate);
+        do{
+            if(tmpK.getDate().compareTo(endDate) >= 0){
+                break;
+            }
+            days ++;
+            Bar tmpK2 = tmpK.after(1);
+            if(tmpK2.getDate().equals(tmpK.getDate())){
+                break;
+            }
+            tmpK = tmpK2;
+        }while(true);
+        return days;
+    }
+    //排列组合
+    private List zhuhe(List<Bar> ks){
+        int[] a = new int[ks.size()];
+        for(int i=0;i<ks.size();i++){
+            a[i] = i;
+        }
+        List result = new ArrayList();
+        List list = AlgorithmUtils.zuhe(a, 2);
+        for (int i = 0; i < list.size(); i++) {
+            List tmp = new ArrayList();
+            int[] temp = (int[]) list.get(i);
+            //System.out.println();
+            for (int j = 0; j < temp.length; j++) {
+                tmp.add(ks.get(temp[j]));
+                //System.out.print(temp[j]);
+            }
+            result.add(tmp);
+        }
+        return result;
+    }
+
+    //十字星
+	public boolean isCrossstar(double d){
+        double p = this.getChange();
+        if(Math.abs(p) <= Math.abs(d)){
+            if(this.getLow() < this.getOpen() && this.getLow() < this.getClose()
+                    && this.getHigh() > this.getOpen() && this.getHigh() > this.getClose()){
+                return true;
+            }
+            return false;
+        }
+        return false;
+    }
+
 	/**
 	 * ----------------------override-----------------------------
 	 */

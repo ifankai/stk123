@@ -2875,7 +2875,8 @@ select * from stk_import_info order by insert_time desc;
 select * from stk_xueqiu_user;
 select * from (select * from stk_kline t where code='000863' order by kline_date desc) where rownum <= 1000;
 
-
+select * from stk_kline t where code='600862' order by kline_date desc;
+update stk_kline set percentage='6.12' where code='600862' and kline_date='20190130';
 select * from stk_kline t where kline_date='20201201';
 select * from stk_kline t where kline_date='20201225';
 select * from stk_kline_hk where kline_date='20201224';
@@ -2915,13 +2916,13 @@ update stk_kline_us set amount=null where code='.DJI' and kline_date='20201224';
 select * from stk_kline_us where code='.DJI' order by kline_date desc;
 select * from stk_kline where length(code)>6;
 
-select * from stk_kline_hk where code='06068' order by kline_date desc;
-update stk_kline_hk set code='06068' where code='060681' and kline_date='20210223';
+select * from stk_kline_hk where code='06837' order by kline_date desc;
+update stk_kline_hk set code='06837' where code='068371' and kline_date='20210226';
 
 select * from stk_text where sub_type=300 order by insert_time desc;
 select * from stk_text where sub_type=100 order by insert_time desc;
 
-select * from stk where market=1 order by insert_time desc;
+select * from stk where market=2 order by insert_time desc;
 select * from stk where code='605395'
 
 select * from stk_error_log;

@@ -173,7 +173,7 @@ public class Filters {
     /**
      * MACD底背离[MACD.dif和（close或ma(n)）背离]
      */
-    public static Filter<Bar> filter_006(int n){
+    public static Filter<Bar> filter_006a(int n){
         return (bar) -> {
             Bar.MACD macd = bar.getMACD();
             Bar.MACD macdBefore = bar.before().getMACD();
@@ -189,6 +189,20 @@ public class Filters {
                 }
             }
             return FilterResult.FALSE("MACD.macd值没有减小");
+        };
+    }
+
+    /**
+     * MACD 0轴附近金叉
+     */
+    public static Filter<BarSeries> filter_006b(double d){
+        return (bs) -> {
+            Bar bar = bs.getFirst();
+            Bar.MACD macd = bar.getMACD();
+            if(Math.abs(macd.macd) < d && Math.abs(macd.dif) < d*2 && macd.dea < macd.dif && bar.getMACDUpperForkBar(0) != null){
+                return FilterResult.TRUE(bar.getDate());
+            }
+            return FilterResult.FALSE();
         };
     }
 
@@ -239,7 +253,8 @@ public class Filters {
                         return FilterResult.FALSE("不满足放量涨缩量跌, 实际:"+ highVolume/lowVolume);
                     }
                 }
-                return FilterResult.TRUE(today.getDate(), today.getDate(), "均线紧缩率(%)", CommonUtils.numberFormat2Digits(change));
+                String jsl = CommonUtils.numberFormat2Digits(change*100);
+                return FilterResult.TRUE(today.getDate() + "均线紧缩率:" + jsl +"%, max="+max+",min="+min, today.getDate(), "均线紧缩率(%)", jsl);
             }
             return FilterResult.FALSE("不满足K线价差小于"+d+"%, 实际："+(change*100));
         };
@@ -247,5 +262,16 @@ public class Filters {
 
     public static Filter<BarSeries> filter_007(double d){
         return filter_007(d, 0);
+    }
+
+    //突破趋势线
+    public static Filter<BarSeries> filter_008(int m, int n, double d){
+        return (bs) -> {
+            Bar today = bs.getFirst();
+            if(today.isBreakTrendLine(m, n, d)){
+                return FilterResult.TRUE(today.getDate());
+            }
+            return FilterResult.FALSE();
+        };
     }
 }

@@ -55,6 +55,10 @@ public class BacktestingService {
     private TaskService taskService;
 
     public StrategyBacktesting backtesting(String code, String strategy, boolean isIncludeRealtimeBar) throws InvocationTargetException, IllegalAccessException {
+        return backtesting(Collections.singletonList(code), strategy, isIncludeRealtimeBar);
+    }
+
+    public StrategyBacktesting backtesting(List<String> codes, String strategy, boolean isIncludeRealtimeBar) throws InvocationTargetException, IllegalAccessException {
         StrategyBacktesting strategyBacktesting = new StrategyBacktesting();
         Set<Method> methods = ReflectionUtils.getAllMethods(Sample.class,
                 method -> StringUtils.equalsIgnoreCase(method.getName(), "strategy_"+strategy) || StringUtils.equalsIgnoreCase(method.getName(), strategy));
@@ -63,7 +67,7 @@ public class BacktestingService {
             strategyBacktesting.addStrategy((Strategy<?>) method.invoke(null, null));
         }
 
-        List<Stock> stocks = stockService.buildStocks(code);
+        List<Stock> stocks = stockService.buildStocks(codes);
         Stock stk = stocks.get(0);
         stk.setBarSeriesRows(Integer.MAX_VALUE);
         if(isIncludeRealtimeBar){

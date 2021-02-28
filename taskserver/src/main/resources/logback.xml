@@ -18,7 +18,8 @@
     <conversionRule conversionWord="wEx" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" />
     <!-- 彩色日志格式 -->
     <property name="CONSOLE_LOG_PATTERN" value="${CONSOLE_LOG_PATTERN:-%clr(%d{yy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(-){faint} %clr([%10.10t]){faint} %clr(%-40.40logger{39}){cyan} %5.5L%clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
-    <property name="CONSOLE_LOG_PATTERN_STK123" value="${CONSOLE_LOG_PATTERN_STK123:-%clr(%d{yy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(-){faint} %clr([%10.10t]){faint} %clr(%-40.40logger{39}){red} %5.5L%clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
+    <property name="CONSOLE_LOG_PATTERN_STK123_BACKUP" value="${CONSOLE_LOG_PATTERN_STK123:-%clr(%d{yy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(-){faint} %clr([%10.10t]){faint} %clr(%-40.40logger{39}){red} %5.5L%clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
+    <property name="CONSOLE_LOG_PATTERN_STK123" value="${CONSOLE_LOG_PATTERN_STK123:-%clr(%d{yy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr([%3.3t]){faint} %clr(%-36.36logger{35}){red} %4.4L%clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
 
 
     <!--输出到控制台-->

@@ -8,6 +8,7 @@ import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
@@ -28,7 +29,7 @@ public class Strategy<X> {
     private String name;
     @Getter
     private Class<X> xClass;
-    private List<FilterExecutor<X, ?>> filterExecutors = new ArrayList<>();
+    private List<FilterExecutor<X, ?>> filterExecutors = Collections.synchronizedList(new ArrayList<>());
     private FilterExecutor<X, X> expectFilterExecutor;
     private boolean expectFilterExecutorRunOrNot = true;
 
@@ -97,8 +98,9 @@ public class Strategy<X> {
         //把不通过数量多的放前面，以便优化性能
         //filterExecutors.sort(Comparator.comparing(FilterExecutor::getCounterNotPassed, Comparator.reverseOrder()));
 
-        //把通过数量少的放前面，以便优化性能
-        filterExecutors.sort(Comparator.comparingInt(FilterExecutor::getCounterPassed));
+        //把通过数量少的放前面，以便优化性能。
+        //存在多线程异常（java.util.ConcurrentModificationException），所以屏蔽此行
+        //filterExecutors.sort(Comparator.comparingInt(FilterExecutor::getCounterPassed));
 
         StrategyResult strategyResult = new StrategyResult();
         strategyResult.setStrategy(this);
@@ -141,7 +143,7 @@ public class Strategy<X> {
         return countOfPassedStrategyResult==0 ? 0 : countOfPassedExpectStrategyResult * 100d/countOfPassedStrategyResult;
     }
     public String getPassRateString(){
-        return String.format("期望过滤器[%s]调用总次数：%d, 通过：%d, 未通过：%d。通过率：%f%%",
+        return String.format("期望过滤器[%s]调用总次数：%d, 通过：%d, 未通过：%d。通过率：%.2f%%",
                 expectFilterExecutor.getName(), expectFilterExecutor.getCounterPassedAndNotPassed(),
                 expectFilterExecutor.getCounterPassed(), expectFilterExecutor.getCounterNotPassed(),
                 this.getPassRate());
@@ -165,7 +167,7 @@ public class Strategy<X> {
             }
         }
         if(frs.size() > 0) {
-            Table table = new Table();
+            Table table = new Table("成功");
             frs.forEach(filterResult -> table.add(filterResult.log()));
             sb.append(table.toHtml());
         }
@@ -180,9 +182,8 @@ public class Strategy<X> {
             }
         }
         if(frs.size() > 0) {
-            Table table = new Table();
+            Table table = new Table("失败");
             frs.forEach(filterResult -> table.add(filterResult.log()));
-            sb.append("<br/>");
             sb.append(table.toHtml());
         }
         return sb.toString();
@@ -208,7 +209,7 @@ public class Strategy<X> {
         });
 
         if(expectFilterExecutor != null) {
-            sb.append(String.format("期望过滤器[%s]调用总次数：%d, 通过：%d, 未通过：%d。通过率：%f%%",
+            sb.append(String.format("期望过滤器[%s]调用总次数：%d, 通过：%d, 未通过：%d。通过率：%.2f%%",
                     expectFilterExecutor.getName(), expectFilterExecutor.getCounterPassedAndNotPassed(),
                     expectFilterExecutor.getCounterPassed(), expectFilterExecutor.getCounterNotPassed(),
                     this.getPassRate())).append("\n");

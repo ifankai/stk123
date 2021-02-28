@@ -11,6 +11,11 @@ public class Table {
     //<y , <x, td>>
     private Map<String, Map<String, TableTd>> datas = new TreeMap<>();
     private Set<String> xTitles = new TreeSet<>();
+    private String name;
+
+    public Table(String name){
+        this.name = name;
+    }
 
     public Table add(TableTd td){
         if(!xTitles.contains(td.getXTitle()))
@@ -38,8 +43,8 @@ public class Table {
 
         HtmlTr tr = new HtmlTr();
         if(datas.size() > 0){
-            tr.columns.add(new HtmlTd());
-            for(String title : datas.get(0).keySet()){
+            tr.columns.add(HtmlTd.getInstance(name));
+            for(String title : xTitles){
                 HtmlTd headTd = new HtmlTd();
                 headTd.text = title;
                 tr.columns.add(headTd);
@@ -48,6 +53,7 @@ public class Table {
         }
         for(String yTitle : datas.keySet()){
             tr = new HtmlTr();
+            tr.columns.add(HtmlTd.getInstance(yTitle));
             for(String xTitle : xTitles){
                 HtmlTd td = new HtmlTd();
                 td.text = StringUtils.join(datas.get(yTitle).get(xTitle).getTd(), "<br/>");

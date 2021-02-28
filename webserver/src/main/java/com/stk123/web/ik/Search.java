@@ -74,7 +74,7 @@ public class Search {
 
 	public Search(int userId) throws IOException{
 		this.userId = userId;
-		this.directoryUser = FSDirectory.open(Paths.get(INDEX_PATH + File.separator + userId));
+		this.directoryUser = FSDirectory.open(Paths.get(INDEX_PATH + File.separator + userId).toFile());
 	}
 
 	public static void initStkAndIndustryAndIndex() throws Exception{
@@ -196,7 +196,7 @@ public class Search {
 
 	public static List<Document> search(String keyword, DocumentType type, boolean sortByTime, DocumentField[] searchFields, int start, int end, List<Name2Value> searchWordsWeight,Set<String> defaultExcludes, boolean highLight, String code,TotalCount totalCount, Directory... directorys) throws Exception {
 		//System.out.println("search=="+keyword);
-		BooleanQuery.Builder query = new BooleanQuery.Builder();
+		BooleanQuery query = new BooleanQuery();
 		BooleanQuery.setMaxClauseCount(Integer.MAX_VALUE);
 		//query.setMinimumNumberShouldMatch(1);
 		if(type != null){
@@ -210,7 +210,7 @@ public class Search {
 		if(searchFields == null){
 			searchFields = SEARCHFIELDS_DEFAULT;
 		}
-        BooleanQuery.Builder query2 = new BooleanQuery.Builder();
+        BooleanQuery query2 = new BooleanQuery();
 		query2.setMinimumNumberShouldMatch(1);
 		for(int i=0;i<searchFields.length;i++){
 			IKSegmenter se = new IKSegmenter(new StringReader(keyword),true);
@@ -227,14 +227,15 @@ public class Search {
 					List<Name2Value> weights = Name2Value.containName(searchWordsWeight, tKeyWord);
 					if(searchWordsWeight != null && weights.size() > 0){
 						for(Name2Value<String,Float> weight : weights){
-                            tq = new BoostQuery(tq, weight.getValue());
+                            //tq = new BoostQuery(tq, weight.getValue());
+                            tq.setBoost(weight.getValue());
 						}
 					}
 				}
 				query2.add(tq, BooleanClause.Occur.SHOULD);
 			}
 		}
-		query.add(query2.build(), BooleanClause.Occur.MUST);
+		query.add(query2, BooleanClause.Occur.MUST);
 
 		List<IndexReader> readers = new ArrayList<IndexReader>();
 		for(Directory directory : directorys){
@@ -249,18 +250,18 @@ public class Search {
 		TopDocs topDocs = null;
 		if(type == DocumentType.TEXT && sortByTime){
 			Sort sort = new Sort(new SortField[]{new SortField(DocumentField.TIME.value(), SortField.Type.LONG, true)});
-			topDocs = isearcher.search(query.build(), end, sort);
+			topDocs = isearcher.search(query, end, sort);
 		}else{
-			topDocs = isearcher.search(query.build(), end);
+			topDocs = isearcher.search(query, end);
 		}
 		ScoreDoc[] scoreDocs = topDocs.scoreDocs;
 		if(totalCount != null){
-			totalCount.totalCount = topDocs.totalHits.value;
+			totalCount.totalCount = topDocs.totalHits;
 		}
 		List<Document> results = new ArrayList<Document>();
 		if(highLight){
 			Analyzer analyzer = new IKAnalyzer(true);
-			for (int i = 0; i < topDocs.totalHits.value; i++) {
+			for (int i = 0; i < topDocs.totalHits; i++) {
 				if(i < start){
 					continue;
 				}else if(i >= end)break;
@@ -270,7 +271,7 @@ public class Search {
 					String text = targetDoc.get(field.value());
 					if (text != null && (DocumentField.CONTENT.value().equals(field.value()) || DocumentField.TITLE.value().equals(field.value()))) {
 						SimpleHTMLFormatter simpleHTMLFormatter = new SimpleHTMLFormatter(HIGH_LIGHT_BEGIN, HIGH_LIGHT_END);
-						Highlighter highlighter = new Highlighter(simpleHTMLFormatter,new QueryScorer(query.build()));
+						Highlighter highlighter = new Highlighter(simpleHTMLFormatter,new QueryScorer(query));
 						highlighter.setTextFragmenter(new SimpleFragmenter(200));
 
 						String rText = HtmlUtils.removeHTML(text);
@@ -292,7 +293,7 @@ public class Search {
 			}
 			analyzer.close();
 		}else{
-			for (int i = 0; i < topDocs.totalHits.value; i++) {
+			for (int i = 0; i < topDocs.totalHits; i++) {
 				if(i < start){
 					continue;
 				}else if(i >= end)break;

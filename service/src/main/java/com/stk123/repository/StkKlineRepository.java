@@ -1,5 +1,7 @@
 package com.stk123.repository;
 
+import cn.hutool.core.bean.BeanUtil;
+import com.stk123.common.util.BeanUtils;
 import com.stk123.entity.StkKlineEntity;
 import com.stk123.model.core.Bar;
 import com.stk123.model.core.BarSeries;
@@ -20,6 +22,9 @@ public interface StkKlineRepository extends JpaRepository<StkKlineEntity, StkKli
 
     StkKlineEntity findTop1ByCodeOrderByKlineDateDesc(String code);
 
+    @Query(value = "select t from StkKlineEntity t where t.close=:code and t.klineDate=:klineDate")
+    StkKlineEntity findById(@Param("code")String code, @Param("klineDate")String klineDate);
+
     @Modifying
     @Query(value = "delete from stk_kline k where k.kline_date > :date", nativeQuery = true)
     void deleteAllByKlineDateAfter(@Param("date")String date);
@@ -36,6 +41,17 @@ public interface StkKlineRepository extends JpaRepository<StkKlineEntity, StkKli
             return save(stkKlineEntity);
         }
         return entity.get();
+    }
+
+    @Transactional
+    default StkKlineEntity saveOrUpdate(StkKlineEntity stkKlineEntity){
+        Optional<StkKlineEntity> entity = this.findById(new StkKlineEntity.CompositeKey(stkKlineEntity.getCode(),stkKlineEntity.getKlineDate()));
+        if(entity.isPresent()){
+            BeanUtils.mapIgnoreNull(stkKlineEntity, entity.get());
+            return save(entity.get());
+        }else {
+            return save(stkKlineEntity);
+        }
     }
 
 

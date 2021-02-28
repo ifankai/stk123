@@ -37,11 +37,19 @@ public class StkText implements Serializable {
     private Integer dispOrder;
 
     @Column(name="USER_ID")
-    private Integer userId;
+    private Long userId;
 
     @Column(name="SUB_TYPE")
     private Integer subType;
 
+    @Column(name="USER_NAME")
+    private String userName;
+    @Column(name="POST_ID")
+    private Long postId;
+    @Column(name="REPLY_COUNT")
+    private Long replyCount;
+    @Column(name="TEXT_DESC")
+    private String textDesc;
 
     public Integer getId(){
         return this.id;
@@ -106,10 +114,10 @@ public class StkText implements Serializable {
         this.dispOrder = dispOrder;
     }
 
-    public Integer getUserId(){
+    public Long getUserId(){
         return this.userId;
     }
-    public void setUserId(Integer userId){
+    public void setUserId(Long userId){
         this.userId = userId;
     }
 
@@ -120,6 +128,37 @@ public class StkText implements Serializable {
         this.subType = subType;
     }
 
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public Long getPostId() {
+        return postId;
+    }
+
+    public void setPostId(Long postId) {
+        this.postId = postId;
+    }
+
+    public Long getReplyCount() {
+        return replyCount;
+    }
+
+    public void setReplyCount(Long replyCount) {
+        this.replyCount = replyCount;
+    }
+
+    public String getTextDesc() {
+        return textDesc;
+    }
+
+    public void setTextDesc(String textDesc) {
+        this.textDesc = textDesc;
+    }
 
     public String toString(){
         return "id="+id+",type="+type+",code="+code+",codeType="+codeType+",title="+title+",text="+text+",insertTime="+insertTime+",updateTime="+updateTime+",dispOrder="+dispOrder+",userId="+userId+",subType="+subType;

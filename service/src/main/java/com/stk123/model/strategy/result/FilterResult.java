@@ -31,6 +31,9 @@ public abstract class FilterResult<R> {
     public static <R> FilterResult FALSE(R result){
         return new FilterResultFalse().addResult(result);
     }
+    public static <R> FilterResult FALSE(){
+        return new FilterResultFalse();
+    }
 
 
     public boolean pass() {

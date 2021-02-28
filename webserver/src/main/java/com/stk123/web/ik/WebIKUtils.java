@@ -155,7 +155,8 @@ public class WebIKUtils extends IKUtils {
 	}
 	
 	public static IndexWriterConfig getConfig(){
-		return new IndexWriterConfig(new IKAnalyzer(true));
+		//return new IndexWriterConfig(new IKAnalyzer(true));
+        return new IndexWriterConfig(Version.LUCENE_45, new IKAnalyzer(true));
 	}
 	
 	private final static List<Directory> Directories = new ArrayList<Directory>();
@@ -243,8 +244,9 @@ public class WebIKUtils extends IKUtils {
 		Analyzer analyzer = new IKAnalyzer(true);
 		Directory directory = null;
 		IndexWriter iwriter = null;
-		directory = FSDirectory.open(Paths.get("D:/stock/index"));
-		IndexWriterConfig iwConfig = new IndexWriterConfig(analyzer);
+		directory = FSDirectory.open(Paths.get("D:/stock/index").toFile());
+		//IndexWriterConfig iwConfig = new IndexWriterConfig(analyzer);
+        IndexWriterConfig iwConfig = new IndexWriterConfig(Version.LUCENE_45, analyzer);
 		iwConfig.setOpenMode(OpenMode.CREATE_OR_APPEND);
 		iwriter = new IndexWriter(directory, iwConfig);
 
@@ -276,18 +278,18 @@ public class WebIKUtils extends IKUtils {
 		IndexReader ireader = null;
 		IndexSearcher isearcher = null;
 		try {
-			directory = FSDirectory.open(Paths.get("D:/stock/index"));
+			directory = FSDirectory.open(Paths.get("D:/stock/index").toFile());
 			
 			ireader = DirectoryReader.open(directory);
 			isearcher = new IndexSearcher(ireader);
-			
-			QueryParser qp = new QueryParser( "content", analyzer);// new QueryParser(Version.LUCENE_45, fieldName,analyzer);
+
+            QueryParser qp = new QueryParser(Version.LUCENE_45, "content", analyzer);// new QueryParser(Version.LUCENE_45, fieldName,analyzer);
 			qp.setDefaultOperator(QueryParser.OR_OPERATOR);
 			Query query = qp.parse(keyword);
 			
 			// 搜索相似度最高的5条记录
 			TopDocs topDocs = isearcher.search(query, 3);
-            float maxScore = topDocs.totalHits.value == 0 ? Float.NaN : topDocs.scoreDocs[0].score;
+            float maxScore = topDocs.totalHits == 0 ? Float.NaN : topDocs.scoreDocs[0].score;
 			System.out.println("命中：" + topDocs.totalHits+", 最大的评分:"+maxScore);
 			// 输出结果
 			ScoreDoc[] scoreDocs = topDocs.scoreDocs;

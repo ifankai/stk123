@@ -2,11 +2,13 @@ package com.stk123.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.model.RequestResult;
+import com.stk123.model.core.BarSeries;
 import com.stk123.model.core.Stock;
 import com.stk123.model.json.View;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.repository.StkRepository;
 import com.stk123.service.XueqiuService;
+import com.stk123.service.core.BarService;
 import com.stk123.service.core.StockService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,8 @@ public class StockController {
     private StkRepository stkRepository;
     @Autowired
     private StockService stockService;
+    @Autowired
+    private BarService barService;
 
 
     @RequestMapping(value = {"/list/{market:1|2|3|cn|us|hk}/{cate}"})
@@ -43,9 +47,21 @@ public class StockController {
         return RequestResult.success(list);
     }
 
-    @RequestMapping(value = {"/{code}/info"})
+    @RequestMapping(value = {"/info/{code}"})
     @ResponseBody
     public RequestResult info(@PathVariable(value = "code")String code){
         return RequestResult.success(stockService.findInfo(code));
+    }
+
+    @RequestMapping(value = {"/updatekline/{code}"})
+    @ResponseBody
+    public RequestResult updateKline(@PathVariable(value = "code")String code){
+        Stock stock = Stock.build(code);
+        try {
+            barService.updateKline(stock, Integer.MAX_VALUE);
+        } catch (Exception e) {
+            return RequestResult.success(e.getMessage());
+        }
+        return RequestResult.success();
     }
 }

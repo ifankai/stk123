@@ -50,7 +50,7 @@ public class BacktestingTask extends AbstractTask {
     public void execute() {
         try {
             if(backtesting != null){
-                StrategyBacktesting strategyBacktesting = backtestingService.backtesting(code, strategy, realtime != null);
+                StrategyBacktesting strategyBacktesting = backtestingService.backtesting(Arrays.asList(StringUtils.split(code, ",")), strategy, realtime != null);
             }else {
                 StrategyBacktesting strategyBacktesting = backtestingService.backtesting(Arrays.asList(StringUtils.split(code, ",")),
                         Arrays.asList(StringUtils.split(strategy, ",")), startDate, endDate, realtime != null);

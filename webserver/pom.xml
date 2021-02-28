@@ -27,6 +27,16 @@
             <groupId>com.stk</groupId>
             <artifactId>common</artifactId>
             <version>1.0.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.elasticsearch</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.elasticsearch.client</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.stk</groupId>
@@ -37,12 +47,30 @@
                     <groupId>org.apache.logging.log4j</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.elasticsearch</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.elasticsearch.client</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
             <groupId>com.stk</groupId>
             <artifactId>taskserver</artifactId>
             <version>1.0.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.elasticsearch</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.elasticsearch.client</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- spring -->
@@ -102,24 +130,27 @@
             <!--<version>11.2.0</version>-->
         <!--</dependency>-->
         <!--&lt;!&ndash;mvn install:install-file -DgroupId=org.wltea -DartifactId=IKAnalyzer2012FF_u1 -Dversion=1.0.0 -Dpackaging=jar -Dfile=D:\share\workspace\stk123\webserver\lib\IKAnalyzer2012FF_u1.jar&ndash;&gt;-->
-        <!--<dependency>-->
-            <!--<groupId>org.wltea</groupId>-->
-            <!--<artifactId>IKAnalyzer2012FF_u1</artifactId>-->
-            <!--<version>1.0.0</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.wltea</groupId>
+            <artifactId>IKAnalyzer2012FF_u1</artifactId>
+            <version>1.0.0</version>
+        </dependency>
 
-<!--        <dependency>
+        <dependency>
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-core</artifactId>
+            <version>4.5.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-queryparser</artifactId>
+            <version>4.5.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-highlighter</artifactId>
-        </dependency>-->
+            <version>4.5.0</version>
+        </dependency>
 
         <dependency>
             <groupId>commons-httpclient</groupId>
@@ -210,10 +241,10 @@
             <artifactId>jython</artifactId>
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
-        </dependency>
+        </dependency>-->
 
     </dependencies>
 

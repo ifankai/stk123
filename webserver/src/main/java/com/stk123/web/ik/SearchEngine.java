@@ -127,7 +127,7 @@ public class SearchEngine {
 	 */
 	public List<Document> search(String keyword, DocumentType type, boolean sortByTime, DocumentField[] searchFields, int cnt, List<Name2Value> searchWordsWeight,Set<String> defaultExcludes) throws Exception {
 		System.out.println("search=="+keyword);
-		BooleanQuery.Builder query = new BooleanQuery.Builder();
+		BooleanQuery query = new BooleanQuery();
 		query.setMinimumNumberShouldMatch(1);//下面should必须有至少一个word匹配
 		if(type != null){
 			TermQuery tq = new TermQuery(new Term(DocumentField.TYPE.value(), type.value()));
@@ -153,8 +153,8 @@ public class SearchEngine {
 					List<Name2Value> weights = Name2Value.containName(searchWordsWeight, tKeyWord);
 					if(searchWordsWeight != null && weights.size() > 0){
 						for(Name2Value<String,Float> weight : weights){
-							//tq.setBoost(Float.parseFloat(String.valueOf(weight.getValue())));
-                            tq = new BoostQuery(tq, weight.getValue());
+							tq.setBoost(Float.parseFloat(String.valueOf(weight.getValue())));
+                            //tq = new BoostQuery(tq, weight.getValue());
 						}
 					}
 				}
@@ -167,14 +167,14 @@ public class SearchEngine {
 		TopDocs topDocs = null;
 		if(type == DocumentType.TEXT && sortByTime){
 			Sort sort = new Sort(new SortField[]{new SortField(DocumentField.TIME.value(), SortField.Type.INT, true)});
-			topDocs = isearcher.search(query.build(), cnt, sort);
+			topDocs = isearcher.search(query, cnt, sort);
 		}else{
-			topDocs = isearcher.search(query.build(), cnt);
+			topDocs = isearcher.search(query, cnt);
 		}
 		ScoreDoc[] scoreDocs = topDocs.scoreDocs;
 		List<Document> results = new ArrayList<Document>();
 		Analyzer analyzer = new IKAnalyzer(true);
-		for (int i = 0; i < topDocs.totalHits.value; i++) {
+		for (int i = 0; i < topDocs.totalHits; i++) {
 			if(i >= cnt)break;
 			ScoreDoc score = scoreDocs[i];
 			Document targetDoc = isearcher.doc(scoreDocs[i].doc);
@@ -184,7 +184,7 @@ public class SearchEngine {
 				String text = targetDoc.get(field.value());
 				if (text != null) {
 					SimpleHTMLFormatter simpleHTMLFormatter = new SimpleHTMLFormatter("<font color='red'>", "</font>");
-					Highlighter highlighter = new Highlighter(simpleHTMLFormatter,new QueryScorer(query.build()));
+					Highlighter highlighter = new Highlighter(simpleHTMLFormatter,new QueryScorer(query));
 					highlighter.setTextFragmenter(new SimpleFragmenter(ChineseUtils.length(text)));
 				
 					TokenStream tokenStream = analyzer.tokenStream(field.value(), new StringReader(text));

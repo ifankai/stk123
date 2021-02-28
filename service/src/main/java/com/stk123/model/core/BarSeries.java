@@ -43,7 +43,7 @@ public class BarSeries {
 
     }
 
-    private boolean restoration = true; //是否前复权，默认为true
+    private boolean restoration = false; //是否前复权，默认为false, 通过BarService.updateKline() 统一更新为前复权数据
     private double restorationChange = 1; //
 //    @JsonView(View.Default.class)
     private EnumPeriod period = DAY; //默认周期是day
@@ -54,7 +54,7 @@ public class BarSeries {
 
 
     public BarSeries(){
-        this(true);
+        this(false);
     }
 
     public BarSeries(boolean restoration){
@@ -78,9 +78,9 @@ public class BarSeries {
         list.add(bar);
         if(restoration){
 
-            Bar after = bar.getAfter();
-            if(after != null && bar.getClose() != after.getLastClose()) {
-                double factor = after.getLastClose() / bar.getClose(); //复权因子
+            //Bar after = bar.getAfter();
+            if(ServiceUtils.numberFormat(bar.getClose()/(1+bar.getChange()/100d), 2) != bar.getLastClose()) {
+                double factor = bar.getClose() / (1+bar.getChange()/100d) / bar.getLastClose(); //复权因子
                 restorationChange = factor * restorationChange;
 //                System.out.println("date="+bar.getDate()+",factor="+factor+",restorationChange="+restorationChange);
             }

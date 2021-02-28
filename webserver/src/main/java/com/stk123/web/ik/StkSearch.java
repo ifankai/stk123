@@ -131,8 +131,8 @@ public class StkSearch {
 		//System.out.println("high weight words:"+highWeightWords);
 		//String[] fields = new String[]{CONTENT};
 		//Analyzer analyzer = new IKAnalyzer(true);
-		BooleanQuery.Builder query = new BooleanQuery.Builder();
-		/*BooleanClause.Occur[] flags = { 
+		BooleanQuery query = new BooleanQuery();
+		/*BooleanClause.Occur[] flags = {
 				BooleanClause.Occur.SHOULD,
 				BooleanClause.Occur.SHOULD //或
 		};*/
@@ -161,8 +161,8 @@ public class StkSearch {
 				Query tq = new TermQuery(new Term(fields[i],tKeyWord));
 				//设置权重
 				if(highWeightWords != null && highWeightWords.contains(tKeyWord)){
-					//tq.setBoost(5F);
-                    tq = new BoostQuery(tq, 5F);
+					tq.setBoost(5F);
+                    //tq = new BoostQuery(tq, 5F);
 				}
 				query.add(tq, BooleanClause.Occur.SHOULD);
 			}
@@ -170,10 +170,10 @@ public class StkSearch {
 		System.out.println("------------");
 		IndexReader ireader = DirectoryReader.open(directory);
 		IndexSearcher isearcher = new IndexSearcher(ireader);
-		TopDocs topDocs = isearcher.search(query.build(), cnt);
+		TopDocs topDocs = isearcher.search(query, cnt);
 		ScoreDoc[] scoreDocs = topDocs.scoreDocs;
 		List<Document> results = new ArrayList<Document>();
-		for (int i = 0; i < topDocs.totalHits.value; i++) {
+		for (int i = 0; i < topDocs.totalHits; i++) {
 			if(i >= cnt)break;
 			ScoreDoc score = scoreDocs[i];
 			Document targetDoc = isearcher.doc(scoreDocs[i].doc);
