@@ -22,8 +22,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: ch.ethz.ganymed:ganymed-ssh2:build210" level="project" />
-    <orderEntry type="library" name="Maven: org.modelmapper:modelmapper:2.3.9" level="project" />
     <orderEntry type="module" module-name="service" />
     <orderEntry type="module" module-name="common" />
     <orderEntry type="library" name="Maven: com.stk:IKAnalyzer2012FF_u1:1.0" level="project" />

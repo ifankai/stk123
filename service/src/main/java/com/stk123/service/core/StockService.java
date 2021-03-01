@@ -1,25 +1,23 @@
 package com.stk123.service.core;
 
 import com.stk123.common.util.PinYin4jUtils;
-import com.stk123.entity.StkEntity;
 import com.stk123.model.core.Stock;
 import com.stk123.model.dto.SearchResult;
 import com.stk123.model.projection.IndustryProjection;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.model.projection.StockCodeNameProjection;
 import com.stk123.model.projection.StockProjection;
+import com.stk123.repository.BaseRepository;
 import com.stk123.repository.StkKlineRepository;
 import com.stk123.repository.StkRepository;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,16 +33,20 @@ public class StockService {
 
     @Transactional
     public List<Stock> buildStocks(List<String> codes) {
-        List<StockBasicProjection> list = new ArrayList<>();
+        /*List<StockBasicProjection> list = new ArrayList<>();
         int start = 0;
         while(true){
             int end = start+1000 >= codes.size() ? codes.size() : start+1000;
             List<String> subCodes = codes.subList(start, end);
             List<StockBasicProjection> subList = stkRepository.findAllByCodes(subCodes);
             list.addAll(subList);
-            if(end >= list.size() -1)break;
+            if(end >= list.size())break;
             start = end;
-        }
+        }*/
+
+        List<StockBasicProjection> list = BaseRepository.findAll1000(codes,
+                subCodes -> stkRepository.findAllByCodes(subCodes));
+
         List<Stock> stocks = list.stream().map(projection -> Stock.build(projection)).collect(Collectors.toList());
         return stocks;
     }
