@@ -16,9 +16,11 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 @Service("baseRepository")
 public class BaseRepository implements ApplicationContextAware {
@@ -179,4 +181,41 @@ public class BaseRepository implements ApplicationContextAware {
     }
 
     /***** hibernate method end *****/
+
+    public static <T,R> List<R> findAll1000(List<T> list, Function<List<T>,List<R>> function){
+        List<R> results = new ArrayList<>();
+        int start = 0;
+        while(true){
+            int end = start+1000 >= list.size() ? list.size() : start+1000;
+            List<T> subCodes = list.subList(start, end);
+            List<R> subList = function.apply(subCodes);
+            results.addAll(subList);
+            if(end >= list.size())break;
+            start = end;
+        }
+        return results;
+    }
+
+    public static void main(String[] args) {
+        List<Integer> integers = new ArrayList<>();
+        integers.add(1);
+        integers.add(2);
+        integers.add(3);
+        integers.add(5);
+        integers.add(6);
+        integers.add(10);
+        integers.add(8);
+        integers.add(12);
+
+
+        List<String> list = findAll1000(integers, subInteger -> {
+            List<String> all = new ArrayList<>();
+            System.out.println(subInteger.size());
+            for(int i : subInteger){
+                all.add((i*2)+"s");
+            }
+            return all;
+        });
+        System.out.println(list);
+    }
 }

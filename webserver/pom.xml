@@ -131,9 +131,9 @@
         <!--</dependency>-->
         <!--&lt;!&ndash;mvn install:install-file -DgroupId=org.wltea -DartifactId=IKAnalyzer2012FF_u1 -Dversion=1.0.0 -Dpackaging=jar -Dfile=D:\share\workspace\stk123\webserver\lib\IKAnalyzer2012FF_u1.jar&ndash;&gt;-->
         <dependency>
-            <groupId>org.wltea</groupId>
+            <groupId>com.stk</groupId>
             <artifactId>IKAnalyzer2012FF_u1</artifactId>
-            <version>1.0.0</version>
+            <version>1.0</version>
         </dependency>
 
         <dependency>
