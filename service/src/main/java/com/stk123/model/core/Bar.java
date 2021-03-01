@@ -1094,7 +1094,7 @@ public class Bar implements Serializable, Cloneable {
 
 	public boolean isBreakTrendLine(int m, int n, double percent){
         List<Bar> ks = this.getHistoryHighPoint(m, n);
-		/*for(K k : ks){
+		/*for(Bar k : ks){
 			System.out.println("=="+k.getDate());
 		}*/
         Bar hk = null;
@@ -1120,7 +1120,22 @@ public class Bar implements Serializable, Cloneable {
                     Bar curK = this.before(date);
                     //System.out.println(curK.getDate()+","+curK.getHigh()+">="+trendLineValue+","+curK.before(1).getHigh()+"<"+ytrendLineValue);
                     if(curK.getClose() >= trendLineValue && curK.before(1).getHigh() < ytrendLineValue){
-                        //this.changePercent = (hk.getClose()-curK.getClose())/hk.getClose();
+                        boolean flag = false;
+                        final String lkDate = lk.getDate();
+                        for(Bar bar : ks){
+                            if(hk.dateBefore(bar) && !bar.getDate().equals(lkDate) ){
+                                //System.out.println("hk=="+hk.getDate()+",lk=="+lk.getDate()+",bar="+bar.getDate());
+                                int ds = bar.getDaysBetween(hk.getDate(), bar.getDate());
+                                double tv = hk.getHigh()*Math.pow(1-decreasePerDay, ds)*0.97;
+                                if(bar.getHigh() > tv){
+                                    //System.out.println(hk.getDate()+","+bar.getDate()+",kkkkkkkkkk="+bar.getDate());
+                                    flag = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if(flag)continue;
+                        //System.out.println("hk="+hk.getDate()+",lk="+lk.getDate());
                         return true;
                     }
                 }
