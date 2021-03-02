@@ -261,7 +261,7 @@ public class Stock {
             stock = stkRepository.findByCode(code);
             this.name = stock.getName();
         }
-        return this.name + "["+ this.getCodeWithPlace() +"]";
+        return (this.name==null?this.code:this.name) + "["+ this.getCodeWithPlace() +"]";
     }
     public String getNameAndCodeWithLink(){
         return CommonUtils.wrapLink(this.getNameAndCode(), "https://xueqiu.com/S/"+this.getCodeWithPlace());

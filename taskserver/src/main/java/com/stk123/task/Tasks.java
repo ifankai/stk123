@@ -96,7 +96,7 @@ public class Tasks {
     @Scheduled(cron = "0 0 11 ? * MON-FRI")
     @Scheduled(cron = "0 30 14 ? * MON-FRI")
     public void klineRealtime() {
-        taskContainer.start(BarTask.class, "Kline", "realtime=1");
+        taskContainer.start(BarTask.class, "Kline", "realtime=1", "market=cn,hk");
     }
 
     @Scheduled(cron = "0 30 5 ? * TUE-SAT")

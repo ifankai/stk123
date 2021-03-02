@@ -126,6 +126,23 @@ public class StrategyBacktesting {
         results.stream().forEach(sr -> strategyResults.addAll(sr));
     }
 
+    public void testAllHistory(List<Stock> stocks) {
+        this.codes = StringUtils.join(stocks.stream().map(Stock::getCode).collect(Collectors.toList()),",");
+
+        List<Callable<List<StrategyResult>>> tasks = new ArrayList<>();
+        for (Stock stock : stocks) {
+            for(Strategy strategy : strategies) {
+                Callable<List<StrategyResult>> task = () -> {
+                    //System.out.println("run ............................ "+Thread.currentThread().getId());
+                    return this.test(strategy, stock, stock.getBarSeries().getLast().getDate(), stock.getBarSeries().getFirst().getDate());
+                };
+                tasks.add(task);
+            }
+        }
+        List<List<StrategyResult>> results = run(tasks, multipleThreadSize);
+        results.stream().forEach(sr -> strategyResults.addAll(sr));
+    }
+
 
     /*public List<StrategyResult> getStrategyResultByStock(Stock stock) {
         return stockStrategyResults.get(stock);

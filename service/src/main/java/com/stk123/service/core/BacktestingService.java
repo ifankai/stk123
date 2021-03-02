@@ -54,26 +54,29 @@ public class BacktestingService {
     @Autowired
     private TaskService taskService;
 
-    public StrategyBacktesting backtesting(String code, String strategy, boolean isIncludeRealtimeBar) throws InvocationTargetException, IllegalAccessException {
-        return backtesting(Collections.singletonList(code), strategy, isIncludeRealtimeBar);
+    public StrategyBacktesting backtestingAllHistory(String code, String strategy, boolean isIncludeRealtimeBar) throws InvocationTargetException, IllegalAccessException {
+        return backtestingAllHistory(Collections.singletonList(code), Collections.singletonList(strategy), isIncludeRealtimeBar);
     }
 
-    public StrategyBacktesting backtesting(List<String> codes, String strategy, boolean isIncludeRealtimeBar) throws InvocationTargetException, IllegalAccessException {
+    public StrategyBacktesting backtestingAllHistory(List<String> codes, List<String> strategies, boolean isIncludeRealtimeBar) throws InvocationTargetException, IllegalAccessException {
         StrategyBacktesting strategyBacktesting = new StrategyBacktesting();
-        Set<Method> methods = ReflectionUtils.getAllMethods(Sample.class,
+        /*Set<Method> methods = ReflectionUtils.getAllMethods(Sample.class,
                 method -> StringUtils.equalsIgnoreCase(method.getName(), "strategy_"+strategy) || StringUtils.equalsIgnoreCase(method.getName(), strategy));
+*/
+        Set<Method> methods = ReflectionUtils.getAllMethods(Sample.class,
+                method -> strategies.stream().anyMatch(name -> StringUtils.equalsIgnoreCase(method.getName(), "strategy_"+name) || StringUtils.equalsIgnoreCase(method.getName(), name)));
+
+
         for (Method method : methods) {
-            System.out.println(method.getName());
             strategyBacktesting.addStrategy((Strategy<?>) method.invoke(null, null));
         }
 
         List<Stock> stocks = stockService.buildStocks(codes);
-        Stock stk = stocks.get(0);
-        stk.setBarSeriesRows(Integer.MAX_VALUE);
+        stocks.forEach(stock -> stock.setBarSeriesRows(Integer.MAX_VALUE));
         if(isIncludeRealtimeBar){
             stocks.forEach(stock -> stock.setIncludeRealtimeBar(true));
         }
-        strategyBacktesting.test(stocks, stk.getBarSeries().getLast().getDate(), stk.getBarSeries().getFirst().getDate());
+        strategyBacktesting.testAllHistory(stocks);
         strategyBacktesting.printDetail();
         strategyBacktesting.print();
         return strategyBacktesting;
@@ -81,11 +84,7 @@ public class BacktestingService {
 
     public StrategyBacktesting backtesting(List<String> codes, List<String> strategies, String startDate, String endDate, boolean isIncludeRealtimeBar) throws InvocationTargetException, IllegalAccessException {
         List<Stock> stocks = stockService.buildStocks(codes);
-        if(isIncludeRealtimeBar){
-            stocks.forEach(stock -> stock.setIncludeRealtimeBar(true));
-        }
-
-        return backtestingOnStock(stocks, strategies, startDate, endDate);
+        return backtestingOnStock(stocks, strategies, startDate, endDate, isIncludeRealtimeBar);
     }
 
 
@@ -94,10 +93,13 @@ public class BacktestingService {
     }
 
     public StrategyBacktesting backtestingOnStock(List<Stock> stocks, List<String> strategies) throws InvocationTargetException, IllegalAccessException {
-        return backtestingOnStock(stocks, strategies, null, null);
+        return backtestingOnStock(stocks, strategies, null, null, false);
     }
 
-    public StrategyBacktesting backtestingOnStock(List<Stock> stocks, List<String> strategies, String startDate, String endDate) throws InvocationTargetException, IllegalAccessException {
+    public StrategyBacktesting backtestingOnStock(List<Stock> stocks, List<String> strategies, String startDate, String endDate, boolean isIncludeRealtimeBar) throws InvocationTargetException, IllegalAccessException {
+        if(isIncludeRealtimeBar){
+            stocks.forEach(stock -> stock.setIncludeRealtimeBar(true));
+        }
         StrategyBacktesting strategyBacktesting = new StrategyBacktesting();
 
         //Set<Method> methods = ReflectionUtils.getAllMethods(Sample.class, method -> strategies.stream().anyMatch(name -> StringUtils.endsWithIgnoreCase(method.getName(), "strategy_"+name)), ReflectionUtils.withReturnType(Strategy.class));

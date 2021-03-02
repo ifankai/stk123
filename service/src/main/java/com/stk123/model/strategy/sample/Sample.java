@@ -8,6 +8,8 @@ import com.stk123.model.strategy.result.FilterResult;
 
 public class Sample {
 
+    public static String STRATEGIES = "01,02a,02b,03,04,05";
+
     public static Strategy strategy_01() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_01","策略603096新经典20201106，一段跌幅后底部放量(01)", BarSeries.class);
         strategy.addFilter("过去3天到80天的跌幅", BarSeries::getFirst, Filters.filter_001b(3,80,-50,-30));
@@ -72,7 +74,7 @@ public class Sample {
     //突破长期趋势线
     public static Strategy strategy_04() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_04","突破长期趋势线(04)", BarSeries.class);
-        strategy.addFilter("突破长期趋势线", Filters.filter_008(300, 25, 0.10));
+        strategy.addFilter("突破长期趋势线", Filters.filter_008(300, 15, 0.10));
         strategy.setExpectFilter("250日内涨幅>25%", Filters.expectFilter(250, 25));
         return strategy;
     }
@@ -101,12 +103,12 @@ public class Sample {
 
             double h2 = today.before().getHighest(20, Bar.EnumValue.C);
             double l2 = today.before().getLowest(20, Bar.EnumValue.C);
-            if( ((h-l)/l < 0.04 && today.getClose() > h && today.before().getBarCountWithPredicate(10, bar -> today.getVolume() > bar.getVolume()) >= 10)
-              ||((h2-l2)/l2 < 0.1 && today.getClose() > h2 && today.before().getBarCountWithPredicate(20, bar -> today.getVolume() > bar.getVolume()) >= 19)
+            if( ((h-l)/l < 0.04 && today.getClose() > h && today.before().getBarCount(10, bar -> today.getVolume() > bar.getVolume()) >= 10)
+              ||((h2-l2)/l2 < 0.1 && today.getClose() > h2 && today.before().getBarCount(20, bar -> today.getVolume() > bar.getVolume()) >= 19)
             ){
-                return FilterResult.TRUE((h-l)/l + "," + today.before().getBarCountWithPredicate(10, bar -> today.getVolume() > bar.getVolume()));
+                return FilterResult.TRUE((h-l)/l + "," + today.before().getBarCount(10, bar -> today.getVolume() > bar.getVolume()));
             }
-            return FilterResult.FALSE(today.before().getBarCountWithPredicate(10, bar -> today.getVolume() > bar.getVolume()));
+            return FilterResult.FALSE(today.before().getBarCount(10, bar -> today.getVolume() > bar.getVolume()));
         };
         //strategy.addFilter("test filter", Filters.filter_006b(0.02));
         strategy.addFilter("test filter", filter);

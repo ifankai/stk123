@@ -11,11 +11,13 @@ import com.stk123.model.core.Stock;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.model.strategy.StrategyBacktesting;
 import com.stk123.model.strategy.StrategyResult;
+import com.stk123.model.strategy.sample.Sample;
 import com.stk123.model.xueqiu.Portfolio;
 import com.stk123.repository.*;
 import com.stk123.service.XueqiuService;
 import com.stk123.service.core.BacktestingService;
 import com.stk123.service.core.BarService;
+import com.stk123.service.core.StockService;
 import com.stk123.task.tool.TaskUtils;
 import com.stk123.util.ExceptionUtils;
 import lombok.Setter;
@@ -44,6 +46,8 @@ public class BarTask extends AbstractTask {
     private String startDate;
     private String endDate;
     private String realtime;
+    private String market;
+    private String strategy;
 
     @Autowired
     private StkKlineRepository stkKlineRepository;
@@ -59,6 +63,8 @@ public class BarTask extends AbstractTask {
     private StkIndustryRepository stkIndustryRepository;
     @Autowired
     private BacktestingService backtestingService;
+    @Autowired
+    private StockService stockService;
 
     public static void main(String[] args) throws Exception {
         AbstractTask task = new BarTask();
@@ -345,10 +351,18 @@ public class BarTask extends AbstractTask {
             }
             log.info(allList);
 
+            List<Stock> stocks = stockService.buildStocks(new ArrayList<>(allList));
+            if(market != null){
+                stocks = stocks.stream().filter(stock -> StringUtils.containsIgnoreCase(market, stock.getMarket().name())).collect(Collectors.toList());
+            }
+
+            if(StringUtils.isEmpty(strategy)){
+                this.strategy = Sample.STRATEGIES;
+            }
             //策略回测开始    01,02 策略在com.stk123.model.strategy.sample.Sample 里定义
-            StrategyBacktesting strategyBacktesting = backtestingService.backtesting(
-                    new ArrayList<>(allList),
-                    Arrays.asList(StringUtils.split("01,02a,02b,03,04,05", ",")),
+            StrategyBacktesting strategyBacktesting = backtestingService.backtestingOnStock(
+                    stocks,
+                    Arrays.asList(StringUtils.split(this.strategy, ",")),
                     startDate, endDate, realtime!=null);
 
             List<StrategyResult> results = strategyBacktesting.getPassedStrategyResult();
@@ -356,7 +370,7 @@ public class BarTask extends AbstractTask {
                 StringBuffer sb = new StringBuffer();
 
                 List<List<String>> datas = new ArrayList<>();
-                results = results.stream().sorted(Comparator.comparing(strategyResult -> strategyResult.getStrategy().getName())).collect(Collectors.toList());
+                results = results.stream().sorted(Comparator.comparing(strategyResult -> strategyResult.getStrategy().getCode())).collect(Collectors.toList());
                 for(StrategyResult strategyResult : results){
 
                     List<String> sources = new ArrayList<>();
@@ -365,9 +379,9 @@ public class BarTask extends AbstractTask {
                     }
                     if (portfolios != null) {
                         for(Portfolio portfolio : portfolios){
-                            List<com.stk123.model.xueqiu.Stock> stocks = portfolio.getStocks();
-                            if(stocks != null && stocks.size() > 0) {
-                                com.stk123.model.xueqiu.Stock stk = stocks.stream().filter(stock -> stock.getCode() != null && stock.getCode().contains(strategyResult.getCode())).findFirst().orElse(null);
+                            List<com.stk123.model.xueqiu.Stock> xqStock = portfolio.getStocks();
+                            if(xqStock != null && xqStock.size() > 0) {
+                                com.stk123.model.xueqiu.Stock stk = xqStock.stream().filter(stock -> stock.getCode() != null && stock.getCode().contains(strategyResult.getCode())).findFirst().orElse(null);
                                 if (stk != null) {
                                     sources.add(CommonUtils.wrapLink(portfolio.getName(), "https://xueqiu.com/P/" + portfolio.getSymbol()) + " ["+stk.getWeight()+"]");
                                 }
@@ -375,7 +389,7 @@ public class BarTask extends AbstractTask {
                         }
                     }
 
-                    StrategyBacktesting backtesting = backtestingService.backtesting(strategyResult.getCode(), strategyResult.getStrategy().getCode(), false);
+                    StrategyBacktesting backtesting = backtestingService.backtestingAllHistory(strategyResult.getCode(), strategyResult.getStrategy().getCode(), false);
 
                     List<String> data = ListUtils.createList(
                             Stock.build(strategyResult.getCode(), null).getNameAndCodeWithLink(),
@@ -388,7 +402,7 @@ public class BarTask extends AbstractTask {
                     datas.add(data);
                 }
 
-                datas = datas.stream().sorted(Comparator.comparing(e -> e.get(3).contains("自选股"), Comparator.reverseOrder())).collect(Collectors.toList());;
+                //datas = datas.stream().sorted(Comparator.comparing(e -> e.get(3).contains("自选股"), Comparator.reverseOrder())).collect(Collectors.toList());
 
                 List<String> titles = ListUtils.createList("标的", "日期", "策略", "来源", "历史策略回测通过率");
                 String table = CommonUtils.createHtmlTable(titles, datas);
@@ -399,6 +413,12 @@ public class BarTask extends AbstractTask {
                 strategyBacktesting.getStrategies().forEach(strategy -> {
                     sb.append(strategy.toString().replaceAll("\n","<br/>")).append("<br/>");
                 });
+
+                sb.append("<br/><br/>--------------------------------------------------------<br/>");
+                List<Stock> finalStocks = stocks;
+                List missingList = allList.stream().filter(code -> finalStocks.stream().noneMatch(stock -> stock.getCode().equals(code))).collect(Collectors.toList());
+                sb.append("被忽略的标的：<br/>");
+                sb.append(StringUtils.join(missingList, ","));
 
                 EmailUtils.send("策略发现"+results.size()+"个标的", sb.toString());
             }else{

@@ -11,10 +11,8 @@ import com.stk123.util.ServiceUtils;
 import lombok.Data;
 import lombok.ToString;
 import lombok.extern.apachecommons.CommonsLog;
-import org.apache.http.client.utils.DateUtils;
 
 import java.io.Serializable;
-import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -602,13 +600,13 @@ public class Bar implements Serializable, Cloneable {
 	}
 
 	/**
-	 * 返回满足条件的Bar的个数
+	 * 返回满足条件的Bar的个数 (包括today)
 	 * @param days
 	 * @param predicate
 	 * @return
 	 * @throws Exception
 	 */
-	public int getBarCountWithPredicate(int days, Predicate<Bar> predicate) {
+	public int getBarCount(int days, Predicate<Bar> predicate) {
 		Bar k = this;
 		int cnt = 0;
 		while(k != null){
@@ -623,6 +621,10 @@ public class Bar implements Serializable, Cloneable {
 		return cnt;
 	}
 
+    public int getBarCountExcludeToday(int days, Predicate<Bar> predicate) {
+        return this.before().getBarCount(days, predicate);
+    }
+
 	/**
 	 * @param days
 	 * @param indent 当满足条件时，k线往前进的天数
@@ -630,7 +632,7 @@ public class Bar implements Serializable, Cloneable {
 	 * @return
 	 * @throws Exception
 	 */
-	public int getBarCountWithPredicate(int days, int indent, Predicate<Bar> predicate) throws Exception {
+	public int getBarCount(int days, int indent, Predicate<Bar> predicate) {
 		Bar k = this;
 		int cnt = 0;
 		while(k != null){
@@ -750,31 +752,31 @@ public class Bar implements Serializable, Cloneable {
 			Bar yk = this.before(1);
 			double ymacd = yk.getYpcdMACD();
 			if(ymacd < 4 && ymacd > -2){
-				int cnt = this.getBarCountWithPredicate(10, k -> {
+				int cnt = this.getBarCount(10, k -> {
 						double m = k.getYpcdMACD();
 						if(m >= 5)return true;
 						return false;
 					});
-				int cnt2 = this.getBarCountWithPredicate(10, k -> {
+				int cnt2 = this.getBarCount(10, k -> {
 						double m = k.getYpcdMACD();
 						if(m < 3 && m > -3)return true;
 						return false;
 					});
 
 				if(cnt > 0 || cnt2 >= 6){
-					cnt = this.getBarCountWithPredicate(8, k -> {
+					cnt = this.getBarCount(8, k -> {
 							double m = k.getYpcdMACD();
 							if(m < -5)return true;
 							return false;
 						});
-					cnt += this.getBarCountWithPredicate(20, k -> {
+					cnt += this.getBarCount(20, k -> {
 							double m = k.getYpcdMACD();
 							if(m > 40)return true;
 							return false;
 						});
 					//System.out.println(cnt);
 					if(cnt == 0){
-						cnt = this.getBarCountWithPredicate(10, k -> {
+						cnt = this.getBarCount(10, k -> {
 								if(k.getYpcdMACD() > -3)return true;
 								return false;
 							});

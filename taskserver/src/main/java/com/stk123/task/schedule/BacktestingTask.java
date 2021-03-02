@@ -5,6 +5,7 @@ import com.stk123.entity.StkTaskLogEntity;
 import com.stk123.model.strategy.PassedResult;
 import com.stk123.model.strategy.StrategyBacktesting;
 import com.stk123.model.strategy.StrategyResult;
+import com.stk123.model.strategy.sample.Sample;
 import com.stk123.service.core.BacktestingService;
 import com.stk123.service.core.TaskService;
 import com.stk123.service.task.Task;
@@ -49,8 +50,12 @@ public class BacktestingTask extends AbstractTask {
 
     public void execute() {
         try {
-            if(backtesting != null){
-                StrategyBacktesting strategyBacktesting = backtestingService.backtesting(Arrays.asList(StringUtils.split(code, ",")), strategy, realtime != null);
+            if(StringUtils.isEmpty(strategy)){
+                strategy = Sample.STRATEGIES;
+            }
+            if(StringUtils.isNotEmpty(backtesting)){
+                StrategyBacktesting strategyBacktesting = backtestingService.backtestingAllHistory(Arrays.asList(StringUtils.split(code, ",")),
+                        Arrays.asList(StringUtils.split(strategy, ",")), realtime != null);
             }else {
                 StrategyBacktesting strategyBacktesting = backtestingService.backtesting(Arrays.asList(StringUtils.split(code, ",")),
                         Arrays.asList(StringUtils.split(strategy, ",")), startDate, endDate, realtime != null);

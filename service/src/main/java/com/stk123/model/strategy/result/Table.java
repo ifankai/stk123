@@ -10,7 +10,7 @@ import java.util.*;
 public class Table {
     //<y , <x, td>>
     private Map<String, Map<String, TableTd>> datas = new TreeMap<>();
-    private Set<String> xTitles = new TreeSet<>();
+    private Set<String> xTitles = new LinkedHashSet<>();//TreeSet<>(Comparator.reverseOrder());
     private String name;
 
     public Table(String name){
@@ -39,7 +39,7 @@ public class Table {
         tab.attributes.put("border", "1");
         tab.attributes.put("cellspacing", "0");
         tab.attributes.put("cellpadding", "0");
-        tab.attributes.put("style", "font:12px");
+        tab.attributes.put("style", "font:10px;word-break:keep-all;white-space:nowrap;");
 
         HtmlTr tr = new HtmlTr();
         if(datas.size() > 0){

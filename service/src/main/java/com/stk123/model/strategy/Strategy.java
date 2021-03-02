@@ -167,6 +167,7 @@ public class Strategy<X> {
             }
         }
         if(frs.size() > 0) {
+            frs = frs.stream().sorted(Comparator.comparing(filterResult -> filterResult.log().getXTitle(), Comparator.reverseOrder())).collect(Collectors.toList());
             Table table = new Table("成功");
             frs.forEach(filterResult -> table.add(filterResult.log()));
             sb.append(table.toHtml());
@@ -182,6 +183,7 @@ public class Strategy<X> {
             }
         }
         if(frs.size() > 0) {
+            frs = frs.stream().sorted(Comparator.comparing(filterResult -> filterResult.log().getXTitle(), Comparator.reverseOrder())).collect(Collectors.toList());
             Table table = new Table("失败");
             frs.forEach(filterResult -> table.add(filterResult.log()));
             sb.append(table.toHtml());

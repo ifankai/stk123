@@ -47,7 +47,11 @@ public abstract class AbstractTask extends Task {
             for (String arg : args) {
                 if(StringUtils.contains(arg, "=")){
                     String[] p = StringUtils.split(arg, "=");
-                    params.put(p[0], p[1]);
+                    if(p.length == 1){
+                        params.put(p[0], null);
+                    }else {
+                        params.put(p[0], p[1]);
+                    }
                 }else{
                     if ("US".equalsIgnoreCase(arg)) {
                         market = Stock.EnumMarket.US;

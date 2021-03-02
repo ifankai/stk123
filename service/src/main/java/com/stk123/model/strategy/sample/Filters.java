@@ -1,17 +1,13 @@
 package com.stk123.model.strategy.sample;
 
 import com.stk123.common.CommonUtils;
-import com.stk123.model.K;
 import com.stk123.model.core.Bar;
 import com.stk123.model.core.BarSeries;
 import com.stk123.model.core.Bars;
 import com.stk123.model.strategy.Filter;
 import com.stk123.model.strategy.result.FilterResult;
 import com.stk123.model.strategy.result.FilterResultBetween;
-import com.stk123.model.strategy.result.FilterResultEquals;
-import org.apache.commons.lang.StringUtils;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -112,7 +108,7 @@ public class Filters {
             double p = bar.getChange();
             double close = bar.getClose();
             if(p > 0){
-                int count = bar.getBarCountWithPredicate(n, k -> k.getClose() < close);
+                int count = bar.getBarCountExcludeToday(n, k -> k.getClose() < close);
                 if(count >= n){
                     return FilterResult.TRUE(bar.getDate());
                 }
@@ -177,7 +173,7 @@ public class Filters {
         return (bar) -> {
             Bar.MACD macd = bar.getMACD();
             Bar.MACD macdBefore = bar.before().getMACD();
-            if(macd.macd < 0 && macd.macd > macdBefore.macd){
+            if(macd.dif <= 0 && macd.macd > macdBefore.macd){
                 Bar forkBar = bar.getMACDUpperForkBar(5);
                 Bar forkBarBefore = forkBar.before();
                 if(forkBarBefore.getMACD().dif < bar.before().getMACD().dif
@@ -222,7 +218,7 @@ public class Filters {
             if(today.getSlopeOfMA(1, 60) < 0 && today.getSlopeOfMA(1, 120) < 0){
                 return FilterResult.FALSE("60,120均线都是下降的");
             }
-            int cnt = today.getBarCountWithPredicate(30, bar -> bar.getMA(20, Bar.EnumValue.C) > bar.getMA(120, Bar.EnumValue.C));
+            int cnt = today.getBarCount(30, bar -> bar.getMA(20, Bar.EnumValue.C) > bar.getMA(120, Bar.EnumValue.C));
             if(cnt < 1){
                 return FilterResult.FALSE("均线空头排列");
             }
@@ -285,8 +281,8 @@ public class Filters {
             double h2 = today.before().getHighest(20, Bar.EnumValue.C);
             double l2 = today.before().getLowest(20, Bar.EnumValue.C);
 
-            int cnt = today.before().getBarCountWithPredicate(10, bar -> today.getVolume() > bar.getVolume());
-            int cnt2 = today.before().getBarCountWithPredicate(20, bar -> today.getVolume() > bar.getVolume());
+            int cnt = today.before().getBarCount(10, bar -> today.getVolume() > bar.getVolume());
+            int cnt2 = today.before().getBarCount(20, bar -> today.getVolume() > bar.getVolume());
             if( ((h-l)/l < 0.04 && today.getClose() > h && cnt >= 10)
                     ||((h2-l2)/l2 < 0.1 && today.getClose() > h2 && cnt2 >= 19)
                     ){
