@@ -91,7 +91,7 @@ public class Sample {
     //站上巨量
     public static Strategy strategy_06() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_06","站上巨量(06)", BarSeries.class);
-        strategy.addFilter("站上巨量", Filters.filter_010(10,5));
+        strategy.addFilter("站上巨量", Filters.filter_010(30,5));
         return null;
     }
 
