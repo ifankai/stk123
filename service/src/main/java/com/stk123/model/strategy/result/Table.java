@@ -29,7 +29,7 @@ public class Table {
         if(cell == null){
             xMap.put(td.getXTitle(), td);
         }else{
-            cell.add(td.getTd());
+            cell.add(td.getContents());
         }
         return this;
     }
@@ -56,7 +56,7 @@ public class Table {
             tr.columns.add(HtmlTd.getInstance(yTitle));
             for(String xTitle : xTitles){
                 HtmlTd td = new HtmlTd();
-                td.text = StringUtils.join(datas.get(yTitle).get(xTitle).getTd(), "<br/>");
+                td.text = StringUtils.join(datas.get(yTitle).get(xTitle).getContents(), "<br/>");
                 td.attributes.put("style", "word-break:keep-all;white-space:nowrap;");
                 tr.columns.add(td);
             }

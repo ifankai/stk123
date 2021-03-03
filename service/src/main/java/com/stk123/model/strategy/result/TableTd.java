@@ -11,21 +11,21 @@ import java.util.List;
 public class TableTd {
     private String xTitle;
     private String yTitle;
-    private List<String> td;
+    private List<String> contents;
 
-    public TableTd(String xTitle, String yTitle, String td){
+    public TableTd(String xTitle, String yTitle, String content){
         this.xTitle = xTitle;
         this.yTitle = yTitle;
-        if(td == null){
-            this.td = new ArrayList<>();
+        if(this.contents == null){
+            this.contents = new ArrayList<>();
         }
-        this.td.add(td);
+        this.contents.add(content);
     }
 
-    public void add(List<String> tds){
-        if(td == null){
-            this.td = new ArrayList<>();
+    public void add(List<String> contents){
+        if(contents == null){
+            this.contents = new ArrayList<>();
         }
-        this.td.addAll(tds);
+        this.contents.addAll(contents);
     }
 }

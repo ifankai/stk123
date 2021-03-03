@@ -58,8 +58,11 @@ public class StockController {
     public RequestResult updateKline(@PathVariable(value = "code")String code){
         Stock stock = Stock.build(code);
         try {
+            log.info("update k line start");
             barService.updateKline(stock, Integer.MAX_VALUE);
+            log.info("update k line end");
         } catch (Exception e) {
+            log.error("",e);
             return RequestResult.success(e.getMessage());
         }
         return RequestResult.success();

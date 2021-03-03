@@ -370,7 +370,9 @@ public class BarTask extends AbstractTask {
                 StringBuffer sb = new StringBuffer();
 
                 List<List<String>> datas = new ArrayList<>();
-                results = results.stream().sorted(Comparator.comparing(strategyResult -> strategyResult.getStrategy().getCode())).collect(Collectors.toList());
+                //results = results.stream().sorted(Comparator.comparing(strategyResult -> strategyResult.getStrategy().getCode())).collect(Collectors.toList());
+
+                String rowCode = null;
                 for(StrategyResult strategyResult : results){
 
                     List<String> sources = new ArrayList<>();
@@ -391,8 +393,14 @@ public class BarTask extends AbstractTask {
 
                     StrategyBacktesting backtesting = backtestingService.backtestingAllHistory(strategyResult.getCode(), strategyResult.getStrategy().getCode(), false);
 
+                    boolean displayCode = true;
+                    if(strategyResult.getCode().equals(rowCode)){
+                        displayCode = false;
+                    }else{
+                        rowCode = strategyResult.getCode();
+                    }
                     List<String> data = ListUtils.createList(
-                            Stock.build(strategyResult.getCode(), null).getNameAndCodeWithLink(),
+                            displayCode?Stock.build(strategyResult.getCode(), null).getNameAndCodeWithLink():"",
                             strategyResult.getDate(),
                             strategyResult.getStrategy().getName(),
                             StringUtils.join(sources, "<br/>"),
@@ -416,11 +424,11 @@ public class BarTask extends AbstractTask {
 
                 sb.append("<br/><br/>--------------------------------------------------------<br/>");
                 List<Stock> finalStocks = stocks;
-                List missingList = allList.stream().filter(code -> finalStocks.stream().noneMatch(stock -> stock.getCode().equals(code))).collect(Collectors.toList());
+                List missingList = allList.stream().filter(code -> finalStocks.stream().noneMatch(stock -> code.contains(stock.getCode()))).collect(Collectors.toList());
                 sb.append("被忽略的标的：<br/>");
                 sb.append(StringUtils.join(missingList, ","));
 
-                EmailUtils.send("策略发现"+results.size()+"个标的", sb.toString());
+                EmailUtils.send("策略发现"+(datas.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count())+"个标的", sb.toString());
             }else{
                 EmailUtils.send("策略发现0个标的", "");
             }

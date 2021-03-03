@@ -271,6 +271,7 @@ public class Filters {
         };
     }
 
+    //突破底部平台
     public static Filter<BarSeries> filter_009() {
         return (bs) -> {
             Bar today = bs.getFirst();
@@ -289,6 +290,18 @@ public class Filters {
                 return FilterResult.TRUE((h-l)/l + "," + cnt + ", "+cnt2);
             }
             return FilterResult.FALSE(cnt + ", "+cnt2);
+        };
+    }
+
+    //站上巨量 n:量能是前一天多少倍
+    public static Filter<BarSeries> filter_010(int days, int n){
+        return (bs) -> {
+            Bar today = bs.getFirst();
+            Bar k = today.getBarExcludeToday(days, bar -> bar.getVolume()/bar.before().getVolume() >= n);
+            if(k != null && today.getClose() >= k.getClose() && today.before().getClose() <= k.getClose()){
+                return FilterResult.TRUE(k.getVolume()/k.before().getVolume());
+            }
+            return FilterResult.FALSE();
         };
     }
 }

@@ -579,25 +579,28 @@ public class Bar implements Serializable, Cloneable {
 	}
 
 	/**
-	 * 返回满足条件的Bar，否则返回null
+	 * 返回满足条件的Bar (包括today)，否则返回null
 	 * @param days
 	 * @param predicate
 	 * @return
 	 * @throws Exception
 	 */
-	public Bar getBarWithPredicate(int days, Predicate<Bar> predicate) throws Exception {
+	public Bar getBar(int days, Predicate<Bar> predicate) {
 		Bar k = this;
 		while(k != null){
 			if(predicate.test(k)){
 				return k;
 			}
-			k = k.before(1);
-			if(days -- <= 1){
+			if(--days < 1){
 				break;
 			}
+            k = k.before(1);
 		}
 		return null;
 	}
+    public Bar getBarExcludeToday(int days, Predicate<Bar> predicate) {
+        return this.before().getBar(days, predicate);
+    }
 
 	/**
 	 * 返回满足条件的Bar的个数 (包括today)

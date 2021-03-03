@@ -8,7 +8,7 @@ import com.stk123.model.strategy.result.FilterResult;
 
 public class Sample {
 
-    public static String STRATEGIES = "01,02a,02b,03,04,05";
+    public static String STRATEGIES = "01,02a,02b,03,04,05,06";
 
     public static Strategy strategy_01() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_01","策略603096新经典20201106，一段跌幅后底部放量(01)", BarSeries.class);
@@ -88,8 +88,15 @@ public class Sample {
         return strategy;
     }
 
-    //大跌后，有减持，问询函？
+    //站上巨量
     public static Strategy strategy_06() {
+        Strategy<BarSeries> strategy = new Strategy<>("strategy_06","站上巨量(06)", BarSeries.class);
+        strategy.addFilter("站上巨量", Filters.filter_010(10,5));
+        return null;
+    }
+
+    //大跌后，有减持，问询函？
+    public static Strategy strategy_0() {
         return null;
     }
 
@@ -97,22 +104,15 @@ public class Sample {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_TEST","Strategy TEST", BarSeries.class);
         Filter<BarSeries> filter = (bs) -> {
             Bar today = bs.getFirst();
-            if(today == null || today.before() == null || today.getChange() > 6) return FilterResult.FALSE();
-            double h = today.before().getHighest(10, Bar.EnumValue.C);
-            double l = today.before().getLowest(10, Bar.EnumValue.C);
-
-            double h2 = today.before().getHighest(20, Bar.EnumValue.C);
-            double l2 = today.before().getLowest(20, Bar.EnumValue.C);
-            if( ((h-l)/l < 0.04 && today.getClose() > h && today.before().getBarCount(10, bar -> today.getVolume() > bar.getVolume()) >= 10)
-              ||((h2-l2)/l2 < 0.1 && today.getClose() > h2 && today.before().getBarCount(20, bar -> today.getVolume() > bar.getVolume()) >= 19)
-            ){
-                return FilterResult.TRUE((h-l)/l + "," + today.before().getBarCount(10, bar -> today.getVolume() > bar.getVolume()));
+            Bar k = today.getBarExcludeToday(5, bar -> bar.getVolume()/bar.before().getVolume() >= 5);
+            if(k != null && today.getClose() >= k.getClose() && today.before().getClose() <= k.getClose()){
+                return FilterResult.TRUE(k.getVolume()/k.before().getVolume());
             }
-            return FilterResult.FALSE(today.before().getBarCount(10, bar -> today.getVolume() > bar.getVolume()));
+            return FilterResult.FALSE();
         };
         //strategy.addFilter("test filter", Filters.filter_006b(0.02));
         strategy.addFilter("test filter", filter);
-        strategy.addFilter("过去3天到80天的跌幅", BarSeries::getFirst, Filters.filter_001b(3,60,-50,-30));
+        //strategy.addFilter("过去3天到80天的跌幅", BarSeries::getFirst, Filters.filter_001b(3,60,-50,-30));
 
         //strategy.setExpectFilter("60日内涨幅>20%", Filters.expectFilter(250, 25));
         strategy.setExpectFilter("60日内涨幅>20%", Filters.expectFilter(60, 20));
