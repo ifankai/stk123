@@ -479,9 +479,16 @@ public class BarService {
             if(ks.length > 0){
                 if(n != Integer.MAX_VALUE){
                     String[] k = ks[0].split(",");
-                    StkKlineEntity stkKlineEntity = stkKlineRepository.findById(stock.getCode(), StringUtils.replace(k[0], "-", ""));
-                    if (stkKlineEntity == null || stkKlineEntity.getOpen() != Double.parseDouble(k[1]) || stkKlineEntity.getClose() != Double.parseDouble(k[2])) {
-                        n = Integer.MAX_VALUE;
+                    if(stock.isMarketCN()) {
+                        StkKlineEntity stkKlineEntity = stkKlineRepository.findById(stock.getCode(), StringUtils.replace(k[0], "-", ""));
+                        if (stkKlineEntity == null || stkKlineEntity.getOpen() != Double.parseDouble(k[1]) || stkKlineEntity.getClose() != Double.parseDouble(k[2])) {
+                            n = Integer.MAX_VALUE;
+                        }
+                    }else if(stock.isMarketHK()){
+                        StkKlineHkEntity stkKlineEntity = stkKlineHkRepository.findById(stock.getCode(), StringUtils.replace(k[0], "-", ""));
+                        if (stkKlineEntity == null || stkKlineEntity.getOpen() != Double.parseDouble(k[1]) || stkKlineEntity.getClose() != Double.parseDouble(k[2])) {
+                            n = Integer.MAX_VALUE;
+                        }
                     }
                 }
             }else{

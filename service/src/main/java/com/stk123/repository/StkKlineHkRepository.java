@@ -3,6 +3,8 @@ package com.stk123.repository;
 import com.stk123.common.util.BeanUtils;
 import com.stk123.entity.StkKlineHkEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +14,9 @@ import java.util.Optional;
 public interface StkKlineHkRepository extends JpaRepository<StkKlineHkEntity, StkKlineHkEntity.CompositeKey> {
 
     StkKlineHkEntity findTop1ByCodeOrderByKlineDateDesc(String code);
+
+    @Query(value = "select t from StkKlineHkEntity t where t.close=:code and t.klineDate=:klineDate")
+    StkKlineHkEntity findById(@Param("code")String code, @Param("klineDate")String klineDate);
 
     @Transactional
     default StkKlineHkEntity saveIfNotExisting(StkKlineHkEntity stkKlineUsEntity){
