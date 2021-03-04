@@ -376,13 +376,13 @@ public class Bar implements Serializable, Cloneable {
 		return this.ene;
 	}*/
 
-	public double getBIAS(int n) throws Exception{
+	public double getBIAS(int n) {
 		double ma = this.getMA(n, C);
 		return (this.getClose() - ma)/ma * 100;
 	}
 
 
-	public double getBIAS4(int m, int n) throws Exception {
+	public double getBIAS4(int m, int n) {
 		return (this.getMA(m, C) - this.getMA(n, C)) / this.getMA(n, C) * 100;
 	}
 
@@ -580,10 +580,6 @@ public class Bar implements Serializable, Cloneable {
 
 	/**
 	 * 返回满足条件的Bar (包括today)，否则返回null
-	 * @param days
-	 * @param predicate
-	 * @return
-	 * @throws Exception
 	 */
 	public Bar getBar(int days, Predicate<Bar> predicate) {
 		Bar k = this;
@@ -604,10 +600,6 @@ public class Bar implements Serializable, Cloneable {
 
 	/**
 	 * 返回满足条件的Bar的个数 (包括today)
-	 * @param days
-	 * @param predicate
-	 * @return
-	 * @throws Exception
 	 */
 	public int getBarCount(int days, Predicate<Bar> predicate) {
 		Bar k = this;
@@ -632,8 +624,6 @@ public class Bar implements Serializable, Cloneable {
 	 * @param days
 	 * @param indent 当满足条件时，k线往前进的天数
 	 * @param predicate
-	 * @return
-	 * @throws Exception
 	 */
 	public int getBarCount(int days, int indent, Predicate<Bar> predicate) {
 		Bar k = this;
@@ -737,7 +727,7 @@ public class Bar implements Serializable, Cloneable {
 		return macd;
 	}
 	//一品抄底-底部
-	public boolean getYpcd() throws Exception {
+	public boolean getYpcd() {
 		Bar yk = this.before(1);
 		double a2 = (this.getHorse() - yk.getHorse())/yk.getHorse() * 100;
 		double ya2 = this.getValue(1, k -> {
@@ -748,7 +738,7 @@ public class Bar implements Serializable, Cloneable {
 		return false;
 	}
 
-	public boolean getYpcd2() throws Exception {
+	public boolean getYpcd2() {
 		double macd = this.getYpcdMACD();
 		//System.out.println(k.getDate()+"="+macd);
 		if(macd >= 4){
@@ -835,8 +825,6 @@ public class Bar implements Serializable, Cloneable {
 	 * VB:=LLV(L,5);
 	 * VC:=HHV(H,5);
 	 * 红线上穿买:EMA((VA-VB)/(VC-VB)*100,5),COLORRED;
-	 * @return
-	 * @throws Exception
 	 */
 	public double getEpcd_Hxscm() {
 		double z = this.getEMA(5, k -> {
@@ -879,7 +867,7 @@ public class Bar implements Serializable, Cloneable {
 	}
 	
 	//10均量连续上升或下降次数
-	public boolean hasHighVolumn(double d) throws Exception{
+	public boolean hasHighVolumn(double d) {
 		IntRange2IntMap range = new IntRange2IntMap();
 		//range.define(0, 5);
 		range.define(6, 50);
@@ -982,14 +970,14 @@ public class Bar implements Serializable, Cloneable {
 	/**
 	 * 返回 今天的n天均量比n天前的n天均量的倍数
 	 */
-	public double getVolumeMA(int n) throws Exception {
+	public double getVolumeMA(int n) {
 		Bar kn = this.before(n);
 		double vn = kn.getMA(n, V);
 		double v = this.getMA(n, V);
 		return v/vn;
 	}
 	
-	public int getDayOnMaxOfVolumeMA(int n, int days) throws Exception{
+	public int getDayOnMaxOfVolumeMA(int n, int days) {
 		//通常倍数(times)设为1，指只要大于前面的量就行
 		return this.getDayOnMaxOfVolumeMA(n, days, 1);
 	}
@@ -998,7 +986,7 @@ public class Bar implements Serializable, Cloneable {
 	 * 
 	 * 即：n日平均量能连续最高(或者大于times倍)保持天数
 	 */
-	public int getDayOnMaxOfVolumeMA(int n, int days, double times) throws Exception{
+	public int getDayOnMaxOfVolumeMA(int n, int days, double times) {
 		Bar kvh = this.getHighestBar(5, V, 5, MA);
 		double v = kvh.getMA(n, V);
 		Bar k = kvh.before(n);
@@ -1026,25 +1014,19 @@ public class Bar implements Serializable, Cloneable {
 	}
 	
 	public boolean dateBefore(Bar k) {
-        Date d1 = null;
-        Date d2 = null;
-        try {
-            d1 = CommonUtils.parseDate(this.getDate());
-            d2 = CommonUtils.parseDate(k.getDate());
-        } catch (Exception e) {
-            log.error(this.getDate()+","+k.getDate(), e);
-        }
+        Date d1 = CommonUtils.parseDate(this.getDate());
+        Date d2 = CommonUtils.parseDate(k.getDate());
 		return d1.before(d2);
 	}
 	public boolean dateBeforeOrEquals(Bar k) {
 		return this.dateEquals(k) || this.dateBefore(k);
 	}
-	public boolean dateAfter(Bar k) throws Exception{
+	public boolean dateAfter(Bar k) {
 		Date d1 = CommonUtils.parseDate(this.getDate());
 		Date d2 = CommonUtils.parseDate(k.getDate());
 		return d1.after(d2);
 	}
-	public boolean dateAfterOrEquals(Bar k) throws Exception{
+	public boolean dateAfterOrEquals(Bar k) {
 		return this.dateEquals(k) || this.dateAfter(k);
 	}
 	public boolean dateEquals(Bar k){

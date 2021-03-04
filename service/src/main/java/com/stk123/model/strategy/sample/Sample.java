@@ -92,7 +92,7 @@ public class Sample {
     public static Strategy strategy_06() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_06","站上巨量(06)", BarSeries.class);
         strategy.addFilter("站上巨量", Filters.filter_010(30,5));
-        return null;
+        return strategy;
     }
 
     //大跌后，有减持，问询函？

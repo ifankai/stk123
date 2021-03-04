@@ -1,40 +1,26 @@
 package com.stk123.service.core;
 
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stk123.entity.StkTaskLogEntity;
 import com.stk123.model.RequestResult;
-import com.stk123.model.core.Bar;
 import com.stk123.model.core.BarSeries;
 import com.stk123.model.core.Stock;
-import com.stk123.model.json.View;
-import com.stk123.model.strategy.PassedResult;
 import com.stk123.model.strategy.Strategy;
 import com.stk123.model.strategy.StrategyBacktesting;
 import com.stk123.model.strategy.StrategyResult;
 import com.stk123.model.strategy.sample.Sample;
-import com.stk123.service.core.BarService;
-import com.stk123.service.core.StockService;
 import com.stk123.util.ServiceUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.reflections.ReflectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -106,8 +92,9 @@ public class BacktestingService {
         Set<Method> methods = ReflectionUtils.getAllMethods(Sample.class,
                 method -> strategies.stream().anyMatch(name -> StringUtils.equalsIgnoreCase(method.getName(), "strategy_"+name) || StringUtils.equalsIgnoreCase(method.getName(), name)));
         for (Method method : methods) {
-            //strategyBacktesting.addStrategy(Sample.strategy_01());
-            strategyBacktesting.addStrategy((Strategy<?>) method.invoke(null, null));
+            Strategy strategy = (Strategy<?>) method.invoke(null, null);
+            Assert.notNull(strategy, "Strategy must not be null");
+            strategyBacktesting.addStrategy(strategy);
         }
 
         if(startDate != null && endDate != null){
