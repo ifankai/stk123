@@ -297,9 +297,11 @@ public class Filters {
     public static Filter<BarSeries> filter_010(int days, int n){
         return (bs) -> {
             Bar today = bs.getFirst();
-            Bar k = today.getBarExcludeToday(days, bar -> bar.getVolume()/bar.before().getVolume() >= n);
+            Bar k = today.getBarExcludeToday(days, bar -> bar.before()!=null && bar.getVolume()/bar.before().getVolume() >= n);
             if(k != null && today.getClose() >= k.getClose() && today.before().getClose() <= k.getClose()){
-                return FilterResult.TRUE(k.getVolume()/k.before().getVolume());
+                if(k.getBarCountExcludeToday(days*4, bar -> bar.getVolume() < k.getVolume()) >= days*4) {
+                    return FilterResult.TRUE(k.getVolume() / k.before().getVolume());
+                }
             }
             return FilterResult.FALSE();
         };
