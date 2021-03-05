@@ -289,6 +289,22 @@ public class Bar implements Serializable, Cloneable {
 		return this.getLowestBar(n, ev).getValue(ev);
 	}
 
+	public Bar getLowestBar(int days, EnumValue typeValue, int days2, EnumCalculationMethod typeCalc) {
+		double min = 0.0;
+		Bar ret = null;
+		for(int i=0;i<days;i++){
+			Bar k = this.before(i);
+			if(k == null){
+				break;
+			}
+			double d = k.getValue(days2, typeValue, typeCalc);
+			if(d < min){
+				ret = k;
+				min = d;
+			}
+		}
+		return ret;
+	}
 
 	/**
 	 * highest
@@ -317,7 +333,7 @@ public class Bar implements Serializable, Cloneable {
         for(int i=0;i<days;i++){
             Bar k = this.before(i);
             if(k == null){
-                continue;
+				break;
             }
             double d = k.getValue(days2, typeValue, typeCalc);
             if(d > max){

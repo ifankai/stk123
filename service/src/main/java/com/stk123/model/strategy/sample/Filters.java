@@ -293,13 +293,31 @@ public class Filters {
         };
     }
 
-    //站上巨量 n:量能是前一天多少倍
+    //站上单根巨量, n:量能是前一天多少倍
     public static Filter<BarSeries> filter_010(int days, int n){
         return (bs) -> {
             Bar today = bs.getFirst();
             Bar k = today.getBarExcludeToday(days, bar -> bar.getVolume()/bar.before().getVolume() >= n);
             if(k != null && today.getClose() >= k.getClose() && today.before().getClose() <= k.getClose()){
                 return FilterResult.TRUE(k.getVolume()/k.before().getVolume());
+            }
+            return FilterResult.FALSE();
+        };
+    }
+
+    //底部一堆放量
+    public static Filter<BarSeries> filter_011(int days, int n){
+        return (bs) -> {
+            Bar today = bs.getFirst();
+            //days天内最大5日均量
+            Bar k = today.before().getHighestBar(days, Bar.EnumValue.V, 5, Bar.EnumCalculationMethod.MA);
+            Bar k2 = k.getHighestBar(5, Bar.EnumValue.C);
+            if(k2 != null && today.getClose() >= k2.getClose() && today.before().getClose() <= k2.getClose()){
+                //days天内最小5日均量
+                Bar k3 = today.before().getLowestBar(days, Bar.EnumValue.V, 5, Bar.EnumCalculationMethod.MA);
+                if(k.getMA(5, Bar.EnumValue.V) / k3.getMA(5, Bar.EnumValue.V) >= n) {
+                    return FilterResult.TRUE(k.getVolume() / k.before().getVolume());
+                }
             }
             return FilterResult.FALSE();
         };

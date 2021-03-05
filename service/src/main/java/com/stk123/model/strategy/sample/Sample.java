@@ -8,7 +8,7 @@ import com.stk123.model.strategy.result.FilterResult;
 
 public class Sample {
 
-    public static String STRATEGIES = "01,02a,02b,03,04,05,06";
+    public static String STRATEGIES = "01,02a,02b,03,04,05,06a";
 
     public static Strategy strategy_01() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_01","策略603096新经典20201106，一段跌幅后底部放量(01)", BarSeries.class);
@@ -88,12 +88,20 @@ public class Sample {
         return strategy;
     }
 
-    //站上巨量
-    public static Strategy strategy_06() {
-        Strategy<BarSeries> strategy = new Strategy<>("strategy_06","站上巨量(06)", BarSeries.class);
-        strategy.addFilter("站上巨量", Filters.filter_010(30,5));
+    //站上单根巨量
+    public static Strategy strategy_06a() {
+        Strategy<BarSeries> strategy = new Strategy<>("strategy_06a","站上单根巨量(06a)", BarSeries.class);
+        strategy.addFilter("站上单根巨量", Filters.filter_010(30,5));
         return strategy;
     }
+
+    //站上底部一堆放量  00005,20201022
+    public static Strategy strategy_06b() {
+        Strategy<BarSeries> strategy = new Strategy<>("strategy_06b","站上底部一堆放量(06b)", BarSeries.class);
+        strategy.addFilter("站上底部一堆放量", Filters.filter_011(30,8));
+        return strategy;
+    }
+
 
     //大跌后，有减持，问询函？
     public static Strategy strategy_0() {
