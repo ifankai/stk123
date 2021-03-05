@@ -92,6 +92,7 @@ public class Sample {
     public static Strategy strategy_06a() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_06a","站上单根巨量(06a)", BarSeries.class);
         strategy.addFilter("站上单根巨量", Filters.filter_010(30,5));
+        strategy.setExpectFilter("60日内涨幅>20%", Filters.expectFilter(60, 20));
         return strategy;
     }
 

@@ -143,6 +143,7 @@ public class Strategy<X> {
         return countOfPassedStrategyResult==0 ? 0 : countOfPassedExpectStrategyResult * 100d/countOfPassedStrategyResult;
     }
     public String getPassRateString(){
+        if(expectFilterExecutor == null)return "";
         return String.format("期望过滤器[%s]调用总次数：%d, 通过：%d, 未通过：%d。通过率：%.2f%%",
                 expectFilterExecutor.getName(), expectFilterExecutor.getCounterPassedAndNotPassed(),
                 expectFilterExecutor.getCounterPassed(), expectFilterExecutor.getCounterNotPassed(),
