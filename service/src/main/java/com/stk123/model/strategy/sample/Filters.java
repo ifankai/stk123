@@ -318,7 +318,7 @@ public class Filters {
             if(k2 != null && today.getClose() >= k2.getClose() && today.before().getClose() <= k2.getClose()){
                 Bar k4 = k.getHighestBar(5, Bar.EnumValue.V);
                 int cnt = k4.getBarCount(100, bar -> k4.getVolume()<bar.getVolume());
-                if(cnt >= 5){
+                if(cnt >= 3){
                     return FilterResult.FALSE("推量附近没有单日大量");
                 }
                 //days天内最小5日均量

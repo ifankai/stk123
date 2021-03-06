@@ -96,7 +96,7 @@ public class Sample {
         return strategy;
     }
 
-    //站上底部一堆放量 00005,20201022
+    //站上底部一堆放量 00005,20201021
     public static Strategy strategy_06b() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_06b","站上底部一堆放量(06b)", BarSeries.class);
         strategy.addFilter("站上底部一堆放量", Filters.filter_011(30,4));

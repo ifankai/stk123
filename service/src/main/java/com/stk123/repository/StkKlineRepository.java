@@ -22,7 +22,7 @@ public interface StkKlineRepository extends JpaRepository<StkKlineEntity, StkKli
 
     StkKlineEntity findTop1ByCodeOrderByKlineDateDesc(String code);
 
-    @Query(value = "select t from StkKlineEntity t where t.close=:code and t.klineDate=:klineDate")
+    @Query(value = "select t from StkKlineEntity t where t.code=:code and t.klineDate=:klineDate")
     StkKlineEntity findById(@Param("code")String code, @Param("klineDate")String klineDate);
 
     @Modifying

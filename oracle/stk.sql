@@ -1782,10 +1782,10 @@ select count(1) from stk_cn;
 select * from stk_fn_data where type=111 and fn_date='20141231' and fn_value>300;
 select * from stk_text where code in ('900940','200056') for update;
 
-select * from stk_us where code='ABGB';
+select * from stk where code='603386';
 update stk set hot =0 where hot is null;
 select * from stk_us where hot is null;
-select * from stk_kline_us where code='BAC' order by kline_date desc;
+select * from stk_kline where code='603386' order by kline_date desc;
 
 
 select * from stk_kline_us where code='NOAH' order by kline_date desc;
@@ -2919,7 +2919,7 @@ update stk_kline_us set amount=null where code='.DJI' and kline_date='20201224';
 select * from stk_kline_us where code='CMRX' order by kline_date desc;
 select * from stk_kline where length(code)>6;
 
-select * from stk_kline_hk where code='06837' order by kline_date desc;
+select * from stk_kline_hk where code='00678' order by kline_date desc;
 update stk_kline_hk set code='06837' where code='068371' and kline_date='20210226';
 
 select * from stk_text where sub_type=300 order by insert_time desc;
