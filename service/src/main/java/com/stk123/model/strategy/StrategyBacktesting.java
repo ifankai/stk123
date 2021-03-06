@@ -7,6 +7,7 @@ import com.stk123.model.strategy.result.FilterResult;
 import com.stk123.model.strategy.result.FilterResultBetween;
 import com.stk123.model.strategy.result.FilterResultEquals;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 @CommonsLog
 public class StrategyBacktesting {
 
+    @Setter
     private int multipleThreadSize = 4;
 
     private boolean printDetail = false;
@@ -32,7 +34,7 @@ public class StrategyBacktesting {
     private String codes;
 
     @Getter
-    private List<Strategy<?>> strategies = new ArrayList<>();
+    private List<Strategy> strategies = new ArrayList<>();
 
     @Getter
     private LinkedHashMap<Stock, List<StrategyResult>> stockStrategyResults = new LinkedHashMap<>();
@@ -131,13 +133,19 @@ public class StrategyBacktesting {
 
         List<Callable<List<StrategyResult>>> tasks = new ArrayList<>();
         for (Stock stock : stocks) {
-            for(Strategy strategy : strategies) {
+            /*for(Strategy strategy : strategies) {
                 Callable<List<StrategyResult>> task = () -> {
                     //System.out.println("run ............................ "+Thread.currentThread().getId());
                     return this.test(strategy, stock, stock.getBarSeries().getLast().getDate(), stock.getBarSeries().getFirst().getDate());
                 };
                 tasks.add(task);
-            }
+            }*/
+
+            Callable<List<StrategyResult>> task = () -> {
+                //System.out.println("run ............................ "+Thread.currentThread().getId());
+                return this.test(strategies, stock, stock.getBarSeries().getLast().getDate(), stock.getBarSeries().getFirst().getDate());
+            };
+            tasks.add(task);
         }
         List<List<StrategyResult>> results = run(tasks, multipleThreadSize);
         results.stream().forEach(sr -> strategyResults.addAll(sr));
@@ -224,8 +232,36 @@ public class StrategyBacktesting {
                 StrategyResult strategyResult = this.test(strategy, stock);
                 strategyResult.setDate(bar.getDate());
                 strategyResult.setCode(stock.getCode());
-                info(strategyResult);
+                //info(strategyResult);
                 strategyResults.add(strategyResult);
+                bar = bar.after();
+                if (bar == null) break;
+                bs.setFirstBarFrom(bar.getDate());
+            } while (bar.dateBeforeOrEquals(endBar));
+        }
+        bs.setFirstBarFrom(null);
+        return strategyResults;
+    }
+
+    private List<StrategyResult> test(List<Strategy> strategies, Stock stock, String startDate, String endDate) {
+        List<StrategyResult> strategyResults = new ArrayList<>();
+        BarSeries bs = stock.getBarSeries();
+        if(bs == null || bs.getFirst() == null){
+            return strategyResults;
+        }
+        Bar endBar = bs.getFirst().before(endDate);
+        Bar first = bs.setFirstBarFrom(startDate);
+        if(first != null) {
+            Bar bar = first;
+            do {
+                Bar finalBar = bar;
+                strategies.forEach(strategy -> {
+                    StrategyResult strategyResult = this.test(strategy, stock);
+                    strategyResult.setDate(finalBar.getDate());
+                    strategyResult.setCode(stock.getCode());
+                    //info(strategyResult);
+                    strategyResults.add(strategyResult);
+                });
                 bar = bar.after();
                 if (bar == null) break;
                 bs.setFirstBarFrom(bar.getDate());

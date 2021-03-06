@@ -203,6 +203,8 @@ public class BarService {
 
                 }
             }
+        }else if(stock.isMarketHK()){
+            updateKline(stock, n);
         }
     }
 

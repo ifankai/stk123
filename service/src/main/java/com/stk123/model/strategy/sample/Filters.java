@@ -307,21 +307,29 @@ public class Filters {
         };
     }
 
-    //底部一堆放量
-    public static Filter<BarSeries> filter_011(int days, int n){
+    //站上底部一堆放量
+    public static Filter<BarSeries> filter_011(int days, double n){
         return (bs) -> {
             Bar today = bs.getFirst();
+            //if(today == null || today.before() == null || today.getChange() > 6) return FilterResult.FALSE("今天涨幅大于6%");
             //days天内最大5日均量
             Bar k = today.before().getHighestBar(days, Bar.EnumValue.V, 5, Bar.EnumCalculationMethod.MA);
             Bar k2 = k.getHighestBar(5, Bar.EnumValue.C);
             if(k2 != null && today.getClose() >= k2.getClose() && today.before().getClose() <= k2.getClose()){
+                Bar k4 = k.getHighestBar(5, Bar.EnumValue.V);
+                int cnt = k4.getBarCount(100, bar -> k4.getVolume()<bar.getVolume());
+                if(cnt >= 5){
+                    return FilterResult.FALSE("推量附近没有单日大量");
+                }
                 //days天内最小5日均量
                 Bar k3 = today.before().getLowestBar(days, Bar.EnumValue.V, 5, Bar.EnumCalculationMethod.MA);
-                if(k.getMA(5, Bar.EnumValue.V) / k3.getMA(5, Bar.EnumValue.V) >= n) {
-                    return FilterResult.TRUE(k.getVolume() / k.before().getVolume());
+                double m = k.getMA(5, Bar.EnumValue.V) / k3.getMA(5, Bar.EnumValue.V);
+                if(m >= n) {
+                    return FilterResult.TRUE(m);
                 }
+                return FilterResult.FALSE(k3.getDate()+","+m);
             }
-            return FilterResult.FALSE();
+            return FilterResult.FALSE(k.getDate()+","+k2.getDate());
         };
     }
 }

@@ -8,7 +8,7 @@ import com.stk123.model.strategy.result.FilterResult;
 
 public class Sample {
 
-    public static String STRATEGIES = "01,02a,02b,03,04,05,06a";
+    public static String STRATEGIES = "01,02a,02b,03,04,05,06a,06b";
 
     public static Strategy strategy_01() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_01","策略603096新经典20201106，一段跌幅后底部放量(01)", BarSeries.class);
@@ -79,8 +79,8 @@ public class Sample {
         return strategy;
     }
 
-    //突破底部平台
-    public static Strategy strategy_05() {//300464
+    //突破底部平台 300464, 20200618
+    public static Strategy strategy_05() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_05","突破底部平台(05)", BarSeries.class);
         strategy.addFilter("过去3天到80天的跌幅", BarSeries::getFirst, Filters.filter_001b(3,60,-50,-30));
         strategy.addFilter("突破底部平台", Filters.filter_009());
@@ -88,7 +88,7 @@ public class Sample {
         return strategy;
     }
 
-    //站上单根巨量
+    //站上单根巨量 09926, 20201203
     public static Strategy strategy_06a() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_06a","站上单根巨量(06a)", BarSeries.class);
         strategy.addFilter("站上单根巨量", Filters.filter_010(30,5));
@@ -96,10 +96,11 @@ public class Sample {
         return strategy;
     }
 
-    //站上底部一堆放量  00005,20201022
+    //站上底部一堆放量 00005,20201022
     public static Strategy strategy_06b() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_06b","站上底部一堆放量(06b)", BarSeries.class);
-        strategy.addFilter("站上底部一堆放量", Filters.filter_011(30,8));
+        strategy.addFilter("站上底部一堆放量", Filters.filter_011(30,4));
+        strategy.setExpectFilter("60日内涨幅>20%", Filters.expectFilter(60, 20));
         return strategy;
     }
 

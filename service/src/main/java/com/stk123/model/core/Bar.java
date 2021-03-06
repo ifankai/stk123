@@ -290,7 +290,7 @@ public class Bar implements Serializable, Cloneable {
 	}
 
 	public Bar getLowestBar(int days, EnumValue typeValue, int days2, EnumCalculationMethod typeCalc) {
-		double min = 0.0;
+		double min = this.getValue(days2, typeValue, typeCalc);
 		Bar ret = null;
 		for(int i=0;i<days;i++){
 			Bar k = this.before(i);
