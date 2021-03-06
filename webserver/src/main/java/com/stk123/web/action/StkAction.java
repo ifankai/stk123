@@ -583,7 +583,8 @@ public class StkAction {
             String title;
             String reply;
 			if(article.getUserName() != null){
-                text = (article.getTitle()!=null?"<b>"+article.getTitle()+"</b><br/>":"")+article.getTextDesc()+"["+CommonUtils.wrapLink("来源", "https://xueqiu.com/"+article.getUserId()+"/"+article.getPostId()+"") +"]";
+			    Index index = new Index(code);
+                text = (article.getTitle()!=null?"<b>"+article.getTitle()+"</b><br/>":"")+article.getTextDesc()+"["+CommonUtils.wrapLink("来源", "https://xueqiu.com/"+(article.getUserId()==-1?index.getLocationAndCode():article.getUserId())+"/"+article.getPostId()+"") +"]";
                 title = article.getUserName();
                 reply = String.valueOf(article.getReplyCount());
             }else {
