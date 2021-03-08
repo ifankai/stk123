@@ -10,6 +10,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 import static com.stk123.model.core.BarSeries.EnumPeriod.DAY;
@@ -49,7 +50,8 @@ public class BarSeries {
     private EnumPeriod period = DAY; //默认周期是day
 
     @JsonView(View.Default.class) @Getter
-    private LinkedList<Bar> list = new LinkedList();
+    private LinkedList<Bar> list = new LinkedList<>();
+
     private Bar first;
 
 
@@ -141,6 +143,41 @@ public class BarSeries {
             }
         }
         return this.first;
+    }
+
+    public int indexOf(String date) {
+        return this.indexOfBefore(date);
+    }
+    public int indexOfAfter(String date) {
+        int pos = 0;
+        for(Bar k : this.list){
+            if(k.getDate().compareTo(date) == 0 ||
+                    (k.before(1) != null && k.before(1).getDate().compareTo(date) < 0)){
+                break;
+            }
+            pos ++;
+        }
+        return pos==this.list.size()?(pos-1):pos;
+    }
+    public int indexOfBefore(String date) {
+        int pos = 0;
+        for(Bar k : this.list){
+            if(k.getDate().compareTo(date) == 0 || k.getDate().compareTo(date) < 0){
+                break;
+            }
+            pos ++;
+        }
+        return pos==this.list.size()?(pos-1):pos;
+    }
+    public Bar getBar(String date, int days) {
+        if(this.list.size() == 0)return null;
+        if(days < 0){
+            return this.list.get(this.list.size()-1);
+        }
+        return this.list.get(this.indexOf(date)).before(days);
+    }
+    public Bar getBar(String date) {
+        return getBar(date, 0);
     }
 
 
