@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -227,16 +228,7 @@ public class Bar implements Serializable, Cloneable {
 
 
 	public double getMA(int days, EnumValue type) {
-		double total = 0.0;
-		int tmp = days;
-		for(int i=0;i<days;i++){
-			Bar k = this.before(i);
-			if(k == null){
-				return 0;
-			}
-			total += k.getValue(type);
-		}
-		return ServiceUtils.numberFormat(total/tmp,2);
+		return ServiceUtils.numberFormat(getSUM(days, type) / days,2);
 	}
 
 	public double getMA(int days, Function<Bar, Double> func) {
@@ -655,6 +647,72 @@ public class Bar implements Serializable, Cloneable {
 			k = k.before(1);
 		}
 		return cnt;
+	}
+
+
+	public Bar getBarMerge(int days, int n){
+		Bar k = this;
+		Bar after = null;
+		Bar ret = null;
+		while(k != null){
+			if(--days < 1){
+				break;
+			}
+			double high = k.getHighest(n, H);
+			double low = k.getLowest(n, L);
+			Bar current = new Bar();
+			current.setDate(k.before(n-1).getDate());
+			current.setHigh(high);
+			current.setLow(low);
+			current.setOpen(k.before(n-1).getOpen());
+			current.setClose(k.getClose());
+			current.setVolume(k.getSUM(n, V));
+			current.setAmount(k.getSUM(n, A));
+			if(after != null){
+				current.setAfter(after);
+				after.setBefore(current);
+			}else{
+				ret = current;
+			}
+			after = current;
+			k = k.before(n);
+		}
+		return ret;
+	}
+
+
+	//定义相似Bar
+	public static BiPredicate<Bar, Bar> getSimilar1(){
+		return (a, b) -> Math.abs((a.getChange() - b.getChange())/a.getChange()) <= 0.1;
+	}
+
+	public boolean similar(int n, Bar bar){
+		return this.similar(n, bar, Bar.getSimilar1());
+	}
+
+	//从当前Bar开始向前比较n个Bar，看是否相似
+	public boolean similar(int n, Bar bar, BiPredicate<Bar, Bar>... biPredicates){
+		int m = 0;
+		while(n >= m){
+			Bar a = this.before(m);
+			Bar b = bar.before(m);
+
+			if(a==null || b==null){
+				return false;
+			}
+			boolean similar = true;
+			for(BiPredicate<Bar, Bar> biPredicate : biPredicates){
+				if(!biPredicate.test(a, b)){
+					similar = false;
+					break;
+				}
+			}
+			if(!similar) {
+				return false;
+			}
+			m++;
+		}
+		return true;
 	}
 
 	/**

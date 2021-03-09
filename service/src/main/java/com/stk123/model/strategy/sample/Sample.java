@@ -114,12 +114,16 @@ public class Sample {
     public static Strategy strategy_TEST() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_TEST","Strategy TEST", BarSeries.class);
         Stock stock = Stock.build("002572");
-        Bar b = stock.getBarSeries().getBar("20210118");
+        Bar a = stock.getBarSeries().getBar("20210118");
+        Bar mergeBar = a.getBarMerge(30, 5);
+        System.out.println(mergeBar);
+
         Filter<BarSeries> filter = (bs) -> {
             Bar today = bs.getFirst();
-            Bar k = today.getBarExcludeToday(5, bar -> bar.getVolume()/bar.before().getVolume() >= 5);
-            if(k != null && today.getClose() >= k.getClose() && today.before().getClose() <= k.getClose()){
-                return FilterResult.TRUE(k.getVolume()/k.before().getVolume());
+            Bar b = today.getBarMerge(30, 5);
+            boolean similar = mergeBar.similar(30/5, b);
+            if(similar){
+                return FilterResult.TRUE(b.getDate());
             }
             return FilterResult.FALSE();
         };
