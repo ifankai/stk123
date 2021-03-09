@@ -655,12 +655,14 @@ public class Bar implements Serializable, Cloneable {
 		Bar after = null;
 		Bar ret = null;
 		while(k != null){
-			if(--days < 1){
+		    days = days - n;
+			if(days < -n){
 				break;
 			}
 			double high = k.getHighest(n, H);
 			double low = k.getLowest(n, L);
 			Bar current = new Bar();
+			current.setCode(k.getCode());
 			current.setDate(k.before(n-1).getDate());
 			current.setHigh(high);
 			current.setLow(low);
@@ -671,6 +673,8 @@ public class Bar implements Serializable, Cloneable {
 			if(after != null){
 				current.setAfter(after);
 				after.setBefore(current);
+				after.setLastClose(current.getClose());
+				after.setChange((after.getClose()-current.getClose())/current.getClose()*100);
 			}else{
 				ret = current;
 			}
@@ -682,12 +686,17 @@ public class Bar implements Serializable, Cloneable {
 
 
 	//定义相似Bar
-	public static BiPredicate<Bar, Bar> getSimilar1(){
-		return (a, b) -> Math.abs((a.getChange() - b.getChange())/a.getChange()) <= 0.1;
+	public static BiPredicate<Bar, Bar> getSimilar1(double d){
+		return (a, b) -> {
+		    if(a.getChange() == b.getChange()){
+		        return true;
+            }
+		    return Math.abs(a.getChange() - b.getChange()) <= d;
+        };
 	}
 
-	public boolean similar(int n, Bar bar){
-		return this.similar(n, bar, Bar.getSimilar1());
+	public boolean similar(int n, Bar bar, double d){
+		return this.similar(n, bar, Bar.getSimilar1(d));
 	}
 
 	//从当前Bar开始向前比较n个Bar，看是否相似
@@ -698,7 +707,7 @@ public class Bar implements Serializable, Cloneable {
 			Bar b = bar.before(m);
 
 			if(a==null || b==null){
-				return false;
+				return true;
 			}
 			boolean similar = true;
 			for(BiPredicate<Bar, Bar> biPredicate : biPredicates){

@@ -115,13 +115,17 @@ public class Sample {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_TEST","Strategy TEST", BarSeries.class);
         Stock stock = Stock.build("002572");
         Bar a = stock.getBarSeries().getBar("20210118");
-        Bar mergeBar = a.getBarMerge(30, 5);
-        System.out.println(mergeBar);
+        Bar mergeBar = a.getBarMerge(120, 6);
+        Bar k = mergeBar;
+        while(k != null) {
+            System.out.println("mergeBar:" + k);
+            k = k.before();
+        }
 
         Filter<BarSeries> filter = (bs) -> {
             Bar today = bs.getFirst();
-            Bar b = today.getBarMerge(30, 5);
-            boolean similar = mergeBar.similar(30/5, b);
+            Bar b = today.getBarMerge(120, 6);
+            boolean similar = mergeBar.similar(120/6, b, 5);
             if(similar){
                 return FilterResult.TRUE(b.getDate());
             }
