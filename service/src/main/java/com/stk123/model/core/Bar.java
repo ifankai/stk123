@@ -650,6 +650,7 @@ public class Bar implements Serializable, Cloneable {
 	}
 
 
+	//返回合并K线，n为合并几天的k线
 	public Bar getBarMerge(int days, int n){
 		Bar k = this;
 		Bar after = null;
@@ -695,19 +696,20 @@ public class Bar implements Serializable, Cloneable {
         };
 	}
 
-	public boolean similar(int n, Bar bar, double d){
+	public int similar(int n, Bar bar, double d){
 		return this.similar(n, bar, Bar.getSimilar1(d));
 	}
 
-	//从当前Bar开始向前比较n个Bar，看是否相似
-	public boolean similar(int n, Bar bar, BiPredicate<Bar, Bar>... biPredicates){
+	//从当前Bar开始向前比较n个Bar，返回相似的个数
+	public int similar(int n, Bar bar, BiPredicate<Bar, Bar>... biPredicates){
+		int cnt = 0;
 		int m = 0;
 		while(n >= m){
 			Bar a = this.before(m);
 			Bar b = bar.before(m);
 
 			if(a==null || b==null){
-				return true;
+				break;
 			}
 			boolean similar = true;
 			for(BiPredicate<Bar, Bar> biPredicate : biPredicates){
@@ -716,12 +718,12 @@ public class Bar implements Serializable, Cloneable {
 					break;
 				}
 			}
-			if(!similar) {
-				return false;
+			if(similar) {
+				cnt++;
 			}
 			m++;
 		}
-		return true;
+		return cnt;
 	}
 
 	/**

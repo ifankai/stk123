@@ -317,7 +317,7 @@ public class BarTask extends AbstractTask {
 
     public void analyseKline(){
         try {
-            Set<String> allList = new HashSet<>();
+            Set<String> allList = new LinkedHashSet<>();
             Set<String> myList = null;
             List<Portfolio> portfolios = null;
             if(code != null){
@@ -350,11 +350,14 @@ public class BarTask extends AbstractTask {
                 }
             }
             log.info(allList);
+            allList = allList.stream().map(Stock::getCodeWithoutPlace).collect(Collectors.toSet());
+            log.info(allList);
 
             List<Stock> stocks = stockService.buildStocks(new ArrayList<>(allList));
             if(market != null){
                 stocks = stocks.stream().filter(stock -> StringUtils.containsIgnoreCase(market, stock.getMarket().name())).collect(Collectors.toList());
             }
+            log.info(stocks.stream().map(Stock::getCode).collect(Collectors.toList()));
 
             if(StringUtils.isEmpty(strategy)){
                 this.strategy = Sample.STRATEGIES;

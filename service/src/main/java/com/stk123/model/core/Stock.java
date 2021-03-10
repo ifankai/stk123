@@ -297,6 +297,19 @@ public class Stock {
         }
     }
 
+    //input:SH000010 return:000010
+    public static String getCodeWithoutPlace(String codeWithPlace){
+        if(codeWithPlace.length() == 8){
+            if(codeWithPlace.startsWith(EnumPlace.SH.name()) || codeWithPlace.startsWith(EnumPlace.SZ.name())){
+                String code = codeWithPlace.substring(2, 8);
+                if(StringUtils.isNumeric(code)){
+                    return code;
+                }
+            }
+        }
+        return codeWithPlace;
+    }
+
 
     public static EnumPlace getCity(String code){
         if(code.startsWith(CommonConstant.NUMBER_SIX) || code.startsWith(CommonConstant.NUMBER_99)){

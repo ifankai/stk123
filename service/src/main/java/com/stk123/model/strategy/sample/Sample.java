@@ -125,8 +125,8 @@ public class Sample {
         Filter<BarSeries> filter = (bs) -> {
             Bar today = bs.getFirst();
             Bar b = today.getBarMerge(120, 6);
-            boolean similar = mergeBar.similar(120/6, b, 5);
-            if(similar){
+            int similar = mergeBar.similar(120/6, b, 5);
+            if(similar >= 16){
                 return FilterResult.TRUE(b.getDate());
             }
             return FilterResult.FALSE();
