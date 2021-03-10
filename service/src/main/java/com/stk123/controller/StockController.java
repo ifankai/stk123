@@ -56,8 +56,8 @@ public class StockController {
     @RequestMapping(value = {"/updatekline/{code}"})
     @ResponseBody
     public RequestResult updateKline(@PathVariable(value = "code")String code){
-        Stock stock = Stock.build(code);
         try {
+            Stock stock = stockService.buildStocks(code).stream().findFirst().get();
             log.info("update k line start:"+code);
             barService.updateKline(stock, Integer.MAX_VALUE);
             log.info("update k line end:"+code);

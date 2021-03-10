@@ -105,7 +105,7 @@ public class BarTask extends AbstractTask {
         }
 
         try{
-            List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_10jqka);
+            List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn);
             for (StockBasicProjection codeName : list) {
                 log.info(codeName.getCode());
                 scn = codeName;
@@ -319,6 +319,7 @@ public class BarTask extends AbstractTask {
         try {
             Set<String> allList = new LinkedHashSet<>();
             Set<String> myList = null;
+            Set<String> bkList = new LinkedHashSet<>();
             List<Portfolio> portfolios = null;
             if(code != null){
                 allList.addAll(Arrays.asList(StringUtils.split(code, ",")));
@@ -332,6 +333,7 @@ public class BarTask extends AbstractTask {
                 log.info(myList);
                 allList.addAll(myList);
 
+                //雪球组合
                 portfolios = XueqiuService.getPortfolios("6237744859");
                 int k = 1;
                 for (Portfolio portfolio : portfolios) {
@@ -347,6 +349,13 @@ public class BarTask extends AbstractTask {
                         log.error("雪球抓取自选组合失败", e);
                         //return;
                     }
+                }
+
+                //板块
+                if(realtime == null) {//实时行情只关注股票，排除板块
+                    List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn);
+                    bkList = list.stream().map(StockBasicProjection::getCode).collect(Collectors.toSet());
+                    allList.addAll(bkList);
                 }
             }
             log.info(allList);
@@ -392,6 +401,9 @@ public class BarTask extends AbstractTask {
                                 }
                             }
                         }
+                    }
+                    if(bkList.contains(strategyResult.getCode())){
+                        sources.add("行业");
                     }
 
                     StrategyBacktesting backtesting = backtestingService.backtestingAllHistory(strategyResult.getCode(), strategyResult.getStrategy().getCode(), false);

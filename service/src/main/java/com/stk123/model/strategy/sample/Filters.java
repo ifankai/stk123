@@ -4,6 +4,7 @@ import com.stk123.common.CommonUtils;
 import com.stk123.model.core.Bar;
 import com.stk123.model.core.BarSeries;
 import com.stk123.model.core.Bars;
+import com.stk123.model.core.Stock;
 import com.stk123.model.strategy.Filter;
 import com.stk123.model.strategy.result.FilterResult;
 import com.stk123.model.strategy.result.FilterResultBetween;
@@ -115,8 +116,9 @@ public class Filters {
      * 一阳吃掉前面多根K线
      * @param n 吃掉前面n根K线
      */
-    public static Filter<Bar> filter_004(int n){
-        return (bar) -> {
+    public static Filter<BarSeries> filter_004(int n){
+        return (bs) -> {
+            Bar bar = bs.getFirst();
             double p = bar.getChange();
             double close = bar.getClose();
             if(p > 0){
@@ -218,20 +220,20 @@ public class Filters {
      * 均线线缠绕，均线最大和最小值不超过d%
      * 且，前days天内放量涨缩量跌
      */
-    public static Filter<BarSeries> filter_007(double d, int days){
-        return (bs) -> {
-            Bar today = bs.getFirst();
+    public static Filter<Stock> filter_007(double d, int days){
+        return (stock) -> {
+            Bar today = stock.getBar();
             double ma5 = today.getMA(5, Bar.EnumValue.C);
             double ma120 = today.getMA(120, Bar.EnumValue.C);
             double d2 = Math.abs(ma5 - ma120)/CommonUtils.min(ma5, ma120);
             if(d2 > d/100d) {
                 return FilterResult.FALSE("不满足K线价差小于"+d+"%, 实际::"+(d2*100));
             }
-            if(today.getSlopeOfMA(1, 60) < 0 && today.getSlopeOfMA(1, 120) < 0){
+            if(stock.isCateStock() && today.getSlopeOfMA(1, 60) < 0 && today.getSlopeOfMA(1, 120) < 0){
                 return FilterResult.FALSE("60,120均线都是下降的");
             }
             int cnt = today.getBarCount(30, bar -> bar.getMA(20, Bar.EnumValue.C) > bar.getMA(120, Bar.EnumValue.C));
-            if(cnt < 1){
+            if(stock.isCateStock() && cnt < 1){
                 return FilterResult.FALSE("均线空头排列");
             }
 
@@ -257,7 +259,7 @@ public class Filters {
                         return FilterResult.FALSE(days+"天内不满足股价最高点高于所有均线"+count+"次，实际"+cnt+"次");
                     }*/
                     double highVolume = hisHighPoints.stream().mapToDouble(Bar::getVolume).sum()/hisHighPoints.size();
-                    if(hisLowPoints.size() == 0 || hisHighPoints.size() == 0 || highVolume < lowVolume * 2){
+                    if(stock.isCateStock() && (hisLowPoints.size() == 0 || hisHighPoints.size() == 0 || highVolume < lowVolume * 2)){
                         return FilterResult.FALSE("不满足放量涨缩量跌, 实际:"+ highVolume/lowVolume);
                     }
                 }
@@ -268,7 +270,7 @@ public class Filters {
         };
     }
 
-    public static Filter<BarSeries> filter_007(double d){
+    public static Filter<Stock> filter_007(double d){
         return filter_007(d, 0);
     }
 

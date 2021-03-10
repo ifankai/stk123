@@ -126,7 +126,7 @@ public class Stock {
 
     @AllArgsConstructor
     public enum EnumCate {
-        STOCK(1), INDEX(2), FUND(3), INDEX_10jqka(4);
+        STOCK(1), INDEX(2), FUND(3), INDEX_10jqka(4), INDEX_eastmoney_gn(5);
 
         @Getter
         private Integer cate;
@@ -276,6 +276,12 @@ public class Stock {
     public boolean isMarketHK(){
         return this.market == EnumMarket.HK;
     }
+    public boolean isCateStock() {
+        return this.cate == EnumCate.STOCK;
+    }
+    public boolean isCateIndexEastmoneyGn() {
+        return this.cate == EnumCate.INDEX_eastmoney_gn;
+    }
     public boolean isPlaceSH(){
         return this.place == EnumPlace.SH;
     }
@@ -319,6 +325,9 @@ public class Stock {
         }
     }
 
+    public Bar getBar(){
+        return this.getBarSeries().getFirst();
+    }
     public BarSeries getBarSeries(){
         return this.getBarSeries(this.BarSeriesRows);
     }

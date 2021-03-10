@@ -14,6 +14,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.*;
 
 @CommonsLog
@@ -31,6 +32,7 @@ public class StockTask extends AbstractTask {
     @Override
     public void register() {
         this.runByName("initCNNewStock", this::initCNNewStock);
+        this.runByName("initCNIndustryEasymoney", this::initCNIndustryEasymoney);
     }
 
     public void initCNNewStock() {
@@ -151,5 +153,49 @@ public class StockTask extends AbstractTask {
             sb.append("sz300"+StringUtils.leftPad(""+i, 3, '0')+",");
         }
         return sb.toString();
+    }
+
+
+    //http://quote.eastmoney.com/center/boardlist.html#concept_board
+    public void initCNIndustryEasymoney() {
+        //http://59.push2.eastmoney.com/api/qt/clist/get?cb=jQuery112407845542377068357_1615380136035&pn=1&pz=2000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=m:90+t:3+f:!50&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f26,f22,f33,f11,f62,f128,f136,f115,f152,f124,f107,f104,f105,f140,f141,f207,f208,f209,f222&_=1615380136036
+        long time = new Date().getTime();
+        String url = "http://59.push2.eastmoney.com/api/qt/clist/get?cb=jQuery112407845542377068357_" + time +
+                "&pn=1&pz=2000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=m:90+t:3+f:!50&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f26,f22,f33,f11,f62,f128,f136,f115,f152,f124,f107,f104,f105,f140,f141,f207,f208,f209,f222" +
+                "&_="+time;
+        try {
+            String page = httpService.getString(url);
+            String json = "{"+StringUtils.substringBetween(page, "({", "})")+"}";
+            ObjectMapper mapper = new ObjectMapper();
+            Map map = mapper.readValue(json, HashMap.class);
+            Map datas = (Map)map.get("data");
+            List<Map> diff = (List)datas.get("diff");
+            for(Map data : diff){
+
+                String code = String.valueOf(data.get("f12"));
+                String name = String.valueOf(data.get("f14"));
+                Optional<StkEntity> stk = stkRepository.findById(code);
+                StkEntity stkEntity;
+                if(!stk.isPresent()){
+                    stkEntity = new StkEntity();
+                    stkEntity.setCode(code);
+                    stkEntity.setName(name);
+                    stkEntity.setInsertTime(new Date());
+                    stkEntity.setMarket(Stock.EnumMarket.CN.getMarket());
+                    stkEntity.setCate(Stock.EnumCate.INDEX_eastmoney_gn.getCate());
+                    stkEntity.setAddress("eastmoney_gn");
+                    log.info("[新股(INDEX_eastmoney_gn)]"+code+","+name);
+                }else{
+                    stkEntity = stk.get();
+                    stkEntity.setCode(code);
+                    stkEntity.setName(name);
+                }
+                stkEntity = stkRepository.save(stkEntity);
+
+            }
+        } catch (IOException e) {
+            log.error("initCNIndustryEasymoney", e);
+        }
+
     }
 }

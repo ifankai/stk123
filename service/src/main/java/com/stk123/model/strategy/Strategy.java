@@ -86,6 +86,9 @@ public class Strategy<X> {
     public void setExpectFilter(String name, Filter<X> expectFilter){
         this.expectFilterExecutor = new FilterExecutor(null, name, x->x, expectFilter);
     }
+    public void setExpectFilter(String name, Function<X, ?> function, Filter<?> expectFilter){
+        this.expectFilterExecutor = new FilterExecutor(null, name, function, expectFilter);
+    }
     public void setExpectFilterRunOrNot(boolean runOrNot){
         expectFilterExecutorRunOrNot = runOrNot;
     }

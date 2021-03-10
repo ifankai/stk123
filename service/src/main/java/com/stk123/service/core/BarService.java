@@ -234,9 +234,10 @@ public class BarService {
             }else if(cate == Stock.EnumCate.INDEX_10jqka){
                 //http://q.10jqka.com.cn/stock/gn/
                 //http://q.10jqka.com.cn/gn/detail/code/308709/
+                //http://d.10jqka.com.cn/v2/line/bk_885910/01/last.js
                 page = HttpUtils.get("http://d.10jqka.com.cn/v2/line/bk_"+code+"/01/last.js", null, "gbk");
                 if("404".equals(page))return;
-                String data = StringUtils.substringBetween(page, "data\":\"", "\"})");
+                String data = StringUtils.substringBetween(page, "data\":\"", "\",\"marketType");
                 String[] ks = StringUtils.split(data, ";");
                 if(ks != null){
                     for(String kk : ks){
@@ -278,6 +279,9 @@ public class BarService {
                     stkKlineRepository.saveIfNotExisting(stkKlineEntity);
                 }
 
+                return;
+            }else if(cate == Stock.EnumCate.INDEX_eastmoney_gn){
+                updateKline(stock, 14);
                 return;
             }
             //腾讯股票接口 http://qt.gtimg.cn/&q=sh600600
@@ -458,20 +462,29 @@ public class BarService {
 
     public void updateKline(Stock stock, int n) throws Exception {
         if(stock.isMarketCN() || stock.isMarketHK()) {
-            boolean isSH = stock.isPlaceSH();
-            String scode = (isSH ? "1." : "0.")+stock.getCode();
-
             long time = new Date().getTime();
 
             //http://quote.eastmoney.com/sh601899.html
+            //http://quote.eastmoney.com/bk/90.BK0896.html
             //不复权：fqt=0， 前复权：fqt=1
-            String url = "http://push2his.eastmoney.com/api/qt/stock/kline/get?cb=jQuery112403175572026253872_"+time+
-                    "&fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61" +
-                    "&ut=&klt=101&fqt=1&secid="+scode+"&beg=0&end=20500000&_="+time;
-            if(stock.isMarketHK()){
-                url = "http://87.push2his.eastmoney.com/api/qt/stock/kline/get?cb=jQuery33106477581096979685_"+time+
-                        "&secid=116."+stock.getCode()+"&ut=&fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61" +
-                        "&klt=101&fqt=1&end=20500101&lmt=120&_="+time;
+            String url = null;
+
+            if(stock.isMarketCN()){
+                if(stock.isCateStock()) {
+                    boolean isSH = stock.isPlaceSH();
+                    String scode = (isSH ? "1." : "0.")+stock.getCode();
+                    url = "http://push2his.eastmoney.com/api/qt/stock/kline/get?cb=jQuery112403175572026253872_" + time +
+                            "&fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61" +
+                            "&secid=" + scode +           "&ut=&klt=101&fqt=1&beg=0&end=20500000&_=" + time;
+                }else if(stock.isCateIndexEastmoneyGn()){
+                    url = "http://push2his.eastmoney.com/api/qt/stock/kline/get?cb=jQuery112408964676862532301_" + time +
+                            "&fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61" +
+                            "&secid=90."+ stock.getCode()+"&ut=&klt=101&fqt=1&beg=19900101&end=20500101&_="+time;
+                }
+            }else if(stock.isMarketHK()){
+                    url = "http://87.push2his.eastmoney.com/api/qt/stock/kline/get?cb=jQuery33106477581096979685_"+time+
+                            "&fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61" +
+                            "&secid=116."+stock.getCode()+"&ut=&klt=101&fqt=1&end=20500101&lmt=120&_="+time;
             }
             String page = HttpUtils.get(url, null, "UTF-8");
             String klines = StringUtils.substringBetween(page, "\"klines\":[\"", "\"]}");
@@ -513,7 +526,7 @@ public class BarService {
                 stkKlineEntity.setLastClose(close==0?null:close);
                 stkKlineEntity.setHigh(Double.parseDouble(k[3]));
                 stkKlineEntity.setLow(Double.parseDouble(k[4]));
-                stkKlineEntity.setVolumn(Double.parseDouble(k[5])*(stock.isMarketHK()?1:100));
+                stkKlineEntity.setVolumn(Double.parseDouble(k[5])*(stock.isMarketCN()&&stock.isCateStock()?100:1));
                 stkKlineEntity.setAmount(Double.parseDouble(k[6]));
                 stkKlineEntity.setHsl(Double.parseDouble(k[10]));
                 //stkKlineHkEntity.setPeTtm(pettm);

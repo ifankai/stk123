@@ -64,11 +64,11 @@ public class Sample {
 
     //002538 20200703 100天内，放量涨缩量跌，之后均线缠绕突破买入
     public static Strategy strategy_03() {
-        Strategy<BarSeries> strategy = new Strategy<>("strategy_03","策略002538司尔特20200703，底部均线缠绕，一阳吃多阴(03)", BarSeries.class);
-        strategy.addFilter("一阳吃4阴或阳", BarSeries::getFirst, Filters.filter_004(4));
-        strategy.addFilter("一阳穿过5, 10, 20, 30, 60日均线中的任何2根", BarSeries::getFirst, Filters.filter_005b(2, 5, 10, 20, 30, 60));
+        Strategy<Stock> strategy = new Strategy<>("strategy_03","策略002538司尔特20200703，底部均线缠绕，一阳吃多阴(03)", Stock.class);
+        strategy.addFilter("一阳吃4阴或阳", Stock::getBarSeries, Filters.filter_004(4));
+        strategy.addFilter("一阳穿过5, 10, 20, 30, 60日均线中的任何2根", Stock::getBar, Filters.filter_005b(2, 5, 10, 20, 30, 60));
         strategy.addFilter("filter_007", "均线线缠绕，且前100天内放量涨缩量跌", Filters.filter_007(13 , 100));
-        strategy.setExpectFilter("60日内涨幅>20%", Filters.expectFilter(60, 20));
+        strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
         return strategy;
     }
 
