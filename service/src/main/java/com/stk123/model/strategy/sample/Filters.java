@@ -7,6 +7,7 @@ import com.stk123.model.core.Bars;
 import com.stk123.model.strategy.Filter;
 import com.stk123.model.strategy.result.FilterResult;
 import com.stk123.model.strategy.result.FilterResultBetween;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,6 +23,17 @@ public class Filters {
             return new FilterResultBetween(p*100, change, 1000);
         };
     }
+
+    public static Filter<BarSeries> filter_excludeStock(String... codes) {
+        return (bs) -> {
+            Bar today = bs.getFirst();
+            if(ArrayUtils.contains(codes, today.getCode())){
+                return FilterResult.FALSE("策略排除该股票");
+            }
+            return FilterResult.TRUE("");
+        };
+    }
+
 
     /**
      * 过去numberBeforeFirst天到numberBeforeParam1天的跌幅
