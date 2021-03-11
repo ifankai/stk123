@@ -45,6 +45,14 @@ public class Filters {
         };
     }
 
+    //斜率, >0表示均线向上
+    public static Filter<Bar> filter_maSlope(int days, int ma, double min, double max) {
+        return (bar) -> {
+            double slope = bar.getSlopeOfMA(ma, days);
+            return new FilterResultBetween(slope*100, min, max).addResult("实际slope：" + slope*100);
+        };
+    }
+
 
     /**
      * 过去numberBeforeFirst天到numberBeforeParam1天的跌幅
