@@ -382,6 +382,7 @@ public class BarTask extends AbstractTask {
                 StringBuffer sb = new StringBuffer();
 
                 List<List<String>> datas = new ArrayList<>();
+                List<List<String>> datasBk = new ArrayList<>();
                 //results = results.stream().sorted(Comparator.comparing(strategyResult -> strategyResult.getStrategy().getCode())).collect(Collectors.toList());
 
                 String rowCode = null;
@@ -402,8 +403,10 @@ public class BarTask extends AbstractTask {
                             }
                         }
                     }
+                    boolean isBk = false;
                     if(bkList.contains(strategyResult.getCode())){
                         sources.add("行业");
+                        isBk = true;
                     }
 
                     StrategyBacktesting backtesting = backtestingService.backtestingAllHistory(strategyResult.getCode(), strategyResult.getStrategy().getCode(), false);
@@ -422,13 +425,20 @@ public class BarTask extends AbstractTask {
                             backtesting.getStrategies().get(0).getPassRateString().replaceAll("]", "]<br/>") +
                                     (StringUtils.isNotEmpty(backtesting.getStrategies().get(0).getPassedFilterResultLog()) ? "<br/>"+backtesting.getStrategies().get(0).getPassedFilterResultLog() : "")
                             );
-                    datas.add(data);
+                    if(isBk){
+                        datasBk.add(data);
+                    }else {
+                        datas.add(data);
+                    }
                 }
 
                 //datas = datas.stream().sorted(Comparator.comparing(e -> e.get(3).contains("自选股"), Comparator.reverseOrder())).collect(Collectors.toList());
 
                 List<String> titles = ListUtils.createList("标的", "日期", "策略", "来源", "历史策略回测通过率");
                 String table = CommonUtils.createHtmlTable(titles, datas);
+                sb.append(table);
+                sb.append("<br/>");
+                table = CommonUtils.createHtmlTable(titles, datasBk);
                 sb.append(table);
 
 

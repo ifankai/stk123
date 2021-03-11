@@ -35,6 +35,16 @@ public class Filters {
         };
     }
 
+    public static Filter<Stock> filter_mustStockCate(Stock.EnumCate cate) {
+        return (stock) -> {
+            Stock.EnumCate ec = stock.getCate();
+            if(ec.equals(cate)){
+                return FilterResult.TRUE();
+            }
+            return FilterResult.FALSE(ec.name());
+        };
+    }
+
 
     /**
      * 过去numberBeforeFirst天到numberBeforeParam1天的跌幅
@@ -124,7 +134,11 @@ public class Filters {
             if(p > 0){
                 int count = bar.getBarCountExcludeToday(n, k -> k.getClose() < close);
                 if(count >= n){
-                    return FilterResult.TRUE(bar.getDate());
+                    int cnt = bar.getBarCountExcludeToday(3, k -> Math.abs(k.getChange()) <= 3);
+                    if(cnt >= 3)
+                        return FilterResult.TRUE(bar.getDate());
+                    else
+                        return FilterResult.FALSE("前3天振幅大于3%");
                 }
                 return FilterResult.FALSE("一阳没有吃掉"+n+"个阴线，实际"+count);
             }
@@ -220,7 +234,7 @@ public class Filters {
      * 均线线缠绕，均线最大和最小值不超过d%
      * 且，前days天内放量涨缩量跌
      */
-    public static Filter<Stock> filter_007(double d, int days){
+    public static Filter<Stock> filter_007(int days, double d){
         return (stock) -> {
             Bar today = stock.getBar();
             double ma5 = today.getMA(5, Bar.EnumValue.C);
@@ -271,7 +285,7 @@ public class Filters {
     }
 
     public static Filter<Stock> filter_007(double d){
-        return filter_007(d, 0);
+        return filter_007( 0, d);
     }
 
     //突破趋势线
@@ -325,25 +339,34 @@ public class Filters {
     public static Filter<BarSeries> filter_011(int days, double n){
         return (bs) -> {
             Bar today = bs.getFirst();
+            if(today.getMACD().dif < today.getMACD().dea){
+                return FilterResult.FALSE("MACD没有上穿");
+            }
             //if(today == null || today.before() == null || today.getChange() > 6) return FilterResult.FALSE("今天涨幅大于6%");
+
+            //days日内价格最低点
+            Bar lowest = today.getLowestBar(days, Bar.EnumValue.C);
+            //价格最低日 到 today的 天数
+            int days2 = today.getDaysBetween(today.getDate(), lowest.getDate());
+
             //days天内最大5日均量
-            Bar k = today.before().getHighestBar(days, Bar.EnumValue.V, 5, Bar.EnumCalculationMethod.MA);
-            Bar k2 = k.getHighestBar(5, Bar.EnumValue.C);
-            if(k2 != null && today.getClose() >= k2.getClose() && today.before().getClose() <= k2.getClose()){
+            Bar k = today.before().getHighestBar(days2, Bar.EnumValue.V, 5, Bar.EnumCalculationMethod.MA);
+            //Bar k2 = k.getHighestBar(5, Bar.EnumValue.V);
+            if(k != null && today.getClose() >= k.getClose() && today.before().getClose() <= k.getClose()){
                 Bar k4 = k.getHighestBar(5, Bar.EnumValue.V);
                 int cnt = k4.getBarCount(100, bar -> k4.getVolume()<bar.getVolume());
                 if(cnt >= 3){
                     return FilterResult.FALSE("推量附近没有单日大量");
                 }
                 //days天内最小5日均量
-                Bar k3 = today.before().getLowestBar(days, Bar.EnumValue.V, 5, Bar.EnumCalculationMethod.MA);
+                Bar k3 = k.before().getLowestBar(15, Bar.EnumValue.V, 5, Bar.EnumCalculationMethod.MA);
                 double m = k.getMA(5, Bar.EnumValue.V) / k3.getMA(5, Bar.EnumValue.V);
                 if(m >= n) {
                     return FilterResult.TRUE(m);
                 }
                 return FilterResult.FALSE(k3.getDate()+","+m);
             }
-            return FilterResult.FALSE(k.getDate()+","+k2.getDate());
+            return FilterResult.FALSE(k.getDate()+","+k.getDate());
         };
     }
 }

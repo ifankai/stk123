@@ -20,6 +20,10 @@ public abstract class FilterResult<R> {
     @JsonView(View.Default.class)
     private TableTd log = null;
 
+    public static <R> FilterResult TRUE(){
+        return new FilterResultTrue();
+    }
+
     public static <R> FilterResult TRUE(R result){
         return new FilterResultTrue().addResult(result);
     }

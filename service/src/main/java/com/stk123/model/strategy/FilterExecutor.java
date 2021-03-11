@@ -50,7 +50,7 @@ public class FilterExecutor<X, B> {
             B bar = function.apply(b); //这里是吧 X 转为 B 类型，B一般是Bar，BarSeries，也可以是Stock本身
             result = filter.filter(bar);
         }catch (Exception e){
-            log.error("FilterExecutor Error:", e);
+            log.error("FilterExecutor Error:"+this.name, e);
             result = FilterResult.FALSE(e.getMessage());
         }
         result.setFilterExecutor(this);
