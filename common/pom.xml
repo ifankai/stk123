@@ -201,6 +201,11 @@
             <artifactId>commons-math3</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>io.shapelets</groupId>
+            <artifactId>khiva</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

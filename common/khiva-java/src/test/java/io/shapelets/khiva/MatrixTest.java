@@ -21,6 +21,7 @@ public class MatrixTest {
 
     @BeforeClass
     public static void setUp() throws Exception {
+        System.out.println(System.getProperty("java.library.path"));
         Library.setKhivaBackend(Library.Backend.KHIVA_BACKEND_CPU);
     }
 
