@@ -1,5 +1,7 @@
 package com.stk123.task.schedule;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import com.stk123.common.CommonUtils;
 import com.stk123.common.util.EmailUtils;
 import com.stk123.common.util.ListUtils;
@@ -355,6 +357,8 @@ public class BarTask extends AbstractTask {
                 if(realtime == null) {//实时行情只关注股票，排除板块
                     List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn);
                     bkList = list.stream().map(StockBasicProjection::getCode).collect(Collectors.toSet());
+                    //排除一些垃圾板块 AB股[BK0498] AH股[BK0499] 上证380[BK0705]
+                    bkList = CollectionUtil.removeAny(bkList, "BK0498", "BK0499", "BK0705");
                     allList.addAll(bkList);
                 }
             }
@@ -381,12 +385,15 @@ public class BarTask extends AbstractTask {
             if(results.size() > 0){
                 StringBuffer sb = new StringBuffer();
 
-                List<List<String>> datas = new ArrayList<>();
+                List<List<String>> datasA = new ArrayList<>();
+                List<List<String>> datasH = new ArrayList<>();
+                List<List<String>> datasU = new ArrayList<>();
                 List<List<String>> datasBk = new ArrayList<>();
                 //results = results.stream().sorted(Comparator.comparing(strategyResult -> strategyResult.getStrategy().getCode())).collect(Collectors.toList());
 
                 String rowCode = null;
                 for(StrategyResult strategyResult : results){
+                    Stock stock = stocks.stream().filter(stk -> stk.getCode().equals(strategyResult.getCode())).findFirst().orElse(null);
 
                     List<String> sources = new ArrayList<>();
                     if(myList != null && myList.contains(strategyResult.getCode())){
@@ -396,16 +403,16 @@ public class BarTask extends AbstractTask {
                         for(Portfolio portfolio : portfolios){
                             List<com.stk123.model.xueqiu.Stock> xqStock = portfolio.getStocks();
                             if(xqStock != null && xqStock.size() > 0) {
-                                com.stk123.model.xueqiu.Stock stk = xqStock.stream().filter(stock -> stock.getCode() != null && stock.getCode().contains(strategyResult.getCode())).findFirst().orElse(null);
-                                if (stk != null) {
-                                    sources.add(CommonUtils.wrapLink(portfolio.getName(), "https://xueqiu.com/P/" + portfolio.getSymbol()) + " ["+stk.getWeight()+"]");
+                                com.stk123.model.xueqiu.Stock xqStk = xqStock.stream().filter(stk -> stk.getCode() != null && stk.getCode().contains(strategyResult.getCode())).findFirst().orElse(null);
+                                if (xqStk != null) {
+                                    sources.add(CommonUtils.wrapLink(portfolio.getName(), "https://xueqiu.com/P/" + portfolio.getSymbol()) + " ["+xqStk.getWeight()+"]");
                                 }
                             }
                         }
                     }
                     boolean isBk = false;
                     if(bkList.contains(strategyResult.getCode())){
-                        sources.add("行业");
+                        sources.add("板块");
                         isBk = true;
                     }
 
@@ -418,9 +425,9 @@ public class BarTask extends AbstractTask {
                         rowCode = strategyResult.getCode();
                     }
                     List<String> data = ListUtils.createList(
-                            displayCode?Stock.build(strategyResult.getCode(), null).getNameAndCodeWithLink():"",
+                            displayCode ? stock.getNameAndCodeWithLink() : "",
                             strategyResult.getDate(),
-                            strategyResult.getStrategy().getName(),
+                            strategyResult.getStrategy().getName().replaceAll("，", "<br/>"),
                             StringUtils.join(sources, "<br/>"),
                             backtesting.getStrategies().get(0).getPassRateString().replaceAll("]", "]<br/>") +
                                     (StringUtils.isNotEmpty(backtesting.getStrategies().get(0).getPassedFilterResultLog()) ? "<br/>"+backtesting.getStrategies().get(0).getPassedFilterResultLog() : "")
@@ -428,19 +435,38 @@ public class BarTask extends AbstractTask {
                     if(isBk){
                         datasBk.add(data);
                     }else {
-                        datas.add(data);
+
+                        if(stock.isMarketCN()) {
+                            datasA.add(data);
+                        }else if(stock.isMarketHK()){
+                            datasH.add(data);
+                        }else if(stock.isMarketUS()){
+                            datasU.add(data);
+                        }
                     }
                 }
 
                 //datas = datas.stream().sorted(Comparator.comparing(e -> e.get(3).contains("自选股"), Comparator.reverseOrder())).collect(Collectors.toList());
 
                 List<String> titles = ListUtils.createList("标的", "日期", "策略", "来源", "历史策略回测通过率");
-                String table = CommonUtils.createHtmlTable(titles, datas);
+                sb.append("A股");
+                String table = CommonUtils.createHtmlTable(titles, datasA);
                 sb.append(table);
                 sb.append("<br/>");
+
+                sb.append("H股");
+                table = CommonUtils.createHtmlTable(titles, datasH);
+                sb.append(table);
+                sb.append("<br/>");
+
+                sb.append("美股");
+                table = CommonUtils.createHtmlTable(titles, datasU);
+                sb.append(table);
+                sb.append("<br/>");
+
+                sb.append("板块");
                 table = CommonUtils.createHtmlTable(titles, datasBk);
                 sb.append(table);
-
 
                 sb.append("<br/><br/>--------------------------------------------------------<br/>");
                 strategyBacktesting.getStrategies().forEach(strategy -> {
@@ -453,7 +479,11 @@ public class BarTask extends AbstractTask {
                 sb.append("被忽略的标的：<br/>");
                 sb.append(StringUtils.join(missingList, ","));
 
-                EmailUtils.send("策略发现"+(datas.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count())+"个标的", sb.toString());
+                EmailUtils.send("策略发现 A股" + (datasA.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count()) + "个, " +
+                                              "H股" + (datasH.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count()) + "个, " +
+                                              "美股"+ (datasU.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count()) + "个, " +
+                                              "板块"+ (datasBk.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count())+ "个"
+                        , sb.toString());
             }else{
                 EmailUtils.send("策略发现0个标的", "");
             }

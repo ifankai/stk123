@@ -726,7 +726,7 @@ public class CommonUtils {
         HtmlTable tab = new HtmlTable();
         tab.attributes.put("border", "1");
         tab.attributes.put("cellspacing", "0");
-        tab.attributes.put("cellpadding", "0");
+        tab.attributes.put("cellpadding", "2px");
         tab.attributes.put("style", "font:13px");
 
         HtmlTr tr = new HtmlTr();

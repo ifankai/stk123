@@ -1,9 +1,11 @@
 package com.stk123.model.core;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.common.CommonConstant;
 import com.stk123.common.CommonUtils;
+import com.stk123.common.util.BeanUtils;
 import com.stk123.model.json.View;
 import com.stk123.model.projection.IndustryProjection;
 import com.stk123.model.projection.StockBasicProjection;
@@ -20,6 +22,7 @@ import lombok.Getter;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -248,19 +251,24 @@ public class Stock {
         return this;
     }
 
+    private boolean loadIfNull(Object o) {
+        if(stock == null && ObjectUtil.isEmpty(o)){
+            stock = stkRepository.findByCode(code);
+            set(stock);
+        }
+        return true;
+    }
+
 
     /**
      * @return SH600000, 03323, APPL
      */
     public String getCodeWithPlace(){
-        return this.place == null ? this.code : this.place.name() + this.code;
+        return this.place == null ? this.code : (loadIfNull(this.cate) && this.isCateStock() ? (this.place.name() + this.code) : this.code);
     }
 
     public String getNameAndCode(){
-        if(StringUtils.isEmpty(name) && stock == null){
-            stock = stkRepository.findByCode(code);
-            this.name = stock.getName();
-        }
+        loadIfNull(this.name);
         return (this.name==null?this.code:this.name) + "["+ this.getCodeWithPlace() +"]";
     }
     public String getNameAndCodeWithLink(){
