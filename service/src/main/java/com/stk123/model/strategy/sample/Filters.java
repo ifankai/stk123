@@ -360,7 +360,7 @@ public class Filters {
             //days天内最大5日均量
             Bar k = today.before().getHighestBar(days2, Bar.EnumValue.V, 5, Bar.EnumCalculationMethod.MA);
             //Bar k2 = k.getHighestBar(5, Bar.EnumValue.V);
-            if(k != null && today.getClose() >= k.getClose() && today.before().getClose() <= k.getClose()){
+            if(k != null && today.getClose() >= Math.max(k.getClose(), k.getOpen()) && today.before().getClose() <= Math.max(k.getClose(), k.getOpen())){
                 Bar k4 = k.getHighestBar(5, Bar.EnumValue.V);
                 int cnt = k4.getBarCount(100, bar -> k4.getVolume()<bar.getVolume());
                 if(cnt >= 3){
