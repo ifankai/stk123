@@ -5,6 +5,7 @@ import io.shapelets.khiva.Library;
 import io.shapelets.khiva.Matrix;
 
 import java.util.Arrays;
+import java.util.Comparator;
 
 public class KhivaUtils {
 
@@ -58,11 +59,56 @@ public class KhivaUtils {
         }
     }
 
+    public static double[] mass(double[] tss, double[] query){
+        long[] dimsTss = {tss.length, 1, 1, 1};
+        long[] dimsQuery = {query.length, 1, 1, 1};
+
+        try (
+                Array t = Array.fromPrimitiveArray(tss, dimsTss);
+                Array q = Array.fromPrimitiveArray(query, dimsQuery)
+        ) {
+
+            Array result = Matrix.mass(q, t);
+            double[] distances = result.getData();
+
+            result.close();
+            return distances;
+        }
+    }
+
     public static int getIndexOfMin(double[] array) {
         int minAt = 0;
         for (int i = 0; i < array.length; i++) {
             minAt = array[i] < array[minAt] ? i : minAt;
         }
         return minAt;
+    }
+
+    public static int[] getIndexesOfMin(double[] array, int num) {
+        //create sort able array with index and value pair
+        IndexValuePair[] pairs = new IndexValuePair[array.length];
+        for (int i = 0; i < array.length; i++) {
+            pairs[i] = new KhivaUtils.IndexValuePair(i, array[i]);
+        }
+
+        //sort
+        Arrays.sort(pairs, Comparator.comparingDouble(o -> o.value));
+
+        //extract the indices
+        int[] result = new int[num];
+        for (int i = 0; i < num; i++) {
+            result[i] = pairs[i].index;
+        }
+        return result;
+    }
+
+    static class IndexValuePair {
+        private int index;
+        private double value;
+
+        public IndexValuePair(int index, double value) {
+            this.index = index;
+            this.value = value;
+        }
     }
 }

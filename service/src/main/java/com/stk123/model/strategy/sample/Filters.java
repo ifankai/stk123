@@ -377,4 +377,12 @@ public class Filters {
             return FilterResult.FALSE(k.getDate()+","+k.getDate());
         };
     }
+
+    public static Filter<Stock> filter_0012a(Bar bar, int length) {
+        return (stock) -> {
+            Bar today = stock.getBar();
+            int n = today.similarMass(0, bar, length);
+            return FilterResult.TRUE(n);
+        };
+    }
 }

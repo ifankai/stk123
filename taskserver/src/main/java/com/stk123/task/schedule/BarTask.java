@@ -69,7 +69,7 @@ public class BarTask extends AbstractTask {
     private StockService stockService;
 
     public static void main(String[] args) throws Exception {
-        AbstractTask task = new BarTask();
+        BarTask task = new BarTask();
         task.execute("analyse", "common", "today=20200101");
         System.out.println(task.today);
     }

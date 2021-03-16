@@ -117,6 +117,15 @@ public class Sample {
         return strategy;
     }
 
+    //相似K线
+    public static Strategy strategy_07a() {
+        Strategy<Stock> strategy = new Strategy<>("strategy_07","策略相似K线(07a)", Stock.class);
+        Stock stock = Stock.build("002572");
+        Bar a = stock.getBarSeries().getBar("20210118");
+        strategy.addFilter("相似K线", Filters.filter_0012a(a, 100));
+        return strategy;
+    }
+
 
     //大跌后，有减持，问询函？
     public static Strategy strategy_0() {
@@ -137,7 +146,7 @@ public class Sample {
         Filter<BarSeries> filter = (bs) -> {
             Bar today = bs.getFirst();
             Bar b = today.getBarMerge(120, 6);
-            int similar = mergeBar.similar(120/6, b, 5);
+            int similar = mergeBar.similarBar(120/6, b, 5);
             if(similar >= 16){
                 return FilterResult.TRUE(b.getDate());
             }

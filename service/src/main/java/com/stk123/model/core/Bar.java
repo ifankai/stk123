@@ -1,8 +1,10 @@
 package com.stk123.model.core;
 
+import cn.hutool.core.collection.CollUtil;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.common.CommonUtils;
+import com.stk123.common.ml.KhivaUtils;
 import com.stk123.common.util.AlgorithmUtils;
 import com.stk123.common.util.collection.IntRange2IntMap;
 import com.stk123.entity.StkKlineEntity;
@@ -11,13 +13,11 @@ import com.stk123.util.ServiceUtils;
 import lombok.Data;
 import lombok.ToString;
 import lombok.extern.apachecommons.CommonsLog;
+import org.elasticsearch.common.util.CollectionUtils;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -202,7 +202,7 @@ public class Bar implements Serializable, Cloneable {
 		Bar k = this;
 		while(true) {
 			result = func.apply(k);
-			if(n++ == 0){
+			if(n-- <= 0){
 				return result;
 			}
 			k = k.before;
@@ -686,20 +686,6 @@ public class Bar implements Serializable, Cloneable {
 	}
 
 
-	//定义相似Bar
-	public static BiPredicate<Bar, Bar> getSimilar1(double d){
-		return (a, b) -> {
-		    if(a.getChange() == b.getChange()){
-		        return true;
-            }
-		    return Math.abs(a.getChange() - b.getChange()) <= d;
-        };
-	}
-
-	public int similar(int n, Bar bar, double d){
-		return this.similar(n, bar, Bar.getSimilar1(d));
-	}
-
 	//从当前Bar开始向前比较n个Bar，返回相似的个数
 	public int similar(int n, Bar bar, BiPredicate<Bar, Bar>... biPredicates){
 		int cnt = 0;
@@ -724,6 +710,58 @@ public class Bar implements Serializable, Cloneable {
 			m++;
 		}
 		return cnt;
+	}
+
+	//定义相似Bar
+	public static BiPredicate<Bar, Bar> getSimilarBar(double delta){
+		return (a, b) -> {
+			if(a.getChange() == b.getChange()){
+				return true;
+			}
+			return Math.abs(a.getChange() - b.getChange()) <= delta;
+		};
+	}
+
+	public int similarBar(int n, Bar bar, double d){
+		return this.similar(n, bar, Bar.getSimilarBar(d));
+	}
+
+	//TODO 相似高低点
+	public int similarHighLowPoint(int n, Bar bar) {
+		return 0;
+	}
+
+	public int similarMass(int n, Bar bar, int length){
+		List<Double> close1 = this.map(length+n, Bar::getClose);
+		List<Double> close2 = bar.map(length, Bar::getClose);
+		double[] tss = close1.stream().mapToDouble(Double::doubleValue).toArray();
+		double[] query = close2.stream().mapToDouble(Double::doubleValue).toArray();
+
+		System.out.println("tss.length:"+tss.length);
+		System.out.println("query.length:"+query.length);
+
+		double[] distances = KhivaUtils.mass(tss, query);
+
+		System.out.println(Arrays.toString(distances));
+		int index = KhivaUtils.getIndexOfMin(distances);
+		System.out.println(index);
+		System.out.println(this.before(index).getDate());
+		System.out.println(Arrays.toString(KhivaUtils.getIndexesOfMin(distances, 3)));
+		return index;
+	}
+
+	public <R> List<R> map(int n, Function<Bar, R> function){
+		List<R> list = new ArrayList<>();
+		Bar k = this;
+		while(true) {
+			if(n-- < 0){
+				return list;
+			}
+			list.add(function.apply(k));
+			k = k.before();
+			if(k == null)break;
+		}
+		return list;
 	}
 
 	/**
