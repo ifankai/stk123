@@ -7,6 +7,9 @@ import io.shapelets.khiva.Matrix;
 import java.util.Arrays;
 import java.util.Comparator;
 
+/**
+ * https://khiva.readthedocs.io/en/latest/
+ */
 public class KhivaUtils {
 
     public static void main(String[] args) {
