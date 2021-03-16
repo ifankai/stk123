@@ -301,7 +301,12 @@ public class BarService {
                     }
 
                     double lastClose = Double.parseDouble(ss[4]);
-                    double volume = Double.parseDouble(ss[6]) * 100;
+                    double volume = 0;
+                    if(stock.getCode().startsWith("688")){
+                        volume = Double.parseDouble(ss[6]);
+                    }else {
+                        volume = Double.parseDouble(ss[6]) * 100;
+                    }
                     double percentage = Double.parseDouble(ss[32]);
                     double high = Double.parseDouble(ss[33]);
                     double low = Double.parseDouble(ss[34]);

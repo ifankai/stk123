@@ -242,7 +242,7 @@ public class Filters {
      * 均线线缠绕，均线最大和最小值不超过d%
      * 且，前days天内放量涨缩量跌
      */
-    public static Filter<Stock> filter_007(int days, double d){
+    public static Filter<Stock> filter_007a(int days, double d){
         return (stock) -> {
             Bar today = stock.getBar();
             double ma5 = today.getMA(5, Bar.EnumValue.C);
@@ -292,8 +292,58 @@ public class Filters {
         };
     }
 
-    public static Filter<Stock> filter_007(double d){
-        return filter_007( 0, d);
+    public static Filter<Stock> filter_007a(double d){
+        return filter_007a( 0, d);
+    }
+
+    public static Filter<Stock> filter_007b(int days, double d){
+        return (stock) -> {
+            Bar today = stock.getBar();
+            double ma5 = today.getMA(5, Bar.EnumValue.C);
+            double ma120 = today.getMA(120, Bar.EnumValue.C);
+            double d2 = Math.abs(ma5 - ma120)/CommonUtils.min(ma5, ma120);
+            if(d2 > d/100d) {
+                return FilterResult.FALSE("不满足K线价差小于"+d+"%, 实际::"+(d2*100));
+            }
+            if(stock.isCateStock() && today.getSlopeOfMA(1, 60) < 0 && today.getSlopeOfMA(1, 120) < 0){
+                return FilterResult.FALSE("60,120均线都是下降的");
+            }
+            int cnt = today.getBarCount(30, bar -> bar.getMA(20, Bar.EnumValue.C) > bar.getMA(120, Bar.EnumValue.C));
+            if(stock.isCateStock() && cnt < 1){
+                return FilterResult.FALSE("均线空头排列");
+            }
+
+            double ma10 = today.getMA(10, Bar.EnumValue.C);
+            double ma30 = today.getMA(30, Bar.EnumValue.C);
+            double ma60 = today.getMA(60, Bar.EnumValue.C);
+            double ma250 = today.getMA(250, Bar.EnumValue.C);
+            double max = CommonUtils.max(ma5, ma10, ma30, ma60, ma120, ma250);
+            double min = CommonUtils.min(ma5, ma10, ma30, ma60, ma120, ma250);
+
+            double change = (max - min)/min;
+            if(change <= d/100d && today.getLow() < max){
+                if(days != 0){
+                    List<Bar> hisLowPoints = today.getHistoryLowPoint(days, 10);
+                    double lowVolume = hisLowPoints.stream().mapToDouble(Bar::getVolume).sum()/hisLowPoints.size();
+                    /*long cnt = hisLowPoints.stream().filter(bar -> bar.getLow() < min).count();
+                    if(cnt < count){
+                        return FilterResult.FALSE(days+"天内不满足股价最低点低于所有均线"+count+"次，实际"+cnt+"次");
+                    }*/
+                    List<Bar> hisHighPoints = today.getHistoryHighPoint(100, 10);
+                    /*cnt = hisHighPoints.stream().filter(bar -> bar.getHigh() > max).count();
+                    if(cnt < count){
+                        return FilterResult.FALSE(days+"天内不满足股价最高点高于所有均线"+count+"次，实际"+cnt+"次");
+                    }*/
+                    double highVolume = hisHighPoints.stream().mapToDouble(Bar::getVolume).sum()/hisHighPoints.size();
+                    if(stock.isCateStock() && (hisLowPoints.size() == 0 || hisHighPoints.size() == 0 || highVolume < lowVolume * 2)){
+                        return FilterResult.FALSE("不满足放量涨缩量跌, 实际:"+ highVolume/lowVolume);
+                    }
+                }
+                String jsl = CommonUtils.numberFormat2Digits(change*100);
+                return FilterResult.TRUE(today.getDate() + "均线紧缩率:" + jsl +"%, max="+max+",min="+min, today.getDate(), "均线紧缩率(%)", jsl);
+            }
+            return FilterResult.FALSE("不满足K线价差小于"+d+"%, 实际："+(change*100));
+        };
     }
 
     //突破趋势线

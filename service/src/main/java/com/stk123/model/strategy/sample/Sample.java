@@ -69,7 +69,7 @@ public class Sample {
         strategy.addFilter("股票", Filters.filter_mustStockCate(Stock.EnumCate.STOCK));
         strategy.addFilter("一阳吃4阴或阳", Stock::getBarSeries, Filters.filter_004(4));
         strategy.addFilter("一阳穿过5, 10, 20, 30, 60日均线中的任何2根", Stock::getBar, Filters.filter_005b(2, 5, 10, 20, 30, 60));
-        strategy.addFilter("均线线缠绕，且前100天内放量涨缩量跌", Filters.filter_007(100, 13 ));
+        strategy.addFilter("均线线缠绕，且前100天内放量涨缩量跌", Filters.filter_007a(100, 13 ));
         strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
         return strategy;
     }
@@ -78,7 +78,7 @@ public class Sample {
         strategy.addFilter("行业", Filters.filter_mustStockCate(Stock.EnumCate.INDEX_eastmoney_gn));
         strategy.addFilter("一阳吃3阴或阳", Stock::getBarSeries, Filters.filter_004(3));
         strategy.addFilter("一阳穿过5, 10, 20, 30, 60日均线中的任何2根", Stock::getBar, Filters.filter_005b(2, 5, 10, 20, 30, 60));
-        strategy.addFilter("均线线缠绕，且前100天内放量涨缩量跌", Filters.filter_007(100, 6 ));
+        strategy.addFilter("均线线缠绕，且前100天内放量涨缩量跌", Filters.filter_007b(100, 6 ));
         strategy.setExpectFilter("60日内涨幅>10%", Stock::getBarSeries, Filters.expectFilter(60, 10));
         return strategy;
     }
