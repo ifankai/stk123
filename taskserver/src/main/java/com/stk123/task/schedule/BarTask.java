@@ -357,8 +357,8 @@ public class BarTask extends AbstractTask {
                 if(realtime == null) {//实时行情只关注股票，排除板块
                     List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn);
                     bkList = list.stream().map(StockBasicProjection::getCode).collect(Collectors.toSet());
-                    //排除一些垃圾板块 AB股[BK0498] AH股[BK0499] 上证380[BK0705] 转债标的[BK0528] 新三板[BK0600]
-                    bkList = CollectionUtil.removeAny(bkList, "BK0498", "BK0499", "BK0705", "BK0528", "BK0600");
+                    //排除一些垃圾板块 AB股[BK0498] AH股[BK0499] 上证380[BK0705] 转债标的[BK0528] 新三板[BK0600] 深股通[BK0804] 三板精选[BK0925]
+                    bkList = CollectionUtil.removeAny(bkList, "BK0498", "BK0499", "BK0705", "BK0528", "BK0600", "BK0804", "BK0925");
                     allList.addAll(bkList);
                 }
             }

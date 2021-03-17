@@ -366,6 +366,12 @@
                 <version>0.5.0</version>
             </dependency>
 
+            <dependency>
+                <groupId>gov.nist.math</groupId>
+                <artifactId>jama</artifactId>
+                <version>1.0.3</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

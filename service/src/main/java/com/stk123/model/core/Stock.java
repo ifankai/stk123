@@ -272,6 +272,9 @@ public class Stock {
         return (this.name==null?this.code:this.name) + "["+ this.getCodeWithPlace() +"]";
     }
     public String getNameAndCodeWithLink(){
+        if(this.isMarketCN() && this.isCateIndexEastmoneyGn()){
+            return CommonUtils.wrapLink(this.getNameAndCode(), "http://quote.eastmoney.com/bk/90."+this.getCode()+".html");
+        }
         return CommonUtils.wrapLink(this.getNameAndCode(), "https://xueqiu.com/S/"+this.getCodeWithPlace());
     }
 
