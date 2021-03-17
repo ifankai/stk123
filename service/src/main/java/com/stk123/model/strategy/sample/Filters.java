@@ -138,8 +138,11 @@ public class Filters {
         return (bs) -> {
             Bar bar = bs.getFirst();
             double p = bar.getChange();
-            double close = bar.getClose();
             if(p > 0){
+                double close = bar.getClose();
+                if(bar.getVolume() < bar.before().getVolume()){
+                    return FilterResult.FALSE("今天量能小于昨天");
+                }
                 int count = bar.getBarCountExcludeToday(n, k -> k.getClose() < close);
                 if(count >= n){
                     int cnt = bar.getBarCountExcludeToday(3, k -> Math.abs(k.getChange()) <= 3);
@@ -431,8 +434,12 @@ public class Filters {
     public static Filter<Stock> filter_0012a(Bar bar, int length) {
         return (stock) -> {
             Bar today = stock.getBar();
-            int n = today.similarMass(0, bar, length);
-            return FilterResult.TRUE(n);
+            double distance = today.similarMass(0, bar, length);
+            if(distance < 5) {
+                return FilterResult.TRUE(distance);
+            }else{
+                return FilterResult.FALSE(distance);
+            }
         };
     }
 }

@@ -731,30 +731,32 @@ public class Bar implements Serializable, Cloneable {
 		return 0;
 	}
 
-	public int similarMass(int n, Bar bar, int length){
-		List<Double> close1 = this.map(length+n, Bar::getClose);
-		List<Double> close2 = bar.map(length, Bar::getClose);
+	public double similarMass(int n, Bar bar, int length){
+		List<Double> close1 = this.map(length+n, bar1 -> bar1.getMA(5, EnumValue.C));
+		List<Double> close2 = bar.map(length, bar1 -> bar1.getMA(5, EnumValue.C));
 		double[] tss = close1.stream().mapToDouble(Double::doubleValue).toArray();
 		double[] query = close2.stream().mapToDouble(Double::doubleValue).toArray();
 
-		System.out.println("tss.length:"+tss.length);
-		System.out.println("query.length:"+query.length);
+		if(tss.length != query.length){
+		    return Double.MAX_VALUE;
+        }
 
 		double[] distances = KhivaUtils.mass(tss, query);
 
-		System.out.println(Arrays.toString(distances));
+//		System.out.println(Arrays.toString(distances));
 		int index = KhivaUtils.getIndexOfMin(distances);
-		System.out.println(index);
-		System.out.println(this.before(index).getDate());
-		System.out.println(Arrays.toString(KhivaUtils.getIndexesOfMin(distances, 3)));
-		return index;
+//		System.out.println(index);
+//		System.out.println(this.before(index).getDate());
+//		System.out.println(Arrays.toString(KhivaUtils.getIndexesOfMin(distances, 3)));
+		return distances[index];
 	}
 
+	//n=1 表示返回当前k线计算结果
 	public <R> List<R> map(int n, Function<Bar, R> function){
 		List<R> list = new ArrayList<>();
 		Bar k = this;
 		while(true) {
-			if(n-- < 0){
+			if(n-- <= 0){
 				return list;
 			}
 			list.add(function.apply(k));

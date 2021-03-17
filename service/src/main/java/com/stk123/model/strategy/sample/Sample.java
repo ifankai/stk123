@@ -123,6 +123,7 @@ public class Sample {
         Stock stock = Stock.build("002572");
         Bar a = stock.getBarSeries().getBar("20210118");
         strategy.addFilter("相似K线", Filters.filter_0012a(a, 100));
+        strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
         return strategy;
     }
 

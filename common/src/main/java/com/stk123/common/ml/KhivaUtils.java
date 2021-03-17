@@ -98,8 +98,9 @@ public class KhivaUtils {
         Arrays.sort(pairs, Comparator.comparingDouble(o -> o.value));
 
         //extract the indices
-        int[] result = new int[num];
-        for (int i = 0; i < num; i++) {
+        int length = num>=array.length?array.length:num;
+        int[] result = new int[length];
+        for (int i = 0; i < length; i++) {
             result[i] = pairs[i].index;
         }
         return result;
