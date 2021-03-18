@@ -9,7 +9,8 @@ import com.stk123.model.strategy.result.FilterResult;
 
 public class Sample {
 
-    public static String STRATEGIES = "01,02a,02b,03a,03b,04,05,06a,06b";
+    // ignore: 02a 选出来的标的太多，由02b替换
+    public static String STRATEGIES = "01,02b,03a,03b,04,05,06a,06b";
 
     public static Strategy strategy_01() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_01","策略603096新经典20201106，一段跌幅后底部放量(01)", BarSeries.class);
