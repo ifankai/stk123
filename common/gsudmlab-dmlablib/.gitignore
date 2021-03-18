@@ -1,0 +1,37 @@
+/bin/
+/target/
+/doc/
+/.settings/
+/.git/
+/settings.xml
+
+
+# User-specific stuff:
+.idea/*
+.idea/
+*.imll
+*.iml
+
+## File-based project format:
+*.iws
+
+## Plugin-specific files:
+
+# IntelliJ
+/out/
+
+# mpeltonen/sbt-idea plugin
+.idea_modules/
+
+# JIRA plugin
+atlassian-ide-plugin.xml
+
+# Crashlytics plugin (for Android Studio and IntelliJ)
+com_crashlytics_export_strings.xml
+crashlytics.properties
+crashlytics-build.properties
+fabric.properties
+/StdG__4.txt
+/xxx.jpg
+/xxxout.png
+/dependency-reduced-pom.xml

@@ -372,6 +372,12 @@
                 <version>1.0.3</version>
             </dependency>
 
+            <dependency>
+                <groupId>edu.gsu.cs.dmlab</groupId>
+                <artifactId>library</artifactId>
+                <version>0.0.4-SNAPSHOT</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

@@ -211,6 +211,11 @@
             <artifactId>jama</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>edu.gsu.cs.dmlab</groupId>
+            <artifactId>library</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

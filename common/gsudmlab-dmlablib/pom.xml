@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<description>Library that contains many different functions used for the DMLab at GSU.</description>
+	<groupId>edu.gsu.cs.dmlab</groupId>
+	<artifactId>library</artifactId>
+	<name>DMLab Library</name>
+	<version>0.0.4-SNAPSHOT</version>
+
+	<organization>
+		<name>GSU DMLab</name>
+		<url>http://dmlab.cs.gsu.edu/</url>
+	</organization>
+
+	<distributionManagement>
+		<!-- - The <repository> tag defines where release artifacts are pushed 
+			to as part of a 'mvn release:perform' command -->
+		<repository>
+			<id>edu.gsu.cs.dmlab.releases</id>
+			<name>DMLab Release Repositories-</name>
+			<url>scpexe://dmlab.cs.gsu.edu/repositories/maven-releases</url>
+		</repository>
+		<!-- - The <snapshotRepository> tag defines where snapshot artifacts are 
+			deployed to as part of a 'mvn deploy' command. -->
+		<snapshotRepository>
+			<id>edu.gsu.cs.dmlab.snapshots</id>
+			<name>DMLab Snapshots Repositories-</name>
+			<url>scpexe://dmlab.cs.gsu.edu/repositories/maven-snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<packaging>pom</packaging>
+
+	<licenses>
+		<license>
+			<name>GNU General Public License, Version 3</name>
+			<url>https://www.gnu.org/licenses/gpl-3.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+
+	<modules>
+		<module>core</module>
+		<module>db-connectors</module>
+		<module>lib</module>
+		<module>imageproc</module>
+		<module>tracking</module>
+		<module>interpolation</module>
+		<module>solgrind</module>
+	</modules>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.8.1</version>
+					<configuration>
+						<source>1.8</source>
+						<target>1.8</target>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>3.1.1</version>
+					<executions>
+						<execution>
+							<id>attach-javadocs</id>
+							<goals>
+								<goal>jar</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>aggregate</id>
+							<goals>
+								<goal>aggregate</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<includeDependencySources>true</includeDependencySources>
+						<dependencySourceIncludes>
+							<dependencySourceInclude>edu.gsu.cs.dmlab:*</dependencySourceInclude>
+						</dependencySourceIncludes>
+						<additionalparam>-Xdoclint:none</additionalparam>
+						<doclint>none</doclint>
+						<quiet>true</quiet>
+						<source>8</source>
+						<tags>
+							<tag>
+								<name>version</name>
+								<placement>a</placement>
+								<head>Version: ${project.version}</head>
+							</tag>
+						</tags>
+						<header>
+							DMLab Library API
+						</header>
+						<footer>
+							Data Mining Lab, Georgia State University, Atlanta, GA
+							30303
+						</footer>
+						<doctitle>DMLab Library API for ${project.version}</doctitle>
+						<windowtitle>DMLab Library API for ${project.version}</windowtitle>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-shade-plugin</artifactId>
+					<version>3.2.1</version>
+					<executions>
+						<execution>
+							<phase>package</phase>
+							<goals>
+								<goal>shade</goal>
+							</goals>
+							<configuration>
+								<transformers>
+									<transformer
+										implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+								</transformers>
+								<minimizeJar>true</minimizeJar>
+							</configuration>
+						</execution>
+					</executions>
+					<configuration>
+						<filters>
+							<filter>
+								<artifact>*:*</artifact>
+								<excludes>
+									<exclude>META-INF/*.SF</exclude>
+									<exclude>META-INF/*.DSA</exclude>
+									<exclude>META-INF/*.RSA</exclude>
+								</excludes>
+							</filter>
+						</filters>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>3.0.0-M3</version>
+					<configuration>
+						<includes>
+							<include>**/*Tests.java</include>
+						</includes>
+						<argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+						<skipTests>false</skipTests>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>2.5.3</version>
+					<configuration>
+						<autoVersionSubmodules>true</autoVersionSubmodules>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<extensions>
+			<!-- Enabling the use of SSH -->
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh-external</artifactId>
+				<version>1.0-beta-6</version>
+			</extension>
+		</extensions>
+	</build>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>27.0-jre</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.code.gson</groupId>
+				<artifactId>gson</artifactId>
+				<version>2.8.5</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-math3</artifactId>
+				<version>3.6.1</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sf.opencsv</groupId>
+				<artifactId>opencsv</artifactId>
+				<version>2.3</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.haifengl</groupId>
+				<artifactId>smile-math</artifactId>
+				<version>1.5.1</version>
+			</dependency>
+			<dependency>
+				<groupId>joda-time</groupId>
+				<artifactId>joda-time</artifactId>
+				<version>2.10.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jgrapht</groupId>
+				<artifactId>jgrapht-ext</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.locationtech.jts</groupId>
+				<artifactId>jts-core</artifactId>
+				<version>1.16.1</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.jai-imageio</groupId>
+				<artifactId>jai-imageio-jpeg2000</artifactId>
+				<version>1.3.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>1.7.25</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jsoup</groupId>
+				<artifactId>jsoup</artifactId>
+				<version>1.8.3</version>
+			</dependency>
+			<dependency>
+				<groupId>gov.nasa.gsfc.heasarc</groupId>
+				<artifactId>nom-tam-fits</artifactId>
+				<version>1.15.2</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openimaj</groupId>
+				<artifactId>image-processing</artifactId>
+				<version>1.3.8</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>2.25.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<version>5.4.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<version>5.4.0</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+</project>
