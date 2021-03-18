@@ -377,6 +377,11 @@
                 <artifactId>library</artifactId>
                 <version>0.0.4-SNAPSHOT</version>
             </dependency>
+            <dependency>
+                <groupId>edu.gsu.cs.dmlab</groupId>
+                <artifactId>imageproc</artifactId>
+                <version>0.0.4-SNAPSHOT</version>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>

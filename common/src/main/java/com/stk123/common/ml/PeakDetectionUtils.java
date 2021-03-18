@@ -1,9 +1,16 @@
 package com.stk123.common.ml;
 
+import cn.hutool.core.lang.Assert;
+import edu.gsu.cs.dmlab.imageproc.imageparam.util.PeakDetection;
+import edu.gsu.cs.dmlab.imageproc.interfaces.IPeakDetector;
+
 import java.util.Arrays;
 import java.util.List;
 
-public class PeakDetection {
+/**
+ * https://bitbucket.org/gsudmlab/dmlablib
+ */
+public class PeakDetectionUtils {
 
     public static void main(String[] args) {
         int n = 0;
@@ -42,6 +49,6 @@ public class PeakDetection {
         List<Integer> peaks = detector.findPeaks(data);
         // System.out.println(Arrays.toString(peaks.toArray()));
         List<Integer> expected = Arrays.asList(13, 35, 69, 110, 143, 168, 194, 229, 254);
-        assertTrue(peaks.equals(expected));
+        Assert.isTrue(peaks.equals(expected));
     }
 }
