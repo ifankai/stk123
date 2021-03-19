@@ -80,6 +80,17 @@ public class StrategyBacktesting {
             }
         }
         List<StrategyResult> results = run(tasks, multipleThreadSize);
+        for(Strategy strategy : strategies) {
+            /*
+            如果有comparator，则
+            List<StrategyResult> all = ...
+            for(StrategyResult result : results){
+                if(isFilterAllPassed())
+                    all.add(result);
+            }
+            */
+
+        }
         results.stream().forEach(sr -> strategyResults.add(sr));
     }
 
