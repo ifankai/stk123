@@ -14,13 +14,13 @@ import java.util.List;
 @FunctionalInterface
 public interface Filter<B> {
 
-    FilterResult filter(B t);
+    FilterResult filter(Strategy strategy, B t);
 
     static <B> Filter<B> or(Filter<B>... filters){
-        return (bs) -> {
+        return (strategy, bs) -> {
             List<Object> results = new ArrayList<>();
             for (Filter<B> filter : filters) {
-                FilterResult filterResult = filter.filter(bs);
+                FilterResult filterResult = filter.filter(strategy, bs);
                 results.add(filterResult.result());
                 if(filterResult.pass()) return filterResult;
             }

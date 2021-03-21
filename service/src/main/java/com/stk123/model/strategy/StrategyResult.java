@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stk123.model.json.View;
 import com.stk123.model.strategy.result.FilterResult;
+import com.stk123.model.strategy.result.FilterResultBetween;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -55,6 +56,20 @@ public class StrategyResult<X> {
 
     public boolean isExpectFilterPassed(){
         return expectFilterResults.stream().filter(FilterResult::pass).count() >= 1;
+    }
+
+    public double getSortableValue(){
+        FilterResult filterResult = filterResults.stream().filter(fr -> fr instanceof Sortable).findFirst().orElse(null);
+        if(filterResult != null){
+            return ((Sortable) filterResult).getValue();
+        }
+        return 0d;
+    }
+    public void setSortablePassed(boolean pass){
+        FilterResult filterResult = filterResults.stream().filter(fr -> fr instanceof Sortable).findFirst().orElse(null);
+        if(filterResult != null){
+            filterResult.setPass(pass);
+        }
     }
 
     @SneakyThrows

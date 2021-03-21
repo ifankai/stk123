@@ -336,6 +336,21 @@ public class Bar implements Serializable, Cloneable {
         return ret;
     }
 
+    public Bar getHighestBar(int n, Function<Bar, Double> function){
+        double value = 0.0;
+        Bar k = this;
+        Bar ret = null;
+        for(int i=0;i<n;i++){
+            double tmp = function.apply(k);
+            if(value < tmp || value == 0.0){
+                value = tmp;
+                ret = k;
+            }
+            k = k.before(1);
+        }
+        return ret;
+    }
+
 	//low的低点
 	@Deprecated
 	public double getLLV(int n){

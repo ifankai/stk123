@@ -35,10 +35,13 @@ public class FilterExecutor<X, B> {
     //private boolean pass;
     @Getter
     private List<FilterResult> results = new ArrayList<>();
+    @Getter
+    private Strategy strategy;
 
-    public FilterExecutor(String code, String name, Function<X, B> function, Filter<B> filter){
+    public FilterExecutor(String code, String name, Strategy strategy, Function<X, B> function, Filter<B> filter){
         this.code = code;
         this.name = name;
+        this.strategy = strategy;
         this.function = function;
         this.filter = filter;
         this.counterPassed = 0;
@@ -47,8 +50,8 @@ public class FilterExecutor<X, B> {
     public FilterResult execute(X b) {
         FilterResult result = null;
         try{
-            B bar = function.apply(b); //这里是吧 X 转为 B 类型，B一般是Bar，BarSeries，也可以是Stock本身
-            result = filter.filter(bar);
+            B x = function.apply(b); //这里是吧 X 转为 B 类型，B一般是Bar，BarSeries，也可以是Stock本身
+            result = filter.filter(strategy, x);
         }catch (Exception e){
             log.error("FilterExecutor Error:"+this.name, e);
             result = FilterResult.FALSE(e.getMessage());

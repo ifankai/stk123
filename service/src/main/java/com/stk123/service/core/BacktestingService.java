@@ -54,7 +54,10 @@ public class BacktestingService {
 
 
         for (Method method : methods) {
-            strategyBacktesting.addStrategy((Strategy<?>) method.invoke(null, null));
+            Strategy strategy = (Strategy<?>) method.invoke(null, null);
+            if(strategy == null) continue;
+            strategy.setStrategyBacktesting(strategyBacktesting);
+            strategyBacktesting.addStrategy(strategy);
         }
 
         List<Stock> stocks = stockService.buildStocks(codes);
@@ -83,17 +86,20 @@ public class BacktestingService {
     }
 
     public StrategyBacktesting backtestingOnStock(List<Stock> stocks, List<String> strategies, String startDate, String endDate, boolean isIncludeRealtimeBar) throws InvocationTargetException, IllegalAccessException {
+        return backtestingOnStock(new StrategyBacktesting(), stocks, strategies, startDate, endDate, isIncludeRealtimeBar);
+    }
+
+    public StrategyBacktesting backtestingOnStock(StrategyBacktesting strategyBacktesting, List<Stock> stocks, List<String> strategies, String startDate, String endDate, boolean isIncludeRealtimeBar) throws InvocationTargetException, IllegalAccessException {
         if(isIncludeRealtimeBar){
             stocks.forEach(stock -> stock.setIncludeRealtimeBar(true));
         }
-        StrategyBacktesting strategyBacktesting = new StrategyBacktesting();
-
         //Set<Method> methods = ReflectionUtils.getAllMethods(Sample.class, method -> strategies.stream().anyMatch(name -> StringUtils.endsWithIgnoreCase(method.getName(), "strategy_"+name)), ReflectionUtils.withReturnType(Strategy.class));
         Set<Method> methods = ReflectionUtils.getAllMethods(Sample.class,
                 method -> strategies.stream().anyMatch(name -> StringUtils.equalsIgnoreCase(method.getName(), "strategy_"+name) || StringUtils.equalsIgnoreCase(method.getName(), name)));
         for (Method method : methods) {
             Strategy strategy = (Strategy<?>) method.invoke(null, null);
-            Assert.notNull(strategy, "Strategy must not be null");
+            if(strategy == null) continue;
+            strategy.setStrategyBacktesting(strategyBacktesting);
             strategyBacktesting.addStrategy(strategy);
         }
 

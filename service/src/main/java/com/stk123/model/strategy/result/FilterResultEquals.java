@@ -11,6 +11,10 @@ public class FilterResultEquals<V extends Number & Comparable, R> extends Filter
     private V tolerance; //上下容忍数值
     private BiPredicate biPredicate;
 
+    public FilterResultEquals(V value){
+        this(value, value);
+    }
+
     public FilterResultEquals(V value, V target) {
         this(value, target, null);
     }
@@ -41,7 +45,7 @@ public class FilterResultEquals<V extends Number & Comparable, R> extends Filter
 
     @Override
     public double getValue() {
-        return Math.abs(value.doubleValue() - target.doubleValue());
+        return value.doubleValue();
     }
 
     @Override

@@ -10,7 +10,7 @@ import com.stk123.model.strategy.result.FilterResult;
 public class Sample {
 
     // ignore: 02a 选出来的标的太多，由02b替换
-    public static String STRATEGIES = "01,02b,03a,03b,04,05,06a,06b";
+    public static String STRATEGIES = "01,02b,03a,03b,04,05,06a,06b,08a,08b,08c";
 
     public static Strategy strategy_01() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_01","策略603096新经典20201106，一段跌幅后底部放量(01)", BarSeries.class);
@@ -50,17 +50,32 @@ public class Sample {
     }
     //比strategy_02a多了MACD底背离
     public static Strategy strategy_02b() {
-        Strategy<BarSeries> strategy = new Strategy<>("strategy_02b","策略002044美年健康20201231，底部一阳吃多阴，MACD底背离(02b)", BarSeries.class);
-        strategy.addFilter("一阳吃5阴或阳", Filters.filter_004(5));
-        strategy.addFilter("一阳穿过5,10日均线", BarSeries::getFirst, Filters.filter_005a(5, 10));
+        Strategy<Stock> strategy = new Strategy<>("strategy_02b","策略002044美年健康20201231，底部一阳吃多阴，MACD底背离(02b)", Stock.class);
+        strategy.addFilter("股票", Filters.filter_mustStockCate(Stock.EnumCate.STOCK));
+        strategy.addFilter("一阳吃5阴或阳", Stock::getBarSeries, Filters.filter_004(5));
+        strategy.addFilter("一阳穿过5,10日均线", Stock::getBar, Filters.filter_005a(5, 10));
         strategy.addFilter("过去3天到100天的跌幅[-100,-20] or 过去3天到60天内最高点到低点的跌幅[-100,-30]",
-                BarSeries::getFirst,
+                Stock::getBar,
                 Filter.<Bar>or(
                         Filters.filter_001a(3,100,-100,-20),
                         Filters.filter_001b(3,60,-100,-25)
                 ));
-        strategy.addFilter("MACD和close或ma(60)底背离", BarSeries::getFirst, Filters.filter_006a(60));
-        strategy.setExpectFilter("60日内涨幅>20%", Filters.expectFilter(60, 20));
+        strategy.addFilter("MACD和close或ma(60)底背离", Stock::getBar, Filters.filter_006a(60));
+        strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
+        return strategy;
+    }
+    public static Strategy strategy_02c() {
+        Strategy<Stock> strategy = new Strategy<>("strategy_02c","策略002044美年健康20201231，底部一阳吃多阴，MACD底背离(02c)", Stock.class);
+        strategy.addFilter("行业", Filters.filter_mustStockCate(Stock.EnumCate.INDEX_eastmoney_gn));
+        strategy.addFilter("一阳吃5阴或阳", Stock::getBarSeries, Filters.filter_004(3));
+        strategy.addFilter("过去3天到100天的跌幅[-100,-20] or 过去3天到60天内最高点到低点的跌幅[-100,-30]",
+                Stock::getBar,
+                Filter.<Bar>or(
+                        Filters.filter_001a(3,100,-100,-20),
+                        Filters.filter_001b(3,60,-100,-25)
+                ));
+        strategy.addFilter("MACD和close或ma(60)底背离", Stock::getBar, Filters.filter_006a(60));
+        strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
         return strategy;
     }
 
@@ -120,7 +135,7 @@ public class Sample {
 
     //相似K线
     public static Strategy strategy_07a() {
-        Strategy<Stock> strategy = new Strategy<>("strategy_07","策略相似K线(07a)", Stock.class);
+        Strategy<Stock> strategy = new Strategy<>("strategy_07a","策略相似K线(07a)", Stock.class);
         Stock stock = Stock.build("002572");
         Bar a = stock.getBarSeries().getBar("20210118");
         strategy.addFilter("相似K线", Filters.filter_0012a(a, 100));
@@ -129,37 +144,74 @@ public class Sample {
     }
 
 
+    public static Strategy strategy_08a() {
+        String turningPoint20 = Sample.getTurningPoint(20);
+        return strategy_08("strategy_08a","20日板块阶段强势(08a)，自"+turningPoint20+"以来", turningPoint20);
+    }
+    public static Strategy strategy_08b() {
+        String turningPoint20 = Sample.getTurningPoint(20);
+        String turningPoint60 = Sample.getTurningPoint(60);
+        if(turningPoint20.equals(turningPoint60)){
+            return null;
+        }
+        return strategy_08("strategy_08b","60日板块阶段强势(08b)，自"+turningPoint60+"以来", turningPoint60);
+    }
+    public static Strategy strategy_08c() {
+        String turningPoint20 = Sample.getTurningPoint(20);
+        String turningPoint60 = Sample.getTurningPoint(60);
+        String turningPoint120 = Sample.getTurningPoint(120);
+        if(turningPoint20.equals(turningPoint120) || turningPoint60.equals(turningPoint120)){
+            return null;
+        }
+        return strategy_08("strategy_08c","120日板块阶段强势(08c)，自"+turningPoint120+"以来", turningPoint120);
+    }
+    private static Strategy strategy_08(String code, String name, String turningPoint) {
+        Strategy<Stock> strategy = new Strategy<>(code, name, Stock.class);
+        strategy.setSortable(5, false);
+        strategy.setCanTestHistory(false);
+
+        strategy.addFilter("行业", Filters.filter_mustStockCate(Stock.EnumCate.INDEX_eastmoney_gn));
+        Filter<Stock> filter = (strg, stock) -> {
+            Bar bar = stock.getBar();
+            Bar k = bar.before(turningPoint);
+            return FilterResult.Sortable(bar.getChange(bar.getDaysBetween(bar.getDate(), k.getDate()), Bar.EnumValue.C));
+        };
+        strategy.addFilter("自"+turningPoint+"以来排行", filter);
+        strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
+        return strategy;
+    }
+    private static String getTurningPoint(int days){
+        Stock stock = Stock.build("999999");
+        Bar bar = stock.getTurningPoint(days);
+        return bar.getDate();
+    }
+
+
+
     //大跌后，有减持，问询函？
     public static Strategy strategy_0() {
         return null;
     }
 
     public static Strategy strategy_TEST() {
-        Strategy<BarSeries> strategy = new Strategy<>("strategy_TEST","Strategy TEST", BarSeries.class);
-        Stock stock = Stock.build("002572");
-        Bar a = stock.getBarSeries().getBar("20210118");
-        Bar mergeBar = a.getBarMerge(120, 6);
-        Bar k = mergeBar;
-        while(k != null) {
-            System.out.println("mergeBar:" + k);
-            k = k.before();
-        }
+        Strategy<Stock> strategy = new Strategy<>("strategy_TEST","Strategy TEST", Stock.class);
+        strategy.setSortable(5, false);
 
-        Filter<BarSeries> filter = (bs) -> {
-            Bar today = bs.getFirst();
-            Bar b = today.getBarMerge(120, 6);
-            int similar = mergeBar.similarBar(120/6, b, 5);
-            if(similar >= 16){
-                return FilterResult.TRUE(b.getDate());
-            }
-            return FilterResult.FALSE();
+        String turningPoint = Sample.getTurningPoint(60);
+        System.out.println("turningPoint=="+turningPoint);
+
+        strategy.addFilter("行业", Filters.filter_mustStockCate(Stock.EnumCate.INDEX_eastmoney_gn));
+        Filter<Stock> filter = (strg, stock) -> {
+            Bar bar = stock.getBar();
+            Bar k = bar.before(turningPoint);
+            return FilterResult.Sortable(bar.getChange(bar.getDaysBetween(bar.getDate(), k.getDate()), Bar.EnumValue.C));
         };
-        //strategy.addFilter("test filter", Filters.filter_006b(0.02));
         strategy.addFilter("test filter", filter);
         //strategy.addFilter("过去3天到80天的跌幅", BarSeries::getFirst, Filters.filter_001b(3,60,-50,-30));
 
         //strategy.setExpectFilter("60日内涨幅>20%", Filters.expectFilter(250, 25));
-        strategy.setExpectFilter("60日内涨幅>20%", Filters.expectFilter(60, 20));
+        strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
         return strategy;
     }
+
 }

@@ -13,6 +13,7 @@ import com.stk123.model.projection.StockProjection;
 import com.stk123.repository.StkIndustryRepository;
 import com.stk123.repository.StkRepository;
 import com.stk123.service.core.BarService;
+import com.stk123.service.core.StockService;
 import com.stk123.service.support.SpringApplicationContext;
 import com.stk123.util.HttpUtils;
 import com.stk123.util.ServiceUtils;
@@ -28,10 +29,8 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.stk123.model.core.Stock.EnumMarket.*;
 import static com.stk123.model.core.Stock.EnumPlace.SH;
@@ -50,6 +49,8 @@ public class Stock {
     private StkRepository stkRepository;
     @Autowired
     private StkIndustryRepository stkIndustryRepository;
+    @Autowired
+    private StockService stockService;
 
     @AllArgsConstructor
     public enum EnumMarket {
@@ -533,6 +534,25 @@ public class Stock {
             return this.industries = stkIndustryRepository.findAllByCode(this.getCode());
         }
         return this.industries;
+    }
+
+    private static Map<Integer, Bar> TURNING_POINTS = Collections.synchronizedMap(new HashMap<>());
+    /**
+     * 转折点，板块站上5日均线最多的日子
+     */
+    public synchronized Bar getTurningPoint(int days){
+        if(TURNING_POINTS.get(days) != null){
+            return TURNING_POINTS.get(days);
+        }
+        List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn);
+        List<Stock> stocks = list.stream().map(projection -> Stock.build(projection)).collect(Collectors.toList());
+        Bar b = this.getBar().getHighestBar(days, bar -> {
+           List<Bar> bars = stocks.stream().map(stock1 -> stock1.getBar().before(bar.getDate())).collect(Collectors.toList());
+           long cnt = bars.stream().filter(bar1 -> bar1.getClose() > bar1.getMA(5, Bar.EnumValue.C) && bar1.before().getClose() < bar1.before().getMA(5, Bar.EnumValue.C)).count();
+           return Double.valueOf(cnt);
+        });
+        TURNING_POINTS.put(days, b);
+        return b;
     }
 
     @Override

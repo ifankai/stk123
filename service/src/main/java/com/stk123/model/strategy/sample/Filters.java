@@ -16,7 +16,7 @@ import java.util.List;
 public class Filters {
 
     public static Filter<BarSeries> expectFilter(int days, double change) {
-        return (bs) -> {
+        return (strategy, bs) -> {
             Bar today = bs.getFirst();
             Bar tomorrwo10 = today.after(days);
             double high = tomorrwo10.getHighest(days, Bar.EnumValue.H);
@@ -26,7 +26,7 @@ public class Filters {
     }
 
     public static Filter<BarSeries> filter_excludeStock(String... codes) {
-        return (bs) -> {
+        return (strategy, bs) -> {
             Bar today = bs.getFirst();
             if(ArrayUtils.contains(codes, today.getCode())){
                 return FilterResult.FALSE("策略排除该股票");
@@ -36,7 +36,7 @@ public class Filters {
     }
 
     public static Filter<Stock> filter_mustStockCate(Stock.EnumCate cate) {
-        return (stock) -> {
+        return (strategy, stock) -> {
             Stock.EnumCate ec = stock.getCate();
             if(ec.equals(cate)){
                 return FilterResult.TRUE();
@@ -47,7 +47,7 @@ public class Filters {
 
     //斜率, >0表示均线向上
     public static Filter<Bar> filter_maSlope(int days, int ma, double min, double max) {
-        return (bar) -> {
+        return (strategy, bar) -> {
             double slope = bar.getSlopeOfMA(ma, days);
             return new FilterResultBetween(slope*100, min, max).addResult("实际slope：" + slope*100);
         };
@@ -62,7 +62,7 @@ public class Filters {
      */
     public static Filter<Bar> filter_001a(int numberBeforeFirst, int numberBeforeParam1, double
             min, double max) {
-        return (bar) -> {
+        return (strategy, bar) -> {
             Bar today = bar;
             Bar todayBefore = today.before(numberBeforeFirst);
             double change = todayBefore.getChange(numberBeforeParam1, Bar.EnumValue.C);
@@ -78,7 +78,7 @@ public class Filters {
      */
     public static Filter<Bar> filter_001b(int numberBeforeFirst, int numberBeforeParam1, double
             min, double max) {
-        return (bar) -> {
+        return (strategy, bar) -> {
             Bar today = bar;
             Bar todayBefore = today.before(numberBeforeFirst);
             Bar highestBar = todayBefore.getHighestBar(numberBeforeParam1, Bar.EnumValue.H);
@@ -88,7 +88,7 @@ public class Filters {
     }
 
     public static Filter<BarSeries> filter_002() {
-        return (bs) -> {
+        return (strategy, bs) -> {
             Bar today = bs.getFirst();
             boolean bool = Bars.isTrue(bar -> bar.getChange() < 0.0, today, today.before(2), today.before(4));
             if(!bool){
@@ -117,7 +117,7 @@ public class Filters {
      * 今日十字星
      */
     public static Filter<Bar> filter_003(double change){
-        return (bar) -> {
+        return (strategy, bar) -> {
             double p = bar.getChange();
             if(Math.abs(p) <= Math.abs(change)){
                 if(bar.getLow() < bar.getOpen() && bar.getLow() < bar.getClose()
@@ -135,7 +135,7 @@ public class Filters {
      * @param n 吃掉前面n根K线
      */
     public static Filter<BarSeries> filter_004(int n){
-        return (bs) -> {
+        return (strategy, bs) -> {
             Bar bar = bs.getFirst();
             double p = bar.getChange();
             if(p > 0){
@@ -162,7 +162,7 @@ public class Filters {
      * @param days 5, 10, 20, 30 ... 日均线
      */
     public static Filter<Bar> filter_005a(int... days){
-        return (bar) -> {
+        return (strategy, bar) -> {
             double open = bar.getOpen();
             double close = bar.getClose();
             if(open >= close){
@@ -185,7 +185,7 @@ public class Filters {
      * @param days 5, 10, 20, 30 ... 日均线
      */
     public static Filter<Bar> filter_005b(int n, int... days){
-        return (bar) -> {
+        return (strategy, bar) -> {
             double open = CommonUtils.min(bar.getOpen(), bar.getLastClose());
             double close = bar.getClose();
             if(open >= close){
@@ -209,7 +209,7 @@ public class Filters {
      * MACD底背离[MACD.dif和（close或ma(n)）背离]
      */
     public static Filter<Bar> filter_006a(int n){
-        return (bar) -> {
+        return (strategy, bar) -> {
             Bar.MACD macd = bar.getMACD();
             Bar.MACD macdBefore = bar.before().getMACD();
             if(macd.dif <= 0 && macd.macd > macdBefore.macd){
@@ -231,7 +231,7 @@ public class Filters {
      * MACD 0轴附近金叉
      */
     public static Filter<BarSeries> filter_006b(double d){
-        return (bs) -> {
+        return (strategy, bs) -> {
             Bar bar = bs.getFirst();
             Bar.MACD macd = bar.getMACD();
             if(Math.abs(macd.macd) < d && Math.abs(macd.dif) < d*2 && macd.dea < macd.dif && bar.getMACDUpperForkBar(0) != null){
@@ -246,7 +246,7 @@ public class Filters {
      * 且，前days天内放量涨缩量跌
      */
     public static Filter<Stock> filter_007a(int days, double d){
-        return (stock) -> {
+        return (strategy, stock) -> {
             Bar today = stock.getBar();
             double ma5 = today.getMA(5, Bar.EnumValue.C);
             double ma120 = today.getMA(120, Bar.EnumValue.C);
@@ -300,7 +300,7 @@ public class Filters {
     }
 
     public static Filter<Stock> filter_007b(int days, double d){
-        return (stock) -> {
+        return (strategy, stock) -> {
             Bar today = stock.getBar();
             double ma5 = today.getMA(5, Bar.EnumValue.C);
             double ma120 = today.getMA(120, Bar.EnumValue.C);
@@ -351,7 +351,7 @@ public class Filters {
 
     //突破趋势线
     public static Filter<BarSeries> filter_008(int m, int n, double d){
-        return (bs) -> {
+        return (strategy, bs) -> {
             Bar today = bs.getFirst();
             if(today.isBreakTrendLine(m, n, d)){
                 return FilterResult.TRUE(today.getDate());
@@ -362,7 +362,7 @@ public class Filters {
 
     //突破底部平台
     public static Filter<BarSeries> filter_009() {
-        return (bs) -> {
+        return (strategy, bs) -> {
             Bar today = bs.getFirst();
             if(today == null || today.before() == null || today.getChange() > 6) return FilterResult.FALSE("今天涨幅大于6%");
             double h = today.before().getHighest(10, Bar.EnumValue.C);
@@ -384,7 +384,7 @@ public class Filters {
 
     //站上单根巨量, n:量能是前一天多少倍
     public static Filter<BarSeries> filter_010(int days, int n){
-        return (bs) -> {
+        return (strategy, bs) -> {
             Bar today = bs.getFirst();
             Bar k = today.getBarExcludeToday(days, bar -> bar.before()!=null && bar.getVolume()/bar.before().getVolume() >= n);
             if(k != null && today.getClose() >= k.getClose() && today.before().getClose() <= k.getClose()){
@@ -398,7 +398,7 @@ public class Filters {
 
     //站上底部一堆放量
     public static Filter<BarSeries> filter_011(int days, double n){
-        return (bs) -> {
+        return (strategy, bs) -> {
             Bar today = bs.getFirst();
             if(today.getMACD().dif < today.getMACD().dea){
                 return FilterResult.FALSE("MACD没有上穿");
@@ -427,12 +427,12 @@ public class Filters {
                 }
                 return FilterResult.FALSE(k3.getDate()+","+m);
             }
-            return FilterResult.FALSE(k.getDate()+","+k.getDate());
+            return FilterResult.FALSE(k!=null?k.getDate():lowest.getDate());
         };
     }
 
     public static Filter<Stock> filter_0012a(Bar bar, int length) {
-        return (stock) -> {
+        return (strategy, stock) -> {
             Bar today = stock.getBar();
             double distance = today.similarMass(0, bar, length);
             if(distance < 5) {

@@ -14,6 +14,7 @@ public abstract class FilterResult<R> {
     @JsonView(View.Default.class)
     private FilterExecutor filterExecutor; //过滤器定义
     @JsonView(View.Default.class)
+    @Setter
     protected Boolean pass;
     protected R result;
 
@@ -39,6 +40,9 @@ public abstract class FilterResult<R> {
         return new FilterResultFalse();
     }
 
+    public static FilterResult Sortable(Double value){
+        return new FilterResultEquals(value);
+    }
 
     public boolean pass() {
         if(this.pass == null) {

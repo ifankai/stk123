@@ -81,17 +81,24 @@ public class StrategyBacktesting {
         }
         List<StrategyResult> results = run(tasks, multipleThreadSize);
         for(Strategy strategy : strategies) {
-            /*
-            如果有comparator，则
-            List<StrategyResult> all = ...
-            for(StrategyResult result : results){
-                if(isFilterAllPassed())
-                    all.add(result);
+            if(strategy.isSortable()) {
+                List<StrategyResult> all = results.stream().filter(strategyResult -> strategyResult.getStrategy().getCode().equals(strategy.getCode()) && strategyResult.isFilterAllPassed()).collect(Collectors.toList());
+                if(strategy.getAsc()){
+                    all = all.stream().sorted(Comparator.comparing(StrategyResult::getSortableValue)).collect(Collectors.toList());
+                }else {
+                    all = all.stream().sorted(Comparator.comparing(StrategyResult::getSortableValue, Comparator.reverseOrder())).collect(Collectors.toList());
+                }
+                for (int i = 0; i < all.size(); i++) {
+                    StrategyResult sr = all.get(i);
+                    if(i < strategy.getTopN()){
+                        sr.setSortablePassed(true);
+                    }else{
+                        sr.setSortablePassed(false);
+                    }
+                }
             }
-            */
-
         }
-        results.stream().forEach(sr -> strategyResults.add(sr));
+        strategyResults.addAll(results);
     }
 
 
@@ -128,15 +135,17 @@ public class StrategyBacktesting {
         List<Callable<List<StrategyResult>>> tasks = new ArrayList<>();
         for (Stock stock : stocks) {
             for(Strategy strategy : strategies) {
+                if(!strategy.isCanTestHistory()) {
+                    continue;
+                }
                 Callable<List<StrategyResult>> task = () -> {
-                    //System.out.println("run ............................ "+Thread.currentThread().getId());
                     return this.test(strategy, stock, startDate, endDate);
                 };
                 tasks.add(task);
             }
         }
         List<List<StrategyResult>> results = run(tasks, multipleThreadSize);
-        results.stream().forEach(sr -> strategyResults.addAll(sr));
+        results.forEach(sr -> strategyResults.addAll(sr));
     }
 
     public void testAllHistory(List<Stock> stocks) {
@@ -144,22 +153,13 @@ public class StrategyBacktesting {
 
         List<Callable<List<StrategyResult>>> tasks = new ArrayList<>();
         for (Stock stock : stocks) {
-            /*for(Strategy strategy : strategies) {
-                Callable<List<StrategyResult>> task = () -> {
-                    //System.out.println("run ............................ "+Thread.currentThread().getId());
-                    return this.test(strategy, stock, stock.getBarSeries().getLast().getDate(), stock.getBarSeries().getFirst().getDate());
-                };
-                tasks.add(task);
-            }*/
-
             Callable<List<StrategyResult>> task = () -> {
-                //System.out.println("run ............................ "+Thread.currentThread().getId());
                 return this.test(strategies, stock, stock.getBarSeries().getLast().getDate(), stock.getBarSeries().getFirst().getDate());
             };
             tasks.add(task);
         }
         List<List<StrategyResult>> results = run(tasks, multipleThreadSize);
-        results.stream().forEach(sr -> strategyResults.addAll(sr));
+        results.forEach(sr -> strategyResults.addAll(sr));
     }
 
 
@@ -267,11 +267,13 @@ public class StrategyBacktesting {
             do {
                 Bar finalBar = bar;
                 strategies.forEach(strategy -> {
-                    StrategyResult strategyResult = this.test(strategy, stock);
-                    strategyResult.setDate(finalBar.getDate());
-                    strategyResult.setCode(stock.getCode());
-                    //info(strategyResult);
-                    strategyResults.add(strategyResult);
+                    if(strategy.isCanTestHistory()) {
+                        StrategyResult strategyResult = this.test(strategy, stock);
+                        strategyResult.setDate(finalBar.getDate());
+                        strategyResult.setCode(stock.getCode());
+                        //info(strategyResult);
+                        strategyResults.add(strategyResult);
+                    }
                 });
                 bar = bar.after();
                 if (bar == null) break;

@@ -358,7 +358,8 @@ public class BarTask extends AbstractTask {
                     List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn);
                     bkList = list.stream().map(StockBasicProjection::getCode).collect(Collectors.toSet());
                     //排除一些垃圾板块 AB股[BK0498] AH股[BK0499] 上证380[BK0705] 转债标的[BK0528] 新三板[BK0600] 深股通[BK0804] 三板精选[BK0925]
-                    bkList = CollectionUtil.removeAny(bkList, "BK0498", "BK0499", "BK0705", "BK0528", "BK0600", "BK0804", "BK0925");
+                    bkList = CollectionUtil.removeAny(bkList, "BK0498", "BK0499", "BK0705", "BK0528", "BK0600", "BK0804",
+                            "BK0925", "BK0816", "BK0815");
                     allList.addAll(bkList);
                 }
             }
@@ -376,7 +377,8 @@ public class BarTask extends AbstractTask {
                 this.strategy = Sample.STRATEGIES;
             }
             //策略回测开始    01,02 策略在com.stk123.model.strategy.sample.Sample 里定义
-            StrategyBacktesting strategyBacktesting = backtestingService.backtestingOnStock(
+            StrategyBacktesting strategyBacktesting = new StrategyBacktesting();
+            backtestingService.backtestingOnStock(strategyBacktesting,
                     stocks,
                     Arrays.asList(StringUtils.split(this.strategy, ",")),
                     startDate, endDate, realtime!=null);
@@ -388,7 +390,8 @@ public class BarTask extends AbstractTask {
                 List<List<String>> datasA = new ArrayList<>();
                 List<List<String>> datasH = new ArrayList<>();
                 List<List<String>> datasU = new ArrayList<>();
-                List<List<String>> datasBk = new ArrayList<>();
+                List<List<String>> datasBk1 = new ArrayList<>();
+                List<List<String>> datasBk2 = new ArrayList<>();
                 //results = results.stream().sorted(Comparator.comparing(strategyResult -> strategyResult.getStrategy().getCode())).collect(Collectors.toList());
 
                 String rowCode = null;
@@ -433,7 +436,11 @@ public class BarTask extends AbstractTask {
                                     (StringUtils.isNotEmpty(backtesting.getStrategies().get(0).getPassedFilterResultLog()) ? "<br/>"+backtesting.getStrategies().get(0).getPassedFilterResultLog() : "")
                             );
                     if(isBk){
-                        datasBk.add(data);
+                        if(strategyResult.getStrategy().getCode().startsWith("strategy_08")){ //板块阶段强势策略
+                            datasBk2.add(data);
+                        }else {
+                            datasBk1.add(data);
+                        }
                     }else {
 
                         if(stock.isMarketCN()) {
@@ -446,27 +453,12 @@ public class BarTask extends AbstractTask {
                     }
                 }
 
-                //datas = datas.stream().sorted(Comparator.comparing(e -> e.get(3).contains("自选股"), Comparator.reverseOrder())).collect(Collectors.toList());
-
                 List<String> titles = ListUtils.createList("标的", "日期", "策略", "来源", "历史策略回测通过率");
-                sb.append("A股");
-                String table = CommonUtils.createHtmlTable(titles, datasA);
-                sb.append(table);
-                sb.append("<br/>");
-
-                sb.append("H股");
-                table = CommonUtils.createHtmlTable(titles, datasH);
-                sb.append(table);
-                sb.append("<br/>");
-
-                sb.append("美股");
-                table = CommonUtils.createHtmlTable(titles, datasU);
-                sb.append(table);
-                sb.append("<br/>");
-
-                sb.append("板块");
-                table = CommonUtils.createHtmlTable(titles, datasBk);
-                sb.append(table);
+                sb.append("A股");        sb.append(CommonUtils.createHtmlTable(titles, datasA));sb.append("<br/>");
+                sb.append("H股");        sb.append(CommonUtils.createHtmlTable(titles, datasH));sb.append("<br/>");
+                sb.append("美股");       sb.append(CommonUtils.createHtmlTable(titles, datasU));sb.append("<br/>");
+                sb.append("板块");       sb.append(CommonUtils.createHtmlTable(titles, datasBk1));sb.append("<br/>");
+                sb.append("板块阶段强势");sb.append(CommonUtils.createHtmlTable(titles, datasBk2));
 
                 sb.append("<br/><br/>--------------------------------------------------------<br/>");
                 strategyBacktesting.getStrategies().forEach(strategy -> {
@@ -482,7 +474,7 @@ public class BarTask extends AbstractTask {
                 EmailUtils.send("策略发现 A股" + (datasA.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count()) + "个, " +
                                               "H股" + (datasH.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count()) + "个, " +
                                               "美股"+ (datasU.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count()) + "个, " +
-                                              "板块"+ (datasBk.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count())+ "个"
+                                              "板块"+ (datasBk1.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count())+ "个"
                         , sb.toString());
             }else{
                 EmailUtils.send("策略发现0个标的", "");

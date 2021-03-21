@@ -5,6 +5,7 @@ import com.stk123.model.json.View;
 import com.stk123.model.strategy.result.FilterResult;
 import com.stk123.model.strategy.result.Table;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
@@ -41,17 +42,34 @@ public class Strategy<X> {
     private int countOfPassedExpectStrategyResult; //expect filter通过次数
 
     @Getter
-    private List<StrategyResult> strategyResults = new ArrayList<>();
+    private List<StrategyResult> strategyResults = Collections.synchronizedList(new ArrayList<>());
 
+    @Getter
+    private Integer topN = null;
+    @Getter
+    private Boolean asc;
+    @Getter@Setter
+    private boolean canTestHistory = true;
+    @Getter@Setter
+    private StrategyBacktesting strategyBacktesting;
 
     public Strategy(String code, String name, Class<X> xClass) {
         this.code = code;
         this.name = name;
         this.xClass = xClass;
     }
-    public Strategy(String code, String name, Class<X> xClass, Filter<X> expectFilter) {
+    /*public Strategy(String code, String name, Class<X> xClass, Filter<X> expectFilter) {
         this(code, name, xClass);
         this.expectFilterExecutor = new FilterExecutor(null,null, x->x, expectFilter);
+    }*/
+
+    public void setSortable(int topN, boolean asc){
+        this.topN = topN;
+        this.asc = asc;
+    }
+
+    public boolean isSortable() {
+        return this.topN != null;
     }
 
     /**
@@ -59,10 +77,10 @@ public class Strategy<X> {
      * @param filter
      */
     public void addFilter(String code, String name, Function<X, ?> function, Filter<?> filter){
-        this.filterExecutors.add(new FilterExecutor(code, name, function, filter));
+        this.filterExecutors.add(new FilterExecutor(code, name, this, function, filter));
     }
     public void addFilter(String name, Function<X, ?> function, Filter<?> filter){
-        this.filterExecutors.add(new FilterExecutor(null, name, function, filter));
+        this.filterExecutors.add(new FilterExecutor(null, name, this, function, filter));
     }
     public void addFilter(String code, String name, Filter<?> filter){
         addFilter(code, name, (x)->x, filter);
@@ -84,10 +102,10 @@ public class Strategy<X> {
      * @TODO 可以增加多个expect filter
      */
     public void setExpectFilter(String name, Filter<X> expectFilter){
-        this.expectFilterExecutor = new FilterExecutor(null, name, x->x, expectFilter);
+        this.expectFilterExecutor = new FilterExecutor(null, name, this, x->x, expectFilter);
     }
     public void setExpectFilter(String name, Function<X, ?> function, Filter<?> expectFilter){
-        this.expectFilterExecutor = new FilterExecutor(null, name, function, expectFilter);
+        this.expectFilterExecutor = new FilterExecutor(null, name, this, function, expectFilter);
     }
     public void setExpectFilterRunOrNot(boolean runOrNot){
         expectFilterExecutorRunOrNot = runOrNot;
@@ -221,5 +239,10 @@ public class Strategy<X> {
                     this.getPassRate())).append("\n");
         }
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o){
+        return this.getCode().equals(((Strategy)o).getCode());
     }
 }
