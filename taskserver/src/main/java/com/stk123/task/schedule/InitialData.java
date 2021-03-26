@@ -497,7 +497,7 @@ public class InitialData {
 			List<List> stks = JsonUtils.getList4Json(StringUtils.substringBetween(page, "dataArr = ", ";"), ArrayList.class);
 
 			for(List stk:stks){
-				if(StringUtils.startsWith(String.valueOf(stk.get(0)), "200")
+				if(stk==null || stk.get(0)==null || StringUtils.startsWith(String.valueOf(stk.get(0)), "200")
 						||StringUtils.startsWith(String.valueOf(stk.get(0)), "900")){//B股
 					continue;
 				}
@@ -1266,7 +1266,7 @@ public class InitialData {
 		//http://vip.stock.finance.sina.com.cn/fund_center/data/jsonp.php/IO.XSRV2.CallbackList['hLfu5s99aaIUp7D4']/NetValueReturn_Service.NetValueReturnOpen?page=1&num=40&sort=form_year&asc=0&ccode=&type2=2&type3=
 		String page = HttpUtils.get("http://vip.stock.finance.sina.com.cn/fund_center/api/jsonp.php/IO.XSRV2.CallbackList"+URLEncoder.encode("['DcBGhAVnTMWhR1GU']","utf-8")+"/NetValueReturn_Service.NetValueReturnOpen?page=1&num=40&sort=one_year&asc=0&ccode=&type2=2&type3=&%5Bobject%20HTMLDivElement%5D=nkyl2","gb2312");
 		//System.out.println(page);
-		String json = StringUtils.substringBetween(page, "(", ")");
+		String json = StringUtils.substringBetween(page, "(", ");");
 		Map<String, Class> m = new HashMap<String, Class>();
         m.put("data", Map.class);
 		Object obj = JsonUtils.getObject4Json(json, Map.class, m);
@@ -1280,7 +1280,7 @@ public class InitialData {
 		//成立以来牛基排行前20
 		page = HttpUtils.get("http://vip.stock.finance.sina.com.cn/fund_center/api/jsonp.php/IO.XSRV2.CallbackList"+URLEncoder.encode("['MH8C82zCRTRcBOjM']","utf-8")+"/NetValueReturn_Service.NetValueReturnOpen?page=1&num=40&sort=form_start&asc=0&ccode=&type2=2&type3=&%5Bobject%20HTMLDivElement%5D=yywui","gb2312");
 		//System.out.println(page);
-		json = StringUtils.substringBetween(page, "(", ")");
+		json = StringUtils.substringBetween(page, "(", ");");
 		m = new HashMap<String, Class>();
         m.put("data", Map.class);
 		obj = JsonUtils.getObject4Json(json, Map.class, m);
