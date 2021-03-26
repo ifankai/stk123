@@ -365,8 +365,9 @@ public class BarTask extends AbstractTask {
                     List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn);
                     bkList = list.stream().map(StockBasicProjection::getCode).collect(Collectors.toSet());
                     //排除一些垃圾板块 AB股[BK0498] AH股[BK0499] 上证380[BK0705] 转债标的[BK0528] 新三板[BK0600] 深股通[BK0804] 三板精选[BK0925]
+                    //B股[BK0636] QFII重仓[BK0535] 沪企改革[BK0672] 富时罗素[BK0867] 标准普尔[BK0879] 债转股[BK0980] 股权激励[BK0567] 融资融券[BK0596]
                     bkList = CollectionUtil.removeAny(bkList, "BK0498", "BK0499", "BK0705", "BK0528", "BK0600", "BK0804",
-                            "BK0925", "BK0816", "BK0815");
+                            "BK0925", "BK0816", "BK0815", "BK0636", "BK0535", "BK0672", "BK0867", "BK0879", "BK0980", "BK0567", "BK0596");
                     allList.addAll(bkList);
                 }
             }
