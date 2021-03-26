@@ -321,8 +321,10 @@ public class BarTask extends AbstractTask {
         try {
             Set<String> allList = new LinkedHashSet<>();
             Set<String> myList = null;
-            Set<String> bkList = new LinkedHashSet<>();
+            Set<String> bkList = null;
+            Set<String> growthList = null;
             List<Portfolio> portfolios = null;
+
             if(code != null){
                 allList.addAll(Arrays.asList(StringUtils.split(code, ",")));
             }else {
@@ -352,6 +354,11 @@ public class BarTask extends AbstractTask {
                         //return;
                     }
                 }
+
+                //成长股
+                List<StkIndustryEntity> inds = stkIndustryRepository.findAllByIndustry(1783);
+                growthList = inds.stream().map(StkIndustryEntity::getCode).collect(Collectors.toSet());
+                allList.addAll(growthList);
 
                 //板块
                 if(realtime == null) {//实时行情只关注股票，排除板块
@@ -392,7 +399,6 @@ public class BarTask extends AbstractTask {
                 List<List<String>> datasU = new ArrayList<>();
                 List<List<String>> datasBk1 = new ArrayList<>();
                 List<List<String>> datasBk2 = new ArrayList<>();
-                //results = results.stream().sorted(Comparator.comparing(strategyResult -> strategyResult.getStrategy().getCode())).collect(Collectors.toList());
 
                 String rowCode = null;
                 for(StrategyResult strategyResult : results){
@@ -412,6 +418,9 @@ public class BarTask extends AbstractTask {
                                 }
                             }
                         }
+                    }
+                    if(growthList != null && growthList.contains(strategyResult.getCode())){
+                        sources.add("成长股");
                     }
                     boolean isBk = false;
                     if(bkList.contains(strategyResult.getCode())){
