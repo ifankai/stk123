@@ -3,12 +3,14 @@ package com.stk123.task.schedule;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.stk123.common.CommonUtils;
+import com.stk123.common.ml.KhivaUtils;
 import com.stk123.common.util.EmailUtils;
 import com.stk123.common.util.ListUtils;
 import com.stk123.entity.StkIndustryEntity;
 import com.stk123.entity.StkKlineUsEntity;
 import com.stk123.entity.StkPeEntity;
 import com.stk123.model.core.Bar;
+import com.stk123.model.core.BarSeries;
 import com.stk123.model.core.Stock;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.model.strategy.StrategyBacktesting;
@@ -493,5 +495,34 @@ public class BarTask extends AbstractTask {
             EmailUtils.send("策略发现标的报错", ExceptionUtils.getExceptionAsString(e));
             log.error("analyseKline", e);
         }
+    }
+
+    public void analyseAllStocks(){
+        List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.STOCK);
+        List<Stock> allList = stockService.buildStocksWithProjection(list);
+        allList = stockService.buildBarSeries(allList, 250);
+
+        List<Stock> stocks = new ArrayList<>();
+        List<double[]> array = new ArrayList<>();
+        for(Stock stock : allList){
+            Bar bar = stock.getBar();
+            List<Double> close = bar.map(100, bar1 -> bar1.getMA(5, Bar.EnumValue.C));
+            double[] doubles = close.stream().mapToDouble(Double::doubleValue).toArray();
+            if(doubles.length == 100){
+                stocks.add(stock);
+                array.add(doubles);
+            }
+        }
+
+        Stock stock = Stock.build("002572");
+        Bar a = stock.getBarSeries().getBar("20210118");
+        List<Double> close = a.map(100, bar1 -> bar1.getMA(5, Bar.EnumValue.C));
+        double[] query = close.stream().mapToDouble(Double::doubleValue).toArray();
+
+        double[] distances = KhivaUtils.mass(array, query);
+        int[] indexes = KhivaUtils.getIndexesOfMin(distances, 5);
+        Arrays.stream(indexes).forEach(idx -> {
+            System.out.println("index:"+idx+", stock:"+stocks.get(idx).getNameAndCode());
+        });
     }
 }

@@ -1,6 +1,7 @@
 package com.stk123.service.core;
 
 import com.stk123.common.util.PinYin4jUtils;
+import com.stk123.model.core.BarSeries;
 import com.stk123.model.core.Stock;
 import com.stk123.model.dto.SearchResult;
 import com.stk123.model.projection.IndustryProjection;
@@ -30,20 +31,11 @@ public class StockService {
     private StkKlineRepository stkKlineRepository;
     @Autowired
     private IndustryService industryService;
+    @Autowired
+    private BarService barService;
 
     @Transactional
     public List<Stock> buildStocks(List<String> codes) {
-        /*List<StockBasicProjection> list = new ArrayList<>();
-        int start = 0;
-        while(true){
-            int end = start+1000 >= codes.size() ? codes.size() : start+1000;
-            List<String> subCodes = codes.subList(start, end);
-            List<StockBasicProjection> subList = stkRepository.findAllByCodes(subCodes);
-            list.addAll(subList);
-            if(end >= list.size())break;
-            start = end;
-        }*/
-
         List<StockBasicProjection> list = BaseRepository.findAll1000(codes,
                 subCodes -> stkRepository.findAllByCodes(subCodes));
 
@@ -56,12 +48,29 @@ public class StockService {
         return this.buildStocks(Arrays.asList(codes));
     }
 
+    public List<Stock> buildStocksWithProjection(List<StockBasicProjection> stockProjections) {
+        return stockProjections.stream().map(projection -> Stock.build(projection)).collect(Collectors.toList());
+    }
+
     @Transactional
     public List<Stock> buildStocksWithIndustries(List<StockProjection> stockProjections) {
         List<Stock> stocks = stockProjections.stream().map(projection -> Stock.build(projection)).collect(Collectors.toList());
         Map<String, List<IndustryProjection>> map = industryService.findAllToMap();
         stocks.forEach(stock -> stock.setIndustries(map.get(stock.getCode())));
         return stocks;
+    }
+
+    public List<Stock> buildBarSeries(List<Stock> stocks) {
+        return buildBarSeries(stocks, Stock.BarSeriesRowsDefault);
+    }
+
+    public List<Stock> buildBarSeries(List<Stock> stocks, Integer rows) {
+        return BaseRepository.findAll1000(stocks,
+                subStocks -> {
+                    LinkedHashMap<String, BarSeries> map = barService.queryTopNByStockListOrderByKlineDateDesc(subStocks, rows);
+                    subStocks.forEach(stock -> stock.setBarSeries(map.get(stock.getCode())));
+                    return subStocks;
+                });
     }
 
     @Getter

@@ -3,20 +3,23 @@ package com.stk123.common.ml;
 import io.shapelets.khiva.Array;
 import io.shapelets.khiva.Library;
 import io.shapelets.khiva.Matrix;
+import org.apache.commons.lang.ArrayUtils;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * https://khiva.readthedocs.io/en/latest/
  */
 public class KhivaUtils {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         //Library.setKhivaBackend(Library.Backend.KHIVA_BACKEND_CPU);
 
         //testMass();
-        testMassMultiple();
+        //testMassMultiple();
+        testFindBestNOccurrences();
     }
 
     public static void testMassMultiple() {
@@ -28,8 +31,7 @@ public class KhivaUtils {
 
         try (Array t = Array.fromPrimitiveArray(tss, dimsTss); Array q = Array.fromPrimitiveArray(query, dimsQuery)) {
 
-            double[] expectedDistance = {1.8388, 0.8739, 1.5307, 3.6955, 3.2660, 3.4897, 2.8284, 1.2116, 1.5307, 2.1758,
-                    2.5783, 3.7550, 2.8284, 2.8284, 3.2159, 0.5020};
+            double[] expectedDistance = {3.265986, 2.570482, 2.828427, 0.0};
             Array result = Matrix.mass(q, t);
             double[] distances = result.getData();
 
@@ -77,6 +79,51 @@ public class KhivaUtils {
             result.close();
             return distances;
         }
+    }
+
+    public static double[] mass(List<double[]> tsss, double[] query){
+        long[] dimsTss = {query.length, tsss.size(), 1, 1};
+        long[] dimsQuery = {query.length, 1, 1, 1};
+
+        double[] tss = new double[]{};
+        tsss.forEach(e -> ArrayUtils.addAll(tss, e));
+
+        try (
+                Array t = Array.fromPrimitiveArray(tss, dimsTss);
+                Array q = Array.fromPrimitiveArray(query, dimsQuery)
+        ) {
+            Array[] result = Matrix.findBestNOccurrences(q, t, 1);
+            double[] distances = result[0].getData();
+
+//            System.out.println(Arrays.toString(distances));
+//            System.out.println(Arrays.toString(getIndexesOfMin(distances, 3)));
+
+            result[0].close();
+            result[1].close();
+            return distances;
+        }
+    }
+
+    public static void testFindBestNOccurrences() throws Exception {
+        double[] tss = {10, 10, 11, 11, 12, 11, 10, 10, 11, 12, 11, 10, 10, 11, 10, 10, 11, 11, 12, 11, 10, 10, 11, 12,
+                11, 10, 10};
+        long[] dimsTss = {3, 9, 1, 1};
+
+        double[] query = {10, 11, 12};
+        long[] dimsQuery = {3, 1, 1, 1};
+
+        try (Array t = Array.fromPrimitiveArray(tss, dimsTss); Array q = Array.fromPrimitiveArray(query, dimsQuery)) {
+            Array[] result = Matrix.findBestNOccurrences(q, t, 1);
+            double[] distances = result[0].getData();
+            int[] indexes = result[1].getData();
+
+            System.out.println(Arrays.toString(distances));
+            System.out.println(Arrays.toString(getIndexesOfMin(distances, 3)));
+
+            result[0].close();
+            result[1].close();
+        }
+
     }
 
     public static int getIndexOfMin(double[] array) {

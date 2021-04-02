@@ -172,7 +172,8 @@ public class Stock {
     private boolean isIncludeRealtimeBar = false;
     private boolean isIncludeRealtimeBarDone = false;
 
-    public Integer BarSeriesRows = 750;
+    public static Integer BarSeriesRowsDefault = 750;
+    public Integer BarSeriesRows = BarSeriesRowsDefault;
 
     /**
      * static field
