@@ -2020,7 +2020,7 @@ public class InitialData {
 				//System.out.println(page);
 				Map<String, Class> m = new HashMap<String, Class>();
 		        m.put("data", Map.class);
-				SinaMeiGu meiGu = (SinaMeiGu)JsonUtils.getObject4Json(StringUtils.substringBetween(page, "((", "));"), SinaMeiGu.class, m);
+				SinaMeiGu meiGu = (SinaMeiGu)JsonUtils.getObject4Json(StringUtils.substringBetween(page, "(", ");"), SinaMeiGu.class, m);
 				if(meiGu.getData() == null){
 					break;
 				}

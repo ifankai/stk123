@@ -84,6 +84,7 @@ public class BarTask extends AbstractTask {
         this.runByName("analyseHK", this::analyseHK);
         this.runByName("analyseUS", this::analyseUS);
         this.runByName("analyseKline", this::analyseKline);
+        this.runByName("analyseAllStocks", this::analyseAllStocks);
     }
 
     public void initCN() {
@@ -498,7 +499,8 @@ public class BarTask extends AbstractTask {
     }
 
     public void analyseAllStocks(){
-        List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.STOCK);
+        //List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.STOCK);
+        List<StockBasicProjection> list = stkRepository.findAllByCodes(ListUtils.createList(""));
         List<Stock> allList = stockService.buildStocksWithProjection(list);
         allList = stockService.buildBarSeries(allList, 250);
 
