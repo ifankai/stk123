@@ -250,6 +250,7 @@ public class NewsRobot {
 		List<Map> news = new ArrayList<Map>();
 		
 		while(true){
+			//https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllNewsStock.php?symbol=sh600600&Page=1
 			String url = "https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllNewsStock.php?symbol="+loc+index.getCode()+"&Page="+pageId;
 			String page = HttpUtils.get(url,null,"GBK");
 			Node node = HtmlUtils.getNodeByAttribute(page,"","class","datelist");
@@ -269,8 +270,12 @@ public class NewsRobot {
 						stop = true;
 						break;
 					}
+
+					if(index.getName() == null){
+						continue;
+					}
 					
-					if(!title.contains(index.getName()) && !title.contains(StringUtils.replace(index.getName(), " ", "")) 
+					if(!title.contains(index.getName()) && !title.contains(StringUtils.replace(index.getName(), " ", ""))
 							&& !title.contains(StringUtils.replace(index.getName(), " ", "").replace("ST", ""))
 							&& !title.contains(StringUtils.replace(index.getName(), " ", "").replace("*ST", ""))
 							){
