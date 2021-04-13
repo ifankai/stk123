@@ -6,13 +6,19 @@ import com.stk123.model.Index;
 import com.stk123.model.IndexUtils;
 import com.stk123.common.CommonUtils;
 import com.stk123.common.html.HtmlA;
+import lombok.SneakyThrows;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.core.type.filter.AssignableTypeFilter;
 
+import java.io.InputStream;
 import java.lang.management.ManagementFactory;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.NumberFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -287,5 +293,12 @@ public class ServiceUtils extends CommonUtils {
         String loc = ServiceUtils.getStkLocation(code);
         link.attributes.put("href", "http://www.windin.com/home/stock/html/"+code+"."+loc+".shtml");
         return link.toHtml();
+    }
+
+    @SneakyThrows
+    public static byte[] getResourceFileAsBytes(String fileName){
+        Resource resource = new ClassPathResource(fileName);
+        //InputStream is = resource.getInputStream();
+        return Files.readAllBytes(Paths.get(resource.getURI()));
     }
 }

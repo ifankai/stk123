@@ -5,6 +5,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.stk123.common.CommonUtils;
 import com.stk123.common.ml.KhivaUtils;
 import com.stk123.common.util.EmailUtils;
+import com.stk123.common.util.ImageUtils;
 import com.stk123.common.util.ListUtils;
 import com.stk123.entity.StkIndustryEntity;
 import com.stk123.entity.StkKlineUsEntity;
@@ -24,6 +25,7 @@ import com.stk123.service.core.BarService;
 import com.stk123.service.core.StockService;
 import com.stk123.task.tool.TaskUtils;
 import com.stk123.util.ExceptionUtils;
+import com.stk123.util.ServiceUtils;
 import lombok.Setter;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
@@ -432,6 +434,7 @@ public class BarTask extends AbstractTask {
                         isBk = true;
                     }
 
+                    Stock.TURNING_POINTS.clear();
                     StrategyBacktesting backtesting = backtestingService.backtestingAllHistory(strategyResult.getCode(), strategyResult.getStrategy().getCode(), false);
 
                     boolean displayCode = true;
@@ -508,17 +511,17 @@ public class BarTask extends AbstractTask {
         List<double[]> array = new ArrayList<>();
         for(Stock stock : allList){
             Bar bar = stock.getBar();
-            List<Double> close = bar.map(100, bar1 -> bar1.getMA(5, Bar.EnumValue.C));
+            List<Double> close = bar.map(50, bar1 -> bar1.getMA(5, Bar.EnumValue.C));
             double[] doubles = close.stream().mapToDouble(Double::doubleValue).toArray();
-            if(doubles.length == 100){
+            if(doubles.length == 50){
                 stocks.add(stock);
                 array.add(doubles);
             }
         }
 
-        Stock stock = Stock.build("002572");
-        Bar a = stock.getBarSeries().getBar("20210118");
-        List<Double> close = a.map(100, bar1 -> bar1.getMA(5, Bar.EnumValue.C));
+        Stock stock_002572 = Stock.build("000408");
+        Bar a = stock_002572.getBarSeries().getBar("20210326");
+        List<Double> close = a.map(50, bar1 -> bar1.getMA(5, Bar.EnumValue.C));
         double[] query = close.stream().mapToDouble(Double::doubleValue).toArray();
 
         double[] distances = KhivaUtils.mass(array, query);
@@ -526,5 +529,21 @@ public class BarTask extends AbstractTask {
         Arrays.stream(indexes).forEach(idx -> {
             System.out.println("index:"+idx+", stock:"+stocks.get(idx).getNameAndCode());
         });
+
+        List<List<String>> datas = new ArrayList<>();
+        List<String> titles = ListUtils.createList("标的", "日期", "相似标的1","相似标的2","相似标的3");
+
+        String imageStr = ImageUtils.getImageStr(ServiceUtils.getResourceFileAsBytes("similar_stock_image/ST藏格[SZ000408]-20210326.png"));
+        String imageHtml = CommonUtils.getImgBase64(imageStr, 450, 300);
+        List<String> data = ListUtils.createList(stock_002572.getNameAndCodeWithLink() + imageHtml, "",
+                stocks.get(0).getNameAndCodeWithLink()+", distance:"+distances[indexes[0]]+stocks.get(0).getDayBarImage(),
+                stocks.get(1).getNameAndCodeWithLink()+", distance:"+distances[indexes[1]]+stocks.get(1).getDayBarImage(),
+                stocks.get(2).getNameAndCodeWithLink()+", distance:"+distances[indexes[2]]+stocks.get(2).getDayBarImage());
+        datas.add(data);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(CommonUtils.createHtmlTable(titles, datas));
+
+        EmailUtils.send("相似标的策略", sb.toString());
     }
 }

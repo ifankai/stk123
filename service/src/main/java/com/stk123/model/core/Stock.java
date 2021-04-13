@@ -537,7 +537,7 @@ public class Stock {
         return this.industries;
     }
 
-    private static Map<Integer, Bar> TURNING_POINTS = Collections.synchronizedMap(new HashMap<>());
+    public static Map<Integer, Bar> TURNING_POINTS = Collections.synchronizedMap(new HashMap<>());
     /**
      * 转折点，板块站上5日均线最多的日子
      */
@@ -554,6 +554,10 @@ public class Stock {
         });
         TURNING_POINTS.put(days, b);
         return b;
+    }
+
+    public String getDayBarImage(){
+        return "http://image.sinajs.cn/newchart/daily/n/"+this.getCodeWithPlace().toLowerCase()+".gif";
     }
 
     @Override
