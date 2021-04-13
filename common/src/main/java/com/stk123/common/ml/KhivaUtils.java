@@ -86,7 +86,9 @@ public class KhivaUtils {
         long[] dimsQuery = {query.length, 1, 1, 1};
 
         double[] tss = new double[]{};
-        tsss.forEach(e -> ArrayUtils.addAll(tss, e));
+        for (double[] e : tsss) {
+            tss = ArrayUtils.addAll(tss, e);
+        }
 
         try (
                 Array t = Array.fromPrimitiveArray(tss, dimsTss);

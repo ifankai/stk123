@@ -26,6 +26,7 @@ import com.stk123.service.core.StockService;
 import com.stk123.task.tool.TaskUtils;
 import com.stk123.util.ExceptionUtils;
 import com.stk123.util.ServiceUtils;
+import lombok.AllArgsConstructor;
 import lombok.Setter;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
@@ -326,7 +327,7 @@ public class BarTask extends AbstractTask {
         try {
             Set<String> allList = new LinkedHashSet<>();
             Set<String> myList = null;
-            Set<String> bkList = null;
+            Set<String> bkList = new LinkedHashSet<>();
             Set<String> growthList = null;
             List<Portfolio> portfolios = null;
 
@@ -502,48 +503,74 @@ public class BarTask extends AbstractTask {
     }
 
     public void analyseAllStocks(){
-        //List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.STOCK);
-        List<StockBasicProjection> list = stkRepository.findAllByCodes(ListUtils.createList(""));
+        List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.STOCK);
+        //List<StockBasicProjection> list = stkRepository.findAllByCodes(ListUtils.createList("000630","000650","002038","000651","002070","603876","600373","000002","000920","002801","000726","603588","002791","300474"));
         List<Stock> allList = stockService.buildStocksWithProjection(list);
         allList = stockService.buildBarSeries(allList, 250);
 
+        List<List<String>> datas = new ArrayList<>();
+        List<String> titles = ListUtils.createList("标的", "日期", "相似标的");
+
+        int count = 0;
+        MassResult result = mass(allList, "000408", "20210326", 50, "ST藏格[SZ000408]-20210326.png", 2.8);
+        datas.add(result.data);
+        count += result.count;
+        MassResult result2 = mass(allList, "002538", "20200703", 100, "司尔特[SZ002538]-20200703.png", 7);
+        datas.add(result2.data);
+        count += result2.count;
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(CommonUtils.createHtmlTable(titles, datas));
+
+        EmailUtils.send("相似策略发现"+count+"个标的", sb.toString());
+    }
+
+    private MassResult mass(List<Stock> allList, String stockCode, String startDate, int days, String png, double targetDistance){
         List<Stock> stocks = new ArrayList<>();
         List<double[]> array = new ArrayList<>();
         for(Stock stock : allList){
             Bar bar = stock.getBar();
-            List<Double> close = bar.map(50, bar1 -> bar1.getMA(5, Bar.EnumValue.C));
+            if(bar==null)continue;
+            List<Double> close = bar.map(days, bar1 -> bar1.getMA(5, Bar.EnumValue.C));
             double[] doubles = close.stream().mapToDouble(Double::doubleValue).toArray();
-            if(doubles.length == 50){
+            if(doubles.length == days){
                 stocks.add(stock);
                 array.add(doubles);
             }
         }
 
-        Stock stock_002572 = Stock.build("000408");
-        Bar a = stock_002572.getBarSeries().getBar("20210326");
-        List<Double> close = a.map(50, bar1 -> bar1.getMA(5, Bar.EnumValue.C));
+        Stock stock = Stock.build(stockCode);
+        Bar a = stock.getBarSeries().getBar(startDate);
+        List<Double> close = a.map(days, bar1 -> bar1.getMA(5, Bar.EnumValue.C));
         double[] query = close.stream().mapToDouble(Double::doubleValue).toArray();
 
+        log.info("array.length:"+array.size());
         double[] distances = KhivaUtils.mass(array, query);
         int[] indexes = KhivaUtils.getIndexesOfMin(distances, 5);
-        Arrays.stream(indexes).forEach(idx -> {
-            System.out.println("index:"+idx+", stock:"+stocks.get(idx).getNameAndCode());
-        });
+        log.info(Arrays.toString(indexes));
 
-        List<List<String>> datas = new ArrayList<>();
-        List<String> titles = ListUtils.createList("标的", "日期", "相似标的1","相似标的2","相似标的3");
-
-        String imageStr = ImageUtils.getImageStr(ServiceUtils.getResourceFileAsBytes("similar_stock_image/ST藏格[SZ000408]-20210326.png"));
+        String imageStr = ImageUtils.getImageStr(ServiceUtils.getResourceFileAsBytes("similar_stock_image/"+png));
         String imageHtml = CommonUtils.getImgBase64(imageStr, 450, 300);
-        List<String> data = ListUtils.createList(stock_002572.getNameAndCodeWithLink() + imageHtml, "",
-                stocks.get(0).getNameAndCodeWithLink()+", distance:"+distances[indexes[0]]+stocks.get(0).getDayBarImage(),
-                stocks.get(1).getNameAndCodeWithLink()+", distance:"+distances[indexes[1]]+stocks.get(1).getDayBarImage(),
-                stocks.get(2).getNameAndCodeWithLink()+", distance:"+distances[indexes[2]]+stocks.get(2).getDayBarImage());
-        datas.add(data);
+        List<String> list = returnIfdistancesLessThenTargetDistance(stocks, indexes, distances, 3, targetDistance);
+        List<String> data = ListUtils.createList(stock.getNameAndCodeWithLink() +"-"+startDate+"<br/>"+ imageHtml,
+                "",StringUtils.join(list, "<br/><br/>"));
+        return new MassResult(data, list.size());
 
-        StringBuilder sb = new StringBuilder();
-        sb.append(CommonUtils.createHtmlTable(titles, datas));
+    }
 
-        EmailUtils.send("相似标的策略", sb.toString());
+    private List<String> returnIfdistancesLessThenTargetDistance(List<Stock> stocks, int[] indexes, double[] distances, int n, double targetDistance){
+        List<String> list = new ArrayList<>();
+        for(int i=0;i<n;i++){
+            if(distances[indexes[i]] <= targetDistance) {
+                list.add(stocks.get(indexes[i]).getNameAndCodeWithLink() + ", distance:" + distances[indexes[i]] + "<br/>" + stocks.get(indexes[i]).getDayBarImage());
+            }
+        }
+        return list;
+    }
+
+    @AllArgsConstructor
+    class MassResult {
+        List<String> data;
+        int count;
     }
 }

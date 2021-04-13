@@ -2940,3 +2940,7 @@ select * from ( select * from stk_text order by insert_time desc ) where rownum 
 
 select * from stk_dictionary where text ='业绩修正';
 select * from stk_import_info _type where type=270 for update;
+
+
+select * from stk where market=1 and cate=2 and code='BK0723';
+select * from stk_kline where code='999999' order by kline_date desc;

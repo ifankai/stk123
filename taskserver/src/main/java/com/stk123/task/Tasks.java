@@ -90,7 +90,8 @@ public class Tasks {
         taskContainer.start(TaskBuilder.of(BarTask.class, "CN"),
                             TaskBuilder.of(BarTask.class, "HK"),
                             TaskBuilder.of(BarTask.class, "Kline"),
-                            TaskBuilder.of(SyncTask.class, "table=stk_task_log"));
+                            TaskBuilder.of(SyncTask.class, "table=stk_task_log"),
+                            TaskBuilder.of(BarTask.class, "AllStocks"));
     }
 
     @Scheduled(cron = "0 0 11 ? * MON-FRI")

@@ -557,7 +557,7 @@ public class Stock {
     }
 
     public String getDayBarImage(){
-        return "http://image.sinajs.cn/newchart/daily/n/"+this.getCodeWithPlace().toLowerCase()+".gif";
+        return "<img src='http://image.sinajs.cn/newchart/daily/n/"+this.getCodeWithPlace().toLowerCase()+".gif'";
     }
 
     @Override
