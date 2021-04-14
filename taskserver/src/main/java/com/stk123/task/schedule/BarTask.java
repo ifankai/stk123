@@ -41,6 +41,7 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @CommonsLog
@@ -512,12 +513,25 @@ public class BarTask extends AbstractTask {
         List<String> titles = ListUtils.createList("标的", "日期", "相似标的");
 
         int count = 0;
-        MassResult result = mass(allList, "000408", "20210326", 50, "ST藏格[SZ000408]-20210326.png", 2.8);
+        MassResult result = massByMA(allList, "000408", "20210326", 50, "ST藏格[SZ000408]-20210326.png", 2.8);
         datas.add(result.data);
         count += result.count;
-        MassResult result2 = mass(allList, "002538", "20200703", 100, "司尔特[SZ002538]-20200703.png", 7);
-        datas.add(result2.data);
-        count += result2.count;
+
+        result = massByMA(allList, "002538", "20200703", 90, "司尔特[SZ002538]-20200703.png", 6);
+        datas.add(result.data);
+        count += result.count;
+
+        result = massByClose(allList, "000516", "20200703", 50, "国际医学[SZ000516]-20200703.png", 100);
+        datas.add(result.data);
+        count += result.count;
+
+        result = massByMA(allList, "603000", "20190124", 50, "人民网[SH603000]-20190124.png", 100);
+        datas.add(result.data);
+        count += result.count;
+        
+        result = massByClose(allList, "600859", "20200430", 50, "王府井[SH600859]-20200430.png", 100);
+        datas.add(result.data);
+        count += result.count;
 
         StringBuilder sb = new StringBuilder();
         sb.append(CommonUtils.createHtmlTable(titles, datas));
@@ -525,13 +539,21 @@ public class BarTask extends AbstractTask {
         EmailUtils.send("相似策略发现"+count+"个标的", sb.toString());
     }
 
-    private MassResult mass(List<Stock> allList, String stockCode, String startDate, int days, String png, double targetDistance){
+    private <R> MassResult massByMA(List<Stock> allList, String stockCode, String startDate, int days, String png, double targetDistance){
+        return mass(allList, stockCode, startDate, days, png, targetDistance, bar -> bar.getMA(5, Bar.EnumValue.C));
+    }
+
+    private <R> MassResult massByClose(List<Stock> allList, String stockCode, String startDate, int days, String png, double targetDistance){
+        return mass(allList, stockCode, startDate, days, png, targetDistance, Bar::getClose);
+    }
+
+    private MassResult mass(List<Stock> allList, String stockCode, String startDate, int days, String png, double targetDistance, Function<Bar, Double> function){
         List<Stock> stocks = new ArrayList<>();
         List<double[]> array = new ArrayList<>();
         for(Stock stock : allList){
             Bar bar = stock.getBar();
             if(bar==null)continue;
-            List<Double> close = bar.map(days, bar1 -> bar1.getMA(5, Bar.EnumValue.C));
+            List<Double> close = bar.map(days, function);
             double[] doubles = close.stream().mapToDouble(Double::doubleValue).toArray();
             if(doubles.length == days){
                 stocks.add(stock);
@@ -541,7 +563,7 @@ public class BarTask extends AbstractTask {
 
         Stock stock = Stock.build(stockCode);
         Bar a = stock.getBarSeries().getBar(startDate);
-        List<Double> close = a.map(days, bar1 -> bar1.getMA(5, Bar.EnumValue.C));
+        List<Double> close = a.map(days, function);
         double[] query = close.stream().mapToDouble(Double::doubleValue).toArray();
 
         log.info("array.length:"+array.size());
