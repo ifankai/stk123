@@ -22,3 +22,4 @@ pid.txt
 web.rar
 /oracle/*.dmp
 /oracle/*.log
+oracle/stk.sql

@@ -2926,7 +2926,11 @@ select * from stk_text where sub_type=300 order by insert_time desc;
 select * from stk_text where sub_type=100 order by insert_time desc;
 
 select * from stk where market=2 order by insert_time desc;
-select * from stk where code='605395'
+select * from stk where code='605395';
+
+delete from stk_holder where code='000832';
+delete from stk_fn_data where code='000832';
+delete from stk where code='000832';
 
 select * from stk_error_log;
 

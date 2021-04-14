@@ -521,15 +521,19 @@ public class BarTask extends AbstractTask {
         datas.add(result.data);
         count += result.count;
 
-        result = massByClose(allList, "000516", "20200703", 50, "国际医学[SZ000516]-20200703.png", 100);
+        result = massByClose(allList, "000516", "20200703", 100, "国际医学[SZ000516]-20200703.png", 6);
         datas.add(result.data);
         count += result.count;
 
-        result = massByMA(allList, "603000", "20190124", 50, "人民网[SH603000]-20190124.png", 100);
+        result = massByMA(allList, "603000", "20190124", 100, "人民网[SH603000]-20190124.png", 5);
         datas.add(result.data);
         count += result.count;
         
-        result = massByClose(allList, "600859", "20200430", 50, "王府井[SH600859]-20200430.png", 100);
+        result = massByClose(allList, "600859", "20200430", 100, "王府井[SH600859]-20200430.png", 5);
+        datas.add(result.data);
+        count += result.count;
+
+        result = massByMA(allList, "600958", "20200630", 100, "东方证券[SH600958]-20200630.png", 5);
         datas.add(result.data);
         count += result.count;
 
