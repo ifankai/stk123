@@ -509,7 +509,7 @@ public class BarTask extends AbstractTask {
         List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.STOCK);
         //List<StockBasicProjection> list = stkRepository.findAllByCodes(ListUtils.createList("000630","000650","002038","000651","002070","603876","600373","000002","000920","002801","000726","603588","002791","300474"));
         List<Stock> allList = stockService.buildStocksWithProjection(list);
-        allList = stockService.buildBarSeries(allList, 250);
+        allList = stockService.buildBarSeries(allList, 250, realtime != null);
 
         List<List<String>> datas = new ArrayList<>();
         List<String> titles = ListUtils.createList("标的", "日期", "相似标的");
