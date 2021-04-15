@@ -13,6 +13,8 @@ import com.stk123.entity.StkPeEntity;
 import com.stk123.model.core.Bar;
 import com.stk123.model.core.BarSeries;
 import com.stk123.model.core.Stock;
+import com.stk123.model.mass.MassResult;
+import com.stk123.model.mass.MassUtils;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.model.strategy.StrategyBacktesting;
 import com.stk123.model.strategy.StrategyResult;
@@ -513,27 +515,27 @@ public class BarTask extends AbstractTask {
         List<String> titles = ListUtils.createList("标的", "日期", "相似标的");
 
         int count = 0;
-        MassResult result = massByMA(allList, "000408", "20210326", 50, "ST藏格[SZ000408]-20210326.png", 2.8);
+        MassResult result = MassUtils.massByMA(allList, "000408", "20210326", 50, "ST藏格[SZ000408]-20210326.png", 2.8);
         datas.add(result.data);
         count += result.count;
 
-        result = massByMA(allList, "002538", "20200703", 90, "司尔特[SZ002538]-20200703.png", 6);
+        result = MassUtils.massByMA(allList, "002538", "20200703", 90, "司尔特[SZ002538]-20200703.png", 6);
         datas.add(result.data);
         count += result.count;
 
-        result = massByClose(allList, "000516", "20200703", 100, "国际医学[SZ000516]-20200703.png", 6);
+        result = MassUtils.massByClose(allList, "000516", "20200703", 100, "国际医学[SZ000516]-20200703.png", 6);
         datas.add(result.data);
         count += result.count;
 
-        result = massByMA(allList, "603000", "20190124", 100, "人民网[SH603000]-20190124.png", 5);
+        result = MassUtils.massByMA(allList, "603000", "20190124", 100, "人民网[SH603000]-20190124.png", 5);
         datas.add(result.data);
         count += result.count;
         
-        result = massByClose(allList, "600859", "20200430", 100, "王府井[SH600859]-20200430.png", 5);
+        result = MassUtils.massByClose(allList, "600859", "20200430", 100, "王府井[SH600859]-20200430.png", 5);
         datas.add(result.data);
         count += result.count;
 
-        result = massByMA(allList, "600958", "20200630", 100, "东方证券[SH600958]-20200630.png", 5);
+        result = MassUtils.massByMA(allList, "600958", "20200630", 100, "东方证券[SH600958]-20200630.png", 5);
         datas.add(result.data);
         count += result.count;
 
@@ -543,60 +545,4 @@ public class BarTask extends AbstractTask {
         EmailUtils.send("相似策略发现"+count+"个标的", sb.toString());
     }
 
-    private <R> MassResult massByMA(List<Stock> allList, String stockCode, String startDate, int days, String png, double targetDistance){
-        return mass(allList, stockCode, startDate, days, png, targetDistance, bar -> bar.getMA(5, Bar.EnumValue.C));
-    }
-
-    private <R> MassResult massByClose(List<Stock> allList, String stockCode, String startDate, int days, String png, double targetDistance){
-        return mass(allList, stockCode, startDate, days, png, targetDistance, Bar::getClose);
-    }
-
-    private MassResult mass(List<Stock> allList, String stockCode, String startDate, int days, String png, double targetDistance, Function<Bar, Double> function){
-        List<Stock> stocks = new ArrayList<>();
-        List<double[]> array = new ArrayList<>();
-        for(Stock stock : allList){
-            Bar bar = stock.getBar();
-            if(bar==null)continue;
-            List<Double> close = bar.map(days, function);
-            double[] doubles = close.stream().mapToDouble(Double::doubleValue).toArray();
-            if(doubles.length == days){
-                stocks.add(stock);
-                array.add(doubles);
-            }
-        }
-
-        Stock stock = Stock.build(stockCode);
-        Bar a = stock.getBarSeries().getBar(startDate);
-        List<Double> close = a.map(days, function);
-        double[] query = close.stream().mapToDouble(Double::doubleValue).toArray();
-
-        log.info("array.length:"+array.size());
-        double[] distances = KhivaUtils.mass(array, query);
-        int[] indexes = KhivaUtils.getIndexesOfMin(distances, 5);
-        log.info(Arrays.toString(indexes));
-
-        String imageStr = ImageUtils.getImageStr(ServiceUtils.getResourceFileAsBytes("similar_stock_image/"+png));
-        String imageHtml = CommonUtils.getImgBase64(imageStr, 450, 300);
-        List<String> list = returnIfdistancesLessThenTargetDistance(stocks, indexes, distances, 3, targetDistance);
-        List<String> data = ListUtils.createList(stock.getNameAndCodeWithLink() +"-"+startDate+"<br/>"+ imageHtml,
-                "",StringUtils.join(list, "<br/><br/>"));
-        return new MassResult(data, list.size());
-
-    }
-
-    private List<String> returnIfdistancesLessThenTargetDistance(List<Stock> stocks, int[] indexes, double[] distances, int n, double targetDistance){
-        List<String> list = new ArrayList<>();
-        for(int i=0;i<n;i++){
-            if(distances[indexes[i]] <= targetDistance) {
-                list.add(stocks.get(indexes[i]).getNameAndCodeWithLink() + ", distance:" + distances[indexes[i]] + "<br/>" + stocks.get(indexes[i]).getDayBarImage());
-            }
-        }
-        return list;
-    }
-
-    @AllArgsConstructor
-    class MassResult {
-        List<String> data;
-        int count;
-    }
 }
