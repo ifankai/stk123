@@ -452,6 +452,7 @@ public class BarTask extends AbstractTask {
                             strategyResult.getDate(),
                             strategyResult.getStrategy().getName().replaceAll("，", "<br/>"),
                             StringUtils.join(sources, "<br/>"),
+                            stock.getDayBarImage(),
                             backtesting.getStrategies().get(0).getPassRateString().replaceAll("]", "]<br/>") +
                                     (StringUtils.isNotEmpty(backtesting.getStrategies().get(0).getPassedFilterResultLog()) ? "<br/>"+backtesting.getStrategies().get(0).getPassedFilterResultLog() : "")
                             );
@@ -473,7 +474,7 @@ public class BarTask extends AbstractTask {
                     }
                 }
 
-                List<String> titles = ListUtils.createList("标的", "日期", "策略", "来源", "历史策略回测通过率");
+                List<String> titles = ListUtils.createList("标的", "日期", "策略", "来源", "K线", "历史策略回测通过率");
                 sb.append("A股");        sb.append(CommonUtils.createHtmlTable(titles, datasA));sb.append("<br/>");
                 sb.append("H股");        sb.append(CommonUtils.createHtmlTable(titles, datasH));sb.append("<br/>");
                 sb.append("美股");       sb.append(CommonUtils.createHtmlTable(titles, datasU));sb.append("<br/>");

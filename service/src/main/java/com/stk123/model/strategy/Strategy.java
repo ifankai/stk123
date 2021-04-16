@@ -165,10 +165,10 @@ public class Strategy<X> {
     }
     public String getPassRateString(){
         if(expectFilterExecutor == null)return "";
-        return String.format("期望过滤器[%s]调用总次数：%d, 通过：%d, 未通过：%d。通过率：%.2f%%",
+        return String.format("通过率：%.2f%%。期望过滤器[%s]调用总次数：%d, 通过：%d, 未通过：%d",
+                this.getPassRate(),
                 expectFilterExecutor.getName(), expectFilterExecutor.getCounterPassedAndNotPassed(),
-                expectFilterExecutor.getCounterPassed(), expectFilterExecutor.getCounterNotPassed(),
-                this.getPassRate());
+                expectFilterExecutor.getCounterPassed(), expectFilterExecutor.getCounterNotPassed());
     }
 
     /**
