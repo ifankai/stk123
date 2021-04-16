@@ -365,9 +365,9 @@ public class BarTask extends AbstractTask {
                 }
 
                 //成长股
-                List<StkIndustryEntity> inds = stkIndustryRepository.findAllByIndustry(1783);
+                /*List<StkIndustryEntity> inds = stkIndustryRepository.findAllByIndustry(1783);
                 growthList = inds.stream().map(StkIndustryEntity::getCode).collect(Collectors.toSet());
-                allList.addAll(growthList);
+                allList.addAll(growthList);*/
 
                 //板块
                 if(realtime == null) {//实时行情只关注股票，排除板块
