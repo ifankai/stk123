@@ -522,7 +522,7 @@ public class BarTask extends AbstractTask {
         MassStrategy a000408 = new MassStrategy("000408", "20210326", 50, 2.8, "ST藏格[SZ000408]-20210326.png");
         a000408.addMassFunction(1, bar -> bar.getMA(5, Bar.EnumValue.C));
 
-        MassStrategy a002538 = new MassStrategy("002538", "20200703", 80, 6,"司尔特[SZ002538]-20200703.png");
+        MassStrategy a002538 = new MassStrategy("002538", "20200703", 80, 7,"司尔特[SZ002538]-20200703.png");
         a002538.addMassFunction(1, bar -> bar.getMA(5, Bar.EnumValue.C));
         a002538.addMassFunction(3, Bar::getVolume);
 
