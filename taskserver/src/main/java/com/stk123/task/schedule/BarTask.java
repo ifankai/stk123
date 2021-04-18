@@ -1,20 +1,15 @@
 package com.stk123.task.schedule;
 
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.stk123.common.CommonUtils;
-import com.stk123.common.ml.KhivaUtils;
 import com.stk123.common.util.EmailUtils;
-import com.stk123.common.util.ImageUtils;
 import com.stk123.common.util.ListUtils;
 import com.stk123.entity.StkIndustryEntity;
 import com.stk123.entity.StkKlineUsEntity;
 import com.stk123.entity.StkPeEntity;
 import com.stk123.model.core.Bar;
-import com.stk123.model.core.BarSeries;
 import com.stk123.model.core.Stock;
-import com.stk123.model.mass.MassResult;
-import com.stk123.model.mass.MassUtils;
+import com.stk123.model.mass.*;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.model.strategy.StrategyBacktesting;
 import com.stk123.model.strategy.StrategyResult;
@@ -27,8 +22,6 @@ import com.stk123.service.core.BarService;
 import com.stk123.service.core.StockService;
 import com.stk123.task.tool.TaskUtils;
 import com.stk123.util.ExceptionUtils;
-import com.stk123.util.ServiceUtils;
-import lombok.AllArgsConstructor;
 import lombok.Setter;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
@@ -43,7 +36,6 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @CommonsLog
@@ -506,44 +498,86 @@ public class BarTask extends AbstractTask {
         }
     }
 
+    public static List<Stock> stocksA = null;
+    static List<Stock> stocksH = null;
+
     public void analyseAllStocks(){
-        List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.STOCK);
-        //List<StockBasicProjection> list = stkRepository.findAllByCodes(ListUtils.createList("000630","000650","002038","000651","002070","603876","600373","000002","000920","002801","000726","603588","002791","300474"));
-        List<Stock> allList = stockService.buildStocksWithProjection(list);
-        allList = stockService.buildBarSeries(allList, 250, realtime != null);
+        if(stocksA == null) {
+            List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.STOCK);
+            //List<StockBasicProjection> list = stkRepository.findAllByCodes(ListUtils.createList("000630","000650","002038","002740","000651","002070","603876","600373","000002","000920","002801","000726","603588","002791","300474"));
+            list = list.stream().filter(stockBasicProjection -> !StringUtils.contains(stockBasicProjection.getName(), "退市")).collect(Collectors.toList());
 
-        List<List<String>> datas = new ArrayList<>();
+            stocksA = stockService.buildStocksWithProjection(list);
+            stocksA = stockService.buildBarSeries(stocksA, 250, realtime != null);
+        }
+
+        /*if(stocksH == null) {
+            List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.HK, Stock.EnumCate.STOCK);
+            list = list.stream().filter(stockBasicProjection -> !StringUtils.contains(stockBasicProjection.getName(), "退市")).collect(Collectors.toList());
+
+            stocksH = stockService.buildStocksWithProjection(list);
+            stocksH = stockService.buildBarSeries(stocksH, 250, realtime != null);
+        }*/
+
+        MassStrategy a000408 = new MassStrategy("000408", "20210326", 50, 2.8, "ST藏格[SZ000408]-20210326.png");
+        a000408.addMassFunction(1, bar -> bar.getMA(5, Bar.EnumValue.C));
+
+        MassStrategy a002538 = new MassStrategy("002538", "20200703", 80, 6,"司尔特[SZ002538]-20200703.png");
+        a002538.addMassFunction(1, bar -> bar.getMA(5, Bar.EnumValue.C));
+        a002538.addMassFunction(3, Bar::getVolume);
+
+        MassStrategy a000516 = new MassStrategy("000516", "20200703", 100, 6, "国际医学[SZ000516]-20200703.png");
+        a000516.addMassFunction(1, Bar::getClose);
+
+        MassStrategy a600859 = new MassStrategy("600859", "20200430", 100, 5, "王府井[SH600859]-20200430.png");
+        a600859.addMassFunction(1, Bar::getClose);
+
+        MassStrategy a600958 = new MassStrategy("600958", "20200630", 100,5,  "东方证券[SH600958]-20200630.png");
+        a600958.addMassFunction(1, bar -> bar.getMA(5, Bar.EnumValue.C));
+
+        MassStrategy a002524 = new MassStrategy("002524", "20210412", 30, 5, "光正眼科[SZ002524]-20210412.png");
+        a002524.addMassFunction(1, Bar::getClose);
+        a002524.addMassFunction(1, Bar::getVolume, 15);
+        a002524.setCountOfMinDistance(5);
+
+        MassStrategy a002177 = new MassStrategy("002177", "20210319", 80,7,  "御银股份[SZ002177]-20210319.png");
+        a002177.addMassFunction(1, Bar::getClose);
+        a002177.addMassFunction(1, Bar::getVolume);
+        a002177.addMassFunction(1, bar -> bar.getMA(120, Bar.EnumValue.C));
+
+        MassStrategy a002762 = new MassStrategy("002762", "20210317", 40, 5, "金发拉比[SZ002762]-20210317.png");
+        a002762.addMassFunction(1, Bar::getClose);
+        a002762.addMassFunction(1, Bar::getVolume);
+        a002762.addMassFunction(1, bar -> bar.getMA(60, Bar.EnumValue.C));
+
+        MassStrategy a002735 = new MassStrategy("002735", "20210322", 40, 4.5, "王子新材[SZ002735]-20210322.png");
+        a002735.addMassFunction(1, Bar::getClose);
+        a002735.addMassFunction(1, Bar::getVolume);
+
+        MassStrategy a002172 = new MassStrategy("002172", "20210115", 60,6,  "澳洋健康[SZ002172]-20210115.png");
+        a002172.addMassFunction(1, Bar::getClose);
+        a002172.addMassFunction(1, Bar::getVolume);
+
+        MassStrategy a000807_1 = new MassStrategy("000807", "20210203", 30, 4.5, "云铝股份[SZ000807]-20210203.png");
+        a000807_1.addMassFunction(1, Bar::getClose);
+        a000807_1.addMassFunction(1, Bar::getVolume);
+        MassStrategy a000807_2 = new MassStrategy("000807", "20201102", 40, 6, "云铝股份[SZ000807]-20201102.png");
+        a000807_2.addMassFunction(1, Bar::getClose);
+        a000807_2.addMassFunction(1, Bar::getVolume);
+        MassStrategy a000807_3 = new MassStrategy("000807", "20200630", 80, 10, "云铝股份[SZ000807]-20200630.png");
+        a000807_3.addMassFunction(2, Bar::getClose);
+        a000807_3.addMassFunction(1, Bar::getVolume);
+
+        MassResult massResultA = Mass.execute(stocksA,
+                a000408, a002538, a000516, a600859, a600958, a002524, a002177, a002762, a002735, a002172, a000807_1, a000807_2, a000807_3);
+        //MassResult massResultH = Mass.execute(stocksH, a000408, a002538, a000516, a600859, a600958, a002524, a002177, a002762, a002735);
+
+        int count = massResultA.getCount();
         List<String> titles = ListUtils.createList("标的", "日期", "相似标的");
-
-        int count = 0;
-        MassResult result = MassUtils.massByMA(allList, "000408", "20210326", 50, "ST藏格[SZ000408]-20210326.png", 2.8);
-        datas.add(result.data);
-        count += result.count;
-
-        result = MassUtils.massByMA(allList, "002538", "20200703", 90, "司尔特[SZ002538]-20200703.png", 6);
-        datas.add(result.data);
-        count += result.count;
-
-        result = MassUtils.massByClose(allList, "000516", "20200703", 100, "国际医学[SZ000516]-20200703.png", 6);
-        datas.add(result.data);
-        count += result.count;
-
-        result = MassUtils.massByMA(allList, "603000", "20190124", 100, "人民网[SH603000]-20190124.png", 5);
-        datas.add(result.data);
-        count += result.count;
+        String table = CommonUtils.createHtmlTable(titles, massResultA.getDatas()) + "<br/><br/>";
         
-        result = MassUtils.massByClose(allList, "600859", "20200430", 100, "王府井[SH600859]-20200430.png", 5);
-        datas.add(result.data);
-        count += result.count;
+        EmailUtils.send("相似策略发现"+count+"个标的", table);
 
-        result = MassUtils.massByMA(allList, "600958", "20200630", 100, "东方证券[SH600958]-20200630.png", 5);
-        datas.add(result.data);
-        count += result.count;
-
-        StringBuilder sb = new StringBuilder();
-        sb.append(CommonUtils.createHtmlTable(titles, datas));
-
-        EmailUtils.send("相似策略发现"+count+"个标的", sb.toString());
     }
 
 }

@@ -11,27 +11,24 @@ import java.util.List;
 public class MassStockDistance {
     private Stock stock;
     private List<Double> distances = new ArrayList<>();
-    private int totalWeight = 0;
+    private double distanceByWeight;
 
-    public MassStockDistance(Stock stock, Double distance, int weight){
+    public MassStockDistance(Stock stock, Double distance, double weight, double totalWeight){
         this.stock = stock;
-        this.addDistance(distance, weight);
+        this.addDistance(distance, weight, totalWeight);
     }
 
-    public void addDistance(Double distance, int weight){
-        distances.add(distance * weight);
-        this.totalWeight += weight;
+    public void addDistance(Double distance, double weight, double totalWeight){
+        distances.add(distance);
+        distanceByWeight += distance * weight / totalWeight;
     }
 
     public double getDistance(){
-        if(this.totalWeight != 0) {
-            return distances.stream().mapToDouble(Double::doubleValue).sum() / totalWeight;
-        }
-        return distances.stream().mapToDouble(Double::doubleValue).sum();
+        return distanceByWeight;
     }
 
     @Override
     public String toString() {
-        return "MassStockDistance{distances=[" + StringUtils.join(distances, ",") + "], totalWeight=" + totalWeight + '}';
+        return "MassStockDistance{distances=[" + StringUtils.join(distances, ",") + "], distance="+distanceByWeight+"}";
     }
 }

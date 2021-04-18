@@ -1,13 +1,16 @@
 package com.stk123.model.mass;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
-@AllArgsConstructor
-@Getter
+@Data
 public class MassResult {
-    public List<String> data;
-    public int count;
+    private List<List<String>> datas = new ArrayList<>();
+    private int count = 0;
+
+    public void count(int count){
+        this.count += count;
+    }
 }

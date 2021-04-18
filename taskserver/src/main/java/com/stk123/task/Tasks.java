@@ -87,11 +87,13 @@ public class Tasks {
 
     @Scheduled(cron = "0 10 16 ? * MON-SAT")
     public void initialKLine() {
+        BarTask.stocksA = null;
         taskContainer.start(TaskBuilder.of(BarTask.class, "CN"),
                             TaskBuilder.of(BarTask.class, "HK"),
                             TaskBuilder.of(BarTask.class, "Kline"),
                             TaskBuilder.of(SyncTask.class, "table=stk_task_log"),
                             TaskBuilder.of(BarTask.class, "AllStocks"));
+        BarTask.stocksA = null;
     }
 
     @Scheduled(cron = "0 0 11 ? * MON-FRI")

@@ -9,6 +9,7 @@ import java.util.function.Function;
 @Data
 @AllArgsConstructor
 public class MassFunction {
-    private int weight;
+    private double weight;
+    private int period;
     private Function<Bar, Double> function;
 }
