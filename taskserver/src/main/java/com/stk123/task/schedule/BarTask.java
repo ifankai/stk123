@@ -568,8 +568,12 @@ public class BarTask extends AbstractTask {
         a000807_3.addMassFunction(2, Bar::getClose);
         a000807_3.addMassFunction(1, Bar::getVolume);
 
+        MassStrategy a002813 = new MassStrategy("002813", "20210331", 40, 10, "路畅科技[SZ002813]-20210331.png");
+        a002813.addMassFunction(1, Bar::getClose);
+        a002813.addMassFunction(1, Bar::getVolume);
+
         MassResult massResultA = Mass.execute(stocksA,
-                a000408, a002538, a000516, a600859, a600958, a002524, a002177, a002762, a002735, a002172, a000807_1, a000807_2, a000807_3);
+                a000408, a002538, a000516, a600859, a600958, a002524, a002177, a002762, a002735, a002172, a000807_1, a000807_2, a000807_3, a002813);
         //MassResult massResultH = Mass.execute(stocksH, a000408, a002538, a000516, a600859, a600958, a002524, a002177, a002762, a002735);
 
         int count = massResultA.getCount();
