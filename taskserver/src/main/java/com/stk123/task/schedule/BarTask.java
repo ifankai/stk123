@@ -519,62 +519,8 @@ public class BarTask extends AbstractTask {
             stocksH = stockService.buildBarSeries(stocksH, 250, realtime != null);
         }*/
 
-        MassStrategy a000408 = new MassStrategy("000408", "20210326", 50, 2.8, "ST藏格[SZ000408]-20210326.png");
-        a000408.addMassFunction(1, bar -> bar.getMA(5, Bar.EnumValue.C));
 
-        MassStrategy a002538 = new MassStrategy("002538", "20200703", 80, 7,"司尔特[SZ002538]-20200703.png");
-        a002538.addMassFunction(1, bar -> bar.getMA(5, Bar.EnumValue.C));
-        a002538.addMassFunction(3, Bar::getVolume);
-
-        MassStrategy a000516 = new MassStrategy("000516", "20200703", 100, 6, "国际医学[SZ000516]-20200703.png");
-        a000516.addMassFunction(1, Bar::getClose);
-
-        MassStrategy a600859 = new MassStrategy("600859", "20200430", 100, 5, "王府井[SH600859]-20200430.png");
-        a600859.addMassFunction(1, Bar::getClose);
-
-        MassStrategy a600958 = new MassStrategy("600958", "20200630", 100,5,  "东方证券[SH600958]-20200630.png");
-        a600958.addMassFunction(1, bar -> bar.getMA(5, Bar.EnumValue.C));
-
-        MassStrategy a002524 = new MassStrategy("002524", "20210412", 30, 5, "光正眼科[SZ002524]-20210412.png");
-        a002524.addMassFunction(1, Bar::getClose);
-        a002524.addMassFunction(1, Bar::getVolume, 15);
-        a002524.setCountOfMinDistance(5);
-
-        MassStrategy a002177 = new MassStrategy("002177", "20210319", 80,7,  "御银股份[SZ002177]-20210319.png");
-        a002177.addMassFunction(1, Bar::getClose);
-        a002177.addMassFunction(1, Bar::getVolume);
-        a002177.addMassFunction(1, bar -> bar.getMA(120, Bar.EnumValue.C));
-
-        MassStrategy a002762 = new MassStrategy("002762", "20210317", 40, 5, "金发拉比[SZ002762]-20210317.png");
-        a002762.addMassFunction(1, Bar::getClose);
-        a002762.addMassFunction(1, Bar::getVolume);
-        a002762.addMassFunction(1, bar -> bar.getMA(60, Bar.EnumValue.C));
-
-        MassStrategy a002735 = new MassStrategy("002735", "20210322", 40, 4.5, "王子新材[SZ002735]-20210322.png");
-        a002735.addMassFunction(1, Bar::getClose);
-        a002735.addMassFunction(1, Bar::getVolume);
-
-        MassStrategy a002172 = new MassStrategy("002172", "20210115", 60,6,  "澳洋健康[SZ002172]-20210115.png");
-        a002172.addMassFunction(1, Bar::getClose);
-        a002172.addMassFunction(1, Bar::getVolume);
-
-        MassStrategy a000807_1 = new MassStrategy("000807", "20210203", 30, 4.5, "云铝股份[SZ000807]-20210203.png");
-        a000807_1.addMassFunction(1, Bar::getClose);
-        a000807_1.addMassFunction(1, Bar::getVolume);
-        MassStrategy a000807_2 = new MassStrategy("000807", "20201102", 40, 6, "云铝股份[SZ000807]-20201102.png");
-        a000807_2.addMassFunction(1, Bar::getClose);
-        a000807_2.addMassFunction(1, Bar::getVolume);
-        MassStrategy a000807_3 = new MassStrategy("000807", "20200630", 80, 10, "云铝股份[SZ000807]-20200630.png");
-        a000807_3.addMassFunction(2, Bar::getClose);
-        a000807_3.addMassFunction(1, Bar::getVolume);
-
-        MassStrategy a002813 = new MassStrategy("002813", "20210331", 40, 10, "路畅科技[SZ002813]-20210331.png");
-        a002813.addMassFunction(1, Bar::getClose);
-        a002813.addMassFunction(1, Bar::getVolume);
-
-        MassResult massResultA = Mass.execute(stocksA,
-                a000408, a002538, a000516, a600859, a600958, a002524, a002177, a002762, a002735, a002172, a000807_1, a000807_2, a000807_3, a002813);
-        //MassResult massResultH = Mass.execute(stocksH, a000408, a002538, a000516, a600859, a600958, a002524, a002177, a002762, a002735);
+        MassResult massResultA = Mass.execute(stocksA);
 
         int count = massResultA.getCount();
         List<String> titles = ListUtils.createList("标的", "日期", "相似标的");

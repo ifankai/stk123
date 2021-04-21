@@ -23,20 +23,31 @@ public class MassStrategy {
 
     private List<MassFunction> functions = new ArrayList<>();
 
-    public MassStrategy(String code, String startDate, int period, double targetDistance, String image){
+    public static MassStrategy build(String code, String startDate, int period, double targetDistance, String image){
+        return new MassStrategy(code, startDate, period, targetDistance, image);
+    }
+
+    private MassStrategy(String code, String startDate, int period, double targetDistance, String image){
         this.templateStockStartDate = startDate;
         this.templateStockPeriod = period;
-        this.templateStock = Stock.build(code);
+        //this.templateStock = Stock.build(code);
         this.targetDistance = targetDistance;
         this.templateStockImage = image;
     }
 
-    public void addMassFunction(double weight, Function<Bar, Double> function, Integer period){
-        this.functions.add(new MassFunction(weight, period == null ? templateStockPeriod : period, function));
+    public MassStrategy setCountOfMinDistance(int countOfMinDistance){
+        this.countOfMinDistance = countOfMinDistance;
+        return this;
     }
 
-    public void addMassFunction(double weight, Function<Bar, Double> function){
+    public MassStrategy addMassFunction(double weight, Function<Bar, Double> function, Integer period){
+        this.functions.add(new MassFunction(weight, period == null ? templateStockPeriod : period, function));
+        return this;
+    }
+
+    public MassStrategy addMassFunction(double weight, Function<Bar, Double> function){
         this.functions.add(new MassFunction(weight, templateStockPeriod, function));
+        return this;
     }
 
     public List<MassStockDistance> getMinDistances(List<Stock> stocks){
