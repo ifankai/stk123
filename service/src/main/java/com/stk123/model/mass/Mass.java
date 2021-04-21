@@ -22,68 +22,85 @@ import java.util.stream.Collectors;
 @Data
 public class Mass {
 
-    static MassStrategy a000408 = MassStrategy.build("000408", "20210326", 50, 2.8, "ST藏格[SZ000408]-20210326.png")
-            .addMassFunction(1, bar -> bar.getMA(5, Bar.EnumValue.C));
+    public static List<MassStrategy> strategies = new ArrayList<>();
 
-    static MassStrategy a002538 = MassStrategy.build("002538", "20200703", 80, 7,"司尔特[SZ002538]-20200703.png")
-            .addMassFunction(1, bar -> bar.getMA(5, Bar.EnumValue.C))
-            .addMassFunction(3, Bar::getVolume);
+    static {
 
-    static MassStrategy a000516 = MassStrategy.build("000516", "20200703", 100, 6, "国际医学[SZ000516]-20200703.png")
-            .addMassFunction(1, Bar::getClose);
+        MassStrategy ms = MassStrategy.build("000408", "20210326", 50, 2.8, "ST藏格[SZ000408]-20210326.png")
+                .addMassFunction(1, bar -> bar.getMA(5, Bar.EnumValue.C));
+        strategies.add(ms);
 
-    static MassStrategy a600859 = MassStrategy.build("600859", "20200430", 100, 5, "王府井[SH600859]-20200430.png")
-            .addMassFunction(1, Bar::getClose);
+        ms = MassStrategy.build("002538", "20200703", 80, 7, "司尔特[SZ002538]-20200703.png")
+                .addMassFunction(1, bar -> bar.getMA(5, Bar.EnumValue.C))
+                .addMassFunction(3, Bar::getVolume);
+        strategies.add(ms);
 
-    static MassStrategy a600958 = MassStrategy.build("600958", "20200630", 100,5,  "东方证券[SH600958]-20200630.png")
-            .addMassFunction(1, bar -> bar.getMA(5, Bar.EnumValue.C));
+        ms = MassStrategy.build("000516", "20200703", 100, 6, "国际医学[SZ000516]-20200703.png")
+                .addMassFunction(1, Bar::getClose);
+        strategies.add(ms);
 
-    static MassStrategy a002524 = MassStrategy.build("002524", "20210412", 30, 5, "光正眼科[SZ002524]-20210412.png")
-            .addMassFunction(1, Bar::getClose)
-            .addMassFunction(1, Bar::getVolume, 15)
-            .setCountOfMinDistance(5);
+        ms = MassStrategy.build("600859", "20200430", 100, 5, "王府井[SH600859]-20200430.png")
+                .addMassFunction(1, Bar::getClose);
+        strategies.add(ms);
 
-    static MassStrategy a002177 = MassStrategy.build("002177", "20210319", 80,7,  "御银股份[SZ002177]-20210319.png")
-            .addMassFunction(1, Bar::getClose)
-            .addMassFunction(1, Bar::getVolume)
-            .addMassFunction(1, bar -> bar.getMA(120, Bar.EnumValue.C));
+        ms = MassStrategy.build("600958", "20200630", 100, 5, "东方证券[SH600958]-20200630.png")
+                .addMassFunction(1, bar -> bar.getMA(5, Bar.EnumValue.C));
+        strategies.add(ms);
 
-    static MassStrategy a002762 = MassStrategy.build("002762", "20210317", 40, 5, "金发拉比[SZ002762]-20210317.png")
-            .addMassFunction(1, Bar::getClose)
-            .addMassFunction(1, Bar::getVolume)
-            .addMassFunction(1, bar -> bar.getMA(60, Bar.EnumValue.C));
+        ms = MassStrategy.build("002524", "20210412", 30, 5, "光正眼科[SZ002524]-20210412.png")
+                .addMassFunction(1, Bar::getClose)
+                .addMassFunction(1, Bar::getVolume, 15)
+                .setCountOfMinDistance(5);
+        strategies.add(ms);
 
-    static MassStrategy a002735 = MassStrategy.build("002735", "20210322", 40, 4.5, "王子新材[SZ002735]-20210322.png")
-            .addMassFunction(1, Bar::getClose)
-            .addMassFunction(1, Bar::getVolume);
+        ms = MassStrategy.build("002177", "20210319", 80, 7, "御银股份[SZ002177]-20210319.png")
+                .addMassFunction(1, Bar::getClose)
+                .addMassFunction(1, Bar::getVolume)
+                .addMassFunction(1, bar -> bar.getMA(120, Bar.EnumValue.C));
+        strategies.add(ms);
 
-    static MassStrategy a002172 = MassStrategy.build("002172", "20210115", 60,6,  "澳洋健康[SZ002172]-20210115.png")
-            .addMassFunction(1, Bar::getClose)
-            .addMassFunction(1, Bar::getVolume);
+        ms = MassStrategy.build("002762", "20210317", 40, 5, "金发拉比[SZ002762]-20210317.png")
+                .addMassFunction(1, Bar::getClose)
+                .addMassFunction(1, Bar::getVolume)
+                .addMassFunction(1, bar -> bar.getMA(60, Bar.EnumValue.C));
+        strategies.add(ms);
 
-    static MassStrategy a000807_1 = MassStrategy.build("000807", "20210203", 30, 4.5, "云铝股份[SZ000807]-20210203.png")
-            .addMassFunction(1, Bar::getClose)
-            .addMassFunction(1, Bar::getVolume);
-    static MassStrategy a000807_2 = MassStrategy.build("000807", "20201102", 40, 6, "云铝股份[SZ000807]-20201102.png")
-            .addMassFunction(1, Bar::getClose)
-            .addMassFunction(1, Bar::getVolume);
-    static MassStrategy a000807_3 = MassStrategy.build("000807", "20200630", 80, 10, "云铝股份[SZ000807]-20200630.png")
-            .addMassFunction(2, Bar::getClose)
-            .addMassFunction(1, Bar::getVolume);
+        ms = MassStrategy.build("002735", "20210322", 40, 4.5, "王子新材[SZ002735]-20210322.png")
+                .addMassFunction(1, Bar::getClose)
+                .addMassFunction(1, Bar::getVolume);
+        strategies.add(ms);
 
-    static MassStrategy a002813 = MassStrategy.build("002813", "20210331", 35, 10, "路畅科技[SZ002813]-20210331.png")
-            .addMassFunction(1, Bar::getClose)
-            .addMassFunction(1, Bar::getVolume);
+        ms = MassStrategy.build("002172", "20210115", 60, 6, "澳洋健康[SZ002172]-20210115.png")
+                .addMassFunction(1, Bar::getClose)
+                .addMassFunction(1, Bar::getVolume);
+        strategies.add(ms);
 
+        ms = MassStrategy.build("000807", "20210203", 30, 4.5, "云铝股份[SZ000807]-20210203.png")
+                .addMassFunction(1, Bar::getClose)
+                .addMassFunction(1, Bar::getVolume);
+        strategies.add(ms);
+        ms = MassStrategy.build("000807", "20201102", 40, 6, "云铝股份[SZ000807]-20201102.png")
+                .addMassFunction(1, Bar::getClose)
+                .addMassFunction(1, Bar::getVolume);
+        strategies.add(ms);
+        ms = MassStrategy.build("000807", "20200630", 80, 10, "云铝股份[SZ000807]-20200630.png")
+                .addMassFunction(2, Bar::getClose)
+                .addMassFunction(1, Bar::getVolume);
+        strategies.add(ms);
 
+        ms = MassStrategy.build("002813", "20210331", 35, 10, "路畅科技[SZ002813]-20210331.png")
+                .addMassFunction(1, Bar::getClose)
+                .addMassFunction(1, Bar::getVolume);
+        strategies.add(ms);
+    }
 
     @SneakyThrows
     public static MassResult execute(List<Stock> stocks){
-        Set<Field> fieldSet = ReflectionUtils.getFields(Mass.class, field -> StringUtils.startsWith(field.getName(), "a"));
+        /*Set<Field> fieldSet = ReflectionUtils.getFields(Mass.class, field -> StringUtils.startsWith(field.getName(), "a"));
         List<MassStrategy> strategies = new ArrayList<>();
         for(Field field : fieldSet){
             strategies.add((MassStrategy) field.get(null));
-        }
+        }*/
         return Mass.execute(stocks, strategies.toArray(new MassStrategy[0]));
     }
 
