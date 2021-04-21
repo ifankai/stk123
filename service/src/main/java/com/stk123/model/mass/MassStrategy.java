@@ -30,7 +30,7 @@ public class MassStrategy {
     private MassStrategy(String code, String startDate, int period, double targetDistance, String image){
         this.templateStockStartDate = startDate;
         this.templateStockPeriod = period;
-        //this.templateStock = Stock.build(code);
+        this.templateStock = Stock.build(code);
         this.targetDistance = targetDistance;
         this.templateStockImage = image;
     }
