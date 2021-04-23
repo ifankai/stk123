@@ -35,6 +35,12 @@ public class Mass {
                 .addMassFunction(3, Bar::getVolume);
         strategies.add(ms);
 
+        ms = MassStrategy.build("002524", "20210412", 30, 5, "光正眼科[SZ002524]-20210412.png")
+                .addMassFunction(1, Bar::getClose)
+                .addMassFunction(1, Bar::getVolume, 15)
+                .setCountOfMinDistance(5);
+        strategies.add(ms);
+
         ms = MassStrategy.build("000516", "20200703", 100, 6, "国际医学[SZ000516]-20200703.png")
                 .addMassFunction(1, Bar::getClose);
         strategies.add(ms);
@@ -45,12 +51,6 @@ public class Mass {
 
         ms = MassStrategy.build("600958", "20200630", 100, 5, "东方证券[SH600958]-20200630.png")
                 .addMassFunction(1, bar -> bar.getMA(5, Bar.EnumValue.C));
-        strategies.add(ms);
-
-        ms = MassStrategy.build("002524", "20210412", 30, 5, "光正眼科[SZ002524]-20210412.png")
-                .addMassFunction(1, Bar::getClose)
-                .addMassFunction(1, Bar::getVolume, 15)
-                .setCountOfMinDistance(5);
         strategies.add(ms);
 
         ms = MassStrategy.build("002177", "20210319", 80, 7, "御银股份[SZ002177]-20210319.png")
@@ -89,6 +89,19 @@ public class Mass {
         strategies.add(ms);
 
         ms = MassStrategy.build("002813", "20210331", 35, 10, "路畅科技[SZ002813]-20210331.png")
+                .addMassFunction(1, Bar::getClose)
+                .addMassFunction(1, Bar::getVolume);
+        strategies.add(ms);
+
+        ms = MassStrategy.build("688068", "20210312", 25, 10, "路畅科技[SZ002813]-20210331.png")
+                .addMassFunction(1, Bar::getClose)
+                .addMassFunction(1, Bar::getVolume);
+        strategies.add(ms);
+        ms = MassStrategy.build("300783", "20210415", 50, 10, "路畅科技[SZ002813]-20210331.png")
+                .addMassFunction(1, Bar::getClose)
+                .addMassFunction(1, Bar::getVolume);
+        strategies.add(ms);
+        ms = MassStrategy.build("002348", "20210331", 60, 10, "路畅科技[SZ002813]-20210331.png")
                 .addMassFunction(1, Bar::getClose)
                 .addMassFunction(1, Bar::getVolume);
         strategies.add(ms);
