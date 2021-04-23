@@ -548,7 +548,7 @@ public class Stock {
         List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn);
         List<Stock> stocks = list.stream().map(projection -> Stock.build(projection)).collect(Collectors.toList());
         Bar b = this.getBar().getHighestBar(days, bar -> {
-           List<Bar> bars = stocks.stream().map(stock1 -> stock1.getBar().before(bar.getDate())).collect(Collectors.toList());
+           List<Bar> bars = stocks.stream().map(stock1 -> stock1.getBar()!=null ? stock1.getBar().before(bar.getDate()) : null).filter(Objects::nonNull).collect(Collectors.toList());
            long cnt = bars.stream().filter(bar1 -> bar1.getClose() > bar1.getMA(5, Bar.EnumValue.C) && bar1.before().getClose() < bar1.before().getMA(5, Bar.EnumValue.C)).count();
            return Double.valueOf(cnt);
         });
