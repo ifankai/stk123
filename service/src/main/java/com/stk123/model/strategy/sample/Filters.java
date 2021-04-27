@@ -350,7 +350,7 @@ public class Filters {
     }
 
     //突破趋势线
-    public static Filter<BarSeries> filter_008(int m, int n, double d){
+    public static Filter<BarSeries> filter_008a(int m, int n, double d){
         return (strategy, bs) -> {
             Bar today = bs.getFirst();
             if(today.isBreakTrendLine(m, n, d)){
@@ -360,11 +360,24 @@ public class Filters {
         };
     }
 
+    public static Filter<BarSeries> filter_008b(int m, int n, double d, double percentLowest2Today){
+        return (strategy, bs) -> {
+            Bar today = bs.getFirst();
+            if(today.isBreakTrendLine(m, n, d)){
+                double lowest = today.getLowest(n*2, Bar.EnumValue.L);
+                if((today.getClose()-lowest)/lowest <= percentLowest2Today){
+                    return FilterResult.TRUE(today.getDate());
+                }
+            }
+            return FilterResult.FALSE();
+        };
+    }
+
     //突破底部平台
     public static Filter<BarSeries> filter_009() {
         return (strategy, bs) -> {
             Bar today = bs.getFirst();
-            if(today == null || today.before() == null || today.getChange() > 6) return FilterResult.FALSE("今天涨幅大于6%");
+            //if(today == null || today.before() == null || today.getChange() > 6) return FilterResult.FALSE("今天涨幅大于6%");
             double h = today.before().getHighest(10, Bar.EnumValue.C);
             double l = today.before().getLowest(10, Bar.EnumValue.C);
 
@@ -373,8 +386,8 @@ public class Filters {
 
             int cnt = today.before().getBarCount(10, bar -> today.getVolume() > bar.getVolume());
             int cnt2 = today.before().getBarCount(20, bar -> today.getVolume() > bar.getVolume());
-            if( ((h-l)/l < 0.04 && today.getClose() > h && cnt >= 10)
-                    ||((h2-l2)/l2 < 0.1 && today.getClose() > h2 && cnt2 >= 19)
+            if( ((h-l)/l <= 0.05 && today.getClose() > h && cnt >= 10)
+                    ||((h2-l2)/l2 < 0.1 && today.getClose() > h2 && cnt2 >= 18)
                     ){
                 return FilterResult.TRUE((h-l)/l + "," + cnt + ", "+cnt2);
             }

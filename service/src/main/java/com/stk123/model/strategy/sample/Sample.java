@@ -10,7 +10,7 @@ import com.stk123.model.strategy.result.FilterResult;
 public class Sample {
 
     // ignore: 02a 选出来的标的太多，由02b替换
-    public static String STRATEGIES = "01,02b,03a,03b,04,05,06a,06b,08a,08b,08c";
+    public static String STRATEGIES = "01,02b,03a,03b,04a,04b,05,06a,06b,08a,08b,08c";
 
     public static Strategy strategy_01() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_01","策略603096新经典20201106，一段跌幅后底部放量(01)", BarSeries.class);
@@ -100,9 +100,16 @@ public class Sample {
     }
 
     //突破长期趋势线
-    public static Strategy strategy_04() {
-        Strategy<BarSeries> strategy = new Strategy<>("strategy_04","突破长期趋势线(04)", BarSeries.class);
-        strategy.addFilter("突破长期趋势线", Filters.filter_008(300, 15, 0.10));
+    public static Strategy strategy_04a() {
+        Strategy<BarSeries> strategy = new Strategy<>("strategy_04a","突破长期趋势线(04a)", BarSeries.class);
+        strategy.addFilter("突破长期趋势线", Filters.filter_008a(300, 15, 0.10));
+        strategy.setExpectFilter("250日内涨幅>25%", Filters.expectFilter(250, 25));
+        return strategy;
+    }
+    //突破中期趋势线
+    public static Strategy strategy_04b() {
+        Strategy<BarSeries> strategy = new Strategy<>("strategy_04b","突破中期趋势线(04b)", BarSeries.class);
+        strategy.addFilter("突破中期趋势线", Filters.filter_008b(100, 7, 0.10, 0.15));
         strategy.setExpectFilter("250日内涨幅>25%", Filters.expectFilter(250, 25));
         return strategy;
     }
