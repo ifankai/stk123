@@ -505,7 +505,7 @@ public class BarTask extends AbstractTask {
         if(stocksA == null) {
             List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.STOCK);
             //List<StockBasicProjection> list = stkRepository.findAllByCodes(ListUtils.createList("000630","000650","002038","002740","000651","002070","603876","600373","000002","000920","002801","000726","603588","002791","300474"));
-            list = list.stream().filter(stockBasicProjection -> !StringUtils.contains(stockBasicProjection.getName(), "退市")).collect(Collectors.toList());
+            list = list.stream().filter(stockBasicProjection -> !StringUtils.contains(stockBasicProjection.getName(), "退")).collect(Collectors.toList());
 
             stocksA = stockService.buildStocksWithProjection(list);
             stocksA = stockService.buildBarSeries(stocksA, 250, realtime != null);
