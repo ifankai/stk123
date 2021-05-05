@@ -376,9 +376,6 @@ public class Filters {
     public static Filter<BarSeries> filter_008c(int m, int left, int right, double percentLowest2Today){
         return (strategy, bs) -> {
             Bar today = bs.getFirst();
-            if(today.getChange() < -2){
-                return FilterResult.FALSE();
-            }
             //System.out.println("today="+today);
             Bar hb = today.getHighPoint(m, left, right);
             //System.out.println("hb="+hb);

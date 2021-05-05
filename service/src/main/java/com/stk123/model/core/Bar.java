@@ -1290,7 +1290,7 @@ public class Bar implements Serializable, Cloneable {
     public List<Bar> getBarsHigherThanTrendline(Bar hightPoint){
         List<Bar> results = new ArrayList<>();
 	    int days = this.getDaysBetween(hightPoint.getDate(), this.getDate());
-        double diff = hightPoint.getHigh() - this.getHigh();
+        double diff = hightPoint.getHigh() - this.getClose();
         //System.out.println("diff="+diff+",days="+days);
         double decreasePerDay = diff/days;
         Bar bar = hightPoint.after(1);
@@ -1313,7 +1313,7 @@ public class Bar implements Serializable, Cloneable {
     public List<Bar> getBarsLowerThanTrendline(Bar hightPoint, double percent){
         List<Bar> results = new ArrayList<>();
         int days = this.getDaysBetween(hightPoint.getDate(), this.getDate());
-        double diff = hightPoint.getHigh() - this.getHigh();
+        double diff = hightPoint.getHigh() - this.getClose();
         //System.out.println("diff="+diff+",days="+days);
         double decreasePerDay = diff/days;
         Bar bar = hightPoint.after(1);
