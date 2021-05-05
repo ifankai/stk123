@@ -832,6 +832,21 @@ public class Bar implements Serializable, Cloneable {
         }
         return highPoints;
     }
+    //得到前段时间内最近的高点
+    public Bar getHighPoint(int days, int left, int right) {
+        Bar k = this.before(right);
+        Bar end = this.before(days);
+        while((k = k.before(1)) != null){
+            if(k.getDate().compareTo(end.getDate()) <= 0){
+                break;
+            }
+            Bar high = k.after(right).getHighestBar(left+right, EnumValue.H);
+            if(k.getDate().equals(high.getDate())){
+                return k;
+            }
+        }
+        return null;
+    }
 
 	//一品抄底-趋势线
 	public double getTrend() {
@@ -1269,6 +1284,52 @@ public class Bar implements Serializable, Cloneable {
             }
         }
         return false;
+    }
+
+    //得到所有最高点在趋势线上方的bar
+    public List<Bar> getBarsHigherThanTrendline(Bar hightPoint){
+        List<Bar> results = new ArrayList<>();
+	    int days = this.getDaysBetween(hightPoint.getDate(), this.getDate());
+        double diff = hightPoint.getHigh() - this.getHigh();
+        //System.out.println("diff="+diff+",days="+days);
+        double decreasePerDay = diff/days;
+        Bar bar = hightPoint.after(1);
+        while(bar != null){
+            if(bar.getDate().compareTo(this.getDate()) >= 0){
+                break;
+            }
+            int ds = bar.getDaysBetween(hightPoint.getDate(), bar.getDate());
+            double tl = hightPoint.getHigh() - (decreasePerDay * ds);
+            //System.out.println("date="+bar.getDate()+", trendline="+tl);
+            if(bar.getHigh() > tl){
+                results.add(bar);
+            }
+            bar = bar.after(1);
+        }
+        return results;
+    }
+
+    //得到所有最低点 低于 趋势线百分之percent的bar
+    public List<Bar> getBarsLowerThanTrendline(Bar hightPoint, double percent){
+        List<Bar> results = new ArrayList<>();
+        int days = this.getDaysBetween(hightPoint.getDate(), this.getDate());
+        double diff = hightPoint.getHigh() - this.getHigh();
+        //System.out.println("diff="+diff+",days="+days);
+        double decreasePerDay = diff/days;
+        Bar bar = hightPoint.after(1);
+        while(bar != null){
+            if(bar.getDate().compareTo(this.getDate()) >= 0){
+                break;
+            }
+            int ds = bar.getDaysBetween(hightPoint.getDate(), bar.getDate());
+            double tl = hightPoint.getHigh() - (decreasePerDay * ds);
+            //System.out.println("date="+bar.getDate()+", trendline="+tl);
+            if(bar.getLow()*(1+percent) < tl){
+                results.add(bar);
+            }
+            bar = bar.after(1);
+        }
+        return results;
     }
 
     private String printDate = null;//"20210419";

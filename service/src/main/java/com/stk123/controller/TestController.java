@@ -60,10 +60,20 @@ public class TestController {
             stock.getBarSeriesMonth().getList().forEach(e -> System.out.println(e));
         }*/
 
-        Stock stock = Stock.build("002044");
+        Stock stock = Stock.build("002081");
         BarSeries bs = stock.getBarSeries();
-        Bar bar = bs.getFirst().getMACDUpperForkBar(0);
-        System.out.println(bar);
+        Bar bar = bs.getBar("20210205");
+        Bar hb = bar.getHighPoint(80, 6, 20);
+        System.out.println(hb);
+        System.out.println("======================");
+        List<Bar> bars = bar.before(4).getBarsHigherThanTrendline(hb);
+        for(Bar b : bars){
+            System.out.println("high==="+b);
+        }
+        bars = bar.before(4).getBarsLowerThanTrendline(hb, 0.15);
+        for(Bar b : bars){
+            System.out.println("low==="+b);
+        }
 
         return RequestResult.success(new Date());
     }
