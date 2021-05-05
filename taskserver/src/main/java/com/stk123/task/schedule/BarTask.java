@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.stk123.common.CommonUtils;
 import com.stk123.common.util.EmailUtils;
 import com.stk123.common.util.ListUtils;
+import com.stk123.entity.StkHolderEntity;
 import com.stk123.entity.StkIndustryEntity;
 import com.stk123.entity.StkKlineUsEntity;
 import com.stk123.entity.StkPeEntity;
@@ -31,6 +32,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EnumType;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
@@ -324,6 +326,7 @@ public class BarTask extends AbstractTask {
             Set<String> myList = null;
             Set<String> bkList = new LinkedHashSet<>();
             Set<String> growthList = null;
+            Set<String> reverseList = null;
             List<Portfolio> portfolios = null;
 
             if(code != null){
@@ -360,6 +363,15 @@ public class BarTask extends AbstractTask {
                 /*List<StkIndustryEntity> inds = stkIndustryRepository.findAllByIndustry(1783);
                 growthList = inds.stream().map(StkIndustryEntity::getCode).collect(Collectors.toSet());
                 allList.addAll(growthList);*/
+
+                //反转股
+                List<StkIndustryEntity> inds = stkIndustryRepository.findAllByIndustry(1782);
+                reverseList = inds.stream().map(StkIndustryEntity::getCode).collect(Collectors.toSet());
+                List<Stock> tmpStocks = stockService.buildStocks(new ArrayList<>(reverseList));
+                stockService.buildHolder(tmpStocks);
+                tmpStocks = filterByHolder(tmpStocks);
+                log.info("反转股个数："+tmpStocks.size());
+                allList.addAll(tmpStocks.stream().map(Stock::getCode).collect(Collectors.toSet()));
 
                 //板块
                 if(realtime == null) {//实时行情只关注股票，排除板块
@@ -423,6 +435,9 @@ public class BarTask extends AbstractTask {
                     }
                     if(growthList != null && growthList.contains(strategyResult.getCode())){
                         sources.add("成长股");
+                    }
+                    if(reverseList != null && reverseList.contains(strategyResult.getCode())){
+                        sources.add("反转股");
                     }
                     boolean isBk = false;
                     if(bkList.contains(strategyResult.getCode())){
@@ -508,7 +523,41 @@ public class BarTask extends AbstractTask {
             list = list.stream().filter(stockBasicProjection -> !StringUtils.contains(stockBasicProjection.getName(), "退")).collect(Collectors.toList());
 
             stocksA = stockService.buildStocksWithProjection(list);
-            stocksA = stockService.buildBarSeries(stocksA, 250, realtime != null);
+            stocksA = stockService.buildBarSeries(stocksA, 300, realtime != null);
+            stockService.buildHolder(stocksA);
+
+            stocksA = stocksA.stream().filter(stock -> {
+                try {
+                    //250日最低点发生在最近50日内
+                    Bar bar250 = stock.getBar().getLowestBar(250, Bar.EnumValue.C);
+                    Bar bar50 = stock.getBar().getLowestBar(60, Bar.EnumValue.C);
+                    if (bar50.getDate().equals(bar250.getDate())) {
+                        return true;
+                    }
+
+                    //排除250日新低
+                    Bar today = stock.getBar();
+                    if(today.getDate().equals(bar250.getDate())){
+                        return false;
+                    }
+
+                    //250均线 或 120均线 多头排列
+                    Bar yesterday = today.yesterday();
+                    if (today.getMA(120, Bar.EnumValue.C) >= yesterday.getMA(120, Bar.EnumValue.C)
+                            || today.getMA(250, Bar.EnumValue.C) >= yesterday.getMA(250, Bar.EnumValue.C)) {
+                        return true;
+                    }
+
+                    return false;
+                }catch (Exception e){
+                    e.getStackTrace();
+                    return false;
+                }
+            }).collect(Collectors.toList());
+
+            //排除 人均持股 20万以下的
+            stocksA = filterByHolder(stocksA);
+
         }
 
         /*if(stocksH == null) {
@@ -528,6 +577,31 @@ public class BarTask extends AbstractTask {
         
         EmailUtils.send("相似策略发现"+count+"个标的", table);
 
+    }
+
+    public List<Stock> filterByHolder(List<Stock> stocks) {
+        return stocks.stream().filter(stock -> {
+            StkHolderEntity holder = stock.getHolder();
+            if(holder == null){
+                return false;
+            }
+            double holderCount = holder.getHolder()==null?0:holder.getHolder();
+            double holderChange = holder.getHolderChange()==null?0:holder.getHolderChange();
+            double holdingAmount = holder.getHoldingAmount()==null?0:holder.getHoldingAmount();
+            if(holderCount > 0 && holderCount <= 12000){
+                return true;
+            }
+            if(holderChange < -10){
+                return true;
+            }
+            if(holderChange > 15){
+                return false;
+            }
+            if(holdingAmount > 200000 && holderChange < 15){
+                return true;
+            }
+            return false;
+        }).collect(Collectors.toList());
     }
 
 }

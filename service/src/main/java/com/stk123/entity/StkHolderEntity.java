@@ -1,46 +1,38 @@
 package com.stk123.entity;
 
+import lombok.*;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
 @Table(name = "STK_HOLDER")
+@IdClass(StkHolderEntity.CompositeKey.class)
+@Setter
+@Getter
+@ToString
 public class StkHolderEntity implements Serializable {
-    private String code;
-    private String fnDate;
-    private Long holder;
-    private StkEntity stkByCode;
 
     @Id
     @Column(name = "CODE", nullable = true, length = 10)
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
+    private String code;
 
     @Id
     @Column(name = "FN_DATE", nullable = true, length = 8)
-    public String getFnDate() {
-        return fnDate;
-    }
-
-    public void setFnDate(String fnDate) {
-        this.fnDate = fnDate;
-    }
+    private String fnDate;
 
     @Basic
     @Column(name = "HOLDER", nullable = true, precision = 2)
-    public Long getHolder() {
-        return holder;
-    }
+    private Double holder;
 
-    public void setHolder(Long holder) {
-        this.holder = holder;
-    }
+    @Basic
+    @Column(name = "HOLDING_AMOUNT", nullable = true, precision = 2)
+    private Double holdingAmount;
+
+    @Basic
+    @Column(name = "HOLDER_CHANGE", nullable = true, precision = 2)
+    private Double holderChange;
 
     @Override
     public boolean equals(Object o) {
@@ -48,14 +40,12 @@ public class StkHolderEntity implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         StkHolderEntity that = (StkHolderEntity) o;
         return Objects.equals(code, that.code) &&
-                Objects.equals(fnDate, that.fnDate) &&
-                Objects.equals(holder, that.holder);
+                Objects.equals(fnDate, that.fnDate);
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(code, fnDate, holder);
+        return Objects.hash(code, fnDate);
     }
 
 //    @ManyToOne
@@ -67,4 +57,13 @@ public class StkHolderEntity implements Serializable {
 //    public void setStkByCode(StkEntity stkByCode) {
 //        this.stkByCode = stkByCode;
 //    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    public static class CompositeKey implements Serializable {
+        private String code;
+        private String fnDate;
+    }
 }

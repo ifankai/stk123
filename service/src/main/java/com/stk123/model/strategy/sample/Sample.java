@@ -102,14 +102,14 @@ public class Sample {
     //突破长期趋势线
     public static Strategy strategy_04a() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_04a","突破长期趋势线(04a)", BarSeries.class);
-        strategy.addFilter("突破长期趋势线", Filters.filter_008a(300, 15, 0.10));
+        strategy.addFilter("突破长期趋势线", Filters.filter_008b(300, 15, 0.10, 0.15));
         strategy.setExpectFilter("250日内涨幅>25%", Filters.expectFilter(250, 25));
         return strategy;
     }
     //突破中期趋势线
     public static Strategy strategy_04b() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_04b","突破中期趋势线(04b)", BarSeries.class);
-        strategy.addFilter("突破中期趋势线", Filters.filter_008b(100, 7, 0.10, 0.15));
+        strategy.addFilter("突破中期趋势线", Filters.filter_008b(100, 7, 0.02, 0.13));
         strategy.setExpectFilter("250日内涨幅>25%", Filters.expectFilter(250, 25));
         return strategy;
     }

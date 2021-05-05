@@ -1221,9 +1221,9 @@ public class Bar implements Serializable, Cloneable {
 
 	public boolean isBreakTrendLine(int m, int n, double percent){
         List<Bar> ks = this.getHistoryHighPoint(m, n);
-		/*for(Bar k : ks){
-			System.out.println("=="+k.getDate());
-		}*/
+		for(Bar k : ks){
+			print("=="+k.getDate());
+		}
         Bar hk = null;
         Bar lk = null;
         if(ks != null && ks.size() >= 2){
@@ -1232,37 +1232,37 @@ public class Bar implements Serializable, Cloneable {
                 List<Bar> ksTmp = (List)list.get(i);
                 hk = ksTmp.get(0);
                 lk = ksTmp.get(1);
-                //System.out.println("i="+i+",hk="+hk.getDate()+",lk="+lk.getDate());
+                print("i========================="+i+",hk="+hk.getDate()+",lk="+lk.getDate());
                 if(hk.getHigh() > lk.getHigh() * (1+percent)){
                     int days = this.getDaysBetween(hk.getDate(), lk.getDate());
                     double d = hk.getHigh() - lk.getHigh();
-                    //System.out.println("d="+d+",days="+days);
+                    print("d="+d+",days="+days);
                     if(d < 0) continue;
                     double decreasePerDay = d/hk.getHigh()/days;
-                    //System.out.println("decreasePerDay="+decreasePerDay);
+                    print("decreasePerDay="+decreasePerDay);
                     int days2 = this.getDaysBetween(lk.getDate(), date);
-                    //System.out.println("day2=="+days2+",hk="+hk.getDate()+",lk="+lk.getDate()+",date="+date);
+                    print("day2=="+days2+",hk="+hk.getDate()+",lk="+lk.getDate()+",date="+date);
                     double trendLineValue = lk.getHigh()*Math.pow(1-decreasePerDay, days2)*0.97;
                     double ytrendLineValue = lk.getHigh()*Math.pow(1-decreasePerDay, days2-1)*0.97;
                     Bar curK = this.before(date);
-                    //System.out.println(curK.getDate()+","+curK.getHigh()+">="+trendLineValue+","+curK.before(1).getHigh()+"<"+ytrendLineValue);
+                    print(curK.getDate()+","+curK.getHigh()+">="+trendLineValue+","+curK.before(1).getHigh()+"<"+ytrendLineValue);
                     if(curK.getClose() >= trendLineValue && curK.before(1).getHigh() < ytrendLineValue){
                         boolean flag = false;
                         final String lkDate = lk.getDate();
                         for(Bar bar : ks){
                             if(hk.dateBefore(bar) && !bar.getDate().equals(lkDate) ){
-                                //System.out.println("hk=="+hk.getDate()+",lk=="+lk.getDate()+",bar="+bar.getDate());
+                                print("hk=="+hk.getDate()+",lk=="+lk.getDate()+",bar="+bar.getDate());
                                 int ds = bar.getDaysBetween(hk.getDate(), bar.getDate());
                                 double tv = hk.getHigh()*Math.pow(1-decreasePerDay, ds)*0.97;
                                 if(bar.getHigh() > tv){
-                                    //System.out.println(hk.getDate()+","+bar.getDate()+",kkkkkkkkkk="+bar.getDate());
+                                    print(hk.getDate()+","+bar.getDate()+",kkkkkkkkkk="+bar.getDate());
                                     flag = true;
                                     break;
                                 }
                             }
                         }
                         if(flag)continue;
-                        //System.out.println("hk="+hk.getDate()+",lk="+lk.getDate());
+                        print("hk="+hk.getDate()+",lk="+lk.getDate());
                         return true;
                     }
                 }
@@ -1270,6 +1270,14 @@ public class Bar implements Serializable, Cloneable {
         }
         return false;
     }
+
+    private String printDate = null;//"20210419";
+    public void print(Object obj){
+        if(this.getDate().equals(printDate)){
+            System.out.println(obj);
+        }
+    }
+
     public int getDaysBetween(String startDate, String endDate) {
         int days = 0;
         if(startDate.compareTo(endDate) > 0){

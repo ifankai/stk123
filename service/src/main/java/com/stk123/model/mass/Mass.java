@@ -124,7 +124,7 @@ public class Mass {
         ms = MassStrategy.build("300283", "20200814", 50, 50, "温州宏丰[SZ300283]-20200814.png")
                 .addMassFunction(1, Bar::getClose).addMassFunction(1, Bar::getVolume)
                 .addMassFunction(1, bar -> bar.getMA(120, Bar.EnumValue.C)-bar.getClose());
-        strategies.add(ms);
+        //strategies.add(ms);
 
         ms = MassStrategy.build("300312", "20210219", 25, 3, "邦讯技术[SZ300312]-20210219.png")
                 .addMassFunction(1, Bar::getClose).addMassFunction(1, Bar::getVolume);

@@ -1,14 +1,23 @@
 package com.stk123.task.schedule;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stk123.common.CommonUtils;
+import com.stk123.common.util.HtmlUtils;
+import com.stk123.common.util.ListUtils;
 import com.stk123.entity.StkEntity;
+import com.stk123.entity.StkHolderEntity;
 import com.stk123.model.core.Stock;
+import com.stk123.model.projection.StockBasicProjection;
+import com.stk123.repository.StkHolderRepository;
 import com.stk123.repository.StkRepository;
 import com.stk123.service.core.ErrorService;
 import com.stk123.service.core.HttpService;
+import com.stk123.service.core.StockService;
 import com.stk123.util.ServiceUtils;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
+import org.htmlparser.Node;
+import org.htmlparser.tags.TableTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -16,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @CommonsLog
 @Service
@@ -28,11 +38,86 @@ public class StockTask extends AbstractTask {
     private StkRepository stkRepository;
     @Autowired
     private ErrorService errorService;
+    @Autowired
+    private StockService stockService;
+    @Autowired
+    private StkHolderRepository stkHolderRepository;
+
+    private List<Stock> stocksCN = null;
 
     @Override
     public void register() {
         this.runByName("initCNNewStock", this::initCNNewStock);
         this.runByName("initCNIndustryEasymoney", this::initCNIndustryEasymoney);
+        this.runByName("initCNHolder", this::initCNHolder);
+    }
+
+    public void initCNHolder() {
+        initCNStocks();
+        for(Stock stock : stocksCN) {
+            System.out.println(stock.getCode());
+            String page = httpService.getString("http://basic.10jqka.com.cn/"+stock.getCode()+"/holder.html", "gbk");
+            //System.out.println("page="+page);
+            try {
+                Node div = HtmlUtils.getNodeByAttribute(page, "GBK", "class", "data_tbody");
+                if(div == null) continue;
+                Node table1 = HtmlUtils.getNodeByAttribute(div, null, "class", "top_thead");
+                List<Node> holderDates = HtmlUtils.getNodeListByTagNameAndAttribute(table1, "div", "class", "td_w");
+                /*for(Node node : holderDates){
+                    System.out.println(node.toPlainTextString());
+                }*/
+                Node table2 = HtmlUtils.getNodeByAttribute(div, null, "class", "tbody");
+                List<List<String>> list = HtmlUtils.getListFromTable((TableTag) table2);
+                /*for(List<String> row : list){
+                    System.out.println(row);
+                }*/
+                Node headNode = HtmlUtils.getNodeByAttribute(page, null, "class", "tbody");
+                List<Node> heads = HtmlUtils.getNodeListByTagName(headNode, "th");
+                int h = 0;
+                for(Node head : heads){
+                    if(StringUtils.contains(head.toPlainTextString(), "变化")){
+                        break;
+                    }
+                    h++;
+                }
+
+                for (int i = 0; i < holderDates.size(); i++) {
+                    Node node = holderDates.get(i);
+                    String holdDate = StringUtils.replace(node.toPlainTextString(), "-", "");
+                    StkHolderEntity stkHolderEntity = stkHolderRepository.findByCodeAndFnDate(stock.getCode(), holdDate);
+
+                    List<String> amounts = list.get(list.size()-1);
+                    List<String> changes = list.get(h);
+                    //System.out.println(amounts);
+                    String amount = amounts.get(i);
+                    String change = StringUtils.replace(changes.get(i), "%", "");
+                    //System.out.println(i+"="+amount+"="+StringUtils.replace(amount,"万", ""));
+                    if(stkHolderEntity == null) {
+                        stkHolderEntity = new StkHolderEntity();
+                        stkHolderEntity.setCode(stock.getCode());
+                        stkHolderEntity.setFnDate(holdDate);
+                    }
+                    stkHolderEntity.setHoldingAmount(CommonUtils.getAmount(amount));
+                    if(!"-".equals(change) && stkHolderEntity.getHolderChange() == null) {
+                        stkHolderEntity.setHolderChange(StringUtils.isEmpty(change) ? null : Double.parseDouble(change));
+                    }
+                    stkHolderRepository.save(stkHolderEntity);
+                    //System.out.println(stkHolderEntity);
+                }
+            } catch (Exception e) {
+                log.error("", e);
+                //System.out.println(stock.getCode());
+                break;
+            }
+        }
+    }
+
+    public void initCNStocks(){
+        if(stocksCN == null) {
+            List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.STOCK);
+            //List<StockBasicProjection> list = stkRepository.findAllByCodes(ListUtils.createList("600600"));
+            stocksCN = stockService.buildStocksWithProjection(list);
+        }
     }
 
     public void initCNNewStock() {

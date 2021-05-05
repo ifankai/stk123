@@ -63,6 +63,7 @@ public class ConfigUtils {
 	public static void setPropsFromResource(Class clazz, String resName) throws Exception {
 //		URL resUrl = clazz.getResource(resName);
 		URL resUrl = ConfigUtils.getURL(resName);
+        System.out.println("url=="+resUrl.getPath());
         if (resUrl == null) {
         	throw new RuntimeException("Resource file "+resUrl+" is not exists.");
         }

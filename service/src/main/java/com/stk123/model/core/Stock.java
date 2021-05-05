@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.common.CommonConstant;
 import com.stk123.common.CommonUtils;
 import com.stk123.common.util.BeanUtils;
+import com.stk123.entity.StkHolderEntity;
 import com.stk123.model.json.View;
 import com.stk123.model.projection.IndustryProjection;
 import com.stk123.model.projection.StockBasicProjection;
@@ -163,6 +164,7 @@ public class Stock {
 
     private StockProjection stock;
     private List<IndustryProjection> industries; //行业
+    private StkHolderEntity holder; //最新股东人数
 
     private BarSeries barSeries;
     private BarSeries barSeriesWeek;

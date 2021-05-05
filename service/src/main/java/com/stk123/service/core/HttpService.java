@@ -4,6 +4,7 @@ import com.stk123.common.util.HtmlUtils;
 import com.stk123.common.util.JWhich;
 import com.stk123.model.HttpResult;
 import lombok.extern.apachecommons.CommonsLog;
+import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jfree.util.Log;
@@ -11,12 +12,16 @@ import org.python.google.common.io.Files;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MimeType;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -35,34 +40,49 @@ public class HttpService {
     }
 
     public String getString(String url){
-        return this.getString(url, null);
+        return this.getString(url, (String)null);
+    }
+    public String getString(String url, String charset){
+        return this.getString(url, charset, null);
     }
 
     public String getString(String url, Map<String, String> headers){
-        HttpResult<String> httpResult = get(url, headers, String.class, 3);
+        HttpResult<String> httpResult = get(url,null, headers, String.class, 3);
         return httpResult.getBody();
     }
-
+    public String getString(String url, String charset, Map<String, String> headers){
+        HttpResult<String> httpResult = get(url, charset, headers, String.class, 3);
+        return httpResult.getBody();
+    }
     public Map getMap(String url){
-        HttpResult<Map> httpResult = this.get(url, null, Map.class,3);
+        HttpResult<Map> httpResult = this.get(url,null, null, Map.class,3);
+        return httpResult.getBody();
+    }
+    public Map getMap(String url, String charset){
+        HttpResult<Map> httpResult = this.get(url, charset, null, Map.class,3);
         return httpResult.getBody();
     }
     public Map getMap(String url, Map<String, String> headers){
-        HttpResult<Map> httpResult = this.get(url, headers, Map.class,3);
+        HttpResult<Map> httpResult = this.get(url,null, headers, Map.class,3);
         return httpResult.getBody();
     }
 
-    public HttpResult get(String url, Map<String, String> headers,Class responseType, int tryTimes) {
+    public HttpResult get(String url, String charset, Map<String, String> headers,Class responseType, int tryTimes) {
         //Exception exception = null;
         HttpResult httpResult = new HttpResult();
         while(tryTimes > 0){
             try {
-                HttpEntity<String> entity = null;
-                if (headers != null){
-                    HttpHeaders httpHeaders = new HttpHeaders();
-                    headers.entrySet().stream().forEach(h -> httpHeaders.add(h.getKey(), h.getValue()));
-                    entity = new HttpEntity<String>("parameters", httpHeaders);
+                HttpHeaders httpHeaders = new HttpHeaders();
+                if(charset != null){
+                    restTemplate.getMessageConverters().set(1, new StringHttpMessageConverter(Charset.forName(charset)));
+                }else{
+                    restTemplate.getMessageConverters().set(1, new StringHttpMessageConverter(Charsets.UTF_8));
                 }
+                if (headers != null){
+                    headers.entrySet().stream().forEach(h -> httpHeaders.add(h.getKey(), h.getValue()));
+                }
+                HttpEntity<String> entity = new HttpEntity<String>("parameters", httpHeaders);
+
                 //Accept=[text/plain, application/json, application/*+json, */*]
                 ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, responseType);
                 HttpStatus status = responseEntity.getStatusCode();
@@ -73,7 +93,7 @@ public class HttpService {
                 }
                 return httpResult;
             }catch(Exception e){
-                Log.error("http get error", e);
+                log.error("http get error", e);
                 if(--tryTimes > 0)continue;
                 //exception = e;
             }

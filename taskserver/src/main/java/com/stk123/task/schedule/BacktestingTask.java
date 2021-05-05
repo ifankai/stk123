@@ -35,7 +35,7 @@ public class BacktestingTask extends AbstractTask {
     private String startDate = null;
     private String endDate = null;
     private String realtime = null;
-    private String backtesting = null;
+    private String history = null;
 
     @Autowired
     private BacktestingService backtestingService;
@@ -53,7 +53,7 @@ public class BacktestingTask extends AbstractTask {
             if(StringUtils.isEmpty(strategy)){
                 strategy = Sample.STRATEGIES;
             }
-            if(StringUtils.isNotEmpty(backtesting)){
+            if(StringUtils.isNotEmpty(history)){
                 StrategyBacktesting strategyBacktesting = backtestingService.backtestingAllHistory(Arrays.asList(StringUtils.split(code, ",")),
                         Arrays.asList(StringUtils.split(strategy, ",")), realtime != null);
             }else {

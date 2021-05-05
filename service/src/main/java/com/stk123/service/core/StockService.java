@@ -1,6 +1,7 @@
 package com.stk123.service.core;
 
 import com.stk123.common.util.PinYin4jUtils;
+import com.stk123.entity.StkHolderEntity;
 import com.stk123.model.core.Bar;
 import com.stk123.model.core.BarSeries;
 import com.stk123.model.core.Stock;
@@ -10,6 +11,7 @@ import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.model.projection.StockCodeNameProjection;
 import com.stk123.model.projection.StockProjection;
 import com.stk123.repository.BaseRepository;
+import com.stk123.repository.StkHolderRepository;
 import com.stk123.repository.StkKlineRepository;
 import com.stk123.repository.StkRepository;
 import com.stk123.util.HttpUtils;
@@ -38,6 +40,8 @@ public class StockService {
     private IndustryService industryService;
     @Autowired
     private BarService barService;
+    @Autowired
+    private StkHolderRepository stkHolderRepository;
 
     @Transactional
     public List<Stock> buildStocks(List<String> codes) {
@@ -148,6 +152,13 @@ public class StockService {
             }
         }
     }
+
+    public List<Stock> buildHolder(List<Stock> stocks){
+        Map<String, StkHolderEntity> map = stkHolderRepository.findAllToMap();
+        stocks.forEach(stock -> stock.setHolder(map.get(stock.getCode())));
+        return stocks;
+    }
+
 
     @Getter
     @Setter

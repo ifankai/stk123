@@ -946,6 +946,16 @@ public class CommonUtils {
         }
         return Double.parseDouble(dd) * n;
     }
+    public static double getAmount(String amount){
+        if(amount != null){
+            if(amount.contains("万")){
+                return Double.parseDouble(StringUtils.replace(amount, "万", "")) * 10000;
+            }else if(amount.contains("亿")){
+                return Double.parseDouble(StringUtils.replace(amount, "亿", "")) * 10000 * 10000;
+            }
+        }
+        return 0;
+    }
 
     //PEG＝市盈率／未来3至5年年度净利润复合增长率
     //净利润复合增长率 = [(现有价值/基础价值)^(1/年数) - 1] x 100%

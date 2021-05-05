@@ -1,3 +1,4 @@
+/*
 package com.stk123.common.ml;
 
 import cn.hutool.core.lang.Assert;
@@ -7,9 +8,11 @@ import edu.gsu.cs.dmlab.imageproc.interfaces.IPeakDetector;
 import java.util.Arrays;
 import java.util.List;
 
+*/
 /**
  * https://bitbucket.org/gsudmlab/dmlablib
- */
+ *//*
+
 public class PeakDetectionUtils {
 
     public static void main(String[] args) {
@@ -52,3 +55,4 @@ public class PeakDetectionUtils {
         Assert.isTrue(peaks.equals(expected));
     }
 }
+*/

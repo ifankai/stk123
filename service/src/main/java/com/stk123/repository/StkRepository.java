@@ -8,9 +8,11 @@ import com.stk123.model.projection.StockProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface StkRepository extends JpaRepository<StkEntity, String> {
 
     @Query(value = "select code as code,name as name,market as market,cate as cate,place as place,hot as hot from StkEntity where market in (:markets) and cate=:cate and hot>=:hot")
