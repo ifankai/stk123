@@ -365,13 +365,13 @@ public class BarTask extends AbstractTask {
                 allList.addAll(growthList);*/
 
                 //反转股
-                List<StkIndustryEntity> inds = stkIndustryRepository.findAllByIndustry(1782);
+                /*List<StkIndustryEntity> inds = stkIndustryRepository.findAllByIndustry(1782);
                 reverseList = inds.stream().map(StkIndustryEntity::getCode).collect(Collectors.toSet());
                 List<Stock> tmpStocks = stockService.buildStocks(new ArrayList<>(reverseList));
                 stockService.buildHolder(tmpStocks);
                 tmpStocks = filterByHolder(tmpStocks);
                 log.info("反转股个数："+tmpStocks.size());
-                allList.addAll(tmpStocks.stream().map(Stock::getCode).collect(Collectors.toSet()));
+                allList.addAll(tmpStocks.stream().map(Stock::getCode).collect(Collectors.toSet()));*/
 
                 //板块
                 if(realtime == null) {//实时行情只关注股票，排除板块

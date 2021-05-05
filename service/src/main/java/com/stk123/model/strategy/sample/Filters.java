@@ -376,6 +376,9 @@ public class Filters {
     public static Filter<BarSeries> filter_008c(int m, int left, int right, double percentLowest2Today){
         return (strategy, bs) -> {
             Bar today = bs.getFirst();
+            if(today.getChange() < -2){
+                return FilterResult.FALSE();
+            }
             //System.out.println("today="+today);
             Bar hb = today.getHighPoint(m, left, right);
             //System.out.println("hb="+hb);
@@ -383,12 +386,15 @@ public class Filters {
                 List<Bar> bars = today.getBarsHigherThanTrendline(hb);
                 int days = today.getDaysBetween(hb.getDate(), today.getDate());
                 if (bars.size() <= 1) {
-                    //System.out.println("today.getChange(days, Bar.EnumValue.C)===="+today.getChange(days, Bar.EnumValue.C));
-                    bars = today.getBarsLowerThanTrendline(hb, Math.min(Math.abs(today.getChange(days, Bar.EnumValue.C)), 0.15));
-                    if(bars.size() < days/2) {
-                        double lowest = today.getLowest(left + right, Bar.EnumValue.L);
-                        if ((today.getClose() - lowest) / lowest <= percentLowest2Today) {
-                            return FilterResult.TRUE(today.getDate());
+                    bars = today.before().getBarsHigherThanTrendline(hb);
+                    if (bars.size() > 1) {
+                        //System.out.println("today.getChange(days, Bar.EnumValue.C)===="+today.getChange(days, Bar.EnumValue.C));
+                        bars = today.getBarsLowerThanTrendline(hb, Math.min(Math.abs(today.getChange(days, Bar.EnumValue.C)), 0.15));
+                        if (bars.size() < days / 2) {
+                            double lowest = today.getLowest(left + right, Bar.EnumValue.L);
+                            if ((today.getClose() - lowest) / lowest <= percentLowest2Today) {
+                                return FilterResult.TRUE(today.getDate());
+                            }
                         }
                     }
                 }
