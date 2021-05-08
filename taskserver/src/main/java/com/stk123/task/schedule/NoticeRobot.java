@@ -13,6 +13,7 @@ import com.stk123.model.News;
 import com.stk123.model.Text;
 import com.stk123.model.bo.Stk;
 import com.stk123.model.bo.StkMonitor;
+import com.stk123.model.dto.Cninfo;
 import com.stk123.util.ExceptionUtils;
 import com.stk123.util.HttpUtils;
 import com.stk123.util.ServiceUtils;
@@ -166,12 +167,12 @@ public class NoticeRobot {
             return ;
         }
         ObjectMapper mapper = new ObjectMapper();
-        NoticeJsonRoot root = mapper.readValue(page, NoticeJsonRoot.class);
+        Cninfo.NoticeRoot root = mapper.readValue(page, Cninfo.NoticeRoot.class);
 
         Set<String> prices1 = new HashSet<String>();
         Set<String> prices2 = new HashSet<String>();
         Date DateBefore = ServiceUtils.addDay(new Date(), -1);
-        for(Announcement item : root.getAnnouncements()){
+        for(Cninfo.Announcement item : root.getAnnouncements()){
             Date createDate = new Date(item.getAnnouncementTime());
             if(createDate.before(DateBefore)){
                 break;
@@ -361,7 +362,7 @@ public class NoticeRobot {
     }
 
 
-	public static void insertStkMonitor(Connection conn, Index index, String type, double price, Announcement item) throws Exception {
+	public static void insertStkMonitor(Connection conn, Index index, String type, double price, Cninfo.Announcement item) throws Exception {
 		/**
 		 * param1 = 员工持股/非公开发行
 		 * param2 = 价格
@@ -428,40 +429,3 @@ public class NoticeRobot {
 	}
 }
 
-@Setter
-@Getter
-class NoticeJsonRoot {
-    private String classifiedAnnouncements;
-    private int totalSecurities;
-    private int totalAnnouncement;
-    private int totalRecordNum;
-    private List<Announcement> announcements;
-    private String categoryList;
-    private boolean hasMore;
-    private int totalpages;
-}
-
-@Setter
-@Getter
-class Announcement {
-    private String id;
-    private String secCode;
-    private String secName;
-    private String orgId;
-    private String announcementId;
-    private String announcementTitle;
-    private long announcementTime;
-    private String adjunctUrl;
-    private int adjunctSize;
-    private String adjunctType;
-    private String storageTime;
-    private String columnId;
-    private String pageColumn;
-    private String announcementType;
-    private String associateAnnouncement;
-    private String important;
-    private String batchNum;
-    private String announcementContent;
-    private String orgName;
-    private String announcementTypeName;
-}

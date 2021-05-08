@@ -233,6 +233,17 @@ public class CommonUtils {
         return null;
     }
 
+    public static List<String> getMatchStrings(String text, String[] patterns){
+        List<String> results = new ArrayList<>();
+        for(String pattern : patterns){
+            String result;
+            if((result = getMatchString(text, pattern)) != null){
+                results.add(result);
+            }
+        }
+        return results;
+    }
+
     public static Set<String> getMatchStrings(String text, String pattern){
         Set<String> labels = new HashSet<String>();
         if(text == null || text.trim().length()==0)return labels;
