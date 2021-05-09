@@ -116,6 +116,7 @@ public class NoticeTask extends AbstractTask {
     }
 
     public void analyzeNotice() {
+        List<Notice> noticeList = new ArrayList<>();
         for(Notice notice : NOTICES){
             try{
                 Date twoHoursBefore = CommonUtils.addMinute(new Date(), -120);
@@ -124,24 +125,17 @@ public class NoticeTask extends AbstractTask {
                     String scode = stock.getCodeWithPlace();
                     Map<String, String> headerRequests = XueqiuService.getCookies();
 
-                    List<Map> notices = new ArrayList<Map>();
                     Date now = new Date();
                     int pageNum = 1;
-                    boolean clearCookie = false;
                     do{
-                        String page = HttpUtils.get("https://xueqiu.com/statuses/stock_timeline.json?symbol_id="+scode+"&count=50&source=%E5%85%AC%E5%91%8A&page="+pageNum,null,headerRequests, "GBK");
-                        if("400".equals(page) || "404".equals(page)){
-                            if(!clearCookie){
-                                XueqiuService.clearCookie();
-                                clearCookie = true;
-                                continue;
-                            }
+                        String json = HttpUtils.get("https://xueqiu.com/statuses/stock_timeline.json?symbol_id="+scode+"&count=50&source=%E5%85%AC%E5%91%8A&page="+pageNum,null,headerRequests, "GBK");
+                        if("400".equals(json) || "404".equals(json)){
                             break;
                         }
-                        Map m = JsonUtils.testJson(page);
-                        List<Map> list = (List)m.get("list");
+                        Map root = JsonUtils.testJson(json);
+                        List<Map> ns = (List)root.get("list");
                         boolean flag = false;
-                        for(Map n : list){
+                        for(Map n : ns){
                             String createdAt = String.valueOf(n.get("created_at"));
                             Date date = new Date(Long.parseLong(createdAt));
                             if(date.before(ServiceUtils.addDay(now, -2))){
@@ -152,20 +146,44 @@ public class NoticeTask extends AbstractTask {
                             int reply = Integer.parseInt(String.valueOf(n.get("reply_count")));
                             if(reply > 0){
                                 int id = Integer.parseInt(String.valueOf(n.get("id")));
+                                int page = 1;
+                                int matchCount = 0;
+                                do{
+                                    //https://xueqiu.com/statuses/comments.json?id=179083274&count=10&page=1&reply=true&asc=false&type=status&split=true
+                                    String url = "https://xueqiu.com/statuses/comments.json?id="+id+"&count=10&page="+page+"&reply=true&asc=false&type=status&split=true";
+                                    json = HttpUtils.get(url,null,headerRequests, "GBK");
+                                    if("400".equals(json) || "404".equals(json)){
+                                        break;
+                                    }
 
-                                Map map = new HashMap();
-                                map.put("url", "https://xueqiu.com"+n.get("target"));
-                                map.put("count", reply);
-                                map.put("createtime", ServiceUtils.formatDate(date));
-                                map.put("description", n.get("description"));
-                                //System.out.println(n.get("description"));
-                                notices.add(map);
+                                    root = JsonUtils.testJson(json);
+                                    List<Map> comments = (List)root.get("comments");
+
+                                    for(Map comment : comments){
+                                        String text = String.valueOf(comment.get("text"));
+                                        List<String> matches = CommonUtils.getMatchStrings(text, POSITIVE_WORDS.stream().toArray(String[]::new));
+                                        matchCount += matches.size();
+                                    }
+
+                                    if(comments.size() < 10){
+                                        break;
+                                    }
+
+                                    page++;
+                                }while(true);
+
+                                if(matchCount >= 3){
+                                    notice.setXqUrl("https://xueqiu.com/S/"+scode+"/"+id);
+                                    notice.setXqTitle(String.valueOf(n.get("description")));
+                                    noticeList.add(notice);
+                                    NOTICES.remove(notice);
+                                }
                             }
                         }
                         if(flag){
                             break;
                         }
-                        if(pageNum++ >= 10)break;
+                        if(pageNum++ >= 5)break;
                     }while(true);
                 }
             } catch (Exception e) {
@@ -193,6 +211,8 @@ public class NoticeTask extends AbstractTask {
 class Notice {
     private String code;
     private Date fetchDate;
+    private String xqUrl;
+    private String xqTitle;
 
     @Override
     public boolean equals(Object o) {
