@@ -2,9 +2,14 @@ package com.stk123.task.schedule;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stk123.common.CommonUtils;
+import com.stk123.common.util.JsonUtils;
+import com.stk123.model.core.Stock;
 import com.stk123.model.dto.Cninfo;
+import com.stk123.service.XueqiuService;
 import com.stk123.util.HttpUtils;
 import com.stk123.util.ServiceUtils;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.StringUtils;
 import org.python.apache.xerces.dom.PSVIAttrNSImpl;
@@ -16,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 实时查询巨潮资讯公告信息（http://www.cninfo.com.cn/new/commonUrl/pageOfSearch?url=disclosure/list/search&keywords=%E5%AD%A3%E5%BA%A6%E6%8A%A5%E5%91%8A#szse）
@@ -27,6 +33,8 @@ import java.util.*;
 @Service
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class NoticeTask extends AbstractTask {
+
+    public static List<Notice> NOTICES = Collections.synchronizedList(new LinkedList<>());
 
     public static List<String> POSITIVE_WORDS = new ArrayList<>();
 
@@ -42,10 +50,11 @@ public class NoticeTask extends AbstractTask {
 
     @Override
     public void register() {
-        super.runAnyway(this::execute);
+        super.runByName("fetchNotice", this::fetchNotice);
+        super.runByName("analyzeNotice", this::analyzeNotice);
     }
 
-    public void execute() {
+    public void fetchNotice() {
         try {
             Path path = Paths.get("./notice_cninfo_code.txt");
             if(!Files.exists(path)){
@@ -55,7 +64,6 @@ public class NoticeTask extends AbstractTask {
 
             int pageNum = 1;
             boolean stopFlag = false;
-            Set<String> codes = new LinkedHashSet<>();
             int i = 0;
 
             String category = "category_gddh_szsh;category_qyfpxzcs_szsh;category_yjdbg_szsh;category_bndbg_szsh;category_yjygjxz_szsh;category_ndbg_szsh;category_sjdbg_szsh;category_gqjl_szsh;category_zf_szsh;category_jj_szsh;category_pg_szsh;category_gqbd_szsh;category_kzzq_szsh";
@@ -82,7 +90,15 @@ public class NoticeTask extends AbstractTask {
                     if(i == 0){
                         Files.write(path, item.getSecCode().getBytes());
                     }
-                    codes.add(item.getSecCode());
+
+                    long cnt = NOTICES.stream().filter(notice -> notice.getCode().equals(item.getSecCode())).count();
+                    if(cnt == 0){
+                        Notice notice = new Notice();
+                        notice.setCode(item.getSecCode());
+                        notice.setFetchDate(new Date());
+                        NOTICES.add(notice);
+                    }
+
                     i++;
                 }
                 if(stopFlag){
@@ -91,11 +107,71 @@ public class NoticeTask extends AbstractTask {
 
                 pageNum++;
             }
-            log.info("codes.size="+codes.size());
+            log.info("NOTICES.size="+NOTICES.size());
 
         } catch (Exception e) {
             e.printStackTrace();
-            log.error("NoticeTask error:", e);
+            log.error("NoticeTask.fetchNotice error:", e);
+        }
+    }
+
+    public void analyzeNotice() {
+        for(Notice notice : NOTICES){
+            try{
+                Date twoHoursBefore = CommonUtils.addMinute(new Date(), -120);
+                if(notice.getFetchDate().before(twoHoursBefore)){
+                    Stock stock = Stock.build(notice.getCode());
+                    String scode = stock.getCodeWithPlace();
+                    Map<String, String> headerRequests = XueqiuService.getCookies();
+
+                    List<Map> notices = new ArrayList<Map>();
+                    Date now = new Date();
+                    int pageNum = 1;
+                    boolean clearCookie = false;
+                    do{
+                        String page = HttpUtils.get("https://xueqiu.com/statuses/stock_timeline.json?symbol_id="+scode+"&count=50&source=%E5%85%AC%E5%91%8A&page="+pageNum,null,headerRequests, "GBK");
+                        if("400".equals(page) || "404".equals(page)){
+                            if(!clearCookie){
+                                XueqiuService.clearCookie();
+                                clearCookie = true;
+                                continue;
+                            }
+                            break;
+                        }
+                        Map m = JsonUtils.testJson(page);
+                        List<Map> list = (List)m.get("list");
+                        boolean flag = false;
+                        for(Map n : list){
+                            String createdAt = String.valueOf(n.get("created_at"));
+                            Date date = new Date(Long.parseLong(createdAt));
+                            if(date.before(ServiceUtils.addDay(now, -2))){
+                                flag = true;
+                                break;
+                            }
+
+                            int reply = Integer.parseInt(String.valueOf(n.get("reply_count")));
+                            if(reply > 0){
+                                int id = Integer.parseInt(String.valueOf(n.get("id")));
+
+                                Map map = new HashMap();
+                                map.put("url", "https://xueqiu.com"+n.get("target"));
+                                map.put("count", reply);
+                                map.put("createtime", ServiceUtils.formatDate(date));
+                                map.put("description", n.get("description"));
+                                //System.out.println(n.get("description"));
+                                notices.add(map);
+                            }
+                        }
+                        if(flag){
+                            break;
+                        }
+                        if(pageNum++ >= 10)break;
+                    }while(true);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                log.error("NoticeTask.analyzeNotice error:", e);
+            }
         }
     }
 
@@ -108,6 +184,26 @@ public class NoticeTask extends AbstractTask {
         List<String> matches = CommonUtils.getMatchStrings(s, POSITIVE_WORDS.stream().toArray(String[]::new));
         System.out.println(matches.size());
 
-        new NoticeTask().execute();
+        new NoticeTask().fetchNotice();
+    }
+}
+
+@Getter
+@Setter
+class Notice {
+    private String code;
+    private Date fetchDate;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Notice notice = (Notice) o;
+        return Objects.equals(code, notice.code);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(code);
     }
 }
