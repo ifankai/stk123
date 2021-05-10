@@ -523,7 +523,7 @@ public class BarTask extends AbstractTask {
             list = list.stream().filter(stockBasicProjection -> !StringUtils.contains(stockBasicProjection.getName(), "退")).collect(Collectors.toList());
 
             stocksA = stockService.buildStocksWithProjection(list);
-            stocksA = stockService.buildBarSeries(stocksA, 300, realtime != null);
+            stocksA = stockService.buildBarSeries(stocksA, 500, realtime != null);
             stockService.buildHolder(stocksA);
 
             stocksA = stocksA.stream().filter(stock -> {

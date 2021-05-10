@@ -2,6 +2,7 @@ package com.stk123.task.schedule;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stk123.common.CommonUtils;
+import com.stk123.common.util.EmailUtils;
 import com.stk123.common.util.JsonUtils;
 import com.stk123.model.core.Stock;
 import com.stk123.model.dto.Cninfo;
@@ -12,7 +13,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.StringUtils;
-import org.python.apache.xerces.dom.PSVIAttrNSImpl;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * 实时查询巨潮资讯公告信息（http://www.cninfo.com.cn/new/commonUrl/pageOfSearch?url=disclosure/list/search&keywords=%E5%AD%A3%E5%BA%A6%E6%8A%A5%E5%91%8A#szse）
@@ -34,18 +34,31 @@ import java.util.stream.Collectors;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class NoticeTask extends AbstractTask {
 
-    public static List<Notice> NOTICES = Collections.synchronizedList(new LinkedList<>());
+    /**
+     * add方法在添加元素的时候，若超出了度列的长度会直接抛出异常
+     * put方法，若向队尾添加元素的时候发现队列已经满了会发生阻塞一直等待空间，以加入元素。
+     * offer方法在添加元素时，如果发现队列已满无法添加的话，会直接返回false。
+     *
+     * poll: 若队列为空，返回null。
+     * remove:若队列为空，抛出NoSuchElementException异常。
+     * take:若队列为空，发生阻塞，等待有元素。
+     */
+    public static LinkedBlockingQueue<Notice> NOTICES = new LinkedBlockingQueue<>();
 
     public static List<String> POSITIVE_WORDS = new ArrayList<>();
 
     static {
         //non-regex
-        String words = "进步了,发展了,静候佳音,应该问题不大,得到证明,数据好,福音,惊喜,期待";
+        String words = "进步了,发展了,静候佳音,应该问题不大,数据好,福音,惊喜,期待,蜕变,成功,靠谱,厉害," +
+                "终于来了,牛逼,比较牛,利好,优秀,可喜可贺,稳步扩张,安心睡大觉,一步一个脚印";
         POSITIVE_WORDS.addAll(Arrays.asList(StringUtils.split(words, ",")));
 
         //regex
         POSITIVE_WORDS.add("护城河很(深|宽)");
         POSITIVE_WORDS.add("(((?!不看好).)*)(\\b看好)");
+        POSITIVE_WORDS.add("效率.{0,5}(可以|提升)");
+        POSITIVE_WORDS.add("得到(证明|承认)");
+
     }
 
     @Override
@@ -54,6 +67,7 @@ public class NoticeTask extends AbstractTask {
         super.runByName("analyzeNotice", this::analyzeNotice);
     }
 
+    //5分钟跑一次
     public void fetchNotice() {
         try {
             Path path = Paths.get("./notice_cninfo_code.txt");
@@ -96,7 +110,7 @@ public class NoticeTask extends AbstractTask {
                         Notice notice = new Notice();
                         notice.setCode(item.getSecCode());
                         notice.setFetchDate(new Date());
-                        NOTICES.add(notice);
+                        NOTICES.put(notice);
                     }
 
                     i++;
@@ -115,21 +129,31 @@ public class NoticeTask extends AbstractTask {
         }
     }
 
+    //持续跑
     public void analyzeNotice() {
+        log.info("analyzeNotice.size="+NOTICES.size());
         List<Notice> noticeList = new ArrayList<>();
-        for(Notice notice : NOTICES){
+        Map<String, String> headerRequests = XueqiuService.getCookies();
+
+        Iterator<Notice> it = NOTICES.iterator();
+        while (it.hasNext()) {
+            Notice notice = it.next();
             try{
                 Date twoHoursBefore = CommonUtils.addMinute(new Date(), -120);
                 if(notice.getFetchDate().before(twoHoursBefore)){
+                    if(notice.getXqCreateDate() != null && notice.getXqCreateDate().after(twoHoursBefore)){
+                        continue;
+                    }
                     Stock stock = Stock.build(notice.getCode());
                     String scode = stock.getCodeWithPlace();
-                    Map<String, String> headerRequests = XueqiuService.getCookies();
 
-                    Date now = new Date();
                     int pageNum = 1;
+                    int totalReplyCount = 0;
                     do{
-                        String json = HttpUtils.get("https://xueqiu.com/statuses/stock_timeline.json?symbol_id="+scode+"&count=50&source=%E5%85%AC%E5%91%8A&page="+pageNum,null,headerRequests, "GBK");
+                        String url = "https://xueqiu.com/statuses/stock_timeline.json?symbol_id="+scode+"&count=50&source=%E5%85%AC%E5%91%8A&page="+pageNum;
+                        String json = HttpUtils.get(url,null,headerRequests, "GBK");
                         if("400".equals(json) || "404".equals(json)){
+                            log.info("404:"+url);
                             break;
                         }
                         Map root = JsonUtils.testJson(json);
@@ -138,21 +162,27 @@ public class NoticeTask extends AbstractTask {
                         for(Map n : ns){
                             String createdAt = String.valueOf(n.get("created_at"));
                             Date date = new Date(Long.parseLong(createdAt));
-                            if(date.before(ServiceUtils.addDay(now, -2))){
+                            if(notice.getXqCreateDate() == null || notice.getXqCreateDate().after(date)) {
+                                notice.setXqCreateDate(date);
+                            }
+
+                            if(date.before(ServiceUtils.addDay(new Date(), -2))){
                                 flag = true;
                                 break;
                             }
 
                             int reply = Integer.parseInt(String.valueOf(n.get("reply_count")));
+                            totalReplyCount += reply;
                             if(reply > 0){
                                 int id = Integer.parseInt(String.valueOf(n.get("id")));
                                 int page = 1;
                                 int matchCount = 0;
                                 do{
                                     //https://xueqiu.com/statuses/comments.json?id=179083274&count=10&page=1&reply=true&asc=false&type=status&split=true
-                                    String url = "https://xueqiu.com/statuses/comments.json?id="+id+"&count=10&page="+page+"&reply=true&asc=false&type=status&split=true";
+                                    url = "https://xueqiu.com/statuses/comments.json?id="+id+"&count=10&page="+page+"&reply=true&asc=false&type=status&split=true";
                                     json = HttpUtils.get(url,null,headerRequests, "GBK");
                                     if("400".equals(json) || "404".equals(json)){
+                                        log.info("404:"+url);
                                         break;
                                     }
 
@@ -175,26 +205,47 @@ public class NoticeTask extends AbstractTask {
                                 if(matchCount >= 3){
                                     notice.setXqUrl("https://xueqiu.com/S/"+scode+"/"+id);
                                     notice.setXqTitle(String.valueOf(n.get("description")));
-                                    noticeList.add(notice);
+                                    //noticeList.add(notice);
                                     NOTICES.remove(notice);
+                                    EmailUtils.send("[公告]"+notice.getXqTitle(), stock.getCodeWithPlace()+CommonUtils.wrapLink(notice.getXqTitle(), notice.getXqUrl()));
                                 }
                             }
                         }
                         if(flag){
                             break;
                         }
-                        if(pageNum++ >= 5)break;
+                        if(pageNum++ >= 3)break;
                     }while(true);
+
+                    if(notice.getXqCreateDate() != null) {
+                        if (totalReplyCount <= 0 &&
+                                notice.getXqCreateDate().before(CommonUtils.addMinute(new Date(), -120))){
+                            log.info("公告2小时内没有任何评论：" + stock.getCodeWithPlace());
+                            NOTICES.remove(notice);
+                        }
+
+                        if (notice.getXqCreateDate().before(CommonUtils.addMinute(new Date(), -180)) &&
+                                totalReplyCount <= 5) {
+                            NOTICES.remove(notice);
+                        }
+
+                        if (notice.getXqCreateDate().before(CommonUtils.addMinute(new Date(), -300))) {
+                            NOTICES.remove(notice);
+                        }
+                    }
+
+                    Thread.sleep(12 * 1000);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
                 log.error("NoticeTask.analyzeNotice error:", e);
             }
         }
+        log.info("analyzeNotice.size="+NOTICES.size());
     }
 
     public static void main(String[] args) {
-        String s = "最期待胰腺癌 看好的数据, 看公司语气，会有惊喜！[大笑],双抗护城河很深很宽, 不看好哈。";
+        String s = "最期待胰腺癌 看好的数据, 看公司语气，会有惊喜！[大笑],双抗护城河很深很宽, 不看好哈。效率都是可以的";
         for(String reg : POSITIVE_WORDS){
             String str = CommonUtils.getMatchString(s, reg);
             System.out.println(reg+","+str);
@@ -202,7 +253,7 @@ public class NoticeTask extends AbstractTask {
         List<String> matches = CommonUtils.getMatchStrings(s, POSITIVE_WORDS.stream().toArray(String[]::new));
         System.out.println(matches.size());
 
-        new NoticeTask().fetchNotice();
+        //new NoticeTask().fetchNotice();
     }
 }
 
@@ -211,6 +262,7 @@ public class NoticeTask extends AbstractTask {
 class Notice {
     private String code;
     private Date fetchDate;
+    private Date xqCreateDate;
     private String xqUrl;
     private String xqTitle;
 
