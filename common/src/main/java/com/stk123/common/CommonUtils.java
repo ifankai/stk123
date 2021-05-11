@@ -181,6 +181,8 @@ public class CommonUtils {
         System.out.println(padString("新开源[SZ300109]", 17)+",");
 
         System.out.println(parseDate("20201010"));
+
+        System.out.println(addHour(new Date(), -2));
     }
 
     public static void printStackTrace(){
@@ -683,6 +685,12 @@ public class CommonUtils {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         cal.add(Calendar.MINUTE, i);
+        return cal.getTime();
+    }
+    public static Date addHour(Date date, int i){
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.HOUR, i);
         return cal.getTime();
     }
 
