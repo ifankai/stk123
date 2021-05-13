@@ -51,7 +51,7 @@ public class Tasks {
 
     */
 
-    @Scheduled(initialDelay = 1, fixedDelay = Integer.MAX_VALUE)
+    //@Scheduled(initialDelay = 1, fixedDelay = Integer.MAX_VALUE)
     public void main() {
         //researchReportJob();
         //initialKLineCN();
@@ -60,10 +60,8 @@ public class Tasks {
 
     @Scheduled(cron = "0 0/1 * ? * *") //每分钟1次
     public void xueqiuStockArticleJob() {
-        if(!ArrayUtils.contains(environment.getActiveProfiles(), "company")) {
-            taskContainer.start(XueqiuStockArticleTask.class);
-            //taskContainer.start(TaskBuilder.of(BarTask.class, "HK"), TaskBuilder.of(SyncTask.class, "table=stk_text"));
-        }
+        taskContainer.start(XueqiuStockArticleTask.class);
+        //taskContainer.start(TaskBuilder.of(BarTask.class, "HK"), TaskBuilder.of(SyncTask.class, "table=stk_text"));
     }
     @Scheduled(cron = "0 0/10 * ? * *") //每10分钟1次
     public void syncTask() {
@@ -138,4 +136,14 @@ public class Tasks {
     public void backupDatabase(){
         TaskUtils.cmd("D:\\share\\workspace\\stk123\\oracle\\export_stk.bat");
     }
+
+    @Scheduled(cron = "0 0/5 * ? * *") //每5分钟1次
+    public void noticeFetch() {
+        taskContainer.start(NoticeTask.class, "fetch");
+    }
+    @Scheduled(fixedDelay=5*60*1000) //task跑完后停5分钟再跑
+    public void noticeAnalyze() {
+        taskContainer.start(NoticeTask.class, "analyze");
+    }
+
 }
