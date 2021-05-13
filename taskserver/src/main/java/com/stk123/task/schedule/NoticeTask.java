@@ -52,7 +52,7 @@ public class NoticeTask extends AbstractTask {
 
     static {
         //non-regex
-        String words = "进步了,发展了,静候佳音,问题不大,数据好,福音,惊喜,期待,蜕变,成功,靠谱,厉害," +
+        String words = "进步了,发展了,静候佳音,问题不大,数据好,福音,惊喜,期待,蜕变,成功,靠谱,厉害,很有诚意的" +
                 "终于来了,牛逼,比较牛,利好,优秀,可喜可贺,稳步扩张,安心睡大觉,一步一个脚印,超预期,爆发,工作务实," +
                 "稳妥,卓有成效,信赖,非常好,欣喜,有吸引力";
         POSITIVE_WORDS.addAll(Arrays.asList(StringUtils.split(words, ",")));
@@ -179,8 +179,9 @@ public class NoticeTask extends AbstractTask {
                             String createdAt = String.valueOf(n.get("created_at"));
                             Date date = new Date(Long.parseLong(createdAt));
 
-                            if(date.before(ServiceUtils.addHour(new Date(), -36))){
+                            if(date.before(ServiceUtils.addHour(new Date(), -24))){
                                 flag = true;
+                                Thread.sleep(12 * 1000);
                                 break;
                             }
 
@@ -227,6 +228,7 @@ public class NoticeTask extends AbstractTask {
                                     log.info("[remove]有积极评论发邮件：" + scode);
                                     NOTICES.remove(notice);
                                     EmailUtils.send("[公告]"+notice.getXqTitle(), scode + CommonUtils.wrapLink(notice.getXqTitle(), notice.getXqUrl()));
+                                    continue;
                                 }
                             }
                         }
@@ -242,6 +244,7 @@ public class NoticeTask extends AbstractTask {
                         if(totalReplyCount > 20){
                             log.info("[remove]评论数大于20条任然没有积极评论：" + scode);
                             NOTICES.remove(notice);
+                            continue;
                         }
 
                         if(stock.isMarketCN()) {
@@ -249,17 +252,20 @@ public class NoticeTask extends AbstractTask {
                                     notice.getXqCreateDate().before(CommonUtils.addHour(new Date(), -2))) {
                                 log.info("[remove]2小时内没有任何评论：" + scode);
                                 NOTICES.remove(notice);
+                                continue;
                             }
 
                             if (notice.getXqCreateDate().before(CommonUtils.addHour(new Date(), -3)) &&
                                     totalReplyCount <= 5) {
                                 log.info("[remove]3小时内评论数小于5条：" + scode);
                                 NOTICES.remove(notice);
+                                continue;
                             }
 
                             if (notice.getXqCreateDate().before(CommonUtils.addHour(new Date(), -5))) {
                                 log.info("[remove]5小时后删除：" + scode);
                                 NOTICES.remove(notice);
+                                continue;
                             }
                         }
                         if(stock.isMarketHK()) {
@@ -267,11 +273,13 @@ public class NoticeTask extends AbstractTask {
                                     notice.getXqCreateDate().before(CommonUtils.addHour(new Date(), -18))) {
                                 log.info("[remove]18小时内没有任何评论：" + scode);
                                 NOTICES.remove(notice);
+                                continue;
                             }
 
                             if (notice.getXqCreateDate().before(CommonUtils.addHour(new Date(), -24))) {
                                 log.info("[remove]24小时后删除：" + scode);
                                 NOTICES.remove(notice);
+                                continue;
                             }
                         }
                     }
@@ -279,6 +287,7 @@ public class NoticeTask extends AbstractTask {
                     if(notice.getFetchDate().before(CommonUtils.addHour(new Date(), -36))){
                         log.info("[remove]抓取36小时后删除：" + scode);
                         NOTICES.remove(notice);
+                        continue;
                     }
                 }
             } catch (Exception e) {
