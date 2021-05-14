@@ -560,11 +560,11 @@ public class Stock {
 
     public String getDayBarImage(){
         if(this.isMarketCN()) {
-            return "<img src='http://image.sinajs.cn/newchart/daily/n/" + this.getCodeWithPlace().toLowerCase() + ".gif'";
+            return "<img src='http://image.sinajs.cn/newchart/daily/n/" + this.getCodeWithPlace().toLowerCase() + ".gif' />";
         }else if(this.isMarketHK()){
-            return "<img src='http://image.sinajs.cn/newchart/hk_stock/daily/" + this.getCode() + ".gif'";
+            return "<img src='http://image.sinajs.cn/newchart/hk_stock/daily/" + this.getCode() + ".gif' />";
         }else if(this.isMarketUS()){
-            return "<img src='http://image.sinajs.cn/newchartv5/usstock/daily/" + this.getCode().toLowerCase() + ".gif'";
+            return "<img src='http://image.sinajs.cn/newchartv5/usstock/daily/" + this.getCode().toLowerCase() + ".gif' />";
         }
         return "";
     }

@@ -383,6 +383,12 @@
                 <version>0.0.4-SNAPSHOT</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.github.houbb</groupId>
+                <artifactId>opencc4j</artifactId>
+                <version>1.0.2</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

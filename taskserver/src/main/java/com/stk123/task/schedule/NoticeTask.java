@@ -1,12 +1,15 @@
 package com.stk123.task.schedule;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.houbb.opencc4j.util.ZhConverterUtil;
 import com.stk123.common.CommonUtils;
 import com.stk123.common.util.EmailUtils;
+import com.stk123.common.util.HtmlUtils;
 import com.stk123.common.util.JsonUtils;
 import com.stk123.model.core.Stock;
 import com.stk123.model.dto.Cninfo;
 import com.stk123.service.XueqiuService;
+import com.stk123.util.ExceptionUtils;
 import com.stk123.util.HttpUtils;
 import com.stk123.util.ServiceUtils;
 import lombok.Getter;
@@ -37,6 +40,8 @@ public class NoticeTask extends AbstractTask {
 
     private String triggerBymanual;
 
+    private static int SLEEP_SECOND = 12*1000;
+
     /**
      * add方法在添加元素的时候，若超出了度列的长度会直接抛出异常
      * put方法，若向队尾添加元素的时候发现队列已经满了会发生阻塞一直等待空间，以加入元素。
@@ -48,7 +53,7 @@ public class NoticeTask extends AbstractTask {
      */
     public static LinkedBlockingQueue<Notice> NOTICES = new LinkedBlockingQueue<>();
 
-    public static List<String> POSITIVE_WORDS = new ArrayList<>();
+    public static Set<String> POSITIVE_WORDS = new HashSet<>();
 
     static {
         //non-regex
@@ -65,6 +70,12 @@ public class NoticeTask extends AbstractTask {
         POSITIVE_WORDS.add("大股东.{0,4}看好公司");
         POSITIVE_WORDS.add("保持.{0,4}增长");
         POSITIVE_WORDS.add("上.{0,5}动力");
+
+        List<String> list = new ArrayList<>();
+        for(String word : POSITIVE_WORDS){
+            list.add(ZhConverterUtil.convertToTraditional(word));
+        }
+        POSITIVE_WORDS.addAll(list);
     }
 
     @Override
@@ -74,9 +85,15 @@ public class NoticeTask extends AbstractTask {
     }
 
     //5分钟跑一次
-    public void fetchNotice() {
+    public void fetchNotice(){
+        fetchNotice("szse");
+        fetchNotice("hke");
+    }
+
+
+    public void fetchNotice(String column) {
         try {
-            Path path = Paths.get("./notice_cninfo_code.txt");
+            Path path = Paths.get("./notice_cninfo_code_"+column+".txt");
             if(!Files.exists(path)){
                 Files.createFile(path);
             }
@@ -89,10 +106,12 @@ public class NoticeTask extends AbstractTask {
             String category = "category_gddh_szsh;category_qyfpxzcs_szsh;category_yjdbg_szsh;category_bndbg_szsh;category_yjygjxz_szsh;category_ndbg_szsh;category_sjdbg_szsh;category_gqjl_szsh;category_zf_szsh;category_jj_szsh;category_pg_szsh;category_gqbd_szsh;category_kzzq_szsh";
 
             while(true) {
-                String body = "pageNum="+pageNum+"&pageSize=30&column=szse&tabName=fulltext&plate=&stock=&searchkey=&secid=&category="+category+"&trade=&seDate=&sortName=time&sortType=desc&isHLtitle=true";
-                String page = HttpUtils.post("http://www.cninfo.com.cn/new/hisAnnouncement/query", body, "UTF-8");
+                String body = "pageNum="+pageNum+"&pageSize=30&column="+column+"&tabName=fulltext&plate=&stock=&searchkey=&secid=&category="+category+"&trade=&seDate=&sortName=time&sortType=desc&isHLtitle=true";
+                String url = "http://www.cninfo.com.cn/new/hisAnnouncement/query";
+                String page = HttpUtils.post(url, body, "UTF-8");
                 //log.info(page);
                 if ("404".equals(page)) {
+                    log.info("404:"+url);
                     return;
                 }
                 ObjectMapper mapper = new ObjectMapper();
@@ -181,7 +200,7 @@ public class NoticeTask extends AbstractTask {
 
                             if(date.before(ServiceUtils.addHour(new Date(), -24))){
                                 flag = true;
-                                Thread.sleep(12 * 1000);
+                                Thread.sleep(SLEEP_SECOND);
                                 break;
                             }
 
@@ -218,7 +237,7 @@ public class NoticeTask extends AbstractTask {
                                     }
 
                                     page++;
-                                    //Thread.sleep(1000);
+                                    //Thread.sleep(SLEEP_SECOND);
                                 }while(true);
 
                                 if(matchCount >= 3){
@@ -227,15 +246,17 @@ public class NoticeTask extends AbstractTask {
                                     //noticeList.add(notice);
                                     log.info("[remove]有积极评论发邮件：" + scode);
                                     NOTICES.remove(notice);
-                                    EmailUtils.send("[公告]"+notice.getXqTitle(), scode + CommonUtils.wrapLink(notice.getXqTitle(), notice.getXqUrl()));
-                                    continue;
+                                    EmailUtils.send("[公告]" + StringUtils.replace(HtmlUtils.removeHTML(notice.getXqTitle()),"网页链接",""),
+                                            stock.getNameAndCodeWithLink() +" "+ CommonUtils.wrapLink(notice.getXqTitle(), notice.getXqUrl()));
+                                    Thread.sleep(SLEEP_SECOND);
+                                    break;
                                 }
                             }
                         }
                         if(flag)break;
                         if(pageNum++ >= 3)break;
 
-                        Thread.sleep(12 * 1000);
+                        Thread.sleep(SLEEP_SECOND);
                     }while(true);
 
 
@@ -292,6 +313,7 @@ public class NoticeTask extends AbstractTask {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                EmailUtils.send("NoticeTask error", ExceptionUtils.getExceptionAsString(e));
                 log.error("NoticeTask.analyzeNotice error:", e);
             }
         }
@@ -308,6 +330,8 @@ public class NoticeTask extends AbstractTask {
         System.out.println(matches.size());
 
         //new NoticeTask().fetchNotice();
+
+        System.out.println("了".equals("上"));
     }
 }
 

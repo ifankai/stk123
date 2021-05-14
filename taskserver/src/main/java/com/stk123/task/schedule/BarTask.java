@@ -460,8 +460,9 @@ public class BarTask extends AbstractTask {
                             strategyResult.getStrategy().getName().replaceAll("，", "<br/>"),
                             StringUtils.join(sources, "<br/>"),
                             stock.getDayBarImage(),
-                            backtesting.getStrategies().get(0).getPassRateString().replaceAll("]", "]<br/>") +
-                                    (StringUtils.isNotEmpty(backtesting.getStrategies().get(0).getPassedFilterResultLog()) ? "<br/>"+backtesting.getStrategies().get(0).getPassedFilterResultLog() : "")
+                            //backtesting.getStrategies().get(0).getPassRateString().replaceAll("]", "]<br/>") +
+                            //        (StringUtils.isNotEmpty(backtesting.getStrategies().get(0).getPassedFilterResultLog()) ? "<br/>"+backtesting.getStrategies().get(0).getPassedFilterResultLog() : "")
+                            backtesting.getStrategies().get(0).getPassRateString().replaceAll("]", "]<br/>")
                             );
                     if(isBk){
                         if(strategyResult.getStrategy().getCode().startsWith("strategy_08")){ //板块阶段强势策略

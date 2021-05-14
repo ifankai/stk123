@@ -211,6 +211,11 @@
             <artifactId>jama</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.github.houbb</groupId>
+            <artifactId>opencc4j</artifactId>
+        </dependency>
+
 
     </dependencies>
 
