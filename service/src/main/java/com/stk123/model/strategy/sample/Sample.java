@@ -10,7 +10,9 @@ import com.stk123.model.strategy.result.FilterResult;
 public class Sample {
 
     // ignore: 02a 选出来的标的太多，由02b替换
-    public static String STRATEGIES = "01,02b,03a,03b,04a,04b,04c,05,06a,06b,08a,08b,08c";
+    public static String STRATEGIES = "01,02b,03a,03b,04a,04b,04c,05a,05b,06a,06b,08a,08b,08c";
+
+    public static String STRATEGIES_FOR_ALL_STOCKS = "01,05b";
 
     public static Strategy strategy_01() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_01","策略603096新经典20201106，一段跌幅后底部放量(01)", BarSeries.class);
@@ -60,7 +62,7 @@ public class Sample {
                         Filters.filter_001a(3,100,-100,-20),
                         Filters.filter_001b(3,60,-100,-25)
                 ));
-        strategy.addFilter("MACD和close或ma(60)底背离", Stock::getBar, Filters.filter_006a(60));
+        strategy.addFilter("MACD和close底背离", Stock::getBar, Filters.filter_006c());
         strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
         return strategy;
     }
@@ -75,6 +77,21 @@ public class Sample {
                         Filters.filter_001b(3,60,-100,-25)
                 ));
         strategy.addFilter("MACD和close或ma(60)底背离", Stock::getBar, Filters.filter_006a(60));
+        strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
+        return strategy;
+    }
+    public static Strategy strategy_02d() {
+        Strategy<Stock> strategy = new Strategy<>("strategy_02d","策略002044美年健康20201231，底部一阳吃多阴，MACD底背离(02d)", Stock.class);
+        strategy.addFilter("股票", Filters.filter_mustStockCate(Stock.EnumCate.STOCK));
+        strategy.addFilter("一阳吃5阴或阳", Stock::getBarSeries, Filters.filter_004(5));
+        strategy.addFilter("一阳穿过5,10日均线", Stock::getBar, Filters.filter_005a(5, 10));
+        strategy.addFilter("过去3天到100天的跌幅[-100,-20] or 过去3天到60天内最高点到低点的跌幅[-100,-30]",
+                Stock::getBar,
+                Filter.<Bar>or(
+                        Filters.filter_001a(3,100,-100,-20),
+                        Filters.filter_001b(3,60,-100,-25)
+                ));
+        strategy.addFilter("MACD和close或ma(60)底背离", Stock::getBar, Filters.filter_006c()); //MACD标准背离
         strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
         return strategy;
     }
@@ -122,11 +139,20 @@ public class Sample {
     }
 
     //突破底部平台 300464, 20200618
-    public static Strategy strategy_05() {
-        Strategy<BarSeries> strategy = new Strategy<>("strategy_05","突破底部平台(05)", BarSeries.class);
-        strategy.addFilter("过去3天到80天的跌幅", BarSeries::getFirst, Filters.filter_001b(3,60,-50,-30));
+    public static Strategy strategy_05a() {
+        Strategy<Stock> strategy = new Strategy<>("strategy_05a","突破底部平台(05a)", Stock.class);
+        strategy.addFilter("过去3天到80天的跌幅", Stock::getBar, Filters.filter_001b(3,60,-50,-20));
         strategy.addFilter("突破底部平台", Filters.filter_009());
-        strategy.setExpectFilter("60日内涨幅>20%", Filters.expectFilter(60, 20));
+        strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
+        return strategy;
+    }
+    //均线缠绕，突破底部平台 002177 20210323
+    public static Strategy strategy_05b() {
+        Strategy<Stock> strategy = new Strategy<>("strategy_05b","均线缠绕，高低点收敛，突破底部平台(05b)", Stock.class);
+        strategy.addFilter("突破底部平台", Filters.filter_009());
+        strategy.addFilter("高低点收敛", Filters.filter_0014a(80, 8));
+        strategy.addFilter("均线线缠绕，且前100天内放量涨缩量跌", Filters.filter_007c(80, 10 ));
+        strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
         return strategy;
     }
 

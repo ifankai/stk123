@@ -14,6 +14,9 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: com.github.houbb:opencc4j:1.0.2" level="project" />
+    <orderEntry type="library" name="Maven: com.github.houbb:paradise-common:1.1.3" level="project" />
+    <orderEntry type="library" name="Maven: com.huaban:jieba-analysis:1.0.2" level="project" />
     <orderEntry type="library" name="Maven: com.stk:commons-digester:1.0" level="project" />
     <orderEntry type="library" name="Maven: com.stk:IKAnalyzer2012FF_u1:1.0" level="project" />
     <orderEntry type="library" name="Maven: com.stk:jdom:1.0" level="project" />

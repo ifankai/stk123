@@ -8,6 +8,7 @@ import com.stk123.model.strategy.StrategyBacktesting;
 import com.stk123.repository.StkKlineRepository;
 import com.stk123.repository.StkRepository;
 import com.stk123.service.core.BacktestingService;
+import com.stk123.service.core.BarService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -36,14 +37,16 @@ public class TestController {
     @Autowired
     private StkKlineRepository stkKlineRepository;
     @Autowired
-    StkRepository stkRepository;
+    private StkRepository stkRepository;
     @Autowired
-    BacktestingService backtestingService;
+    private BacktestingService backtestingService;
+    @Autowired
+    private BarService barService;
 
 
     @RequestMapping(value = "/test")
     @ResponseBody
-    public RequestResult test() throws InvocationTargetException, IllegalAccessException {
+    public RequestResult test() throws Exception {
 
         /*List<String> stocks = new ArrayList<>();
         stocks.add("603096");
@@ -60,20 +63,8 @@ public class TestController {
             stock.getBarSeriesMonth().getList().forEach(e -> System.out.println(e));
         }*/
 
-        Stock stock = Stock.build("002081");
-        BarSeries bs = stock.getBarSeries();
-        Bar bar = bs.getBar("20210205");
-        Bar hb = bar.getHighPoint(80, 6, 20);
-        System.out.println(hb);
-        System.out.println("======================");
-        List<Bar> bars = bar.before(4).getBarsHigherThanTrendline(hb);
-        for(Bar b : bars){
-            System.out.println("high==="+b);
-        }
-        bars = bar.before(4).getBarsLowerThanTrendline(hb, 0.15);
-        for(Bar b : bars){
-            System.out.println("low==="+b);
-        }
+        Stock stock = Stock.build("399106");
+        barService.initKLine(stock);
 
         return RequestResult.success(new Date());
     }

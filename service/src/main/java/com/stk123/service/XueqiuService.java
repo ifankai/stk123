@@ -124,9 +124,9 @@ public class XueqiuService {
 	//https://xueqiu.com/u/road_of_faith#/stock
 	//https://stock.xueqiu.com/v5/stock/portfolio/stock/list.json?pid=-5&category=1&size=1000&uid=6237744859
 	//{"data":{"pid":-5,"category":1,"stocks":[{"symbol":"SZ000526","name":"紫光学大","type":11,"remark":"","exchange":"SZ","created":1590697960528},{"symbol":"SH601288","name":"农业银行","type":11,"remark":"","exchange":"SH","created":1590462857107},{"symbol":"SH000902","name":"中证流通","type":12,"remark":"","exchange":"SH","created":1590060296825},{"symbol":"SH603589","name":"口子窖","type":11,"remark":"","exchange":"SH","created":1589462380128},{"symbol":"SZ002460","name":"赣锋锂业","type":11,"remark":"","exchange":"SZ","created":1384056375471},{"symbol":"SZ300124","name":"汇川技术","type":11,"remark":"","exchange":"SZ","created":1375090999580},{"symbol":"SH000001","name":"上证指数","type":12,"remark":"","exchange":"SH","created":1341237149686},...]},"error_code":0,"error_description":""}
-	public static List<String> getFollowStks() throws Exception {
+	public static List<String> getFollowStksByUid(String uid) throws Exception {
 		Map<String, String> headerRequests = XueqiuService.getCookies();
-		String page = HttpUtils.get("https://stock.xueqiu.com/v5/stock/portfolio/stock/list.json?pid=-5&category=1&size=1000&uid=6237744859", null, headerRequests, "UTF-8");
+		String page = HttpUtils.get("https://stock.xueqiu.com/v5/stock/portfolio/stock/list.json?pid=-1&category=1&size=1000&uid="+uid, null, headerRequests, "UTF-8");
 		
 		Map<String, Class> m = new HashMap<String, Class>();
         m.put("data", Map.class);
@@ -142,8 +142,7 @@ public class XueqiuService {
 			String exchange = stock.get("exchange");
 			stks.add(StringUtils.replace(symbol, exchange, ""));
 		}
-		System.out.println(StringUtils.join(stks, ","));
-		FileUtils.writeStringToFile(new File("D:\\share\\workspace\\stk123\\mystocks.txt"), StringUtils.join(stks, ","));
+		//FileUtils.writeStringToFile(new File("D:\\share\\workspace\\stk123\\mystocks.txt"), StringUtils.join(stks, ","));
 		return stks;
 	}
 
@@ -282,24 +281,10 @@ public class XueqiuService {
 
         //System.out.println(XueqiuService.existingXueqiuFollowStk("全部","002191"));
 		//XueqiuUtils.getCookies();
-		//XueqiuUtils.getFollowStks();
-		System.out.println(XueqiuService.getPortfolioStocks("SP1006082"));
+        System.out.println(XueqiuService.getFollowStksByUid("7580740929"));
+		//System.out.println(XueqiuService.getPortfolioStocks("SP1006082"));
 		//System.out.println(getPortfolios("6237744859"));
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -15,6 +15,7 @@ import com.stk123.repository.StkKlineRepository;
 import com.stk123.repository.StkKlineUsRepository;
 import com.stk123.util.HttpUtils;
 import com.stk123.util.ServiceUtils;
+import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -27,6 +28,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@CommonsLog
 public class BarService {
 
     @Autowired
@@ -286,6 +288,7 @@ public class BarService {
             }
             //腾讯股票接口 http://qt.gtimg.cn/&q=sh600600
             page = HttpUtils.get("http://qt.gtimg.cn/&q="+codeWithPlace, null, "");
+            //log.info(codeWithPlace+":"+page);
             if(page != null && page.length() > 0){
                 String str = StringUtils.substringBetween(page, "\"", "\"");
                 //System.out.println(str);

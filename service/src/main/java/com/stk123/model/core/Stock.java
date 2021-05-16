@@ -230,6 +230,7 @@ public class Stock {
         }
 
         setPlace();
+        setCate();
         return this;
     }
     private Stock set(String code, String name, EnumMarket market, EnumPlace place){
@@ -268,7 +269,8 @@ public class Stock {
      * @return SH600000, 03323, APPL
      */
     public String getCodeWithPlace(){
-        return this.place == null ? this.code : (loadIfNull(this.cate) && this.isCateStock() ? (this.place.name() + this.code) : this.code);
+        //return this.place == null ? this.code : (loadIfNull(this.cate) && this.isCateStock() ? (this.place.name() + this.code) : this.code);
+        return this.place == null ? this.code : (this.place.name() + this.code);
     }
 
     public String getNameAndCode(){
@@ -302,6 +304,7 @@ public class Stock {
     }
 
     private void setPlace(){
+        if(place != null) return;
         if(this.market == CN){
             if(this.code.length() == 8){//01000010 or SH000010
                 if(this.code.startsWith(CommonConstant.NUMBER_01) || this.code.startsWith(EnumPlace.SH.name())){
@@ -315,6 +318,18 @@ public class Stock {
             }else{
                 this.place = getCity(code);
             }
+        }
+    }
+    private void setCate() {
+        if(cate != null) return;
+        if (this.market == CN) {
+            if(this.code.startsWith("399")){
+                this.cate = EnumCate.INDEX;
+            }else {
+                this.cate = EnumCate.STOCK;
+            }
+        }else {
+            this.cate = EnumCate.STOCK;
         }
     }
 

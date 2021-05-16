@@ -298,6 +298,21 @@ public class Bar implements Serializable, Cloneable {
 		return ret;
 	}
 
+    public Bar getLowestBar(int n, Function<Bar, Double> function){
+        double value = 0.0;
+        Bar k = this;
+        Bar ret = null;
+        for(int i=0;i<n;i++){
+            double tmp = function.apply(k);
+            if(value > tmp || value == 0.0){
+                value = tmp;
+                ret = k;
+            }
+            k = k.before(1);
+        }
+        return ret;
+    }
+
 	/**
 	 * highest
 	 */
@@ -638,6 +653,19 @@ public class Bar implements Serializable, Cloneable {
 		}
 		return cnt;
 	}
+
+    public int getSum(int days, Function<Bar,Integer> function) {
+        Bar k = this;
+        int cnt = 0;
+        while(k != null){
+            cnt += function.apply(k);
+            if(--days < 1){
+                break;
+            }
+            k = k.before(1);
+        }
+        return cnt;
+    }
 
     public int getBarCountExcludeToday(int days, Predicate<Bar> predicate) {
         return this.before().getBarCount(days, predicate);

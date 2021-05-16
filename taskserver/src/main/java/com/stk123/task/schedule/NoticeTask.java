@@ -93,7 +93,7 @@ public class NoticeTask extends AbstractTask {
 
     public void fetchNotice(String column) {
         try {
-            Path path = Paths.get("./notice_cninfo_code_"+column+".txt");
+            Path path = Paths.get("./temp/notice_cninfo_code_"+column+".txt");
             if(!Files.exists(path)){
                 Files.createFile(path);
             }
@@ -103,7 +103,7 @@ public class NoticeTask extends AbstractTask {
             boolean stopFlag = false;
             int i = 0;
 
-            String category = "category_gddh_szsh;category_qyfpxzcs_szsh;category_yjdbg_szsh;category_bndbg_szsh;category_yjygjxz_szsh;category_ndbg_szsh;category_sjdbg_szsh;category_gqjl_szsh;category_zf_szsh;category_jj_szsh;category_pg_szsh;category_gqbd_szsh;category_kzzq_szsh";
+            String category = "hke".equals(column)?"":"category_gddh_szsh;category_qyfpxzcs_szsh;category_yjdbg_szsh;category_bndbg_szsh;category_yjygjxz_szsh;category_ndbg_szsh;category_sjdbg_szsh;category_gqjl_szsh;category_zf_szsh;category_jj_szsh;category_pg_szsh;category_gqbd_szsh;category_kzzq_szsh";
 
             while(true) {
                 String body = "pageNum="+pageNum+"&pageSize=30&column="+column+"&tabName=fulltext&plate=&stock=&searchkey=&secid=&category="+category+"&trade=&seDate=&sortName=time&sortType=desc&isHLtitle=true";
@@ -146,7 +146,7 @@ public class NoticeTask extends AbstractTask {
 
                 pageNum++;
             }
-            log.info("NOTICES.size="+NOTICES.size());
+            log.info("["+column+"]NOTICES.size="+NOTICES.size());
 
         } catch (Exception e) {
             e.printStackTrace();

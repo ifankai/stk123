@@ -11,7 +11,9 @@ import com.stk123.model.strategy.result.FilterResultBetween;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Filters {
 
@@ -241,6 +243,25 @@ public class Filters {
         };
     }
 
+    //MACD标准背离
+    public static Filter<Bar> filter_006c(){
+        return (strategy, bar) -> {
+            Bar.MACD macd = bar.getMACD();
+            Bar.MACD macdBefore = bar.before().getMACD();
+            if(macd.dif <= 0 && macd.macd > macdBefore.macd){
+                Bar forkBar = bar.getMACDUpperForkBar(5);
+                Bar forkBarBefore = forkBar.before();
+                if(forkBarBefore.getMACD().dif < bar.before().getMACD().dif
+                        && forkBarBefore.getClose() > bar.before().getClose() ){
+                    return FilterResult.TRUE(bar.getDate());
+                }else{
+                    return FilterResult.FALSE("MACD没有背离");
+                }
+            }
+            return FilterResult.FALSE("MACD.macd值没有减小");
+        };
+    }
+
     /**
      * 均线线缠绕，均线最大和最小值不超过d%
      * 且，前days天内放量涨缩量跌
@@ -349,6 +370,87 @@ public class Filters {
         };
     }
 
+    public static Filter<Stock> filter_007c(int days, double d){
+        return (strategy, stock) -> {
+            Bar today = stock.getBar();
+            double ma5 = today.getMA(5, Bar.EnumValue.C);
+            double ma120 = today.getMA(120, Bar.EnumValue.C);
+            double d2 = Math.abs(ma5 - ma120)/CommonUtils.min(ma5, ma120);
+            if(d2 > d/100d) {
+                return FilterResult.FALSE("不满足K线价差小于"+d+"%, 实际::"+(d2*100));
+            }
+            if(stock.isCateStock() && today.getSlopeOfMA(1, 60) < 0 && today.getSlopeOfMA(1, 120) < 0){
+                return FilterResult.FALSE("60,120均线都是下降的");
+            }
+            int cnt = today.getBarCount(30, bar -> bar.getMA(20, Bar.EnumValue.C) > bar.getMA(120, Bar.EnumValue.C));
+            if(stock.isCateStock() && cnt < 1){
+                return FilterResult.FALSE("均线空头排列");
+            }
+
+            Bar highest = today.getHighestBar(days, Bar.EnumValue.H);
+            if(highest.getHigh() < highest.getMA(250, Bar.EnumValue.C)){
+                return FilterResult.FALSE("最高点没有高于250均线");
+            }
+            Bar lowest = today.getLowestBar(days, Bar.EnumValue.L);
+            if(lowest.getLow() > lowest.getMA(250, Bar.EnumValue.C)){
+                return FilterResult.FALSE("最低点没有低于250均线");
+            }
+
+            int sum = today.getSum(days, bar -> {
+                int n = 0;
+                if(bar.getOpen() > bar.getClose()){
+                    n++;
+                }
+                Bar after = bar.getAfter();
+                //今天阳线量能 > 明天阴线量能
+                if(after != null && bar.getOpen() < bar.getClose() && after.getOpen() > after.getClose() && bar.getVolume() > after.getVolume()){
+                    n++;
+                }
+                Bar before = bar.getBefore();
+                //今天阳线量能 > 昨天阴线量能
+                if(before != null && bar.getOpen() < bar.getClose() && before.getOpen() > before.getClose() && bar.getVolume() > before.getVolume()){
+                    n++;
+                }
+                //今天阳线量能 > 昨天阳线量能
+                if(before != null && bar.getOpen() < bar.getClose() && before.getOpen() < before.getClose() && bar.getVolume() > before.getVolume()){
+                    n++;
+                }
+                //二连阳
+                if(bar.getOpen() < bar.getClose() && before.getOpen() < before.getClose() ){
+                    n = n+2;
+                }
+                return n;
+            });
+
+            if(stock.isCateStock() && sum < 100){
+                return FilterResult.FALSE("不是阳线量能大于阴线:"+sum);
+            }
+
+            double ma10 = today.getMA(10, Bar.EnumValue.C);
+            double ma30 = today.getMA(30, Bar.EnumValue.C);
+            double ma60 = today.getMA(60, Bar.EnumValue.C);
+            //double ma250 = today.getMA(250, Bar.EnumValue.C);
+            double max = CommonUtils.max(ma5, ma10, ma30, ma60, ma120);
+            double min = CommonUtils.min(ma5, ma10, ma30, ma60, ma120);
+
+            double change = (max - min)/min;
+            if(change <= d/100d && today.getLow() < max){
+                if(days != 0){
+                    Bar highVolumeBar = today.getHighestBar(days, bar -> bar.getMA(10, Bar.EnumValue.V));
+                    Bar lowVolumeBar = today.getLowestBar(days, bar -> bar.getMA(10, Bar.EnumValue.V));
+
+                    double rate = highVolumeBar.getMA(10, Bar.EnumValue.V)/lowVolumeBar.getMA(10, Bar.EnumValue.V);
+                    if(stock.isCateStock() && rate < 3){
+                        return FilterResult.FALSE("不满足放量涨缩量跌, 实际:"+ rate);
+                    }
+                }
+                String jsl = CommonUtils.numberFormat2Digits(change*100);
+                return FilterResult.TRUE(today.getDate() + "均线紧缩率:" + jsl +"%,max="+max+",min="+min+",sum="+sum, today.getDate(), "均线紧缩率(%)", jsl);
+            }
+            return FilterResult.FALSE("不满足K线价差小于"+d+"%, 实际："+(change*100));
+        };
+    }
+
     //突破趋势线
     public static Filter<BarSeries> filter_008a(int m, int n, double d){
         return (strategy, bs) -> {
@@ -401,10 +503,10 @@ public class Filters {
     }
 
     //突破底部平台
-    public static Filter<BarSeries> filter_009() {
-        return (strategy, bs) -> {
-            Bar today = bs.getFirst();
-            //if(today == null || today.before() == null || today.getChange() > 6) return FilterResult.FALSE("今天涨幅大于6%");
+    public static Filter<Stock> filter_009() {
+        return (strategy, stock) -> {
+            Bar today = stock.getBar();
+            if(today == null || today.before() == null) return FilterResult.FALSE();
             double h = today.before().getHighest(10, Bar.EnumValue.C);
             double l = today.before().getLowest(10, Bar.EnumValue.C);
 
@@ -480,6 +582,60 @@ public class Filters {
             }else{
                 return FilterResult.FALSE(distance);
             }
+        };
+    }
+
+    //最低点一个比一个高
+    public static Filter<Stock> filter_0013a(int days, int n) {
+        return (strategy, stock) -> {
+            Bar today = stock.getBar();
+            List<Bar> lowPoints = today.getHistoryLowPoint(days, n);
+            if(lowPoints.size() > 1){
+                Bar last = null;
+                for(Bar bar :lowPoints){
+                    if(last == null){
+                        last = bar;
+                        continue;
+                    }
+                    if(last.getLow() > bar.getLow()){
+                        return FilterResult.FALSE(lowPoints.stream().map(Bar::getLow).collect(Collectors.toList()));
+                    }
+                }
+            }
+            return FilterResult.TRUE();
+        };
+    }
+
+    //高低点收敛
+    public static Filter<Stock> filter_0014a(int days, int n) {
+        return (strategy, stock) -> {
+            Bar today = stock.getBar();
+            List<Bar> lowPoints = today.getHistoryLowPoint(days, n);
+            List<Bar> highPoints = today.getHistoryHighPoint(days, n);
+            if(lowPoints.size() > 1 && highPoints.size() > 1){
+                Collections.reverse(lowPoints);
+                Collections.reverse(highPoints);
+
+                Bar last = null;
+                double diff = -1;
+                for (int i = 0, lowPointsSize = lowPoints.size(); i < lowPointsSize; i++) {
+                    Bar lowBar = lowPoints.get(i);
+                    if(highPoints.size() <= i){
+                        break;
+                    }
+                    Bar highBar = highPoints.get(i);
+
+                    if (diff == -1) {
+                        diff = highBar.getHigh() - lowBar.getLow();
+                        continue;
+                    }
+                    if (diff > highBar.getHigh() - lowBar.getLow()) {
+                        return FilterResult.FALSE(lowPoints.stream().map(Bar::getLow).collect(Collectors.toList())+",,,,"+highPoints.stream().map(Bar::getHigh).collect(Collectors.toList()));
+                    }
+                }
+                return FilterResult.TRUE();
+            }
+            return FilterResult.FALSE();
         };
     }
 }
