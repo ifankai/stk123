@@ -226,6 +226,7 @@ public class Sample {
         return bar.getDate();
     }
 
+    //4天放量1天缩量 000519 20210421
     public static Strategy strategy_09a() {
         Strategy<Stock> strategy = new Strategy<>("strategy_09a","4天放量1天缩量(09a)", Stock.class);
         strategy.addFilter("过去3天到80天的跌幅", Stock::getBar, Filters.filter_001b(3,60,-50,-10));
