@@ -638,4 +638,38 @@ public class Filters {
             return FilterResult.FALSE();
         };
     }
+
+    //n天放量1天缩量
+    public static Filter<Stock> filter_015(int days, int n, double percent){
+        return (strategy, stock) -> {
+            Bar today = stock.getBar();
+            if(today.getOpen() <= today.getClose()){
+                return FilterResult.FALSE("今天是阳线");
+            }
+            if(today.getVolume() > today.before().getVolume() * (1-percent)){
+                return FilterResult.FALSE("今天没有比昨天缩量>"+percent+",实际："+ (today.before().getVolume()/today.getVolume()));
+            }
+            for (int i = 1; i <= n; i++) {
+                Bar before = today.before(i);
+                if(before == null){
+                    return FilterResult.FALSE();
+                }
+                if(before.getOpen() > before.getClose()){
+                    return FilterResult.FALSE("前面第"+i+"天不是阳线");
+                }
+                if(today.getVolume() > before.getVolume()){
+                    return FilterResult.FALSE("今天没有缩量");
+                }
+            }
+            Bar before = today.before(n+1);
+            double highVolume = before.getHighest(days, Bar.EnumValue.V);
+            for (int i = 1; i <= n; i++) {
+                Bar bar = today.before(i);
+                if(bar.getVolume() < highVolume){
+                    return FilterResult.FALSE("前面第"+i+"天没有放量");
+                }
+            }
+            return FilterResult.TRUE();
+        };
+    }
 }
