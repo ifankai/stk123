@@ -643,6 +643,9 @@ public class Filters {
     public static Filter<Stock> filter_015(int days, int n, double percent){
         return (strategy, stock) -> {
             Bar today = stock.getBar();
+            if(stock.getBarSeries().size() <= (days+n)){
+                return FilterResult.FALSE("K线历史太短");
+            }
             if(today.getOpen() <= today.getClose()){
                 return FilterResult.FALSE("今天是阳线");
             }

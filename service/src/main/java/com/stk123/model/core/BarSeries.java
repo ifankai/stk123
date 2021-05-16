@@ -181,6 +181,10 @@ public class BarSeries {
     }
 
 
+    public int size(){
+        return this.getList().size();
+    }
+
     @Override
     public String toString(){
         StringBuilder sb = new StringBuilder();
