@@ -15,9 +15,10 @@ public class StockBasic implements StockBasicProjection {
     private Integer market;
     private Integer cate;
     private Integer place;
+    private Double totalCapital;
 
     public StockBasic(String code, String name, Stock.EnumMarket market, Stock.EnumCate cate, Stock.EnumPlace place){
-        this(code, name, market.getMarket(), cate.getCate(), place.getPlace());
+        this(code, name, market.getMarket(), cate.getCate(), place.getPlace(), null);
     }
 
 }

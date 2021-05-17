@@ -360,8 +360,6 @@ public class BarTask extends AbstractTask {
         try {
             final Set<StockWrapper> allList = new LinkedHashSet<>();
 
-
-
             if(code != null){
                 List<String> codes = Arrays.asList(StringUtils.split(code, ","));
                 addStocks(allList, codes, null);
@@ -540,6 +538,7 @@ public class BarTask extends AbstractTask {
         }
     }
 
+
     public static List<Stock> stocksCN = null;
 
     public void analyseAllStocks(){
@@ -551,6 +550,14 @@ public class BarTask extends AbstractTask {
 
                 stocksCN = stockService.buildStocksWithProjection(list);
                 stocksCN = stockService.buildBarSeries(stocksCN, 500, realtime != null);
+
+                //排除总市值小于50亿的
+                stocksCN = stocksCN.stream().filter(stock -> {
+                    if(stock.isMarketCN() && stock.getMarketCap() < 50){
+                        return false;
+                    }
+                    return true;
+                }).collect(Collectors.toList());
             }
 
             if(StringUtils.isEmpty(strategy)){
@@ -614,6 +621,8 @@ public class BarTask extends AbstractTask {
     public static List<Stock> stocksA = null;
     public static List<Stock> stocksH = null;
 
+
+    //相似算法
     public void analyseMass(){
         if(stocksA == null) {
             List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.STOCK);

@@ -24,7 +24,7 @@ public interface StkRepository extends JpaRepository<StkEntity, String> {
     @Query(value = "select t from StkEntity t where market=1 or ((market=2 or market=3) and hot>500)")
     List<StockProjection> findAllStk();
 
-    @Query(value = "select code as code,name as name,market as market,cate as cate,place as place from StkEntity where market=:market and cate=:cate order by code")
+    @Query(value = "select code as code,name as name,market as market,cate as cate,place as place,totalCapital as totalCapital from StkEntity where market=:market and cate=:cate order by code")
     List<StockBasicProjection> findAllByMarketAndCateOrderByCode(@Param("market") Integer market, @Param("cate") Integer cate);
 
     default List<StockBasicProjection> findAllByMarketAndCateOrderByCode(Stock.EnumMarket market, Stock.EnumCate cate) {

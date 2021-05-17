@@ -162,6 +162,9 @@ public class Stock {
     @JsonView(View.Default.class)
     private EnumCate cate;
 
+    private Double totalCapital; //总股本
+    private Double marketCap; //总市值
+
     private StockProjection stock;
     private List<IndustryProjection> industries; //行业
     private StkHolderEntity holder; //最新股东人数
@@ -253,6 +256,7 @@ public class Stock {
         if(this.market == EnumMarket.CN && this.place == null){
             setPlace();
         }
+        this.totalCapital = stockBasicProjection.getTotalCapital();
         return this;
     }
 
@@ -582,6 +586,16 @@ public class Stock {
             return "<img src='http://image.sinajs.cn/newchartv5/usstock/daily/" + this.getCode().toLowerCase() + ".gif' />";
         }
         return "";
+    }
+
+    public Double getMarketCap(){
+        if(this.marketCap != null) return this.marketCap;
+        if(this.totalCapital != null && this.getBar() != null){
+            this.marketCap = totalCapital * this.getBar().getClose() / 10000;
+        }else{
+            this.marketCap = Double.MIN_VALUE;
+        }
+        return this.marketCap;
     }
 
     @Override
