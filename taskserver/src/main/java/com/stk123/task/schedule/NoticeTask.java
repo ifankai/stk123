@@ -154,7 +154,7 @@ public class NoticeTask extends AbstractTask {
         Map<String, String> headerRequests = XueqiuService.getCookies();
 
         for (Notice notice : NOTICES) {
-            log.info("notice:" + notice.getCode());
+            //log.info("notice:" + notice.getCode());
             try {
                 Date twoHoursBefore = CommonUtils.addHour(new Date(), -2);
                 Date oneHoursBefore = CommonUtils.addHour(new Date(), -1);

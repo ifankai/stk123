@@ -398,7 +398,7 @@ public class Filters {
 
             int sum = today.getScore(days, bar -> {
                 int n = 0;
-                if(bar.getOpen() > bar.getClose()){
+                if(bar.getOpen() < bar.getClose()){
                     n++;
                 }
                 Bar after = bar.getAfter();
@@ -702,21 +702,23 @@ public class Filters {
                             if(before.getOpen() >= before.getClose()){//昨天阴线
                                 List<Bar> bars = bar.getBarsMeet(bar1 -> bar1.getOpen() < bar1.getClose());
                                 for(Bar bar1 : bars){
+                                    //if(bar.getDaysBetween(bar.getDate(), bar1.getDate()) >=3) break;
                                     if(bar1.getVolume() < bar.getVolume()){//今天阴线量能 > 前几天阳线量能
                                         n--;
                                     }
                                 }
                                 break;
-                            }
-                            if(bar.getVolume() < before.getVolume()){//今天阴线量能小于昨天阳线量能
-                                n++;
-                                if(bar.getVolume() < before.getVolume()/percent){//如果今天阴线量能小于昨天阳线量能20%，再加1
+                            }else {//昨天阳线
+                                if (bar.getVolume() < before.getVolume()) {//今天阴线量能小于昨天阳线量能
                                     n++;
-                                }
-                            }else{
-                                n--;
-                                if(bar.getVolume() > before.getVolume()*percent){//如果今天阴线量能大于昨天阳线量能20%，再减1
+                                    if (bar.getVolume() < before.getVolume() / percent) {//如果今天阴线量能小于昨天阳线量能20%，再加1
+                                        n++;
+                                    }
+                                } else {
                                     n--;
+                                    if (bar.getVolume() > before.getVolume() * percent) {//如果今天阴线量能大于昨天阳线量能20%，再减1
+                                        n--;
+                                    }
                                 }
                             }
                             before = before.before();
@@ -725,11 +727,12 @@ public class Filters {
                 }
                 return n;
             });
-
+            System.out.println("code:"+stock.getCode()+",sum:"+sum);
             if(sum < score){
                 return FilterResult.FALSE("得分:"+sum);
             }
-            return FilterResult.TRUE("得分:"+sum);
+
+            return FilterResult.Sortable((double) sum);
         };
     }
 }

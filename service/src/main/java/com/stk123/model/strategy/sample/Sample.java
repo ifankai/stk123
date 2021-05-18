@@ -10,9 +10,9 @@ import com.stk123.model.strategy.result.FilterResult;
 public class Sample {
 
     // ignore: 02a 选出来的标的太多，由02b替换
-    public static String STRATEGIES = "01,02b,03a,03b,04a,04b,04c,05a,05b,06a,06b,08a,08b,08c,09a";
+    public static String STRATEGIES = "01,02b,03a,03b,04a,04b,04c,05a,05b,06a,06b,08a,08b,08c,09a,09c";
 
-    public static String STRATEGIES_FOR_ALL_STOCKS = "01,05b,09a";
+    public static String STRATEGIES_FOR_ALL_STOCKS = "01,05b,09a,09b";
 
     public static Strategy strategy_01() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_01","策略603096新经典20201106，一段跌幅后底部放量(01)", BarSeries.class);
@@ -232,6 +232,22 @@ public class Sample {
         strategy.addFilter("n天放量1天缩量", Filters.filter_015a(20,4,0.20));
         strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
         return strategy;
+    }
+
+    //阳线放量 阴线缩量
+    public static Strategy strategy_09(int topN) {
+        Strategy<Stock> strategy = new Strategy<>("strategy_09b","阳线放量阴线缩量(09b)", Stock.class);
+        strategy.setSortable(10).setAsc(true);
+        strategy.addFilter("过去3天到80天的跌幅", Stock::getBar, Filters.filter_001b(1,60,-30,-5));
+        strategy.addFilter("阳线放量阴线缩量", Filters.filter_015b(30,35));
+        strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
+        return strategy;
+    }
+    public static Strategy strategy_09b() {
+        return strategy_09(10);
+    }
+    public static Strategy strategy_09c() {
+        return strategy_09(5);
     }
 
     //大跌后，有减持，问询函？
