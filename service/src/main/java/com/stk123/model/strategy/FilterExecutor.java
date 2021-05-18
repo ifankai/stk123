@@ -25,6 +25,7 @@ public class FilterExecutor<X, B> {
     @Getter
     @JsonView(View.Default.class)
     private String name;
+    @Getter
     private Filter<B> filter;
     private Function<X, B> function;
     @Getter

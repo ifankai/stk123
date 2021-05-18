@@ -207,8 +207,7 @@ public class Sample {
     }
     private static Strategy strategy_08(String code, String name, String turningPoint) {
         Strategy<Stock> strategy = new Strategy<>(code, name, Stock.class);
-        strategy.setSortable(5, false);
-        strategy.setCanTestHistory(false);
+        strategy.setSortable(5).setAsc(false);
 
         strategy.addFilter("行业", Filters.filter_mustStockCate(Stock.EnumCate.INDEX_eastmoney_gn));
         Filter<Stock> filter = (strg, stock) -> {
@@ -230,7 +229,7 @@ public class Sample {
     public static Strategy strategy_09a() {
         Strategy<Stock> strategy = new Strategy<>("strategy_09a","4天放量1天缩量(09a)", Stock.class);
         strategy.addFilter("过去3天到80天的跌幅", Stock::getBar, Filters.filter_001b(3,60,-50,-10));
-        strategy.addFilter("n天放量1天缩量", Filters.filter_015(20,4,0.20));
+        strategy.addFilter("n天放量1天缩量", Filters.filter_015a(20,4,0.20));
         strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
         return strategy;
     }
@@ -242,7 +241,7 @@ public class Sample {
 
     public static Strategy strategy_TEST() {
         Strategy<Stock> strategy = new Strategy<>("strategy_TEST","Strategy TEST", Stock.class);
-        strategy.setSortable(5, false);
+        strategy.setSortable(5).setAsc(false);
 
         String turningPoint = Sample.getTurningPoint(60);
         System.out.println("turningPoint=="+turningPoint);
