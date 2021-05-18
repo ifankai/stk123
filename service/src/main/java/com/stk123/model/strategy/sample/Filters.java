@@ -396,7 +396,7 @@ public class Filters {
                 return FilterResult.FALSE("最低点没有低于250均线");
             }
 
-            int sum = today.getSum(days, bar -> {
+            int sum = today.getScore(days, bar -> {
                 int n = 0;
                 if(bar.getOpen() > bar.getClose()){
                     n++;
@@ -640,7 +640,7 @@ public class Filters {
     }
 
     //n天放量1天缩量
-    public static Filter<Stock> filter_015(int days, int n, double percent){
+    public static Filter<Stock> filter_015a(int days, int n, double percent){
         return (strategy, stock) -> {
             Bar today = stock.getBar();
             if(stock.getBarSeries().size() <= (days+n)){
@@ -673,6 +673,63 @@ public class Filters {
                 }
             }
             return FilterResult.TRUE();
+        };
+    }
+
+    /**
+     * days天内 阳线放量 阴线缩量 评分算法
+     */
+    public static Filter<Stock> filter_015b(int days, int score) {
+        final double percent = 1.2; //量能增减幅度
+        return (strategy, stock) -> {
+            Bar today = stock.getBar();
+            int sum = today.getScore(days, bar -> {
+                int n = 0;
+                Bar before = bar.before();
+                if(before != null) {
+                    if (bar.getOpen() <= bar.getClose()) {//今天阳线
+                        if (before.getOpen() > before.getClose() && bar.getVolume() > before.getVolume()) {//今天阳线量能 > 昨天阴线量能
+                            n++;
+                            if(bar.getVolume() > before.getVolume()*percent){//如果量能大于20%，再加1
+                                n++;
+                            }
+                        }
+                        if (before.getOpen() < before.getClose()) {//今天阳线 昨天也是阳线
+                            n++;
+                        }
+                    } else {//今天阴线
+                        while (true){//今天阴线量能 < 前几天阳线量能
+                            if(before.getOpen() >= before.getClose()){//昨天阴线
+                                List<Bar> bars = bar.getBarsMeet(bar1 -> bar1.getOpen() < bar1.getClose());
+                                for(Bar bar1 : bars){
+                                    if(bar1.getVolume() < bar.getVolume()){//今天阴线量能 > 前几天阳线量能
+                                        n--;
+                                    }
+                                }
+                                break;
+                            }
+                            if(bar.getVolume() < before.getVolume()){//今天阴线量能小于昨天阳线量能
+                                n++;
+                                if(bar.getVolume() < before.getVolume()/percent){//如果今天阴线量能小于昨天阳线量能20%，再加1
+                                    n++;
+                                }
+                            }else{
+                                n--;
+                                if(bar.getVolume() > before.getVolume()*percent){//如果今天阴线量能大于昨天阳线量能20%，再减1
+                                    n--;
+                                }
+                            }
+                            before = before.before();
+                        }
+                    }
+                }
+                return n;
+            });
+
+            if(sum < score){
+                return FilterResult.FALSE("得分:"+sum);
+            }
+            return FilterResult.TRUE("得分:"+sum);
         };
     }
 }

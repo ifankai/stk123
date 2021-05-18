@@ -654,7 +654,10 @@ public class Bar implements Serializable, Cloneable {
 		return cnt;
 	}
 
-    public int getSum(int days, Function<Bar,Integer> function) {
+	/**
+	 * 给days天内所有bar打分，返回分数之和
+	 */
+    public int getScore(int days, Function<Bar,Integer> function) {
         Bar k = this;
         int cnt = 0;
         while(k != null){
@@ -690,6 +693,26 @@ public class Bar implements Serializable, Cloneable {
 			k = k.before(1);
 		}
 		return cnt;
+	}
+
+	/**
+	 * 得到连续满足条件的所有bar
+	 * 比如：得到前面所有连续的阳线 today.getBarsMeet(bar -> bar.getOpen() < bar.getClose());
+	 */
+	public List<Bar> getBarsMeet(Predicate<Bar> condition){
+		List<Bar> bars = new ArrayList<>();
+		Bar k = this;
+		boolean stop = false;
+		while(k != null){
+			if(condition.test(k)){
+				bars.add(k);
+				stop = true;
+			}else{
+				if(stop)break;
+			}
+			k = k.before();
+		}
+		return bars;
 	}
 
 

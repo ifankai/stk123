@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -40,29 +41,21 @@ public class NoticeTask extends AbstractTask {
 
     private String triggerBymanual;
 
-    private static int SLEEP_SECOND = 12*1000;
+    private static int SLEEP_SECOND = 10*1000;
 
-    /**
-     * add方法在添加元素的时候，若超出了度列的长度会直接抛出异常
-     * put方法，若向队尾添加元素的时候发现队列已经满了会发生阻塞一直等待空间，以加入元素。
-     * offer方法在添加元素时，如果发现队列已满无法添加的话，会直接返回false。
-     *
-     * poll: 若队列为空，返回null。
-     * remove:若队列为空，抛出NoSuchElementException异常。
-     * take:若队列为空，发生阻塞，等待有元素。
-     */
-    public static LinkedBlockingQueue<Notice> NOTICES = new LinkedBlockingQueue<>();
+    public static List<Notice> NOTICES = new CopyOnWriteArrayList<>();
 
-    public static Set<String> POSITIVE_WORDS = new HashSet<>();
+    public static Set<String> POSITIVE_WORDS = new LinkedHashSet<>();
 
     static {
         //non-regex
         String words = "进步了,发展了,静候佳音,问题不大,数据好,福音,惊喜,期待,蜕变,成功,靠谱,厉害,很有诚意的" +
-                "终于来了,牛逼,比较牛,利好,优秀,可喜可贺,稳步扩张,安心睡大觉,一步一个脚印,超预期,爆发,工作务实," +
-                "稳妥,卓有成效,信赖,非常好,欣喜,有吸引力";
+                "终于来了,牛逼,比较牛,大利好,优秀,可喜可贺,稳步扩张,安心睡大觉,一步一个脚印,超预期,爆发,工作务实," +
+                "稳妥,卓有成效,信赖,非常好,欣喜,有吸引力,不错,良心,可期";
         POSITIVE_WORDS.addAll(Arrays.asList(StringUtils.split(words, ",")));
 
         //regex
+        POSITIVE_WORDS.add("\\b利好\\b");
         POSITIVE_WORDS.add("护城河很(深|宽)");
         POSITIVE_WORDS.add("(((?!不看好).)*)(\\b看好)");
         POSITIVE_WORDS.add("效率.{0,5}(可以|提升)");
@@ -135,7 +128,7 @@ public class NoticeTask extends AbstractTask {
                         Notice notice = new Notice();
                         notice.setCode(item.getSecCode());
                         notice.setFetchDate(new Date());
-                        NOTICES.put(notice);
+                        NOTICES.add(notice);
                     }
 
                     i++;
@@ -160,115 +153,115 @@ public class NoticeTask extends AbstractTask {
         List<Notice> noticeList = new ArrayList<>();
         Map<String, String> headerRequests = XueqiuService.getCookies();
 
-        Iterator<Notice> it = NOTICES.iterator();
-        while (it.hasNext()) {
-            Notice notice = it.next();
-            log.info("notice:"+notice.getCode());
-            try{
+        for (Notice notice : NOTICES) {
+            log.info("notice:" + notice.getCode());
+            try {
                 Date twoHoursBefore = CommonUtils.addHour(new Date(), -2);
                 Date oneHoursBefore = CommonUtils.addHour(new Date(), -1);
-                if(notice.getFetchDate().before(twoHoursBefore) || triggerBymanual != null){
-                    if(notice.getXqCreateDate() != null && notice.getXqCreateDate().after(twoHoursBefore)
-                            && notice.getXqFetchDate() != null && notice.getXqFetchDate().after(oneHoursBefore)){
+                if (notice.getFetchDate().before(twoHoursBefore) || triggerBymanual != null) {
+                    if (notice.getXqCreateDate() != null && notice.getXqCreateDate().after(twoHoursBefore)
+                            && notice.getXqFetchDate() != null && notice.getXqFetchDate().after(oneHoursBefore)) {
                         continue;
                     }
                     notice.setXqFetchDate(new Date());
 
                     Stock stock = Stock.build(notice.getCode());
                     String scode = stock.getCodeWithPlace();
-                    log.info("notice:"+scode);
+                    log.info("notice:" + scode);
 
                     int pageNum = 1;
                     int countPerPage = 100;
                     int totalReplyCount = 0;
 
-                    do{
-                        String url = "https://xueqiu.com/statuses/stock_timeline.json?symbol_id="+scode+"&count="+countPerPage+"&source=%E5%85%AC%E5%91%8A&page="+pageNum;
-                        String json = HttpUtils.get(url,null,headerRequests, "GBK");
-                        if("400".equals(json) || "404".equals(json)){
-                            log.info("404:"+url);
+                    do {
+                        String url = "https://xueqiu.com/statuses/stock_timeline.json?symbol_id=" + scode + "&count=" + countPerPage + "&source=%E5%85%AC%E5%91%8A&page=" + pageNum;
+                        String json = HttpUtils.get(url, null, headerRequests, "GBK");
+                        if ("400".equals(json) || "404".equals(json)) {
+                            log.info("404:" + url);
                             log.info("[remove]404：" + scode);
                             NOTICES.remove(notice);
                             break;
                         }
                         Map root = JsonUtils.testJson(json);
-                        List<Map> ns = (List)root.get("list");
+                        List<Map> ns = (List) root.get("list");
                         boolean flag = false;
-                        for(Map n : ns){
+                        for (Map n : ns) {
                             String createdAt = String.valueOf(n.get("created_at"));
                             Date date = new Date(Long.parseLong(createdAt));
 
-                            if(date.before(ServiceUtils.addHour(new Date(), -24))){
+                            if (date.before(ServiceUtils.addHour(new Date(), -24))) {
                                 flag = true;
                                 Thread.sleep(SLEEP_SECOND);
                                 break;
                             }
 
-                            if(notice.getXqCreateDate() == null || notice.getXqCreateDate().after(date)) {
+                            if (notice.getXqCreateDate() == null || notice.getXqCreateDate().after(date)) {
                                 notice.setXqCreateDate(date);
                             }
 
                             int reply = Integer.parseInt(String.valueOf(n.get("reply_count")));
                             totalReplyCount += reply;
-                            if(reply > 0){
+                            if (reply > 0) {
                                 int id = Integer.parseInt(String.valueOf(n.get("id")));
                                 int page = 1;
                                 int matchCount = 0;
-                                do{
+                                List<String> matches = null;
+                                do {
                                     //https://xueqiu.com/statuses/comments.json?id=179083274&count=20&page=1&reply=true&asc=false&type=status&split=true
-                                    url = "https://xueqiu.com/statuses/comments.json?id="+id+"&count="+countPerPage+"&page="+page+"&reply=true&asc=false&type=status&split=true";
-                                    json = HttpUtils.get(url,null,headerRequests, "GBK");
-                                    if("400".equals(json) || "404".equals(json)){
-                                        log.info("404:"+url);
+                                    url = "https://xueqiu.com/statuses/comments.json?id=" + id + "&count=" + countPerPage + "&page=" + page + "&reply=true&asc=false&type=status&split=true";
+                                    json = HttpUtils.get(url, null, headerRequests, "GBK");
+                                    if ("400".equals(json) || "404".equals(json)) {
+                                        log.info("404:" + url);
                                         break;
                                     }
 
                                     root = JsonUtils.testJson(json);
-                                    List<Map> comments = (List)root.get("comments");
+                                    List<Map> comments = (List) root.get("comments");
 
-                                    for(Map comment : comments){
+                                    for (Map comment : comments) {
                                         String text = String.valueOf(comment.get("text"));
-                                        List<String> matches = CommonUtils.getMatchStrings(text, POSITIVE_WORDS.toArray(new String[0]));
+                                        matches = CommonUtils.getMatchStrings(text, POSITIVE_WORDS.toArray(new String[0]));
                                         matchCount += matches.size();
                                     }
 
-                                    if(comments.size() < countPerPage){
+                                    if (comments.size() < countPerPage) {
                                         break;
                                     }
 
                                     page++;
                                     //Thread.sleep(SLEEP_SECOND);
-                                }while(true);
+                                } while (true);
 
-                                if(matchCount >= 3){
-                                    notice.setXqUrl("https://xueqiu.com/S/"+scode+"/"+id);
+                                if (matchCount >= 3) {
+                                    notice.setXqUrl("https://xueqiu.com/S/" + scode + "/" + id);
                                     notice.setXqTitle(String.valueOf(n.get("description")));
                                     //noticeList.add(notice);
                                     log.info("[remove]有积极评论发邮件：" + scode);
                                     NOTICES.remove(notice);
-                                    EmailUtils.send("[公告]" + StringUtils.replace(HtmlUtils.removeHTML(notice.getXqTitle()),"网页链接",""),
-                                            stock.getNameAndCodeWithLink() +" "+ CommonUtils.wrapLink(notice.getXqTitle(), notice.getXqUrl()));
+                                    String keywords = "积极词汇：" + matches;
+                                    EmailUtils.send("[公告]" + StringUtils.replace(HtmlUtils.removeHTML(notice.getXqTitle()), "网页链接", ""),
+                                            stock.getNameAndCodeWithLink() + " " + CommonUtils.wrapLink(notice.getXqTitle(), notice.getXqUrl()) + "<br/>" + keywords);
                                     Thread.sleep(SLEEP_SECOND);
                                     break;
                                 }
                             }
                         }
-                        if(flag)break;
-                        if(pageNum++ >= 3)break;
+                        if (flag) break;
+                        if (pageNum++ >= 3) break;
 
                         Thread.sleep(SLEEP_SECOND);
-                    }while(true);
+                    } while (true);
 
 
-                    if(notice.getXqCreateDate() != null) {
+                    if (notice.getXqCreateDate() != null) {
 
-                        if(totalReplyCount > 20){
+                        if (totalReplyCount > 20) {
                             log.info("[remove]评论数大于20条任然没有积极评论：" + scode);
                             NOTICES.remove(notice);
                             continue;
                         }
 
-                        if(stock.isMarketCN()) {
+                        if (stock.isMarketCN()) {
                             if (totalReplyCount <= 0 &&
                                     notice.getXqCreateDate().before(CommonUtils.addHour(new Date(), -2))) {
                                 log.info("[remove]2小时内没有任何评论：" + scode);
@@ -289,7 +282,7 @@ public class NoticeTask extends AbstractTask {
                                 continue;
                             }
                         }
-                        if(stock.isMarketHK()) {
+                        if (stock.isMarketHK()) {
                             if (totalReplyCount <= 0 &&
                                     notice.getXqCreateDate().before(CommonUtils.addHour(new Date(), -18))) {
                                 log.info("[remove]18小时内没有任何评论：" + scode);
@@ -305,7 +298,7 @@ public class NoticeTask extends AbstractTask {
                         }
                     }
 
-                    if(notice.getFetchDate().before(CommonUtils.addHour(new Date(), -36))){
+                    if (notice.getFetchDate().before(CommonUtils.addHour(new Date(), -36))) {
                         log.info("[remove]抓取36小时后删除：" + scode);
                         NOTICES.remove(notice);
                         continue;
@@ -321,7 +314,7 @@ public class NoticeTask extends AbstractTask {
     }
 
     public static void main(String[] args) {
-        String s = "最期待胰腺癌 看好的数据, 看公司语气，会有惊喜！[大笑],双抗护城河很深很宽, 不看好哈。效率都是可以的";
+        String s = "最期待胰腺癌 看好的数据, 看公司语气，会有惊喜！[大笑],双抗护城河很深很宽, 不看好哈。效率都是可以的 利好";
         for(String reg : POSITIVE_WORDS){
             String str = CommonUtils.getMatchString(s, reg);
             System.out.println(reg+","+str);

@@ -47,7 +47,7 @@ public class Strategy<X> {
     @Getter
     private Integer topN = null;
     @Getter
-    private Boolean asc;
+    private Boolean asc = true;
     @Getter@Setter
     private boolean canTestHistory = true;
     @Getter@Setter
@@ -63,9 +63,14 @@ public class Strategy<X> {
         this.expectFilterExecutor = new FilterExecutor(null,null, x->x, expectFilter);
     }*/
 
-    public void setSortable(int topN, boolean asc){
+    public Strategy<X> setSortable(int topN){
         this.topN = topN;
+        this.canTestHistory = false;
+        return this;
+    }
+    public Strategy setAsc(boolean asc){
         this.asc = asc;
+        return this;
     }
 
     public boolean isSortable() {
@@ -78,9 +83,11 @@ public class Strategy<X> {
      */
     public void addFilter(String code, String name, Function<X, ?> function, Filter<?> filter){
         this.filterExecutors.add(new FilterExecutor(code, name, this, function, filter));
+        checkSortableFilter();
     }
     public void addFilter(String name, Function<X, ?> function, Filter<?> filter){
         this.filterExecutors.add(new FilterExecutor(null, name, this, function, filter));
+        checkSortableFilter();
     }
     public void addFilter(String code, String name, Filter<?> filter){
         addFilter(code, name, (x)->x, filter);
@@ -98,6 +105,16 @@ public class Strategy<X> {
     public int getFilterCount(){
         return this.filterExecutors.size();
     }
+
+    private void checkSortableFilter(){
+        if(this.isSortable()){
+            long count = this.filterExecutors.stream().filter(fe -> fe.getFilter() instanceof Sortable).count();
+            if(count > 1){
+                throw new RuntimeException("Sortable Strategy only allow one sortable filter, but now have more than one.");
+            }
+        }
+    }
+    
     /**
      * @TODO 可以增加多个expect filter
      */
