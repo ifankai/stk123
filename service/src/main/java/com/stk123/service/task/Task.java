@@ -2,6 +2,7 @@ package com.stk123.service.task;
 
 import com.stk123.util.ExceptionUtils;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -22,8 +23,8 @@ public abstract class Task<R> {
 
     @Getter
     private String id;
-    @Getter
-    private boolean canStop; //if true, 就是异步
+    @Getter@Setter
+    private boolean async; //if true, 就是异步
 
     private EnumStatus status = EnumStatus.NOT_RUNNING;
     @Getter
@@ -38,8 +39,8 @@ public abstract class Task<R> {
         this(true);
     }
 
-    public Task(boolean canStop){
-        this.canStop = canStop;
+    public Task(boolean async){
+        this.async = async;
         this.id = String.valueOf(System.currentTimeMillis());
     }
 

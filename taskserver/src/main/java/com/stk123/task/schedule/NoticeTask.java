@@ -3,6 +3,7 @@ package com.stk123.task.schedule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.houbb.opencc4j.util.ZhConverterUtil;
 import com.stk123.common.CommonUtils;
+import com.stk123.common.util.CacheUtils;
 import com.stk123.common.util.EmailUtils;
 import com.stk123.common.util.HtmlUtils;
 import com.stk123.common.util.JsonUtils;
@@ -43,6 +44,7 @@ public class NoticeTask extends AbstractTask {
     private String triggerBymanual;
 
     private static int SLEEP_SECOND = 10*1000;
+    private static String CACHE_KEY = "noticetask_code";
 
     public static Set<Notice> NOTICES = new CopyOnWriteArraySet<>();
 
@@ -124,12 +126,17 @@ public class NoticeTask extends AbstractTask {
                         Files.write(path, item.getSecCode().getBytes());
                     }
 
+                    if(item.getSecCode().equals(CacheUtils.get(CacheUtils.KEY_ONE_DAY, CACHE_KEY+item.getSecCode()))){
+                        continue;
+                    }
+
                     long cnt = NOTICES.stream().filter(notice -> notice.getCode().equals(item.getSecCode())).count();
                     if(cnt == 0){
                         Notice notice = new Notice();
                         notice.setCode(item.getSecCode());
                         notice.setFetchDate(new Date());
                         NOTICES.add(notice);
+                        CacheUtils.put(CacheUtils.KEY_ONE_DAY, CACHE_KEY+item.getSecCode(), item.getSecCode());
                     }
 
                     i++;

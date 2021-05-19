@@ -145,7 +145,7 @@ public class Tasks {
     }
     @Scheduled(fixedDelay=5*60*1000) //task跑完后停5分钟再跑
     public void noticeAnalyze() {
-        taskContainer.start(NoticeTask.class, "analyze");
+        taskContainer.start(NoticeTask.class, false, "analyze");
     }
 
 }

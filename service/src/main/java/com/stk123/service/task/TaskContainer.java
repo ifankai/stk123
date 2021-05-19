@@ -31,10 +31,16 @@ public class TaskContainer {
         start(createTask(cls), args);
     }
 
+    public void start(Class cls, boolean async, String... args) {
+        Task task = createTask(cls);
+        task.setAsync(async);
+        start(task, args);
+    }
+
     public void start(Task task, String... args) {
         try {
             tasks.add(task);
-            if(task.isCanStop()) {
+            if(task.isAsync()) {
                 ScheduledFuture future = taskScheduler.schedule(
                         () -> task.run(args), new Date());
                 scheduledTasks.put(task.getId(), future);
@@ -89,7 +95,7 @@ public class TaskContainer {
                 this.tasks.removeIf(task1 -> task1.getId().equals(id));
             }
         }
-        if(!task.isCanStop()) {
+        if(!task.isAsync()) {
             scheduledTasks.remove(task.getId());
         }
     }
