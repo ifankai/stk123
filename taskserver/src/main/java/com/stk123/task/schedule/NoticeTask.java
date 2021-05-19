@@ -25,6 +25,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -43,7 +44,7 @@ public class NoticeTask extends AbstractTask {
 
     private static int SLEEP_SECOND = 10*1000;
 
-    public static List<Notice> NOTICES = new CopyOnWriteArrayList<>();
+    public static Set<Notice> NOTICES = new CopyOnWriteArraySet<>();
 
     public static Set<String> POSITIVE_WORDS = new LinkedHashSet<>();
 
@@ -201,11 +202,11 @@ public class NoticeTask extends AbstractTask {
 
                             int reply = Integer.parseInt(String.valueOf(n.get("reply_count")));
                             totalReplyCount += reply;
-                            if (reply > 0) {
+                            if (reply >= 3) {
                                 int id = Integer.parseInt(String.valueOf(n.get("id")));
                                 int page = 1;
                                 int matchCount = 0;
-                                List<String> matches = null;
+                                List<String> matches = new ArrayList<>();
                                 do {
                                     //https://xueqiu.com/statuses/comments.json?id=179083274&count=20&page=1&reply=true&asc=false&type=status&split=true
                                     url = "https://xueqiu.com/statuses/comments.json?id=" + id + "&count=" + countPerPage + "&page=" + page + "&reply=true&asc=false&type=status&split=true";
@@ -220,7 +221,7 @@ public class NoticeTask extends AbstractTask {
 
                                     for (Map comment : comments) {
                                         String text = String.valueOf(comment.get("text"));
-                                        matches = CommonUtils.getMatchStrings(text, POSITIVE_WORDS.toArray(new String[0]));
+                                        matches.addAll(CommonUtils.getMatchStrings(text, POSITIVE_WORDS.toArray(new String[0])));
                                         matchCount += matches.size();
                                     }
 
@@ -238,6 +239,7 @@ public class NoticeTask extends AbstractTask {
                                     //noticeList.add(notice);
                                     log.info("[remove]有积极评论发邮件：" + scode);
                                     NOTICES.remove(notice);
+                                    flag = true;
                                     String keywords = "积极词汇：" + matches;
                                     EmailUtils.send("[公告]" + StringUtils.replace(HtmlUtils.removeHTML(notice.getXqTitle()), "网页链接", ""),
                                             stock.getNameAndCodeWithLink() + " " + CommonUtils.wrapLink(notice.getXqTitle(), notice.getXqUrl()) + "<br/>" + keywords);
