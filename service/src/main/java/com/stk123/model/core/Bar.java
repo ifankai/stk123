@@ -172,6 +172,21 @@ public class Bar implements Serializable, Cloneable {
 		}
 	}
 
+	//是否阳线，假阳也算
+	public boolean isYang(){
+		return this.getOpen() < this.getClose();
+	}
+	public boolean isYangOrEqual(){
+		return this.getOpen() <= this.getClose();
+	}
+	//是否阴线，假阴也算
+	public boolean isYin(){
+		return this.getOpen() > this.getClose();
+	}
+	public boolean isYinOrEqual(){
+		return this.getOpen() >= this.getClose();
+	}
+
 
     public double getValue(int days, Function<Bar, Double> func) {
         return func.apply(this.go(days));
