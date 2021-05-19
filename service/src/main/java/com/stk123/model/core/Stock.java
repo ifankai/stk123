@@ -62,7 +62,7 @@ public class Stock {
         }
         @Getter
         private Integer market;
-        @Getter
+
         private String klineTable;
 
         public String getKlineTable(){
@@ -71,7 +71,6 @@ public class Stock {
 
         /**
          * @param name 1|2|3|cn|us|hk
-         * @return
          */
         public static EnumMarket getMarket(String name){
             for(EnumMarket em : EnumMarket.values()){
@@ -215,9 +214,6 @@ public class Stock {
 
     /**
      * 能适应各种类型的code, eg: SH600600, 600600, 02002, BIDU
-     * @param code
-     * @param name
-     * @return
      */
     private Stock set(String code, String name) {
         this.code = code;
@@ -507,9 +503,9 @@ public class Stock {
         }
         log.info("buildBarRealTime:"+page);
         String[] str = page.split(";");
-        for(int j=0;j<str.length;j++){
-            String s = str[j];
-            if(this.isMarketCN() && s.length() > 40){
+        for (String aStr : str) {
+            String s = aStr;
+            if (this.isMarketCN() && s.length() > 40) {
                 s = org.apache.commons.lang.StringUtils.substringBetween(s, "\"", "\"");
                 String[] ss = s.split(",");
                 Bar k = new Bar();
@@ -521,13 +517,13 @@ public class Stock {
                 k.setLow(Double.parseDouble(ss[5]));
                 k.setVolume(Double.parseDouble(ss[8]));
                 k.setAmount(Double.parseDouble(ss[9]));
-                k.setChange((k.getClose()-k.getLastClose())/k.getLastClose()*100);
+                k.setChange((k.getClose() - k.getLastClose()) / k.getLastClose() * 100);
                 k.setDate(org.apache.commons.lang.StringUtils.replace(ss[30], "-", ""));
 
                 this.getBarSeries().addToFirst(k);
                 //System.out.println(this.getBarSeries().getFirst());
                 return this;
-            }else if(this.isMarketHK() && s.length() > 12){
+            } else if (this.isMarketHK() && s.length() > 12) {
                 s = org.apache.commons.lang.StringUtils.substringBetween(s, "\"", "\"");
                 String[] ss = s.split(",");
                 Bar k = new Bar();
@@ -567,11 +563,11 @@ public class Stock {
             return TURNING_POINTS.get(days);
         }
         List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn);
-        List<Stock> stocks = list.stream().map(projection -> Stock.build(projection)).collect(Collectors.toList());
+        List<Stock> stocks = list.stream().map(Stock::build).collect(Collectors.toList());
         Bar b = this.getBar().getHighestBar(days, bar -> {
            List<Bar> bars = stocks.stream().map(stock1 -> stock1.getBar()!=null ? stock1.getBar().before(bar.getDate()) : null).filter(Objects::nonNull).collect(Collectors.toList());
            long cnt = bars.stream().filter(bar1 -> bar1.getClose() > bar1.getMA(5, Bar.EnumValue.C) && bar1.before().getClose() < bar1.before().getMA(5, Bar.EnumValue.C)).count();
-           return Double.valueOf(cnt);
+           return (double) cnt;
         });
         TURNING_POINTS.put(days, b);
         return b;

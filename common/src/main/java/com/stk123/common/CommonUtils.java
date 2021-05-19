@@ -187,13 +187,11 @@ public class CommonUtils {
 
     public static void printStackTrace(){
         StackTraceElement[] se = Thread.currentThread().getStackTrace();
-        if(se != null){
-            for(int i = se.length-1; i >= 0; i--){
-                if("printStackTrace".equalsIgnoreCase(se[i].getMethodName()))break;
-                if(!se[i].getClassName().contains("com.stk123"))continue;
-                System.out.println("  "+se[i].getClassName()+"."+se[i].getMethodName()+"("+se[i].getLineNumber()+")");
-                //System.out.println(stackElements[i].getFileName());
-            }
+        for(int i = se.length-1; i >= 0; i--){
+            if("printStackTrace".equalsIgnoreCase(se[i].getMethodName()))break;
+            if(!se[i].getClassName().contains("com.stk123"))continue;
+            System.out.println("  "+se[i].getClassName()+"."+se[i].getMethodName()+"("+se[i].getLineNumber()+")");
+            //System.out.println(stackElements[i].getFileName());
         }
     }
 
@@ -218,8 +216,7 @@ public class CommonUtils {
         if(text == null || text.trim().length()==0)return text;
         Pattern pat = Pattern.compile(pattern);
         Matcher matcher = pat.matcher(text);
-        while (matcher.find())//查找符合pattern的字符串
-        {
+        if (matcher.find()) {//查找符合pattern的字符串
             return matcher.group();
         }
         return null;
@@ -552,7 +549,7 @@ public class CommonUtils {
     }
 
     public static String getQuartersAsSelect() throws Exception{
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("<select id=\"quarter\" onclick=\"stopBubble(this);\">");
         sb.append("<option>-财务日期-</option>");
         String result = CommonUtils.getToday();
@@ -917,23 +914,23 @@ public class CommonUtils {
     private final static String WRAPCODEASHTML_3 = "</a>";
 
     public static String wrapCodeAsHtml(String code){
-        return new StringBuffer(WRAPCODEASHTML_1).append(code).append(WRAPCODEASHTML_2).append(code).append(WRAPCODEASHTML_3).toString();
+        return WRAPCODEASHTML_1 + code + WRAPCODEASHTML_2 + code + WRAPCODEASHTML_3;
     }
     public static String wrapCodeAndNameAsHtml2(String code, String name){
-        return new StringBuffer().append(name).append(CommonConstant.MARK_BLANK_SPACE).append(WRAPCODEASHTML_1).append(code).append("' data-code='"+code+"'>").append(CommonConstant.MARK_BRACKET_LEFT).append(code).append(CommonConstant.MARK_BRACKET_RIGHT).append(WRAPCODEASHTML_3).toString();
+        return name + CommonConstant.MARK_BLANK_SPACE + WRAPCODEASHTML_1 + code + "' data-code='" + code + "'>" + CommonConstant.MARK_BRACKET_LEFT + code + CommonConstant.MARK_BRACKET_RIGHT + WRAPCODEASHTML_3;
     }
     public static String wrapCodeAndNameAsHtml(String code, String name){
-        return new StringBuffer().append(WRAPCODEASHTML_1).append(code).append("' data-code='"+code+"'>").append(name).append(CommonConstant.MARK_BLANK_SPACE).append(CommonConstant.MARK_BRACKET_LEFT).append(code).append(CommonConstant.MARK_BRACKET_RIGHT).append(WRAPCODEASHTML_3).toString();
+        return WRAPCODEASHTML_1 + code + "' data-code='" + code + "'>" + name + CommonConstant.MARK_BLANK_SPACE + CommonConstant.MARK_BRACKET_LEFT + code + CommonConstant.MARK_BRACKET_RIGHT + WRAPCODEASHTML_3;
     }
 
 
 
     public static String wrapIndustryAsHtml(Integer id,String name){
-        return new StringBuffer("<a target='_blank' href='/industry?id=").append(id).append("'>").append(name).append("</a>").toString();
+        return "<a target='_blank' href='/industry?id=" + id + "'>" + name + "</a>";
     }
 
     public static String wrapLink(String title, String url){
-        return new StringBuffer("<a target='_blank' href='").append(url).append("'>").append(title).append("</a>").toString();
+        return "<a target='_blank' href='" + url + "'>" + title + "</a>";
     }
 
     //计算复合增长率
@@ -1211,11 +1208,10 @@ public class CommonUtils {
     @SneakyThrows
     public static void cmd(String command)  {
         Process process = Runtime.getRuntime().exec("cmd.exe /c " + command);
-        BufferedInputStream bis = null;
-        BufferedReader br = null;
-        try {
-            bis = new BufferedInputStream(process.getInputStream());
-            br = new BufferedReader(new InputStreamReader(bis));
+        try (
+            BufferedInputStream bis = new BufferedInputStream(process.getInputStream());
+            BufferedReader br = new BufferedReader(new InputStreamReader(bis))
+        ) {
             String line;
             while ((line = br.readLine()) != null) {
                 log.info(line);
@@ -1225,11 +1221,8 @@ public class CommonUtils {
             if (process.exitValue() != 0) {
                 log.info("[error] exit value:" + process.exitValue());
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("error command:[" + command + "]", e);
-        }finally {
-            bis.close();
-            br.close();
         }
     }
 
@@ -1243,8 +1236,10 @@ public class CommonUtils {
 
     public static String padString(String str, int leng) {
         int len = ChineseUtils.length(str);
+        StringBuilder strBuilder = new StringBuilder(str);
         for (int i = len; i <= leng; i++)
-            str += " ";
+            strBuilder.append(" ");
+        str = strBuilder.toString();
         return str;
     }
 }

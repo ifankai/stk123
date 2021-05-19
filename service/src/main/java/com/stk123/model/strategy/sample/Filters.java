@@ -81,8 +81,7 @@ public class Filters {
     public static Filter<Bar> filter_001b(int numberBeforeFirst, int numberBeforeParam1, double
             min, double max) {
         return (strategy, bar) -> {
-            Bar today = bar;
-            Bar todayBefore = today.before(numberBeforeFirst);
+            Bar todayBefore = bar.before(numberBeforeFirst);
             Bar highestBar = todayBefore.getHighestBar(numberBeforeParam1, Bar.EnumValue.H);
             double change = (todayBefore.getLow() - highestBar.getHigh())/highestBar.getHigh();
             return new FilterResultBetween(change*100, min, max).addResult("实际最高点到低点涨跌幅：" + change*100);
@@ -170,13 +169,12 @@ public class Filters {
             if(open >= close){
                 return FilterResult.FALSE("今天不是阳线");
             }
-            for(int i=0; i<days.length; i++){
-                int day = days[i];
+            for (int day : days) {
                 double ma = bar.getMA(day, Bar.EnumValue.C);
-                if(ma < CommonUtils.min(open, bar.getLastClose()) || ma > close){
-                    return FilterResult.FALSE("没有穿过"+day+"日均线");
+                if (ma < CommonUtils.min(open, bar.getLastClose()) || ma > close) {
+                    return FilterResult.FALSE("没有穿过" + day + "日均线");
                 }
-            };
+            }
             return FilterResult.TRUE(bar.getDate());
         };
     }
