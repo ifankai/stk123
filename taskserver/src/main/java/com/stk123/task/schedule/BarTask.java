@@ -591,7 +591,7 @@ public class BarTask extends AbstractTask {
                     List<String> data = ListUtils.createList(
                             displayCode ? stock.getNameAndCodeWithLink() : "",
                             strategyResult.getDate(),
-                            strategyResult.getStrategy().getName().replaceAll("，", "<br/>"),
+                            strategyResult.getStrategy().getName().replaceAll("，", "<br/>") + "<br/>-----------<br/>" + strategyResult.getResults(),
                             stock.getDayBarImage(),
                             //backtesting.getStrategies().get(0).getPassRateString().replaceAll("]", "]<br/>") +
                             //        (StringUtils.isNotEmpty(backtesting.getStrategies().get(0).getPassedFilterResultLog()) ? "<br/>"+backtesting.getStrategies().get(0).getPassedFilterResultLog() : "")

@@ -2,9 +2,7 @@ package com.stk123.model.strategy;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.model.json.View;
-import com.stk123.model.strategy.Filter;
 import com.stk123.model.strategy.result.FilterResult;
-import com.stk123.model.strategy.result.FilterResultFalse;
 import lombok.Getter;
 import lombok.extern.apachecommons.CommonsLog;
 
@@ -32,8 +30,6 @@ public class FilterExecutor<X, B> {
     private int counterPassed;
     @Getter
     private int counterNotPassed;
-    //@Getter
-    //private boolean pass;
     @Getter
     private List<FilterResult> results = new ArrayList<>();
     @Getter

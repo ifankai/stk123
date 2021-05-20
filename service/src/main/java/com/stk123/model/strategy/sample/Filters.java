@@ -20,8 +20,8 @@ public class Filters {
     public static Filter<BarSeries> expectFilter(int days, double change) {
         return (strategy, bs) -> {
             Bar today = bs.getFirst();
-            Bar tomorrwo10 = today.after(days);
-            double high = tomorrwo10.getHighest(days, Bar.EnumValue.H);
+            Bar tomorrow10 = today.after(days);
+            double high = tomorrow10.getHighest(days, Bar.EnumValue.H);
             double p = (high - today.getClose())/today.getClose();
             return new FilterResultBetween(p*100, change, 1000);
         };
@@ -33,7 +33,7 @@ public class Filters {
             if(ArrayUtils.contains(codes, today.getCode())){
                 return FilterResult.FALSE("策略排除该股票");
             }
-            return FilterResult.TRUE("");
+            return FilterResult.TRUE();
         };
     }
 
@@ -65,8 +65,7 @@ public class Filters {
     public static Filter<Bar> filter_001a(int numberBeforeFirst, int numberBeforeParam1, double
             min, double max) {
         return (strategy, bar) -> {
-            Bar today = bar;
-            Bar todayBefore = today.before(numberBeforeFirst);
+            Bar todayBefore = bar.before(numberBeforeFirst);
             double change = todayBefore.getChange(numberBeforeParam1, Bar.EnumValue.C);
             return new FilterResultBetween(change*100, min, max).addResult("实际涨跌幅：" + change*100);
         };
@@ -110,7 +109,7 @@ public class Filters {
                 return FilterResult.FALSE("不是最低点量能最大");
             }
             Bar l10v = today.getLowestBar(10, Bar.EnumValue.V);
-            return new FilterResultBetween(h10v.getVolume()/l10v.getVolume(),7, 10).addResult(today.getDate());
+            return new FilterResultBetween(h10v.getVolume()/l10v.getVolume(),7, 10);
         };
     }
 
@@ -123,7 +122,7 @@ public class Filters {
             if(Math.abs(p) <= Math.abs(change)){
                 if(bar.getLow() < bar.getOpen() && bar.getLow() < bar.getClose()
                         && bar.getHigh() > bar.getOpen() && bar.getHigh() > bar.getClose()){
-                    return FilterResult.TRUE(bar.getDate());
+                    return FilterResult.TRUE();
                 }
                 return FilterResult.FALSE("非十字星");
             }
@@ -148,7 +147,7 @@ public class Filters {
                 if(count >= n){
                     int cnt = bar.getBarCountExcludeToday(3, k -> Math.abs(k.getChange()) <= 3);
                     if(cnt >= 3)
-                        return FilterResult.TRUE(bar.getDate());
+                        return FilterResult.TRUE();
                     else
                         return FilterResult.FALSE("前3天振幅大于3%");
                 }
@@ -175,7 +174,7 @@ public class Filters {
                     return FilterResult.FALSE("没有穿过" + day + "日均线");
                 }
             }
-            return FilterResult.TRUE(bar.getDate());
+            return FilterResult.TRUE();
         };
     }
 
@@ -197,7 +196,7 @@ public class Filters {
                 if (ma >= open && ma <= close) {
                     count++;
                     if (count >= n) {
-                        return FilterResult.TRUE(bar.getDate());
+                        return FilterResult.TRUE();
                     }
                 }
             }
@@ -218,7 +217,7 @@ public class Filters {
                 if(forkBarBefore.getMACD().dif < bar.before().getMACD().dif
                         && (forkBarBefore.getClose() > bar.before().getClose()
                         || forkBarBefore.getMA(n, Bar.EnumValue.C) > bar.before().getMA(n, Bar.EnumValue.C) ) ){
-                    return FilterResult.TRUE(bar.getDate());
+                    return FilterResult.TRUE();
                 }else{
                     return FilterResult.FALSE("MACD没有背离");
                 }
@@ -235,7 +234,7 @@ public class Filters {
             Bar bar = bs.getFirst();
             Bar.MACD macd = bar.getMACD();
             if(Math.abs(macd.macd) < d && Math.abs(macd.dif) < d*2 && macd.dea < macd.dif && bar.getMACDUpperForkBar(0) != null){
-                return FilterResult.TRUE(bar.getDate());
+                return FilterResult.TRUE();
             }
             return FilterResult.FALSE();
         };
@@ -251,7 +250,7 @@ public class Filters {
                 Bar forkBarBefore = forkBar.before();
                 if(forkBarBefore.getMACD().dif < bar.before().getMACD().dif
                         && forkBarBefore.getClose() > bar.before().getClose() ){
-                    return FilterResult.TRUE(bar.getDate());
+                    return FilterResult.TRUE();
                 }else{
                     return FilterResult.FALSE("MACD没有背离");
                 }
@@ -308,7 +307,7 @@ public class Filters {
                     }
                 }
                 String jsl = CommonUtils.numberFormat2Digits(change*100);
-                return FilterResult.TRUE(today.getDate() + "均线紧缩率:" + jsl +"%, max="+max+",min="+min, today.getDate(), "均线紧缩率(%)", jsl);
+                return FilterResult.TRUE("均线紧缩率:" + jsl +"%, max="+max+",min="+min, today.getDate(), "均线紧缩率(%)", jsl);
             }
             return FilterResult.FALSE("不满足K线价差小于"+d+"%, 实际："+(change*100));
         };
@@ -362,7 +361,7 @@ public class Filters {
                     }
                 }
                 String jsl = CommonUtils.numberFormat2Digits(change*100);
-                return FilterResult.TRUE(today.getDate() + "均线紧缩率:" + jsl +"%, max="+max+",min="+min, today.getDate(), "均线紧缩率(%)", jsl);
+                return FilterResult.TRUE("均线紧缩率:" + jsl +"%, max="+max+",min="+min, today.getDate(), "均线紧缩率(%)", jsl);
             }
             return FilterResult.FALSE("不满足K线价差小于"+d+"%, 实际："+(change*100));
         };
@@ -414,7 +413,7 @@ public class Filters {
                     n++;
                 }
                 //二连阳
-                if(bar.getOpen() < bar.getClose() && before.getOpen() < before.getClose() ){
+                if(before != null && bar.getOpen() < bar.getClose() && before.getOpen() < before.getClose() ){
                     n = n+2;
                 }
                 return n;
@@ -443,7 +442,7 @@ public class Filters {
                     }
                 }
                 String jsl = CommonUtils.numberFormat2Digits(change*100);
-                return FilterResult.TRUE(today.getDate() + "均线紧缩率:" + jsl +"%,max="+max+",min="+min+",sum="+sum, today.getDate(), "均线紧缩率(%)", jsl);
+                return FilterResult.TRUE("均线紧缩率:" + jsl +"%,max="+max+",min="+min+",sum="+sum, today.getDate(), "均线紧缩率(%)", jsl);
             }
             return FilterResult.FALSE("不满足K线价差小于"+d+"%, 实际："+(change*100));
         };
@@ -454,7 +453,7 @@ public class Filters {
         return (strategy, bs) -> {
             Bar today = bs.getFirst();
             if(today.isBreakTrendLine(m, n, d)){
-                return FilterResult.TRUE(today.getDate());
+                return FilterResult.TRUE();
             }
             return FilterResult.FALSE();
         };
@@ -466,7 +465,7 @@ public class Filters {
             if(today.isBreakTrendLine(m, n, d)){
                 double lowest = today.getLowest(n*2, Bar.EnumValue.L);
                 if((today.getClose()-lowest)/lowest <= percentLowest2Today){
-                    return FilterResult.TRUE(today.getDate());
+                    return FilterResult.TRUE();
                 }
             }
             return FilterResult.FALSE();
@@ -477,7 +476,7 @@ public class Filters {
         return (strategy, stock) -> {
             Bar today = stock.getBar();
             if(today.isBreakTrendline(m, left, right, percentLowest2Today)){
-                return FilterResult.TRUE(today.getDate());
+                return FilterResult.TRUE();
             }
             return FilterResult.FALSE();
         };
@@ -499,7 +498,7 @@ public class Filters {
             if( ((h-l)/l <= 0.05 && today.getClose() > h && cnt >= 10)
                     ||((h2-l2)/l2 < 0.1 && today.getClose() > h2 && cnt2 >= 18)
                     ){
-                return FilterResult.TRUE((h-l)/l + "," + cnt + ", "+cnt2);
+                return FilterResult.TRUE(); //(h-l)/l + "," + cnt + ", "+cnt2
             }
             return FilterResult.FALSE(cnt + ", "+cnt2);
         };
@@ -512,7 +511,7 @@ public class Filters {
             Bar k = today.getBarExcludeToday(days, bar -> bar.before()!=null && bar.getVolume()/bar.before().getVolume() >= n);
             if(k != null && today.getClose() >= k.getClose() && today.before().getClose() <= k.getClose()){
                 if(k.getBarCountExcludeToday(days*4, bar -> bar.getVolume() < k.getVolume()) >= days*4) {
-                    return FilterResult.TRUE(k.getVolume() / k.before().getVolume());
+                    return FilterResult.TRUE("倍数："+k.getVolume() / k.before().getVolume());
                 }
             }
             return FilterResult.FALSE();
@@ -731,7 +730,7 @@ public class Filters {
             if(sum < score){
                 return FilterResult.FALSE("得分:"+sum);
             }
-            return FilterResult.Sortable((double) sum);
+            return FilterResult.Sortable((double) sum).addResult("得分:"+sum);
         };
     }
 }

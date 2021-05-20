@@ -52,15 +52,16 @@ public class NoticeTask extends AbstractTask {
 
     static {
         //non-regex
-        String words = "进步了,发展了,静候佳音,问题不大,数据好,福音,惊喜,期待,蜕变,成功,靠谱,厉害,很有诚意的" +
+        String words = "进步了,发展了,静候佳音,问题不大,数据好,福音,惊喜,期待,蜕变,成功,厉害,很有诚意的" +
                 "终于来了,牛逼,比较牛,大利好,优秀,可喜可贺,稳步扩张,安心睡大觉,一步一个脚印,超预期,爆发,工作务实," +
-                "稳妥,卓有成效,信赖,非常好,欣喜,有吸引力,不错,良心,可期";
+                "稳妥,卓有成效,信赖,非常好,欣喜,有吸引力,不错,良心,可期,长期大增,业绩好,好企业";
         POSITIVE_WORDS.addAll(Arrays.asList(StringUtils.split(words, ",")));
 
         //regex
         POSITIVE_WORDS.add("\\b利好\\b");
         POSITIVE_WORDS.add("护城河很(深|宽)");
         POSITIVE_WORDS.add("(((?!不看好).)*)(\\b看好)");
+        POSITIVE_WORDS.add("(((?!不靠谱).)*)(\\b靠谱)");
         POSITIVE_WORDS.add("效率.{0,5}(可以|提升)");
         POSITIVE_WORDS.add("得到(证明|承认)");
         POSITIVE_WORDS.add("大股东.{0,4}看好公司");

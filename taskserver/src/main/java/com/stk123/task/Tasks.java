@@ -1,5 +1,6 @@
 package com.stk123.task;
 
+import com.stk123.common.util.WeatherUtils;
 import com.stk123.service.task.TaskBuilder;
 import com.stk123.service.task.TaskContainer;
 import com.stk123.task.quartz.job.ResearchReportJob;
@@ -55,6 +56,11 @@ public class Tasks {
     public void main() {
         //researchReportJob();
         //initialKLineCN();
+    }
+
+    @Scheduled(cron = "0 0 8 ? * *") //每天早上8点检查天气看是否降温
+    public void weatherCheck(){
+        WeatherUtils.check();
     }
 
 
