@@ -89,16 +89,16 @@ public class Strategy<X> {
         this.filterExecutors.add(new FilterExecutor(null, name, this, function, filter));
         checkSortableFilter();
     }
-    public void addFilter(String code, String name, Filter<?> filter){
+    public void addFilter(String code, String name, Filter<X> filter){
         addFilter(code, name, (x)->x, filter);
     }
-    public void addFilter(String name, Filter<?> filter){
+    public void addFilter(String name, Filter<X> filter){
         addFilter(null, name, (x)->x, filter);
     }
     public void addFilter(Function<X, ?> function, Filter<?> filter){
         addFilter(null, null, function, filter);
     }
-    public void addFilter(Filter<?> filter){
+    public void addFilter(Filter<X> filter){
         addFilter(null, null, (x)->x, filter);
     }
 

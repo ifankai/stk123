@@ -248,7 +248,6 @@ public class Bar implements Serializable, Cloneable {
 
 	public double getMA(int days, Function<Bar, Double> func) {
 		double total = 0.0;
-		int tmp = days;
 		for(int i=0;i<days;i++){
 			Bar k = this.before(i);
 			if(k == null){
@@ -256,7 +255,7 @@ public class Bar implements Serializable, Cloneable {
 			}
 			total += func.apply(k);
 		}
-		return ServiceUtils.numberFormat(total/tmp,2);
+		return ServiceUtils.numberFormat(total/ days,2);
 	}
 
 
@@ -272,8 +271,31 @@ public class Bar implements Serializable, Cloneable {
 		return ServiceUtils.numberFormat(total,2);
 	}
 
+	/**
+	 * 得到中位数
+	 * @param calcAvgForEven 当days是偶数时是否计算average值
+	 */
+	public double getMedian(int days, EnumValue type, boolean calcAvgForEven){
+		List<Double> values = this.map(days, bar -> bar.getValue(type));
+		Collections.sort(values);
+		int index = values.size()/2;
+		if(calcAvgForEven && values.size() % 2 == 0){
+			return (values.get(index) + values.get(index - 1))/2;
+		}else{
+			return values.get(index > 0 && values.size() % 2 == 0 ? index - 1 : index);
+		}
+	}
+	public double getMedian(int days, EnumValue type){
+		return getMedian(days, type, false);
+	}
 
-
+	/**
+	 * 是否向上跳空缺口
+	 */
+	public boolean isGapUp(){
+		Bar yesterday = this.yesterday();
+		return yesterday != null && this.getLow() > yesterday.getHigh();
+	}
 
 	/**
 	 * lowest
@@ -1351,6 +1373,35 @@ public class Bar implements Serializable, Cloneable {
         }
         return false;
     }
+
+	/**
+	 * 突破趋势线
+	 * 用法：(100, 6, 20, 0.13)
+	 */
+    public boolean isBreakTrendline(int m, int left, int right, double percentLowest2Today){
+		Bar today = this;
+		//System.out.println("today="+today);
+		Bar hb = today.getHighPoint(m, left, right);
+		//System.out.println("hb="+hb);
+		if(hb != null) {
+			List<Bar> bars = today.getBarsHigherThanTrendline(hb);
+			int days = today.getDaysBetween(hb.getDate(), today.getDate());
+			if (bars.size() <= 1) {
+				bars = today.before().getBarsHigherThanTrendline(hb);
+				if (bars.size() > 1) {
+					//System.out.println("today.getChange(days, Bar.EnumValue.C)===="+today.getChange(days, Bar.EnumValue.C));
+					bars = today.getBarsLowerThanTrendline(hb, Math.min(Math.abs(today.getChange(days, Bar.EnumValue.C)), 0.15));
+					if (bars.size() < days / 2) {
+						double lowest = today.getLowest(left + right, Bar.EnumValue.L);
+						if ((today.getClose() - lowest) / lowest <= percentLowest2Today) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
 
     //得到所有最高点在趋势线上方的bar
     public List<Bar> getBarsHigherThanTrendline(Bar hightPoint){

@@ -10,32 +10,46 @@ import com.stk123.model.strategy.result.FilterResult;
 public class Sample {
 
     // ignore: 02a 选出来的标的太多，由02b替换
-    public static String STRATEGIES = "01,02b,03a,03b,04a,04b,04c,05a,05b,06a,06b,08a,08b,08c,09a,09c";
+    public static String STRATEGIES = "01a,01b,01d,02b,03a,03b,04a,04b,04c,05a,05b,06a,06b,08a,08b,08c,09a";
 
-    public static String STRATEGIES_FOR_ALL_STOCKS = "01,05b,09a,09b";
+    public static String STRATEGIES_FOR_ALL_STOCKS = "01a,01b,01c,05b";
 
-    public static Strategy strategy_01() {
-        Strategy<BarSeries> strategy = new Strategy<>("strategy_01","策略603096新经典20201106，一段跌幅后底部放量(01)", BarSeries.class);
+
+    /**** 阳线放量 阴线缩量 *****/
+    public static Strategy strategy_01a() {
+        Strategy<BarSeries> strategy = new Strategy<>("strategy_01a","策略603096新经典20201106，一段跌幅后底部放量(01a)", BarSeries.class);
         strategy.addFilter("过去3天到80天的跌幅", BarSeries::getFirst, Filters.filter_001b(3,80,-50,-30));
         strategy.addFilter("底部2天放量3天缩量", Filters.filter_002());
         strategy.addFilter("今日十字星", BarSeries::getFirst, Filters.filter_003(0.45));
         strategy.setExpectFilter("10日内涨幅>12%", Filters.expectFilter(10, 12));
         return strategy;
     }
+    //4天放量1天缩量 000519 20210421
+    public static Strategy strategy_01b() {
+        Strategy<Stock> strategy = new Strategy<>("strategy_01b","4天放量1天缩量(01b)", Stock.class);
+        strategy.addFilter("过去3天到80天的跌幅", Stock::getBar, Filters.filter_001b(3,60,-50,-10));
+        strategy.addFilter("n天放量1天缩量", Filters.filter_015a(20,4,0.20));
+        strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
+        return strategy;
+    }
+    //阳线放量 阴线缩量
+    public static Strategy strategy_01(String code, int topN) {
+        Strategy<Stock> strategy = new Strategy<>("strategy_"+code,"阳线放量阴线缩量("+code+")", Stock.class);
+        strategy.setSortable(10).setAsc(true);
+        strategy.addFilter("过去3天到80天的跌幅", Stock::getBar, Filters.filter_001b(1,60,-30,-10));
+        strategy.addFilter("阳线放量阴线缩量", Filters.filter_015b(30,30));
+        strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
+        return strategy;
+    }
+    public static Strategy strategy_01c() {
+        return strategy_01("01c", 10);
+    }
+    public static Strategy strategy_01d() {
+        return strategy_01("01d", 5);
+    }
 
-    /**
-     http://localhost:8082/task/start/com.stk123.task.schedule.BacktestingTask/?code=002044&strategy=02&startDate=20200101&endDate=20201231
 
-     策略[策略002044美年健康20201231，底部一阳吃多阴，MACD底背离]调用所有过滤器调用总次数：263
-     其中：
-       过滤器[一阳吃5阴或阳]调用总次数：22, 通过：5, 未通过：17
-       过滤器[一阳穿过5,10日均线]调用总次数：48, 通过：5, 未通过：43
-       过滤器[MACD和close或ma(60)底背离]调用总次数：151, 通过：6, 未通过：145
-       过滤器[过去3天到100天的跌幅[-100,-20] or 过去3天到40天内最高点到低点的跌幅[-100,-30]]调用总次数：42, 通过：6, 未通过：36
-     通过所有过滤器次数：2
-     StrategyResult{name=策略002044美年健康20201231，底部一阳吃多阴（最好MACD底背离）, code=002044, date=20200616, filterResults=[FilterResultTrue{filterName=一阳吃5阴或阳, pass=true, result='20200616'}, FilterResultTrue{filterName=MACD和close或ma(60)底背离, pass=true, result='20200616'}, FilterResultBetween{filterName=过去3天到100天的跌幅[-100,-20] or 过去3天到40天内最高点到低点的跌幅[-100,-30], pass=true, value=-22.51, min=-100.0, max=-20.0, result=实际涨跌幅：-22.50502344273275}, FilterResultTrue{filterName=一阳穿过5,10日均线, pass=true, result='20200616'}], expectFilterResults=[]}
-     StrategyResult{name=策略002044美年健康20201231，底部一阳吃多阴（最好MACD底背离）, code=002044, date=20201231, filterResults=[FilterResultTrue{filterName=一阳吃5阴或阳, pass=true, result='20201231'}, FilterResultTrue{filterName=一阳穿过5,10日均线, pass=true, result='20201231'}, FilterResultTrue{filterName=MACD和close或ma(60)底背离, pass=true, result='20201231'}, FilterResultBetween{filterName=过去3天到100天的跌幅[-100,-20] or 过去3天到40天内最高点到低点的跌幅[-100,-30], pass=true, value=-29.69, min=-100.0, max=-20.0, result=实际涨跌幅：-29.69460688758934}], expectFilterResults=[]}
-     */
+    /**** 一阳吃多阴 ****/
     public static Strategy strategy_02a() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_02a","策略002044美年健康20201231，底部一阳吃多阴(02a)", BarSeries.class);
         strategy.addFilter("一阳吃5阴或阳", Filters.filter_004(5));
@@ -96,6 +110,8 @@ public class Sample {
         return strategy;
     }
 
+
+    /**** 均线缠绕 ****/
     //002538 20200703 100天内，放量涨缩量跌，之后均线缠绕突破买入
     public static Strategy strategy_03a() {
         Strategy<Stock> strategy = new Strategy<>("strategy_03a","策略002538司尔特20200703，底部均线缠绕，一阳吃多阴(03a)", Stock.class);
@@ -116,6 +132,8 @@ public class Sample {
         return strategy;
     }
 
+
+    /**** 突破趋势线 ****/
     //突破长期趋势线
     public static Strategy strategy_04a() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_04a","突破长期趋势线(04a)", BarSeries.class);
@@ -132,12 +150,14 @@ public class Sample {
     }
     //突破短期趋势线
     public static Strategy strategy_04c() {
-        Strategy<BarSeries> strategy = new Strategy<>("strategy_04c","突破短期趋势线(04c)", BarSeries.class);
+        Strategy<Stock> strategy = new Strategy<>("strategy_04c","突破短期趋势线(04c)", Stock.class);
         strategy.addFilter("突破短期趋势线", Filters.filter_008c(100, 6, 20, 0.13));
-        strategy.setExpectFilter("250日内涨幅>25%", Filters.expectFilter(250, 25));
+        strategy.setExpectFilter("250日内涨幅>25%",Stock::getBarSeries, Filters.expectFilter(250, 25));
         return strategy;
     }
 
+
+    /**** 突破底部平台 ****/
     //突破底部平台 300464, 20200618
     public static Strategy strategy_05a() {
         Strategy<Stock> strategy = new Strategy<>("strategy_05a","突破底部平台(05a)", Stock.class);
@@ -156,6 +176,8 @@ public class Sample {
         return strategy;
     }
 
+
+    /**** 站上放量  ****/
     //站上单根巨量 09926, 20201203
     public static Strategy strategy_06a() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_06a","站上单根巨量(06a)", BarSeries.class);
@@ -163,7 +185,6 @@ public class Sample {
         strategy.setExpectFilter("60日内涨幅>20%", Filters.expectFilter(60, 20));
         return strategy;
     }
-
     //站上底部一堆放量 00005,20201021
     public static Strategy strategy_06b() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_06b","站上底部一堆放量(06b)", BarSeries.class);
@@ -173,7 +194,8 @@ public class Sample {
         return strategy;
     }
 
-    //相似K线
+
+    /**** 相似K线 ****/
     public static Strategy strategy_07a() {
         Strategy<Stock> strategy = new Strategy<>("strategy_07a","策略相似K线(07a)", Stock.class);
         Stock stock = Stock.build("002572");
@@ -184,6 +206,7 @@ public class Sample {
     }
 
 
+    /**** 阶段强势 ****/
     public static Strategy strategy_08a() {
         String turningPoint20 = Sample.getTurningPoint(20);
         return strategy_08("strategy_08a","20日板块阶段强势(08a)，自"+turningPoint20+"以来", turningPoint20);
@@ -225,30 +248,25 @@ public class Sample {
         return bar.getDate();
     }
 
-    //4天放量1天缩量 000519 20210421
+
+    /**** 跳空缺口 ****/
     public static Strategy strategy_09a() {
-        Strategy<Stock> strategy = new Strategy<>("strategy_09a","4天放量1天缩量(09a)", Stock.class);
-        strategy.addFilter("过去3天到80天的跌幅", Stock::getBar, Filters.filter_001b(3,60,-50,-10));
-        strategy.addFilter("n天放量1天缩量", Filters.filter_015a(20,4,0.20));
+        Strategy<Stock> strategy = new Strategy<>("strategy_09a","跳空缺口，前期突破趋势(09a)", Stock.class);
+        Filter<Stock> filter = (strg, stock) -> {
+            Bar bar = stock.getBar();
+            Bar upBar = bar.getBar(10, Bar::isGapUp);
+            return upBar != null ? FilterResult.TRUE() : FilterResult.FALSE();
+        };
+        strategy.addFilter("跳空缺口", filter);
+        strategy.addFilter("突破短期趋势线", Filters.filter_008c(100, 6, 20, 0.13));
         strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
         return strategy;
     }
 
-    //阳线放量 阴线缩量
-    public static Strategy strategy_09(int topN) {
-        Strategy<Stock> strategy = new Strategy<>("strategy_09b","阳线放量阴线缩量(09b)", Stock.class);
-        strategy.setSortable(10).setAsc(true);
-        strategy.addFilter("过去3天到80天的跌幅", Stock::getBar, Filters.filter_001b(1,60,-30,-10));
-        strategy.addFilter("阳线放量阴线缩量", Filters.filter_015b(30,30));
-        strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
-        return strategy;
-    }
-    public static Strategy strategy_09b() {
-        return strategy_09(10);
-    }
-    public static Strategy strategy_09c() {
-        return strategy_09(5);
-    }
+
+
+
+
 
     //大跌后，有减持，问询函？
     public static Strategy strategy_0() {
