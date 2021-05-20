@@ -551,13 +551,8 @@ public class BarTask extends AbstractTask {
                 stocksCN = stockService.buildStocksWithProjection(list);
                 stocksCN = stockService.buildBarSeries(stocksCN, 500, realtime != null);
 
-                //排除总市值小于50亿的
-                stocksCN = stocksCN.stream().filter(stock -> {
-                    if(stock.isMarketCN() && stock.getMarketCap() < 50){
-                        return false;
-                    }
-                    return true;
-                }).collect(Collectors.toList());
+                //排除总市值小于40亿的
+                stocksCN = filterByMarketCap(stocksCN, 40);
             }
 
             if(StringUtils.isEmpty(strategy)){
@@ -665,6 +660,9 @@ public class BarTask extends AbstractTask {
             //排除 人均持股 20万以下的
             stocksA = filterByHolder(stocksA);
 
+            //排除总市值小于50亿的
+            stocksA = filterByMarketCap(stocksA, 50);
+
         }
 
         /*if(stocksH == null) {
@@ -711,6 +709,13 @@ public class BarTask extends AbstractTask {
         }).collect(Collectors.toList());
     }
 
-
+    public List<Stock> filterByMarketCap(List<Stock> stocks, double marketCap){
+        return stocksA.stream().filter(stock -> {
+            if(stock.isMarketCN() && stock.getMarketCap() < marketCap){
+                return false;
+            }
+            return true;
+        }).collect(Collectors.toList());
+    }
 
 }
