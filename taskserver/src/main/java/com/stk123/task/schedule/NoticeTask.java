@@ -212,7 +212,7 @@ public class NoticeTask extends AbstractTask {
                             if (reply >= 3) {
                                 int id = Integer.parseInt(String.valueOf(n.get("id")));
                                 int page = 1;
-                                int matchCount = 0;
+                                //int matchCount = 0;
                                 List<String> matches = new ArrayList<>();
                                 do {
                                     //https://xueqiu.com/statuses/comments.json?id=179083274&count=20&page=1&reply=true&asc=false&type=status&split=true
@@ -229,7 +229,7 @@ public class NoticeTask extends AbstractTask {
                                     for (Map comment : comments) {
                                         String text = String.valueOf(comment.get("text"));
                                         matches.addAll(CommonUtils.getMatchStrings(text, POSITIVE_WORDS.toArray(new String[0])));
-                                        matchCount += matches.size();
+                                        //matchCount += matches.size();
                                     }
 
                                     if (comments.size() < countPerPage) {
@@ -240,7 +240,7 @@ public class NoticeTask extends AbstractTask {
                                     //Thread.sleep(SLEEP_SECOND);
                                 } while (true);
 
-                                if (matchCount >= 3) {
+                                if (matches.size() >= 3) {
                                     notice.setXqUrl("https://xueqiu.com/S/" + scode + "/" + id);
                                     notice.setXqTitle(String.valueOf(n.get("description")));
                                     //noticeList.add(notice);
