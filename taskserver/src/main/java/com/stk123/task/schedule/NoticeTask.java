@@ -241,7 +241,7 @@ public class NoticeTask extends AbstractTask {
                                     //Thread.sleep(SLEEP_SECOND);
                                 } while (true);
 
-                                if (matches.size() >= 3) {
+                                if (matches.size() >= 2) {
                                     notice.setXqUrl("https://xueqiu.com/S/" + scode + "/" + id);
                                     notice.setXqTitle(String.valueOf(n.get("description")));
                                     //noticeList.add(notice);
