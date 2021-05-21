@@ -660,77 +660,107 @@ public class Filters {
      * days天内 阳线放量 阴线缩量 评分算法
      */
     public static Filter<Stock> filter_015b(int days, int score) {
-        final double percent = 1.2; //量能增减幅度
+
         return (strategy, stock) -> {
-            int sum = stock.getBar().getScore(days, today -> {
-                int n = 0;
-                Bar yesterday = today.before();
-                if(yesterday != null) {
-                    Bar beforeYesterday = yesterday.before();
-
-                    if (today.isYangOrEqual()) {//今天阳线
-
-                        if(today.getVolume() > yesterday.getVolume() * percent){//如果今天阳线量能大于昨天量能20%，再加1
-                            n++;
-                        }
-
-                        if(yesterday.isYin()){//昨天阴线
-                            if (today.getVolume() > yesterday.getVolume()) {//今天阳线量能 > 昨天阴线量能
-                                n++;
-                                if(beforeYesterday != null &&
-                                        beforeYesterday.isYin() && today.getVolume() > beforeYesterday.getVolume()){//今天阳线量能 > 前天阴线量能
-                                    n++;
-                                }
-                            }
-                        }else{//昨天阳线
-                            if (yesterday.yesterday().isYang() || (today.tomorrow() != null && today.tomorrow().isYin())) {//今天阳线 昨天是阳线 前天阳线or明天是阴线
-                                n++;
-                            }
-                            if(beforeYesterday != null && today.getVolume() > beforeYesterday.getVolume() * percent){//如果今天阳线 昨天阳线 今天量能大于前天量能20%，再加1
-                                n++;
-                            }
-                        }
-
-                    } else {//今天阴线
-
-                        if(yesterday.isYin()){//昨天阴线
-                            List<Bar> bars = today.getBarsMeet(Bar::isYang);
-                            for(Bar bar : bars){
-                                //if(bar.getDaysBetween(bar.getDate(), bar1.getDate()) >=3) break;
-                                if(bar.getVolume() < today.getVolume()){//今天阴线量能 > 前几天阳线量能
-                                    n--;
-                                }
-                            }
-                        }else {//昨天阳线
-                            if (today.getVolume() < yesterday.getVolume()) {//今天阴线量能小于昨天阳线量能
-                                n++;
-                                if (today.getVolume() < yesterday.getVolume() / percent) {//如果今天阴线量能小于昨天阳线量能20%，再加1
-                                    n++;
-                                }
-                            } else {
-                                n--;
-                                if (today.getVolume() > yesterday.getVolume() * percent) {//如果今天阴线量能大于昨天量能20%，再减1
-                                    n--;
-                                }
-                            }
-
-                            //前天阳线
-                            if (beforeYesterday != null && beforeYesterday.isYang()
-                                    && today.getVolume() < beforeYesterday.getVolume()) {//今天阴线量能小于前天阳线量能
-                                n++;
-                                if (today.getVolume() < beforeYesterday.getVolume() / percent) {//如果今天阴线量能小于前天阳线量能20%，再加1
-                                    n++;
-                                }
-                            }
-                        }
-                    }
-                }
-                return n;
-            });
+            int sum = getScore(stock, days);
+            sum += getScore(stock, days/2); //加大后期k线权重
+            sum += getScore(stock, days/3); //加大后期k线权重
+            if(stock.getBar().isYin()){
+                sum ++;
+            }
             if(sum < score){
                 return FilterResult.FALSE("得分:"+sum);
             }
             return FilterResult.Sortable((double) sum).addResult("得分:"+sum);
+        };
+    }
+
+    private static int getScore(Stock stock, int days){
+        final double percent = 1.2; //量能增减幅度
+        return stock.getBar().getScore(days, today -> {
+            int n = 0;
+            Bar yesterday = today.before();
+            if(yesterday != null) {
+                Bar beforeYesterday = yesterday.before();
+
+                if (today.isYangOrEqual()) {//今天阳线
+
+                    if(today.getVolume() > yesterday.getVolume() * percent){//如果今天阳线量能大于昨天量能20%，再加1
+                        n++;
+                    }
+
+                    if(yesterday.isYin()){//昨天阴线
+                        if (today.getVolume() > yesterday.getVolume()) {//今天阳线量能 > 昨天阴线量能
+                            n++;
+                            if(beforeYesterday != null &&
+                                    beforeYesterday.isYin() && today.getVolume() > beforeYesterday.getVolume()){//今天阳线量能 > 前天阴线量能
+                                n++;
+                            }
+                        }
+                    }else{//昨天阳线
+                        if (yesterday.yesterday().isYang() || (today.tomorrow() != null && today.tomorrow().isYin())) {//今天阳线 昨天是阳线 前天阳线or明天是阴线
+                            n++;
+                        }
+                        if(beforeYesterday != null && today.getVolume() > beforeYesterday.getVolume() * percent){//如果今天阳线 昨天阳线 今天量能大于前天量能20%，再加1
+                            n++;
+                        }
+                    }
+
+                } else {//今天阴线
+
+                    if(yesterday.isYin()){//昨天阴线
+                        List<Bar> bars = today.getBarsMeet(Bar::isYang);
+                        for(Bar bar : bars){
+                            //if(bar.getDaysBetween(bar.getDate(), bar1.getDate()) >=3) break;
+                            if(bar.getVolume() < today.getVolume()){//今天阴线量能 > 前几天阳线量能
+                                n--;
+                            }
+                        }
+                    }else {//昨天阳线
+                        if (today.getVolume() < yesterday.getVolume()) {//今天阴线量能小于昨天阳线量能
+                            n++;
+                            if (today.getVolume() < yesterday.getVolume() / percent) {//如果今天阴线量能小于昨天阳线量能20%，再加1
+                                n++;
+                            }
+                        } else {
+                            n--;
+                            if (today.getVolume() > yesterday.getVolume() * percent) {//如果今天阴线量能大于昨天量能20%，再减1
+                                n--;
+                            }
+                        }
+
+                        //前天阳线
+                        if (beforeYesterday != null && beforeYesterday.isYang()
+                                && today.getVolume() < beforeYesterday.getVolume()) {//今天阴线量能小于前天阳线量能
+                            n++;
+                            if (today.getVolume() < beforeYesterday.getVolume() / percent) {//如果今天阴线量能小于前天阳线量能20%，再加1
+                                n++;
+                            }
+                        }
+                    }
+                }
+            }
+            return n;
+        });
+    }
+
+    /**
+     * 箱体上沿整荡整理。
+     * days天内，最近m天有大于等于n天是运行在箱体（箱体不超过box）上沿百分子percent之内的
+     */
+    public static Filter<Stock> filter_016a(int days, double box, int m, int n, double percent){
+        return (strategy, stock) -> {
+            Bar today = stock.getBar();
+            double closeHigh = today.getHighest(days, Bar.EnumValue.C);
+            double closeLow = today.getLowest(days, Bar.EnumValue.C);
+            if(closeHigh/closeLow > (1+box)){
+                return FilterResult.FALSE("箱体高低比:"+(closeHigh/closeLow)+",大于"+(1+box));
+            }
+            int cnt = today.getBarCount(m, bar -> bar.getClose() >= closeLow + (closeHigh-closeLow) * (1-percent));
+            if(cnt < n){
+                return FilterResult.FALSE("运行在箱体上沿的只有"+cnt+"个,少于"+n);
+            }
+            return FilterResult.TRUE();
         };
     }
 }

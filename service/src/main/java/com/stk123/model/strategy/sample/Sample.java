@@ -37,6 +37,7 @@ public class Sample {
         Strategy<Stock> strategy = new Strategy<>("strategy_"+code,"阳线放量阴线缩量("+code+")", Stock.class);
         strategy.setSortable(10).setAsc(true);
         strategy.addFilter("过去3天到80天的跌幅", Stock::getBar, Filters.filter_001b(1,60,-30,-10));
+        strategy.addFilter("", Filters.filter_016a(30, 0.3, 10, 8, 0.5));
         strategy.addFilter("阳线放量阴线缩量", Filters.filter_015b(30,30));
         strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
         return strategy;
