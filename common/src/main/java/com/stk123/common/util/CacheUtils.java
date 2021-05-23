@@ -27,8 +27,8 @@ public class CacheUtils {
     public final static String KEY_INDUSTRY_STK = "industry.";
     public final static String KEY_STKS_COLUMN_NAMES = "stksColumnNames";//多股同列显示的列名key
     public final static String KEY_INDEX_TREE = "indexTree";
-    private final static String STOCK = "stock";
-    private final static String FOREVER = "forever";
+    public final static String STOCK = "stock";
+    public final static String FOREVER = "forever";
 	
     //one day key
     public final static String KEY_ONE_DAY = "oneday";
@@ -52,9 +52,9 @@ public class CacheUtils {
 //        }
 //    }
     static {
-        Cache<String, Object> cache_6_hours = Caffeine.newBuilder().expireAfterWrite(6, TimeUnit.HOURS).maximumSize(1_000).build();
-        Cache<String, Object> cache_oneday = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.DAYS).maximumSize(1_000).build();
-        Cache<String, Object> cache_forever = Caffeine.newBuilder().maximumSize(1_000).build();
+        Cache<String, Object> cache_6_hours = Caffeine.newBuilder().expireAfterWrite(6, TimeUnit.HOURS).maximumSize(1_0000).build();
+        Cache<String, Object> cache_oneday = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.DAYS).maximumSize(1_0000).build();
+        Cache<String, Object> cache_forever = Caffeine.newBuilder().maximumSize(1_0000).build();
 
         ALL_CACHE.put(KEY_STK_STOCK, cache_6_hours);
         ALL_CACHE.put(KEY_STK_INDUSTRY, cache_6_hours);

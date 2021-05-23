@@ -586,7 +586,7 @@ public class BarTask extends AbstractTask {
                     List<String> data = ListUtils.createList(
                             displayCode ? stock.getNameAndCodeWithLink() : "",
                             strategyResult.getDate(),
-                            strategyResult.getStrategy().getName().replaceAll("，", "<br/>") + "<br/>-----------<br/>" + strategyResult.getResults(),
+                            strategyResult.getStrategy().getName().replaceAll("，", "<br/>") + "<br/>-----------<br/>" + StringUtils.join(strategyResult.getResults(),"<br/>"),
                             stock.getDayBarImage(),
                             //backtesting.getStrategies().get(0).getPassRateString().replaceAll("]", "]<br/>") +
                             //        (StringUtils.isNotEmpty(backtesting.getStrategies().get(0).getPassedFilterResultLog()) ? "<br/>"+backtesting.getStrategies().get(0).getPassedFilterResultLog() : "")
@@ -710,7 +710,7 @@ public class BarTask extends AbstractTask {
     }
 
     public List<Stock> filterByMarketCap(List<Stock> stocks, double marketCap){
-        return stocksA.stream().filter(stock -> {
+        return stocks.stream().filter(stock -> {
             if(stock.isMarketCN() && stock.getMarketCap() < marketCap){
                 return false;
             }

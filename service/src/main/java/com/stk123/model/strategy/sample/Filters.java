@@ -662,16 +662,17 @@ public class Filters {
     public static Filter<Stock> filter_015b(int days, int score) {
 
         return (strategy, stock) -> {
-            int sum = getScore(stock, days);
-            sum += getScore(stock, days/2); //加大后期k线权重
-            sum += getScore(stock, days/3); //加大后期k线权重
+            int sum1 = getScore(stock, days);
+            int sum2 = getScore(stock, days/2); //加大后期k线权重
+            int sum3 = getScore(stock, days/3); //加大后期k线权重
+            int sum = sum1+sum2+sum3;
             if(stock.getBar().isYin()){
                 sum ++;
             }
             if(sum < score){
                 return FilterResult.FALSE("得分:"+sum);
             }
-            return FilterResult.Sortable((double) sum).addResult("得分:"+sum);
+            return FilterResult.Sortable((double) sum).addResult("得分:"+sum+",sum1="+sum1+",sum2="+sum2+",sum3="+sum3);
         };
     }
 
@@ -748,7 +749,7 @@ public class Filters {
      * 箱体上沿整荡整理。
      * days天内，最近m天有大于等于n天是运行在箱体（箱体不超过box）上沿百分子percent之内的
      */
-    public static Filter<Stock> filter_016a(int days, double box, int m, int n, double percent){
+    public static Filter<Stock> filter_016a(int days, double box,double lowPercent, double highPercent, int m, int n){
         return (strategy, stock) -> {
             Bar today = stock.getBar();
             double closeHigh = today.getHighest(days, Bar.EnumValue.C);
@@ -756,9 +757,27 @@ public class Filters {
             if(closeHigh/closeLow > (1+box)){
                 return FilterResult.FALSE("箱体高低比:"+(closeHigh/closeLow)+",大于"+(1+box));
             }
-            int cnt = today.getBarCount(m, bar -> bar.getClose() >= closeLow + (closeHigh-closeLow) * (1-percent));
+            if(today.getClose() < closeLow + (closeHigh-closeLow) * lowPercent
+                    || today.getClose() > closeLow + (closeHigh-closeLow) * highPercent){
+                return FilterResult.FALSE("今天股价不在区间("+ (closeLow + (closeHigh-closeLow) * lowPercent)
+                        +","+ (closeLow + (closeHigh-closeLow) * highPercent)+")内");
+            }
+            int cnt = today.getBarCount(m, bar -> bar.getClose() >= closeLow + (closeHigh-closeLow) * lowPercent
+                && bar.getClose() <= closeLow + (closeHigh-closeLow) * highPercent);
             if(cnt < n){
                 return FilterResult.FALSE("运行在箱体上沿的只有"+cnt+"个,少于"+n);
+            }
+            return FilterResult.TRUE();
+        };
+    }
+
+    //低点到今天的涨幅
+    public static Filter<Stock> filter_017a(int days, double lowPercent, double highPercent){
+        return (strategy, stock) -> {
+            Bar today = stock.getBar();
+            double lowest = today.getLowest(days, Bar.EnumValue.C);
+            if(today.getClose() < lowest*(1+lowPercent) || today.getClose() > lowest*(1+highPercent)){
+                return FilterResult.FALSE("区间("+lowest*(1+lowPercent)+","+lowest*(1+highPercent)+")");
             }
             return FilterResult.TRUE();
         };

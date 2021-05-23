@@ -88,11 +88,11 @@ public class StrategyBacktesting {
                 }else {
                     all = all.stream().sorted(Comparator.comparing(StrategyResult::getSortableValue, Comparator.reverseOrder())).collect(Collectors.toList());
                 }
-                for (int i = 0; i < all.size(); i++) {
-                    StrategyResult sr = all.get(i);
-                    if(i < strategy.getTopN()){
+                int j = 0;
+                for (StrategyResult sr : all) {
+                    if (sr.isFilterAllPassed() && j++ < strategy.getTopN()) {
                         sr.setSortablePassed(true);
-                    }else{
+                    } else {
                         sr.setSortablePassed(false);
                     }
                 }

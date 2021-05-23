@@ -34,16 +34,17 @@ public class Sample {
     }
     //阳线放量 阴线缩量
     public static Strategy strategy_01(String code, int topN) {
-        Strategy<Stock> strategy = new Strategy<>("strategy_"+code,"阳线放量阴线缩量("+code+")", Stock.class);
-        strategy.setSortable(10).setAsc(true);
-        strategy.addFilter("过去3天到80天的跌幅", Stock::getBar, Filters.filter_001b(1,60,-30,-10));
-        strategy.addFilter("", Filters.filter_016a(30, 0.3, 10, 8, 0.5));
-        strategy.addFilter("阳线放量阴线缩量", Filters.filter_015b(30,30));
+        Strategy<Stock> strategy = new Strategy<>("strategy_"+code,"阳线放量阴线缩量[月线要放量]("+code+")", Stock.class);
+        strategy.setSortable(topN).setAsc(false);
+        //strategy.addFilter("过去3天到80天的跌幅", Stock::getBar, Filters.filter_001b(1,60,-30,-10));
+        strategy.addFilter("", Filters.filter_016a(30, 0.3, 0.4, 0.9, 10, 8));
+        strategy.addFilter("", Filters.filter_017a(100, 0, 0.25));
+        strategy.addFilter("阳线放量阴线缩量", Filters.filter_015b(30,60));
         strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
         return strategy;
     }
     public static Strategy strategy_01c() {
-        return strategy_01("01c", 10);
+        return strategy_01("01c", 30);
     }
     public static Strategy strategy_01d() {
         return strategy_01("01d", 5);
@@ -231,7 +232,7 @@ public class Sample {
     }
     private static Strategy strategy_08(String code, String name, String turningPoint) {
         Strategy<Stock> strategy = new Strategy<>(code, name, Stock.class);
-        strategy.setSortable(5).setAsc(false);
+        strategy.setSortable(5).setAsc(false).setCanTestHistory(false);
 
         strategy.addFilter("行业", Filters.filter_mustStockCate(Stock.EnumCate.INDEX_eastmoney_gn));
         Filter<Stock> filter = (strg, stock) -> {

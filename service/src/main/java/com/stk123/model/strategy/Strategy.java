@@ -65,7 +65,7 @@ public class Strategy<X> {
 
     public Strategy<X> setSortable(int topN){
         this.topN = topN;
-        this.canTestHistory = false;
+        //this.canTestHistory = false;
         return this;
     }
     public Strategy setAsc(boolean asc){

@@ -45,6 +45,7 @@ public class NoticeTask extends AbstractTask {
 
     private static int SLEEP_SECOND = 10*1000;
     private static String CACHE_KEY = "noticetask_code";
+    private static String CACHE_KEY_IDS = "noticetask_ids";
 
     public static Set<Notice> NOTICES = new CopyOnWriteArraySet<>();
 
@@ -129,6 +130,18 @@ public class NoticeTask extends AbstractTask {
 
                     if(item.getSecCode().equals(CacheUtils.get(CacheUtils.KEY_ONE_DAY, CACHE_KEY+item.getSecCode()))){
                         continue;
+                    }
+
+                    Set ids = (Set) CacheUtils.get(CacheUtils.FOREVER, CACHE_KEY_IDS);
+                    if(ids != null){
+                        if(ids.contains(item.getAnnouncementId())) {
+                            continue;
+                        }
+                        ids.add(item.getAnnouncementId());
+                    }else{
+                        Set set = new HashSet();
+                        set.add(item.getAnnouncementId());
+                        CacheUtils.put(CacheUtils.FOREVER, CACHE_KEY_IDS, set);
                     }
 
                     long cnt = NOTICES.stream().filter(notice -> notice.getCode().equals(item.getSecCode())).count();
