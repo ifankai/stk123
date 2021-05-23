@@ -39,6 +39,7 @@ public class Sample {
         //strategy.addFilter("过去3天到80天的跌幅", Stock::getBar, Filters.filter_001b(1,60,-30,-10));
         strategy.addFilter("", Filters.filter_016a(30, 0.3, 0.4, 0.9, 10, 8));
         strategy.addFilter("", Filters.filter_017a(100, 0, 0.25));
+        //TODO 月线放量，最近3个月60天的均量 》 300天前3个月60天的均量 1倍？
         strategy.addFilter("阳线放量阴线缩量", Filters.filter_015b(30,60));
         strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
         return strategy;
