@@ -47,6 +47,10 @@ public class Filters {
         };
     }
 
+    public static Filter<Stock> filter_mustBarSizeGreatThan(int size) {
+        return (strategy, stock) -> stock.getBarSeries().size() >= size ? FilterResult.TRUE() : FilterResult.FALSE();
+    }
+
     //斜率, >0表示均线向上
     public static Filter<Bar> filter_maSlope(int days, int ma, double min, double max) {
         return (strategy, bar) -> {

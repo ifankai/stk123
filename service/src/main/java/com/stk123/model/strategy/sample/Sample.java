@@ -38,15 +38,16 @@ public class Sample {
         strategy.setSortable(topN).setAsc(false);
         //strategy.addFilter("过去3天到80天的跌幅", Stock::getBar, Filters.filter_001b(1,60,-30,-10));
         //strategy.addFilter("", Filters.filter_016a(30, 0.3, 0.4, 0.9, 10, 8));
+        strategy.addFilter("K线数量", Filters.filter_mustBarSizeGreatThan(250));
         strategy.addFilter("低点到今天的涨幅", Filters.filter_017a(100, 0, 0.25));
         //TODO 月线放量，最近3个月60天的均量 》 300天前3个月60天的均量（或500天最低点） 1倍？
-        strategy.addFilter("", (strgy, stock) -> stock.getBar().getSUM(60, Bar.EnumValue.HSL) >= 100 ? FilterResult.TRUE() : FilterResult.FALSE());
+        strategy.addFilter("", (strgy, stock) -> stock.getBar().getSUM(60, Bar.EnumValue.HSL) >= 200 ? FilterResult.TRUE() : FilterResult.FALSE());
         strategy.addFilter("阳线放量阴线缩量", Filters.filter_015b(30,60));
         strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
         return strategy;
     }
     public static Strategy strategy_01c() {
-        return strategy_01("01c", 30);
+        return strategy_01("01c", 20);
     }
     public static Strategy strategy_01d() {
         return strategy_01("01d", 5);
