@@ -5,16 +5,12 @@ import com.jcraft.jsch.Session;
 import com.stk123.common.util.ScpUtils;
 import com.stk123.task.tool.TaskUtils;
 import lombok.Setter;
-import lombok.SneakyThrows;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,7 +38,7 @@ public class SyncTask extends AbstractTask {
 
     @Override
     public void register() {
-        this.runAnyway(this::execute);
+        this.run(this::execute);
     }
 
     public void execute() {

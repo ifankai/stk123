@@ -3,7 +3,6 @@ package com.stk123.task.schedule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stk123.common.util.Arrays;
 import com.stk123.common.util.ChineseUtils;
-import com.stk123.common.util.EmailUtils;
 import com.stk123.common.util.HtmlUtils;
 import com.stk123.entity.StkTextEntity;
 import com.stk123.model.Text;
@@ -51,7 +50,7 @@ public class XueqiuStockArticleTask extends AbstractTask {
 
     @Override
     public void register() {
-        this.runAnyway(this::execute);
+        this.run(this::execute);
     }
 
     public void execute() {

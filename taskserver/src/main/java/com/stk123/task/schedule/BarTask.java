@@ -56,6 +56,11 @@ public class BarTask extends AbstractTask {
     private String market;
     private String strategy;
 
+    private String today = TaskUtils.getToday();//"20160923";
+    private final Date now = new Date();
+    private int dayOfWeek = TaskUtils.getDayOfWeek(now);
+    private boolean isWorkingDay = dayOfWeek == 1 || dayOfWeek == 2 || dayOfWeek == 3 || dayOfWeek == 4 || dayOfWeek == 5;
+
     @Autowired
     private StkKlineRepository stkKlineRepository;
     @Autowired

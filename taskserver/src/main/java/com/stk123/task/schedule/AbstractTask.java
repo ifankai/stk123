@@ -6,7 +6,6 @@ import com.stk123.task.tool.TaskUtils;
 import lombok.Setter;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -24,11 +23,6 @@ public abstract class AbstractTask extends Task {
         super(canStop);
     }
 
-    protected final Date now = new Date();
-    @Setter
-    protected String today = TaskUtils.getToday();//"20160923";
-    protected int dayOfWeek = TaskUtils.getDayOfWeek(now);
-    protected boolean isWorkingDay = (dayOfWeek == 1 || dayOfWeek == 2 || dayOfWeek == 3 || dayOfWeek == 4 || dayOfWeek == 5)?true:false;;
     protected Stock.EnumMarket market = Stock.EnumMarket.CN; //default A stock
 
     protected Map<String, Object> params = new LinkedHashMap<>();
@@ -37,8 +31,8 @@ public abstract class AbstractTask extends Task {
     protected void runByName(String name, Runnable runnable){
         methods.put(name, runnable);
     }
-    protected void runAnyway(Runnable runnable){
-        methods.put("run_anyway_"+new Date().getTime(), runnable);
+    protected void run(Runnable runnable){
+        methods.put("run_"+new Date().getTime(), runnable);
     }
 
     @Override
@@ -67,7 +61,7 @@ public abstract class AbstractTask extends Task {
 
         Set<String> keySet = params.keySet();
         for(Map.Entry<String, Runnable> method : methods.entrySet()){
-            if(keySet.isEmpty() || StringUtils.startsWith(method.getKey(), "run_anyway_") || keySet.stream().anyMatch(key -> StringUtils.contains(method.getKey(), key))){
+            if(keySet.isEmpty() || StringUtils.startsWith(method.getKey(), "run_") || keySet.stream().anyMatch(key -> StringUtils.contains(method.getKey(), key))){
                 log.info("["+this.getClass().getSimpleName()+"]" + "...start");
                 method.getValue().run();
                 log.info("["+this.getClass().getSimpleName()+"]" + "...end");
@@ -86,12 +80,8 @@ public abstract class AbstractTask extends Task {
             try {
                 if(PropertyUtils.isWriteable(this, param.getKey()))
                     PropertyUtils.setProperty(this, param.getKey(), param.getValue());
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
+            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                log.error("setParameterToProperty error", e);
             }
         }
     }

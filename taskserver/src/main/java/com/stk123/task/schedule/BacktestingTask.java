@@ -34,7 +34,7 @@ public class BacktestingTask extends AbstractTask {
     }*/
 
     public void register() {
-        this.runAnyway(() -> execute());
+        this.run(() -> execute());
     }
 
     public void execute() {
