@@ -16,6 +16,7 @@ public class Sample {
 
 
     /**** 阳线放量 阴线缩量 *****/
+    //2天放量3天缩量
     public static Strategy strategy_01a() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_01a","策略603096新经典20201106，一段跌幅后底部放量(01a)", BarSeries.class);
         strategy.addFilter("过去3天到80天的跌幅", BarSeries::getFirst, Filters.filter_001b(3,80,-50,-30));
@@ -34,14 +35,13 @@ public class Sample {
     }
     //阳线放量 阴线缩量
     public static Strategy strategy_01(String code, int topN) {
-        Strategy<Stock> strategy = new Strategy<>("strategy_"+code,"阳线放量阴线缩量[月线要放量]("+code+")", Stock.class);
+        Strategy<Stock> strategy = new Strategy<>("strategy_"+code,"阳线放量阴线缩量("+code+")", Stock.class);
         strategy.setSortable(topN).setAsc(false);
         //strategy.addFilter("过去3天到80天的跌幅", Stock::getBar, Filters.filter_001b(1,60,-30,-10));
-        //strategy.addFilter("", Filters.filter_016a(30, 0.3, 0.4, 0.9, 10, 8));
+        //strategy.addFilter("箱体上沿整荡整理", Filters.filter_016a(30, 0.3, 0.4, 0.9, 10, 8));
         strategy.addFilter("K线数量", Filters.filter_mustBarSizeGreatThan(250));
         strategy.addFilter("低点到今天的涨幅", Filters.filter_017a(100, 0, 0.25));
-        //TODO 月线放量，最近3个月60天的均量 》 300天前3个月60天的均量（或500天最低点） 1倍？
-        strategy.addFilter("", (strgy, stock) -> stock.getBar().getSUM(60, Bar.EnumValue.HSL) >= 200 ? FilterResult.TRUE() : FilterResult.FALSE());
+        strategy.addFilter("60天换手率大于200%", Filters.filter_mustHSLGreatThan(60, 200));
         strategy.addFilter("阳线放量阴线缩量", Filters.filter_015b(30,60));
         strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
         return strategy;
@@ -257,12 +257,7 @@ public class Sample {
     /**** 跳空缺口 ****/
     public static Strategy strategy_09a() {
         Strategy<Stock> strategy = new Strategy<>("strategy_09a","跳空缺口，前期突破趋势(09a)", Stock.class);
-        Filter<Stock> filter = (strg, stock) -> {
-            Bar bar = stock.getBar();
-            Bar upBar = bar.getBar(10, Bar::isGapUp);
-            return upBar != null ? FilterResult.TRUE() : FilterResult.FALSE();
-        };
-        strategy.addFilter("跳空缺口", filter);
+        strategy.addFilter("跳空缺口", Filters.filter_mustGapUp(10));
         strategy.addFilter("突破短期趋势线", Filters.filter_008c(100, 6, 20, 0.13));
         strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
         return strategy;

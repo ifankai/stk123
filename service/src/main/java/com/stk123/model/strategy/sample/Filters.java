@@ -51,6 +51,16 @@ public class Filters {
         return (strategy, stock) -> stock.getBarSeries().size() >= size ? FilterResult.TRUE() : FilterResult.FALSE();
     }
 
+    //days天内换手率大于percent
+    public static Filter<Stock> filter_mustHSLGreatThan(int days, double percent) {
+        return (strategy, stock) -> stock.getBar().getSUM(days, Bar.EnumValue.HSL) >= percent ? FilterResult.TRUE() : FilterResult.FALSE();
+    }
+
+    //跳空缺口
+    public static Filter<Stock> filter_mustGapUp(int days) {
+        return (strategy, stock) -> stock.getBar().getBar(days, Bar::isGapUp) != null ? FilterResult.TRUE() : FilterResult.FALSE();
+    }
+
     //斜率, >0表示均线向上
     public static Filter<Bar> filter_maSlope(int days, int ma, double min, double max) {
         return (strategy, bar) -> {

@@ -520,7 +520,7 @@ public class BarTask extends AbstractTask {
 
                 sb.append("<br/><br/>--------------------------------------------------------<br/>");
                 List<Stock> finalStocks = stocks;
-                List missingList = allList.stream().filter(stockWrapper -> finalStocks.stream().noneMatch(stock -> stockWrapper.getCode().equals(stock.getCode()))).collect(Collectors.toList());
+                List missingList = allList.stream().filter(stockWrapper -> finalStocks.stream().noneMatch(stock -> stockWrapper.getCode().equals(stock.getCode()))).map(StockWrapper::getCode).collect(Collectors.toList());
                 sb.append("被忽略的标的：<br/>");
                 sb.append(StringUtils.join(missingList, ","));
 
