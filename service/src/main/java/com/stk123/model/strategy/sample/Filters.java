@@ -473,6 +473,7 @@ public class Filters {
         };
     }
 
+    //突破中、长期趋势线
     public static Filter<BarSeries> filter_008b(int m, int n, double d, double percentLowest2Today){
         return (strategy, bs) -> {
             Bar today = bs.getFirst();
@@ -486,6 +487,7 @@ public class Filters {
         };
     }
 
+    //突破短期趋势线
     public static Filter<Stock> filter_008c(int m, int left, int right, double percentLowest2Today){
         return (strategy, stock) -> {
             Bar today = stock.getBar();
@@ -794,6 +796,32 @@ public class Filters {
                 return FilterResult.FALSE("区间("+lowest*(1+lowPercent)+","+lowest*(1+highPercent)+")");
             }
             return FilterResult.TRUE();
+        };
+    }
+
+    // V型缩量反转 600744 20210225
+    public static Filter<Stock> filter_018a(int days) {
+        return (strategy, stock) -> {
+            Bar today = stock.getBar();
+            List<Bar> lowBars = today.getHistoryLowPoint(days, 7);
+            if(!lowBars.isEmpty()){
+                Bar low = lowBars.get(lowBars.size()-1);
+                Bar high = low.getHighPoint(days, 5, 7);
+                if(high != null){
+                    int n = low.getDaysBetween(low.getDate(), high.getDate());
+                    if(n > 7 && low.getChange(n, Bar.EnumValue.C) < -0.15){
+                        int m = today.getDaysBetween(today.getDate(), low.getDate());
+                        if(m <= 12 && m >= 7 && today.getBarCount(m, Bar::isYangOrEqual) >= 6 && low.getChange(-7, Bar.EnumValue.C) >= 0.1){
+                            double ma = today.getMA(14, Bar.EnumValue.HSL);
+                            double percentile = today.getPercentile(Math.min(stock.getBarSeries().size(), 250), Bar.EnumValue.HSL, 10);
+                            if(ma <= percentile) {
+                                return FilterResult.TRUE();
+                            }
+                        }
+                    }
+                }
+            }
+            return FilterResult.FALSE();
         };
     }
 }

@@ -1,6 +1,5 @@
 package com.stk123.model.core;
 
-import cn.hutool.core.collection.CollUtil;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.common.CommonUtils;
@@ -13,7 +12,6 @@ import com.stk123.util.ServiceUtils;
 import lombok.Data;
 import lombok.ToString;
 import lombok.extern.apachecommons.CommonsLog;
-import org.elasticsearch.common.util.CollectionUtils;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -287,6 +285,14 @@ public class Bar implements Serializable, Cloneable {
 	}
 	public double getMedian(int days, EnumValue type){
 		return getMedian(days, type, false);
+	}
+
+	//求百分位数 percentile(.., 25)
+	public double getPercentile(int days, EnumValue type, double percentile) {
+		List<Double> values = this.map(days, bar -> bar.getValue(type));
+		Collections.sort(values);
+		int index = (int) Math.ceil(percentile / 100.0 * values.size());
+		return values.get(index-1);
 	}
 
 	/**
