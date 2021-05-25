@@ -523,11 +523,11 @@ public class BarTask extends AbstractTask {
                     sb.append(strategy.toString().replaceAll("\n","<br/>")).append("<br/>");
                 });*/
 
-                sb.append("<br/><br/>--------------------------------------------------------<br/>");
+                /*sb.append("<br/><br/>--------------------------------------------------------<br/>");
                 List<Stock> finalStocks = stocks;
                 List missingList = allList.stream().filter(stockWrapper -> finalStocks.stream().noneMatch(stock -> stockWrapper.getCode().equals(stock.getCode()))).map(StockWrapper::getCode).collect(Collectors.toList());
                 sb.append("被忽略的标的：<br/>");
-                sb.append(StringUtils.join(missingList, ","));
+                sb.append(StringUtils.join(missingList, ","));*/
 
                 EmailUtils.send("策略发现 A股" + (datasA.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count()) + "个, " +
                                 "H股" + (datasH.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count()) + "个, " +
