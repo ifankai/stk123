@@ -10,7 +10,7 @@ import com.stk123.model.strategy.result.FilterResult;
 public class Sample {
 
     // ignore: 02a 选出来的标的太多，由02b替换
-    public static String STRATEGIES = "01a,01b,01d,02b,03a,03b,04a,04b,04c,05a,05b,06a,06b,08a,08b,08c,09a";
+    public static String STRATEGIES = "01a,01b,01d,02b,03a,03b,04a,04b,04c,05a,05b,06a,06b,08a,08b,08c,09a,10a";
 
     public static String STRATEGIES_FOR_ALL_STOCKS = "01a,01b,01c,05b";
 
@@ -264,8 +264,14 @@ public class Sample {
     }
 
 
-
-
+    /**** V型缩量反转 ****/
+    public static Strategy strategy_10a() {
+        Strategy<Stock> strategy = new Strategy<>("strategy_10a", "V型缩量反转(10a)", Stock.class);
+        strategy.addFilter("过去3天到80天的跌幅", Stock::getBar, Filters.filter_001b(7,60,-50,-25));
+        strategy.addFilter("V型缩量反转", Filters.filter_018a(30));
+        strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
+        return strategy;
+    }
 
 
     //大跌后，有减持，问询函？
