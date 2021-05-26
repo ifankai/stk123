@@ -101,9 +101,11 @@ public class BarSeries {
 
     public void addToFirst(Bar bar) {
         Bar f = this.getFirst();
-        if(f.getDate().compareTo(bar.getDate()) >= 0) return;
-        bar.setBefore(f);
-        f.setAfter(bar);
+        if(f != null){
+            if (f.getDate().compareTo(bar.getDate()) >= 0) return;
+            bar.setBefore(f);
+            f.setAfter(bar);
+        }
         this.list.addFirst(bar);
     }
 

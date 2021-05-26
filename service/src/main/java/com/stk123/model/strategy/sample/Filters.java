@@ -813,11 +813,17 @@ public class Filters {
                         int m = today.getDaysBetween(today.getDate(), low.getDate());
                         if(m <= 12 && m >= 7 && today.getBarCount(m, Bar::isYangOrEqual) >= 6 && low.getChange(-7, Bar.EnumValue.C) >= 0.1){
                             double ma = today.getMA(14, Bar.EnumValue.HSL);
-                            double percentile = today.getPercentile(Math.min(stock.getBarSeries().size(), 250), Bar.EnumValue.HSL, 10);
+                            double percentile = today.getPercentile(Math.min(stock.getBarSeries().size(), 60), Bar.EnumValue.HSL, 30);
                             if(ma <= percentile) {
                                 return FilterResult.TRUE();
+                            }else{
+                                return FilterResult.FALSE("ma="+ma+",percentile="+percentile);
                             }
+                        }else{
+                            return FilterResult.FALSE("m="+m+","+low.getChange(-7, Bar.EnumValue.C));
                         }
+                    }else{
+                        return FilterResult.FALSE("n="+n+","+low.getChange(n, Bar.EnumValue.C));
                     }
                 }
             }

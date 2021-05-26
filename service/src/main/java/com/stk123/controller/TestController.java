@@ -63,8 +63,9 @@ public class TestController {
             stock.getBarSeriesMonth().getList().forEach(e -> System.out.println(e));
         }*/
 
-        Stock stock = Stock.build("399106");
-        barService.initKLine(stock);
+        Stock stock = Stock.build("600744");
+        stock.getBarSeries();
+        System.out.println(stock.getBar().before(10).getChange(-7, Bar.EnumValue.C));
 
         return RequestResult.success(new Date());
     }

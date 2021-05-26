@@ -1,5 +1,6 @@
 package com.stk123.service.core;
 
+import com.stk123.common.util.ListUtils;
 import com.stk123.common.util.PinYin4jUtils;
 import com.stk123.entity.StkHolderEntity;
 import com.stk123.model.core.Bar;
@@ -27,6 +28,7 @@ import sun.reflect.annotation.ExceptionProxy;
 
 import java.net.SocketException;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -81,7 +83,8 @@ public class StockService {
                     LinkedHashMap<String, BarSeries> map = barService.queryTopNByStockListOrderByKlineDateDesc(subStocks, rows);
                     subStocks.forEach(stock -> stock.setBarSeries(map.get(stock.getCode())));
                     if(isIncludeRealtimeBar){
-                        this.buildBarSeriesWithRealtimeBar(subStocks);
+                        ListUtils.eachSubList(subStocks, 250, this::buildBarSeriesWithRealtimeBar);
+                        //this.buildBarSeriesWithRealtimeBar(subStocks);
                     }
                     return subStocks;
                 });
@@ -107,17 +110,10 @@ public class StockService {
 
         String page = null;
         try {
+            //log.info(listCodes);
             page = HttpUtils.get("http://hq.sinajs.cn/list="+listCodes, null, "GBK");
-        } catch (SocketException e) {
+        } catch (Exception e) {
             log.error("buildBarSeriesWithRealtimeBar", e);
-        } catch (Exception e){
-            try {
-                log.info(listCodes);
-                Thread.sleep(15*1000);
-                page = HttpUtils.get("http://hq.sinajs.cn/list="+listCodes, null, "GBK");
-            } catch (Exception e1) {
-                e1.printStackTrace();
-            }
         }
         if(StringUtils.isEmpty(page)){
             log.info("get sinajs empty:"+listCodes);
@@ -143,6 +139,7 @@ public class StockService {
                 k.setChange((k.getClose()-k.getLastClose())/k.getLastClose()*100);
                 k.setDate(StringUtils.replace(ss[30], "-", ""));
 
+                if(k.getOpen()==k.getClose() && k.getOpen()==0)continue;
                 stock.getBarSeries().addToFirst(k);
                 //System.out.println(this.getBarSeries().getFirst());
             }else if(stock.isMarketHK() && s.length() > 12){
