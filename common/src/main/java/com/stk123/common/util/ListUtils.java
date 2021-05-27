@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class ListUtils {
 	
@@ -59,4 +61,28 @@ public class ListUtils {
 		list.addAll(Arrays.asList(elements));
 		return list;
 	}
+
+    public static <T,R> List<R> eachSubList(List<T> list, int cnt, Function<List<T>,List<R>> function){
+        List<R> results = new ArrayList<>();
+        int start = 0;
+        while(true){
+            int end = start+cnt >= list.size() ? list.size() : start+cnt;
+            List<T> subCodes = list.subList(start, end);
+            List<R> subList = function.apply(subCodes);
+            results.addAll(subList);
+            if(end >= list.size())break;
+            start = end;
+        }
+        return results;
+    }
+    public static <T> void eachSubList(List<T> list, int cnt, Consumer<List<T>> consumer){
+        int start = 0;
+        while(true){
+            int end = start+cnt >= list.size() ? list.size() : start+cnt;
+            List<T> subCodes = list.subList(start, end);
+            consumer.accept(subCodes);
+            if(end >= list.size())break;
+            start = end;
+        }
+    }
 }

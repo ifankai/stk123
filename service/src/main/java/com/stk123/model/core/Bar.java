@@ -109,7 +109,7 @@ public class Bar implements Serializable, Cloneable {
         }else if(n > 0){
 	        return before(n);
         }else{
-	        return after(n);
+	        return after(Math.abs(n));
         }
     }
 
