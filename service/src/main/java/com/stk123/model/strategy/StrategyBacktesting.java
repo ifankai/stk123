@@ -97,6 +97,9 @@ public class StrategyBacktesting {
                     }
                 }
             }
+            if(strategy.getPostExecutor() != null){
+                strategy.getPostExecutor().accept(strategy);
+            }
         }
         strategyResults.addAll(results);
     }

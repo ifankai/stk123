@@ -108,16 +108,8 @@ public class StockService {
         String page = null;
         try {
             page = HttpUtils.get("http://hq.sinajs.cn/list="+listCodes, null, "GBK");
-        } catch (SocketException e) {
+        } catch (Exception e) {
             log.error("buildBarSeriesWithRealtimeBar", e);
-        } catch (Exception e){
-            try {
-                log.info(listCodes);
-                Thread.sleep(15*1000);
-                page = HttpUtils.get("http://hq.sinajs.cn/list="+listCodes, null, "GBK");
-            } catch (Exception e1) {
-                e1.printStackTrace();
-            }
         }
         if(StringUtils.isEmpty(page)){
             log.info("get sinajs empty:"+listCodes);

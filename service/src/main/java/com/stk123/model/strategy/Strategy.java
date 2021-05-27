@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -33,6 +34,8 @@ public class Strategy<X> {
     private List<FilterExecutor<X, ?>> filterExecutors = Collections.synchronizedList(new ArrayList<>());
     private FilterExecutor<X, X> expectFilterExecutor;
     private boolean expectFilterExecutorRunOrNot = true;
+    @Getter@Setter
+    private Consumer<Strategy> postExecutor;
 
     @Getter
     private int countOfAllStrategyResult; //Strategy总共执行次数，即StrategyResult的个数

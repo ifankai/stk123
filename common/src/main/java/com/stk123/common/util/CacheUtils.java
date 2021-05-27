@@ -32,6 +32,7 @@ public class CacheUtils {
 	
     //one day key
     public final static String KEY_ONE_DAY = "oneday";
+    public final static String KEY_50_HOURS = "hours_50";
     
 	private static final String path = "ehcache.xml";  
 //    private static CacheManager manager;
@@ -55,6 +56,7 @@ public class CacheUtils {
         Cache<String, Object> cache_6_hours = Caffeine.newBuilder().expireAfterWrite(6, TimeUnit.HOURS).maximumSize(1_0000).build();
         Cache<String, Object> cache_oneday = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.DAYS).maximumSize(1_0000).build();
         Cache<String, Object> cache_forever = Caffeine.newBuilder().maximumSize(1_0000).build();
+		Cache<String, Object> cache_50_hours = Caffeine.newBuilder().expireAfterWrite(50, TimeUnit.HOURS).maximumSize(1_0000).build();
 
         ALL_CACHE.put(KEY_STK_STOCK, cache_6_hours);
         ALL_CACHE.put(KEY_STK_INDUSTRY, cache_6_hours);
@@ -71,6 +73,7 @@ public class CacheUtils {
         ALL_CACHE.put(FOREVER, cache_forever);
 
         ALL_CACHE.put(KEY_ONE_DAY, cache_oneday);
+		ALL_CACHE.put(KEY_50_HOURS, cache_50_hours);
 
     }
     

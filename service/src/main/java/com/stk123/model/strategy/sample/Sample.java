@@ -1,11 +1,16 @@
 package com.stk123.model.strategy.sample;
 
+import com.stk123.common.util.CacheUtils;
 import com.stk123.model.core.Bar;
 import com.stk123.model.core.BarSeries;
 import com.stk123.model.core.Stock;
 import com.stk123.model.strategy.Filter;
 import com.stk123.model.strategy.Strategy;
+import com.stk123.model.strategy.StrategyResult;
 import com.stk123.model.strategy.result.FilterResult;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Sample {
 
@@ -37,9 +42,19 @@ public class Sample {
     public static Strategy strategy_01(String code, int topN) {
         Strategy<Stock> strategy = new Strategy<>("strategy_"+code,"阳线放量阴线缩量("+code+")", Stock.class);
         strategy.setSortable(topN).setAsc(false);
+        strategy.setPostExecutor(strgy -> {
+            List<StrategyResult> srs = strgy.getStrategyResults();
+            List<StrategyResult> list = srs.stream().filter(strategyResult -> strategyResult.isFilterAllPassed()).collect(Collectors.toList());
+            list.forEach(strategyResult -> {
+                CacheUtils.put(CacheUtils.KEY_50_HOURS, "strategy_01_"+strategyResult.getCode(), strategyResult.getCode());
+            });
+        });
         //strategy.addFilter("过去3天到80天的跌幅", Stock::getBar, Filters.filter_001b(1,60,-30,-10));
         //strategy.addFilter("箱体上沿整荡整理", Filters.filter_016a(30, 0.3, 0.4, 0.9, 10, 8));
-        strategy.addFilter("K线数量", Filters.filter_mustBarSizeGreatThan(250));
+        strategy.addFilter("50小时没有出现在topN里", (strgy, stock) -> {
+            return CacheUtils.get(CacheUtils.KEY_50_HOURS, "strategy_01_"+stock.getCode()) == null ? FilterResult.TRUE() : FilterResult.FALSE();
+        });
+        strategy.addFilter("K线数量", Filters.filter_mustBarSizeGreatThan(120));
         strategy.addFilter("低点到今天的涨幅", Filters.filter_017a(100, 0, 0.25));
         strategy.addFilter("60天换手率大于200%", Filters.filter_mustHSLGreatThan(60, 200));
         strategy.addFilter("阳线放量阴线缩量", Filters.filter_015b(30,60));
