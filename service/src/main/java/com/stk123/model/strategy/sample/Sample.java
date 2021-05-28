@@ -55,7 +55,7 @@ public class Sample {
             return CacheUtils.get(CacheUtils.KEY_50_HOURS, "strategy_01_"+stock.getCode()) == null ? FilterResult.TRUE() : FilterResult.FALSE();
         });
         strategy.addFilter("K线数量", Filters.filter_mustBarSizeGreatThan(120));
-        strategy.addFilter("低点到今天的涨幅", Filters.filter_017a(100, 0, 0.25));
+        strategy.addFilter("低点到今天的涨幅", Filters.filter_017a(30, 0, 0.25));
         strategy.addFilter("60天换手率大于200%", Filters.filter_mustHSLGreatThan(60, 200));
         strategy.addFilter("阳线放量阴线缩量", Filters.filter_015b(30,60));
         strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));

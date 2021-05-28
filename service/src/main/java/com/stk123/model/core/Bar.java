@@ -287,13 +287,31 @@ public class Bar implements Serializable, Cloneable {
 		return getMedian(days, type, false);
 	}
 
-	//求百分位数 percentile(.., 25)
+	//求百分位数的值 percentile(.., 25)
 	public double getPercentile(int days, EnumValue type, double percentile) {
 		List<Double> values = this.map(days, bar -> bar.getValue(type));
 		Collections.sort(values);
 		int index = (int) Math.ceil(percentile / 100.0 * values.size());
 		return values.get(index-1);
 	}
+	//求当前值所在的百分位
+    public double getPercentile(int days, Function<Bar, Double> function) {
+        List<Double> values = this.map(days, function);
+        Collections.sort(values);
+        Double currentValue = function.apply(this);
+        List<Integer> indexs = new ArrayList<>();
+        for (int i = 0; i < values.size(); i++) {
+            Double value = values.get(i);
+            if (currentValue.equals(value)) {
+                indexs.add(i+1);
+            }
+        }
+        int avg = (int) indexs.stream().mapToInt(d -> d).average().orElse(0);
+        return avg / values.size() * 100;
+    }
+    public double getPercentile(int days, EnumValue type){
+	    return getPercentile(days, bar -> bar.getValue(type));
+    }
 
 	/**
 	 * 是否向上跳空缺口
