@@ -110,11 +110,11 @@ public class XueqiuStockArticleTask extends AbstractTask {
         } catch (Exception e) {
             log.error("XueqiuStockArticleTask", e);
         } finally {
-            if (codeIndex >= stocks.size()) {
+            /*if (codeIndex >= stocks.size()) {
                 if (results.size() > 0) {
                     //EmailUtils.send("雪球个股长文end", StringUtils.join(results, "<br><br>"));
                 }
-            }
+            }*/
         }
     }
 
@@ -127,7 +127,7 @@ public class XueqiuStockArticleTask extends AbstractTask {
         List<XueqiuPost> list = getList(stock);
         for (XueqiuPost post : list) {
             long createdAt = post.getCreated_at();
-            if (ServiceUtils.addDay(new Date(), -2).getTime() <= createdAt && ServiceUtils.addDay(new Date(), 0).getTime() >= createdAt) {
+            if (ServiceUtils.addDay(new Date(), -2).getTime() <= createdAt && ServiceUtils.addDay(new Date(), 1).getTime() >= createdAt) {
                 boolean flag = false;
                 String title = post.getTitle();
                 String text = post.getText();
@@ -228,7 +228,7 @@ public class XueqiuStockArticleTask extends AbstractTask {
         //热帖
         String url = "https://xueqiu.com/statuses/search.json?count=100&comment=0&symbol=" + scode + "&hl=0&source=all&sort=alpha&page=1&q=&type=11";
         String page = HttpUtils.get(url, null, requestHeaders, "gb2312");
-        //		System.out.println(page);
+        //System.out.println(page);
         if ("400".equals(page)) {
             return results;
         }
@@ -241,7 +241,6 @@ public class XueqiuStockArticleTask extends AbstractTask {
                 results.add(post);
             }
         }
-
         return results;
     }
 }

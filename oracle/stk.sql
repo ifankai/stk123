@@ -608,7 +608,8 @@ alter table stk_text add read_date date;
 comment on column stk_text.favorite_date is '阅读时间';
 alter table stk_text add text_desc varchar2(4000);
 comment on column stk_text.text_desc is '帖子摘要';
-
+alter table stk_text add reply_positive number(1);
+comment on column stk_text.reply_positive is '评论是否正面';
 
 create table stk_data_industry_pe(
   industry_id number(6),
@@ -2949,7 +2950,7 @@ select * from stk_import_info _type where type=270 for update;
 
 
 select * from stk where market=1 and cate=2 and code='BK0723';
-select * from stk_kline where code='999999' order by kline_date desc;
+select * from stk_kline where code='601528' order by kline_date desc;
 
 
 select * from stk where name like '%退%';
@@ -2960,3 +2961,5 @@ select count(1) from stk_holder where fn_date='20210331' and holding_amount>1000
 select s.code, s.name, t.fn_date, t.holder, t.holding_amount, t.holder_change
   from (select code, fn_date, holder, holding_amount,holder_change, ROW_NUMBER() over(PARTITION by code order by fn_date desc) as num from stk_holder) t, stk s
  where t.code=s.code and t.num = 1 and t.code='600600';
+ 
+select * from stk_text where code='000069' order by insert_time desc; 

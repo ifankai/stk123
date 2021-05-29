@@ -302,12 +302,12 @@ public class Bar implements Serializable, Cloneable {
         List<Integer> indexs = new ArrayList<>();
         for (int i = 0; i < values.size(); i++) {
             Double value = values.get(i);
-            if (currentValue.equals(value)) {
+            if (currentValue.doubleValue() == value) {
                 indexs.add(i+1);
             }
         }
         int avg = (int) indexs.stream().mapToInt(d -> d).average().orElse(0);
-        return avg / values.size() * 100;
+        return avg * 100.0 / values.size();
     }
     public double getPercentile(int days, EnumValue type){
 	    return getPercentile(days, bar -> bar.getValue(type));
@@ -1406,14 +1406,14 @@ public class Bar implements Serializable, Cloneable {
 		Bar today = this;
 		//System.out.println("today="+today);
 		Bar hb = today.getHighPoint(m, left, right);
-		//System.out.println("hb="+hb);
+        //print("20210416","hb="+hb);
 		if(hb != null) {
 			List<Bar> bars = today.getBarsHigherThanTrendline(hb);
 			int days = today.getDaysBetween(hb.getDate(), today.getDate());
 			if (bars.size() <= 1) {
 				bars = today.before().getBarsHigherThanTrendline(hb);
 				if (bars.size() > 1) {
-					//System.out.println("today.getChange(days, Bar.EnumValue.C)===="+today.getChange(days, Bar.EnumValue.C));
+					//print("20210416","today.getChange(days, Bar.EnumValue.C)===="+today.getChange(days, Bar.EnumValue.C));
 					bars = today.getBarsLowerThanTrendline(hb, Math.min(Math.abs(today.getChange(days, Bar.EnumValue.C)), 0.15));
 					if (bars.size() < days / 2) {
 						double lowest = today.getLowest(left + right, Bar.EnumValue.L);
@@ -1477,6 +1477,11 @@ public class Bar implements Serializable, Cloneable {
     public void print(Object obj){
         if(this.getDate().equals(printDate)){
             System.out.println(obj);
+        }
+    }
+    public void print(String printDate, Object obj){
+        if(this.getDate().equals(printDate)){
+            System.out.println("["+printDate+"]"+obj);
         }
     }
 

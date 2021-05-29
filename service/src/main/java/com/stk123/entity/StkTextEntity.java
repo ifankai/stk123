@@ -92,4 +92,7 @@ public class StkTextEntity implements Serializable {
     @Column(name="TEXT")
     @JsonProperty("content")
     private String text;
+
+    @Column(name="REPLY_POSITIVE")
+    private Integer replyPositive;
 }

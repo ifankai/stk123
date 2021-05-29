@@ -7,8 +7,14 @@ import com.stk123.common.util.CacheUtils;
 import com.stk123.common.util.EmailUtils;
 import com.stk123.common.util.HtmlUtils;
 import com.stk123.common.util.JsonUtils;
+import com.stk123.entity.StkTextEntity;
+import com.stk123.model.Text;
+import com.stk123.model.constant.TextConstant;
 import com.stk123.model.core.Stock;
 import com.stk123.model.dto.Cninfo;
+import com.stk123.model.xueqiu.XueqiuPost;
+import com.stk123.model.xueqiu.XueqiuPostRoot;
+import com.stk123.repository.StkTextRepository;
 import com.stk123.service.XueqiuService;
 import com.stk123.util.ExceptionUtils;
 import com.stk123.util.HttpUtils;
@@ -17,6 +23,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -40,6 +47,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 @Setter
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class NoticeTask extends AbstractTask {
+
+    @Autowired
+    private StkTextRepository stkTextRepository;
 
     private String triggerBymanual;
 
@@ -204,11 +214,17 @@ public class NoticeTask extends AbstractTask {
                             NOTICES.remove(notice);
                             break;
                         }
-                        Map root = JsonUtils.testJson(json);
-                        List<Map> ns = (List) root.get("list");
+
                         boolean flag = false;
-                        for (Map n : ns) {
-                            String createdAt = String.valueOf(n.get("created_at"));
+
+                        ObjectMapper objectMapper = new ObjectMapper();
+                        XueqiuPostRoot xueqiuPostRoot = objectMapper.readValue(json, XueqiuPostRoot.class);
+
+                        /*Map root = JsonUtils.testJson(json);
+                        List<Map> ns = (List) root.get("list");*/
+
+                        for (XueqiuPost post : xueqiuPostRoot.getList()) {
+                            String createdAt = String.valueOf(post.getCreated_at());
                             Date date = new Date(Long.parseLong(createdAt));
 
                             if (date.before(ServiceUtils.addHour(new Date(), -24))) {
@@ -221,10 +237,10 @@ public class NoticeTask extends AbstractTask {
                                 notice.setXqCreateDate(date);
                             }
 
-                            int reply = Integer.parseInt(String.valueOf(n.get("reply_count")));
+                            int reply = Integer.parseInt(String.valueOf(post.getReply_count()));
                             totalReplyCount += reply;
                             if (reply >= 3) {
-                                int id = Integer.parseInt(String.valueOf(n.get("id")));
+                                long id = post.getId();
                                 int page = 1;
                                 //int matchCount = 0;
                                 List<String> matches = new ArrayList<>();
@@ -237,7 +253,7 @@ public class NoticeTask extends AbstractTask {
                                         break;
                                     }
 
-                                    root = JsonUtils.testJson(json);
+                                    Map root = JsonUtils.testJson(json);
                                     List<Map> comments = (List) root.get("comments");
 
                                     for (Map comment : comments) {
@@ -256,14 +272,49 @@ public class NoticeTask extends AbstractTask {
 
                                 if (matches.size() >= 2) {
                                     notice.setXqUrl("https://xueqiu.com/S/" + scode + "/" + id);
-                                    notice.setXqTitle(String.valueOf(n.get("description")));
+                                    notice.setXqTitle(post.getDescription());
                                     //noticeList.add(notice);
                                     log.info("[remove]有积极评论发邮件：" + scode);
+
+                                    boolean sendEmail = false;
+                                    StkTextEntity stkTextEntity = stkTextRepository.findByCodeAndPostId(stock.getCode(), post.getId());
+                                    if (stkTextEntity == null) {
+                                        stkTextEntity = new StkTextEntity();
+                                        stkTextEntity.setUserId(post.getUser_id());
+                                        stkTextEntity.setUserName(post.getUser().getScreen_name());
+                                        stkTextEntity.setCode(stock.getCode());
+                                        stkTextEntity.setCreatedAt(new Date(post.getCreated_at()));
+                                        stkTextEntity.setPostId(post.getId());
+                                        stkTextEntity.setTitle(post.getTitle());
+                                        stkTextEntity.setText(post.getText());
+                                        stkTextEntity.setTextDesc(post.getDescription());
+                                        stkTextEntity.setType(TextConstant.TYPE_XUEQIU);
+                                        stkTextEntity.setSubType(TextConstant.SUB_TYPE_XUEQIU_DEFAUTL);
+                                        stkTextEntity.setInsertTime(new Date());
+                                        stkTextEntity.setCodeType(TextConstant.CODE_TYPE_STK);
+                                        stkTextEntity.setFollowersCount(post.getUser().getFollowers_count());
+                                        stkTextEntity.setReplyCount(post.getReply_count());
+                                        stkTextEntity.setUserAvatar(org.apache.commons.lang.StringUtils.split(post.getUser().getProfile_image_url(), ",")[1]);
+                                        if (post.getUser().getId() == 0) {
+                                            stkTextEntity.setSubType(Text.SUB_TYPE_XUEQIU_NOTICE);
+                                        }
+                                        stkTextEntity.setReplyPositive(1);
+                                        stkTextRepository.save(stkTextEntity);
+                                        sendEmail = true;
+                                    }
+                                    if(stkTextEntity.getReplyPositive() == null){
+                                        stkTextEntity.setReplyPositive(1);
+                                        stkTextRepository.save(stkTextEntity);
+                                        sendEmail = true;
+                                    }
+
                                     NOTICES.remove(notice);
                                     flag = true;
-                                    String keywords = "积极词汇：" + matches;
-                                    EmailUtils.send("[公告]" + StringUtils.replace(HtmlUtils.removeHTML(notice.getXqTitle()), "网页链接", ""),
-                                            stock.getNameAndCodeWithLink() + " " + CommonUtils.wrapLink(notice.getXqTitle(), notice.getXqUrl()) + "<br/>" + keywords);
+                                    if(sendEmail) {
+                                        String keywords = "积极词汇：" + matches;
+                                        EmailUtils.send("[公告]" + StringUtils.replace(HtmlUtils.removeHTML(notice.getXqTitle()), "网页链接", ""),
+                                                stock.getNameAndCodeWithLink() + " " + CommonUtils.wrapLink(notice.getXqTitle(), notice.getXqUrl()) + "<br/>" + keywords);
+                                    }
                                     Thread.sleep(SLEEP_SECOND);
                                     break;
                                 }

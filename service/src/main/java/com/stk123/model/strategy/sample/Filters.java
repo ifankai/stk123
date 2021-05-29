@@ -47,21 +47,75 @@ public class Filters {
         };
     }
 
+    //阳线
+    public static Filter<Stock> filter_mustBarIsYang(int n) {
+        return (strategy, stock) -> stock.getBar().before(n).isYang() ? FilterResult.TRUE() : FilterResult.FALSE();
+    }
+    public static Filter<Stock> filter_mustBarIsYang(int n, double percent) {
+        return (strategy, stock) -> stock.getBar().before(n).isYang() && stock.getBar().before(n).getChange() >= percent ? FilterResult.TRUE() : FilterResult.FALSE();
+    }
+
+    public static Filter<Stock> filter_mustBarSmallUpperShadow(double percent) {
+        return (strategy, stock) -> {
+            Bar bar = stock.getBar();
+            if((bar.getHigh() - bar.getClose())/bar.getClose() < (bar.getClose() - bar.getOpen())/bar.getOpen()){
+                return FilterResult.TRUE();
+            }
+            return FilterResult.FALSE((bar.getHigh() - bar.getClose())/bar.getClose());
+        };
+    }
+
+    //k线数量
     public static Filter<Stock> filter_mustBarSizeGreatThan(int size) {
         return (strategy, stock) -> stock.getBarSeries().size() >= size ? FilterResult.TRUE() : FilterResult.FALSE();
     }
 
     //days天内换手率大于percent
     public static Filter<Stock> filter_mustHSLGreatThan(int days, double percent) {
-        return (strategy, stock) -> stock.getBar().getSUM(days, Bar.EnumValue.HSL) >= percent ? FilterResult.TRUE() : FilterResult.FALSE();
+        return (strategy, stock) -> {
+            double hsl = stock.getBar().getSUM(days, Bar.EnumValue.HSL);
+            return hsl >= percent ? FilterResult.TRUE() : FilterResult.FALSE("HSL:"+hsl);
+        };
+    }
+    //days天内换手率百分位大于percentile
+    public static Filter<Stock> filter_mustHSLPercentileGreatThan(int size, int days, double percentile) {
+        return (strategy, stock) -> {
+            double hsl = stock.getBar().getPercentile(size, bar -> bar.getSUM(days, Bar.EnumValue.HSL) );
+            return hsl >= percentile ? FilterResult.TRUE("HSL percentile:"+hsl) : FilterResult.FALSE("HSL percentile:"+hsl);
+        };
     }
 
     //跳空缺口
     public static Filter<Stock> filter_mustGapUp(int days) {
-        return (strategy, stock) -> stock.getBar().getBar(days, Bar::isGapUp) != null ? FilterResult.TRUE() : FilterResult.FALSE();
+        return (strategy, stock) -> {
+            Bar bar = stock.getBar().getBar(days, Bar::isGapUp);
+            if(bar != null && stock.getBar().getClose() > bar.before().getHigh()){
+                return FilterResult.TRUE();
+            }
+            return FilterResult.FALSE();
+        };
     }
 
-    //斜率, >0表示均线向上
+    //n天内有突破趋势线
+    public static Filter<Stock> filter_mustBreakTrendline(int days, int m, int left, int right, double percentLowest2Today) {
+        return (strategy, stock) -> stock.getBar().getBar(days, bar -> bar.isBreakTrendline(m, left, right, percentLowest2Today)) != null ? FilterResult.TRUE() : FilterResult.FALSE();
+    }
+    public static Filter<Stock> filter_mustBreakTrendline(int days, int m, int n, double d, double percentLowest2Today){
+        return (strategy, stock) -> {
+            return stock.getBar().getBar(days, bar -> {
+                Bar today = bar;
+                if (today.isBreakTrendLine(m, n, d)) {
+                    double lowest = today.getLowest(n * 2, Bar.EnumValue.L);
+                    if ((today.getClose() - lowest) / lowest <= percentLowest2Today) {
+                        return true;
+                    }
+                }
+                return false;
+            }) != null ? FilterResult.TRUE() : FilterResult.FALSE();
+        };
+    }
+
+    //斜率, >0表示均线向上 (60, 120, -12, 100)
     public static Filter<Bar> filter_maSlope(int days, int ma, double min, double max) {
         return (strategy, bar) -> {
             double slope = bar.getSlopeOfMA(ma, days);
@@ -69,7 +123,45 @@ public class Filters {
         };
     }
 
+    //低点到今天的涨幅 (30, 0, 0.30)
+    public static Filter<Stock> filter_mustChangeBetweenLowestAndToday(int days, double lowPercent, double highPercent){
+        return (strategy, stock) -> {
+            Bar today = stock.getBar();
+            double lowest = today.getLowest(days, Bar.EnumValue.C);
+            if(today.getClose() < lowest*(1+lowPercent) || today.getClose() > lowest*(1+highPercent)){
+                return FilterResult.FALSE("区间("+lowPercent+","+highPercent+")，实际涨幅:"+(today.getClose()-lowest)/lowest);
+            }
+            return FilterResult.TRUE();
+        };
+    }
 
+    //低点到高点的涨幅 (40, 0, 0.35)
+    public static Filter<Stock> filter_mustChangeBetweenLowestAndHighest(int days, double lowPercent, double highPercent){
+        return (strategy, stock) -> {
+            Bar today = stock.getBar();
+            double lowest = today.getLowest(days, Bar.EnumValue.C);
+            double highest = today.getHighest(days, Bar.EnumValue.C);
+            if(highest < lowest*(1+lowPercent) || highest > lowest*(1+highPercent)){
+                return FilterResult.FALSE("区间("+lowPercent+","+highPercent+")，实际涨幅:"+(highest-lowest)/lowest);
+            }
+            return FilterResult.TRUE();
+        };
+    }
+
+    //低点到高点的涨幅 (40, 0, 0.35)
+    public static Filter<Stock> filter_mustLowestEqual(int days1, int days2){
+        return (strategy, stock) -> {
+            Bar today = stock.getBar();
+            double lowest1 = today.getLowest(days1, Bar.EnumValue.L);
+            double lowest2 = today.getLowest(days2, Bar.EnumValue.L);
+            if(lowest1 != lowest2){
+                return FilterResult.FALSE();
+            }
+            return FilterResult.TRUE();
+        };
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////
     /**
      * 过去numberBeforeFirst天到numberBeforeParam1天的跌幅
      *
@@ -682,8 +774,9 @@ public class Filters {
             int sum2 = getScore(stock, days/2); //加大后期k线权重
             int sum3 = getScore(stock, days/3); //加大后期k线权重
             int sum = sum1+sum2+sum3;
-            if(stock.getBar().isYin()){
-                sum ++;
+            Bar today = stock.getBar();
+            if(today.isYin() && today.getVolume() < today.yesterday().getVolume()){
+                sum = sum + 3;
             }
             if(sum < score){
                 return FilterResult.FALSE("得分:"+sum);
@@ -787,17 +880,6 @@ public class Filters {
         };
     }
 
-    //低点到今天的涨幅
-    public static Filter<Stock> filter_017a(int days, double lowPercent, double highPercent){
-        return (strategy, stock) -> {
-            Bar today = stock.getBar();
-            double lowest = today.getLowest(days, Bar.EnumValue.C);
-            if(today.getClose() < lowest*(1+lowPercent) || today.getClose() > lowest*(1+highPercent)){
-                return FilterResult.FALSE("区间("+lowest*(1+lowPercent)+","+lowest*(1+highPercent)+")");
-            }
-            return FilterResult.TRUE();
-        };
-    }
 
     // V型缩量反转 600744 20210225
     public static Filter<Stock> filter_018a(int days) {
@@ -809,7 +891,7 @@ public class Filters {
                 Bar high = low.getHighPoint(days, 5, 7);
                 if(high != null){
                     int n = low.getDaysBetween(low.getDate(), high.getDate());
-                    if(n > 7 && low.getChange(n, Bar.EnumValue.C) < -0.15){
+                    if(n > 7 && low.getChange(n, Bar.EnumValue.C) < -0.13){
                         int m = today.getDaysBetween(today.getDate(), low.getDate());
                         if(m <= 12 && m >= 7 && today.getBarCount(m, Bar::isYangOrEqual) >= 6 && low.getChange(-7, Bar.EnumValue.C) >= 0.1){
                             double ma = today.getMA(14, Bar.EnumValue.HSL);
@@ -830,4 +912,6 @@ public class Filters {
             return FilterResult.FALSE();
         };
     }
+
+
 }

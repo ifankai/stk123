@@ -17,7 +17,7 @@ public class Sample {
     // ignore: 02a 选出来的标的太多，由02b替换
     public static String STRATEGIES = "01a,01b,01d,02b,03a,03b,04a,04b,04c,05a,05b,06a,06b,08a,08b,08c,09a,10a";
 
-    public static String STRATEGIES_FOR_ALL_STOCKS = "01a,01b,01c,05b";
+    public static String STRATEGIES_FOR_ALL_STOCKS = "01a,01b,01c,05b,10a,11a";
 
 
     /**** 阳线放量 阴线缩量 *****/
@@ -39,7 +39,7 @@ public class Sample {
         return strategy;
     }
     //阳线放量 阴线缩量
-    public static Strategy strategy_01(String code, int topN) {
+    public static Strategy strategy_01(String code, int topN, int score) {
         Strategy<Stock> strategy = new Strategy<>("strategy_"+code,"阳线放量阴线缩量("+code+")", Stock.class);
         strategy.setSortable(topN).setAsc(false);
         strategy.setPostExecutor(strgy -> {
@@ -51,21 +51,21 @@ public class Sample {
         });
         //strategy.addFilter("过去3天到80天的跌幅", Stock::getBar, Filters.filter_001b(1,60,-30,-10));
         //strategy.addFilter("箱体上沿整荡整理", Filters.filter_016a(30, 0.3, 0.4, 0.9, 10, 8));
-        strategy.addFilter("50小时没有出现在topN里", (strgy, stock) -> {
-            return CacheUtils.get(CacheUtils.KEY_50_HOURS, "strategy_01_"+stock.getCode()) == null ? FilterResult.TRUE() : FilterResult.FALSE();
-        });
-        strategy.addFilter("K线数量", Filters.filter_mustBarSizeGreatThan(120));
-        strategy.addFilter("低点到今天的涨幅", Filters.filter_017a(30, 0, 0.25));
-        strategy.addFilter("60天换手率大于200%", Filters.filter_mustHSLGreatThan(60, 200));
-        strategy.addFilter("阳线放量阴线缩量", Filters.filter_015b(30,60));
+        //strategy.addFilter("50小时没有出现在topN里", (strgy, stock) -> CacheUtils.get(CacheUtils.KEY_50_HOURS, "strategy_01_"+stock.getCode()) == null ? FilterResult.TRUE() : FilterResult.FALSE());
+        strategy.addFilter("K线数量", Filters.filter_mustBarSizeGreatThan(60));
+        strategy.addFilter("低点到今天的涨幅", Filters.filter_mustChangeBetweenLowestAndToday(30, 0, 0.30));
+        strategy.addFilter("低点到高点的涨幅", Filters.filter_mustChangeBetweenLowestAndHighest(40, 0, 0.35));
+        //strategy.addFilter("60天换手率大于200%", Filter.or(Filters.filter_mustHSLGreatThan(60, 200), Filters.filter_mustHSLGreatThan(30, 100)));
+        strategy.addFilter("阳线放量阴线缩量", Filters.filter_015b(30, score));
+        strategy.addFilter("60天换手率百分位大于80", Filter.or(Filters.filter_mustHSLPercentileGreatThan(120,30, 95), Filters.filter_mustHSLGreatThan(60, 200), Filters.filter_mustHSLGreatThan(30, 100)));
         strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
         return strategy;
     }
     public static Strategy strategy_01c() {
-        return strategy_01("01c", 20);
+        return strategy_01("01c", 20, 50);
     }
     public static Strategy strategy_01d() {
-        return strategy_01("01d", 5);
+        return strategy_01("01d", 8, 50);
     }
 
 
@@ -273,7 +273,7 @@ public class Sample {
     public static Strategy strategy_09a() {
         Strategy<Stock> strategy = new Strategy<>("strategy_09a","跳空缺口，前期突破趋势(09a)", Stock.class);
         strategy.addFilter("跳空缺口", Filters.filter_mustGapUp(10));
-        strategy.addFilter("突破短期趋势线", Filters.filter_008c(100, 6, 20, 0.13));
+        strategy.addFilter("突破短期趋势线", Filters.filter_mustBreakTrendline(10, 100, 6, 20, 0.13));
         strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
         return strategy;
     }
@@ -282,9 +282,29 @@ public class Sample {
     /**** V型缩量反转 ****/
     public static Strategy strategy_10a() {
         Strategy<Stock> strategy = new Strategy<>("strategy_10a", "V型缩量反转(10a)", Stock.class);
-        strategy.addFilter("过去3天到80天的跌幅", Stock::getBar, Filters.filter_001b(7,60,-50,-25));
+        strategy.addFilter("过去7天到80天的跌幅", Stock::getBar, Filters.filter_001b(7,120,-50,-25));
         strategy.addFilter("V型缩量反转", Filters.filter_018a(30));
         strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
+        return strategy;
+    }
+
+    /**** 低位突破趋势线后，连续2根放量阳线 ****/
+    //300061 202010416   600735 20210408    600007 20210430    600793 20210107
+    public static Strategy strategy_11a() {
+        Strategy<Stock> strategy = new Strategy<>("strategy_11a", "低位突破趋势线后，连续2根放量阳线(11a)", Stock.class);
+        strategy.addFilter("阳线", Filters.filter_mustBarIsYang(0, 0.04));
+        strategy.addFilter("阳线", (strgy, stock) -> stock.getBar().getHigh() > stock.getBar().before().getHigh() ? FilterResult.TRUE() : FilterResult.FALSE());
+        strategy.addFilter("", Filters.filter_mustLowestEqual(100, 250));
+        //strategy.addFilter("", Filters.filter_mustChangeBetweenLowestAndToday(60, 0, 0.30));
+        //strategy.addFilter("过去7天到80天的跌幅", Stock::getBar, Filters.filter_001b(7,120,-100,-15));
+        strategy.addFilter("250天线平缓或多头", Stock::getBar, Filter.or(Filters.filter_maSlope(20, 120, -5, 100), Filters.filter_maSlope(30, 250, -5, 100)));
+        strategy.addFilter("突破短期趋势线",
+                Filter.or(Filters.filter_mustBreakTrendline(50, 100, 6, 15, 0.2),
+                          Filters.filter_mustBreakTrendline(15, 100, 7, 0.02, 0.2)));
+        //strategy.addFilter("突破中期趋势线",Stock::getBarSeries, Filters.filter_008b(100, 7, 0.02, 0.13));
+        strategy.addFilter("", Filters.filter_mustHSLPercentileGreatThan(120, 2, 98));
+        strategy.addFilter("", Filters.filter_mustChangeBetweenLowestAndToday(30, 0, 0.5));
+        strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(120, 20));
         return strategy;
     }
 

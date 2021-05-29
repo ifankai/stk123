@@ -56,6 +56,8 @@ public interface StkTextRepository extends JpaRepository<StkTextEntity, Long> {
     @Query(value = "select count(1) from stk_text where post_id=:postId", nativeQuery = true)
     Integer existingByPostId(@Param("postId")Long postId);
 
+    StkTextEntity findByCodeAndPostId(String code, Long postId);
+
     @Modifying
     @Query(value = "update stk_text set read_date = sysdate where id in (:id)", nativeQuery = true)
     void updateAll2Readed(@Param("id") List<Long> ids);
