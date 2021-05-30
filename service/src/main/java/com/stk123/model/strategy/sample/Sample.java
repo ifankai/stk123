@@ -15,9 +15,9 @@ import java.util.stream.Collectors;
 public class Sample {
 
     // ignore: 02a 选出来的标的太多，由02b替换
-    public static String STRATEGIES = "01a,01b,01d,02b,03a,03b,04a,04b,04c,05a,05b,06a,06b,08a,08b,08c,09a,10a";
+    public static String STRATEGIES = "01a,01b,01d,02b,03a,03b,04a,04b,04c,05a,05b,06a,06b,06c,08a,08b,08c,09a,10a";
 
-    public static String STRATEGIES_FOR_ALL_STOCKS = "01a,01b,01c,05b,10a,11a";
+    public static String STRATEGIES_FOR_ALL_STOCKS = "01a,01b,01c,05b,06c,10a,11a";
 
 
     /**** 阳线放量 阴线缩量 *****/
@@ -211,6 +211,24 @@ public class Sample {
         strategy.addFilter("过去3天到80天的跌幅", BarSeries::getFirst, Filters.filter_001b(3,60,-50,-20));
         strategy.addFilter("站上底部一堆放量", Filters.filter_011(120,4));
         strategy.setExpectFilter("60日内涨幅>20%", Filters.expectFilter(60, 20));
+        return strategy;
+    }
+    //巨量换手后，突破趋势线 600733 20210402
+    public static Strategy strategy_06c() {
+        Strategy<Stock> strategy = new Strategy<>("strategy_06c","巨量换手后，突破趋势线(06c)", Stock.class);
+        strategy.addFilter("K线数量", Filters.filter_mustBarSizeGreatThan(120));
+        strategy.addFilter("巨量换手", Filters.filter_mustHSLGreatThan(120, 350));
+        strategy.addFilter("换手率百分位小于30", Filters.filter_mustHSLPercentileLessThan(60, 7, 25));
+        strategy.addFilter("短期涨幅", Filters.filter_mustChangeBetweenLowestAndToday(10, 0, 0.15));
+        strategy.addFilter("中期涨幅", Filters.filter_mustChangeBetweenLowestAndToday(30, 0, 0.30));
+        strategy.addFilter("长期涨幅", Filters.filter_mustChangeBetweenLowestAndToday(120, 0, 0.70));
+        strategy.addFilter("长长期涨幅", Filters.filter_mustChangeBetweenLowestAndToday(250, 0, 1));
+        strategy.addFilter("高点到今天的跌幅", Filters.filter_mustChangeBetweenHighestAndToday(300, 0, -0.3));
+        strategy.addFilter("突破趋势线",
+                Filter.or(Filters.filter_mustBreakTrendline(0, 80, 6, 10, 0.3),
+                          Filters.filter_mustBreakTrendline(0, 100, 8, 0.00, 0.2),
+                          Filters.filter_mustCloseHigherThanBefore(5) ));
+        strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
         return strategy;
     }
 

@@ -70,18 +70,40 @@ public class Filters {
         return (strategy, stock) -> stock.getBarSeries().size() >= size ? FilterResult.TRUE() : FilterResult.FALSE();
     }
 
-    //days天内换手率大于percent
+    //1阳突破n根k线
+    public static Filter<Stock> filter_mustCloseHigherThanBefore(int days){
+        return (strategy, stock) -> {
+            Bar bar = stock.getBar();
+            int n = bar.getBarCountExcludeToday(days, k -> k.getClose() < bar.getClose());
+            if(n >= days){
+                n = bar.before().getBarCountExcludeToday(days, k -> k.getClose() < bar.before().getClose());
+                if(n < days) {
+                    return FilterResult.TRUE();
+                }
+            }
+            return FilterResult.FALSE(n);
+        };
+    }
+
+    //days天内换手率大于percent  (100, 300)
     public static Filter<Stock> filter_mustHSLGreatThan(int days, double percent) {
         return (strategy, stock) -> {
             double hsl = stock.getBar().getSUM(days, Bar.EnumValue.HSL);
             return hsl >= percent ? FilterResult.TRUE() : FilterResult.FALSE("HSL:"+hsl);
         };
     }
-    //days天内换手率百分位大于percentile
+    //days天内换手率百分位大于percentile  (120,30, 95)
     public static Filter<Stock> filter_mustHSLPercentileGreatThan(int size, int days, double percentile) {
         return (strategy, stock) -> {
             double hsl = stock.getBar().getPercentile(size, bar -> bar.getSUM(days, Bar.EnumValue.HSL) );
             return hsl >= percentile ? FilterResult.TRUE("HSL percentile:"+hsl) : FilterResult.FALSE("HSL percentile:"+hsl);
+        };
+    }
+    //days天内换手率百分位小于percentile
+    public static Filter<Stock> filter_mustHSLPercentileLessThan(int size, int days, double percentile) {
+        return (strategy, stock) -> {
+            double hsl = stock.getBar().getPercentile(size, bar -> bar.getSUM(days, Bar.EnumValue.HSL) );
+            return hsl <= percentile ? FilterResult.TRUE("HSL percentile:"+hsl) : FilterResult.FALSE("HSL percentile:"+hsl);
         };
     }
 
@@ -96,10 +118,11 @@ public class Filters {
         };
     }
 
-    //n天内有突破趋势线
+    //n天内有突破趋势线 (50, 100, 6, 15, 0.2)
     public static Filter<Stock> filter_mustBreakTrendline(int days, int m, int left, int right, double percentLowest2Today) {
         return (strategy, stock) -> stock.getBar().getBar(days, bar -> bar.isBreakTrendline(m, left, right, percentLowest2Today)) != null ? FilterResult.TRUE() : FilterResult.FALSE();
     }
+    // (15, 100, 7, 0.02, 0.2)
     public static Filter<Stock> filter_mustBreakTrendline(int days, int m, int n, double d, double percentLowest2Today){
         return (strategy, stock) -> {
             return stock.getBar().getBar(days, bar -> {
@@ -123,7 +146,7 @@ public class Filters {
         };
     }
 
-    //低点到今天的涨幅 (30, 0, 0.30)
+    //低点到今天的涨幅 (30, 0, 0.30)   短期不能涨幅过大：(10, 0, 0.15)
     public static Filter<Stock> filter_mustChangeBetweenLowestAndToday(int days, double lowPercent, double highPercent){
         return (strategy, stock) -> {
             Bar today = stock.getBar();
@@ -135,7 +158,7 @@ public class Filters {
         };
     }
 
-    //低点到高点的涨幅 (40, 0, 0.35)
+    //低点到高点的涨幅 (40, 0, 0.35)   长期箱体内：(300, 0, 1.5)
     public static Filter<Stock> filter_mustChangeBetweenLowestAndHighest(int days, double lowPercent, double highPercent){
         return (strategy, stock) -> {
             Bar today = stock.getBar();
@@ -148,7 +171,7 @@ public class Filters {
         };
     }
 
-    //低点到高点的涨幅 (40, 0, 0.35)
+    //最近低点是长期的低点，也就是最近才创了低点 (100, 250)
     public static Filter<Stock> filter_mustLowestEqual(int days1, int days2){
         return (strategy, stock) -> {
             Bar today = stock.getBar();
@@ -156,6 +179,18 @@ public class Filters {
             double lowest2 = today.getLowest(days2, Bar.EnumValue.L);
             if(lowest1 != lowest2){
                 return FilterResult.FALSE();
+            }
+            return FilterResult.TRUE();
+        };
+    }
+
+    //历史高点到今天的跌幅  (300, 0, -0.3)
+    public static Filter<Stock> filter_mustChangeBetweenHighestAndToday(int days, double lowPercent, double highPercent){
+        return (strategy, stock) -> {
+            Bar today = stock.getBar();
+            double highest = today.getHighest(days, Bar.EnumValue.C);
+            if(today.getClose() < highest*(1+highPercent) || today.getClose() > highest*(1+lowPercent)){
+                return FilterResult.FALSE("区间("+lowPercent+","+highPercent+")，实际跌幅:"+(today.getClose() - highest)/highest);
             }
             return FilterResult.TRUE();
         };
@@ -808,7 +843,7 @@ public class Filters {
                             }
                         }
                     }else{//昨天阳线
-                        if (yesterday.yesterday().isYang() || (today.tomorrow() != null && today.tomorrow().isYin())) {//今天阳线 昨天是阳线 前天阳线or明天是阴线
+                        if ((yesterday.yesterday() != null && yesterday.yesterday().isYang()) || (today.tomorrow() != null && today.tomorrow().isYin())) {//今天阳线 昨天是阳线 前天阳线or明天是阴线
                             n++;
                         }
                         if(beforeYesterday != null && today.getVolume() > beforeYesterday.getVolume() * percent){//如果今天阳线 昨天阳线 今天量能大于前天量能20%，再加1
