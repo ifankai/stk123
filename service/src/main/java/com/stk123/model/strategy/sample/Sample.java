@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class Sample {
 
     // ignore: 02a 选出来的标的太多，由02b替换
-    public static String STRATEGIES = "01a,01b,01d,02b,03a,03b,04a,04b,04c,05a,05b,06a,06b,06c,08a,08b,08c,09a,10a";
+    public static String STRATEGIES = "01a,01b,01d,02b,03a,03b,04a,04b,04c,05a,05b,06a,06b,06c,08a,08b,08c,10a";
 
     public static String STRATEGIES_FOR_ALL_STOCKS = "01a,01b,01c,05b,06c,10a,11a";
 
@@ -288,6 +288,7 @@ public class Sample {
 
 
     /**** 跳空缺口 ****/
+    @Deprecated //TODO 还要优化
     public static Strategy strategy_09a() {
         Strategy<Stock> strategy = new Strategy<>("strategy_09a","跳空缺口，前期突破趋势(09a)", Stock.class);
         strategy.addFilter("跳空缺口", Filters.filter_mustGapUp(10));

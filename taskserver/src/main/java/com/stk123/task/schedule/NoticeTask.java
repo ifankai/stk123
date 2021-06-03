@@ -243,6 +243,15 @@ public class NoticeTask extends AbstractTask {
                             int reply = Integer.parseInt(String.valueOf(post.getReply_count()));
                             totalReplyCount += reply;
                             if (reply >= 3) {
+
+                                if(reply >= 10){
+                                    StkTextEntity stkTextEntity = stkTextRepository.findByCodeAndPostId(stock.getCode(), post.getId());
+                                    if (stkTextEntity == null) {
+                                        stkTextEntity = createPostEntity(post, stock);
+                                        stkTextRepository.save(stkTextEntity);
+                                    }
+                                }
+
                                 long id = post.getId();
                                 int page = 1;
                                 //int matchCount = 0;
@@ -282,25 +291,7 @@ public class NoticeTask extends AbstractTask {
                                     boolean sendEmail = false;
                                     StkTextEntity stkTextEntity = stkTextRepository.findByCodeAndPostId(stock.getCode(), post.getId());
                                     if (stkTextEntity == null) {
-                                        stkTextEntity = new StkTextEntity();
-                                        stkTextEntity.setUserId(post.getUser_id());
-                                        stkTextEntity.setUserName(post.getUser().getScreen_name());
-                                        stkTextEntity.setCode(stock.getCode());
-                                        stkTextEntity.setCreatedAt(new Date(post.getCreated_at()));
-                                        stkTextEntity.setPostId(post.getId());
-                                        stkTextEntity.setTitle(post.getTitle());
-                                        stkTextEntity.setText(post.getText());
-                                        stkTextEntity.setTextDesc(post.getDescription());
-                                        stkTextEntity.setType(TextConstant.TYPE_XUEQIU);
-                                        stkTextEntity.setSubType(TextConstant.SUB_TYPE_XUEQIU_DEFAUTL);
-                                        stkTextEntity.setInsertTime(new Date());
-                                        stkTextEntity.setCodeType(TextConstant.CODE_TYPE_STK);
-                                        stkTextEntity.setFollowersCount(post.getUser().getFollowers_count());
-                                        stkTextEntity.setReplyCount(post.getReply_count());
-                                        stkTextEntity.setUserAvatar(org.apache.commons.lang.StringUtils.split(post.getUser().getProfile_image_url(), ",")[1]);
-                                        if (post.getUser().getId() == 0) {
-                                            stkTextEntity.setSubType(Text.SUB_TYPE_XUEQIU_NOTICE);
-                                        }
+                                        stkTextEntity = createPostEntity(post, stock);
                                         stkTextEntity.setReplyPositive(1);
                                         stkTextRepository.save(stkTextEntity);
                                         sendEmail = true;
@@ -388,6 +379,29 @@ public class NoticeTask extends AbstractTask {
             }
         }
         log.info("analyzeNotice.size="+NOTICES.size());
+    }
+
+    private StkTextEntity createPostEntity(XueqiuPost post, Stock stock){
+        StkTextEntity stkTextEntity = new StkTextEntity();
+        stkTextEntity.setUserId(post.getUser_id());
+        stkTextEntity.setUserName(post.getUser().getScreen_name());
+        stkTextEntity.setCode(stock.getCode());
+        stkTextEntity.setCreatedAt(new Date(post.getCreated_at()));
+        stkTextEntity.setPostId(post.getId());
+        stkTextEntity.setTitle(post.getTitle());
+        stkTextEntity.setText(post.getText());
+        stkTextEntity.setTextDesc(post.getDescription());
+        stkTextEntity.setType(TextConstant.TYPE_XUEQIU);
+        stkTextEntity.setSubType(TextConstant.SUB_TYPE_XUEQIU_DEFAUTL);
+        stkTextEntity.setInsertTime(new Date());
+        stkTextEntity.setCodeType(TextConstant.CODE_TYPE_STK);
+        stkTextEntity.setFollowersCount(post.getUser().getFollowers_count());
+        stkTextEntity.setReplyCount(post.getReply_count());
+        stkTextEntity.setUserAvatar(org.apache.commons.lang.StringUtils.split(post.getUser().getProfile_image_url(), ",")[1]);
+        if (post.getUser().getId() == 0) {
+            stkTextEntity.setSubType(Text.SUB_TYPE_XUEQIU_NOTICE);
+        }
+        return stkTextEntity;
     }
 
     public static void main(String[] args) {
