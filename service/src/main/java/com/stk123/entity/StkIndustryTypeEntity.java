@@ -14,6 +14,8 @@ import java.util.Objects;
 public class StkIndustryTypeEntity {
     @Id
     @Column(name = "ID", nullable = false, precision = 0)
+    @GeneratedValue(strategy =GenerationType.SEQUENCE, generator="s_industry_type_id")
+    @SequenceGenerator(name="s_industry_type_id", sequenceName="s_industry_type_id", allocationSize = 1)
     private Integer id;
 
     @Basic

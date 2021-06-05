@@ -4,11 +4,13 @@ import com.stk123.model.RequestResult;
 import com.stk123.model.core.Bar;
 import com.stk123.model.core.BarSeries;
 import com.stk123.model.core.Stock;
+import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.model.strategy.StrategyBacktesting;
 import com.stk123.repository.StkKlineRepository;
 import com.stk123.repository.StkRepository;
 import com.stk123.service.core.BacktestingService;
 import com.stk123.service.core.BarService;
+import com.stk123.service.core.StockService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -42,6 +44,8 @@ public class TestController {
     private BacktestingService backtestingService;
     @Autowired
     private BarService barService;
+    @Autowired
+    private StockService stockService;
 
 
     @RequestMapping(value = "/test")
@@ -63,9 +67,19 @@ public class TestController {
             stock.getBarSeriesMonth().getList().forEach(e -> System.out.println(e));
         }*/
 
-        Stock stock = Stock.build("600744");
-        stock.getBarSeries();
-        System.out.println(stock.getBar().before(10).getChange(-7, Bar.EnumValue.C));
+//        Stock stock = Stock.build("600744");
+//        stock.getBarSeries();
+//        System.out.println(stock.getBar().before(10).getChange(-7, Bar.EnumValue.C));
+
+        List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn);
+        List<Stock> stocks = stockService.buildStocksWithProjection(list);
+        stockService.buildBarSeries(stocks);
+        List<Stock> stks = stockService.calcRps("easy_gn", stocks, stock -> {
+            return stock.getBar().getChange();
+        });
+        stks.forEach(stock -> {
+            System.out.println(stock.getRps("easy_gn"));
+        });
 
         return RequestResult.success(new Date());
     }

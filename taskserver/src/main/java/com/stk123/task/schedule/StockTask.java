@@ -6,9 +6,13 @@ import com.stk123.common.util.HtmlUtils;
 import com.stk123.common.util.ListUtils;
 import com.stk123.entity.StkEntity;
 import com.stk123.entity.StkHolderEntity;
+import com.stk123.entity.StkIndustryEntity;
+import com.stk123.entity.StkIndustryTypeEntity;
 import com.stk123.model.core.Stock;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.repository.StkHolderRepository;
+import com.stk123.repository.StkIndustryRepository;
+import com.stk123.repository.StkIndustryTypeRepository;
 import com.stk123.repository.StkRepository;
 import com.stk123.service.core.ErrorService;
 import com.stk123.service.core.HttpService;
@@ -21,6 +25,7 @@ import org.htmlparser.tags.TableTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -42,6 +47,10 @@ public class StockTask extends AbstractTask {
     private StockService stockService;
     @Autowired
     private StkHolderRepository stkHolderRepository;
+    @Autowired
+    private StkIndustryTypeRepository stkIndustryTypeRepository;
+    @Autowired
+    private StkIndustryRepository stkIndustryRepository;
 
     private List<Stock> stocksCN = null;
 
@@ -256,9 +265,9 @@ public class StockTask extends AbstractTask {
             Map datas = (Map)map.get("data");
             List<Map> diff = (List)datas.get("diff");
             for(Map data : diff){
-
                 String code = String.valueOf(data.get("f12"));
                 String name = String.valueOf(data.get("f14"));
+                log.info("code="+code+",name="+name);
                 Optional<StkEntity> stk = stkRepository.findById(code);
                 StkEntity stkEntity;
                 if(!stk.isPresent()){
@@ -277,6 +286,40 @@ public class StockTask extends AbstractTask {
                 }
                 stkEntity = stkRepository.save(stkEntity);
 
+
+                //update stk_industry_type stk_industry
+                //http://70.push2.eastmoney.com/api/qt/clist/get?cb=jQuery11240011828891552190912_1622866172512&pn=1&pz=1000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=b:BK0896+f:!50&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f22,f11,f62,f128,f136,f115,f152,f45&_=1622866172522
+                time = new Date().getTime();
+                url = "http://70.push2.eastmoney.com/api/qt/clist/get?cb=jQuery11240011828891552190912_"+time
+                        +"&pn=1&pz=1000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=b:"+code
+                        +"+f:!50&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f22,f11,f62,f128,f136,f115,f152,f45&_="+time;
+                page = httpService.getString(url);
+                json = "{"+StringUtils.substringBetween(page, "({", "})")+"}";
+                Map stkMap = mapper.readValue(json, HashMap.class);
+                Map stkDatas = (Map)stkMap.get("data");
+                List<Map> stkDiff = (List)stkDatas.get("diff");
+
+                if(!stkDiff.isEmpty()) {
+
+                    StkIndustryTypeEntity stkIndustryTypeEntity = new StkIndustryTypeEntity();
+                    stkIndustryTypeEntity.setCode(code);
+                    Optional<StkIndustryTypeEntity> sit = stkIndustryTypeRepository.findOne(Example.of(stkIndustryTypeEntity));
+                    if (!sit.isPresent()) {
+                        stkIndustryTypeEntity.setName(name);
+                        stkIndustryTypeEntity.setSource("eastmoney_gn");
+                        stkIndustryTypeRepository.save(stkIndustryTypeEntity);
+                    } else {
+                        stkIndustryTypeEntity = sit.get();
+                        stkIndustryRepository.deleteAllByIndustry(stkIndustryTypeEntity.getId());
+                    }
+
+                    for(Map stkData : stkDiff){
+                        StkIndustryEntity stkIndustryEntity = new StkIndustryEntity();
+                        stkIndustryEntity.setCode(String.valueOf(stkData.get("f12")));
+                        stkIndustryEntity.setIndustry(stkIndustryTypeEntity.getId());
+                        stkIndustryRepository.save(stkIndustryEntity);
+                    }
+                }
             }
         } catch (IOException e) {
             log.error("initCNIndustryEasymoney", e);

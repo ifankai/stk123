@@ -12,7 +12,9 @@ import java.util.*;
 @Service
 public class IndustryService {
 
-    public final static String DEFAULT_SOURCES = "csindex_zz,csindex_zjh,10jqka_gn,10jqka_thshy";
+    public final static String SOURCE_EASTMONEY_GN = "eastmoney_gn";
+
+    public final static String DEFAULT_SOURCES = "csindex_zz,csindex_zjh,10jqka_gn,10jqka_thshy,eastmoney_gn";
 
     @Autowired
     private StkIndustryRepository stkIndustryRepository;

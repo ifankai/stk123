@@ -24,12 +24,11 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sun.reflect.annotation.ExceptionProxy;
 
-import java.net.SocketException;
 import java.util.*;
-import java.util.function.Consumer;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Service
@@ -70,6 +69,24 @@ public class StockService {
         List<Stock> stocks = stockProjections.stream().map(projection -> Stock.build(projection)).collect(Collectors.toList());
         Map<String, List<IndustryProjection>> map = industryService.findAllToMap();
         stocks.forEach(stock -> stock.setIndustries(map.get(stock.getCode())));
+        return stocks;
+    }
+
+    public List<Stock> buildIndustries(List<Stock> stocks) {
+        Map<String, List<IndustryProjection>> map = industryService.findAllToMap();
+        stocks.forEach(stock -> stock.setIndustries(map.get(stock.getCode())));
+        return stocks;
+    }
+
+    public List<Stock> buildBk(List<Stock> stocks, List<Stock> bks){
+        Map<String, Stock> bkMap = bks.stream().collect(Collectors.toMap(Stock::getCode, Function.identity()));
+        stocks.forEach(stock -> {
+            List<IndustryProjection> industryProjections = stock.getIndustries();
+            List <IndustryProjection> bkList = industryProjections.stream().filter(industryProjection -> IndustryService.SOURCE_EASTMONEY_GN.equals(industryProjection.getSource())).collect(Collectors.toList());
+            bkList.forEach(industryProjection -> {
+                stock.getBks().add(bkMap.get(industryProjection.getBkCode()));
+            });
+        });
         return stocks;
     }
 
@@ -167,6 +184,26 @@ public class StockService {
         Map<String, StkHolderEntity> map = stkHolderRepository.findAllToMap();
         stocks.forEach(stock -> stock.setHolder(map.get(stock.getCode())));
         return stocks;
+    }
+
+    public List<Stock> calcRps(String rpsCode, List<Stock> stocks, Function<Stock,Double> function){
+        stocks.forEach(stock -> {
+            Double value = function.apply(stock);
+            stock.setRpsValue(rpsCode, value);
+        });
+        List<Stock> stks = stocks.stream().sorted(Comparator.comparing(stock -> stock.getRps(rpsCode).getValue())).collect(Collectors.toList());
+        int order = 1;
+        for (Stock stock : stks) {
+            Stock.Rps rps = stock.getRps(rpsCode);
+            if(rps == null || rps.getValue() == null){
+                stock.setRpsPercentile(rpsCode, 50.0);
+                continue;
+            }
+            stock.setRpsOrder(rpsCode, order);
+            stock.setRpsPercentile(rpsCode, order*1.0/stks.size()*100);
+            order++;
+        }
+        return stks;
     }
 
 

@@ -147,7 +147,9 @@ public class BarService {
                 }
 
                 //http://stockdata.stock.hexun.com/gghq_601899.shtml
-                String page = HttpUtils.get("http://webstock.quote.hermes.hexun.com/a/kline?code="+tmp+"&start="+ServiceUtils.getToday()+"150000&number=-1000&type=5&callback=callback", null, "gb2312");
+                Map<String, String> reqHeader = new HashMap<>();
+                reqHeader.put("Referer", "http://stockdata.stock.hexun.com/indexhq_"+(code.equals("999999")?"000001":code)+"_"+stock.getPlace().getPlace()+".shtml");
+                String page = HttpUtils.get("http://webstock.quote.hermes.hexun.com/a/kline?code="+tmp+"&start="+ServiceUtils.getToday()+"150000&number=-1000&type=5&callback=callback", null, reqHeader,"gb2312");
                 //System.out.println(page);
                 List<List> datas = JsonUtils.getList4Json("["+StringUtils.substringBetween(page, "[[", "]]")+"]]", ArrayList.class );
                 for(List data:datas){

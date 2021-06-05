@@ -5,4 +5,5 @@ public interface IndustryProjection {
     String getName();
     String getCode();
     String getSource();
+    String getBkCode();
 }

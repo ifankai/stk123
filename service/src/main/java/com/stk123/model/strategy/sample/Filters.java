@@ -12,6 +12,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -816,7 +817,16 @@ public class Filters {
             if(sum < score){
                 return FilterResult.FALSE("得分:"+sum);
             }
-            return FilterResult.Sortable((double) sum).addResult("得分:"+sum+",sum1="+sum1+",sum2="+sum2+",sum3="+sum3);
+            int sum4 = 0;
+            if(!stock.getBks().isEmpty()){
+                Stock bk = stock.getBkByMaxRps(Stock.Rps.CODE_BK_60);
+                Stock.Rps rps = bk.getRps(Stock.Rps.CODE_BK_60);
+                if(rps != null && rps.getPercentile() >= 90){ //板块rps强度大于90百分位，则加10分
+                    sum4 = 10;
+                }
+            }
+            sum += sum4;
+            return FilterResult.Sortable((double) sum).addResult("得分:"+sum+",sum1="+sum1+",sum2="+sum2+",sum3="+sum3+",sumBK="+sum4);
         };
     }
 

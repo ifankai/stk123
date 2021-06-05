@@ -2,9 +2,8 @@ package com.stk123.service;
 
 import com.stk123.entity.StkDataIndustryPeEntity;
 import com.stk123.entity.StkIndustryTypeEntity;
-import com.stk123.repository.BaseRepository;
 import com.stk123.repository.StkDataIndustryPeRepository;
-import com.stk123.repository.StkIndustryTypRepository;
+import com.stk123.repository.StkIndustryTypeRepository;
 import com.stk123.util.ServiceUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,7 +21,7 @@ public class IndustryServiceDeprecated {
     private StkDataIndustryPeRepository stkDataIndustryPeRepository;
 
     @Autowired
-    private StkIndustryTypRepository stkIndustryTypRepository;
+    private StkIndustryTypeRepository stkIndustryTypRepository;
 
     public StkDataIndustryPeEntity insertOrUpdateIndustryData(Integer industryId, String peDate, Double pe, Double peTtm, Double pb, Double adr){
         if(industryId == null || peDate == null){

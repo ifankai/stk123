@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface StkIndustryTypRepository extends JpaRepository<StkIndustryTypeEntity, Integer> {
+public interface StkIndustryTypeRepository extends JpaRepository<StkIndustryTypeEntity, Integer> {
 }

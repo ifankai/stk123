@@ -21,6 +21,7 @@ import com.stk123.util.ServiceUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
+import lombok.ToString;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -166,6 +167,7 @@ public class Stock {
 
     private StockProjection stock;
     private List<IndustryProjection> industries; //行业
+    private List<Stock> bks = new ArrayList<>(); //板块 eastmoney_gn
     private StkHolderEntity holder; //最新股东人数
 
     private BarSeries barSeries;
@@ -179,11 +181,21 @@ public class Stock {
     public static Integer BarSeriesRowsDefault = 750;
     public Integer BarSeriesRows = BarSeriesRowsDefault;
 
-    /**
-     * static field
-     */
+    //相对强弱指标
+    private Map<String, Rps> rps = new HashMap<>();
+    @Data
+    @ToString
+    public class Rps{
+        public final static String CODE_BK_60 = "bk_60";
+
+        private Double value;
+        private Integer order;
+        private Double percentile;
+    }
 
 
+
+    //////////////////////////////////////////////////////////////////////////////////////
 
     private Stock() {}
 
@@ -592,6 +604,33 @@ public class Stock {
             this.marketCap = Double.MIN_VALUE;
         }
         return this.marketCap;
+    }
+
+    public void setRpsValue(String rpsCode, Double rpsValue){
+        Rps rps = getOrCreateRps(rpsCode);
+        rps.value = rpsValue;
+    }
+    public void setRpsOrder(String rpsCode, Integer rpsOrder){
+        Rps rps = getOrCreateRps(rpsCode);
+        rps.order = rpsOrder;
+    }
+    public void setRpsPercentile(String rpsCode, Double rpsPercentile){
+        Rps rps = getOrCreateRps(rpsCode);
+        rps.percentile = rpsPercentile;
+    }
+    public Rps getRps(String rpsCode){
+        return rps.get(rpsCode);
+    }
+    private Rps getOrCreateRps(String rpsCode){
+        Rps rps = getRps(rpsCode);
+        if(rps == null){
+            rps = new Rps();
+            this.rps.put(rpsCode, rps);
+        }
+        return rps;
+    }
+    public Stock getBkByMaxRps(String rpsCode){
+        return getBks().stream().max(Comparator.comparingDouble(stk -> stk.getRps(rpsCode).getPercentile())).orElse(null);
     }
 
     @Override

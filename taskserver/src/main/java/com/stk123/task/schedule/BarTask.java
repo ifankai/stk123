@@ -558,6 +558,19 @@ public class BarTask extends AbstractTask {
 
                 //排除总市值小于40亿的
                 stocksCN = filterByMarketCap(stocksCN, 40);
+
+                stocksCN = stockService.buildIndustries(stocksCN);
+
+                //建立板块关系，计算rps
+                List<StockBasicProjection> bkList = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn);
+                List<Stock> bkStocks = stockService.buildStocksWithProjection(bkList);
+                bkStocks = stockService.buildBarSeries(bkStocks, 250, false);
+                stockService.calcRps(Stock.Rps.CODE_BK_60, bkStocks, stock -> {
+                    Bar bar = stock.getBar();
+                    return bar.getChange(60, Bar.EnumValue.C);
+                });
+                stockService.buildBk(stocksCN, bkStocks);
+
             }
 
             if(StringUtils.isEmpty(strategy)){
@@ -588,8 +601,14 @@ public class BarTask extends AbstractTask {
                     }else{
                         rowCode = strategyResult.getCode();
                     }
+                    String bkInfo = "";
+                    if(!stock.getBks().isEmpty()){
+                        Stock bk = stock.getBkByMaxRps(Stock.Rps.CODE_BK_60);
+                        bkInfo = "<br/>板块:"+bk.getNameAndCodeWithLink()
+                                +"<br/>板块Rps:"+CommonUtils.numberFormat2Digits(bk.getRps(Stock.Rps.CODE_BK_60).getPercentile());
+                    }
                     List<String> data = ListUtils.createList(
-                            displayCode ? stock.getNameAndCodeWithLink() : "",
+                            displayCode ? stock.getNameAndCodeWithLink()+bkInfo : "",
                             strategyResult.getDate(),
                             strategyResult.getStrategy().getName().replaceAll("，", "<br/>") + "<br/>-----------<br/>" + StringUtils.join(strategyResult.getResults(),"<br/>"),
                             stock.getDayBarImage(),
