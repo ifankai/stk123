@@ -630,11 +630,19 @@ public class Stock {
         return rps;
     }
     public Stock getBkByMaxRps(String rpsCode){
-        return getBks().stream().max(Comparator.comparingDouble(stk -> stk.getRps(rpsCode).getPercentile())).orElse(null);
+        return getBks().stream().filter(Objects::nonNull).max(Comparator.comparingDouble(stk -> stk.getRps(rpsCode).getPercentile())).orElse(null);
     }
 
     @Override
     public int hashCode(){
         return this.code.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Stock{" +
+                "code='" + code + '\'' +
+                ", name='" + name + '\'' +
+                '}';
     }
 }

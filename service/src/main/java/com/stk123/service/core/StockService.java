@@ -84,7 +84,10 @@ public class StockService {
             List<IndustryProjection> industryProjections = stock.getIndustries();
             List <IndustryProjection> bkList = industryProjections.stream().filter(industryProjection -> IndustryService.SOURCE_EASTMONEY_GN.equals(industryProjection.getSource())).collect(Collectors.toList());
             bkList.forEach(industryProjection -> {
-                stock.getBks().add(bkMap.get(industryProjection.getBkCode()));
+                Stock bk = bkMap.get(industryProjection.getBkCode());
+                if(bk != null) {
+                    stock.getBks().add(bk);
+                }
             });
         });
         return stocks;
@@ -197,6 +200,7 @@ public class StockService {
             Stock.Rps rps = stock.getRps(rpsCode);
             if(rps == null || rps.getValue() == null){
                 stock.setRpsPercentile(rpsCode, 50.0);
+                order++;
                 continue;
             }
             stock.setRpsOrder(rpsCode, order);

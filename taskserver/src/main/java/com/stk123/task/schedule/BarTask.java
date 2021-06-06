@@ -61,6 +61,14 @@ public class BarTask extends AbstractTask {
     private int dayOfWeek = TaskUtils.getDayOfWeek(now);
     private boolean isWorkingDay = dayOfWeek == 1 || dayOfWeek == 2 || dayOfWeek == 3 || dayOfWeek == 4 || dayOfWeek == 5;
 
+    /**排除一些垃圾板块**/
+    // AB股[BK0498] AH股[BK0499] 上证380[BK0705] 转债标的[BK0528] 新三板[BK0600] 深股通[BK0804] 三板精选[BK0925] 昨日涨停[SZBK0815]
+    // B股[BK0636] QFII重仓[BK0535] 沪企改革[BK0672] 富时罗素[BK0867] 标准普尔[BK0879] 债转股[BK0980] 股权激励[BK0567] 融资融券[BK0596]
+    // 债转股[SZBK0980] 养老金[SZBK0823] 预亏预减[SZBK0570] 独角兽[SZBK0835]
+    public String BK_REMOVE = "BK0498,BK0499,BK0705,BK0528,BK0600,BK0804,BK0925,BK0816,BK0815," +
+            "BK0636,BK0535,BK0672,BK0867,BK0879,BK0980,BK0567,BK0596"+
+            "BK0980,BK0823,BK0570,BK0835";
+
     @Autowired
     private StkKlineRepository stkKlineRepository;
     @Autowired
@@ -426,11 +434,7 @@ public class BarTask extends AbstractTask {
                 if(realtime == null) {//实时行情只关注股票，排除板块
                     List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn);
                     Set<String> bkList = list.stream().map(StockBasicProjection::getCode).collect(Collectors.toSet());
-                    //排除一些垃圾板块 AB股[BK0498] AH股[BK0499] 上证380[BK0705] 转债标的[BK0528] 新三板[BK0600] 深股通[BK0804] 三板精选[BK0925]
-                    //B股[BK0636] QFII重仓[BK0535] 沪企改革[BK0672] 富时罗素[BK0867] 标准普尔[BK0879] 债转股[BK0980] 股权激励[BK0567] 融资融券[BK0596]
-                    bkList = CollectionUtil.removeAny(bkList, "BK0498", "BK0499", "BK0705", "BK0528", "BK0600", "BK0804",
-                            "BK0925", "BK0816", "BK0815", "BK0636", "BK0535", "BK0672", "BK0867", "BK0879", "BK0980", "BK0567", "BK0596");
-                    addStocks(allList, bkList, "板块");
+                    bkList = CollectionUtil.removeAny(bkList, StringUtils.split(BK_REMOVE,","));
                 }
             }
             log.info(allList);
@@ -564,6 +568,7 @@ public class BarTask extends AbstractTask {
                 //建立板块关系，计算rps
                 List<StockBasicProjection> bkList = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn);
                 List<Stock> bkStocks = stockService.buildStocksWithProjection(bkList);
+                bkStocks = bkStocks.stream().filter(stock -> !BK_REMOVE.contains(stock.getCode())).collect(Collectors.toList());
                 bkStocks = stockService.buildBarSeries(bkStocks, 250, false);
                 stockService.calcRps(Stock.Rps.CODE_BK_60, bkStocks, stock -> {
                     Bar bar = stock.getBar();
@@ -605,7 +610,7 @@ public class BarTask extends AbstractTask {
                     if(!stock.getBks().isEmpty()){
                         Stock bk = stock.getBkByMaxRps(Stock.Rps.CODE_BK_60);
                         bkInfo = "<br/>板块:"+bk.getNameAndCodeWithLink()
-                                +"<br/>板块Rps:"+CommonUtils.numberFormat2Digits(bk.getRps(Stock.Rps.CODE_BK_60).getPercentile());
+                                +"<br/>板块60日Rps:"+CommonUtils.numberFormat2Digits(bk.getRps(Stock.Rps.CODE_BK_60).getPercentile());
                     }
                     List<String> data = ListUtils.createList(
                             displayCode ? stock.getNameAndCodeWithLink()+bkInfo : "",

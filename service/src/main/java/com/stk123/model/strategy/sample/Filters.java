@@ -821,8 +821,12 @@ public class Filters {
             if(!stock.getBks().isEmpty()){
                 Stock bk = stock.getBkByMaxRps(Stock.Rps.CODE_BK_60);
                 Stock.Rps rps = bk.getRps(Stock.Rps.CODE_BK_60);
-                if(rps != null && rps.getPercentile() >= 90){ //板块rps强度大于90百分位，则加10分
-                    sum4 = 10;
+                if(rps != null){ //板块rps强度大于90百分位，则加10分
+                    if(rps.getPercentile() >= 90){
+                        sum4 = 10;
+                    }else if(rps.getPercentile() >= 80){
+                        sum4 = 5;
+                    }
                 }
             }
             sum += sum4;
