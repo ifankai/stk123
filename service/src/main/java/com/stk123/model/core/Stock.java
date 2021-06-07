@@ -269,7 +269,8 @@ public class Stock {
         this.market = EnumMarket.getMarket(stockBasicProjection.getMarket());
         this.cate = EnumCate.getCate(stockBasicProjection.getCate());
         this.place = EnumPlace.getPlace(stockBasicProjection.getPlace());
-        if(this.market == EnumMarket.CN && this.place == null){
+        if(this.market == EnumMarket.CN && this.place == null
+                && (this.cate == EnumCate.STOCK || this.cate == EnumCate.INDEX)){
             setPlace();
         }
         this.totalCapital = stockBasicProjection.getTotalCapital();

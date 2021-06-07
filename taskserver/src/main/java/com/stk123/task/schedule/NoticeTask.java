@@ -404,6 +404,31 @@ public class NoticeTask extends AbstractTask {
         return stkTextEntity;
     }
 
+    @Getter
+    @Setter
+    public class Notice {
+        private String code;
+        private Date fetchDate;
+
+        private Date xqFetchDate;
+        private Date xqCreateDate;
+        private String xqUrl;
+        private String xqTitle;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Notice notice = (Notice) o;
+            return Objects.equals(code, notice.code);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(code);
+        }
+    }
+
     public static void main(String[] args) {
         String s = "最期待胰腺癌 看好的数据, 看公司语气，会有惊喜！[大笑],双抗护城河很深很宽, 不看好哈。效率都是可以的 利好";
         for(String reg : POSITIVE_WORDS){
@@ -419,27 +444,3 @@ public class NoticeTask extends AbstractTask {
     }
 }
 
-@Getter
-@Setter
-class Notice {
-    private String code;
-    private Date fetchDate;
-
-    private Date xqFetchDate;
-    private Date xqCreateDate;
-    private String xqUrl;
-    private String xqTitle;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Notice notice = (Notice) o;
-        return Objects.equals(code, notice.code);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(code);
-    }
-}
