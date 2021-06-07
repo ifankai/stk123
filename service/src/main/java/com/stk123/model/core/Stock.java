@@ -185,12 +185,20 @@ public class Stock {
     private Map<String, Rps> rps = new HashMap<>();
     @Data
     @ToString
-    public class Rps{
+    public static class Rps{
         public final static String CODE_BK_60 = "bk_60";
+        private static Map<String, String> CODE_NAME = new HashMap<>();
+        static{
+            CODE_NAME.put(CODE_BK_60, "60日");
+        }
 
         private Double value;
         private Integer order;
         private Double percentile;
+
+        public static String getName(String rpsCode){
+            return CODE_NAME.get(rpsCode);
+        }
     }
 
 
@@ -631,6 +639,14 @@ public class Stock {
     }
     public Stock getBkByMaxRps(String rpsCode){
         return getBks().stream().filter(Objects::nonNull).max(Comparator.comparingDouble(stk -> stk.getRps(rpsCode).getPercentile())).orElse(null);
+    }
+    public String getBkInfo(String rpsCode){
+        if(!getBks().isEmpty()){
+            Stock bk = this.getBkByMaxRps(rpsCode);
+            Rps rps = bk.getRps(rpsCode);
+            return "<br/>板块:"+bk.getNameAndCodeWithLink()+"<br/>板块"+Rps.getName(rpsCode)+"Rps:"+CommonUtils.numberFormat2Digits(rps.getPercentile());
+        }
+        return "";
     }
 
     @Override

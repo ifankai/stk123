@@ -57,8 +57,8 @@ public class NoticeTask extends AbstractTask {
     private static String CACHE_KEY = "noticetask_code";
     private static String CACHE_KEY_IDS = "noticetask_ids";
 
-    private static String EMAIL_MSG = "<br/><br/><br/>---------------------牛股分析：" +
-            "[20210527]-飞龙股份[SZ002536] 飞龙股份：2021年半年度业绩预告 网页链接 - 基本面：业绩不错，是比较早的半年报业绩预告，雪球评论还不多；技术面：前期月线放量历史最高，前期顶部没有明显出货痕迹，当前面临突破前期高点。<br/>";
+    private static String EMAIL_MSG = "<br/><br/><br/>---------------------牛股分析：<br/>" +
+            "[2021-05-27]:飞龙股份[SZ002536] 飞龙股份：2021年半年度业绩预告 网页链接 - 基本面：业绩不错，是比较早的半年报业绩预告，雪球评论还不多；技术面：前期月线放量历史最高，前期顶部没有明显出货痕迹，当前面临突破前期高点。<br/>";
 
     public static Set<Notice> NOTICES = new CopyOnWriteArraySet<>();
 

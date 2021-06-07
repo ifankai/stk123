@@ -74,7 +74,14 @@ public class StockService {
 
     public List<Stock> buildIndustries(List<Stock> stocks) {
         Map<String, List<IndustryProjection>> map = industryService.findAllToMap();
-        stocks.forEach(stock -> stock.setIndustries(map.get(stock.getCode())));
+        stocks.forEach(stock -> {
+            List<IndustryProjection> industries = map.get(stock.getCode());
+            if(industries == null){
+                stock.setIndustries(new ArrayList<>());
+            }else {
+                stock.setIndustries(industries);
+            }
+        });
         return stocks;
     }
 
@@ -82,6 +89,7 @@ public class StockService {
         Map<String, Stock> bkMap = bks.stream().collect(Collectors.toMap(Stock::getCode, Function.identity()));
         stocks.forEach(stock -> {
             List<IndustryProjection> industryProjections = stock.getIndustries();
+            
             List <IndustryProjection> bkList = industryProjections.stream().filter(industryProjection -> IndustryService.SOURCE_EASTMONEY_GN.equals(industryProjection.getSource())).collect(Collectors.toList());
             bkList.forEach(industryProjection -> {
                 Stock bk = bkMap.get(industryProjection.getBkCode());
@@ -181,6 +189,7 @@ public class StockService {
                 //System.out.println(this.getBarSeries().getFirst());
             }
         }
+        stocks.forEach(stock -> stock.setIncludeRealtimeBarDone(true));
     }
 
     public List<Stock> buildHolder(List<Stock> stocks){
