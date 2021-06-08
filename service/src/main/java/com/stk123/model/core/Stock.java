@@ -641,7 +641,7 @@ public class Stock {
     public Stock getBkByMaxRps(String rpsCode){
         return getBks().stream().filter(Objects::nonNull).max(Comparator.comparingDouble(stk -> stk.getRps(rpsCode).getPercentile())).orElse(null);
     }
-    public Rps getMaxRps(String rpsCode){
+    public Rps getMaxRpsInAllBk(String rpsCode){
         return getBkByMaxRps(rpsCode).getRps(rpsCode);
     }
 

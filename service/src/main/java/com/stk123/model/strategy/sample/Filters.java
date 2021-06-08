@@ -57,7 +57,7 @@ public class Filters {
     }
 
     public static Filter<Stock> filter_mustRpsGreatThan(String rpsCode, int n) {
-        return (strategy, stock) -> stock.getMaxRps(rpsCode).getPercentile() >= n ? FilterResult.TRUE() : FilterResult.FALSE();
+        return (strategy, stock) -> stock.getMaxRpsInAllBk(rpsCode).getPercentile() >= n ? FilterResult.TRUE() : FilterResult.FALSE();
     }
 
     public static Filter<Stock> filter_mustBarSmallUpperShadow(double percent) {
