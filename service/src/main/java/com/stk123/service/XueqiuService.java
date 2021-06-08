@@ -12,9 +12,11 @@ import com.stk123.model.xueqiu.Stock;
 import com.stk123.util.HttpUtils;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.htmlparser.Node;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,7 @@ import java.io.File;
 import java.util.*;
 
 @Service
+@CommonsLog
 public class XueqiuService {
 
 	@Setter
@@ -30,21 +33,18 @@ public class XueqiuService {
 	private static Map<String,Set<String>> Follows = new HashMap<String, Set<String>>();
 	
 	static{
-		Thread my = new Thread() {
-			@Override
-			public void run() {
-				while(true){
-					if(StringUtils.isNotEmpty(cookies)){
-						cookies = null;
-					}
-					try {
-						Thread.sleep(1000 * 60 * 30);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
+		Thread my = new Thread(() -> {
+			while(true){
+				if(StringUtils.isNotEmpty(cookies)){
+					cookies = null;
+				}
+				try {
+					Thread.sleep(1000 * 60 * 30);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
 				}
 			}
-		};
+		});
 		my.setDaemon(true);
 		my.start();
 	}
@@ -53,6 +53,13 @@ public class XueqiuService {
 		Map<String, String> requestHeaders = new HashMap<String, String>();
 		if(cookies == null){
 			//cookies = login();
+			try {
+				String json = HttpUtils.get("http://81.68.255.181:8089/cookie/get", "utf-8");
+				cookies = String.valueOf(JsonUtils.testJson(json).get("data"));
+			} catch (Exception e) {
+				log.error("Get cookie from 'http://81.68.255.181:8089/cookie/get' error", e);
+			}
+			log.info("Get cookie from 81.68.255.181:"+cookies);
 		}
 		if(cookies == null || cookies.length() == 0){
 			try {
@@ -61,7 +68,7 @@ public class XueqiuService {
 				e.printStackTrace();
 			}
 			cookies = ConfigUtils.getProp("xueqiu.cookie");
-			System.out.println("cookie="+cookies);
+			log.info("Get cookie from xueqiu.cookie.properties:"+cookies);
 		}
     	requestHeaders.put("Cookie", cookies);
     	return requestHeaders;
@@ -87,6 +94,10 @@ public class XueqiuService {
 			}
 		}
 		return StringUtils.replace(StringUtils.join(cookies, "; "), ".xueqiu.com;", "xueqiu.com;");
+	}
+
+	public static void clearFollowStks(String tabName){
+		Follows.remove(tabName);
 	}
 	
 	//https://xueqiu.com/v4/stock/portfolio/stocks.json?size=1000&pid=10&tuid=6237744859&pname=%E5%85%B3%E6%B3%A8C&uid=6237744859&category=2&type=2&_=1505130889888
@@ -218,6 +229,9 @@ public class XueqiuService {
 		}
 		url = "https://xueqiu.com/cubes/quote.json?code="+StringUtils.join(codes,",");
 		html = HttpUtils.get(url,null, requestHeaders,"UTF-8");
+		if(NumberUtils.isDigits(html)){
+			throw new Exception("Xueqiu.com cookie is expired.");
+		}
 		JSONObject jsonObject2 = JSON.parseObject(html);
 		List<Portfolio> result = new ArrayList<Portfolio>();
 		for(Portfolio portfolio : portfolios){
@@ -282,8 +296,12 @@ public class XueqiuService {
         //System.out.println(XueqiuService.existingXueqiuFollowStk("全部","002191"));
 		//XueqiuUtils.getCookies();
         System.out.println(XueqiuService.getFollowStksByUid("7580740929"));
-		//System.out.println(XueqiuService.getPortfolioStocks("SP1006082"));
+
+        //System.out.println(XueqiuService.getPortfolioStocks("SP1006082"));
 		//System.out.println(getPortfolios("6237744859"));
+
+		//String json = HttpUtils.get("http://81.68.255.181:8089/cookie/get", "utf-8");
+		//System.out.println(JsonUtils.testJson(json).get("data"));
 	}
 
 

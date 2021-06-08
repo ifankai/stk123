@@ -21,7 +21,7 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-@Controller
+//@Controller
 @CommonsLog
 public class WebSocketController {
 

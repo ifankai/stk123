@@ -377,6 +377,7 @@ public class BarTask extends AbstractTask {
                 List<String> codes = Arrays.asList(StringUtils.split(code, ","));
                 addStocks(allList, codes, null);
             }else {
+                XueqiuService.clearFollowStks("全部");
                 Set<String> myList = XueqiuService.getFollowStks("全部");
                 //Set<String> myList = XueqiuService.getFollowStks("我的");
                 if (myList.isEmpty()) {
