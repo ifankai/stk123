@@ -56,6 +56,10 @@ public class Filters {
         return (strategy, stock) -> stock.getBar().before(n).isYang() && stock.getBar().before(n).getChange() >= percent ? FilterResult.TRUE() : FilterResult.FALSE();
     }
 
+    public static Filter<Stock> filter_mustRpsGreatThan(String rpsCode, int n) {
+        return (strategy, stock) -> stock.getMaxRps(rpsCode).getPercentile() >= n ? FilterResult.TRUE() : FilterResult.FALSE();
+    }
+
     public static Filter<Stock> filter_mustBarSmallUpperShadow(double percent) {
         return (strategy, stock) -> {
             Bar bar = stock.getBar();

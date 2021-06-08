@@ -311,6 +311,7 @@ public class Sample {
     //300061 202010416   600735 20210408    600007 20210430    600793 20210107
     public static Strategy strategy_11a() {
         Strategy<Stock> strategy = new Strategy<>("strategy_11a", "低位突破趋势线后，连续2根放量阳线(11a)", Stock.class);
+        strategy.addFilter("Rps", Filters.filter_mustRpsGreatThan(Stock.Rps.CODE_BK_60, 80));
         strategy.addFilter("阳线", Filters.filter_mustBarIsYang(0, 0.04));
         strategy.addFilter("阳线", (strgy, stock) -> stock.getBar().getHigh() > stock.getBar().before().getHigh() ? FilterResult.TRUE() : FilterResult.FALSE());
         strategy.addFilter("", Filters.filter_mustLowestEqual(100, 250));
