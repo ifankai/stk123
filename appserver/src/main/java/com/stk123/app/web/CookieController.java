@@ -5,6 +5,8 @@ import com.stk123.model.RequestResult;
 import lombok.SneakyThrows;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.net.URLDecoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Date;
 
 @Controller
@@ -30,6 +35,7 @@ public class CookieController {
         return "cookie";
     }
 
+    @SneakyThrows
     @RequestMapping(value = "/set", method = RequestMethod.POST)
     @ResponseBody
     public RequestResult setCookie(@RequestParam(value = "cookie")String cookie){
@@ -38,6 +44,8 @@ public class CookieController {
         }
         COOKIE = URLDecoder.decode(cookie);
         COOKIE_SET_DATE = new Date();
+        Path path = Paths.get("./cookie.txt");
+        Files.write(path, COOKIE.getBytes());
         return RequestResult.success(COOKIE);
     }
 

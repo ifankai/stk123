@@ -7,7 +7,9 @@ import com.stk123.task.tool.TaskUtils;
 import lombok.Setter;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -18,12 +20,14 @@ import java.util.Map;
 @CommonsLog
 @Service
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+@PropertySource("classpath:password.properties")
 public class SyncTask extends AbstractTask {
 
     private String host = "81.68.255.181";
     private int port = 22;
     private String username = "root";
-    private String password = "M5Pbg;Ln2W[pe6";
+    @Value("${server.password}")
+    private String password;
     private String localDir = "D:/share/workspace/stk123/oracle/";
     private String remoteDir = "/root/oracle/";
 

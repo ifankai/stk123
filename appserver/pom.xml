@@ -143,13 +143,14 @@
 						</goals>
 						<configuration>
 							<target name="stk-deploy" description="Use antrun plugin to deploy with SCP and SSH">
+								<property file="D:/IdeaProjects/stk123/service/src/main/resources/password.properties" />
 								<!-- remote host and the command to be executed there -->
 
 								<echo message="Stopping appserver ..." />
 								<sshexec trust="true" failonerror="false"
 										 host="${ftp.host}" verbose="false"
 										 username="${ftp.username}"
-										 password="${ftp.password}"
+										 password="${server.password}"
 										 command="cd ${ftp.path}; ./appserver_stop.sh"
 										 timeout="120000" />
 
@@ -157,14 +158,14 @@
 								<echo message="Transfering ${project.build.directory}\${project.build.finalName}.${project.packaging} ..." />
 								<scp trust="true" failonerror="true" verbose="off" sftp="true"
 									 file="${project.build.directory}\${project.build.finalName}.${project.packaging}"
-									 todir="${ftp.username}:${ftp.password}@${ftp.host}:${ftp.path}/${project.artifactId}.${project.packaging}" />
+									 todir="${ftp.username}:${server.password}@${ftp.host}:${ftp.path}/${project.artifactId}.${project.packaging}" />
 
 								<!-- remote host and the command to be executed there -->
 								<echo message="Starting appserver ..." />
 								<sshexec trust="true" failonerror="true"
 										 host="${ftp.host}"
 										 username="${ftp.username}"
-										 password="${ftp.password}"
+										 password="${server.password}"
 										 command="cd ${ftp.path}; ./appserver_start.sh"
 										 timeout="120000" />
 								<echo message="The deployment is done." />

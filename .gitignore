@@ -26,3 +26,5 @@ oracle/stk.sql
 notice_cninfo_code.txt
 temp/notice_cninfo_code_szse.txt
 temp/notice_cninfo_code_hke.txt
+service/src/main/resources/password.properties
+cookie.txt
