@@ -170,7 +170,7 @@ public class StockService {
                 if(k.getOpen()==k.getClose() && k.getOpen()==0)continue;
                 stock.getBarSeries().addToFirst(k);
                 //System.out.println(this.getBarSeries().getFirst());
-            }else if(stock.isMarketHK() && s.length() > 12){
+            }else if(stock.isMarketHK() && s.split(",").length >= 12){
                 s = StringUtils.substringBetween(s, "\"", "\"");
                 String[] ss = s.split(",");
                 Bar k = new Bar();
