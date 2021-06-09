@@ -15,7 +15,7 @@ public class SpringApplicationContext implements ApplicationContextAware {
         CONTEXT = context;
     }
 
-    public static <T> T getBeanByForName(String className) throws ClassNotFoundException {
+    public static <T> T getBeanByClassName(String className) throws ClassNotFoundException {
         return (T) CONTEXT.getBean(Class.forName(className));
     }
 

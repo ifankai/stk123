@@ -7,8 +7,6 @@ import com.stk123.service.task.Task;
 import com.stk123.service.task.TaskContainer;
 import lombok.SneakyThrows;
 import lombok.extern.apachecommons.CommonsLog;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -80,7 +78,7 @@ public class TaskController {
     @RequestMapping(path={"/start/{name}", "/start/{name}/**"})
     public RequestResult runTask(HttpServletRequest request, @PathVariable("name") String taskName, @RequestParam Map<String,String> allRequestParams){
         String mvcPath = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-        Task task = SpringApplicationContext.getBeanByForName(taskName);
+        Task task = SpringApplicationContext.getBeanByClassName(taskName);
         String value = StringUtils.substringAfter(mvcPath, "/task/start/"+taskName);
         List<String> params = Arrays.stream(StringUtils.split(value, "/")).filter(e -> StringUtils.isNotEmpty(e)).collect(Collectors.toList());
         if(allRequestParams != null)
