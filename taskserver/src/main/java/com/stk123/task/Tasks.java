@@ -147,6 +147,13 @@ public class Tasks {
         TaskUtils.cmd("D:\\share\\workspace\\stk123\\oracle\\export_stk.bat");
     }
 
+    @Scheduled(cron = "0 55 10 ? * MON-FRI")
+    @Scheduled(cron = "0 25 14 ? * MON-FRI")
+    @Scheduled(cron = "0 0 16 ? * MON-FRI")
+    public void gitPull(){
+        TaskUtils.cmd("D:\\share\\workspace\\stk123\\git_pull.bat");
+    }
+
     @Scheduled(cron = "0 0/5 * ? * *") //每5分钟1次
     public void noticeFetch() {
         taskContainer.start(NoticeTask.class, "fetch");

@@ -46,7 +46,7 @@ public abstract class Task<R> {
 
     public void run(String... args) {
         this.startTime = LocalDateTime.now();
-        log.info("task............start, id:"+this.id);
+        log.info("["+this.getClass().getSimpleName()+"]..start, id:"+this.id);
         try {
             status = EnumStatus.RUNNING;
             execute(args);
@@ -57,7 +57,7 @@ public abstract class Task<R> {
         } finally {
             this.endTime = LocalDateTime.now();
             status = EnumStatus.NOT_RUNNING;
-            log.info("task............end, cost time:"+ (getEndTimeToLong()-getStartTimeToLong())/1000.0 + "s");
+            log.info("["+this.getClass().getSimpleName()+"]....end, cost time:"+ (getEndTimeToLong()-getStartTimeToLong())/1000.0 + "s");
         }
     }
 
