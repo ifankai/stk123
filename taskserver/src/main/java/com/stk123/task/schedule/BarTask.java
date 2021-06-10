@@ -501,7 +501,7 @@ public class BarTask extends AbstractTask {
 
 
                     List<String> data = ListUtils.createList(
-                            displayCode ? stock.getNameAndCodeWithLink() + stock.getBkInfo(Stock.Rps.CODE_BK_60) : "",
+                            displayCode ? stock.getNameAndCodeWithLink() + stock.getBkInfo() : "",
                             strategyResult.getDate(),
                             strategyResult.getStrategy().getName().replaceAll("，", "<br/>"),
                             StringUtils.join(sources, "<br/>"),
@@ -613,7 +613,7 @@ public class BarTask extends AbstractTask {
                     }
 
                     List<String> data = ListUtils.createList(
-                            displayCode ? stock.getNameAndCodeWithLink() + stock.getBkInfo(Stock.Rps.CODE_BK_60) : "",
+                            displayCode ? stock.getNameAndCodeWithLink() + stock.getBkInfo() : "",
                             strategyResult.getDate(),
                             strategyResult.getStrategy().getName().replaceAll("，", "<br/>") + "<br/>-----------<br/>" + StringUtils.join(strategyResult.getResults(),"<br/>"),
                             stock.getDayBarImage(),
@@ -750,14 +750,19 @@ public class BarTask extends AbstractTask {
     public void buildBkAndCalcRps(List<Stock> stocks){
         //建立板块关系，计算rps
         List<StockBasicProjection> bkList = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn);
-        List<Stock> bkStocks = stockService.buildStocksWithProjection(bkList);
-        bkStocks = bkStocks.stream().filter(stock -> !BK_REMOVE.contains(stock.getCode())).collect(Collectors.toList());
-        bkStocks = stockService.buildBarSeries(bkStocks, 250, false);
-        stockService.calcRps(Stock.Rps.CODE_BK_60, bkStocks, stock -> {
+        List<Stock> bks = stockService.buildStocksWithProjection(bkList);
+        bks = bks.stream().filter(stock -> !BK_REMOVE.contains(stock.getCode())).collect(Collectors.toList());
+        bks = stockService.buildBarSeries(bks, 250, false);
+        stockService.calcRps(Stock.Rps.CODE_BK_60, bks, stock -> {
             Bar bar = stock.getBar();
             return bar.getChange(60, Bar.EnumValue.C);
         });
-        stockService.buildBk(stocks, bkStocks);
+        stockService.buildBk(stocks, bks);
+        stockService.calcRps(Stock.Rps.CODE_BK_STOCKS_30_SCORE, bks, bk -> {
+            List<Stock> bkStocks = bk.getStocks();
+            List<Stock> top5 = ListUtils.greatest(bkStocks, 5, bkStock -> (double)bkStock.getBar().getScore(30));
+            return (double)top5.stream().mapToInt(bkStock ->bkStock.getBar().getScore(30)).sum();
+        });
     }
 
 }

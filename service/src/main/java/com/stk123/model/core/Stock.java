@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.common.CommonConstant;
 import com.stk123.common.CommonUtils;
 import com.stk123.common.util.BeanUtils;
+import com.stk123.common.util.ListUtils;
 import com.stk123.entity.StkHolderEntity;
 import com.stk123.model.json.View;
 import com.stk123.model.projection.IndustryProjection;
@@ -166,8 +167,11 @@ public class Stock {
     private Double marketCap; //总市值
 
     private StockProjection stock;
+
     private List<IndustryProjection> industries; //行业
     private List<Stock> bks = new ArrayList<>(); //板块 eastmoney_gn
+    private List<Stock> stocks = new ArrayList<>(); //板块包含的所有股票
+
     private StkHolderEntity holder; //最新股东人数
 
     private BarSeries barSeries;
@@ -186,10 +190,13 @@ public class Stock {
     @Data
     @ToString
     public static class Rps{
-        public final static String CODE_BK_60 = "bk_60";
+        public final static String CODE_BK_60 = "code_bk_60";
+        public final static String CODE_BK_STOCKS_30_SCORE = "code_bk_stocks_30_score";
+
         private static Map<String, String> CODE_NAME = new HashMap<>();
         static{
-            CODE_NAME.put(CODE_BK_60, "60日");
+            CODE_NAME.put(CODE_BK_60, "板块60日涨幅");
+            CODE_NAME.put(CODE_BK_STOCKS_30_SCORE, "个股score前5个sum");
         }
 
         private Double value;
@@ -645,11 +652,19 @@ public class Stock {
         return getBkByMaxRps(rpsCode).getRps(rpsCode);
     }
 
-    public String getBkInfo(String rpsCode){
+    public String getBkInfo(){
         if(!getBks().isEmpty()){
-            Stock bk = this.getBkByMaxRps(rpsCode);
-            Rps rps = bk.getRps(rpsCode);
-            return "<br/>板块:"+bk.getNameAndCodeWithLink()+"<br/>板块"+Rps.getName(rpsCode)+"Rps:"+CommonUtils.numberFormat2Digits(rps.getPercentile());
+            Stock bk = this.getBkByMaxRps(Rps.CODE_BK_60);
+            Rps rps = bk.getRps(Rps.CODE_BK_60);
+
+            Stock bk2 = this.getBkByMaxRps(Rps.CODE_BK_STOCKS_30_SCORE);
+            Rps rps2 = bk2.getRps(Rps.CODE_BK_STOCKS_30_SCORE);
+
+            List<Stock> top5 = ListUtils.greatest(bk2.getStocks(), 5, bkStock -> (double)bkStock.getBar().getScore(30));
+
+            return "<br/>"+Rps.getName(Rps.CODE_BK_60)+"["+bk.getNameAndCodeWithLink()+"]:"+CommonUtils.numberFormat2Digits(rps.getPercentile())+
+                   "<br/>"+Rps.getName(Rps.CODE_BK_STOCKS_30_SCORE)+"["+bk2.getNameAndCodeWithLink()+"]["+rps2.getValue()+"]:"+CommonUtils.numberFormat2Digits(rps2.getPercentile())+
+                   "<br/>"+StringUtils.join(top5.stream().map(Stock::getNameAndCodeWithLink), "<br/>");
         }
         return "";
     }

@@ -95,6 +95,7 @@ public class StockService {
                 Stock bk = bkMap.get(industryProjection.getBkCode());
                 if(bk != null) {
                     stock.getBks().add(bk);
+                    bk.getStocks().add(stock);
                 }
             });
         });

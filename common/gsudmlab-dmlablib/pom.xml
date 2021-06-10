@@ -93,7 +93,6 @@
 						<dependencySourceIncludes>
 							<dependencySourceInclude>edu.gsu.cs.dmlab:*</dependencySourceInclude>
 						</dependencySourceIncludes>
-						<additionalparam>-Xdoclint:none</additionalparam>
 						<doclint>none</doclint>
 						<quiet>true</quiet>
 						<source>8</source>

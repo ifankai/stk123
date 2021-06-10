@@ -1,11 +1,12 @@
 package com.stk123.common.util;
 
-import java.util.ArrayList;
+import com.google.common.collect.Comparators;
+
+import java.util.*;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collector;
 
 public class ListUtils {
 	
@@ -51,6 +52,10 @@ public class ListUtils {
 	public interface Get{
 		public double get(Object o);
 	}
+
+    public static <T> List<T> greatest(List<T> list, int n, Function<T,Double> function){
+        return list.stream().collect(Comparators.greatest(n, Comparator.comparing(function)));
+    }
 
 	public static <E> Collection<E> add(Collection collection, E... elements){
 		collection.addAll(Arrays.asList(elements));
