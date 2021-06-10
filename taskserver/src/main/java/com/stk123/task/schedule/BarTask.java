@@ -23,7 +23,6 @@ import com.stk123.service.core.BarService;
 import com.stk123.service.core.StockService;
 import com.stk123.task.tool.TaskUtils;
 import com.stk123.util.ExceptionUtils;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -35,7 +34,6 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EnumType;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
@@ -753,16 +751,9 @@ public class BarTask extends AbstractTask {
         List<Stock> bks = stockService.buildStocksWithProjection(bkList);
         bks = bks.stream().filter(stock -> !BK_REMOVE.contains(stock.getCode())).collect(Collectors.toList());
         bks = stockService.buildBarSeries(bks, 250, false);
-        stockService.calcRps(Stock.Rps.CODE_BK_60, bks, stock -> {
-            Bar bar = stock.getBar();
-            return bar.getChange(60, Bar.EnumValue.C);
-        });
+        stockService.calcRps(Stock.Rps.CODE_BK_60, bks);
         stockService.buildBk(stocks, bks);
-        stockService.calcRps(Stock.Rps.CODE_BK_STOCKS_30_SCORE, bks, bk -> {
-            List<Stock> bkStocks = bk.getStocks();
-            List<Stock> top5 = ListUtils.greatest(bkStocks, 5, bkStock -> (double)bkStock.getBar().getScore(30));
-            return (double)top5.stream().mapToInt(bkStock ->bkStock.getBar().getScore(30)).sum();
-        });
+        stockService.calcRps(Stock.Rps.CODE_BK_STOCKS_SCORE_30, bks);
     }
 
 }

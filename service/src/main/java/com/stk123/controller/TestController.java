@@ -74,9 +74,7 @@ public class TestController {
         List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn);
         List<Stock> stocks = stockService.buildStocksWithProjection(list);
         stockService.buildBarSeries(stocks);
-        List<Stock> stks = stockService.calcRps("easy_gn", stocks, stock -> {
-            return stock.getBar().getChange();
-        });
+        List<Stock> stks = stockService.calcRps("easy_gn", stocks);
         stks.forEach(stock -> {
             System.out.println(stock.getRps("easy_gn"));
         });

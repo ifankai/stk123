@@ -199,9 +199,9 @@ public class StockService {
         return stocks;
     }
 
-    public List<Stock> calcRps(String rpsCode, List<Stock> stocks, Function<Stock,Double> function){
+    public List<Stock> calcRps(String rpsCode, List<Stock> stocks){
         stocks.forEach(stock -> {
-            Double value = function.apply(stock);
+            Double value = Stock.Rps.getCalculation(rpsCode).apply(stock);
             stock.setRpsValue(rpsCode, value);
         });
         List<Stock> stks = stocks.stream().sorted(Comparator.comparing(stock -> stock.getRps(rpsCode).getValue())).collect(Collectors.toList());

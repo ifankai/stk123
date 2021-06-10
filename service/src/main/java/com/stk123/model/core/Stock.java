@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.common.CommonConstant;
 import com.stk123.common.CommonUtils;
-import com.stk123.common.util.BeanUtils;
 import com.stk123.common.util.ListUtils;
 import com.stk123.entity.StkHolderEntity;
 import com.stk123.model.json.View;
@@ -26,13 +25,13 @@ import lombok.ToString;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.stk123.model.core.Stock.EnumMarket.*;
@@ -163,6 +162,9 @@ public class Stock {
     @JsonView(View.Default.class)
     private EnumCate cate;
 
+    //存放临时数据
+    private Map data = new HashMap();
+
     private Double totalCapital; //总股本
     private Double marketCap; //总市值
 
@@ -191,21 +193,54 @@ public class Stock {
     @ToString
     public static class Rps{
         public final static String CODE_BK_60 = "code_bk_60";
-        public final static String CODE_BK_STOCKS_30_SCORE = "code_bk_stocks_30_score";
+        public final static String CODE_BK_STOCKS_SCORE_30 = "code_bk_stocks_score_30";
 
-        private static Map<String, String> CODE_NAME = new HashMap<>();
+        private static Map<String, RpsDefinition> CODE_NAME = new HashMap<>();
         static{
-            CODE_NAME.put(CODE_BK_60, "板块60日涨幅");
-            CODE_NAME.put(CODE_BK_STOCKS_30_SCORE, "个股score前5个sum");
+            CODE_NAME.put(CODE_BK_60, new RpsDefinition(CODE_BK_60, "板块60日涨幅", stock -> {
+                Bar bar = stock.getBar();
+                return bar.getChange(60, Bar.EnumValue.C);
+            }));
+
+            CODE_NAME.put(CODE_BK_STOCKS_SCORE_30, new RpsDefinition(CODE_BK_STOCKS_SCORE_30,"个股score前5个sum",bk -> {
+                List<Stock> bkStocks = bk.getStocks();
+                List<Stock> top5 = ListUtils.greatest(bkStocks, 5, bkStock -> (double)bkStock.getBar().getScore(30));
+                bk.getData().put("top5", top5);
+                return (double)top5.stream().mapToInt(bkStock ->bkStock.getBar().getScore(30)).sum();
+            }));
         }
 
+        public static Function<Stock, Double> getCalculation(String rpsCode){
+            return CODE_NAME.get(rpsCode).getCalculation();
+        }
+
+
+        private RpsDefinition rpsDefinition;
         private Double value;
         private Integer order;
         private Double percentile;
 
-        public static String getName(String rpsCode){
-            return CODE_NAME.get(rpsCode);
+        @Data
+        @AllArgsConstructor
+        public static class RpsDefinition{
+            private String code;
+            private String name;
+            private Function<Stock,Double> calculation;
         }
+
+        public Rps(RpsDefinition rpsDefinition){
+            this.rpsDefinition = rpsDefinition;
+        }
+
+        public String getCode(){
+            return rpsDefinition.getCode();
+        }
+
+        public String getName(){
+            return rpsDefinition.getName();
+        }
+
+
     }
 
 
@@ -640,7 +675,7 @@ public class Stock {
     private Rps getOrCreateRps(String rpsCode){
         Rps rps = getRps(rpsCode);
         if(rps == null){
-            rps = new Rps();
+            rps = new Rps(Rps.CODE_NAME.get(rpsCode));
             this.rps.put(rpsCode, rps);
         }
         return rps;
@@ -657,13 +692,13 @@ public class Stock {
             Stock bk = this.getBkByMaxRps(Rps.CODE_BK_60);
             Rps rps = bk.getRps(Rps.CODE_BK_60);
 
-            Stock bk2 = this.getBkByMaxRps(Rps.CODE_BK_STOCKS_30_SCORE);
-            Rps rps2 = bk2.getRps(Rps.CODE_BK_STOCKS_30_SCORE);
+            Stock bk2 = this.getBkByMaxRps(Rps.CODE_BK_STOCKS_SCORE_30);
+            Rps rps2 = bk2.getRps(Rps.CODE_BK_STOCKS_SCORE_30);
 
-            List<Stock> top5 = ListUtils.greatest(bk2.getStocks(), 5, bkStock -> (double)bkStock.getBar().getScore(30));
+            List<Stock> top5 = (List<Stock>)bk2.getData().get("top5");
 
-            return "<br/>"+Rps.getName(Rps.CODE_BK_60)+"["+bk.getNameAndCodeWithLink()+"]:"+CommonUtils.numberFormat2Digits(rps.getPercentile())+
-                   "<br/>"+Rps.getName(Rps.CODE_BK_STOCKS_30_SCORE)+"["+bk2.getNameAndCodeWithLink()+"]["+rps2.getValue()+"]:"+CommonUtils.numberFormat2Digits(rps2.getPercentile())+
+            return "<br/>"+rps.getName()+"["+bk.getNameAndCodeWithLink()+"]:"+CommonUtils.numberFormat2Digits(rps.getPercentile())+"<br/>"+
+                   "<br/>"+rps2.getName()+"["+bk2.getNameAndCodeWithLink()+"]["+rps2.getValue()+"]:"+CommonUtils.numberFormat2Digits(rps2.getPercentile())+
                    "<br/>"+StringUtils.join(top5.stream().map(Stock::getNameAndCodeWithLink), "<br/>");
         }
         return "";
