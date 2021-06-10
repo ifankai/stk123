@@ -62,9 +62,9 @@ public abstract class AbstractTask extends Task {
         Set<String> keySet = params.keySet();
         for(Map.Entry<String, Runnable> method : methods.entrySet()){
             if(keySet.isEmpty() || StringUtils.startsWith(method.getKey(), "run_") || keySet.stream().anyMatch(key -> StringUtils.contains(method.getKey(), key))){
-                log.info("["+this.getClass().getSimpleName()+"]" + "...start");
+                //log.info("["+this.getClass().getSimpleName()+"]" + "...start");
                 method.getValue().run();
-                log.info("["+this.getClass().getSimpleName()+"]" + "...end");
+                //log.info("["+this.getClass().getSimpleName()+"]" + "...end");
             }
         }
     }
