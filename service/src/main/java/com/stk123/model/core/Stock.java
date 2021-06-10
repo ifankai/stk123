@@ -699,7 +699,7 @@ public class Stock {
 
             return "<br/>"+rps.getName()+"["+bk.getNameAndCodeWithLink()+"]:"+CommonUtils.numberFormat2Digits(rps.getPercentile())+"<br/>"+
                    "<br/>"+rps2.getName()+"["+bk2.getNameAndCodeWithLink()+"]["+rps2.getValue()+"]:"+CommonUtils.numberFormat2Digits(rps2.getPercentile())+
-                   "<br/>"+StringUtils.join(top5.stream().map(Stock::getNameAndCodeWithLink), "<br/>");
+                    (top5==null?"":"<br/>"+StringUtils.join(top5.stream().map(Stock::getNameAndCodeWithLink), "<br/>"));
         }
         return "";
     }
