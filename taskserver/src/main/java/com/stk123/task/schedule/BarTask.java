@@ -438,6 +438,7 @@ public class BarTask extends AbstractTask {
                     List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn);
                     Set<String> bkList = list.stream().map(StockBasicProjection::getCode).collect(Collectors.toSet());
                     bkList = CollectionUtil.removeAny(bkList, StringUtils.split(BK_REMOVE,","));
+                    addStocks(allList, bkList, "板块");
                 }
             }
             log.info(allList);
@@ -573,7 +574,7 @@ public class BarTask extends AbstractTask {
                 stocksCN = stockService.buildBarSeries(stocksCN, 500, realtime != null);
 
                 //排除总市值小于40亿的
-                stocksCN = filterByMarketCap(stocksCN, 40);
+                stocksCN = filterByMarketCap(stocksCN, 30);
 
                 stocksCN = stockService.buildIndustries(stocksCN);
 

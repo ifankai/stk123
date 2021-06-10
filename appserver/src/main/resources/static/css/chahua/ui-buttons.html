@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<!--[if IE 7]>    <html class="no-js ie7 ie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8 ie" lang="en"> <![endif]-->
+<!--[if IE 9]>    <html class="no-js ie9 ie" lang="en"> <![endif]-->
+<!--[if gt IE 9]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+	<head>
+		<meta charset="utf-8" />
+		<title>UI &amp; Buttons | Wuxia Bootstrap Admin Template</title>
+		<meta name="description" content="" />
+		<meta name="author" content="Walking Pixels | www.walkingpixels.com" />
+		<meta name="robots" content="index, follow" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		
+		<!-- CSS styles -->
+		<link rel='stylesheet' type='text/css' href='css/wuxia-blue.css' />
+		
+		<!-- Fav and touch icons -->
+		<link rel="shortcut icon" href="img/icons/favicon.ico" />
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="img/icons/apple-touch-icon-114-precomposed.png" />
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="img/icons/apple-touch-icon-72-precomposed.png" />
+		<link rel="apple-touch-icon-precomposed" href="img/icons/apple-touch-icon-57-precomposed.png" />
+		
+		<!-- JS Libs -->
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+		<script>window.jQuery || document.write('<script src="js/libs/jquery.js"><\/script>')</script>
+		<script src="js/libs/modernizr.js"></script>
+		<script src="js/libs/selectivizr.js"></script>
+		
+		<script>
+			$(document).ready(function(){
+				
+				// Navbar tooltips
+				$('.navbar [title]').tooltip({
+					placement: 'bottom'
+				});
+				
+				// Content tooltips
+				$('[role=main] [title]:not(.demoPopover)').tooltip({
+					placement: 'top'
+				});
+				
+				// Dropdowns
+				$('.dropdown-toggle').dropdown();
+				
+				// Tabs
+				$('.demoTabs a').click(function (e) {
+					e.preventDefault();
+					$(this).tab('show');
+				})
+				
+				// Radio buttons
+				$('.demoBtns').button();
+				
+				// Popovers
+				$('.demoPopover').popover();
+				
+			});
+		</script>
+		<script type="text/javascript">
+			var _gaq=_gaq||[];_gaq.push(["_setAccount","UA-22557155-5"]);_gaq.push(["_trackPageview"]);(function(){var b=document.createElement("script");b.type="text/javascript";b.async=true;b.src=("https:"==document.location.protocol?"https://ssl":"http://www")+".google-analytics.com/ga.js";var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(b,a)})();
+		</script>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
+	<body>
+	
+		<!-- Main navigation bar -->
+		<header class="navbar navbar-fixed-top">
+			<div class="navbar-inner">
+				<div class="container">
+					<button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".user">
+						<span class="icon-user"></span>
+					</button>
+					<button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".navigation">
+						<span class="icon-chevron-down"></span>
+					</button>
+					<a class="brand" href="http://envato.walkingpixels.com/themes/wuxia/">Walking Pixels Wuxia Bootstrap admin template</a>
+					<nav class="nav-collapse navigation">
+						<ul class="nav" role="navigation">
+							<li><a href="index.html" title="Homepage dashboard"><span class="icon-home"></span> Dashboard</a></li>
+							<li><a href="forms.html" title="Form elements"><span class="icon-tasks"></span> Forms</a></li>
+							<li><a href="tables.html" title="Static and dynamic tables"><span class="icon-table"></span> Tables</a></li>
+							<li><a href="typography.html" title="Typography showcase"><span class="icon-font"></span> Typography</a></li>
+							<li class="active"><a href="ui-buttons.html" title="Buttons in navbar!"><span class="icon-magic"></span> UI &amp; Buttons</a></li>
+							<li class="divider-vertical"></li>
+							<li><a href="#" title="Buttons in navbar!" class="btn-wuxia-navbar"><div class="btn btn-wuxia"><span class="icon-key"></span> Widgets</div></a></li>
+						</ul>
+					</nav>
+					<nav class="nav-collapse user">
+						<div class="user-info pull-right">
+							<img src="http://placekitten.com/35/35" alt="User avatar" />
+							<div class="btn-group">
+								<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+									<div><strong>John Pixel</strong>Administrator</div>
+									<span class="caret"></span>
+								</a>
+								<ul class="dropdown-menu">
+									<li><a href=""><span class="icon-cogs"></span> Account settings</a></li>
+									<li><a href=""><span class="icon-bell"></span> Preferences</a></li>
+									<li><a href=""><span class="icon-envelope"></span> Email notifications</a></li>
+									<li class="divider"></li>
+									<li><a href=""><span class="icon-signout"></span> Logout</a></li>
+								</ul>
+							</div>
+						</div>
+					</nav>
+				</div>
+			</div>
+		</header>
+		<!-- /Main navigation bar -->
+		
+		<!-- Main content -->
+		<div class="container" role="main">
+		
+			<!-- Breadcrumbs -->
+			<ul class="breadcrumb">
+				<li><a href="#"><span class="icon-home"></span> Home</a></li>
+				<li><a href="#">Wuxia template</a></li>
+				<li class="active">UI &amp; Buttons</li>
+			</ul>
+			<!-- Breadcrumbs -->
+		
+			<!-- Secondary navigation -->
+			<div class="nav-secondary">
+				<nav>
+					<ul>
+						<li><a class="wuxify-me" href="charts.html"><span class="icon-signal"></span>Charts</a></li>
+						<li><a class="wuxify-me" href="gallery.html"><span class="icon-picture"></span>Gallery</a></li>
+						<li><a class="wuxify-me" href="file-explorer.html"><span class="icon-file"></span>File explorer</a></li>
+						<li><a class="wuxify-me" href="calendar.html"><span class="icon-calendar"></span>Calendar</a></li>
+						<li><a class="wuxify-me" href="grid.html"><span class="icon-th"></span>Grid</a></li>
+						<li><a class="wuxify-me" href="goodies.html"><span class="icon-heart"></span>Goodies</a><span class="badge badge-inverse">6</span></li>
+					</ul>
+				</nav>
+			</div>
+			<!-- /Secondary navigation -->
+			
+			<!-- Main data container -->
+			<div class="content">
+			
+				<!-- Page header -->
+				<div class="page-header">
+					<h1><span class="icon-magic"></span> User interface &amp; buttons</h1>
+					<ul class="page-header-actions">
+						<li class="active demoTabs"><a href="#ui" class="btn btn-wuxia">Interface elements</a></li>
+						<li class="demoTabs"><a href="#buttons" class="btn btn-wuxia">Buttons</a></li>
+						<li><a href="http://twitter.github.com/bootstrap/components.html" class="btn btn-wuxia btn-inverse pull-right" title="Official Bootstrap documentation" target="_blank"><span class="icon-question-sign"></span> Bootstrap Docs</a></li>
+					</ul>
+				</div>
+				<!-- /Page header -->
+				
+				<!-- Tab content -->
+				<div class="page-container tab-content">
+				
+					<!-- Tab #ui -->
+					<div class="tab-pane active" id="ui">
+						
+						<!-- Grid row -->
+						<div class="row">
+						
+							<!-- Example pagination -->
+							<!-- Page grid cell (12 blocks - full) -->
+							<article class="span12">
+									<h2>Pagination</h2>
+							</article>
+							<!-- /Page grid cell (12 blocks - full) -->
+							
+							<!-- Page grid cell (4 blocks) -->
+							<article class="span4">
+								
+								<h3>Multicon-page pagination</h3>
+								<p>The default pagination component is flexible and works in a number of variations.</p>
+								<p>Links have 3 different states. Use class <code>.active</code> for current page and <code>.disabled</code> for unclickable links.</p>
+								<p>You can also align pagination to the left (default), center <code>.pagination-centered</code> and right <code>.pagination-right</code>.</p>
+									
+							</article>
+							<!-- /Page grid cell (4 blocks) -->
+							
+							<!-- Page grid cell (4 blocks) -->
+							<article class="span4">
+								
+								<div class="pagination pagination-right">
+									<ul>
+										<li><a href="#">&laquo;</a></li>
+										<li class="active"><a href="#">10</a></li>
+										<li class="disabled"><a href="#">...</a></li>
+										<li><a href="#">20</a></li>
+										<li><a href="#">&raquo;</a></li>
+									</ul>
+								</div>
+								<div class="pagination pagination-centered">
+									<ul>
+										<li class="active"><a href="#">1</a></li>
+										<li><a href="#">2</a></li>
+										<li><a href="#">3</a></li>
+										<li><a href="#">4</a></li>
+										<li><a href="#">5</a></li>
+									</ul>
+								</div>
+								<div class="pagination">
+									<ul>
+										<li class="disabled"><a href="#"><span class="icon-arrow-left"></span></a></li>
+										<li class="active"><a href="#">1</a></li>
+										<li><a href="#">2</a></li>
+										<li><a href="#">3</a></li>
+										<li><a href="#">4</a></li>
+										<li><a href="#"><span class="icon-arrow-right"></span></a></li>
+									</ul>
+								</div>
+									
+							</article>
+							<!-- /Page grid cell (4 blocks) -->
+							
+							<!-- Page grid cell (4 blocks) -->
+							<article class="span4">
+								
+								<h3>Pager</h3>
+								<p>Pager links also use the general <code>.disabled</code> class from the pagination.</p>
+								<ul class="pager">
+									<li><a href="#">Previous</a></li>
+									<li><a href="#">Next</a></li>
+								</ul>
+								<ul class="pager">
+									<li class="previous"><a href="#"><span class="icon-caret-left"></span>Older</a></li>
+									<li class="next"><a href="#">Newer<span class="icon-caret-right"></span></a></li>
+								</ul>
+									
+							</article>
+							<!-- /Page grid cell (4 blocks) -->
+							
+						</div>
+						<!-- /Grid row -->
+						
+						<!-- Grid row -->
+						<div class="row">
+						
+							<!-- Example alerts -->
+							<!-- Page grid cell (12 blocks - full) -->
+							<article class="span12">
+									<h2>Alerts</h2>
+							</article>
+							<!-- /Page grid cell (12 blocks - full) -->
+							
+							<!-- Page grid cell (4 blocks) -->
+							<article class="span4">
+								
+								<p>Simple alerts for user notification. Comes in two variants and several colors.</p>
+								<p>iOS devices require an <code>href="#"</code> for the dismissal of alerts. Be sure to include it and the data attribute for anchor close icons. Alternatively, you may use a
+<code>&lt;button&gt;</code> element with the data attribute. When using <code>&lt;button&gt;</code>, you must include <code>type="button"</code> or your forms may not submit.</p>
+									
+							</article>
+							<!-- /Page grid cell (4 blocks) -->
+							
+							<!-- Page grid cell (8 blocks) -->
+							<article class="span8">
+								
+								<div class="alert alert-block">
+									<button class="close" data-dismiss="alert" type="button">&times;</button>
+									<h4 class="alert-heading">Warning!</h4>
+									<p>Best check yo self, you're not looking too good. Nulla vitae elit libero, a pharetra augue. Praesent commodo cursus magna, vel scelerisque nisl consectetur et.</p>
+								</div>
+								
+								<div class="alert alert-error">
+									<button class="close" data-dismiss="alert" type="button">&times;</button>
+									<strong>Oh snap!</strong> Change a few things up and try submitting again.
+								</div>
+								
+								<div class="alert alert-success">
+									<button class="close" data-dismiss="alert" type="button">&times;</button>
+									<strong>Well done!</strong> You successfully read this important alert message.
+								</div>
+								
+								<div class="alert alert-info">
+									<button class="close" data-dismiss="alert" type="button">&times;</button>
+									<strong>Heads up!</strong> This alert needs your attention, but it's not super important.
+								</div>
+								
+							</article>
+							<!-- /Page grid cell (8 blocks) -->
+							
+						</div>
+						<!-- /Grid row -->
+						
+						<!-- Grid row -->
+						<div class="row">
+						
+							<!-- Example progress bars -->
+							<!-- Page grid cell (12 blocks - full) -->
+							<article class="span12">
+									<h2>Progress bars</h2>
+							</article>
+							<!-- /Page grid cell (12 blocks - full) -->
+							
+							<!-- Page grid cell (4 blocks) -->
+							<article class="span4">
+								
+								<p>Progress bars use some of the same button and alert classes for consistent styles. Similar to the solid colors, we have varied striped progress bars.</p>
+								<p>Progress bars use CSS3 transitions, so if you dynamically adjust the width via javascript, it will smoothly resize. If you use the <code>.active</code> class, your <code>.progress-striped</code> progress bars will animate the stripes left to right.</p>
+									
+							</article>
+							<!-- /Page grid cell (4 blocks) -->
+							
+							<!-- Page grid cell (4 blocks) -->
+							<article class="span4">
+								
+								<div class="progress progress-info" style="margin-bottom: 9px;">
+									<div class="bar" style="width: 20%"></div>
+								</div>
+								<div class="progress progress-success" style="margin-bottom: 9px;">
+									<div class="bar" style="width: 40%"></div>
+								</div>
+								<div class="progress progress-warning" style="margin-bottom: 9px;">
+									<div class="bar" style="width: 60%"></div>
+								</div>
+								<div class="progress progress-danger" style="margin-bottom: 9px;">
+									<div class="bar" style="width: 80%"></div>
+								</div>
+								<div class="progress progress-inverse" style="margin-bottom: 9px;">
+									<div class="bar" style="width: 89%">89%</div>
+								</div>
+									
+							</article>
+							<!-- /Page grid cell (4 blocks) -->
+							
+							<!-- Page grid cell (4 blocks) -->
+							<article class="span4">
+								
+								<div class="progress progress-info progress-striped" style="margin-bottom: 9px;">
+									<div class="bar" style="width: 20%"></div>
+								</div>
+								<div class="progress progress-success progress-striped" style="margin-bottom: 9px;">
+									<div class="bar" style="width: 40%"></div>
+								</div>
+								<div class="progress progress-warning progress-striped" style="margin-bottom: 9px;">
+									<div class="bar" style="width: 60%"></div>
+								</div>
+								<div class="progress progress-danger progress-striped" style="margin-bottom: 9px;">
+									<div class="bar" style="width: 80%"></div>
+								</div>
+								<div class="progress progress-inverse progress-striped active" style="margin-bottom: 9px;">
+									<div class="bar" style="width: 89%">89%</div>
+								</div>
+									
+							</article>
+							<!-- /Page grid cell (4 blocks) -->
+							
+						</div>
+						<!-- /Grid row -->
+						
+						<!-- Grid row -->
+						<div class="row">
+						
+							<!-- Example inline labels -->
+							<!-- Page grid cell (4 blocks) -->
+							<article class="span4">
+								
+								<h2>Inline labels</h2>
+								<p>Inline labels for anything you need. Get creative!</p>
+								<span class="label">Default</span>
+								<span class="label label-success">Success</span>
+								<span class="label label-warning">Warning</span>
+								<span class="label label-important">Important</span>
+								<span class="label label-info">Info</span>
+								<span class="label label-inverse">Inverse</span>
+									
+							</article>
+							<!-- /Page grid cell (4 blocks) -->
+							
+							<!-- Example badges -->
+							<!-- Page grid cell (4 blocks) -->
+							<article class="span4">
+								
+								<h2>Badges</h2>
+								<p>Smaller and more rounded younger brother.</p>
+								<span class="badge">1</span>
+								<span class="badge badge-success">2</span>
+								<span class="badge badge-warning">4</span>
+								<span class="badge badge-important">6</span>
+								<span class="badge badge-info">8</span>
+								<span class="badge badge-inverse">10</span>
+									
+							</article>
+							<!-- /Page grid cell (4 blocks) -->
+							
+							<!-- Example wells -->
+							<!-- Page grid cell (4 blocks) -->
+							<article class="span4">
+								
+								<h2>Wells</h2>
+								<p>Use the well as a simple effect on an element to give it an inset effect.</p>
+								<div class="well"> Look, I'm in a well! </div>
+									
+							</article>
+							<!-- /Page grid cell (4 blocks) -->
+							
+						</div>
+						<!-- /Grid row -->
+						
+						<!-- Grid row -->
+						<div class="row">
+						
+							<!-- Example popover and modal-->
+							<!-- Page grid cell (4 blocks) -->
+							<article class="span4">
+								
+								<h2>Popovers</h2>
+								<p>Hover over the button to trigger the popover.</p>
+								<a href="#" class="btn btn-wuxia btn-danger demoPopover" title="A Title" data-content="And here's some amazing content. It's very engaging. right?">Hover for popover</a>
+								
+								<h2>Modal</h2>
+								<p>Not much to say here - basic modals. Click on the button to trigger modal window.</p>
+								<a class="btn btn-wuxia btn-primary" data-toggle="modal" href="#demoModal">Launch Modal</a>
+								<div class="modal fade hide" id="demoModal">
+									<div class="modal-header">
+										<button type="button" class="close" data-dismiss="modal">×</button>
+										<h3>Modal header</h3>
+									</div>
+									<div class="modal-body">
+										<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vitae enim ac ligula eleifend commodo id quis risus. Donec consequat lorem et metus facilisis vitae dapibus felis fermentum. Aenean imperdiet nibh vitae sem condimentum pharetra. Mauris molestie molestie faucibus. Aenean sit amet sem orci, at adipiscing dolor. Fusce feugiat odio vitae erat commodo sed accumsan ante sollicitudin. Integer mollis, tellus vel feugiat varius, risus quam lacinia erat, eu ultricies urna dolor ac metus. Mauris vestibulum euismod lectus, vitae vehicula nisl ullamcorper sit amet. In ac consectetur purus. Integer orci ipsum, sollicitudin non rutrum id, adipiscing eu augue. Nulla eget lorem elit. Curabitur vehicula porttitor suscipit.</p>
+									</div>
+									<div class="modal-footer">
+										<a href="#" class="btn btn-wuxia" data-dismiss="modal">Close</a>
+										<a href="#" class="btn btn-wuxia btn-primary">Save changes</a>
+									</div>
+								</div>
+									
+							</article>
+							<!-- /Page grid cell (4 blocks) -->
+							
+							<!-- Example accordion -->
+							<!-- Page grid cell (8 blocks) -->
+							<article class="span8">
+								
+								<h2>Accordion</h2>
+								<p>Just add <code>data-toggle="collapse"</code> and a <code>data-target</code> to element to automatically assign control of a collapsible element. The <code>data-target</code> attribute accepts a css selector to apply the collapse to. Be sure to add the class <code>collapse</code> to the collapsible element. If you'd like it to default open, add the additional class <code>in</code>.</p>
+								<div id="accordion1" class="accordion">
+									<div class="accordion-group">
+										<div class="accordion-heading">
+											<a class="accordion-toggle" href="#collapseOne" data-parent="#accordion1" data-toggle="collapse"> Collapsible Group Item #1 </a>
+										</div>
+										<div id="collapseOne" class="accordion-body collapse">
+											<div class="accordion-inner">Anim  cliche reprehenderit, enim eiusmod high life  terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda  et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.</div>
+										</div>
+									</div>
+									<div class="accordion-group">
+										<div class="accordion-heading">
+											<a class="accordion-toggle" href="#collapseTwo" data-parent="#accordion1" data-toggle="collapse"> Collapsible Group Item #2 </a>
+										</div>
+										<div id="collapseTwo" class="accordion-body collapse">
+											<div class="accordion-inner"> Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </div>
+										</div>
+									</div>
+									<div class="accordion-group">
+										<div class="accordion-heading">
+											<a class="accordion-toggle" href="#collapseThree" data-parent="#accordion1" data-toggle="collapse"> Collapsible Group Item #3 </a>
+										</div>
+										<div id="collapseThree" class="accordion-body in collapse">
+											<div class="accordion-inner"> Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </div>
+										</div>
+									</div>
+								</div>
+									
+							</article>
+							<!-- /Page grid cell (8 blocks) -->
+							
+						</div>
+						<!-- /Grid row -->
+						
+						<!-- Grid row -->
+						<div class="row">
+						
+							
+							<!-- Example huge accordion -->
+							<!-- Page grid cell (12 blocks - full) -->
+							<article class="span12">
+								
+								<h2>Huge accordion</h2>
+								<p>Just add <code>huge</code> class to the accordion element to automatically set width fullscreen. You will love it on your smartphone.</p>
+								<div id="accordion2" class="accordion huge">
+									<div class="accordion-group">
+										<div class="accordion-heading">
+											<a class="accordion-toggle" href="#collapseFour" data-parent="#accordion2" data-toggle="collapse"> Invoices </a>
+										</div>
+										<div id="collapseFour" class="accordion-body collapse">
+											<div class="accordion-inner">Anim  cliche reprehenderit, enim eiusmod high life  terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda  et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.</div>
+										</div>
+									</div>
+									<div class="accordion-group">
+										<div class="accordion-heading">
+											<a class="accordion-toggle" href="#collapseFive" data-parent="#accordion2" data-toggle="collapse"> Orders <span class="badge badge-inverse">10</span></a>
+										</div>
+										<div id="collapseFive" class="accordion-body collapse">
+											<div class="accordion-inner"> Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </div>
+										</div>
+									</div>
+									<div class="accordion-group">
+										<div class="accordion-heading">
+											<a class="accordion-toggle" href="#collapseSix" data-parent="#accordion2" data-toggle="collapse"> Shipments </a>
+										</div>
+										<div id="collapseSix" class="accordion-body collapse">
+											<div class="accordion-inner"> Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </div>
+										</div>
+									</div>
+								</div>
+									
+							</article>
+							<!-- /Page grid cell (12 blocks - full) -->
+							
+						</div>
+						<!-- /Grid row -->
+						
+					</div>
+					<!-- /Tab #ui -->
+					
+					<!-- Tab #buttons -->
+					<div class="tab-pane" id="buttons">
+						
+						<!-- Grid row -->
+						<div class="row">
+						
+							<!-- Default buttons showcase -->
+							<!-- Page grid cell (12 blocks - full) -->
+							<article class="span12">
+							
+								<h2>Default Bootstrap buttons</h2>
+								<table class="table table-bordered table-striped">
+									<thead>
+										<tr>
+											<th>Button</th>
+											<th>Class</th>
+											<th>Description</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td><button class="btn">Default</button></td>
+											<td><code>btn</code></td>
+											<td>Standard gray button with gradient</td>
+										</tr>
+										<tr>
+											<td><button class="btn btn-primary">Primary</button></td>
+											<td><code>btn btn-primary</code></td>
+											<td>Provides extra visual weight and identifies the primary action in a set of buttons</td>
+										</tr>
+										<tr>
+											<td><button class="btn btn-info">Info</button></td>
+											<td><code>btn btn-info</code></td>
+											<td>Used as an alternative to the default styles</td>
+										</tr>
+										<tr>
+											<td><button class="btn btn-success">Success</button></td>
+											<td><code>btn btn-success</code></td>
+											<td>Indicates a successful or positive action</td>
+										</tr>
+										<tr>
+											<td><button class="btn btn-warning">Warning</button></td>
+											<td><code>btn btn-warning</code></td>
+											<td>Indicates caution should be taken with this action</td>
+										</tr>
+										<tr>
+											<td><button class="btn btn-danger">Danger</button></td>
+											<td><code>btn btn-danger</code></td>
+											<td>Indicates a dangerous or potentially negative action</td>
+										</tr>
+										<tr>
+											<td><button class="btn btn-inverse">Inverse</button></td>
+											<td><code>btn btn-inverse</code></td>
+											<td>Alternate dark gray button, not tied to a semantic action or use</td>
+										</tr>
+									</tbody>
+								</table>
+							
+							</article>
+							<!-- /Page grid cell (12 blocks - full) -->
+							
+							<!-- Wuxia showcase -->
+							<!-- Page grid cell (12 blocks - full) -->
+							<article class="span12">
+							
+								<h2>Wuxia buttons</h2>
+								<table class="table table-bordered table-striped">
+									<thead>
+										<tr>
+											<th>Button</th>
+											<th>Class</th>
+											<th>Description</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td><button class="btn btn-wuxia">Default</button></td>
+											<td><code>btn btn-wuxia</code></td>
+											<td>Standard gray button with gradient</td>
+										</tr>
+										<tr>
+											<td><button class="btn btn-primary btn-wuxia">Primary</button></td>
+											<td><code>btn btn-wuxia btn-primary</code></td>
+											<td>Provides extra visual weight and identifies the primary action in a set of buttons</td>
+										</tr>
+										<tr>
+											<td><button class="btn btn-info btn-wuxia">Info</button></td>
+											<td><code>btn btn-wuxia btn-info</code></td>
+											<td>Used as an alternative to the default styles</td>
+										</tr>
+										<tr>
+											<td><button class="btn btn-success btn-wuxia">Success</button></td>
+											<td><code>btn btn-wuxia btn-success</code></td>
+											<td>Indicates a successful or positive action</td>
+										</tr>
+										<tr>
+											<td><button class="btn btn-warning btn-wuxia">Warning</button></td>
+											<td><code>btn btn-wuxia btn-warning</code></td>
+											<td>Indicates caution should be taken with this action</td>
+										</tr>
+										<tr>
+											<td><button class="btn btn-danger btn-wuxia">Danger</button></td>
+											<td><code>btn btn-wuxia btn-danger</code></td>
+											<td>Indicates a dangerous or potentially negative action</td>
+										</tr>
+										<tr>
+											<td><button class="btn btn-inverse btn-wuxia">Inverse</button></td>
+											<td><code>btn btn-wuxia btn-inverse</code></td>
+											<td>Alternate dark gray button, not tied to a semantic action or use</td>
+										</tr>
+									</tbody>
+								</table>
+							
+							</article>
+							<!-- /Page grid cell (12 blocks - full) -->
+							
+							<!-- Flat wuxia showcase -->
+							<!-- Page grid cell (12 blocks - full) -->
+							<article class="span12">
+							
+								<h2>Flat wuxia buttons</h2>
+								<table class="table table-bordered table-striped">
+									<thead>
+										<tr>
+											<th>Button</th>
+											<th>Class</th>
+											<th>Description</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td><button class="btn btn-flat">Default</button></td>
+											<td><code>btn btn-flat</code></td>
+											<td>Standard gray button with gradient</td>
+										</tr>
+										<tr>
+											<td><button class="btn btn-primary btn-flat">Primary</button></td>
+											<td><code>btn btn-wuxia btn-flat</code></td>
+											<td>Provides extra visual weight and identifies the primary action in a set of buttons</td>
+										</tr>
+										<tr>
+											<td><button class="btn btn-info btn-flat">Info</button></td>
+											<td><code>btn btn-flat btn-info</code></td>
+											<td>Used as an alternative to the default styles</td>
+										</tr>
+										<tr>
+											<td><button class="btn btn-success btn-flat">Success</button></td>
+											<td><code>btn btn-flat btn-success</code></td>
+											<td>Indicates a successful or positive action</td>
+										</tr>
+										<tr>
+											<td><button class="btn btn-warning btn-flat">Warning</button></td>
+											<td><code>btn btn-flat btn-warning</code></td>
+											<td>Indicates caution should be taken with this action</td>
+										</tr>
+										<tr>
+											<td><button class="btn btn-danger btn-flat">Danger</button></td>
+											<td><code>btn btn-flat btn-danger</code></td>
+											<td>Indicates a dangerous or potentially negative action</td>
+										</tr>
+										<tr>
+											<td><button class="btn btn-inverse btn-flat">Inverse</button></td>
+											<td><code>btn btn-flat btn-inverse</code></td>
+											<td>Alternate dark gray button, not tied to a semantic action or use</td>
+										</tr>
+									</tbody>
+								</table>
+							
+							</article>
+							<!-- /Page grid cell (12 blocks - full) -->
+							
+						</div>
+						<!-- /Grid row -->
+						
+						<!-- Grid row -->
+						<div class="row">
+						
+							<article class="span12">
+								<h2>More fun with buttons</h2>
+							</article>
+							
+							<!-- Different tags button styling -->
+							<!-- Page grid cell (4 blocks) -->
+							<article class="span4">
+								
+								<h3>One class for multiple tags</h3>
+								<p>Use the <code>.btn</code> class on an <code>&lt;a&gt;</code>, <code>&lt;button&gt;</code>, or <code>&lt;input&gt;</code> element.</p>
+								<a class="btn" href="">Link</a>
+								<button class="btn" type="submit">Button</button>
+								<input class="btn" type="button" value="Input" />
+								<input class="btn" type="submit" value="Submit" />
+								
+							</article>
+							<!-- /Page grid cell (4 blocks) -->
+							
+							<!-- Different button size -->
+							<!-- Page grid cell (4 blocks) -->
+							<article class="span4">
+								
+								<h3>3 different sizes</h3>
+								<p>Fancy larger or smaller buttons? Add <code>.btn-large</code>, <code>.btn-small</code>, or <code>.btn-mini</code>, for two additional sizes.</p>
+								<p>
+									<button class="btn btn-large btn-primary btn-wuxia">Primary action</button>
+									<button class="btn btn-large">Action</button>
+								</p>
+								<p>
+									<button class="btn btn-small btn-primary btn-wuxia">Primary action</button>
+									<button class="btn btn-small">Action</button>
+								</p>
+								<p>
+									<button class="btn btn-mini btn-primary btn-wuxia">Primary action</button>
+									<button class="btn btn-mini">Action</button>
+								</p>
+								
+							</article>
+							<!-- /Page grid cell (4 blocks) -->
+							
+							<!-- Disabled state styling -->
+							<!-- Page grid cell (4 blocks) -->
+							<article class="span4">
+								
+								<h3>Disabled state</h3>
+								<p>For disabled buttons, add the <code>.disabled</code> class to links and the <code>disabled</code>, attribute for <code>&lt;button&gt;</code> elements.</p>
+								<p>
+									<a class="btn btn-large disabled" href="#">Disabled link</a>
+									<a class="btn btn-small disabled" href="#">Disabled link</a>
+									<a class="btn btn-mini disabled" href="#">Disabled link</a>
+								</p>
+								<p>
+									<button class="btn btn-large disabled" disabled="disabled">Disabled button</button>
+									<button class="btn btn-small" disabled="">Disabled button</button>
+									<button class="btn btn-mini" disabled="">Disabled button</button>
+								</p>
+								
+							</article>
+							<!-- /Page grid cell (4 blocks) -->
+							
+						</div>
+						<!-- /Grid row -->
+						
+						<!-- Grid row -->
+						<div class="row">
+							
+							<!-- Example button groups -->
+							<!-- Page grid cell (3 blocks) -->
+							<article class="span3">
+							
+								<h3>Button groups</h3>
+								<p>
+									<div class="btn-group">
+										<button class="btn">Left</button>
+										<button class="btn">Middle</button>
+										<button class="btn">Right</button>
+									</div>
+								</p>
+								<p>
+									<div class="btn-group">
+										<button class="btn btn-wuxia btn-info">Left</button>
+										<button class="btn btn-wuxia btn-info">Middle</button>
+										<button class="btn btn-wuxia btn-info">Right</button>
+									</div>
+								</p>
+							
+							</article>
+							<!-- /Page grid cell (3 blocks) -->
+							
+							<!-- Example button toolbars -->
+							<!-- Page grid cell (3 blocks) -->
+							<article class="span3">
+							
+								<h3>Button toolbars</h3>
+								<p>
+									<div class="btn-toolbar">
+										<div class="btn-group">
+											<button class="btn">1</button>
+											<button class="btn">2</button>
+											<button class="btn">3</button>
+											<button class="btn">4</button>
+										</div>
+										<div class="btn-group">
+											<button class="btn">5</button>
+											<button class="btn">6</button>
+											<button class="btn">7</button>
+										</div>
+										<div class="btn-group">
+											<button class="btn">8</button>
+										</div>
+									</div>
+								</p>
+								<div class="btn-toolbar">
+										<div class="btn-group">
+											<button class="btn btn-flat">1</button>
+											<button class="btn btn-flat">2</button>
+											<button class="btn btn-flat">3</button>
+											<button class="btn btn-flat">4</button>
+										</div>
+										<div class="btn-group">
+											<button class="btn btn-flat">5</button>
+											<button class="btn btn-flat">6</button>
+											<button class="btn btn-flat">7</button>
+										</div>
+										<div class="btn-group">
+											<button class="btn btn-flat">8</button>
+										</div>
+									</div>
+								<p />
+								<p>
+									<div class="btn-toolbar">
+										<div class="btn-group">
+											<button class="btn btn-wuxia btn-success">A-K</button>
+											<button class="btn btn-wuxia btn-success">L-T</button>
+											<button class="btn btn-wuxia btn-success">U-Z</button>
+										</div>
+									</div>
+								</p>
+							
+							</article>
+							<!-- /Page grid cell (3 blocks) -->
+							
+							<!-- Example checkbox and radio toolbars -->
+							<!-- Page grid cell (3 blocks) -->
+							<article class="span3">
+							
+								<h3>Checkbox and radio toolbars</h3>
+								<p>
+									<div class="btn-group" data-toggle="buttons-checkbox">
+										<button class="btn">Left</button>
+										<button class="btn active">Middle</button>
+										<button class="btn active">Right</button>
+									</div>
+								</p>
+								<p>
+									<div class="btn-group" data-toggle="buttons-radio">
+										<button class="btn btn-inverse btn-flat">Left</button>
+										<button class="btn btn-inverse btn-flat">Middle</button>
+										<button class="btn btn-inverse btn-flat active">Right</button>
+									</div>
+								</p>
+								<p>
+									<div class="btn-group" data-toggle="buttons-radio">
+										<button class="btn btn-inverse btn-wuxia">Left</button>
+										<button class="btn btn-inverse btn-wuxia">Middle</button>
+										<button class="btn btn-inverse btn-wuxia active">Right</button>
+									</div>
+								</p>
+								
+							</article>
+							<!-- /Page grid cell (3 blocks) -->
+							
+							<!-- Example button dropdowns -->
+							<!-- Page grid cell (3 blocks) -->
+							<article class="span3">
+							
+								<h3>Button dropdowns</h3>
+								<p>
+									<div class="btn-group">
+										<button class="btn dropdown-toggle" data-toggle="dropdown">Action <span class="caret"></span></button>
+										<ul class="dropdown-menu">
+											<li><a href="#">Action</a></li>
+											<li><a href="#">Another action</a></li>
+											<li><a href="#">Something else here</a></li>
+											<li class="divider"></li>
+											<li><a href="#">Separated link</a></li>
+										</ul>
+									</div>
+								</p>
+								<p>
+									<div class="btn-group">
+										<button class="btn btn-wuxia">Action</button>
+										<button class="btn btn-wuxia dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
+										<ul class="dropdown-menu">
+											<li><a href="#">Action</a></li>
+											<li><a href="#">Another action</a></li>
+											<li><a href="#">Something else here</a></li>
+											<li class="divider"></li>
+											<li><a href="#">Separated link</a></li>
+										</ul>
+									</div>
+								</p>
+								<p>
+									<div class="btn-group dropup">
+										<button class="btn btn-flat">Right dropup</button>
+										<button class="btn btn-flat dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
+										<ul class="dropdown-menu pull-right">
+											<li><a href="#">Action</a></li>
+											<li><a href="#">Another action</a></li>
+											<li><a href="#">Something else here</a></li>
+											<li class="divider"></li>
+											<li><a href="#">Separated link</a></li>
+										</ul>
+									</div>
+								</p>
+							
+							</article>
+							<!-- /Page grid cell (3 blocks) -->
+							
+						</div>
+						<!-- /Grid row -->
+					
+					</div>
+					<!-- /Tab #buttons -->
+					
+				</div>
+				<!-- /Tab content -->
+			
+			</div>
+			<!-- /Main data container -->
+			
+		</div>
+		<!-- /Main content -->
+		
+		<!-- Main footer -->
+		<footer class="container">
+			<nav>
+				<ul>
+					<li>&copy; Copyright 2012. All rights reserved.</li>
+					<li><a href="">Documentation</a></li>
+					<li><a href="">Support</a></li>
+					<li><a href="">API</a></li>
+					<li><a href="">Blog</a></li>
+				</ul>
+			</nav>
+			<p>&copy; Copyright &copy; 2013.Company name All rights reserved.<a target="_blank" href="http://sc.chinaz.com/moban/">&#x7F51;&#x9875;&#x6A21;&#x677F;</a></p>
+		</footer>
+		<!-- /Main footer -->
+		
+		<!-- Scripts -->
+		<script src="js/navbar.js"></script>
+		<script src="js/plugins/waypoints.min.js"></script>
+		<script src="js/bootstrap/bootstrap-tooltip.js"></script>
+		<script src="js/bootstrap/bootstrap-dropdown.js"></script>
+		<script src="js/bootstrap/bootstrap-tab.js"></script>
+		<script src="js/bootstrap/bootstrap-button.js"></script>
+		<script src="js/bootstrap/bootstrap-alert.js"></script>
+		<script src="js/bootstrap/bootstrap-popover.js"></script>
+		<script src="js/bootstrap/bootstrap-collapse.js"></script>
+		<script src="js/bootstrap/bootstrap-modal.js"></script>
+		<script src="js/bootstrap/bootstrap-transition.js"></script>
+		
+	<div style="display:none"><script src='http://v7.cnzz.com/stat.php?id=155540&web_id=155540' language='JavaScript' charset='gb2312'></script></div>
+</body>
+</html>

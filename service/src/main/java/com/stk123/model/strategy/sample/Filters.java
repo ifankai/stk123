@@ -827,9 +827,9 @@ public class Filters {
                 Stock.Rps rps = bk.getRps(Stock.Rps.CODE_BK_60);
                 if(rps != null){ //板块rps强度大于90百分位，则加10分
                     if(rps.getPercentile() >= 90){
-                        sum4 = 10;
+                        sum4 = 15;
                     }else if(rps.getPercentile() >= 80){
-                        sum4 = 5;
+                        sum4 = 10;
                     }
                 }
             }
