@@ -202,11 +202,11 @@ public class Stock {
                 return bar.getChange(60, Bar.EnumValue.C);
             }));
 
-            CODE_NAME.put(CODE_BK_STOCKS_SCORE_30, new RpsDefinition(CODE_BK_STOCKS_SCORE_30,"个股score前5个sum",bk -> {
+            CODE_NAME.put(CODE_BK_STOCKS_SCORE_30, new RpsDefinition(CODE_BK_STOCKS_SCORE_30,"个股score前5",bk -> {
                 List<Stock> bkStocks = bk.getStocks();
-                List<Stock> top5 = ListUtils.greatest(bkStocks, 5, bkStock -> (double)bkStock.getBar().getScore(30));
+                List<Stock> top5 = ListUtils.greatest(bkStocks, 5, bkStock -> (bkStock.getBar().getScore(30)+bkStock.getBar().getScore(10)*2.0));
                 bk.getData().put("top5", top5);
-                return (double)top5.stream().mapToInt(bkStock ->bkStock.getBar().getScore(30)).sum();
+                return top5.stream().mapToDouble(bkStock ->(bkStock.getBar().getScore(30)+bkStock.getBar().getScore(10)*2.0)).sum();
             }));
         }
 
