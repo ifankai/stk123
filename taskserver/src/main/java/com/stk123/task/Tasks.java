@@ -151,6 +151,7 @@ public class Tasks {
     @Scheduled(cron = "0 25 14 ? * MON-FRI")
     @Scheduled(cron = "0 0 16 ? * MON-FRI")
     @Scheduled(cron = "0 0 18 ? * MON-FRI")
+    @Scheduled(cron = "0 0 0 ? * *")
     public void gitPull(){
         TaskUtils.cmd("D:\\share\\workspace\\stk123\\git_pull.bat");
     }

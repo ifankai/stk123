@@ -1,0 +1,9 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div class="container">
+    <span th:each="url,iter : ${urls}" th:utext=="${url}"></span>
+</div>
+
+</body>
+</html>

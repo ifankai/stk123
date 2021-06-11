@@ -155,17 +155,21 @@ public class Mass {
             List<MassStockDistance> minDistances = strategy.getMinDistances(stocks);
             List<MassStockDistance> listStocks = minDistances.stream().filter(massStockDistance -> massStockDistance.getDistance() <= strategy.getTargetDistance()).collect(Collectors.toList());
 
-            List<String> list = new ArrayList<>();
+            List<List<String>> subTable = new ArrayList<>();
             for(MassStockDistance massStockDistance : listStocks){
-                list.add(massStockDistance.getStock().getNameAndCodeWithLink() + ", distance:" + massStockDistance.getDistance() + "<br/>" + massStockDistance.getStock().getDayBarImage());
+                List<String> row = ListUtils.createList(massStockDistance.getStock().getNameAndCodeWithLink()+"<br/>distance:" + massStockDistance.getDistance(),
+                        massStockDistance.getStock().getDayBarImage(), massStockDistance.getStock().getWeekBarImage());
+                subTable.add(row);
             }
+            String table = CommonUtils.createHtmlTable(null, subTable);
+
             String imageStr = ImageUtils.getImageStr(ServiceUtils.getResourceFileAsBytes("similar_stock_image/" + strategy.getTemplateStockImage()));
             String imageHtml = CommonUtils.getImgBase64(imageStr, 450, 300);
-            List<String> data = ListUtils.createList(strategy.getTemplateStock().getNameAndCodeWithLink() +"-"+strategy.getTemplateStockStartDate()+"<br/>"+ imageHtml,
-                    "",StringUtils.join(list, "<br/><br/>"));
+            List<String> row = ListUtils.createList(strategy.getTemplateStock().getNameAndCodeWithLink() +"-"+strategy.getTemplateStockStartDate()+"<br/>"+ imageHtml,
+                    "", table);
 
-            massResult.getDatas().add(data);
-            massResult.count(list.size());
+            massResult.getDatas().add(row);
+            massResult.count(listStocks.size());
         }
         return massResult;
     }

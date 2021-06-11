@@ -933,6 +933,10 @@ public class CommonUtils {
         return "<a target='_blank' href='" + url + "'>" + title + "</a>";
     }
 
+    public static String k(String title, List<String> codes){
+        return CommonUtils.wrapLink(title,"http://81.68.255.181:8089/k/"+ StringUtils.join(codes, ","));
+    }
+
     //计算复合增长率
     public static double calcCAGR(double startValue, double endValue, int years){
         return CommonUtils.numberFormat(Math.pow(endValue/startValue,1.0/years) - 1D, 4) * 100;
