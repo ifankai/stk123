@@ -372,6 +372,7 @@ public class BarTask extends AbstractTask {
     public void analyseKline(){
         try {
             final Set<StockWrapper> allList = new LinkedHashSet<>();
+            List<Stock> hotBks = new ArrayList<>();
 
             if(code != null){
                 List<String> codes = Arrays.asList(StringUtils.split(code, ","));
@@ -467,7 +468,6 @@ public class BarTask extends AbstractTask {
 
             List<StrategyResult> results = strategyBacktesting.getPassedStrategyResult();
             if(results.size() > 0){
-                StringBuffer sb = new StringBuffer();
 
                 List<List<String>> datasA = new ArrayList<>();
                 List<List<String>> datasH = new ArrayList<>();
@@ -511,6 +511,7 @@ public class BarTask extends AbstractTask {
                     if(stock.isCateIndexEastmoneyGn()){
                         if(strategyResult.getStrategy().getCode().startsWith("strategy_08")){ //板块阶段强势策略
                             datasBk2.add(data);
+                            hotBks.add(stock);
                         }else {
                             datasBk1.add(data);
                         }
@@ -527,6 +528,8 @@ public class BarTask extends AbstractTask {
                 }
 
                 List<String> titles = ListUtils.createList("标的", "日期", "策略", "来源", "K线", "历史策略回测通过率");
+                StringBuffer sb = new StringBuffer();
+                sb.append("热门板块：").append(hotBks.stream().map(Stock::getNameAndCodeWithLink).collect(Collectors.toList())).append("<br/><br/>");
                 sb.append("A股");        sb.append(CommonUtils.createHtmlTable(titles, datasA));sb.append("<br/>");
                 sb.append("H股");        sb.append(CommonUtils.createHtmlTable(titles, datasH));sb.append("<br/>");
                 sb.append("美股");       sb.append(CommonUtils.createHtmlTable(titles, datasU));sb.append("<br/>");
