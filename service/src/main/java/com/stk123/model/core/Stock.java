@@ -197,12 +197,12 @@ public class Stock {
 
         private static Map<String, RpsDefinition> CODE_NAME = new HashMap<>();
         static{
-            CODE_NAME.put(CODE_BK_60, new RpsDefinition(CODE_BK_60, "板块60日涨幅", stock -> {
-                Bar bar = stock.getBar();
+            CODE_NAME.put(CODE_BK_60, new RpsDefinition(CODE_BK_60, "板块60日涨幅", bk -> {
+                Bar bar = bk.getBar();
                 return bar.getChange(60, Bar.EnumValue.C);
             }));
 
-            CODE_NAME.put(CODE_BK_STOCKS_SCORE_30, new RpsDefinition(CODE_BK_STOCKS_SCORE_30,"个股score前5",bk -> {
+            CODE_NAME.put(CODE_BK_STOCKS_SCORE_30, new RpsDefinition(CODE_BK_STOCKS_SCORE_30,"个股score前5", bk -> {
                 List<Stock> bkStocks = bk.getStocks();
                 List<Stock> top5 = ListUtils.greatest(bkStocks, 5, bkStock -> (bkStock.getBar().getScore(30)+bkStock.getBar().getScore(10)*2.0));
                 bk.getData().put("top5", top5);
@@ -697,8 +697,8 @@ public class Stock {
 
             List<Stock> top5 = rps2.getPercentile()>=90?(List<Stock>)bk2.getData().get("top5"):null;
 
-            return "<br/>"+rps.getName()+bk.getNameAndCodeWithLink()+":"+CommonUtils.numberFormat2Digits(rps.getPercentile())+"<br/>"+
-                   "<br/>"+rps2.getName()+bk2.getNameAndCodeWithLink()+"["+rps2.getValue()+"]:"+CommonUtils.numberFormat2Digits(rps2.getPercentile())+
+            return "<br/>"+bk.getNameAndCodeWithLink()+rps.getName()+":"+CommonUtils.numberFormat2Digits(rps.getPercentile())+"<br/>"+
+                   "<br/>"+bk2.getNameAndCodeWithLink()+rps2.getName()+"["+rps2.getValue()+"]:"+CommonUtils.numberFormat2Digits(rps2.getPercentile())+
                     (top5==null?"":"<br/>"+StringUtils.join(top5.stream().map(Stock::getNameAndCodeWithLink).collect(Collectors.toList()), "<br/>"));
         }
         return "";
