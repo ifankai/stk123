@@ -35,7 +35,7 @@ public class MainController {
     public String getDayBarImage(String code){
         if(code.length() == 8) {
             return "<img src='http://image.sinajs.cn/newchart/daily/n/" + code.toLowerCase() + ".gif' />";
-        }else if(code.length() == 6 && NumberUtils.isDigits(code)){
+        }else if(code.length() == 5 && NumberUtils.isDigits(code)){
             return "<img src='http://image.sinajs.cn/newchart/hk_stock/daily/" + code + ".gif' />";
         }else{
             return "<img src='http://image.sinajs.cn/newchartv5/usstock/daily/" + code.toLowerCase() + ".gif' />";
