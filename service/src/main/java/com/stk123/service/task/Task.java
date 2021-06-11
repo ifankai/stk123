@@ -57,7 +57,7 @@ public abstract class Task<R> {
         } finally {
             this.endTime = LocalDateTime.now();
             status = EnumStatus.NOT_RUNNING;
-            log.info("["+this.getClass().getSimpleName()+"]....end, cost time:"+ (getEndTimeToLong()-getStartTimeToLong())/1000.0 + "s");
+            log.info("["+this.getClass().getSimpleName()+"]....end, id:"+this.id+", cost time:"+ (getEndTimeToLong()-getStartTimeToLong())/1000.0 + "s");
         }
     }
 
