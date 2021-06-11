@@ -1,6 +1,7 @@
 package com.stk123.common.util;
 
 import com.google.common.collect.Comparators;
+import com.google.common.collect.Lists;
 
 import java.util.*;
 import java.util.Arrays;
@@ -62,9 +63,7 @@ public class ListUtils {
 		return collection;
 	}
 	public static <E> List<E> createList(E... elements){
-		List list = new ArrayList<>();
-		list.addAll(Arrays.asList(elements));
-		return list;
+        return Lists.newArrayList(elements);
 	}
 
     public static <T,R> List<R> eachSubList(List<T> list, int cnt, Function<List<T>,List<R>> function){

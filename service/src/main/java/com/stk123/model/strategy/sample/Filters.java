@@ -814,13 +814,7 @@ public class Filters {
             int sum2 = getScore(stock, days/2); //加大后期k线权重
             int sum3 = getScore(stock, days/3); //加大后期k线权重
             int sum = sum1+sum2+sum3;
-            Bar today = stock.getBar();
-            if(today.isYin() && today.getVolume() < today.yesterday().getVolume()){
-                sum = sum + 3;
-            }
-            if(sum < score){
-                return FilterResult.FALSE("得分:"+sum);
-            }
+
             int sum4 = 0;
             if(!stock.getBks().isEmpty()){
                 Stock bk = stock.getBkByMaxRps(Stock.Rps.CODE_BK_60);
@@ -834,6 +828,9 @@ public class Filters {
                 }
             }
             sum += sum4;
+            if(sum < score){
+                return FilterResult.FALSE("得分:"+sum);
+            }
             return FilterResult.Sortable((double) sum).addResult("得分:"+sum+",sum1="+sum1+",sum2="+sum2+",sum3="+sum3+",sumBK="+sum4);
         };
     }

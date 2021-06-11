@@ -794,6 +794,10 @@ public class Bar implements Serializable, Cloneable {
 							}
 						}
 					}
+
+					if(today.getVolume()*percent < today.yesterday().getVolume()){
+						n += + 3;
+					}
 				}
 			}
 			return n;
