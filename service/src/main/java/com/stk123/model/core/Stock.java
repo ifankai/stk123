@@ -695,7 +695,7 @@ public class Stock {
             Stock bk2 = this.getBkByMaxRps(Rps.CODE_BK_STOCKS_SCORE_30);
             Rps rps2 = bk2.getRps(Rps.CODE_BK_STOCKS_SCORE_30);
 
-            List<Stock> top5 = (List<Stock>)bk2.getData().get("top5");
+            List<Stock> top5 = rps2.getPercentile()>=90?(List<Stock>)bk2.getData().get("top5"):null;
 
             return "<br/>"+rps.getName()+bk.getNameAndCodeWithLink()+":"+CommonUtils.numberFormat2Digits(rps.getPercentile())+"<br/>"+
                    "<br/>"+rps2.getName()+bk2.getNameAndCodeWithLink()+"["+rps2.getValue()+"]:"+CommonUtils.numberFormat2Digits(rps2.getPercentile())+
