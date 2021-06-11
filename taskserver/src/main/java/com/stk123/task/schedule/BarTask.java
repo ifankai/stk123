@@ -63,11 +63,13 @@ public class BarTask extends AbstractTask {
     // AB股[BK0498] AH股[BK0499] 上证380[BK0705] 转债标的[BK0528] 新三板[BK0600] 深股通[BK0804] 三板精选[BK0925] 昨日涨停[SZBK0815]
     // B股[BK0636] QFII重仓[BK0535] 沪企改革[BK0672] 富时罗素[BK0867] 标准普尔[BK0879] 债转股[BK0980] 股权激励[BK0567] 融资融券[BK0596]
     // 债转股[BK0980] 养老金[BK0823] 预亏预减[BK0570] 独角兽[BK0835] 基金重仓[BK0536] 创业板综[BK0742] 证金持股[BK0718] 创业成份[BK0638]
-    // 沪股通[BK0707] 深成500[BK0568] 预盈预增[BK0571] 送转预期[BK0633]
+    // 沪股通[BK0707] 深成500[BK0568] 预盈预增[BK0571] 送转预期[BK0633] 中证500[BK0701] MSCI中国[BK0821] 机构重仓[BK0552] 次新股[BK0501]
+    // 昨日触板[BK0817]
     public String BK_REMOVE = "BK0498,BK0499,BK0705,BK0528,BK0600,BK0804,BK0925,BK0816,BK0815," +
             "BK0636,BK0535,BK0672,BK0867,BK0879,BK0980,BK0567,BK0596"+
             "BK0980,BK0823,BK0570,BK0835,BK0536,BK0742,BK0718,BK0638"+
-            "BK0707,BK0568,BK0571,BK0633";
+            "BK0707,BK0568,BK0571,BK0633,BK0701,BK0821,BK0552,BK0501"+
+            "BK0817";
 
     @Autowired
     private StkKlineRepository stkKlineRepository;
@@ -372,7 +374,7 @@ public class BarTask extends AbstractTask {
     public void analyseKline(){
         try {
             final Set<StockWrapper> allList = new LinkedHashSet<>();
-            List<Stock> hotBks = new ArrayList<>();
+            Set<Stock> hotBks = new TreeSet<>();
 
             if(code != null){
                 List<String> codes = Arrays.asList(StringUtils.split(code, ","));
@@ -499,9 +501,8 @@ public class BarTask extends AbstractTask {
 
 
                     List<String> data = ListUtils.createList(
-                            displayCode ? stock.getNameAndCodeWithLink() + stock.getBkInfo() : "",
-                            strategyResult.getDate(),
-                            strategyResult.getStrategy().getName().replaceAll("，", "<br/>"),
+                            displayCode ? stock.getNameAndCodeWithLinkAndBold() + stock.getBkInfo() : "",
+                            strategyResult.getDate()+"<br/>"+strategyResult.getStrategy().getName().replaceAll("，", "<br/>"),
                             StringUtils.join(sources, "<br/>"),
                             stock.getDayBarImage(),
                             //backtesting.getStrategies().get(0).getPassRateString().replaceAll("]", "]<br/>") +
@@ -527,7 +528,7 @@ public class BarTask extends AbstractTask {
                     }
                 }
 
-                List<String> titles = ListUtils.createList("标的", "日期", "策略", "来源", "K线", "历史策略回测通过率");
+                List<String> titles = ListUtils.createList("标的", "日期/策略", "来源", "K线", "历史策略回测通过率");
                 StringBuffer sb = new StringBuffer();
                 sb.append("热门板块：").append(hotBks.stream().map(Stock::getNameAndCodeWithLink).collect(Collectors.toList())).append("<br/><br/>");
                 sb.append("A股");        sb.append(CommonUtils.createHtmlTable(titles, datasA));sb.append("<br/>");
@@ -614,9 +615,10 @@ public class BarTask extends AbstractTask {
                     }
 
                     List<String> data = ListUtils.createList(
-                            displayCode ? stock.getNameAndCodeWithLink() + stock.getBkInfo() : "",
-                            strategyResult.getDate(),
-                            strategyResult.getStrategy().getName().replaceAll("，", "<br/>") + "<br/>-----------<br/>" + StringUtils.join(strategyResult.getResults(),"<br/>"),
+                            displayCode ? stock.getNameAndCodeWithLinkAndBold() + stock.getBkInfo() : "",
+                            strategyResult.getDate()+"<br/>"
+                                    + strategyResult.getStrategy().getName().replaceAll("，", "<br/>")
+                                    + "<br/>-----------<br/>" + StringUtils.join(strategyResult.getResults(),"<br/>"),
                             stock.getDayBarImage(),
                             //backtesting.getStrategies().get(0).getPassRateString().replaceAll("]", "]<br/>") +
                             //        (StringUtils.isNotEmpty(backtesting.getStrategies().get(0).getPassedFilterResultLog()) ? "<br/>"+backtesting.getStrategies().get(0).getPassedFilterResultLog() : "")
@@ -629,7 +631,7 @@ public class BarTask extends AbstractTask {
 
                 }
 
-                List<String> titles = ListUtils.createList("标的", "日期", "策略", "K线", "历史策略回测通过率");
+                List<String> titles = ListUtils.createList("标的", "日期/策略", "K线", "历史策略回测通过率");
                 sb.append("A股");
                 sb.append(CommonUtils.createHtmlTable(titles, datasA));sb.append("<br/>");
 

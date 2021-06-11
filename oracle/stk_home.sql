@@ -151,6 +151,17 @@ create tablespace stk_tablespace_1 datafile '/opt/oracle/oradata/XE/stk_data_1.d
 create tablespace stk_tablespace_2 datafile '/opt/oracle/oradata/XE/stk_data_2.dbf' size 2048M autoextend on next 200M maxsize 10240M extent management local;
 create temporary tablespace stk_tablespace_temp tempfile '/opt/oracle/oradata/XE/stk_temp.dbf' size 1024M autoextend on next 200M maxsize 10240m extent management local;
 
+--drop user and then create user
+sqlplus system/password1@localhost:1539/xepdb1  <<ENDOFSQL
+alter session set container=XEPDB1;
+--Select username from ALL_USERS;
+DROP USER stk CASCADE;
+create user stk identified by stkpwd default tablespace stk_tablespace_1 temporary tablespace stk_tablespace_temp;
+grant connect,resource,dba to stk;
+CREATE OR REPLACE DIRECTORY DPUMP_DIR AS '/var/stk/oracle';
+grant read,write on directory DPUMP_DIR to public;
+	exit;
+ENDOFSQL
 
 --elasticsearch:
 # please execute the following statements to configure elasticsearch service to start automatically using systemd

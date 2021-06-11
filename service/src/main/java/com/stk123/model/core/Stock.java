@@ -204,9 +204,9 @@ public class Stock {
 
             CODE_NAME.put(CODE_BK_STOCKS_SCORE_30, new RpsDefinition(CODE_BK_STOCKS_SCORE_30,"个股score前5", bk -> {
                 List<Stock> bkStocks = bk.getStocks();
-                List<Stock> top5 = ListUtils.greatest(bkStocks, 5, bkStock -> (bkStock.getBar().getScore(30)+bkStock.getBar().getScore(10)*2.0));
+                List<Stock> top5 = ListUtils.greatest(bkStocks, 5, bkStock -> (bkStock.getBar().getScore(20)+bkStock.getBar().getScore(10)*2.0));
                 bk.getData().put("top5", top5);
-                return top5.stream().mapToDouble(bkStock ->(bkStock.getBar().getScore(30)+bkStock.getBar().getScore(10)*2.0)).sum();
+                return top5.stream().mapToDouble(bkStock ->(bkStock.getBar().getScore(20)+bkStock.getBar().getScore(10)*2.0)).sum();
             }));
         }
 
@@ -345,6 +345,9 @@ public class Stock {
             return CommonUtils.wrapLink(this.getNameAndCode(), "https://quote.eastmoney.com/bk/90."+this.getCode()+".html");
         }
         return CommonUtils.wrapLink(this.getNameAndCode(), "https://xueqiu.com/S/"+this.getCodeWithPlace());
+    }
+    public String getNameAndCodeWithLinkAndBold(){
+        return "<b>"+this.getNameAndCodeWithLink()+"</b>";
     }
 
     public boolean isMarketCN(){
@@ -687,19 +690,26 @@ public class Stock {
         return getBkByMaxRps(rpsCode).getRps(rpsCode);
     }
 
+    public List<Stock> getGreatestStocksInBkByRps(String rpsCode){
+        return ListUtils.greatest(this.getStocks(), 5, Rps.getCalculation(rpsCode));
+    }
+
     public String getBkInfo(){
         if(!getBks().isEmpty()){
             Stock bk = this.getBkByMaxRps(Rps.CODE_BK_60);
             Rps rps = bk.getRps(Rps.CODE_BK_60);
+            List<Stock> top5a = rps.getPercentile()>=90?bk.getGreatestStocksInBkByRps(Rps.CODE_BK_STOCKS_SCORE_30):null;
 
             Stock bk2 = this.getBkByMaxRps(Rps.CODE_BK_STOCKS_SCORE_30);
             Rps rps2 = bk2.getRps(Rps.CODE_BK_STOCKS_SCORE_30);
 
-            List<Stock> top5 = rps2.getPercentile()>=90?(List<Stock>)bk2.getData().get("top5"):null;
+            List<Stock> top5b = rps2.getPercentile()>=90?(List<Stock>)bk2.getData().get("top5"):null;
 
-            return "<br/>"+bk.getNameAndCodeWithLink()+rps.getName()+":"+CommonUtils.numberFormat2Digits(rps.getPercentile())+"<br/>"+
+            final int[] a = {1}, b = {1};
+            return "<br/>"+bk.getNameAndCodeWithLink()+rps.getName()+":"+CommonUtils.numberFormat2Digits(rps.getPercentile())+
+                    (top5a==null?"":("<br/>"+StringUtils.join(top5a.stream().map(stock->(a[0]++)+"."+stock.getNameAndCodeWithLink()).collect(Collectors.toList()), "<br/>"))+CommonUtils.k("查看",top5a.stream().map(Stock::getCodeWithPlace).collect(Collectors.toList())))+
                    "<br/>"+bk2.getNameAndCodeWithLink()+rps2.getName()+"["+rps2.getValue()+"]:"+CommonUtils.numberFormat2Digits(rps2.getPercentile())+
-                    (top5==null?"":"<br/>"+StringUtils.join(top5.stream().map(Stock::getNameAndCodeWithLink).collect(Collectors.toList()), "<br/>"));
+                    (top5b==null?"":("<br/>"+StringUtils.join(top5b.stream().map(stock->(b[0]++)+"."+stock.getNameAndCodeWithLink()).collect(Collectors.toList()), "<br/>"))+CommonUtils.k("查看",top5b.stream().map(Stock::getCodeWithPlace).collect(Collectors.toList())));
         }
         return "";
     }
