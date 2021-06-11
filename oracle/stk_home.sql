@@ -2,20 +2,20 @@
 
 select * from tab;
 
---²é¿´±í¿Õ¼äÂ·¾¶
+--æŸ¥çœ‹è¡¨ç©ºé—´è·¯å¾„
 select tablespace_name,file_id,file_name from dba_data_files order by 1,2;
 
 select tablespace_name,sum(bytes)/1024/1024 || 'M' from dba_free_space group by tablespace_name;
---²é¿´±íµÄÊı¾İ´óĞ¡
+--æŸ¥çœ‹è¡¨çš„æ•°æ®å¤§å°
 select segment_name, sum(bytes)/1024/1024 Mbytese from user_segments where segment_type='TABLE' group by segment_name order by Mbytese desc;
 
---²é¿´±í¿Õ¼äµÄÀûÓÃÂÊ
+--æŸ¥çœ‹è¡¨ç©ºé—´çš„åˆ©ç”¨ç‡
 SELECT D.TABLESPACE_NAME,
        SPACE || 'M' "SUM_SPACE(M)",
        BLOCKS "SUM_BLOCKS",
        SPACE - NVL(FREE_SPACE, 0) || 'M' "USED_SPACE(M)",
        ROUND((1 - NVL(FREE_SPACE, 0) / SPACE) * 100, 2) ||
-       
+
        '%' "USED_RATE(%)",
        FREE_SPACE || 'M' "FREE_SPACE(M)"
   FROM (SELECT TABLESPACE_NAME,
@@ -25,20 +25,20 @@ SELECT D.TABLESPACE_NAME,
          GROUP BY TABLESPACE_NAME) D,
        (SELECT TABLESPACE_NAME,
                ROUND(SUM(BYTES) / (1024 * 1024), 2)
-               
+
                FREE_SPACE
           FROM DBA_FREE_SPACE
          GROUP BY TABLESPACE_NAME) F
  WHERE D.TABLESPACE_NAME = F.TABLESPACE_NAME(+)
 UNION ALL
 
---Èç¹ûÓĞÁÙÊ±±í¿Õ¼ä 
+--å¦‚æœæœ‰ä¸´æ—¶è¡¨ç©ºé—´
 SELECT D.TABLESPACE_NAME,
        SPACE || 'M' "SUM_SPACE(M)",
        BLOCKS SUM_BLOCKS,
        USED_SPACE || 'M' "USED_SPACE(M)",
        ROUND(NVL(USED_SPACE, 0) / SPACE * 100, 2) || '%'
-       
+
        "USED_RATE(%)",
        NVL(FREE_SPACE, 0) || 'M' "FREE_SPACE(M)"
   FROM (SELECT TABLESPACE_NAME,
@@ -48,32 +48,32 @@ SELECT D.TABLESPACE_NAME,
          GROUP BY TABLESPACE_NAME) D,
        (SELECT TABLESPACE_NAME,
                ROUND(SUM(BYTES_USED) / (1024 * 1024), 2)
-               
+
                USED_SPACE,
                ROUND(SUM(BYTES_FREE) / (1024 * 1024), 2)
-               
+
                FREE_SPACE
           FROM V$TEMP_SPACE_HEADER
          GROUP BY TABLESPACE_NAME) F
  WHERE D.TABLESPACE_NAME = F.TABLESPACE_NAME(+)
  ORDER BY 1;
 
---ÊÍ·Å±í¿Õ¼ä
+--é‡Šæ”¾è¡¨ç©ºé—´
 alter tablespace STK_TABLESPACE_TEMP shrink space;
 alter database tempfile 'D:\oradata\stk_temp.dbf' resize 1024M;
 
---²é¿´µ±Ç°ÓĞÄÄĞ©ÓÃ»§ÕıÔÚÊ¹ÓÃÊı¾İ
-SELECT osuser, a.username,cpu_time/executions/1000000||'s', sql_fulltext,machine 
+--æŸ¥çœ‹å½“å‰æœ‰å“ªäº›ç”¨æˆ·æ­£åœ¨ä½¿ç”¨æ•°æ®
+SELECT osuser, a.username,cpu_time/executions/1000000||'s', sql_fulltext,machine
 from v$session a, v$sqlarea b
 where a.sql_address =b.address order by cpu_time/executions desc;
 
-select count(*) from v$process; --µ±Ç°µÄÁ¬½ÓÊı
-select value from v$parameter where name = 'processes'; --Êı¾İ¿âÔÊĞíµÄ×î´óÁ¬½ÓÊı
+select count(*) from v$process; --å½“å‰çš„è¿æ¥æ•°
+select value from v$parameter where name = 'processes'; --æ•°æ®åº“å…è®¸çš„æœ€å¤§è¿æ¥æ•°
 
---ĞŞ¸Ä×î´óÁ¬½ÓÊı:
+--ä¿®æ”¹æœ€å¤§è¿æ¥æ•°:
 alter system set processes = 300 scope = spfile;
 
---ÖØÆôÊı¾İ¿â:
+--é‡å¯æ•°æ®åº“:
 shutdown immediate;
 startup;
 
@@ -129,7 +129,7 @@ select con_id, dbid, guid, name , open_mode from v$pdbs;
 alter session set container=XEPDB1;
 
 . oraenv
-sqlplus system
+sqlplus system/password1
 sqlplus stk/stkpwd@localhost:1539/xepdb1
 
 
@@ -162,8 +162,8 @@ create temporary tablespace stk_tablespace_temp tempfile '/opt/oracle/oradata/XE
 --log
 /var/log/elasticsearch
 
-grep "Out of memory" /var/log/messages 
+grep "Out of memory" /var/log/messages
 
---²é¿´liunxÄÚ´æ
+--æŸ¥çœ‹liunxå†…å­˜
 top
 free -m
