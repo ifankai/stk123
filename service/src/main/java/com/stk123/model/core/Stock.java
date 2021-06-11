@@ -697,9 +697,9 @@ public class Stock {
 
             List<Stock> top5 = (List<Stock>)bk2.getData().get("top5");
 
-            return "<br/>"+rps.getName()+"["+bk.getNameAndCodeWithLink()+"]:"+CommonUtils.numberFormat2Digits(rps.getPercentile())+"<br/>"+
-                   "<br/>"+rps2.getName()+"["+bk2.getNameAndCodeWithLink()+"]["+rps2.getValue()+"]:"+CommonUtils.numberFormat2Digits(rps2.getPercentile())+
-                    (top5==null?"":"<br/>"+StringUtils.join(top5.stream().map(Stock::getNameAndCodeWithLink), "<br/>"));
+            return "<br/>"+rps.getName()+bk.getNameAndCodeWithLink()+":"+CommonUtils.numberFormat2Digits(rps.getPercentile())+"<br/>"+
+                   "<br/>"+rps2.getName()+bk2.getNameAndCodeWithLink()+"["+rps2.getValue()+"]:"+CommonUtils.numberFormat2Digits(rps2.getPercentile())+
+                    (top5==null?"":"<br/>"+StringUtils.join(top5.stream().map(Stock::getNameAndCodeWithLink).collect(Collectors.toList()), "<br/>"));
         }
         return "";
     }
