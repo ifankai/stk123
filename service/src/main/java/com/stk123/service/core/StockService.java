@@ -220,6 +220,10 @@ public class StockService {
         return stks;
     }
 
+    public List<Stock> calcRps(List<Stock> stocks, String rpsCode){
+        return null;
+    }
+
 
     @Getter
     @Setter

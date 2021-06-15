@@ -192,8 +192,9 @@ public class Stock {
     @Data
     @ToString
     public static class Rps{
-        public final static String CODE_BK_60 = "code_bk_60";
-        public final static String CODE_BK_STOCKS_SCORE_30 = "code_bk_stocks_score_30";
+        public final static String CODE_BK_60 = "01";
+        public final static String CODE_BK_STOCKS_SCORE_30 = "02";
+        public final static String CODE_STOCK_SCORE_20 = "03";
 
         private static Map<String, RpsDefinition> CODE_NAME = new HashMap<>();
         static{
@@ -207,6 +208,10 @@ public class Stock {
                 List<Stock> top5 = ListUtils.greatest(bkStocks, 5, bkStock -> (bkStock.getBar().getScore(20)+bkStock.getBar().getScore(10)*2.0));
                 bk.getData().put("top5", top5);
                 return top5.stream().mapToDouble(bkStock ->(bkStock.getBar().getScore(20)+bkStock.getBar().getScore(10)*2.0)).sum();
+            }));
+
+            CODE_NAME.put(CODE_STOCK_SCORE_20, new RpsDefinition(CODE_STOCK_SCORE_20,"个股score", stock -> {
+                return stock.getBar().getScore(20) + stock.getBar().getScore(10)*2.0;
             }));
         }
 
@@ -696,15 +701,16 @@ public class Stock {
         return getBkByMaxRps(rpsCode).getRps(rpsCode);
     }
 
-    public List<Stock> getGreatestStocksInBkByRps(String rpsCode){
-        return ListUtils.greatest(this.getStocks(), 5, Rps.getCalculation(rpsCode));
+    public List<Stock> getGreatestStocksInBkByRps(String rpsCode, int topN){
+        return ListUtils.greatest(this.getStocks(), topN, Rps.getCalculation(rpsCode));
     }
 
+    //用于stock
     public String getBkInfo(){
         if(!getBks().isEmpty()){
             Stock bk = this.getBkByMaxRps(Rps.CODE_BK_60);
             Rps rps = bk.getRps(Rps.CODE_BK_60);
-            List<Stock> top5a = rps.getPercentile()>=90?bk.getGreatestStocksInBkByRps(Rps.CODE_BK_STOCKS_SCORE_30):null;
+            List<Stock> top5a = rps.getPercentile()>=90?bk.getGreatestStocksInBkByRps(Rps.CODE_BK_STOCKS_SCORE_30, 5):null;
 
             Stock bk2 = this.getBkByMaxRps(Rps.CODE_BK_STOCKS_SCORE_30);
             Rps rps2 = bk2.getRps(Rps.CODE_BK_STOCKS_SCORE_30);
@@ -712,12 +718,20 @@ public class Stock {
             List<Stock> top5b = rps2.getPercentile()>=90?(List<Stock>)bk2.getData().get("top5"):null;
 
             final int[] a = {1}, b = {1};
-            return "<br/>"+bk.getNameAndCodeWithLink()+rps.getName()+":"+CommonUtils.numberFormat2Digits(rps.getPercentile())+
+            return "<br/>"+bk.getNameAndCodeWithLink()+bk.getStocksInfo(Rps.CODE_STOCK_SCORE_20,10,false)+rps.getName()+":"+CommonUtils.numberFormat2Digits(rps.getPercentile())+
                     (top5a==null?"":("<br/>"+StringUtils.join(top5a.stream().map(stock->(a[0]++)+"."+stock.getNameAndCodeWithLink()).collect(Collectors.toList()), "<br/>"))+CommonUtils.k("查看",top5a.stream().map(Stock::getCodeWithPlace).collect(Collectors.toList())))+
-                   "<br/>"+bk2.getNameAndCodeWithLink()+rps2.getName()+"["+rps2.getValue()+"]:"+CommonUtils.numberFormat2Digits(rps2.getPercentile())+
+                   "<br/>"+bk2.getNameAndCodeWithLink()+bk2.getStocksInfo(Rps.CODE_STOCK_SCORE_20,10,false)+rps2.getName()+"["+rps2.getValue()+"]:"+CommonUtils.numberFormat2Digits(rps2.getPercentile())+
                     (top5b==null?"":("<br/>"+StringUtils.join(top5b.stream().map(stock->(b[0]++)+"."+stock.getNameAndCodeWithLink()).collect(Collectors.toList()), "<br/>"))+CommonUtils.k("查看",top5b.stream().map(Stock::getCodeWithPlace).collect(Collectors.toList())));
         }
         return "";
+    }
+
+    //用于bk
+    public String getStocksInfo(String rpsCode, int topN, boolean displayAllStocks){
+        List<Stock> stocks = this.getGreatestStocksInBkByRps(rpsCode, topN);
+        final int[] a = {1};
+        String info = displayAllStocks ? StringUtils.join(stocks.stream().map(stock->(a[0]++)+"."+stock.getNameAndCodeWithLink()).collect(Collectors.toList()), "<br/>") : "";
+        return info + CommonUtils.k("查看", stocks.stream().map(Stock::getCodeWithPlace).collect(Collectors.toList()));
     }
 
     @Override

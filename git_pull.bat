@@ -2,7 +2,8 @@
 title git_pull
 
 cd D:\share\workspace\stk123
-d:
+d:h
+
 git fetch
 git pull
 

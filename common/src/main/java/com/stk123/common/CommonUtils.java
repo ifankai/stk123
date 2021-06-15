@@ -934,7 +934,7 @@ public class CommonUtils {
     }
 
     public static String k(String title, List<String> codes){
-        return CommonUtils.wrapLink(title,"http://81.68.255.181:8089/k/"+ StringUtils.join(codes, ","));
+        return CommonUtils.wrapLink(title,"https://81.68.255.181:8443/k/"+ StringUtils.join(codes, ","));
     }
 
     //计算复合增长率

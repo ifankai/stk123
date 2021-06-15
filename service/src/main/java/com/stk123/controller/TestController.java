@@ -12,6 +12,7 @@ import com.stk123.service.core.BacktestingService;
 import com.stk123.service.core.BarService;
 import com.stk123.service.core.StockService;
 import lombok.extern.apachecommons.CommonsLog;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
@@ -22,6 +23,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping
@@ -71,15 +73,10 @@ public class TestController {
 //        stock.getBarSeries();
 //        System.out.println(stock.getBar().before(10).getChange(-7, Bar.EnumValue.C));
 
-        List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn);
-        List<Stock> stocks = stockService.buildStocksWithProjection(list);
-        stockService.buildBarSeries(stocks);
-        List<Stock> stks = stockService.calcRps("easy_gn", stocks);
-        stks.forEach(stock -> {
-            System.out.println(stock.getRps("easy_gn"));
-        });
+        Stock stock = Stock.build("BK0891");
+        List<Stock> stocks = stock.getGreatestStocksInBkByRps(Stock.Rps.CODE_STOCK_SCORE_20, 10);
 
-        return RequestResult.success(new Date());
+        return RequestResult.success(StringUtils.join(stocks.stream().map(stk->stk.getNameAndCodeWithLink()).collect(Collectors.toList())));
     }
 
 

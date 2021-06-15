@@ -1,9 +1,41 @@
-<html xmlns:th="http://www.thymeleaf.org">
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <!-- 必须的 meta 标签 -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+</head>
 <body>
 
 <div class="container">
-    <span th:each="url,iter : ${urls}" th:utext=="${url}"></span>
+    <div style="position: fixed; margin-top: -50px; background: snow">
+        <ul class="nav nav-tabs" id="tabs" role="tablist">
+            <li class="nav-item" role="presentation"><a class="nav-link active" href="#tabs-1" role="tab">日K线</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" href="#tabs-2" role="tab">周K线</a></li>
+        </ul>
+    </div>
+
+    <div class="tab-content" style="margin-top: 50px">
+        <div role="tabpanel" class="tab-pane fade show active" id="tabs-1">
+            <span th:each="url,iter : ${urls}" th:utext=="${url[daily]}"></span>
+        </div>
+        <div role="tabpanel" class="tab-pane fade" id="tabs-2">
+            <span th:each="url,iter : ${urls}" th:utext=="${url[weekly]}"></span>
+        </div>
+    </div>
+
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+<script>
+  $('#tabs a').click(function (e) {
+    e.preventDefault()
+    $(this).tab('show')
+  })
+</script>
+

@@ -831,7 +831,7 @@ public class Filters {
             if(sum < score){
                 return FilterResult.FALSE("得分:"+sum);
             }
-            return FilterResult.Sortable((double) sum).addResult("得分:"+sum+",sum1="+sum1+",sum2="+sum2+",sum3="+sum3+",sumBK="+sum4);
+            return FilterResult.Sortable((double) sum).addResult("得分:"+sum+",s1="+sum1+",s2="+sum2+",s3="+sum3+",sBK="+sum4);
         };
     }
 

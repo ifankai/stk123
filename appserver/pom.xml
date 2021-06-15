@@ -143,7 +143,7 @@
 						</goals>
 						<configuration>
 							<target name="stk-deploy" description="Use antrun plugin to deploy with SCP and SSH">
-								<property file="D:/IdeaProjects/stk123/service/src/main/resources/password.properties" />
+								<property file="../service/src/main/resources/password.properties" />
 								<!-- remote host and the command to be executed there -->
 
 								<echo message="Stopping appserver ..." />

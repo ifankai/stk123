@@ -64,12 +64,12 @@ public class BarTask extends AbstractTask {
     // B股[BK0636] QFII重仓[BK0535] 沪企改革[BK0672] 富时罗素[BK0867] 标准普尔[BK0879] 债转股[BK0980] 股权激励[BK0567] 融资融券[BK0596]
     // 债转股[BK0980] 养老金[BK0823] 预亏预减[BK0570] 独角兽[BK0835] 基金重仓[BK0536] 创业板综[BK0742] 证金持股[BK0718] 创业成份[BK0638]
     // 沪股通[BK0707] 深成500[BK0568] 预盈预增[BK0571] 送转预期[BK0633] 中证500[BK0701] MSCI中国[BK0821] 机构重仓[BK0552] 次新股[BK0501]
-    // 昨日触板[BK0817]
+    // 昨日触板[BK0817] HS300_[BK0500]
     public String BK_REMOVE = "BK0498,BK0499,BK0705,BK0528,BK0600,BK0804,BK0925,BK0816,BK0815," +
             "BK0636,BK0535,BK0672,BK0867,BK0879,BK0980,BK0567,BK0596"+
             "BK0980,BK0823,BK0570,BK0835,BK0536,BK0742,BK0718,BK0638"+
             "BK0707,BK0568,BK0571,BK0633,BK0701,BK0821,BK0552,BK0501"+
-            "BK0817";
+            "BK0817,BK0500";
 
     @Autowired
     private StkKlineRepository stkKlineRepository;
@@ -374,7 +374,7 @@ public class BarTask extends AbstractTask {
     public void analyseKline(){
         try {
             final Set<StockWrapper> allList = new LinkedHashSet<>();
-            Set<Stock> hotBks = new TreeSet<>();
+            Set<Stock> hotBks = new LinkedHashSet<>();
 
             if(code != null){
                 List<String> codes = Arrays.asList(StringUtils.split(code, ","));
@@ -455,7 +455,12 @@ public class BarTask extends AbstractTask {
             stocks = stockService.buildBarSeries(stocks, 500, realtime != null);
             stocks = stockService.buildIndustries(stocks);
             //建立板块关系，计算rps
-            buildBkAndCalcRps(stocks);
+            List<Stock> bks = stocks.stream().filter(Stock::isCateIndexEastmoneyGn).collect(Collectors.toList());
+            if(bks.isEmpty()){
+                buildBkAndCalcRps(stocks);
+            }else {
+                buildBkAndCalcRps(stocks, bks);
+            }
 
 
             if(StringUtils.isEmpty(strategy)){
@@ -502,8 +507,9 @@ public class BarTask extends AbstractTask {
 
                     List<String> data = ListUtils.createList(
                             displayCode ? stock.getNameAndCodeWithLinkAndBold() + stock.getBkInfo() : "",
-                            strategyResult.getDate()+"<br/>"+strategyResult.getStrategy().getName().replaceAll("，", "<br/>"),
-                            StringUtils.join(sources, "<br/>"),
+                            strategyResult.getDate()+
+                                    "<br/>"+strategyResult.getStrategy().getName().replaceAll("，", "<br/>")+
+                                    "<br/>"+StringUtils.join(sources, "<br/>"),
                             stock.getDayBarImage(),stock.getWeekBarImage(),
                             //backtesting.getStrategies().get(0).getPassRateString().replaceAll("]", "]<br/>") +
                             //        (StringUtils.isNotEmpty(backtesting.getStrategies().get(0).getPassedFilterResultLog()) ? "<br/>"+backtesting.getStrategies().get(0).getPassedFilterResultLog() : "")
@@ -528,9 +534,19 @@ public class BarTask extends AbstractTask {
                     }
                 }
 
-                List<String> titles = ListUtils.createList("标的", "日期/策略", "来源", "日K线", "周K线", "历史策略回测通过率");
+                List<String> titles = ListUtils.createList("标的", "日期/策略/来源", "日K线", "周K线", "历史策略回测通过率");
                 StringBuffer sb = new StringBuffer();
-                sb.append("热门板块：").append(hotBks.stream().map(Stock::getNameAndCodeWithLink).collect(Collectors.toList())).append("<br/><br/>");
+
+                if(!hotBks.isEmpty()){
+                    List<String> hotBkTitle = hotBks.stream().map(Stock::getNameAndCodeWithLink).collect(Collectors.toList());
+                    List<List<String>> hotBkDatas = new ArrayList<>();
+                    List<String> hotBkRow = hotBks.stream().map(bk1 -> {
+                        return bk1.getStocksInfo(Stock.Rps.CODE_STOCK_SCORE_20, 10, true);
+                    }).collect(Collectors.toList());
+                    hotBkDatas.add(hotBkRow);
+                    sb.append("热门板块：<br/>").append(CommonUtils.createHtmlTable(hotBkTitle, hotBkDatas)).append("<br/><br/>");
+                }
+
                 sb.append("A股");        sb.append(CommonUtils.createHtmlTable(titles, datasA));sb.append("<br/>");
                 sb.append("H股");        sb.append(CommonUtils.createHtmlTable(titles, datasH));sb.append("<br/>");
                 sb.append("美股");       sb.append(CommonUtils.createHtmlTable(titles, datasU));sb.append("<br/>");
@@ -756,6 +772,13 @@ public class BarTask extends AbstractTask {
         List<Stock> bks = stockService.buildStocksWithProjection(bkList);
         bks = bks.stream().filter(stock -> !BK_REMOVE.contains(stock.getCode())).collect(Collectors.toList());
         bks = stockService.buildBarSeries(bks, 250, false);
+        stockService.calcRps(Stock.Rps.CODE_BK_60, bks);
+        stockService.buildBk(stocks, bks);
+        stockService.calcRps(Stock.Rps.CODE_BK_STOCKS_SCORE_30, bks);
+    }
+
+    public void buildBkAndCalcRps(List<Stock> stocks, List<Stock> bks){
+        //建立板块关系，计算rps
         stockService.calcRps(Stock.Rps.CODE_BK_60, bks);
         stockService.buildBk(stocks, bks);
         stockService.calcRps(Stock.Rps.CODE_BK_STOCKS_SCORE_30, bks);
