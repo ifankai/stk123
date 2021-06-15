@@ -91,22 +91,24 @@ public class Tasks {
 
     @Scheduled(cron = "0 10 16 ? * MON-SAT")
     public void initialKLine() {
-        BarTask.stocksA = null;
-        BarTask.stocksH = null;
-        BarTask.stocksCN = null;
+        BarTask.StocksMass = null;
+        BarTask.StocksH = null;
+        BarTask.StocksAllCN = null;
+        BarTask.Bks = null;
         taskContainer.start(TaskBuilder.of(BarTask.class, "CN"),
                             TaskBuilder.of(BarTask.class, "HK"),
-                            TaskBuilder.of(BarTask.class, "Kline"),
+                            TaskBuilder.of(BarTask.class, "MyStocks"),
                             TaskBuilder.of(BarTask.class, "AllStocks"),
-                            TaskBuilder.of(SyncTask.class, "table=stk_task_log"),
+                            TaskBuilder.of(BarTask.class, "Bks"),
+                            //TaskBuilder.of(SyncTask.class, "table=stk_task_log"),
                             TaskBuilder.of(BarTask.class, "Mass"));
     }
 
     @Scheduled(cron = "0 0 11 ? * MON-FRI")
     @Scheduled(cron = "0 30 14 ? * MON-FRI")
     public void klineRealtime() {
-        taskContainer.start(BarTask.class, "Kline", "realtime=1", "market=cn,hk");
-        BarTask.stocksCN = null;
+        taskContainer.start(BarTask.class, "MyStocks", "realtime=1", "market=cn,hk");
+        BarTask.StocksAllCN = null;
         taskContainer.start(BarTask.class, "AllStocks", "realtime=1");
     }
 

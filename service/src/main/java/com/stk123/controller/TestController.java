@@ -3,6 +3,7 @@ package com.stk123.controller;
 import com.stk123.model.RequestResult;
 import com.stk123.model.core.Bar;
 import com.stk123.model.core.BarSeries;
+import com.stk123.model.core.Rps;
 import com.stk123.model.core.Stock;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.model.strategy.StrategyBacktesting;
@@ -74,7 +75,7 @@ public class TestController {
 //        System.out.println(stock.getBar().before(10).getChange(-7, Bar.EnumValue.C));
 
         Stock stock = Stock.build("BK0891");
-        List<Stock> stocks = stock.getGreatestStocksInBkByRps(Stock.Rps.CODE_STOCK_SCORE_20, 10);
+        List<Stock> stocks = stock.getGreatestStocksInBkByRps(Rps.CODE_STOCK_SCORE_20, 10);
 
         return RequestResult.success(StringUtils.join(stocks.stream().map(stk->stk.getNameAndCodeWithLink()).collect(Collectors.toList())));
     }

@@ -11,6 +11,8 @@ import com.stk123.model.json.View;
 import com.stk123.model.projection.IndustryProjection;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.model.projection.StockProjection;
+import com.stk123.model.strategy.Strategy;
+import com.stk123.model.strategy.sample.Sample;
 import com.stk123.repository.StkIndustryRepository;
 import com.stk123.repository.StkRepository;
 import com.stk123.service.core.BarService;
@@ -31,7 +33,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.stk123.model.core.Stock.EnumMarket.*;
@@ -189,65 +190,6 @@ public class Stock {
 
     //相对强弱指标
     private Map<String, Rps> rps = new HashMap<>();
-    @Data
-    @ToString
-    public static class Rps{
-        public final static String CODE_BK_60 = "01";
-        public final static String CODE_BK_STOCKS_SCORE_30 = "02";
-        public final static String CODE_STOCK_SCORE_20 = "03";
-
-        private static Map<String, RpsDefinition> CODE_NAME = new HashMap<>();
-        static{
-            CODE_NAME.put(CODE_BK_60, new RpsDefinition(CODE_BK_60, "板块60日涨幅", bk -> {
-                Bar bar = bk.getBar();
-                return bar.getChange(60, Bar.EnumValue.C);
-            }));
-
-            CODE_NAME.put(CODE_BK_STOCKS_SCORE_30, new RpsDefinition(CODE_BK_STOCKS_SCORE_30,"个股score前5", bk -> {
-                List<Stock> bkStocks = bk.getStocks();
-                List<Stock> top5 = ListUtils.greatest(bkStocks, 5, bkStock -> (bkStock.getBar().getScore(20)+bkStock.getBar().getScore(10)*2.0));
-                bk.getData().put("top5", top5);
-                return top5.stream().mapToDouble(bkStock ->(bkStock.getBar().getScore(20)+bkStock.getBar().getScore(10)*2.0)).sum();
-            }));
-
-            CODE_NAME.put(CODE_STOCK_SCORE_20, new RpsDefinition(CODE_STOCK_SCORE_20,"个股score", stock -> {
-                return stock.getBar().getScore(20) + stock.getBar().getScore(10)*2.0;
-            }));
-        }
-
-        public static Function<Stock, Double> getCalculation(String rpsCode){
-            return CODE_NAME.get(rpsCode).getCalculation();
-        }
-
-
-        private RpsDefinition rpsDefinition;
-        private Double value;
-        private Integer order;
-        private Double percentile;
-
-        @Data
-        @AllArgsConstructor
-        public static class RpsDefinition{
-            private String code;
-            private String name;
-            private Function<Stock,Double> calculation;
-        }
-
-        public Rps(RpsDefinition rpsDefinition){
-            this.rpsDefinition = rpsDefinition;
-        }
-
-        public String getCode(){
-            return rpsDefinition.getCode();
-        }
-
-        public String getName(){
-            return rpsDefinition.getName();
-        }
-
-
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////////
@@ -625,6 +567,13 @@ public class Stock {
         return this.industries;
     }
 
+    public List<Stock> getStocks(){
+        if(this.stocks.isEmpty()){
+            //TODO
+        }
+        return this.stocks;
+    }
+
     public static Map<Integer, Bar> TURNING_POINTS = Collections.synchronizedMap(new HashMap<>());
     /**
      * 转折点，板块站上5日均线最多的日子
@@ -673,15 +622,15 @@ public class Stock {
 
     public void setRpsValue(String rpsCode, Double rpsValue){
         Rps rps = getOrCreateRps(rpsCode);
-        rps.value = rpsValue;
+        rps.setValue(rpsValue);
     }
     public void setRpsOrder(String rpsCode, Integer rpsOrder){
         Rps rps = getOrCreateRps(rpsCode);
-        rps.order = rpsOrder;
+        rps.setOrder(rpsOrder);
     }
     public void setRpsPercentile(String rpsCode, Double rpsPercentile){
         Rps rps = getOrCreateRps(rpsCode);
-        rps.percentile = rpsPercentile;
+        rps.setPercentile(rpsPercentile);
     }
     public Rps getRps(String rpsCode){
         return rps.get(rpsCode);
@@ -689,7 +638,7 @@ public class Stock {
     private Rps getOrCreateRps(String rpsCode){
         Rps rps = getRps(rpsCode);
         if(rps == null){
-            rps = new Rps(Rps.CODE_NAME.get(rpsCode));
+            rps = new Rps(Rps.CODE_STRATEGY.get(rpsCode));
             this.rps.put(rpsCode, rps);
         }
         return rps;
@@ -702,7 +651,8 @@ public class Stock {
     }
 
     public List<Stock> getGreatestStocksInBkByRps(String rpsCode, int topN){
-        return ListUtils.greatest(this.getStocks(), topN, Rps.getCalculation(rpsCode));
+        List<Stock> stocks = stockService.calcRps(this.getStocks(), Rps.getRpsStrategy(rpsCode));
+        return ListUtils.greatest(stocks, topN, stock1 -> stock1.getRps(rpsCode).getValue());
     }
 
     //用于stock

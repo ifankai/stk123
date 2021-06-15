@@ -9,6 +9,7 @@ import com.stk123.model.strategy.StrategyBacktesting;
 import com.stk123.model.strategy.StrategyResult;
 import com.stk123.model.strategy.sample.Sample;
 import com.stk123.util.ServiceUtils;
+import lombok.SneakyThrows;
 import org.apache.commons.lang.StringUtils;
 import org.reflections.ReflectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,11 +41,12 @@ public class BacktestingService {
     @Autowired
     private TaskService taskService;
 
-    public StrategyBacktesting backtestingAllHistory(String code, String strategy, boolean isIncludeRealtimeBar) throws InvocationTargetException, IllegalAccessException {
+    public StrategyBacktesting backtestingAllHistory(String code, String strategy, boolean isIncludeRealtimeBar) {
         return backtestingAllHistory(Collections.singletonList(code), Collections.singletonList(strategy), isIncludeRealtimeBar);
     }
 
-    public StrategyBacktesting backtestingAllHistory(List<String> codes, List<String> strategies, boolean isIncludeRealtimeBar) throws InvocationTargetException, IllegalAccessException {
+    @SneakyThrows
+    public StrategyBacktesting backtestingAllHistory(List<String> codes, List<String> strategies, boolean isIncludeRealtimeBar) {
         StrategyBacktesting strategyBacktesting = new StrategyBacktesting();
         /*Set<Method> methods = ReflectionUtils.getAllMethods(Sample.class,
                 method -> StringUtils.equalsIgnoreCase(method.getName(), "strategy_"+strategy) || StringUtils.equalsIgnoreCase(method.getName(), strategy));
@@ -71,33 +73,46 @@ public class BacktestingService {
         return strategyBacktesting;
     }
 
-    public StrategyBacktesting backtesting(List<String> codes, List<String> strategies, String startDate, String endDate, boolean isIncludeRealtimeBar) throws InvocationTargetException, IllegalAccessException {
+    public StrategyBacktesting backtesting(List<String> codes, List<String> strategies, String startDate, String endDate, boolean isIncludeRealtimeBar) {
         List<Stock> stocks = stockService.buildStocks(codes);
         return backtestingOnStock(stocks, strategies, startDate, endDate, isIncludeRealtimeBar);
     }
 
 
-    public StrategyBacktesting backtesting(List<String> codes, List<String> strategies, String startDate, String endDate) throws InvocationTargetException, IllegalAccessException {
+    public StrategyBacktesting backtesting(List<String> codes, List<String> strategies, String startDate, String endDate) {
         return backtesting(codes, strategies, startDate, endDate, false);
     }
 
-    public StrategyBacktesting backtestingOnStock(List<Stock> stocks, List<String> strategies) throws InvocationTargetException, IllegalAccessException {
+    public StrategyBacktesting backtestingOnStock(List<Stock> stocks, List<String> strategies) {
         return backtestingOnStock(stocks, strategies, null, null, false);
     }
 
-    public StrategyBacktesting backtestingOnStock(List<Stock> stocks, List<String> strategies, String startDate, String endDate, boolean isIncludeRealtimeBar) throws InvocationTargetException, IllegalAccessException {
+    public StrategyBacktesting backtestingOnStock(List<Stock> stocks, List<String> strategies, String startDate, String endDate, boolean isIncludeRealtimeBar) {
         return backtestingOnStock(new StrategyBacktesting(), stocks, strategies, startDate, endDate, isIncludeRealtimeBar);
     }
 
-    public StrategyBacktesting backtestingOnStock(StrategyBacktesting strategyBacktesting, List<Stock> stocks, List<String> strategies, String startDate, String endDate, boolean isIncludeRealtimeBar) throws InvocationTargetException, IllegalAccessException {
-        if(isIncludeRealtimeBar){
-            stocks.forEach(stock -> stock.setIncludeRealtimeBar(true));
-        }
+    @SneakyThrows
+    public StrategyBacktesting backtestingOnStock(StrategyBacktesting strategyBacktesting, List<Stock> stocks, List<String> strategies, String startDate, String endDate, boolean isIncludeRealtimeBar) {
+        List<Strategy> strategyList = new ArrayList<>();
+
         //Set<Method> methods = ReflectionUtils.getAllMethods(Sample.class, method -> strategies.stream().anyMatch(name -> StringUtils.endsWithIgnoreCase(method.getName(), "strategy_"+name)), ReflectionUtils.withReturnType(Strategy.class));
         Set<Method> methods = ReflectionUtils.getAllMethods(Sample.class,
                 method -> strategies.stream().anyMatch(name -> StringUtils.equalsIgnoreCase(method.getName(), "strategy_"+name) || StringUtils.equalsIgnoreCase(method.getName(), name)));
         for (Method method : methods) {
             Strategy strategy = (Strategy<?>) method.invoke(null, null);
+            if(strategy == null) continue;
+            strategyList.add(strategy);
+        }
+
+        return backtesting(strategyBacktesting, stocks, strategyList, startDate, endDate, isIncludeRealtimeBar);
+    }
+
+    public StrategyBacktesting backtesting(StrategyBacktesting strategyBacktesting, List<Stock> stocks, List<Strategy> strategies, String startDate, String endDate, boolean isIncludeRealtimeBar) {
+        if(isIncludeRealtimeBar){
+            stocks.forEach(stock -> stock.setIncludeRealtimeBar(true));
+        }
+
+        for(Strategy strategy : strategies){
             if(strategy == null) continue;
             strategy.setStrategyBacktesting(strategyBacktesting);
             strategyBacktesting.addStrategy(strategy);
@@ -118,6 +133,10 @@ public class BacktestingService {
         }
 
         return strategyBacktesting;
+    }
+
+    public StrategyBacktesting backtesting(List<Stock> stocks, List<Strategy> strategies) {
+        return backtesting(new StrategyBacktesting(), stocks, strategies, null, null, false);
     }
 
     public void saveStrategyResult(StrategyBacktesting strategyBacktesting){

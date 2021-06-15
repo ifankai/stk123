@@ -1,6 +1,5 @@
 package com.stk123.task.schedule;
 
-import cn.hutool.core.collection.CollectionUtil;
 import com.stk123.common.CommonUtils;
 import com.stk123.common.util.EmailUtils;
 import com.stk123.common.util.ListUtils;
@@ -9,6 +8,7 @@ import com.stk123.entity.StkIndustryEntity;
 import com.stk123.entity.StkKlineUsEntity;
 import com.stk123.entity.StkPeEntity;
 import com.stk123.model.core.Bar;
+import com.stk123.model.core.Rps;
 import com.stk123.model.core.Stock;
 import com.stk123.model.mass.*;
 import com.stk123.model.projection.StockBasicProjection;
@@ -53,6 +53,12 @@ public class BarTask extends AbstractTask {
     private String realtime;
     private String market;
     private String strategy;
+
+    public static List<Stock> StocksAllCN = null;
+    public static List<Stock> StocksMass = null;
+    public static List<Stock> StocksH = null;
+    public static List<Stock> Bks = null;
+
 
     private String today = TaskUtils.getToday();//"20160923";
     private final Date now = new Date();
@@ -101,9 +107,10 @@ public class BarTask extends AbstractTask {
         this.runByName("analyseCN", this::analyseCN);
         this.runByName("analyseHK", this::analyseHK);
         this.runByName("analyseUS", this::analyseUS);
-        this.runByName("analyseKline", this::analyseKline);
+        this.runByName("analyseMyStocks", this::analyseMyStocks);
         this.runByName("analyseMass", this::analyseMass);
         this.runByName("analyseAllStocks", this::analyseAllStocks);
+        this.runByName("analyseBks", this::analyseBks);
     }
 
     public void initCN() {
@@ -371,10 +378,75 @@ public class BarTask extends AbstractTask {
         });
     }
 
-    public void analyseKline(){
+    public void analyseBks(){
+        try{
+            if(this.Bks == null) {
+                Bks = getBks();
+            }
+            if(StocksAllCN == null) {
+                StocksAllCN = getAllStocks();
+            }
+            buildBkAndCalcRps(StocksAllCN, Bks);
+
+            if(StringUtils.isEmpty(strategy)){
+                this.strategy = Sample.STRATEGIES_BK;
+            }
+
+            StrategyBacktesting strategyBacktesting = new StrategyBacktesting();
+            backtestingService.backtestingOnStock(strategyBacktesting,
+                    Bks,
+                    Arrays.asList(StringUtils.split(this.strategy, ",")),
+                    startDate, endDate, realtime!=null);
+
+            List<StrategyResult> results = strategyBacktesting.getPassedStrategyResult();
+            if(results.size() > 0){
+                List<List<String>> datasBk1 = new ArrayList<>();
+                List<List<String>> datasBk2 = new ArrayList<>();
+
+                String rowCode = null;
+                for(StrategyResult strategyResult : results){
+                    Stock bk = Bks.stream().filter(stk -> stk.getCode().equals(strategyResult.getCode())).findFirst().orElse(null);
+
+                    Stock.TURNING_POINTS.clear();
+                    boolean displayCode = true;
+                    if(strategyResult.getCode().equals(rowCode)){
+                        displayCode = false;
+                    }else{
+                        rowCode = strategyResult.getCode();
+                    }
+
+                    List<String> data = ListUtils.createList(
+                            displayCode ? bk.getNameAndCodeWithLinkAndBold() : "",
+                            strategyResult.getDate()+
+                                    "<br/>"+strategyResult.getStrategy().getName().replaceAll("，", "<br/>"),
+                            displayCode ? bk.getStocksInfo(Rps.CODE_STOCK_SCORE_20, 10, true) : ""
+                    );
+                    if(bk.isCateIndexEastmoneyGn()) {
+                        if (strategyResult.getStrategy().getCode().startsWith("strategy_08")) { //板块阶段强势策略
+                            datasBk2.add(data);
+                        } else {
+                            datasBk1.add(data);
+                        }
+                    }
+                }
+
+                List<String> titles = ListUtils.createList("标的", "日期/策略/来源", "Rps["+Sample.rps_03().getName()+"]");
+                StringBuffer sb = new StringBuffer();
+                sb.append("板块");       sb.append(CommonUtils.createHtmlTable(titles, datasBk1));sb.append("<br/>");
+                sb.append("板块阶段强势");sb.append(CommonUtils.createHtmlTable(titles, datasBk2));
+                EmailUtils.send("板块策略发现 "+ (datasBk1.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count())+ "个" , sb.toString());
+            }
+
+
+        }catch (Exception e){
+            EmailUtils.send("报错[analyseBks]", ExceptionUtils.getExceptionAsString(e));
+            log.error("analyseBks", e);
+        }
+    }
+
+    public void analyseMyStocks(){
         try {
             final Set<StockWrapper> allList = new LinkedHashSet<>();
-            Set<Stock> hotBks = new LinkedHashSet<>();
 
             if(code != null){
                 List<String> codes = Arrays.asList(StringUtils.split(code, ","));
@@ -434,16 +506,8 @@ public class BarTask extends AbstractTask {
                 log.info("反转股个数："+tmpStocks.size());
                 addStocks(allList, tmpStocks.stream().map(Stock::getCode).collect(Collectors.toSet()), "反转股");*/
 
-                //板块
-                if(realtime == null) {//实时行情只关注股票，排除板块
-                    List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn);
-                    Set<String> bkList = list.stream().map(StockBasicProjection::getCode).collect(Collectors.toSet());
-                    bkList = CollectionUtil.removeAny(bkList, StringUtils.split(BK_REMOVE,","));
-                    addStocks(allList, bkList, "板块");
-                }
             }
-            log.info(allList);
-            log.info("allList.size="+allList.size());
+            log.info("allList.size="+allList.size()+", "+allList);
 
             List<Stock> stocks = stockService.buildStocks(allList.stream().map(StockWrapper::getCode).collect(Collectors.toList()));
             if(market != null){
@@ -451,20 +515,13 @@ public class BarTask extends AbstractTask {
             }
             log.info(stocks.stream().map(Stock::getCode).collect(Collectors.toList()));
 
-
             stocks = stockService.buildBarSeries(stocks, 500, realtime != null);
             stocks = stockService.buildIndustries(stocks);
             //建立板块关系，计算rps
-            List<Stock> bks = stocks.stream().filter(Stock::isCateIndexEastmoneyGn).collect(Collectors.toList());
-            if(bks.isEmpty()){
-                buildBkAndCalcRps(stocks);
-            }else {
-                buildBkAndCalcRps(stocks, bks);
-            }
-
+            buildBkAndCalcRps(stocks);
 
             if(StringUtils.isEmpty(strategy)){
-                this.strategy = Sample.STRATEGIES;
+                this.strategy = Sample.STRATEGIES_MY_STOCKS;
             }
             //策略回测开始    01,02 策略在com.stk123.model.strategy.sample.Sample 里定义
             StrategyBacktesting strategyBacktesting = new StrategyBacktesting();
@@ -475,12 +532,9 @@ public class BarTask extends AbstractTask {
 
             List<StrategyResult> results = strategyBacktesting.getPassedStrategyResult();
             if(results.size() > 0){
-
                 List<List<String>> datasA = new ArrayList<>();
                 List<List<String>> datasH = new ArrayList<>();
                 List<List<String>> datasU = new ArrayList<>();
-                List<List<String>> datasBk1 = new ArrayList<>();
-                List<List<String>> datasBk2 = new ArrayList<>();
 
                 String rowCode = null;
                 for(StrategyResult strategyResult : results){
@@ -494,7 +548,6 @@ public class BarTask extends AbstractTask {
                         }
                     }
 
-                    Stock.TURNING_POINTS.clear();
                     StrategyBacktesting backtesting = backtestingService.backtestingAllHistory(strategyResult.getCode(), strategyResult.getStrategy().getCode(), false);
 
                     boolean displayCode = true;
@@ -504,122 +557,69 @@ public class BarTask extends AbstractTask {
                         rowCode = strategyResult.getCode();
                     }
 
-
                     List<String> data = ListUtils.createList(
                             displayCode ? stock.getNameAndCodeWithLinkAndBold() + stock.getBkInfo() : "",
                             strategyResult.getDate()+
                                     "<br/>"+strategyResult.getStrategy().getName().replaceAll("，", "<br/>")+
                                     "<br/>"+StringUtils.join(sources, "<br/>"),
-                            stock.getDayBarImage(),stock.getWeekBarImage(),
+                            displayCode?stock.getDayBarImage():"",displayCode?stock.getWeekBarImage():"",
                             //backtesting.getStrategies().get(0).getPassRateString().replaceAll("]", "]<br/>") +
                             //        (StringUtils.isNotEmpty(backtesting.getStrategies().get(0).getPassedFilterResultLog()) ? "<br/>"+backtesting.getStrategies().get(0).getPassedFilterResultLog() : "")
                             backtesting.getStrategies().get(0).getPassRateString().replaceAll("]", "]<br/>")
                     );
-                    if(stock.isCateIndexEastmoneyGn()){
-                        if(strategyResult.getStrategy().getCode().startsWith("strategy_08")){ //板块阶段强势策略
-                            datasBk2.add(data);
-                            hotBks.add(stock);
-                        }else {
-                            datasBk1.add(data);
-                        }
-                    }else {
 
-                        if(stock.isMarketCN()) {
-                            datasA.add(data);
-                        }else if(stock.isMarketHK()){
-                            datasH.add(data);
-                        }else if(stock.isMarketUS()){
-                            datasU.add(data);
-                        }
+                    if(stock.isMarketCN()) {
+                        datasA.add(data);
+                    }else if(stock.isMarketHK()){
+                        datasH.add(data);
+                    }else if(stock.isMarketUS()){
+                        datasU.add(data);
                     }
                 }
 
                 List<String> titles = ListUtils.createList("标的", "日期/策略/来源", "日K线", "周K线", "历史策略回测通过率");
                 StringBuffer sb = new StringBuffer();
-
-                if(!hotBks.isEmpty()){
-                    List<String> hotBkTitle = hotBks.stream().map(Stock::getNameAndCodeWithLink).collect(Collectors.toList());
-                    List<List<String>> hotBkDatas = new ArrayList<>();
-                    List<String> hotBkRow = hotBks.stream().map(bk1 -> {
-                        return bk1.getStocksInfo(Stock.Rps.CODE_STOCK_SCORE_20, 10, true);
-                    }).collect(Collectors.toList());
-                    hotBkDatas.add(hotBkRow);
-                    sb.append("热门板块：<br/>").append(CommonUtils.createHtmlTable(hotBkTitle, hotBkDatas)).append("<br/><br/>");
-                }
-
                 sb.append("A股");        sb.append(CommonUtils.createHtmlTable(titles, datasA));sb.append("<br/>");
                 sb.append("H股");        sb.append(CommonUtils.createHtmlTable(titles, datasH));sb.append("<br/>");
                 sb.append("美股");       sb.append(CommonUtils.createHtmlTable(titles, datasU));sb.append("<br/>");
-                sb.append("板块");       sb.append(CommonUtils.createHtmlTable(titles, datasBk1));sb.append("<br/>");
-                sb.append("板块阶段强势");sb.append(CommonUtils.createHtmlTable(titles, datasBk2));
-
-                /*sb.append("<br/><br/>--------------------------------------------------------<br/>");
-                strategyBacktesting.getStrategies().forEach(strategy -> {
-                    sb.append(strategy.toString().replaceAll("\n","<br/>")).append("<br/>");
-                });*/
-
-                /*sb.append("<br/><br/>--------------------------------------------------------<br/>");
-                List<Stock> finalStocks = stocks;
-                List missingList = allList.stream().filter(stockWrapper -> finalStocks.stream().noneMatch(stock -> stockWrapper.getCode().equals(stock.getCode()))).map(StockWrapper::getCode).collect(Collectors.toList());
-                sb.append("被忽略的标的：<br/>");
-                sb.append(StringUtils.join(missingList, ","));*/
 
                 EmailUtils.send("策略发现 A股" + (datasA.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count()) + "个, " +
                                 "H股" + (datasH.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count()) + "个, " +
-                                "美股"+ (datasU.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count()) + "个, " +
-                                "板块"+ (datasBk1.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count())+ "个"
+                                "美股"+ (datasU.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count()) + "个"
                         , sb.toString());
             }else{
                 EmailUtils.send("策略发现0个标的", "");
             }
         } catch (Exception e) {
-            EmailUtils.send("策略发现标的报错", ExceptionUtils.getExceptionAsString(e));
-            log.error("analyseKline", e);
+            EmailUtils.send("报错[analyseMyStocks]", ExceptionUtils.getExceptionAsString(e));
+            log.error("analyseMyStocks", e);
         }
     }
 
 
-    public static List<Stock> stocksCN = null;
-
     public void analyseAllStocks(){
         try {
-            if(stocksCN == null) {
-                List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.STOCK);
-                //List<StockBasicProjection> list = stkRepository.findAllByCodes(ListUtils.createList("000630","000650","002038","002740","000651","002070","603876","600373","000002","000920","002801","000726","603588","002791","300474"));
-                list = list.stream().filter(stockBasicProjection -> !StringUtils.contains(stockBasicProjection.getName(), "退")).collect(Collectors.toList());
-
-                stocksCN = stockService.buildStocksWithProjection(list);
-                stocksCN = stockService.buildBarSeries(stocksCN, 500, realtime != null);
-
-                //排除总市值小于40亿的
-                stocksCN = filterByMarketCap(stocksCN, 30);
-
-                stocksCN = stockService.buildIndustries(stocksCN);
-
-                //建立板块关系，计算rps
-                buildBkAndCalcRps(stocksCN);
-
+            if(StocksAllCN == null) {
+                StocksAllCN = getAllStocks();
             }
 
             if(StringUtils.isEmpty(strategy)){
-                this.strategy = Sample.STRATEGIES_FOR_ALL_STOCKS;
+                this.strategy = Sample.STRATEGIES_ALL_STOCKS;
             }
 
             StrategyBacktesting strategyBacktesting = new StrategyBacktesting();
             backtestingService.backtestingOnStock(strategyBacktesting,
-                    stocksCN,
+                    StocksAllCN,
                     Arrays.asList(StringUtils.split(this.strategy, ",")),
                     startDate, endDate, realtime!=null);
 
             List<StrategyResult> results = strategyBacktesting.getPassedStrategyResult();
             if(results.size() > 0) {
-                StringBuffer sb = new StringBuffer();
-
                 List<List<String>> datasA = new ArrayList<>();
 
                 String rowCode = null;
                 for (StrategyResult strategyResult : results) {
-                    Stock stock = stocksCN.stream().filter(stk -> stk.getCode().equals(strategyResult.getCode())).findFirst().orElse(null);
+                    Stock stock = StocksAllCN.stream().filter(stk -> stk.getCode().equals(strategyResult.getCode())).findFirst().orElse(null);
 
                     StrategyBacktesting backtesting = backtestingService.backtestingAllHistory(strategyResult.getCode(), strategyResult.getStrategy().getCode(), false);
 
@@ -635,7 +635,7 @@ public class BarTask extends AbstractTask {
                             strategyResult.getDate()+"<br/>"
                                     + strategyResult.getStrategy().getName().replaceAll("，", "<br/>")
                                     + "<br/>-----------<br/>" + StringUtils.join(strategyResult.getResults(),"<br/>"),
-                            stock.getDayBarImage(),stock.getWeekBarImage(),
+                            displayCode?stock.getDayBarImage():"",displayCode?stock.getWeekBarImage():"",
                             //backtesting.getStrategies().get(0).getPassRateString().replaceAll("]", "]<br/>") +
                             //        (StringUtils.isNotEmpty(backtesting.getStrategies().get(0).getPassedFilterResultLog()) ? "<br/>"+backtesting.getStrategies().get(0).getPassedFilterResultLog() : "")
                             backtesting.getStrategies().get(0).getPassRateString().replaceAll("]", "]<br/>")
@@ -648,6 +648,7 @@ public class BarTask extends AbstractTask {
                 }
 
                 List<String> titles = ListUtils.createList("标的", "日期/策略", "日K线", "周K线", "历史策略回测通过率");
+                StringBuffer sb = new StringBuffer();
                 sb.append("A股");
                 sb.append(CommonUtils.createHtmlTable(titles, datasA));sb.append("<br/>");
 
@@ -656,27 +657,24 @@ public class BarTask extends AbstractTask {
                 EmailUtils.send("全市场策略发现0个标的", "");
             }
         } catch (Exception e) {
-            EmailUtils.send("全市场策略发现标的报错[analyseAllStocks]", ExceptionUtils.getExceptionAsString(e));
+            EmailUtils.send("报错[analyseAllStocks]", ExceptionUtils.getExceptionAsString(e));
             log.error("analyseAllStocks", e);
         }
     }
 
-    public static List<Stock> stocksA = null;
-    public static List<Stock> stocksH = null;
-
 
     //相似算法
     public void analyseMass(){
-        if(stocksA == null) {
+        if(StocksMass == null) {
             List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.STOCK);
             //List<StockBasicProjection> list = stkRepository.findAllByCodes(ListUtils.createList("000630","000650","002038","002740","000651","002070","603876","600373","000002","000920","002801","000726","603588","002791","300474"));
             list = list.stream().filter(stockBasicProjection -> !StringUtils.contains(stockBasicProjection.getName(), "退")).collect(Collectors.toList());
 
-            stocksA = stockService.buildStocksWithProjection(list);
-            stocksA = stockService.buildBarSeries(stocksA, 500, realtime != null);
-            stockService.buildHolder(stocksA);
+            StocksMass = stockService.buildStocksWithProjection(list);
+            StocksMass = stockService.buildBarSeries(StocksMass, 500, realtime != null);
+            stockService.buildHolder(StocksMass);
 
-            stocksA = stocksA.stream().filter(stock -> {
+            StocksMass = StocksMass.stream().filter(stock -> {
                 try {
                     //250日最低点发生在最近50日内
                     Bar bar250 = stock.getBar().getLowestBar(250, Bar.EnumValue.C);
@@ -706,23 +704,23 @@ public class BarTask extends AbstractTask {
             }).collect(Collectors.toList());
 
             //排除 人均持股 20万以下的
-            stocksA = filterByHolder(stocksA);
+            StocksMass = filterByHolder(StocksMass);
 
             //排除总市值小于50亿的
-            stocksA = filterByMarketCap(stocksA, 50);
+            StocksMass = filterByMarketCap(StocksMass, 50);
 
         }
 
-        /*if(stocksH == null) {
+        /*if(StocksH == null) {
             List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.HK, Stock.EnumCate.STOCK);
             list = list.stream().filter(stockBasicProjection -> !StringUtils.contains(stockBasicProjection.getName(), "退市")).collect(Collectors.toList());
 
-            stocksH = stockService.buildStocksWithProjection(list);
-            stocksH = stockService.buildBarSeries(stocksH, 250, realtime != null);
+            StocksH = stockService.buildStocksWithProjection(list);
+            StocksH = stockService.buildBarSeries(StocksH, 250, realtime != null);
         }*/
 
 
-        MassResult massResultA = Mass.execute(stocksA);
+        MassResult massResultA = Mass.execute(StocksMass);
 
         int count = massResultA.getCount();
         List<String> titles = ListUtils.createList("标的", "日期", "日K线", "周K线");
@@ -768,20 +766,44 @@ public class BarTask extends AbstractTask {
 
     public void buildBkAndCalcRps(List<Stock> stocks){
         //建立板块关系，计算rps
-        List<StockBasicProjection> bkList = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn);
-        List<Stock> bks = stockService.buildStocksWithProjection(bkList);
-        bks = bks.stream().filter(stock -> !BK_REMOVE.contains(stock.getCode())).collect(Collectors.toList());
-        bks = stockService.buildBarSeries(bks, 250, false);
-        stockService.calcRps(Stock.Rps.CODE_BK_60, bks);
+        List<Stock> bks = getBks();
+        stockService.calcRps(bks, Rps.CODE_BK_60);
         stockService.buildBk(stocks, bks);
-        stockService.calcRps(Stock.Rps.CODE_BK_STOCKS_SCORE_30, bks);
+        stockService.calcRps(bks, Rps.CODE_BK_STOCKS_SCORE_30);
     }
 
     public void buildBkAndCalcRps(List<Stock> stocks, List<Stock> bks){
         //建立板块关系，计算rps
-        stockService.calcRps(Stock.Rps.CODE_BK_60, bks);
+        stockService.calcRps(bks, Rps.CODE_BK_60);
         stockService.buildBk(stocks, bks);
-        stockService.calcRps(Stock.Rps.CODE_BK_STOCKS_SCORE_30, bks);
+        stockService.calcRps(bks, Rps.CODE_BK_STOCKS_SCORE_30);
+    }
+
+    public List<Stock> getBks(){
+        List<StockBasicProjection> bkList = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn);
+        List<Stock> bks = stockService.buildStocksWithProjection(bkList);
+        bks = bks.stream().filter(stock -> !BK_REMOVE.contains(stock.getCode())).collect(Collectors.toList());
+        bks = stockService.buildBarSeries(bks, 250, false);
+        return bks;
+    }
+
+    public List<Stock> getAllStocks(){
+        List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.STOCK);
+        //List<StockBasicProjection> list = stkRepository.findAllByCodes(ListUtils.createList("000630","000650","002038","002740","000651","002070","603876","600373","000002","000920","002801","000726","603588","002791","300474"));
+        list = list.stream().filter(stockBasicProjection -> !StringUtils.contains(stockBasicProjection.getName(), "退")).collect(Collectors.toList());
+
+        List<Stock> stocks = stockService.buildStocksWithProjection(list);
+        stocks = stockService.buildBarSeries(stocks, 500, realtime != null);
+
+        //排除总市值小于40亿的
+        stocks = filterByMarketCap(stocks, 30);
+
+        stocks = stockService.buildIndustries(stocks);
+
+        //建立板块关系，计算rps
+        buildBkAndCalcRps(stocks);
+
+        return stocks;
     }
 
 }

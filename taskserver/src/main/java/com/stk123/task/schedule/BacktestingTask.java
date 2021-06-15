@@ -40,7 +40,7 @@ public class BacktestingTask extends AbstractTask {
     public void execute() {
         try {
             if(StringUtils.isEmpty(strategy)){
-                strategy = Sample.STRATEGIES;
+                strategy = Sample.STRATEGIES_MY_STOCKS;
             }
             if(StringUtils.isNotEmpty(history)){
                 StrategyBacktesting strategyBacktesting = backtestingService.backtestingAllHistory(Arrays.asList(StringUtils.split(code, ",")),

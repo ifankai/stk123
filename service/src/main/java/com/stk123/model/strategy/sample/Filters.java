@@ -1,10 +1,7 @@
 package com.stk123.model.strategy.sample;
 
 import com.stk123.common.CommonUtils;
-import com.stk123.model.core.Bar;
-import com.stk123.model.core.BarSeries;
-import com.stk123.model.core.Bars;
-import com.stk123.model.core.Stock;
+import com.stk123.model.core.*;
 import com.stk123.model.strategy.Filter;
 import com.stk123.model.strategy.result.FilterResult;
 import com.stk123.model.strategy.result.FilterResultBetween;
@@ -229,7 +226,7 @@ public class Filters {
             Bar todayBefore = bar.before(numberBeforeFirst);
             Bar highestBar = todayBefore.getHighestBar(numberBeforeParam1, Bar.EnumValue.H);
             double change = (todayBefore.getHigh() - highestBar.getHigh())/highestBar.getHigh();
-            return new FilterResultBetween(change*100, min, max).addResult("实际最高点到低点涨跌幅：" + change*100);
+            return new FilterResultBetween(change*100, min, max).addResult("实际最高点到低点涨跌幅：" + CommonUtils.numberFormat2Digits(change*100));
         };
     }
 
@@ -588,7 +585,7 @@ public class Filters {
                     }
                 }
                 String jsl = CommonUtils.numberFormat2Digits(change*100);
-                return FilterResult.TRUE("均线紧缩率:" + jsl +"%,max="+max+",min="+min+",sum="+sum, today.getDate(), "均线紧缩率(%)", jsl);
+                return FilterResult.TRUE("均线紧缩率:" + jsl +"%", today.getDate(), "均线紧缩率(%)", jsl);
             }
             return FilterResult.FALSE("不满足K线价差小于"+d+"%, 实际："+(change*100));
         };
@@ -817,8 +814,8 @@ public class Filters {
 
             int sum4 = 0;
             if(!stock.getBks().isEmpty()){
-                Stock bk = stock.getBkByMaxRps(Stock.Rps.CODE_BK_60);
-                Stock.Rps rps = bk.getRps(Stock.Rps.CODE_BK_60);
+                Stock bk = stock.getBkByMaxRps(Rps.CODE_BK_60);
+                Rps rps = bk.getRps(Rps.CODE_BK_60);
                 if(rps != null){ //板块rps强度大于90百分位，则加10分
                     if(rps.getPercentile() >= 90){
                         sum4 = 15;

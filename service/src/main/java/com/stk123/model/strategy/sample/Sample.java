@@ -1,8 +1,10 @@
 package com.stk123.model.strategy.sample;
 
 import com.stk123.common.util.CacheUtils;
+import com.stk123.common.util.ListUtils;
 import com.stk123.model.core.Bar;
 import com.stk123.model.core.BarSeries;
+import com.stk123.model.core.Rps;
 import com.stk123.model.core.Stock;
 import com.stk123.model.strategy.Filter;
 import com.stk123.model.strategy.Strategy;
@@ -15,9 +17,11 @@ import java.util.stream.Collectors;
 public class Sample {
 
     // ignore: 02a 选出来的标的太多，由02b替换
-    public static String STRATEGIES = "01a,01b,01d,02b,03a,03b,04a,04b,04c,05a,05b,06a,06b,06c,08a,08b,08c,10a";
+    public static String STRATEGIES_MY_STOCKS = "01a,01b,01d,02b,03a,03b,04a,04b,04c,05a,05b,06a,06b,06c,10a";
 
-    public static String STRATEGIES_FOR_ALL_STOCKS = "01a,01b,01c,05b,06c,10a,11a";
+    public static String STRATEGIES_ALL_STOCKS = "01a,01b,01c,05b,06c,10a"; //,11a
+
+    public static String STRATEGIES_BK = "01a,01b,02b,03a,03b,04a,04b,04c,05a,05b,06a,06b,06c,08a,08b,08c,10a";;
 
 
     /**** 阳线放量 阴线缩量 *****/
@@ -311,7 +315,7 @@ public class Sample {
     //300061 202010416   600735 20210408    600007 20210430    600793 20210107
     public static Strategy strategy_11a() {
         Strategy<Stock> strategy = new Strategy<>("strategy_11a", "低位突破趋势线后，连续2根放量阳线(11a)", Stock.class);
-        strategy.addFilter("Rps", Filters.filter_mustRpsGreatThan(Stock.Rps.CODE_BK_60, 80));
+        strategy.addFilter("Rps", Filters.filter_mustRpsGreatThan(Rps.CODE_BK_60, 80));
         strategy.addFilter("阳线", Filters.filter_mustBarIsYang(0, 0.04));
         strategy.addFilter("阳线", (strgy, stock) -> stock.getBar().getHigh() > stock.getBar().before().getHigh() ? FilterResult.TRUE() : FilterResult.FALSE());
         strategy.addFilter("", Filters.filter_mustLowestEqual(100, 250));
@@ -325,6 +329,39 @@ public class Sample {
         strategy.addFilter("", Filters.filter_mustHSLPercentileGreatThan(120, 2, 98));
         strategy.addFilter("", Filters.filter_mustChangeBetweenLowestAndToday(30, 0, 0.5));
         strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(120, 20));
+        return strategy;
+    }
+
+
+    public static Strategy rps_01() {
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_BK_60,"板块60日涨幅", Stock.class);
+        strategy.addFilter("板块60日涨幅", (strgy, bk) -> {
+            Bar bar = bk.getBar();
+            double rpsValue = bar.getChange(60, Bar.EnumValue.C);
+            bk.setRpsValue(Rps.CODE_BK_60, rpsValue);
+            return FilterResult.TRUE();
+        });
+        return strategy;
+    }
+    public static Strategy rps_02() {
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_BK_STOCKS_SCORE_30,"个股score前5", Stock.class);
+        strategy.addFilter("个股score前5", (strgy, bk) -> {
+            List<Stock> bkStocks = bk.getStocks();
+            List<Stock> top5 = ListUtils.greatest(bkStocks, 5, bkStock -> (bkStock.getBar().getScore(20)+bkStock.getBar().getScore(10)*2.0));
+            bk.getData().put("top5", top5);
+            double rpsValue = top5.stream().mapToDouble(bkStock ->(bkStock.getBar().getScore(20)+bkStock.getBar().getScore(10)*2.0)).sum();
+            bk.setRpsValue(Rps.CODE_BK_STOCKS_SCORE_30, rpsValue);
+            return FilterResult.TRUE();
+        });
+        return strategy;
+    }
+    public static Strategy rps_03() {
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_SCORE_20,"个股score", Stock.class);
+        strategy.addFilter("个股score", (strgy, stock) -> {
+            double rpsValue = stock.getBar().getScore(20) + stock.getBar().getScore(10)*2.0;
+            stock.setRpsValue(Rps.CODE_STOCK_SCORE_20, rpsValue);
+            return FilterResult.TRUE();
+        });
         return strategy;
     }
 

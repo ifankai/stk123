@@ -5,12 +5,14 @@ import com.stk123.common.util.PinYin4jUtils;
 import com.stk123.entity.StkHolderEntity;
 import com.stk123.model.core.Bar;
 import com.stk123.model.core.BarSeries;
+import com.stk123.model.core.Rps;
 import com.stk123.model.core.Stock;
 import com.stk123.model.dto.SearchResult;
 import com.stk123.model.projection.IndustryProjection;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.model.projection.StockCodeNameProjection;
 import com.stk123.model.projection.StockProjection;
+import com.stk123.model.strategy.Strategy;
 import com.stk123.repository.BaseRepository;
 import com.stk123.repository.StkHolderRepository;
 import com.stk123.repository.StkKlineRepository;
@@ -26,9 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,6 +45,8 @@ public class StockService {
     private BarService barService;
     @Autowired
     private StkHolderRepository stkHolderRepository;
+    @Autowired
+    private BacktestingService backtestingService;
 
     @Transactional
     public List<Stock> buildStocks(List<String> codes) {
@@ -199,15 +201,17 @@ public class StockService {
         return stocks;
     }
 
-    public List<Stock> calcRps(String rpsCode, List<Stock> stocks){
-        stocks.forEach(stock -> {
-            Double value = Stock.Rps.getCalculation(rpsCode).apply(stock);
-            stock.setRpsValue(rpsCode, value);
-        });
+    public List<Stock> calcRps(List<Stock> stocks, String rpsCode){
+        Strategy strategy = Rps.getRpsStrategy(rpsCode);
+        return calcRps(stocks, strategy);
+    }
+    public List<Stock> calcRps(List<Stock> stocks, Strategy rpsStrategy){
+        backtestingService.backtesting(stocks, Collections.singletonList(rpsStrategy));
+        String rpsCode = rpsStrategy.getCode();
         List<Stock> stks = stocks.stream().sorted(Comparator.comparing(stock -> stock.getRps(rpsCode).getValue())).collect(Collectors.toList());
         int order = 1;
         for (Stock stock : stks) {
-            Stock.Rps rps = stock.getRps(rpsCode);
+            Rps rps = stock.getRps(rpsCode);
             if(rps == null || rps.getValue() == null){
                 stock.setRpsPercentile(rpsCode, 50.0);
                 order++;
@@ -218,10 +222,6 @@ public class StockService {
             order++;
         }
         return stks;
-    }
-
-    public List<Stock> calcRps(List<Stock> stocks, String rpsCode){
-        return null;
     }
 
 
