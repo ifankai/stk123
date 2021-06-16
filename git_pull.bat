@@ -7,4 +7,6 @@ d:h
 git fetch
 git pull
 
+git push
+
 @rem set /p choi=Press [Enter] to close ...
