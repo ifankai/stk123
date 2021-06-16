@@ -667,9 +667,11 @@ public class Stock {
             //List<Stock> top5b = rps2.getPercentile()>=90?(List<Stock>)bk2.getData().get("top5"):null;
 
             //final int[] a = {1}, b = {1};
-            return "<br/>"+bk.getNameAndCodeWithLink()+bk.getStocksInfo(Rps.CODE_STOCK_SCORE_20,10,false)+rps.getName()+":"+CommonUtils.numberFormat2Digits(rps.getPercentile())+
+            return "<br/>"+bk.getNameAndCodeWithLink()+bk.getStocksInfo(Rps.CODE_STOCK_SCORE_20,10,false)+
+                   "<br/>"+rps.getName()+":"+CommonUtils.numberFormat2Digits(rps.getPercentile())+
                     //(top5a==null?"":("<br/>"+StringUtils.join(top5a.stream().map(stock->(a[0]++)+"."+stock.getNameAndCodeWithLink()).collect(Collectors.toList()), "<br/>"))+CommonUtils.k("查看",top5a.stream().map(Stock::getCodeWithPlace).collect(Collectors.toList())))+
-                   "<br/>"+bk2.getNameAndCodeWithLink()+bk2.getStocksInfo(Rps.CODE_STOCK_SCORE_20,10,false)+rps2.getName()+"["+rps2.getValue()+"]:"+CommonUtils.numberFormat2Digits(rps2.getPercentile());
+                   "<br/>"+bk2.getNameAndCodeWithLink()+bk2.getStocksInfo(Rps.CODE_STOCK_SCORE_20,10,false)+
+                   "<br/>"+rps2.getName()+"["+rps2.getValue()+"]:"+CommonUtils.numberFormat2Digits(rps2.getPercentile());
                     //(top5b==null?"":("<br/>"+StringUtils.join(top5b.stream().map(stock->(b[0]++)+"."+stock.getNameAndCodeWithLink()).collect(Collectors.toList()), "<br/>"))+CommonUtils.k("查看",top5b.stream().map(Stock::getCodeWithPlace).collect(Collectors.toList())));
         }
         return "";
