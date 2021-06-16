@@ -2,6 +2,7 @@ package com.stk123.task.schedule;
 
 import cn.hutool.extra.ssh.JschUtil;
 import com.jcraft.jsch.Session;
+import com.stk123.common.CommonUtils;
 import com.stk123.common.util.ScpUtils;
 import com.stk123.task.tool.TaskUtils;
 import lombok.Setter;
@@ -14,6 +15,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.Charset;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,7 +57,9 @@ public class SyncTask extends AbstractTask {
                 }
             });
             if(table == null){
+                log.info("begin to sync database.");
                 syncDatabase();
+                log.info("end to sync database.");
             }
         } catch (Exception e) {
             log.error("XueqiuStockArticleTask", e);
@@ -63,26 +67,22 @@ public class SyncTask extends AbstractTask {
     }
 
     public void syncDatabase(){
-        String dpFile = "expdp_stk.dp";
-        String expdp = "expdp stk/stkpwd@XE directory=DPUMP_DIR dumpfile="+dpFile+" SCHEMAS=stk PARALLEL=4";
+        String dpFile = "DB_STK.DP";
+        String dateStart = CommonUtils.formatDate(CommonUtils.addDay(new Date(), -100), CommonUtils.sf_ymd2);
+        //PARALLEL=4  //ORA-39094: 在此数据库版本中不支持并行执行。
+        //expdp stk/stkpwd@XE directory=DPUMP_DIR dumpfile=db_stk.dp REUSE_DUMPFILES=Y SCHEMAS=stk QUERY=STK_ERROR_LOG:\"WHERE 1<>1\",STK_KLINE_US:\"WHERE kline_date>=\'20210101\'\",STK_KLINE:\"WHERE kline_date>=\'20210101\'\",STK_DATA_EASTMONEY_GUBA:\"WHERE 1<>1\",STK_FN_DATA_BAK:\"WHERE 1<>1\",STK_DATA_PPI:\"WHERE 1<>1\",STK_CAPITAL_FLOW:\"WHERE 1<>1\"
+        String expdp = "expdp stk/stkpwd@XE directory=DPUMP_DIR dumpfile="+dpFile+" REUSE_DUMPFILES=Y SCHEMAS=stk QUERY=STK_ERROR_LOG:\\\"WHERE 1<>1\\\",STK_KLINE_US:\\\"WHERE kline_date>=\\'"+dateStart+"\\'\\\",STK_KLINE:\\\"WHERE kline_date>=\\'"+dateStart+"\\'\\\",STK_DATA_EASTMONEY_GUBA:\\\"WHERE 1<>1\\\",STK_FN_DATA_BAK:\\\"WHERE 1<>1\\\",STK_DATA_PPI:\\\"WHERE 1<>1\\\",STK_CAPITAL_FLOW:\\\"WHERE 1<>1\\\"";
         log.info(expdp);
         TaskUtils.cmd(expdp);
 
+        log.info("begin to upload:"+dpFile);
+        ssh("rm -rf "+remoteDir+dpFile);
         uploadFile(dpFile);
+        log.info("end to upload:"+dpFile);
 
-        StringBuilder impdp = new StringBuilder();
-        impdp.append("sqlplus system/password1@localhost:1539/xepdb1  <<ENDOFSQL \\n");
-        impdp.append("alter session set container=XEPDB1; \\n");
-        impdp.append("DROP USER stk CASCADE; \\n");
-        impdp.append("create user stk identified by stkpwd default tablespace stk_tablespace_1 temporary tablespace stk_tablespace_temp; \\n");
-        impdp.append("grant connect,resource,dba to stk; \\n");
-        impdp.append("CREATE OR REPLACE DIRECTORY DPUMP_DIR AS '/var/stk/oracle'; \\n");
-        impdp.append("grant read,write on directory DPUMP_DIR to public; \\n");
-        impdp.append("exit; \\n");
-        impdp.append("ENDOFSQL \\n");
-        impdp.append("impdp stk/stkpwd@localhost:1539/xepdb1 directory=DPUMP_DIR dumpfile="+dpFile+" SCHEMAS=stk logfile="+dpFile+".log PARALLEL=2");
-        log.info(impdp);
-        ssh(impdp.toString());
+        ssh("sh "+remoteDir+"delete_user_stk.sh");
+        ssh("chmod 644 "+remoteDir+dpFile);
+        ssh("sh "+remoteDir+"impdp_db.sh");
     }
 
     public void syncTable(String tableName, String whereClause){

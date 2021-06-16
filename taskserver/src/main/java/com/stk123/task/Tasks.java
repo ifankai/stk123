@@ -117,7 +117,6 @@ public class Tasks {
         taskContainer.start(BarTask.class, "US");
     }
 
-
     @Scheduled(cron = "0 0 2 ? * MON,FRI")
     public void initialDataCN() {
         initialData.run(1);
@@ -147,6 +146,11 @@ public class Tasks {
     @Scheduled(cron = "0 0 2 ? * SUN") //每周日凌晨2点
     public void backupDatabase(){
         TaskUtils.cmd("D:\\share\\workspace\\stk123\\oracle\\export_stk.bat");
+    }
+
+    @Scheduled(cron = "0 0 6 ? * *") //每天6点同步database
+    public void syncDatabase() {
+        taskContainer.start(SyncTask.class);
     }
 
     @Scheduled(cron = "0 55 10 ? * MON-FRI")

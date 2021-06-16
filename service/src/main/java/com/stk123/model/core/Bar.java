@@ -733,6 +733,7 @@ public class Bar implements Serializable, Cloneable {
 
 	public int getScore(int days){
 		final double percent = 1.2; //量能增减幅度
+        final double percent2 = 1.5;
 		return this.getScore(days, today -> {
 			int n = 0;
 			Bar yesterday = today.before();
@@ -743,6 +744,9 @@ public class Bar implements Serializable, Cloneable {
 
 					if(today.getVolume() > yesterday.getVolume() * percent){//如果今天阳线量能大于昨天量能20%，再加1
 						n++;
+                        if(today.getVolume() > yesterday.getVolume() * percent2){//如果今天阳线量能大于昨天量能50%，再加1
+                            n++;
+                        }
 					}
 
 					if(yesterday.isYin()){//昨天阴线
@@ -757,9 +761,12 @@ public class Bar implements Serializable, Cloneable {
 						if ((yesterday.yesterday() != null && yesterday.yesterday().isYang()) || (today.tomorrow() != null && today.tomorrow().isYin())) {//今天阳线 昨天是阳线 前天阳线or明天是阴线
 							n++;
 						}
-						if(beforeYesterday != null && today.getVolume() > beforeYesterday.getVolume() * percent){//如果今天阳线 昨天阳线 今天量能大于前天量能20%，再加1
-							n++;
-						}
+                        if(beforeYesterday != null && today.getVolume() > beforeYesterday.getVolume() * percent){//如果今天阳线 昨天阳线 今天量能大于前天量能20%，再加1
+                            n++;
+                            if(today.getVolume() > beforeYesterday.getVolume() * percent2){//如果今天阳线 昨天阳线 今天量能大于前天量能50%，再加1
+                                n++;
+                            }
+                        }
 					}
 
 				} else {//今天阴线
@@ -795,8 +802,8 @@ public class Bar implements Serializable, Cloneable {
 						}
 					}
 
-					if(today.getVolume()*percent < today.yesterday().getVolume()){
-						n += + 3;
+					if(today.getVolume()*percent < today.yesterday().getVolume()){//今天阴线量能小于昨天20%，加3
+						n += 3;
 					}
 				}
 			}

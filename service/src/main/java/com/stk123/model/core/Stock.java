@@ -595,11 +595,11 @@ public class Stock {
 
     private String getBarImage(String period){
         if(this.isMarketCN()) {
-            return "<img src='http://image.sinajs.cn/newchart/"+period+"/n/" + this.getCodeWithPlace().toLowerCase() + ".gif' />";
+            return CommonUtils.wrapLink("<img src='http://image.sinajs.cn/newchart/"+period+"/n/" + this.getCodeWithPlace().toLowerCase() + ".gif' />", "https://xueqiu.com/S/"+this.getCodeWithPlace());
         }else if(this.isMarketHK()){
-            return "<img src='http://image.sinajs.cn/newchart/hk_stock/"+period+"/" + this.getCode() + ".gif' />";
+            return CommonUtils.wrapLink("<img src='http://image.sinajs.cn/newchart/hk_stock/"+period+"/" + this.getCode() + ".gif' />", "https://xueqiu.com/S/"+this.getCodeWithPlace());
         }else if(this.isMarketUS()){
-            return "<img src='http://image.sinajs.cn/newchartv5/usstock/"+period+"/" + this.getCode().toLowerCase() + ".gif' />";
+            return CommonUtils.wrapLink("<img src='http://image.sinajs.cn/newchartv5/usstock/"+period+"/" + this.getCode().toLowerCase() + ".gif' />", "https://xueqiu.com/S/"+this.getCodeWithPlace());
         }
         return "";
     }
@@ -660,18 +660,17 @@ public class Stock {
         if(!getBks().isEmpty()){
             Stock bk = this.getBkByMaxRps(Rps.CODE_BK_60);
             Rps rps = bk.getRps(Rps.CODE_BK_60);
-            List<Stock> top5a = rps.getPercentile()>=90?bk.getGreatestStocksInBkByRps(Rps.CODE_BK_STOCKS_SCORE_30, 5):null;
+            //List<Stock> top5a = rps.getPercentile()>=90?bk.getGreatestStocksInBkByRps(Rps.CODE_BK_STOCKS_SCORE_30, 5):null;
 
             Stock bk2 = this.getBkByMaxRps(Rps.CODE_BK_STOCKS_SCORE_30);
             Rps rps2 = bk2.getRps(Rps.CODE_BK_STOCKS_SCORE_30);
+            //List<Stock> top5b = rps2.getPercentile()>=90?(List<Stock>)bk2.getData().get("top5"):null;
 
-            List<Stock> top5b = rps2.getPercentile()>=90?(List<Stock>)bk2.getData().get("top5"):null;
-
-            final int[] a = {1}, b = {1};
+            //final int[] a = {1}, b = {1};
             return "<br/>"+bk.getNameAndCodeWithLink()+bk.getStocksInfo(Rps.CODE_STOCK_SCORE_20,10,false)+rps.getName()+":"+CommonUtils.numberFormat2Digits(rps.getPercentile())+
-                    (top5a==null?"":("<br/>"+StringUtils.join(top5a.stream().map(stock->(a[0]++)+"."+stock.getNameAndCodeWithLink()).collect(Collectors.toList()), "<br/>"))+CommonUtils.k("查看",top5a.stream().map(Stock::getCodeWithPlace).collect(Collectors.toList())))+
-                   "<br/>"+bk2.getNameAndCodeWithLink()+bk2.getStocksInfo(Rps.CODE_STOCK_SCORE_20,10,false)+rps2.getName()+"["+rps2.getValue()+"]:"+CommonUtils.numberFormat2Digits(rps2.getPercentile())+
-                    (top5b==null?"":("<br/>"+StringUtils.join(top5b.stream().map(stock->(b[0]++)+"."+stock.getNameAndCodeWithLink()).collect(Collectors.toList()), "<br/>"))+CommonUtils.k("查看",top5b.stream().map(Stock::getCodeWithPlace).collect(Collectors.toList())));
+                    //(top5a==null?"":("<br/>"+StringUtils.join(top5a.stream().map(stock->(a[0]++)+"."+stock.getNameAndCodeWithLink()).collect(Collectors.toList()), "<br/>"))+CommonUtils.k("查看",top5a.stream().map(Stock::getCodeWithPlace).collect(Collectors.toList())))+
+                   "<br/>"+bk2.getNameAndCodeWithLink()+bk2.getStocksInfo(Rps.CODE_STOCK_SCORE_20,10,false)+rps2.getName()+"["+rps2.getValue()+"]:"+CommonUtils.numberFormat2Digits(rps2.getPercentile());
+                    //(top5b==null?"":("<br/>"+StringUtils.join(top5b.stream().map(stock->(b[0]++)+"."+stock.getNameAndCodeWithLink()).collect(Collectors.toList()), "<br/>"))+CommonUtils.k("查看",top5b.stream().map(Stock::getCodeWithPlace).collect(Collectors.toList())));
         }
         return "";
     }

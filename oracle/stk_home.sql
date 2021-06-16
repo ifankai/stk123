@@ -2,14 +2,14 @@
 
 select * from tab;
 
---æŸ¥çœ‹è¡¨ç©ºé—´è·¯å¾„
+--²é¿´±í¿Õ¼äÂ·¾¶
 select tablespace_name,file_id,file_name from dba_data_files order by 1,2;
 
 select tablespace_name,sum(bytes)/1024/1024 || 'M' from dba_free_space group by tablespace_name;
---æŸ¥çœ‹è¡¨çš„æ•°æ®å¤§å°
+--²é¿´±íµÄÊı¾İ´óĞ¡
 select segment_name, sum(bytes)/1024/1024 Mbytese from user_segments where segment_type='TABLE' group by segment_name order by Mbytese desc;
 
---æŸ¥çœ‹è¡¨ç©ºé—´çš„åˆ©ç”¨ç‡
+--²é¿´±í¿Õ¼äµÄÀûÓÃÂÊ
 SELECT D.TABLESPACE_NAME,
        SPACE || 'M' "SUM_SPACE(M)",
        BLOCKS "SUM_BLOCKS",
@@ -32,7 +32,7 @@ SELECT D.TABLESPACE_NAME,
  WHERE D.TABLESPACE_NAME = F.TABLESPACE_NAME(+)
 UNION ALL
 
---å¦‚æœæœ‰ä¸´æ—¶è¡¨ç©ºé—´
+--Èç¹ûÓĞÁÙÊ±±í¿Õ¼ä
 SELECT D.TABLESPACE_NAME,
        SPACE || 'M' "SUM_SPACE(M)",
        BLOCKS SUM_BLOCKS,
@@ -58,22 +58,22 @@ SELECT D.TABLESPACE_NAME,
  WHERE D.TABLESPACE_NAME = F.TABLESPACE_NAME(+)
  ORDER BY 1;
 
---é‡Šæ”¾è¡¨ç©ºé—´
+--ÊÍ·Å±í¿Õ¼ä
 alter tablespace STK_TABLESPACE_TEMP shrink space;
 alter database tempfile 'D:\oradata\stk_temp.dbf' resize 1024M;
 
---æŸ¥çœ‹å½“å‰æœ‰å“ªäº›ç”¨æˆ·æ­£åœ¨ä½¿ç”¨æ•°æ®
+--²é¿´µ±Ç°ÓĞÄÄĞ©ÓÃ»§ÕıÔÚÊ¹ÓÃÊı¾İ
 SELECT osuser, a.username,cpu_time/executions/1000000||'s', sql_fulltext,machine
 from v$session a, v$sqlarea b
 where a.sql_address =b.address order by cpu_time/executions desc;
 
-select count(*) from v$process; --å½“å‰çš„è¿æ¥æ•°
-select value from v$parameter where name = 'processes'; --æ•°æ®åº“å…è®¸çš„æœ€å¤§è¿æ¥æ•°
+select count(*) from v$process; --µ±Ç°µÄÁ¬½ÓÊı
+select value from v$parameter where name = 'processes'; --Êı¾İ¿âÔÊĞíµÄ×î´óÁ¬½ÓÊı
 
---ä¿®æ”¹æœ€å¤§è¿æ¥æ•°:
+--ĞŞ¸Ä×î´óÁ¬½ÓÊı:
 alter system set processes = 300 scope = spfile;
 
---é‡å¯æ•°æ®åº“:
+--ÖØÆôÊı¾İ¿â:
 shutdown immediate;
 startup;
 
@@ -160,8 +160,15 @@ create user stk identified by stkpwd default tablespace stk_tablespace_1 tempora
 grant connect,resource,dba to stk;
 CREATE OR REPLACE DIRECTORY DPUMP_DIR AS '/var/stk/oracle';
 grant read,write on directory DPUMP_DIR to public;
-	exit;
+  exit;
 ENDOFSQL
+
+
+CREATE OR REPLACE DIRECTORY DPUMP_DIR AS 'D:/share/workspace/stk123/oracle/';
+grant read,write on directory DPUMP_DIR to public;
+--EXCLUDE=TABLE:\"IN\(\'STK_ERROR_LOG\'\)\" 
+expdp stk/stkpwd@XE directory=DPUMP_DIR dumpfile=db_stk.dp REUSE_DUMPFILES=Y SCHEMAS=stk QUERY=STK_ERROR_LOG:\"WHERE 1<>1\",STK_KLINE_US:\"WHERE kline_date>=\'20210101\'\",STK_KLINE:\"WHERE kline_date>=\'20210101\'\",STK_DATA_EASTMONEY_GUBA:\"WHERE 1<>1\",STK_FN_DATA_BAK:\"WHERE 1<>1\",STK_DATA_PPI:\"WHERE 1<>1\",STK_CAPITAL_FLOW:\"WHERE 1<>1\"
+impdp stk/stkpwd@localhost:1539/xepdb1 directory=DPUMP_DIR dumpfile=DB_STK.DP SCHEMAS=stk logfile=DB_STK.DP.log table_exists_action=replace
 
 --elasticsearch:
 # please execute the following statements to configure elasticsearch service to start automatically using systemd
@@ -175,6 +182,6 @@ ENDOFSQL
 
 grep "Out of memory" /var/log/messages
 
---æŸ¥çœ‹liunxå†…å­˜
+--²é¿´liunxÄÚ´æ
 top
 free -m

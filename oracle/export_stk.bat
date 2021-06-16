@@ -1,1 +1,1 @@
-exp stk/stkpwd@XE file=D:/share/workspace/stk123/oracle/db_stk.dmp owner=(stk)
+expdp stk/stkpwd@XE directory=DPUMP_DIR dumpfile=DB_STK_FULL.DP REUSE_DUMPFILES=Y SCHEMAS=stk

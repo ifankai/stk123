@@ -172,6 +172,9 @@ public class NoticeRobot {
         Set<String> prices1 = new HashSet<String>();
         Set<String> prices2 = new HashSet<String>();
         Date DateBefore = ServiceUtils.addDay(new Date(), -1);
+        if(root.getAnnouncements() == null){
+            return;
+        }
         for(Cninfo.Announcement item : root.getAnnouncements()){
             Date createDate = new Date(item.getAnnouncementTime());
             if(createDate.before(DateBefore)){
