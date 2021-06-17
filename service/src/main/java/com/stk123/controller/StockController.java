@@ -7,14 +7,17 @@ import com.stk123.model.core.Stock;
 import com.stk123.model.json.View;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.repository.StkRepository;
+import com.stk123.repository.StkTextRepository;
 import com.stk123.service.XueqiuService;
 import com.stk123.service.core.BarService;
 import com.stk123.service.core.StockService;
 import lombok.extern.apachecommons.CommonsLog;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.net.URLDecoder;
@@ -33,6 +36,8 @@ public class StockController {
     private StockService stockService;
     @Autowired
     private BarService barService;
+    @Autowired
+    private StkTextRepository stkTextRepository;
 
 
     @RequestMapping(value = {"/list/{market:1|2|3|cn|us|hk}/{cate}"})
@@ -67,4 +72,5 @@ public class StockController {
         }
         return RequestResult.success();
     }
+
 }
