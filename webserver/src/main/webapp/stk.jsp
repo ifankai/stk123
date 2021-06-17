@@ -743,7 +743,6 @@ $(function() {
 	listXueqiuArticle();
 });
 </script>
-</script>
 
 <div class="content">
   <div class="page-header">

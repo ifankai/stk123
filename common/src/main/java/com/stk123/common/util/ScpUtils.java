@@ -57,7 +57,7 @@ public class ScpUtils {
      * @param localFile 本地文件路径
      * @param remoteTargetDirectory  远程存放文件路径
      */
-    public void putFile(String localFile, String remoteTargetDirectory) {
+    public void putFile(String localFile, String remoteTargetDirectory) throws Exception {
         Connection conn = new Connection(ip,port);
         try {
             conn.connect();
@@ -70,8 +70,9 @@ public class ScpUtils {
             SCPClient client = new SCPClient(conn);
             client.put(localFile, remoteTargetDirectory);
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("",e);
+            throw e;
         } finally {
             conn.close();
         }

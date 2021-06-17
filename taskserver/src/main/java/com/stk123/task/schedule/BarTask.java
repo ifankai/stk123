@@ -583,12 +583,12 @@ public class BarTask extends AbstractTask {
                 sb.append("H股");        sb.append(CommonUtils.createHtmlTable(titles, datasH));sb.append("<br/>");
                 sb.append("美股");       sb.append(CommonUtils.createHtmlTable(titles, datasU));sb.append("<br/>");
 
-                EmailUtils.send("策略发现 A股" + (datasA.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count()) + "个, " +
+                EmailUtils.send((realtime!=null?"[实时]":"")+"策略发现 A股" + (datasA.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count()) + "个, " +
                                 "H股" + (datasH.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count()) + "个, " +
                                 "美股"+ (datasU.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count()) + "个"
                         , sb.toString());
             }else{
-                EmailUtils.send("策略发现0个标的", "");
+                EmailUtils.send((realtime!=null?"[实时]":"")+"策略发现0个标的", "");
             }
         } catch (Exception e) {
             EmailUtils.send("报错[analyseMyStocks]", ExceptionUtils.getExceptionAsString(e));
@@ -652,9 +652,9 @@ public class BarTask extends AbstractTask {
                 sb.append("A股");
                 sb.append(CommonUtils.createHtmlTable(titles, datasA));sb.append("<br/>");
 
-                EmailUtils.send("全市场策略发现 A股" + (datasA.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count()) + "个", sb.toString());
+                EmailUtils.send((realtime!=null?"[实时]":"")+"全市场策略发现 A股" + (datasA.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count()) + "个", sb.toString());
             }else{
-                EmailUtils.send("全市场策略发现0个标的", "");
+                EmailUtils.send((realtime!=null?"[实时]":"")+"全市场策略发现0个标的", "");
             }
         } catch (Exception e) {
             EmailUtils.send("报错[analyseAllStocks]", ExceptionUtils.getExceptionAsString(e));

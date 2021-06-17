@@ -25,7 +25,7 @@ import java.nio.file.Paths;
  * Console URL: http://127.0.0.1:8080/h2-console
  *
  */
-@SpringBootApplication//(exclude={DataSourceAutoConfiguration.class,HibernateJpaAutoConfiguration.class})
+@SpringBootApplication(exclude={DataSourceAutoConfiguration.class,HibernateJpaAutoConfiguration.class})
 @EnableAutoConfiguration
 //@EntityScan({"com.stk123.entity"})
 @EnableAsync

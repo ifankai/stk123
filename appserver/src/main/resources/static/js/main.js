@@ -1,17 +1,25 @@
-var app = new Framework7({
-    root: '#app',
-    name: 'My App',
-    id: 'com.myapp.test',
-    routes: [
-        // Add your routes here
-        // Example:
-        /*
-        {
-          path: '/about/',
-          url: 'about.html',
+const app = Vue.createApp({
+    data() {
+        return {
+            name: "哈哈哈",
+            infos: {},
+            notices: {}
+        }
+    },
+    methods: {
+        getNotices: function () {
+            console.log(this.name);
+            axios.get("/notice").then (function (res) {
+                console.log(res.data);
+                this.notices = res.data;
+            });
+            return this.notices;
         },
-        */
-    ],
+    },
+    mounted() {
+        // `this` 指向 vm 实例
+        console.log('name is: ' + this.name); // => "count is: 1"
+        initPosts('');
+    }
 });
-
-var mainView = app.views.create('.view-main');
+const vm = app.mount('#app');
