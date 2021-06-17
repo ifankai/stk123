@@ -7,6 +7,7 @@ import com.stk123.common.html.HtmlTd;
 import com.stk123.common.html.HtmlTr;
 import com.stk123.common.util.ChineseUtils;
 import com.stk123.common.util.collection.IntRange;
+import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
@@ -17,9 +18,7 @@ import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Time;
@@ -1212,14 +1211,11 @@ public class CommonUtils {
     @SneakyThrows
     public static void cmd(String command)  {
         Process process = Runtime.getRuntime().exec("cmd.exe /c " + command);
-        try (
-            BufferedInputStream bis = new BufferedInputStream(process.getInputStream());
-            BufferedReader br = new BufferedReader(new InputStreamReader(bis))
-        ) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                log.info(line);
-            }
+        try {
+            StreamGobbler errorGobbler = new StreamGobbler(process.getErrorStream(), "Error");
+            StreamGobbler outputGobbler = new StreamGobbler(process.getInputStream(), "Output");
+            errorGobbler.start();
+            outputGobbler.start();
 
             process.waitFor();
             if (process.exitValue() != 0) {
@@ -1227,6 +1223,31 @@ public class CommonUtils {
             }
         } catch (Exception e) {
             log.error("error command:[" + command + "]", e);
+        }
+    }
+
+    @AllArgsConstructor
+    private static class StreamGobbler extends Thread {
+        private InputStream is;
+        private String type;
+
+        public void run() {
+            try {
+                BufferedReader br;
+                try (InputStreamReader isr = new InputStreamReader(is, "GBK")) {
+                    br = new BufferedReader(isr);
+                    String line = null;
+                    while ((line = br.readLine()) != null) {
+                        if (type.equals("Error"))
+                            log.info(line);
+                        else
+                            log.info(line);
+                    }
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

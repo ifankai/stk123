@@ -73,7 +73,9 @@ public class SyncTask extends AbstractTask {
         //expdp stk/stkpwd@XE directory=DPUMP_DIR dumpfile=db_stk.dp REUSE_DUMPFILES=Y SCHEMAS=stk QUERY=STK_ERROR_LOG:\"WHERE 1<>1\",STK_KLINE_US:\"WHERE kline_date>=\'20210101\'\",STK_KLINE:\"WHERE kline_date>=\'20210101\'\",STK_DATA_EASTMONEY_GUBA:\"WHERE 1<>1\",STK_FN_DATA_BAK:\"WHERE 1<>1\",STK_DATA_PPI:\"WHERE 1<>1\",STK_CAPITAL_FLOW:\"WHERE 1<>1\"
         String expdp = "expdp stk/stkpwd@XE directory=DPUMP_DIR dumpfile="+dpFile+" REUSE_DUMPFILES=Y SCHEMAS=stk QUERY=STK_ERROR_LOG:\\\"WHERE 1<>1\\\",STK_KLINE_US:\\\"WHERE kline_date>=\\'"+dateStart+"\\'\\\",STK_KLINE:\\\"WHERE kline_date>=\\'"+dateStart+"\\'\\\",STK_DATA_EASTMONEY_GUBA:\\\"WHERE 1<>1\\\",STK_FN_DATA_BAK:\\\"WHERE 1<>1\\\",STK_DATA_PPI:\\\"WHERE 1<>1\\\",STK_CAPITAL_FLOW:\\\"WHERE 1<>1\\\"";
         log.info(expdp);
+        log.info("begin to expdp:"+dpFile);
         TaskUtils.cmd(expdp);
+        log.info("end to expdp:"+dpFile);
 
         log.info("begin to upload:"+dpFile);
         ssh("rm -rf "+remoteDir+dpFile);
@@ -100,6 +102,7 @@ public class SyncTask extends AbstractTask {
     public void ssh(String command){
         Session session = null;
         try {
+            log.info(command);
             session = JschUtil.getSession(host, port, username, password);
             String cmd = "source /etc/profile;source ~/.bash_profile;source ~/.bashrc; . oraenv; " + command;
             String output = JschUtil.exec(session, cmd, Charset.forName("UTF-8"));

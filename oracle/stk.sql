@@ -1082,6 +1082,7 @@ select * from stk_info_log order by code;
 select * from stk_error_log order by insert_time desc;
 truncate table stk_error_log;
 select count(1) from stk_error_log;
+select * from STK_KLINE_US where kline_date;
 
 update stk set status=1,status_date=sysdate where code in (300262) and status <> 1;
 select * from stk where status=1 order by status_date;
@@ -2949,8 +2950,14 @@ select * from stk_dictionary where text ='业绩修正';
 select * from stk_import_info _type where type=270 for update;
 
 
-select * from stk where market=1 and cate=2 and code='BK0723';
-select * from stk_kline where code='601528' order by kline_date desc;
+select * from stk where market=1 and cate=2 for update and code='999999' for update;
+select * from stk where market=1 and cate=5 and code='BK0896';
+select * from stk_kline where code='BK0896' order by kline_date desc;
+select * from stk_kline where code='999999' order by kline_date desc;
+select * from stk_kline where code='399300' order by kline_date desc;
+select count(*) from stk_industry_type where source='eastmoney_gn';
+select * from stk_industry where industry=124950;
+select * from stk_industry_type where id=124950;
 
 
 select * from stk where name like '%退%';
@@ -2963,3 +2970,8 @@ select s.code, s.name, t.fn_date, t.holder, t.holding_amount, t.holder_change
  where t.code=s.code and t.num = 1 and t.code='600600';
  
 select * from stk_text where code='000069' order by insert_time desc; 
+select * from stk_text where code='600519' order by insert_time desc; 
+select * from stk_text where reply_positive is not null;
+
+select * from stk_error_log order by insert_time desc;
+select * from stk_import_info order by insert_time desc;
