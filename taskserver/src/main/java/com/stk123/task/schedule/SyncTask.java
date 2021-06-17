@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @CommonsLog
@@ -36,7 +37,7 @@ public class SyncTask extends AbstractTask {
     @Setter
     private String table;
 
-    private static Map<String, String> SYNC_TABLES = new HashMap<>();
+    private static Map<String, String> SYNC_TABLES = new LinkedHashMap<>();
     static {
         SYNC_TABLES.put("stk_text", "where insert_time>sysdate-1");
         SYNC_TABLES.put("stk_task_log", "where insert_time>sysdate-1");
@@ -49,13 +50,13 @@ public class SyncTask extends AbstractTask {
 
     public void execute() {
         try {
-            SYNC_TABLES.entrySet().stream().forEach(e -> {
+            for (Map.Entry<String, String> e : SYNC_TABLES.entrySet()) {
                 String tableName = e.getKey();
-                if(StringUtils.containsIgnoreCase(tableName, table)) {
+                if (StringUtils.containsIgnoreCase(tableName, table)) {
                     String whereClause = e.getValue();
                     syncTable(tableName, whereClause);
                 }
-            });
+            }
             if(table == null){
                 log.info("begin to sync database.");
                 syncDatabase();
@@ -66,7 +67,7 @@ public class SyncTask extends AbstractTask {
         }
     }
 
-    public void syncDatabase(){
+    public void syncDatabase() throws Exception {
         String dpFile = "DB_STK.DP";
         String dateStart = CommonUtils.formatDate(CommonUtils.addDay(new Date(), -100), CommonUtils.sf_ymd2);
         //PARALLEL=4  //ORA-39094: 在此数据库版本中不支持并行执行。
@@ -85,7 +86,7 @@ public class SyncTask extends AbstractTask {
         ssh("sh "+remoteDir+"impdp_db.sh");
     }
 
-    public void syncTable(String tableName, String whereClause){
+    public void syncTable(String tableName, String whereClause) throws Exception {
         String command = getExpCommand(tableName, whereClause);
         log.info(command);
         TaskUtils.cmd(command);
@@ -109,7 +110,7 @@ public class SyncTask extends AbstractTask {
         }
     }
 
-    public void uploadFile(String tableName) {
+    public void uploadFile(String tableName) throws Exception {
         ScpUtils scpclient = ScpUtils.getInstance(host, port, username, password);
         scpclient.putFile(localDir+ tableName, remoteDir);
     }
