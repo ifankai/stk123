@@ -26,7 +26,7 @@ public class Rps{
         if(methods.size() == 1) {
             return (Strategy<?>) methods.iterator().next().invoke(null, null);
         }
-        throw new RuntimeException("Can not find matched method name in Sample:"+rpsCode);
+        throw new RuntimeException("Can not find matched method name in Strategies.class:"+rpsCode);
     }
 
 
