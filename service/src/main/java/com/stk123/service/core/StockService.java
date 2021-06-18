@@ -202,17 +202,22 @@ public class StockService {
     }
 
     public List<Stock> calcRps(List<Stock> stocks, String rpsCode){
-        Strategy strategy = Rps.getRpsStrategy(rpsCode);
+        //这里一定要new一个strategy，否则当运行同个strategy的多个调用calcRps方法时，strategy实例会混乱，并且报错：
+        //java.util.ConcurrentModificationException at java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1390)
+        Strategy strategy = Rps.newRpsStrategy(rpsCode);
         return calcRps(stocks, strategy);
     }
-    public List<Stock> calcRps(List<Stock> stocks, Strategy rpsStrategy){
+    private List<Stock> calcRps(List<Stock> stocks, Strategy rpsStrategy){
+        stocks.forEach(stock -> {
+            stock.createRps(rpsStrategy);
+        });
         backtestingService.backtesting(stocks, Collections.singletonList(rpsStrategy));
         String rpsCode = rpsStrategy.getCode();
         List<Stock> stks = stocks.stream().sorted(Comparator.comparing(stock -> stock.getRps(rpsCode).getValue())).collect(Collectors.toList());
         int order = 1;
         for (Stock stock : stks) {
             Rps rps = stock.getRps(rpsCode);
-            if(rps == null || rps.getValue() == null){
+            if(rps.getValue() == null){
                 stock.setRpsPercentile(rpsCode, 50.0);
                 order++;
                 continue;

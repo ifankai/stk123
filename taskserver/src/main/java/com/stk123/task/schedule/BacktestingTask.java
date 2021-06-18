@@ -1,7 +1,7 @@
 package com.stk123.task.schedule;
 
 import com.stk123.model.strategy.StrategyBacktesting;
-import com.stk123.model.strategy.sample.Sample;
+import com.stk123.model.strategy.sample.Strategies;
 import com.stk123.service.core.BacktestingService;
 import lombok.Setter;
 import lombok.extern.apachecommons.CommonsLog;
@@ -40,7 +40,7 @@ public class BacktestingTask extends AbstractTask {
     public void execute() {
         try {
             if(StringUtils.isEmpty(strategy)){
-                strategy = Sample.STRATEGIES_MY_STOCKS;
+                strategy = Strategies.STRATEGIES_MY_STOCKS;
             }
             if(StringUtils.isNotEmpty(history)){
                 StrategyBacktesting strategyBacktesting = backtestingService.backtestingAllHistory(Arrays.asList(StringUtils.split(code, ",")),

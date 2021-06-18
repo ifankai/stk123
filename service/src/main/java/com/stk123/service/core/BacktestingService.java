@@ -7,7 +7,7 @@ import com.stk123.model.core.Stock;
 import com.stk123.model.strategy.Strategy;
 import com.stk123.model.strategy.StrategyBacktesting;
 import com.stk123.model.strategy.StrategyResult;
-import com.stk123.model.strategy.sample.Sample;
+import com.stk123.model.strategy.sample.Strategies;
 import com.stk123.util.ServiceUtils;
 import lombok.SneakyThrows;
 import org.apache.commons.lang.StringUtils;
@@ -16,10 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -51,7 +49,7 @@ public class BacktestingService {
         /*Set<Method> methods = ReflectionUtils.getAllMethods(Sample.class,
                 method -> StringUtils.equalsIgnoreCase(method.getName(), "strategy_"+strategy) || StringUtils.equalsIgnoreCase(method.getName(), strategy));
 */
-        Set<Method> methods = ReflectionUtils.getAllMethods(Sample.class,
+        Set<Method> methods = ReflectionUtils.getAllMethods(Strategies.class,
                 method -> strategies.stream().anyMatch(name -> StringUtils.equalsIgnoreCase(method.getName(), "strategy_"+name) || StringUtils.equalsIgnoreCase(method.getName(), name)));
 
 
@@ -96,7 +94,7 @@ public class BacktestingService {
         List<Strategy> strategyList = new ArrayList<>();
 
         //Set<Method> methods = ReflectionUtils.getAllMethods(Sample.class, method -> strategies.stream().anyMatch(name -> StringUtils.endsWithIgnoreCase(method.getName(), "strategy_"+name)), ReflectionUtils.withReturnType(Strategy.class));
-        Set<Method> methods = ReflectionUtils.getAllMethods(Sample.class,
+        Set<Method> methods = ReflectionUtils.getAllMethods(Strategies.class,
                 method -> strategies.stream().anyMatch(name -> StringUtils.equalsIgnoreCase(method.getName(), "strategy_"+name) || StringUtils.equalsIgnoreCase(method.getName(), name)));
         for (Method method : methods) {
             Strategy strategy = (Strategy<?>) method.invoke(null, null);

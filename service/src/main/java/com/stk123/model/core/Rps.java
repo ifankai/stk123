@@ -1,12 +1,15 @@
 package com.stk123.model.core;
 
 import com.stk123.model.strategy.Strategy;
-import com.stk123.model.strategy.sample.Sample;
+import com.stk123.model.strategy.sample.Strategies;
 import lombok.Data;
+import lombok.SneakyThrows;
 import lombok.ToString;
+import org.apache.commons.lang.StringUtils;
+import org.reflections.ReflectionUtils;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.lang.reflect.Method;
+import java.util.Set;
 
 @Data
 @ToString
@@ -16,15 +19,14 @@ public class Rps{
     public final static String CODE_BK_STOCKS_SCORE_30 = "rps_02";
     public final static String CODE_STOCK_SCORE_20 = "rps_03";
 
-    public static Map<String, Strategy> CODE_STRATEGY = new HashMap<>();
-    static{
-        CODE_STRATEGY.put(CODE_BK_60, Sample.rps_01());
-        CODE_STRATEGY.put(CODE_BK_STOCKS_SCORE_30, Sample.rps_02());
-        CODE_STRATEGY.put(CODE_STOCK_SCORE_20, Sample.rps_03());
-    }
-
-    public static Strategy getRpsStrategy(String rpsCode){
-        return CODE_STRATEGY.get(rpsCode);
+    @SneakyThrows
+    public static Strategy newRpsStrategy(String rpsCode){
+        Set<Method> methods = ReflectionUtils.getAllMethods(Strategies.class,
+                method -> StringUtils.equalsIgnoreCase(method.getName(), rpsCode));
+        if(methods.size() == 1) {
+            return (Strategy<?>) methods.iterator().next().invoke(null, null);
+        }
+        throw new RuntimeException("Can not find matched method name in Sample:"+rpsCode);
     }
 
 

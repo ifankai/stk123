@@ -14,7 +14,7 @@ import com.stk123.model.strategy.result.FilterResult;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Sample {
+public class Strategies {
 
     // ignore: 02a 选出来的标的太多，由02b替换
     public static String STRATEGIES_MY_STOCKS = "01a,01b,01d,02b,03a,03b,04a,04b,04c,05a,05b,06a,06b,06c,10a";
@@ -250,21 +250,21 @@ public class Sample {
 
     /**** 阶段强势 ****/
     public static Strategy strategy_08a() {
-        String turningPoint20 = Sample.getTurningPoint(20);
+        String turningPoint20 = Strategies.getTurningPoint(20);
         return strategy_08("strategy_08a","20日板块阶段强势(08a)，自"+turningPoint20+"以来", turningPoint20);
     }
     public static Strategy strategy_08b() {
-        String turningPoint20 = Sample.getTurningPoint(20);
-        String turningPoint60 = Sample.getTurningPoint(60);
+        String turningPoint20 = Strategies.getTurningPoint(20);
+        String turningPoint60 = Strategies.getTurningPoint(60);
         if(turningPoint20.equals(turningPoint60)){
             return null;
         }
         return strategy_08("strategy_08b","60日板块阶段强势(08b)，自"+turningPoint60+"以来", turningPoint60);
     }
     public static Strategy strategy_08c() {
-        String turningPoint20 = Sample.getTurningPoint(20);
-        String turningPoint60 = Sample.getTurningPoint(60);
-        String turningPoint120 = Sample.getTurningPoint(120);
+        String turningPoint20 = Strategies.getTurningPoint(20);
+        String turningPoint60 = Strategies.getTurningPoint(60);
+        String turningPoint120 = Strategies.getTurningPoint(120);
         if(turningPoint20.equals(turningPoint120) || turningPoint60.equals(turningPoint120)){
             return null;
         }
@@ -375,7 +375,7 @@ public class Sample {
         Strategy<Stock> strategy = new Strategy<>("strategy_TEST","Strategy TEST", Stock.class);
         strategy.setSortable(5).setAsc(false);
 
-        String turningPoint = Sample.getTurningPoint(60);
+        String turningPoint = Strategies.getTurningPoint(60);
         System.out.println("turningPoint=="+turningPoint);
 
         strategy.addFilter("行业", Filters.filter_mustStockCate(Stock.EnumCate.INDEX_eastmoney_gn));
