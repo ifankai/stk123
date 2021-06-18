@@ -12,7 +12,6 @@ import com.stk123.model.projection.IndustryProjection;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.model.projection.StockProjection;
 import com.stk123.model.strategy.Strategy;
-import com.stk123.model.strategy.sample.Sample;
 import com.stk123.repository.StkIndustryRepository;
 import com.stk123.repository.StkRepository;
 import com.stk123.service.core.BarService;
@@ -23,7 +22,6 @@ import com.stk123.util.ServiceUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
-import lombok.ToString;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -621,24 +619,25 @@ public class Stock {
     }
 
     public void setRpsValue(String rpsCode, Double rpsValue){
-        Rps rps = getOrCreateRps(rpsCode);
+        Rps rps = getRps(rpsCode);
         rps.setValue(rpsValue);
     }
     public void setRpsOrder(String rpsCode, Integer rpsOrder){
-        Rps rps = getOrCreateRps(rpsCode);
+        Rps rps = getRps(rpsCode);
         rps.setOrder(rpsOrder);
     }
     public void setRpsPercentile(String rpsCode, Double rpsPercentile){
-        Rps rps = getOrCreateRps(rpsCode);
+        Rps rps = getRps(rpsCode);
         rps.setPercentile(rpsPercentile);
     }
     public Rps getRps(String rpsCode){
         return rps.get(rpsCode);
     }
-    private Rps getOrCreateRps(String rpsCode){
+    public Rps createRps(Strategy strategy){
+        String rpsCode = strategy.getCode();
         Rps rps = getRps(rpsCode);
         if(rps == null){
-            rps = new Rps(Rps.CODE_STRATEGY.get(rpsCode));
+            rps = new Rps(strategy);
             this.rps.put(rpsCode, rps);
         }
         return rps;
@@ -651,7 +650,7 @@ public class Stock {
     }
 
     public List<Stock> getGreatestStocksInBkByRps(String rpsCode, int topN){
-        List<Stock> stocks = stockService.calcRps(this.getStocks(), Rps.getRpsStrategy(rpsCode));
+        List<Stock> stocks = stockService.calcRps(this.getStocks(), rpsCode);
         return ListUtils.greatest(stocks, topN, stock1 -> stock1.getRps(rpsCode).getValue());
     }
 

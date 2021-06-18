@@ -14,7 +14,7 @@ import com.stk123.model.mass.*;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.model.strategy.StrategyBacktesting;
 import com.stk123.model.strategy.StrategyResult;
-import com.stk123.model.strategy.sample.Sample;
+import com.stk123.model.strategy.sample.Strategies;
 import com.stk123.model.xueqiu.Portfolio;
 import com.stk123.repository.*;
 import com.stk123.service.XueqiuService;
@@ -389,7 +389,7 @@ public class BarTask extends AbstractTask {
             buildBkAndCalcRps(StocksAllCN, Bks);
 
             if(StringUtils.isEmpty(strategy)){
-                this.strategy = Sample.STRATEGIES_BK;
+                this.strategy = Strategies.STRATEGIES_BK;
             }
 
             StrategyBacktesting strategyBacktesting = new StrategyBacktesting();
@@ -430,7 +430,7 @@ public class BarTask extends AbstractTask {
                     }
                 }
 
-                List<String> titles = ListUtils.createList("标的", "日期/策略/来源", "Rps["+Sample.rps_03().getName()+"]");
+                List<String> titles = ListUtils.createList("标的", "日期/策略/来源", "Rps["+Strategies.rps_03().getName()+"]");
                 StringBuffer sb = new StringBuffer();
                 sb.append("板块");       sb.append(CommonUtils.createHtmlTable(titles, datasBk1));sb.append("<br/>");
                 sb.append("板块阶段强势");sb.append(CommonUtils.createHtmlTable(titles, datasBk2));
@@ -521,7 +521,7 @@ public class BarTask extends AbstractTask {
             buildBkAndCalcRps(stocks);
 
             if(StringUtils.isEmpty(strategy)){
-                this.strategy = Sample.STRATEGIES_MY_STOCKS;
+                this.strategy = Strategies.STRATEGIES_MY_STOCKS;
             }
             //策略回测开始    01,02 策略在com.stk123.model.strategy.sample.Sample 里定义
             StrategyBacktesting strategyBacktesting = new StrategyBacktesting();
@@ -604,7 +604,7 @@ public class BarTask extends AbstractTask {
             }
 
             if(StringUtils.isEmpty(strategy)){
-                this.strategy = Sample.STRATEGIES_ALL_STOCKS;
+                this.strategy = Strategies.STRATEGIES_ALL_STOCKS;
             }
 
             StrategyBacktesting strategyBacktesting = new StrategyBacktesting();
