@@ -55,6 +55,8 @@ public class Strategy<X> {
     private boolean canTestHistory = true;
     @Getter@Setter
     private StrategyBacktesting strategyBacktesting;
+    @Getter@Setter
+    private double weight = 1; //策略权重
 
     public Strategy(String code, String name, Class<X> xClass) {
         this.code = code;

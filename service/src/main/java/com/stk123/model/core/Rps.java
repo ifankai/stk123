@@ -5,11 +5,12 @@ import com.stk123.model.strategy.sample.Strategies;
 import lombok.Data;
 import lombok.SneakyThrows;
 import lombok.ToString;
+import org.apache.commons.collections.map.SingletonMap;
 import org.apache.commons.lang.StringUtils;
 import org.reflections.ReflectionUtils;
 
 import java.lang.reflect.Method;
-import java.util.Set;
+import java.util.*;
 
 @Data
 @ToString
@@ -19,33 +20,47 @@ public class Rps{
     public final static String CODE_BK_STOCKS_SCORE_30 = "rps_02";
     public final static String CODE_STOCK_SCORE_20 = "rps_03";
 
+    public static Map<String, SingletonMap> CODE_NAME = new HashMap<>();
+
+    static{
+        CODE_NAME.put(CODE_BK_60, new SingletonMap(CODE_BK_60, Strategies.rps_01().getName()+".."));
+        CODE_NAME.put(CODE_BK_STOCKS_SCORE_30, new SingletonMap(CODE_BK_STOCKS_SCORE_30, Strategies.rps_02().getName()+"hhhh"));
+        CODE_NAME.put(CODE_STOCK_SCORE_20, new SingletonMap(CODE_STOCK_SCORE_20, "个股score!"));
+    }
+
     @SneakyThrows
-    public static Strategy newRpsStrategy(String rpsCode){
+    public static List<Strategy> newRpsStrategy(String rpsCode){
         Set<Method> methods = ReflectionUtils.getAllMethods(Strategies.class,
                 method -> StringUtils.equalsIgnoreCase(method.getName(), rpsCode));
-        if(methods.size() == 1) {
-            return (Strategy<?>) methods.iterator().next().invoke(null, null);
+        List<Strategy> strategies = new ArrayList<>();
+        if(methods.size() >= 1) {
+            for(Method method : methods) {
+                Object obj = method.invoke(null, null);
+                if(obj instanceof Strategy) {
+                    strategies.add((Strategy<?>) obj);
+                }else if(obj instanceof List){
+                    strategies.addAll((List) obj);
+                }
+            }
+        }else {
+            throw new RuntimeException("Can not find matched method name in Strategies.class:" + rpsCode);
         }
-        throw new RuntimeException("Can not find matched method name in Strategies.class:"+rpsCode);
+        return strategies;
     }
 
 
-    private Strategy rpsStrategy;
+    private List<Strategy> rpsStrategies;
+    private SingletonMap rps;
     private Double value;
     private Integer order;
     private Double percentile;
 
-    public Rps(Strategy rpsStrategy){
-        this.rpsStrategy = rpsStrategy;
-    }
-
-    public String getCode(){
-        return rpsStrategy.getCode();
+    public Rps(String code, List<Strategy> rpsStrategies){
+        this.rps = CODE_NAME.get(code);
+        this.rpsStrategies = rpsStrategies;
     }
 
     public String getName(){
-        return rpsStrategy.getName();
+        return (String) this.rps.getValue();
     }
-
-
 }

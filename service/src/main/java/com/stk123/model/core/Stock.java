@@ -638,11 +638,10 @@ public class Stock {
     public Rps getRps(String rpsCode){
         return rps.get(rpsCode);
     }
-    public Rps createRps(Strategy strategy){
-        String rpsCode = strategy.getCode();
+    public Rps createRps(String rpsCode, List<Strategy> strategies){
         Rps rps = getRps(rpsCode);
-        if(rps == null){
-            rps = new Rps(strategy);
+        if (rps == null) {
+            rps = new Rps(rpsCode, strategies);
             this.rps.put(rpsCode, rps);
         }
         return rps;
@@ -654,7 +653,7 @@ public class Stock {
         return getBkByMaxRps(rpsCode).getRps(rpsCode);
     }
 
-    public List<Stock> getGreatestStocksInBkByRps(String rpsCode, int topN){
+    public List<Stock> getGreatestStocksInBkByRps(int topN, String rpsCode){
         List<Stock> stocks = stockService.calcRps(this.getStocks(), rpsCode);
         return ListUtils.greatest(stocks, topN, stock1 -> stock1.getRps(rpsCode).getPercentile());
     }
@@ -671,10 +670,10 @@ public class Stock {
             //List<Stock> top5b = rps2.getPercentile()>=90?(List<Stock>)bk2.getData().get("top5"):null;
 
             //final int[] a = {1}, b = {1};
-            return "<br/>"+bk.getNameAndCodeWithLink()+bk.getStocksInfo(Rps.CODE_STOCK_SCORE_20,15,false)+
+            return "<br/>"+bk.getNameAndCodeWithLink()+bk.getStocksInfo(15,false, Rps.CODE_STOCK_SCORE_20)+
                    "<br/>"+rps.getName()+":"+CommonUtils.numberFormat2Digits(rps.getPercentile())+
                     //(top5a==null?"":("<br/>"+StringUtils.join(top5a.stream().map(stock->(a[0]++)+"."+stock.getNameAndCodeWithLink()).collect(Collectors.toList()), "<br/>"))+CommonUtils.k("查看",top5a.stream().map(Stock::getCodeWithPlace).collect(Collectors.toList())))+
-                   "<br/>"+bk2.getNameAndCodeWithLink()+bk2.getStocksInfo(Rps.CODE_STOCK_SCORE_20,15,false)+
+                   "<br/>"+bk2.getNameAndCodeWithLink()+bk2.getStocksInfo(15,false, Rps.CODE_STOCK_SCORE_20)+
                    "<br/>"+rps2.getName()+"["+rps2.getValue()+"]:"+CommonUtils.numberFormat2Digits(rps2.getPercentile());
                     //(top5b==null?"":("<br/>"+StringUtils.join(top5b.stream().map(stock->(b[0]++)+"."+stock.getNameAndCodeWithLink()).collect(Collectors.toList()), "<br/>"))+CommonUtils.k("查看",top5b.stream().map(Stock::getCodeWithPlace).collect(Collectors.toList())));
         }
@@ -682,10 +681,11 @@ public class Stock {
     }
 
     //用于bk
-    public String getStocksInfo(String rpsCode, int topN, boolean displayAllStocks){
-        List<Stock> stocks = this.getGreatestStocksInBkByRps(rpsCode, topN);
+    public String getStocksInfo(int topN, boolean displayAllStocks, String rpsCode){
+        List<Stock> stocks = this.getGreatestStocksInBkByRps(topN, rpsCode);
         final int[] a = {1};
-        String info = displayAllStocks ? StringUtils.join(stocks.stream().map(stock->(a[0]++)+"."+stock.getNameAndCodeWithLink()+"["+CommonUtils.numberFormat2Digits(stock.getRps(rpsCode).getPercentile())+"]").collect(Collectors.toList()), "<br/>") : "";
+
+        String info = displayAllStocks ? StringUtils.join(stocks.stream().map(stock->(a[0]++)+"."+stock.getNameAndCodeWithLink()+"["+CommonUtils.numberFormat2Digits(stock.getRps(rpsCode).getPercentile())+"("+stock.getRps(rpsCode).getRpsStrategies().stream().map(rs -> CommonUtils.numberFormat0Digits(stock.getRps(rs.getCode()).getPercentile())).collect(Collectors.toList())+")]").collect(Collectors.toList()), "<br/>") : "";
         return info + CommonUtils.k("查看", stocks.stream().map(Stock::getCodeWithPlace).collect(Collectors.toList()));
     }
 

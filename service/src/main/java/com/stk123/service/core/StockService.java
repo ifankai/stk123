@@ -208,27 +208,57 @@ public class StockService {
     public List<Stock> calcRps(List<Stock> stocks, String rpsCode){
         //这里一定要new一个strategy，否则当运行同个strategy的多个调用calcRps方法时，strategy实例会混乱，并且报错：
         //java.util.ConcurrentModificationException at java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1390)
-        Strategy strategy = Rps.newRpsStrategy(rpsCode);
-        return calcRps(stocks, strategy);
+        List<Strategy> strategies = Rps.newRpsStrategy(rpsCode);
+        return calcRps(stocks, rpsCode, strategies);
     }
-    private List<Stock> calcRps(List<Stock> stocks, Strategy rpsStrategy){
+    private List<Stock> calcRps(List<Stock> stocks, String rpsCode, List<Strategy> rpsStrategies){
         stocks.forEach(stock -> {
-            stock.createRps(rpsStrategy);
-        });
-        backtestingService.backtesting(stocks, Collections.singletonList(rpsStrategy));
-        String rpsCode = rpsStrategy.getCode();
-        List<Stock> stks = stocks.stream().sorted(Comparator.comparing(stock -> stock.getRps(rpsCode).getValue())).collect(Collectors.toList());
-        int order = 1;
-        for (Stock stock : stks) {
-            Rps rps = stock.getRps(rpsCode);
-            if(rps.getValue() == null){
-                stock.setRpsPercentile(rpsCode, 50.0);
-                order++;
-                continue;
+            stock.createRps(rpsCode, rpsStrategies);
+            for(Strategy strategy : rpsStrategies){
+                stock.createRps(strategy.getCode(), Collections.singletonList(strategy));
             }
-            stock.setRpsOrder(rpsCode, order);
-            stock.setRpsPercentile(rpsCode, order*1.0/stks.size()*100);
-            order++;
+        });
+        backtestingService.backtesting(stocks, rpsStrategies);
+        List<Stock> stks = stocks;
+        for(Strategy rpsStrategy : rpsStrategies) {
+            String rpsStrategyCode = rpsStrategy.getCode();
+            if(rpsStrategy.getAsc()) {
+                stks = stocks.stream().sorted(Comparator.comparing(stock -> stock.getRps(rpsStrategyCode).getValue())).collect(Collectors.toList());
+            }else{
+                stks = stocks.stream().sorted(Comparator.comparing(stock -> stock.getRps(rpsStrategyCode).getValue(), Comparator.reverseOrder())).collect(Collectors.toList());
+            }
+            int order = 1;
+            for (Stock stock : stks) {
+                Rps rps = stock.getRps(rpsStrategyCode);
+                if (rps.getValue() == null) {
+                    stock.setRpsPercentile(rpsStrategyCode, 50.0);
+                    order++;
+                    continue;
+                }
+                stock.setRpsOrder(rpsStrategyCode, order);
+                stock.setRpsPercentile(rpsStrategyCode, order * 1.0 / stks.size() * 100);
+                order++;
+            }
+        }
+
+        if(rpsStrategies.size() > 1) {
+            stks.forEach(stock -> {
+                double sum = rpsStrategies.stream().mapToDouble(rpsStrategy -> stock.getRps(rpsStrategy.getCode()).getPercentile() * rpsStrategy.getWeight()).sum();
+                stock.setRpsValue(rpsCode, sum);
+            });
+            stks = stks.stream().sorted(Comparator.comparing(stock -> stock.getRps(rpsCode).getValue())).collect(Collectors.toList());
+            int order = 1;
+            for (Stock stock : stks) {
+                Rps rps = stock.getRps(rpsCode);
+                if (rps.getValue() == null) {
+                    stock.setRpsPercentile(rpsCode, 50.0);
+                    order++;
+                    continue;
+                }
+                stock.setRpsOrder(rpsCode, order);
+                stock.setRpsPercentile(rpsCode, order * 1.0 / stks.size() * 100);
+                order++;
+            }
         }
         return stks;
     }

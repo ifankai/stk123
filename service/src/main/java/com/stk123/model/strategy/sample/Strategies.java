@@ -1,5 +1,6 @@
 package com.stk123.model.strategy.sample;
 
+import com.stk123.common.CommonUtils;
 import com.stk123.common.util.CacheUtils;
 import com.stk123.common.util.ListUtils;
 import com.stk123.model.core.Bar;
@@ -11,6 +12,7 @@ import com.stk123.model.strategy.Strategy;
 import com.stk123.model.strategy.StrategyResult;
 import com.stk123.model.strategy.result.FilterResult;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -360,14 +362,27 @@ public class Strategies {
         });
         return strategy;
     }
-    public static Strategy rps_03() {
-        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_SCORE_20,"个股score", Stock.class);
-        strategy.addFilter("个股score", (strgy, stock) -> {
+    public static List<Strategy> rps_03() {
+        List<Strategy> strategies = new ArrayList<>();
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_SCORE_20+"_01","个股score"+"_01", Stock.class);
+        strategy.addFilter("个股score"+"_01", (strgy, stock) -> {
             double rpsValue = stock.getBar().getScore(20) + stock.getBar().getScore(10)*2.0;
-            stock.setRpsValue(Rps.CODE_STOCK_SCORE_20, rpsValue);
+            stock.setRpsValue(Rps.CODE_STOCK_SCORE_20+"_01", rpsValue);
             return FilterResult.TRUE();
         });
-        return strategy;
+        strategies.add(strategy);
+
+        Strategy<Stock> strategy2 = new Strategy<>(Rps.CODE_STOCK_SCORE_20+"_02","个股score"+"_02", Stock.class);
+        strategy2.setAsc(false);
+        strategy2.setWeight(0.3);
+        strategy2.addFilter("个股score"+"_02", (strgy, stock) -> {
+            double rpsValue = stock.getBar().getChange(20, Bar.EnumValue.C);
+            stock.setRpsValue(Rps.CODE_STOCK_SCORE_20+"_02", CommonUtils.numberFormat(rpsValue, 2));
+            return FilterResult.TRUE();
+        });
+        strategies.add(strategy2);
+
+        return strategies;
     }
 
 

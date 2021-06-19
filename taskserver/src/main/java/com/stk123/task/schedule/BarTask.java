@@ -641,7 +641,7 @@ public class BarTask extends AbstractTask {
                             strategyResult.getDate()+
                                     "<br/>"+strategyResult.getStrategy().getName().replaceAll("，", "<br/>"),
                             displayCode ? bk.getDayBarImage() : "",
-                            displayCode ? bk.getStocksInfo(Rps.CODE_STOCK_SCORE_20, 15, true) : ""
+                            displayCode ? bk.getStocksInfo(15, true, Rps.CODE_STOCK_SCORE_20) : ""
                     );
                     if(bk.isCateIndexEastmoneyGn()) {
                         if (strategyResult.getStrategy().getCode().startsWith("strategy_08")) { //板块阶段强势策略
@@ -652,7 +652,7 @@ public class BarTask extends AbstractTask {
                     }
                 }
 
-                List<String> titles = ListUtils.createList("标的", "日期/策略/来源", "K线", "Rps["+Strategies.rps_03().getName()+"]");
+                List<String> titles = ListUtils.createList("标的", "日期/策略/来源", "K线", "Rps["+Rps.CODE_STOCK_SCORE_20+"]");
                 StringBuffer sb = new StringBuffer();
                 sb.append("板块");       sb.append(CommonUtils.createHtmlTable(titles, datasBk1));sb.append("<br/>");
                 sb.append("板块阶段强势");sb.append(CommonUtils.createHtmlTable(titles, datasBk2));

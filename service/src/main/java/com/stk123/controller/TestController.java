@@ -75,7 +75,7 @@ public class TestController {
 //        System.out.println(stock.getBar().before(10).getChange(-7, Bar.EnumValue.C));
 
         Stock stock = Stock.build("BK0891");
-        List<Stock> stocks = stock.getGreatestStocksInBkByRps(Rps.CODE_STOCK_SCORE_20, 10);
+        List<Stock> stocks = stock.getGreatestStocksInBkByRps(10, Rps.CODE_STOCK_SCORE_20);
 
         return RequestResult.success(StringUtils.join(stocks.stream().map(stk->stk.getNameAndCodeWithLink()).collect(Collectors.toList())));
     }
