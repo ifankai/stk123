@@ -770,6 +770,7 @@ public class Bar implements Serializable, Cloneable {
 					}
 
 				} else {//今天阴线
+				    n++;
 
 					if(yesterday.isYin()){//昨天阴线
 						List<Bar> bars = today.getBarsMeet(Bar::isYang);
@@ -975,6 +976,21 @@ public class Bar implements Serializable, Cloneable {
 		return list;
 	}
 
+    public List<Bar> filter(int n, Predicate<Bar> predicate){
+        List<Bar> list = new ArrayList<>();
+        Bar k = this;
+        while(true) {
+            if(n-- <= 0){
+                return list;
+            }
+            if(predicate.test(k)) {
+                list.add(k);
+            }
+            k = k.before();
+            if(k == null)break;
+        }
+        return list;
+    }
 	/**
 	 * 是否涨停
 	 */

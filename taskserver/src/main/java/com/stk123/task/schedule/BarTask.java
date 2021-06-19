@@ -57,7 +57,6 @@ public class BarTask extends AbstractTask {
     public static List<Stock> StocksAllCN = null;
     public static List<Stock> StocksMass = null;
     public static List<Stock> StocksH = null;
-    public static List<Stock> Bks = null;
 
 
     private String today = TaskUtils.getToday();//"20160923";
@@ -70,12 +69,12 @@ public class BarTask extends AbstractTask {
     // B股[BK0636] QFII重仓[BK0535] 沪企改革[BK0672] 富时罗素[BK0867] 标准普尔[BK0879] 债转股[BK0980] 股权激励[BK0567] 融资融券[BK0596]
     // 债转股[BK0980] 养老金[BK0823] 预亏预减[BK0570] 独角兽[BK0835] 基金重仓[BK0536] 创业板综[BK0742] 证金持股[BK0718] 创业成份[BK0638]
     // 沪股通[BK0707] 深成500[BK0568] 预盈预增[BK0571] 送转预期[BK0633] 中证500[BK0701] MSCI中国[BK0821] 机构重仓[BK0552] 次新股[BK0501]
-    // 昨日触板[BK0817] HS300_[BK0500]
+    // 昨日触板[BK0817] HS300_[BK0500] 上证180_[BK0612] 深证100R[BK0743]
     public String BK_REMOVE = "BK0498,BK0499,BK0705,BK0528,BK0600,BK0804,BK0925,BK0816,BK0815," +
             "BK0636,BK0535,BK0672,BK0867,BK0879,BK0980,BK0567,BK0596"+
             "BK0980,BK0823,BK0570,BK0835,BK0536,BK0742,BK0718,BK0638"+
             "BK0707,BK0568,BK0571,BK0633,BK0701,BK0821,BK0552,BK0501"+
-            "BK0817,BK0500";
+            "BK0817,BK0500,BK0612,BK0743";
 
     @Autowired
     private StkKlineRepository stkKlineRepository;
@@ -378,71 +377,7 @@ public class BarTask extends AbstractTask {
         });
     }
 
-    public void analyseBks(){
-        try{
-            if(this.Bks == null) {
-                Bks = getBks();
-            }
-            if(StocksAllCN == null) {
-                StocksAllCN = getAllStocks();
-            }
-            buildBkAndCalcRps(StocksAllCN, Bks);
 
-            if(StringUtils.isEmpty(strategy)){
-                this.strategy = Strategies.STRATEGIES_BK;
-            }
-
-            StrategyBacktesting strategyBacktesting = new StrategyBacktesting();
-            backtestingService.backtestingOnStock(strategyBacktesting,
-                    Bks,
-                    Arrays.asList(StringUtils.split(this.strategy, ",")),
-                    startDate, endDate, realtime!=null);
-
-            List<StrategyResult> results = strategyBacktesting.getPassedStrategyResult();
-            if(results.size() > 0){
-                List<List<String>> datasBk1 = new ArrayList<>();
-                List<List<String>> datasBk2 = new ArrayList<>();
-
-                String rowCode = null;
-                for(StrategyResult strategyResult : results){
-                    Stock bk = Bks.stream().filter(stk -> stk.getCode().equals(strategyResult.getCode())).findFirst().orElse(null);
-
-                    Stock.TURNING_POINTS.clear();
-                    boolean displayCode = true;
-                    if(strategyResult.getCode().equals(rowCode)){
-                        displayCode = false;
-                    }else{
-                        rowCode = strategyResult.getCode();
-                    }
-
-                    List<String> data = ListUtils.createList(
-                            displayCode ? bk.getNameAndCodeWithLinkAndBold() : "",
-                            strategyResult.getDate()+
-                                    "<br/>"+strategyResult.getStrategy().getName().replaceAll("，", "<br/>"),
-                            displayCode ? bk.getStocksInfo(Rps.CODE_STOCK_SCORE_20, 10, true) : ""
-                    );
-                    if(bk.isCateIndexEastmoneyGn()) {
-                        if (strategyResult.getStrategy().getCode().startsWith("strategy_08")) { //板块阶段强势策略
-                            datasBk2.add(data);
-                        } else {
-                            datasBk1.add(data);
-                        }
-                    }
-                }
-
-                List<String> titles = ListUtils.createList("标的", "日期/策略/来源", "Rps["+Strategies.rps_03().getName()+"]");
-                StringBuffer sb = new StringBuffer();
-                sb.append("板块");       sb.append(CommonUtils.createHtmlTable(titles, datasBk1));sb.append("<br/>");
-                sb.append("板块阶段强势");sb.append(CommonUtils.createHtmlTable(titles, datasBk2));
-                EmailUtils.send("板块策略发现 "+ (datasBk1.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count())+ "个" , sb.toString());
-            }
-
-
-        }catch (Exception e){
-            EmailUtils.send("报错[analyseBks]", ExceptionUtils.getExceptionAsString(e));
-            log.error("analyseBks", e);
-        }
-    }
 
     public void analyseMyStocks(){
         try {
@@ -478,7 +413,7 @@ public class BarTask extends AbstractTask {
                             Thread.sleep(15 * 1000);
                         }
                     } catch (Exception e) {
-                        log.error("雪球抓取自选组合失败", e);
+                        log.error("雪球抓取自选组合失败:"+portfolio.getSymbol(), e);
                         //return;
                     }
                 }
@@ -520,14 +455,15 @@ public class BarTask extends AbstractTask {
             //建立板块关系，计算rps
             buildBkAndCalcRps(stocks);
 
-            if(StringUtils.isEmpty(strategy)){
-                this.strategy = Strategies.STRATEGIES_MY_STOCKS;
+            String stratgies = Strategies.STRATEGIES_MY_STOCKS;
+            if(StringUtils.isNotEmpty(strategy)){
+                stratgies = strategy;
             }
             //策略回测开始    01,02 策略在com.stk123.model.strategy.sample.Sample 里定义
             StrategyBacktesting strategyBacktesting = new StrategyBacktesting();
             backtestingService.backtestingOnStock(strategyBacktesting,
                     stocks,
-                    Arrays.asList(StringUtils.split(this.strategy, ",")),
+                    Arrays.asList(StringUtils.split(stratgies, ",")),
                     startDate, endDate, realtime!=null);
 
             List<StrategyResult> results = strategyBacktesting.getPassedStrategyResult();
@@ -603,14 +539,15 @@ public class BarTask extends AbstractTask {
                 StocksAllCN = getAllStocks();
             }
 
-            if(StringUtils.isEmpty(strategy)){
-                this.strategy = Strategies.STRATEGIES_ALL_STOCKS;
+            String strategies = Strategies.STRATEGIES_ALL_STOCKS;
+            if(StringUtils.isNotEmpty(strategy)){
+                strategies = strategy;
             }
 
             StrategyBacktesting strategyBacktesting = new StrategyBacktesting();
             backtestingService.backtestingOnStock(strategyBacktesting,
                     StocksAllCN,
-                    Arrays.asList(StringUtils.split(this.strategy, ",")),
+                    Arrays.asList(StringUtils.split(strategies, ",")),
                     startDate, endDate, realtime!=null);
 
             List<StrategyResult> results = strategyBacktesting.getPassedStrategyResult();
@@ -659,6 +596,73 @@ public class BarTask extends AbstractTask {
         } catch (Exception e) {
             EmailUtils.send("报错[analyseAllStocks]", ExceptionUtils.getExceptionAsString(e));
             log.error("analyseAllStocks", e);
+        }
+    }
+
+
+    public void analyseBks(){
+        try{
+            List<Stock> bks = getBks();
+            if(StocksAllCN == null) {
+                StocksAllCN = getAllStocks();
+                buildBkAndCalcRps(StocksAllCN, bks);
+            }
+
+            String strategies = Strategies.STRATEGIES_BK;
+            if(StringUtils.isNotEmpty(strategy)){
+                this.strategy = strategies;
+            }
+
+            StrategyBacktesting strategyBacktesting = new StrategyBacktesting();
+            backtestingService.backtestingOnStock(strategyBacktesting,
+                    bks,
+                    Arrays.asList(StringUtils.split(strategies, ",")),
+                    startDate, endDate, realtime!=null);
+
+            List<StrategyResult> results = strategyBacktesting.getPassedStrategyResult();
+            if(results.size() > 0){
+                List<List<String>> datasBk1 = new ArrayList<>();
+                List<List<String>> datasBk2 = new ArrayList<>();
+
+                String rowCode = null;
+                for(StrategyResult strategyResult : results){
+                    Stock bk = bks.stream().filter(stk -> stk.getCode().equals(strategyResult.getCode())).findFirst().orElse(null);
+
+                    Stock.TURNING_POINTS.clear();
+                    boolean displayCode = true;
+                    if(strategyResult.getCode().equals(rowCode)){
+                        displayCode = false;
+                    }else{
+                        rowCode = strategyResult.getCode();
+                    }
+
+                    List<String> data = ListUtils.createList(
+                            displayCode ? bk.getNameAndCodeWithLinkAndBold() : "",
+                            strategyResult.getDate()+
+                                    "<br/>"+strategyResult.getStrategy().getName().replaceAll("，", "<br/>"),
+                            displayCode ? bk.getDayBarImage() : "",
+                            displayCode ? bk.getStocksInfo(Rps.CODE_STOCK_SCORE_20, 15, true) : ""
+                    );
+                    if(bk.isCateIndexEastmoneyGn()) {
+                        if (strategyResult.getStrategy().getCode().startsWith("strategy_08")) { //板块阶段强势策略
+                            datasBk2.add(data);
+                        } else {
+                            datasBk1.add(data);
+                        }
+                    }
+                }
+
+                List<String> titles = ListUtils.createList("标的", "日期/策略/来源", "K线", "Rps["+Strategies.rps_03().getName()+"]");
+                StringBuffer sb = new StringBuffer();
+                sb.append("板块");       sb.append(CommonUtils.createHtmlTable(titles, datasBk1));sb.append("<br/>");
+                sb.append("板块阶段强势");sb.append(CommonUtils.createHtmlTable(titles, datasBk2));
+                EmailUtils.send("板块策略发现 "+ (datasBk1.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count())+ "个" , sb.toString());
+            }
+
+
+        }catch (Exception e){
+            EmailUtils.send("报错[analyseBks]", ExceptionUtils.getExceptionAsString(e));
+            log.error("analyseBks", e);
         }
     }
 
@@ -767,13 +771,9 @@ public class BarTask extends AbstractTask {
     public void buildBkAndCalcRps(List<Stock> stocks){
         //建立板块关系，计算rps
         List<Stock> bks = getBks();
-        stockService.calcRps(bks, Rps.CODE_BK_60);
-        stockService.buildBk(stocks, bks);
-        stockService.calcRps(bks, Rps.CODE_BK_STOCKS_SCORE_30);
+        buildBkAndCalcRps(stocks, bks);
     }
-
     public void buildBkAndCalcRps(List<Stock> stocks, List<Stock> bks){
-        //建立板块关系，计算rps
         stockService.calcRps(bks, Rps.CODE_BK_60);
         stockService.buildBk(stocks, bks);
         stockService.calcRps(bks, Rps.CODE_BK_STOCKS_SCORE_30);

@@ -21,7 +21,7 @@ public class Strategies {
 
     public static String STRATEGIES_ALL_STOCKS = "01a,01b,01c,05b,06c,10a"; //,11a
 
-    public static String STRATEGIES_BK = "01a,01b,02b,03a,03b,04a,04b,04c,05a,05b,06a,06b,06c,08a,08b,08c,10a";;
+    public static String STRATEGIES_BK = "01a,01b,02b,03a,04a,04b,04c,05a,05b,06a,06b,06c,08a,08b,08c,10a"; //03b,
 
 
     /**** 阳线放量 阴线缩量 *****/
@@ -194,7 +194,9 @@ public class Strategies {
     public static Strategy strategy_05b() {
         Strategy<Stock> strategy = new Strategy<>("strategy_05b","均线缠绕，高低点收敛，突破底部平台(05b)", Stock.class);
         strategy.addFilter("突破底部平台", Filters.filter_009());
+        strategy.addFilter("高位阳线个数及比例", Filters.filter_mustBarIsYang(80, 10, 50));
         strategy.addFilter("高低点收敛", Filters.filter_0014a(80, 8));
+        strategy.addFilter("最低点一个比一个高", Filters.filter_0013a(100, 8, 3));
         strategy.addFilter("均线线缠绕，且前100天内放量涨缩量跌", Filters.filter_007c(80, 10 ));
         strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
         return strategy;
@@ -221,7 +223,10 @@ public class Strategies {
     public static Strategy strategy_06c() {
         Strategy<Stock> strategy = new Strategy<>("strategy_06c","巨量换手后，突破趋势线(06c)", Stock.class);
         strategy.addFilter("K线数量", Filters.filter_mustBarSizeGreatThan(120));
-        strategy.addFilter("巨量换手", Filters.filter_mustHSLGreatThan(120, 350));
+        strategy.addFilter("120均线斜率", Stock::getBar, Filters.filter_maSlope(60, 120, -5, 15));
+        strategy.addFilter("收盘价与均线间的距离", Filters.filter_mustCloseAndMaLessThan(30, 20,120, 1.15));
+        strategy.addFilter("波动较多", Filters.filter_0013b(100, 5, 7));
+        strategy.addFilter("巨量换手", Filters.filter_mustHSLPercentileGreatThan(100, 400, 30, 90));
         strategy.addFilter("换手率百分位小于30", Filters.filter_mustHSLPercentileLessThan(60, 7, 25));
         strategy.addFilter("短期涨幅", Filters.filter_mustChangeBetweenLowestAndToday(10, 0, 0.15));
         strategy.addFilter("中期涨幅", Filters.filter_mustChangeBetweenLowestAndToday(30, 0, 0.30));

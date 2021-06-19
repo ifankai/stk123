@@ -91,21 +91,38 @@ public class Filters {
     public static Filter<Stock> filter_mustHSLGreatThan(int days, double percent) {
         return (strategy, stock) -> {
             double hsl = stock.getBar().getSUM(days, Bar.EnumValue.HSL);
-            return hsl >= percent ? FilterResult.TRUE() : FilterResult.FALSE("HSL:"+hsl);
+            return hsl >= percent ? FilterResult.TRUE() : FilterResult.FALSE("HSL:"+CommonUtils.numberFormat2Digits(hsl));
         };
     }
     //days天内换手率百分位大于percentile  (120,30, 95)
     public static Filter<Stock> filter_mustHSLPercentileGreatThan(int size, int days, double percentile) {
         return (strategy, stock) -> {
             double hsl = stock.getBar().getPercentile(size, bar -> bar.getSUM(days, Bar.EnumValue.HSL) );
-            return hsl >= percentile ? FilterResult.TRUE("HSL percentile:"+hsl) : FilterResult.FALSE("HSL percentile:"+hsl);
+            return hsl >= percentile ? FilterResult.TRUE() : FilterResult.FALSE("HSL percentile:"+CommonUtils.numberFormat2Digits(hsl));
+        };
+    }
+    public static Filter<Stock> filter_mustHSLPercentileGreatThan(int before, int size, int days, double percentile) {
+        return (strategy, stock) -> {
+            double hsl = stock.getBar().getHighestBar(before, Bar.EnumValue.H).getPercentile(size, bar1 -> bar1.getSUM(days, Bar.EnumValue.HSL) );
+            return hsl >= percentile ? FilterResult.TRUE() : FilterResult.FALSE("HSL percentile:"+CommonUtils.numberFormat2Digits(hsl));
         };
     }
     //days天内换手率百分位小于percentile
     public static Filter<Stock> filter_mustHSLPercentileLessThan(int size, int days, double percentile) {
         return (strategy, stock) -> {
             double hsl = stock.getBar().getPercentile(size, bar -> bar.getSUM(days, Bar.EnumValue.HSL) );
-            return hsl <= percentile ? FilterResult.TRUE("HSL percentile:"+hsl) : FilterResult.FALSE("HSL percentile:"+hsl);
+            return hsl <= percentile ? FilterResult.TRUE() : FilterResult.FALSE("HSL percentile:"+CommonUtils.numberFormat2Digits(hsl));
+        };
+    }
+
+    //高位阳线个数及比例
+    public static Filter<Stock> filter_mustBarIsYang(int size, int days, double percent) {
+        return (strategy, stock) -> {
+            Bar highBar = stock.getBar().getHighestBar(size, Bar.EnumValue.H);
+            Bar lowBar = stock.getBar().getLowestBar(size, Bar.EnumValue.L);
+            List<Bar> bars = stock.getBar().filter(size, bar -> bar.getClose() > (highBar.getHigh()+lowBar.getLow())/2);
+            int cnt = (int)bars.stream().filter(bar -> bar.isYang()).count();
+            return (cnt >= days && cnt*1.0/bars.size() >= percent/100) ? FilterResult.TRUE() : FilterResult.FALSE("高位阳线个数比例:"+cnt*1.0/bars.size());
         };
     }
 
@@ -145,6 +162,22 @@ public class Filters {
         return (strategy, bar) -> {
             double slope = bar.getSlopeOfMA(ma, days);
             return new FilterResultBetween(slope*100, min, max).addResult("实际slope：" + slope*100);
+        };
+    }
+
+    //今日k线收盘价与均线间的距离
+    public static Filter<Stock> filter_mustCloseAndMaLessThan(int n, int m, int ma, double max) {
+        return (strategy, stock) -> {
+            Bar bar = stock.getBar();
+            int cnt = bar.getBarCount(n, bar1 -> {
+                double maClose = bar1.getMA(ma, Bar.EnumValue.C);
+                double close = bar1.getClose();
+                double maxClose = Math.max(maClose, close);
+                double minClose = Math.min(maClose, close);
+                return maxClose/minClose <= max;
+            });
+
+            return (cnt >= m) ? FilterResult.TRUE() : FilterResult.FALSE("沿着均线的个数:"+cnt);
         };
     }
 
@@ -711,13 +744,17 @@ public class Filters {
     }
 
     //最低点一个比一个高
-    public static Filter<Stock> filter_0013a(int days, int n) {
+    public static Filter<Stock> filter_0013a(int days, int n, int sizeOfLowestPoint) {
         return (strategy, stock) -> {
             Bar today = stock.getBar();
             List<Bar> lowPoints = today.getHistoryLowPoint(days, n);
-            if(lowPoints.size() > 1){
+            if(lowPoints.size() >= sizeOfLowestPoint){
                 Bar last = null;
+                int cnt = 0;
                 for(Bar bar :lowPoints){
+                    if(cnt++ >= sizeOfLowestPoint-1){
+                        break;
+                    }
                     if(last == null){
                         last = bar;
                         continue;
@@ -726,8 +763,22 @@ public class Filters {
                         return FilterResult.FALSE(lowPoints.stream().map(Bar::getLow).collect(Collectors.toList()));
                     }
                 }
+            }else{
+                return FilterResult.FALSE("低点个数:"+lowPoints.size());
             }
             return FilterResult.TRUE();
+        };
+    }
+    //高低点多，说明波动较多
+    public static Filter<Stock> filter_0013b(int days, int n, int sizeOfLowestPoint) {
+        return (strategy, stock) -> {
+            Bar today = stock.getBar();
+            List<Bar> lowPoints = today.getHistoryLowPoint(days, n);
+            if(lowPoints.size() >= sizeOfLowestPoint){
+                return FilterResult.TRUE("低点个数:"+lowPoints.size());
+            }else{
+                return FilterResult.FALSE("低点个数:"+lowPoints.size());
+            }
         };
     }
 

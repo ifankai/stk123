@@ -592,12 +592,17 @@ public class Stock {
     }
 
     private String getBarImage(String period){
+        String xueqiu = "https://xueqiu.com/S/"+this.getCodeWithPlace();
         if(this.isMarketCN()) {
-            return CommonUtils.wrapLink("<img src='http://image.sinajs.cn/newchart/"+period+"/n/" + this.getCodeWithPlace().toLowerCase() + ".gif' />", "https://xueqiu.com/S/"+this.getCodeWithPlace());
+            if(this.isCateIndexEastmoneyGn()){
+                String type = "weekly".equals(period)?"W":"";
+                return CommonUtils.wrapLink("<img src='http://webquoteklinepic.eastmoney.com/GetPic.aspx?token=&nid=90."+this.getCodeWithPlace()+"&type="+type+"&unitWidth=-6&ef=&formula=MACD&imageType=KXL&_="+new Date().getTime()+"' />", xueqiu);
+            }
+            return CommonUtils.wrapLink("<img src='http://image.sinajs.cn/newchart/"+period+"/n/" + this.getCodeWithPlace().toLowerCase() + ".gif' />", xueqiu);
         }else if(this.isMarketHK()){
-            return CommonUtils.wrapLink("<img src='http://image.sinajs.cn/newchart/hk_stock/"+period+"/" + this.getCode() + ".gif' />", "https://xueqiu.com/S/"+this.getCodeWithPlace());
+            return CommonUtils.wrapLink("<img src='http://image.sinajs.cn/newchart/hk_stock/"+period+"/" + this.getCode() + ".gif' />", xueqiu);
         }else if(this.isMarketUS()){
-            return CommonUtils.wrapLink("<img src='http://image.sinajs.cn/newchartv5/usstock/"+period+"/" + this.getCode().toLowerCase() + ".gif' />", "https://xueqiu.com/S/"+this.getCodeWithPlace());
+            return CommonUtils.wrapLink("<img src='http://image.sinajs.cn/newchartv5/usstock/"+period+"/" + this.getCode().toLowerCase() + ".gif' />", xueqiu);
         }
         return "";
     }
@@ -666,10 +671,10 @@ public class Stock {
             //List<Stock> top5b = rps2.getPercentile()>=90?(List<Stock>)bk2.getData().get("top5"):null;
 
             //final int[] a = {1}, b = {1};
-            return "<br/>"+bk.getNameAndCodeWithLink()+bk.getStocksInfo(Rps.CODE_STOCK_SCORE_20,10,false)+
+            return "<br/>"+bk.getNameAndCodeWithLink()+bk.getStocksInfo(Rps.CODE_STOCK_SCORE_20,15,false)+
                    "<br/>"+rps.getName()+":"+CommonUtils.numberFormat2Digits(rps.getPercentile())+
                     //(top5a==null?"":("<br/>"+StringUtils.join(top5a.stream().map(stock->(a[0]++)+"."+stock.getNameAndCodeWithLink()).collect(Collectors.toList()), "<br/>"))+CommonUtils.k("查看",top5a.stream().map(Stock::getCodeWithPlace).collect(Collectors.toList())))+
-                   "<br/>"+bk2.getNameAndCodeWithLink()+bk2.getStocksInfo(Rps.CODE_STOCK_SCORE_20,10,false)+
+                   "<br/>"+bk2.getNameAndCodeWithLink()+bk2.getStocksInfo(Rps.CODE_STOCK_SCORE_20,15,false)+
                    "<br/>"+rps2.getName()+"["+rps2.getValue()+"]:"+CommonUtils.numberFormat2Digits(rps2.getPercentile());
                     //(top5b==null?"":("<br/>"+StringUtils.join(top5b.stream().map(stock->(b[0]++)+"."+stock.getNameAndCodeWithLink()).collect(Collectors.toList()), "<br/>"))+CommonUtils.k("查看",top5b.stream().map(Stock::getCodeWithPlace).collect(Collectors.toList())));
         }
