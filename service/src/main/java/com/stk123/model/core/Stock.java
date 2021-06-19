@@ -656,7 +656,7 @@ public class Stock {
 
     public List<Stock> getGreatestStocksInBkByRps(String rpsCode, int topN){
         List<Stock> stocks = stockService.calcRps(this.getStocks(), rpsCode);
-        return ListUtils.greatest(stocks, topN, stock1 -> stock1.getRps(rpsCode).getValue());
+        return ListUtils.greatest(stocks, topN, stock1 -> stock1.getRps(rpsCode).getPercentile());
     }
 
     //用于stock
@@ -685,13 +685,18 @@ public class Stock {
     public String getStocksInfo(String rpsCode, int topN, boolean displayAllStocks){
         List<Stock> stocks = this.getGreatestStocksInBkByRps(rpsCode, topN);
         final int[] a = {1};
-        String info = displayAllStocks ? StringUtils.join(stocks.stream().map(stock->(a[0]++)+"."+stock.getNameAndCodeWithLink()).collect(Collectors.toList()), "<br/>") : "";
+        String info = displayAllStocks ? StringUtils.join(stocks.stream().map(stock->(a[0]++)+"."+stock.getNameAndCodeWithLink()+"["+CommonUtils.numberFormat2Digits(stock.getRps(rpsCode).getPercentile())+"]").collect(Collectors.toList()), "<br/>") : "";
         return info + CommonUtils.k("查看", stocks.stream().map(Stock::getCodeWithPlace).collect(Collectors.toList()));
     }
 
     @Override
     public int hashCode(){
         return this.code.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Stock && this.getCodeWithPlace().equals(((Stock) obj).getCodeWithPlace());
     }
 
     @Override

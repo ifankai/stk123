@@ -60,7 +60,7 @@ public class Strategies {
         strategy.addFilter("低点到今天的涨幅", Filters.filter_mustChangeBetweenLowestAndToday(30, 0, 0.30));
         strategy.addFilter("低点到高点的涨幅", Filters.filter_mustChangeBetweenLowestAndHighest(40, 0, 0.35));
         //strategy.addFilter("60天换手率大于200%", Filter.or(Filters.filter_mustHSLGreatThan(60, 200), Filters.filter_mustHSLGreatThan(30, 100)));
-        strategy.addFilter("阳线放量阴线缩量", Filters.filter_015b(30, score));
+        strategy.addFilter("阳线放量阴线缩量", Filters.filter_015b(25, score));
         strategy.addFilter("60天换手率百分位大于80", Filter.or(Filters.filter_mustHSLPercentileGreatThan(120,30, 95), Filters.filter_mustHSLGreatThan(60, 200), Filters.filter_mustHSLGreatThan(30, 100)));
         strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
         return strategy;

@@ -734,7 +734,7 @@ public class Bar implements Serializable, Cloneable {
 	public int getScore(int days){
 		final double percent = 1.2; //量能增减幅度
         final double percent2 = 1.5;
-		return this.getScore(days, today -> {
+		int score =  this.getScore(days, today -> {
 			int n = 0;
 			Bar yesterday = today.before();
 			if(yesterday != null) {
@@ -770,7 +770,6 @@ public class Bar implements Serializable, Cloneable {
 					}
 
 				} else {//今天阴线
-				    n++;
 
 					if(yesterday.isYin()){//昨天阴线
 						List<Bar> bars = today.getBarsMeet(Bar::isYang);
@@ -803,14 +802,15 @@ public class Bar implements Serializable, Cloneable {
 						}
 					}
 
-					if(today.getVolume()*percent < today.yesterday().getVolume()){//今天阴线量能小于昨天20%，加3
-						n += 3;
-					}
 				}
 			}
+
 			return n;
 		});
-
+        if(this.isYin() && this.yesterday() != null && this.getVolume()*percent < this.yesterday().getVolume()){//今天阴线量能小于昨天20%，加3
+            score += 3;
+        }
+        return score;
 	}
 
 

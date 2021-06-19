@@ -858,9 +858,9 @@ public class Filters {
     public static Filter<Stock> filter_015b(int days, int score) {
 
         return (strategy, stock) -> {
-            int sum1 = getScore(stock, days);
-            int sum2 = getScore(stock, days/2); //加大后期k线权重
-            int sum3 = getScore(stock, days/3); //加大后期k线权重
+            int sum1 = stock.getBar().getScore(days);
+            int sum2 = stock.getBar().getScore(days/2); //加大后期k线权重
+            int sum3 = stock.getBar().getScore(days/3); //加大后期k线权重
             int sum = sum1+sum2+sum3;
 
             int sum4 = 0;
@@ -881,10 +881,6 @@ public class Filters {
             }
             return FilterResult.Sortable((double) sum).addResult("得分:"+sum+",s1="+sum1+",s2="+sum2+",s3="+sum3+",sBK="+sum4);
         };
-    }
-
-    private static int getScore(Stock stock, int days){
-        return stock.getBar().getScore(days);
     }
 
     /**

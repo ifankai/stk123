@@ -96,8 +96,12 @@ public class StockService {
             bkList.forEach(industryProjection -> {
                 Stock bk = bkMap.get(industryProjection.getBkCode());
                 if(bk != null) {
-                    stock.getBks().add(bk);
-                    bk.getStocks().add(stock);
+                    if(!stock.getBks().contains(bk)){
+                        stock.getBks().add(bk);
+                    }
+                    if(!bk.getStocks().contains(stock)) {
+                        bk.getStocks().add(stock);
+                    }
                 }
             });
         });

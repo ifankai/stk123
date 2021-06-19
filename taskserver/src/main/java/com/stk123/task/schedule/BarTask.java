@@ -605,8 +605,8 @@ public class BarTask extends AbstractTask {
             List<Stock> bks = getBks();
             if(StocksAllCN == null) {
                 StocksAllCN = getAllStocks();
-                buildBkAndCalcRps(StocksAllCN, bks);
             }
+            buildBkAndCalcRps(StocksAllCN, bks);
 
             String strategies = Strategies.STRATEGIES_BK;
             if(StringUtils.isNotEmpty(strategy)){
