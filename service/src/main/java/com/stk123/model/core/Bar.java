@@ -808,7 +808,7 @@ public class Bar implements Serializable, Cloneable {
 			return n;
 		});
         if(this.isYin() && this.yesterday() != null && this.getVolume()*percent < this.yesterday().getVolume()){//今天阴线量能小于昨天20%，加3
-            score += 3;
+            score += 5;
         }
         return score;
 	}

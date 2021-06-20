@@ -30,9 +30,9 @@ public class Strategies {
     //2天放量3天缩量
     public static Strategy strategy_01a() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_01a","策略603096新经典20201106，一段跌幅后底部放量(01a)", BarSeries.class);
-        strategy.addFilter("过去3天到80天的跌幅", BarSeries::getFirst, Filters.filter_001b(3,80,-50,-30));
+        strategy.addFilter("过去3天到80天的跌幅", BarSeries::getFirst, Filters.filter_001b(3,80,-50,-20));
         strategy.addFilter("底部2天放量3天缩量", Filters.filter_002());
-        strategy.addFilter("今日十字星", BarSeries::getFirst, Filters.filter_003(0.45));
+        strategy.addFilter("今日十字星", BarSeries::getFirst, Filters.filter_003(0.5));
         strategy.setExpectFilter("10日内涨幅>12%", Filters.expectFilter(10, 12));
         return strategy;
     }
@@ -350,13 +350,14 @@ public class Strategies {
         });
         return strategy;
     }
+    //板块内个股score前5的排序
     public static Strategy rps_02() {
-        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_BK_STOCKS_SCORE_30,"个股score前5", Stock.class);
-        strategy.addFilter("个股score前5", (strgy, bk) -> {
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_BK_STOCKS_SCORE_30,"板块个股前5", Stock.class);
+        strategy.addFilter("板块个股前5", (strgy, bk) -> {
             List<Stock> bkStocks = bk.getStocks();
-            List<Stock> top5 = ListUtils.greatest(bkStocks, 5, bkStock -> (bkStock.getBar().getScore(20)+bkStock.getBar().getScore(10)*2.0));
+            List<Stock> top5 = ListUtils.greatest(bkStocks, 10, bkStock -> bkStock.getScore()*1.0);
             bk.getData().put("top5", top5);
-            double rpsValue = top5.stream().mapToDouble(bkStock ->(bkStock.getBar().getScore(20)+bkStock.getBar().getScore(10)*2.0)).sum();
+            double rpsValue = top5.stream().mapToDouble(bkStock -> bkStock.getScore()*1.0).sum();
             bk.setRpsValue(Rps.CODE_BK_STOCKS_SCORE_30, rpsValue);
             return FilterResult.TRUE();
         });
@@ -366,7 +367,7 @@ public class Strategies {
         List<Strategy> strategies = new ArrayList<>();
         Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_SCORE_20+"_01","个股score"+"_01", Stock.class);
         strategy.addFilter("个股score"+"_01", (strgy, stock) -> {
-            double rpsValue = stock.getBar().getScore(20) + stock.getBar().getScore(10)*2.0;
+            double rpsValue = stock.getScore();
             stock.setRpsValue(Rps.CODE_STOCK_SCORE_20+"_01", rpsValue);
             return FilterResult.TRUE();
         });

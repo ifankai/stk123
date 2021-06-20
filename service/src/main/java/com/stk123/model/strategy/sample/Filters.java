@@ -161,7 +161,7 @@ public class Filters {
     public static Filter<Bar> filter_maSlope(int days, int ma, double min, double max) {
         return (strategy, bar) -> {
             double slope = bar.getSlopeOfMA(ma, days);
-            return new FilterResultBetween(slope*100, min, max).addResult("实际slope：" + slope*100);
+            return new FilterResultBetween(slope*100, min, max).addResult("实际slope：" + CommonUtils.numberFormat2Digits(slope*100));
         };
     }
 
@@ -858,28 +858,11 @@ public class Filters {
     public static Filter<Stock> filter_015b(int days, int score) {
 
         return (strategy, stock) -> {
-            int sum1 = stock.getBar().getScore(days);
-            int sum2 = stock.getBar().getScore(days/2); //加大后期k线权重
-            int sum3 = stock.getBar().getScore(days/3); //加大后期k线权重
-            int sum = sum1+sum2+sum3;
-
-            int sum4 = 0;
-            if(!stock.getBks().isEmpty()){
-                Stock bk = stock.getBkByMaxRps(Rps.CODE_BK_60);
-                Rps rps = bk.getRps(Rps.CODE_BK_60);
-                if(rps != null){ //板块rps强度大于90百分位，则加10分
-                    if(rps.getPercentile() >= 90){
-                        sum4 = 15;
-                    }else if(rps.getPercentile() >= 80){
-                        sum4 = 10;
-                    }
-                }
-            }
-            sum += sum4;
+            int sum = stock.getScore();
             if(sum < score){
-                return FilterResult.FALSE("得分:"+sum);
+                return FilterResult.FALSE("score:"+sum);
             }
-            return FilterResult.Sortable((double) sum).addResult("得分:"+sum+",s1="+sum1+",s2="+sum2+",s3="+sum3+",sBK="+sum4);
+            return FilterResult.Sortable((double) sum).addResult("score:"+sum);
         };
     }
 

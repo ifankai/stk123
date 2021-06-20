@@ -454,6 +454,7 @@ public class BarTask extends AbstractTask {
             stocks = stockService.buildIndustries(stocks);
             //建立板块关系，计算rps
             buildBkAndCalcRps(stocks);
+            stockService.buildHolder(stocks);
 
             String stratgies = Strategies.STRATEGIES_MY_STOCKS;
             if(StringUtils.isNotEmpty(strategy)){
@@ -538,6 +539,7 @@ public class BarTask extends AbstractTask {
             if(StocksAllCN == null) {
                 StocksAllCN = getAllStocks();
             }
+            stockService.buildHolder(StocksAllCN);
 
             String strategies = Strategies.STRATEGIES_ALL_STOCKS;
             if(StringUtils.isNotEmpty(strategy)){

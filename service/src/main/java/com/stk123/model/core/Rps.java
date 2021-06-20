@@ -23,9 +23,9 @@ public class Rps{
     public static Map<String, SingletonMap> CODE_NAME = new HashMap<>();
 
     static{
-        CODE_NAME.put(CODE_BK_60, new SingletonMap(CODE_BK_60, Strategies.rps_01().getName()+".."));
-        CODE_NAME.put(CODE_BK_STOCKS_SCORE_30, new SingletonMap(CODE_BK_STOCKS_SCORE_30, Strategies.rps_02().getName()+"hhhh"));
-        CODE_NAME.put(CODE_STOCK_SCORE_20, new SingletonMap(CODE_STOCK_SCORE_20, "个股score!"));
+        CODE_NAME.put(CODE_BK_60, new SingletonMap(CODE_BK_60, Strategies.rps_01().getName()));
+        CODE_NAME.put(CODE_BK_STOCKS_SCORE_30, new SingletonMap(CODE_BK_STOCKS_SCORE_30, Strategies.rps_02().getName()));
+        CODE_NAME.put(CODE_STOCK_SCORE_20, new SingletonMap(CODE_STOCK_SCORE_20, "个股score"));
     }
 
     @SneakyThrows

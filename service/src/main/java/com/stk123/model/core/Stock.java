@@ -7,12 +7,16 @@ import com.stk123.common.CommonConstant;
 import com.stk123.common.CommonUtils;
 import com.stk123.common.util.ListUtils;
 import com.stk123.entity.StkHolderEntity;
+import com.stk123.entity.StkIndustryEntity;
+import com.stk123.entity.StkIndustryTypeEntity;
+import com.stk123.model.bo.StkIndustryType;
 import com.stk123.model.json.View;
 import com.stk123.model.projection.IndustryProjection;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.model.projection.StockProjection;
 import com.stk123.model.strategy.Strategy;
 import com.stk123.repository.StkIndustryRepository;
+import com.stk123.repository.StkIndustryTypeRepository;
 import com.stk123.repository.StkRepository;
 import com.stk123.service.core.BarService;
 import com.stk123.service.core.StockService;
@@ -31,6 +35,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.stk123.model.core.Stock.EnumMarket.*;
@@ -52,6 +57,8 @@ public class Stock {
     private StkIndustryRepository stkIndustryRepository;
     @Autowired
     private StockService stockService;
+    @Autowired
+    private StkIndustryTypeRepository stkIndustryTypeRepository;
 
     @AllArgsConstructor
     public enum EnumMarket {
@@ -173,7 +180,7 @@ public class Stock {
     private List<Stock> bks = new ArrayList<>(); //板块 eastmoney_gn
     private List<Stock> stocks = new ArrayList<>(); //板块包含的所有股票
 
-    private StkHolderEntity holder; //最新股东人数
+    private StkHolderEntity holder; //最新股东人数,人均持股金额
 
     private BarSeries barSeries;
     private BarSeries barSeriesWeek;
@@ -567,7 +574,10 @@ public class Stock {
 
     public List<Stock> getStocks(){
         if(this.stocks.isEmpty()){
-            //TODO
+            StkIndustryTypeEntity stkIndustryTypeEntity = stkIndustryTypeRepository.findByCode(this.getCode());
+            List<StkIndustryEntity> list = stkIndustryRepository.findAllByIndustry(stkIndustryTypeEntity.getId());
+            List<Stock> stockList = stockService.buildStocks(list.stream().map(StkIndustryEntity::getCode).collect(Collectors.toList()));
+            this.stocks.addAll(stockList);
         }
         return this.stocks;
     }
@@ -596,6 +606,7 @@ public class Stock {
         if(this.isMarketCN()) {
             if(this.isCateIndexEastmoneyGn()){
                 String type = "weekly".equals(period)?"W":"";
+                xueqiu = "https://xueqiu.com/k?q="+this.getName()+"#/stock";
                 return CommonUtils.wrapLink("<img src='http://webquoteklinepic.eastmoney.com/GetPic.aspx?token=&nid=90."+this.getCodeWithPlace()+"&type="+type+"&unitWidth=-6&ef=&formula=MACD&imageType=KXL&_="+new Date().getTime()+"' />", xueqiu);
             }
             return CommonUtils.wrapLink("<img src='http://image.sinajs.cn/newchart/"+period+"/n/" + this.getCodeWithPlace().toLowerCase() + ".gif' />", xueqiu);
@@ -653,6 +664,7 @@ public class Stock {
         return getBkByMaxRps(rpsCode).getRps(rpsCode);
     }
 
+    //用于bk
     public List<Stock> getGreatestStocksInBkByRps(int topN, String rpsCode){
         List<Stock> stocks = stockService.calcRps(this.getStocks(), rpsCode);
         return ListUtils.greatest(stocks, topN, stock1 -> stock1.getRps(rpsCode).getPercentile());
@@ -687,6 +699,57 @@ public class Stock {
 
         String info = displayAllStocks ? StringUtils.join(stocks.stream().map(stock->(a[0]++)+"."+stock.getNameAndCodeWithLink()+"["+CommonUtils.numberFormat2Digits(stock.getRps(rpsCode).getPercentile())+"("+stock.getRps(rpsCode).getRpsStrategies().stream().map(rs -> CommonUtils.numberFormat0Digits(stock.getRps(rs.getCode()).getPercentile())).collect(Collectors.toList())+")]").collect(Collectors.toList()), "<br/>") : "";
         return info + CommonUtils.k("查看", stocks.stream().map(Stock::getCodeWithPlace).collect(Collectors.toList()));
+    }
+
+    //评分
+    public int getScore(){
+        int days = 30;
+        int score = this.getBar().getScore(days);
+        score += this.getBar().getScore(days/2);
+        score += this.getBar().getScore(days/3);
+        score += this.getScoreByBk();
+        score += this.getScoreByHolder();
+        return score;
+    }
+
+    public int getScoreByBk(){
+        if(!this.getBks().isEmpty()){
+            Stock bk = this.getBkByMaxRps(Rps.CODE_BK_60);
+            Rps rps = bk.getRps(Rps.CODE_BK_60);
+            if(rps != null){
+                if(rps.getPercentile() >= 90){ //板块rps强度大于90百分位，则加10分
+                    return 15;
+                }else if(rps.getPercentile() >= 80){
+                    return 10;
+                }
+            }
+        }
+        return 0;
+    }
+
+    public int getScoreByHolder(){
+        int score = 0;
+        if(this.getHolder() != null){
+            StkHolderEntity stkHolderEntity = this.getHolder();
+            if(stkHolderEntity.getHoldingAmount() != null){
+                if(stkHolderEntity.getHoldingAmount() >= 500000){ //人均持股金额大于50w，加10
+                    score += 10;
+                }else if(stkHolderEntity.getHoldingAmount() >= 300000){ //人均持股金额大于30w，加5
+                    score += 5;
+                }else if(stkHolderEntity.getHoldingAmount() < 100000){ //人均持股金额小于10w，减5
+                    score += -5;
+                }
+            }
+            if(stkHolderEntity.getHolderChange() != null){
+                if(stkHolderEntity.getHolderChange() < -10){
+                    score += 5;
+                }
+                if(stkHolderEntity.getHolderChange() > 15){
+                    score += -5;
+                }
+            }
+        }
+        return score;
     }
 
     @Override
