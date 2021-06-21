@@ -177,8 +177,8 @@ public class Stock {
     private StockProjection stock;
 
     private List<IndustryProjection> industries; //行业
-    private List<Stock> bks = new ArrayList<>(); //板块 eastmoney_gn
-    private List<Stock> stocks = new ArrayList<>(); //板块包含的所有股票
+    private List<Stock> bks; //板块 eastmoney_gn
+    private List<Stock> stocks; //板块包含的所有股票
 
     private StkHolderEntity holder; //最新股东人数,人均持股金额
 
@@ -572,14 +572,57 @@ public class Stock {
         return this.industries;
     }
 
+    //用于bk
+    public void initStocks(){
+        if(this.stocks == null)
+            this.stocks = new ArrayList<>();
+    }
+    //用于bk
+    public void addStock(Stock stock){
+        if(this.stocks == null){
+            this.stocks = new ArrayList<>();
+            this.stocks.add(stock);
+        }else{
+            if(!this.stocks.contains(stock)){
+                this.stocks.add(stock);
+            }
+        }
+    }
+    //用于bk
     public List<Stock> getStocks(){
-        if(this.stocks.isEmpty()){
+        if(this.stocks == null){
             StkIndustryTypeEntity stkIndustryTypeEntity = stkIndustryTypeRepository.findByCode(this.getCode());
             List<StkIndustryEntity> list = stkIndustryRepository.findAllByIndustry(stkIndustryTypeEntity.getId());
-            List<Stock> stockList = stockService.buildStocks(list.stream().map(StkIndustryEntity::getCode).collect(Collectors.toList()));
-            this.stocks.addAll(stockList);
+            this.stocks = stockService.buildStocks(list.stream().map(StkIndustryEntity::getCode).collect(Collectors.toList()));
         }
         return this.stocks;
+    }
+
+    //用于stock
+    public void initBks(){
+        if(bks == null)
+            this.bks = new ArrayList<>();
+    }
+    //用于stock
+    public void addBk(Stock bk){
+        if(this.bks == null){
+            this.bks = new ArrayList<>();
+            this.bks.add(bk);
+        }else{
+            if(!this.bks.contains(bk)){
+                this.bks.add(bk);
+            }
+        }
+    }
+    //用于stock
+    public List<Stock> getBks(){
+        if(this.bks == null){
+            if(this.industries == null){
+                this.industries = stkIndustryRepository.findAllByCode(this.getCode());
+            }
+            this.bks = stockService.buildStocks(this.industries.stream().map(IndustryProjection::getBkCode).collect(Collectors.toList()));
+        }
+        return this.bks;
     }
 
     public static Map<Integer, Bar> TURNING_POINTS = Collections.synchronizedMap(new HashMap<>());

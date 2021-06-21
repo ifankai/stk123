@@ -15,7 +15,7 @@ public interface StkIndustryRepository extends JpaRepository<StkIndustryEntity, 
 
     List<StkIndustryEntity> findAllByIndustry(Integer industry);
 
-    @Query(value = "select i.industry as id,i.code as code,t.name as name,t.source as source from stk_industry i, stk_industry_type t where i.industry=t.id and i.code=:code", nativeQuery = true)
+    @Query(value = "select i.industry as id,i.code as code,t.name as name,t.source as source,t.code as bkCode from stk_industry i, stk_industry_type t where i.industry=t.id and i.code=:code", nativeQuery = true)
     List<IndustryProjection> findAllByCode(@Param("code")String code);
 
     @Query(value = "select i.industry as id,i.code as code,t.name as name,t.source as source,t.code as bkCode from stk_industry i, stk_industry_type t where i.industry=t.id and t.source in (:sources)", nativeQuery = true)

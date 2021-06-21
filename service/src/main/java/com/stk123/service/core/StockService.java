@@ -90,21 +90,19 @@ public class StockService {
     public List<Stock> buildBk(List<Stock> stocks, List<Stock> bks){
         Map<String, Stock> bkMap = bks.stream().collect(Collectors.toMap(Stock::getCode, Function.identity()));
         stocks.forEach(stock -> {
+            stock.initBks();
             List<IndustryProjection> industryProjections = stock.getIndustries();
             
             List <IndustryProjection> bkList = industryProjections.stream().filter(industryProjection -> IndustryService.SOURCE_EASTMONEY_GN.equals(industryProjection.getSource())).collect(Collectors.toList());
             bkList.forEach(industryProjection -> {
                 Stock bk = bkMap.get(industryProjection.getBkCode());
-                if(bk != null) {
-                    if(!stock.getBks().contains(bk)){
-                        stock.getBks().add(bk);
-                    }
-                    if(!bk.getStocks().contains(stock)) {
-                        bk.getStocks().add(stock);
-                    }
+                if (bk != null) {
+                    stock.addBk(bk);
+                    bk.addStock(stock);
                 }
             });
         });
+        bks.forEach(Stock::initStocks);
         return stocks;
     }
 
