@@ -166,15 +166,13 @@ public class Filters {
     }
 
     //今日k线收盘价与均线间的距离
-    public static Filter<Stock> filter_mustCloseAndMaLessThan(int n, int m, int ma, double max) {
+    public static Filter<Stock> filter_mustCloseAndMaRatioBetween(int n, int m, int ma, double min, double max) {
         return (strategy, stock) -> {
             Bar bar = stock.getBar();
             int cnt = bar.getBarCount(n, bar1 -> {
                 double maClose = bar1.getMA(ma, Bar.EnumValue.C);
                 double close = bar1.getClose();
-                double maxClose = Math.max(maClose, close);
-                double minClose = Math.min(maClose, close);
-                return maxClose/minClose <= max;
+                return close/maClose <= max && min <= close/maClose;
             });
 
             return (cnt >= m) ? FilterResult.TRUE() : FilterResult.FALSE("沿着均线的个数:"+cnt);

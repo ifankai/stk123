@@ -744,6 +744,15 @@ public class Stock {
         return info + CommonUtils.k("查看", stocks.stream().map(Stock::getCodeWithPlace).collect(Collectors.toList()));
     }
 
+    public int getScore(String date){
+        int days = 30;
+        Bar bar = this.getBar().before(date);
+        int score = bar.getScore(days);
+        score += bar.getScore(days/2);
+        score += bar.getScore(days/3);
+        return score;
+    }
+
     //评分
     public int getScore(){
         int days = 30;

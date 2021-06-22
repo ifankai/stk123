@@ -75,7 +75,7 @@ public class TestController {
 //        System.out.println(stock.getBar().before(10).getChange(-7, Bar.EnumValue.C));
 
         Stock stock = Stock.build("300581");
-        int cnt = stock.getBar().getCountOfContinuousYangAndYin(30, 3);
+        int cnt = stock.getScore("20210528");
 
         return RequestResult.success(cnt);
     }

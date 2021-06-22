@@ -225,8 +225,8 @@ public class Strategies {
     public static Strategy strategy_06c() {
         Strategy<Stock> strategy = new Strategy<>("strategy_06c","巨量换手后，突破趋势线(06c)", Stock.class);
         strategy.addFilter("K线数量", Filters.filter_mustBarSizeGreatThan(120));
-        strategy.addFilter("120均线斜率", Stock::getBar, Filters.filter_maSlope(60, 120, -5, 15));
-        strategy.addFilter("收盘价与均线间的距离", Filters.filter_mustCloseAndMaLessThan(30, 20,120, 1.15));
+        strategy.addFilter("120均线斜率", Stock::getBar, Filters.filter_maSlope(60, 120, -2, 15));
+        strategy.addFilter("收盘价与均线间的距离", Filters.filter_mustCloseAndMaRatioBetween(30, 20, 120, 0.96, 1.12));
         strategy.addFilter("波动较多", Filters.filter_0013b(100, 5, 7));
         strategy.addFilter("巨量换手", Filters.filter_mustHSLPercentileGreatThan(100, 400, 30, 90));
         strategy.addFilter("换手率百分位小于30", Filters.filter_mustHSLPercentileLessThan(60, 7, 25));
