@@ -715,6 +715,61 @@ public class Bar implements Serializable, Cloneable {
 		return cnt;
 	}
 
+	public int getBarCountExcludeToday(int days, Predicate<Bar> predicate) {
+		return this.before().getBarCount(days, predicate);
+	}
+
+	/**
+	 * days天內大于n天的连阳或连阴的个数
+	 */
+	public int getCountOfContinuousYangAndYin(int days, int n){
+		Bar k = this;
+		int total = 0;
+		int yang = 0;
+		int yin = 0;
+		while(k != null && k.before() != null){
+			if(k.isYang()){
+				yang++;
+				if(!k.before().isYang() && yang >= n) {
+					total++;
+					yang = 0;
+				}
+			}else{
+				yin++;
+				if(k.before().isYang() && yin >= n) {
+					total++;
+					yin = 0;
+				}
+			}
+			if(--days < 1){
+				break;
+			}
+			k = k.before(1);
+		}
+		return total;
+	}
+
+	/**
+	 * @param days
+	 * @param indent 当满足条件时，k线往前进的天数
+	 * @param predicate
+	 */
+	public int getBarCount(int days, int indent, Predicate<Bar> predicate) {
+		Bar k = this;
+		int cnt = 0;
+		while(k != null){
+			if(predicate.test(k)){
+				cnt ++;
+				k = k.before(indent);
+			}
+			if(--days < 1){
+				break;
+			}
+			k = k.before(1);
+		}
+		return cnt;
+	}
+
 	/**
 	 * 给days天内所有bar打分，返回分数之和
 	 */
@@ -810,34 +865,10 @@ public class Bar implements Serializable, Cloneable {
         if(this.isYin() && this.yesterday() != null && this.getVolume()*percent < this.yesterday().getVolume()){//今天阴线量能小于昨天20%，加3
             score += 5;
         }
+        //score += getCountOfContinuousYangAndYin(days, 4);
         return score;
 	}
 
-
-    public int getBarCountExcludeToday(int days, Predicate<Bar> predicate) {
-        return this.before().getBarCount(days, predicate);
-    }
-
-	/**
-	 * @param days
-	 * @param indent 当满足条件时，k线往前进的天数
-	 * @param predicate
-	 */
-	public int getBarCount(int days, int indent, Predicate<Bar> predicate) {
-		Bar k = this;
-		int cnt = 0;
-		while(k != null){
-			if(predicate.test(k)){
-				cnt ++;
-				k = k.before(indent);
-			}
-			if(--days < 1){
-				break;
-			}
-			k = k.before(1);
-		}
-		return cnt;
-	}
 
 	/**
 	 * 得到连续满足条件的所有bar
