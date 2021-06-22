@@ -730,15 +730,17 @@ public class Bar implements Serializable, Cloneable {
 		while(k != null && k.before() != null){
 			if(k.isYang()){
 				yang++;
-				if(!k.before().isYang() && yang >= n) {
-					total++;
-					yang = 0;
+				if(!k.before().isYang()) {
+                    if(yang >= n)
+                        total++;
+                    yang = 0;
 				}
 			}else{
 				yin++;
-				if(k.before().isYang() && yin >= n) {
-					total++;
-					yin = 0;
+				if(k.before().isYang()) {
+                    if(yin >= n)
+                        total++;
+                    yin = 0;
 				}
 			}
 			if(--days < 1){
@@ -865,7 +867,7 @@ public class Bar implements Serializable, Cloneable {
         if(this.isYin() && this.yesterday() != null && this.getVolume()*percent < this.yesterday().getVolume()){//今天阴线量能小于昨天20%，加3
             score += 5;
         }
-        //score += getCountOfContinuousYangAndYin(days, 4);
+        score += getCountOfContinuousYangAndYin(days, 3);
         return score;
 	}
 

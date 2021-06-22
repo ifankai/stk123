@@ -74,10 +74,10 @@ public class TestController {
 //        stock.getBarSeries();
 //        System.out.println(stock.getBar().before(10).getChange(-7, Bar.EnumValue.C));
 
-        Stock stock = Stock.build("BK0891");
-        List<Stock> stocks = stock.getGreatestStocksInBkByRps(10, Rps.CODE_STOCK_SCORE_20);
+        Stock stock = Stock.build("300581");
+        int cnt = stock.getBar().getCountOfContinuousYangAndYin(30, 3);
 
-        return RequestResult.success(StringUtils.join(stocks.stream().map(stk->stk.getNameAndCodeWithLink()).collect(Collectors.toList())));
+        return RequestResult.success(cnt);
     }
 
 
