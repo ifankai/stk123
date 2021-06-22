@@ -136,7 +136,7 @@ public class StockService {
                     }
                     return scode;
                 },
-                stock -> stock));
+                stock -> stock,(entity1,entity2) -> entity1)/*(entity1, entity2) -> entity1 这里使用的箭头函数，也就是说当出现了重复key的数据时，会回调这个方法，可以在这个方法里处理重复Key数据问题，直接使用了上一个数据*/);
 
         List<String> codes = map.keySet().stream().filter(Objects::nonNull).collect(Collectors.toList());
         String listCodes = StringUtils.join(codes, ',');
