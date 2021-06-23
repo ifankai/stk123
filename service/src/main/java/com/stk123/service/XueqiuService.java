@@ -99,6 +99,9 @@ public class XueqiuService {
 	public static void clearFollowStks(String tabName){
 		Follows.remove(tabName);
 	}
+    public static void clearFollowStks(){
+        Follows = new HashMap<>();
+    }
 	
 	//https://xueqiu.com/v4/stock/portfolio/stocks.json?size=1000&pid=10&tuid=6237744859&pname=%E5%85%B3%E6%B3%A8C&uid=6237744859&category=2&type=2&_=1505130889888
 	//https://xueqiu.com/v4/stock/portfolio/stocks.json?size=1000&pid=17&tuid=6237744859&pname=%E5%85%B3%E6%B3%A8H&uid=6237744859&category=2&type=2&_=1505131015277
