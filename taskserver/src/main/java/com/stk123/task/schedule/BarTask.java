@@ -1,5 +1,6 @@
 package com.stk123.task.schedule;
 
+import com.google.common.collect.Sets;
 import com.stk123.common.CommonUtils;
 import com.stk123.common.util.EmailUtils;
 import com.stk123.common.util.ListUtils;
@@ -32,6 +33,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.domain.Range;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -381,20 +383,21 @@ public class BarTask extends AbstractTask {
 
     public void analyseMyStocks(){
         try {
-            final Set<StockWrapper> allList = new LinkedHashSet<>();
+            Set<StockWrapper> allList = new LinkedHashSet<>();
 
             if(code != null){
                 List<String> codes = Arrays.asList(StringUtils.split(code, ","));
                 addStocks(allList, codes, null);
             }else {
-                XueqiuService.clearFollowStks("全部");
+                XueqiuService.clearFollowStks();
                 Set<String> myList = XueqiuService.getFollowStks("全部");
-                //Set<String> myList = XueqiuService.getFollowStks("我的");
-                if (myList.isEmpty()) {
+                Set<String> iList = XueqiuService.getFollowStks("我的");
+                if (myList.isEmpty() || iList.isEmpty()) {
                     EmailUtils.send("雪球抓取自选股失败", "雪球抓取自选股失败");
                     return;
                 }
                 log.info(myList);
+                List<String> excludeList = new ArrayList<>(iList).subList(0,20);
                 addStocks(allList, myList, "自选股");
 
                 //雪球组合
@@ -405,10 +408,10 @@ public class BarTask extends AbstractTask {
                     try {
                         List<com.stk123.model.xueqiu.Stock> stocks = XueqiuService.getPortfolioStocks(portfolio.getSymbol());
                         portfolio.setStocks(stocks);
-                        stocks.forEach(stock -> {
+                        for (com.stk123.model.xueqiu.Stock stock : stocks) {
                             addStock(allList, stock.getCode(),
-                                    CommonUtils.wrapLink(portfolio.getName(), "https://xueqiu.com/P/" + portfolio.getSymbol()) + " ["+stock.getWeight()+"]");
-                        });
+                                    CommonUtils.wrapLink(portfolio.getName(), "https://xueqiu.com/P/" + portfolio.getSymbol()) + " [" + stock.getWeight() + "]");
+                        }
                         if (k++ % 10 == 0) {
                             Thread.sleep(15 * 1000);
                         }
@@ -441,7 +444,9 @@ public class BarTask extends AbstractTask {
                 log.info("反转股个数："+tmpStocks.size());
                 addStocks(allList, tmpStocks.stream().map(Stock::getCode).collect(Collectors.toSet()), "反转股");*/
 
+                allList = allList.stream().filter(stockWrapper -> !excludeList.contains(stockWrapper.getCode())).collect(Collectors.toSet());
             }
+
             log.info("allList.size="+allList.size()+", "+allList);
 
             List<Stock> stocks = stockService.buildStocks(allList.stream().map(StockWrapper::getCode).collect(Collectors.toList()));
