@@ -7,12 +7,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,9 +30,14 @@ import java.nio.file.Paths;
  * Console URL: http://127.0.0.1:8080/h2-console
  *
  */
-@SpringBootApplication(exclude={DataSourceAutoConfiguration.class,HibernateJpaAutoConfiguration.class})
-@EnableAutoConfiguration
-//@EntityScan({"com.stk123.entity"})
+//@SpringBootApplication(exclude={DataSourceAutoConfiguration.class,HibernateJpaAutoConfiguration.class})
+@SpringBootApplication(scanBasePackages =
+        {"com.stk123.app","com.stk123.service","com.stk123.service.core","com.stk123.controller","com.stk123.entity","com.stk123.repository","com.stk123.model","com.stk123.config"})
+@EnableJpaRepositories({"com.stk123.entity","com.stk123.repository"})
+@EntityScan({"com.stk123.entity"})
+@EnableTransactionManagement
+@Configuration
+@EnableScheduling
 @EnableAsync
 public class WebApplication {
 

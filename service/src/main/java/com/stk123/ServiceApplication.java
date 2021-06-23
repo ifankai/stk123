@@ -1,8 +1,6 @@
 package com.stk123;
 
 
-import com.stk123.entity.StkKlineEntity;
-import com.stk123.model.RequestResult;
 import com.stk123.service.core.EsService;
 import com.stk123.util.ServiceUtils;
 import com.stk123.ws.StkWebSocketClient;
@@ -15,32 +13,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.annotation.Bean;
-
-import org.springframework.context.annotation.Import;
-import org.springframework.context.event.EventListener;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.core.env.Environment;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.springframework.web.client.RestTemplate;
-
-import java.lang.management.ManagementFactory;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
-
 import org.springframework.context.event.EventListener;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.web.client.RestTemplate;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -78,13 +54,6 @@ public class ServiceApplication implements ApplicationContextAware {
         this.context = ctx;
     }
 
-    @Bean
-    public RestTemplate restTemplate(){
-        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        factory.setReadTimeout(5000);//单位为ms
-        factory.setConnectTimeout(5000);//单位为ms
-        return new RestTemplate(factory);
-    }
 
     //@EventListener(ApplicationReadyEvent.class)
     //@Scheduled(cron = "${service.schedule.websocket.cron}")

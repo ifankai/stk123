@@ -48,14 +48,6 @@ public class TaskApplication {
         Files.write(Paths.get("./pid.txt"), pid.getBytes());
     }
 
-    @Bean
-    public RestTemplate restTemplate(){
-        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        factory.setReadTimeout(5000);//单位为ms
-        factory.setConnectTimeout(5000);//单位为ms
-        return new RestTemplate(factory);
-    }
-
     @EventListener(ApplicationReadyEvent.class)
     public void doSomethingAfterStartup() {
         System.out.println("doSomethingAfterStartup..........");
