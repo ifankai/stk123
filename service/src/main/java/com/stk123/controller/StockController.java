@@ -73,5 +73,13 @@ public class StockController {
         return RequestResult.success();
     }
 
+    @RequestMapping(value = {"/score/{code}"})
+    @ResponseBody
+    public RequestResult score(@PathVariable(value = "code")String code){
+        Stock stock = Stock.build(code);
+        int cnt = stock.getScore();
+
+        return RequestResult.success(cnt);
+    }
 
 }

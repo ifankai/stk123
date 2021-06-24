@@ -24,27 +24,4 @@ public class MainController {
         return "main";
     }
 
-    @RequestMapping("/k/{codes}")
-    public String show(@PathVariable(value = "codes", required = true)String codes, Model model){
-        String[] stks = StringUtils.split(codes, ",");
-        List<Map> urls = new ArrayList<>();
-        for(String stk : stks){
-            Map<String, String> map = new HashMap<>();
-            map.put("daily", CommonUtils.wrapLink(getDayBarImage(stk,"daily"), "https://xueqiu.com/S/"+stk));
-            map.put("weekly", CommonUtils.wrapLink(getDayBarImage(stk, "weekly"), "https://xueqiu.com/S/"+stk));
-            urls.add(map);
-        }
-        model.addAttribute("urls", urls);
-        return "k";
-    }
-
-    public String getDayBarImage(String code, String period){
-        if(code.length() == 8) {
-            return "<img src='http://image.sinajs.cn/newchart/"+period+"/n/" + code.toLowerCase() + ".gif' />";
-        }else if(code.length() == 5 && NumberUtils.isDigits(code)){
-            return "<img src='http://image.sinajs.cn/newchart/hk_stock/"+period+"/" + code + ".gif' />";
-        }else{
-            return "<img src='http://image.sinajs.cn/newchartv5/usstock/"+period+"/" + code.toLowerCase() + ".gif' />";
-        }
-    }
 }

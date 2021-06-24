@@ -3,7 +3,7 @@ const app = Vue.createApp({
         return {
             name: "哈哈哈",
             infos: {},
-            notices: {}
+            posts: {}
         }
     },
     methods: {
@@ -11,15 +11,15 @@ const app = Vue.createApp({
             console.log(this.name);
             axios.get("/notice").then (function (res) {
                 console.log(res.data);
-                this.notices = res.data;
+                this.posts = res.data;
             });
-            return this.notices;
+            return this.posts;
         },
     },
     mounted() {
         // `this` 指向 vm 实例
         console.log('name is: ' + this.name); // => "count is: 1"
-        initPosts('');
+        this.posts = initPosts('');
     }
 });
 const vm = app.mount('#app');

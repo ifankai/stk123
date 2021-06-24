@@ -32,8 +32,8 @@
         </button>
         <div class="collapse navbar-collapse" id="navbar">
             <ul class="navbar-nav">
-                <li class="nav-item active">
-                    <a class="nav-link" href="#">日K线</a>
+                <li class="nav-item">
+                    <a class="nav-link show active" href="#">日K线</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">周K线</a>
@@ -42,23 +42,23 @@
         </div>
     </nav>
 
-    <div class="row no-gutters" th:each="url,iter : ${urls}" th:with="numList=${#strings.listSplit('0,1', ',')}" th:if="${iter.index} % 2 == 0">
-        <div class="col-md-6" th:each="num : ${numList}" th:with="dataIndex=(${iter.index} + ${num})" th:if="(${iter.index} + ${num}) &lt; ${#lists.size(urls)}">
+    <div class="row no-gutters" th:each="stock,iter : ${stocks}" th:with="numList=${#strings.listSplit('0,1', ',')}" th:if="${iter.index} % 2 == 0">
+        <div class="col-md-6" th:each="num : ${numList}" th:with="dataIndex=(${iter.index} + ${num})" th:if="(${iter.index} + ${num}) &lt; ${#lists.size(stocks)}">
             <div class="row no-gutters">
                 <div class="col-1">
-                    <div class="nav flex-column nav-tabs" id="tabs" role="tablist">
-                        <a class="nav-link active p-1" href="#tabs-1" role="tab">日K线</a>
-                        <a class="nav-link p-1" href="#tabs-2" role="tab">周K线</a>
+                    <div class="nav flex-column nav-tabs" th:id="'tabs-'+${stocks[dataIndex][code]}" role="tablist">
+                        <a class="nav-link active p-1" th:href="'#tabs-'+${stocks[dataIndex][code]}+'-1'" role="tab">日K线</a>
+                        <a class="nav-link p-1" th:href="'#tabs-'+${stocks[dataIndex][code]}+'-2'" role="tab">周K线</a>
                     </div>
                 </div>
 
-                <div class="col-9" style="margin-left:-5px;">
+                <div class="col-9">
                     <div class="tab-content">
-                        <div role="tabpanel" class="tab-pane fade show active" id="tabs-1">
-                            <span th:utext=="${urls[dataIndex][daily]}"></span>
+                        <div role="tabpanel" class="tab-pane fade show active" th:id="'tabs-'+${stocks[dataIndex][code]}+'-1'">
+                            <span th:utext=="${stocks[dataIndex][daily]}"></span>
                         </div>
-                        <div role="tabpanel" class="tab-pane fade" id="tabs-2">
-                            <span th:utext=="${urls[dataIndex][weekly]}"></span>
+                        <div role="tabpanel" class="tab-pane fade" th:id="'tabs-'+${stocks[dataIndex][code]}+'-2'">
+                            <span th:utext=="${stocks[dataIndex][weekly]}"></span>
                         </div>
                     </div>
                 </div>
@@ -72,13 +72,13 @@
 </body>
 </html>
 <script>
-  $('#tabs a').click(function (e) {
-    e.preventDefault()
+  $("[id^='tabs-'] a").click(function (e) {
+    e.preventDefault();
     $(this).tab('show')
-  })
+  });
   $('#navbar a').click(function (e) {
-      e.preventDefault()
+      e.preventDefault();
       $(this).tab('show')
-  })
+  });
 </script>
 

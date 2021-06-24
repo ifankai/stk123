@@ -744,6 +744,7 @@ public class Stock {
         return info + CommonUtils.k("查看", stocks.stream().map(Stock::getCodeWithPlace).collect(Collectors.toList()));
     }
 
+    @Deprecated
     public int getScore(String date){
         int days = 30;
         Bar bar = this.getBar().before(date);
@@ -765,7 +766,7 @@ public class Stock {
     }
 
     public int getScoreByBk(){
-        if(!this.getBks().isEmpty()){
+        if(this.bks != null){
             Stock bk = this.getBkByMaxRps(Rps.CODE_BK_60);
             Rps rps = bk.getRps(Rps.CODE_BK_60);
             if(rps != null){

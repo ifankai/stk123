@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping(value = {"/s","/S"})
 @CommonsLog
-public class SController {
+public class StockWebController {
 
     @RequestMapping("/{code}")
     public String stock(@PathVariable(value = "code", required = true)String code, Model model){
