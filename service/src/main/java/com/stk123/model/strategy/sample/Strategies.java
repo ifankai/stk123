@@ -378,6 +378,7 @@ public class Strategies {
         strategy2.setWeight(0.3);
         strategy2.addFilter("个股score"+"_02", (strgy, stock) -> {
             double rpsValue = stock.getBar().getChange(20, Bar.EnumValue.C);
+            if(rpsValue < 0) rpsValue = 0;
             stock.setRpsValue(Rps.CODE_STOCK_SCORE_20+"_02", CommonUtils.numberFormat(rpsValue, 2));
             return FilterResult.TRUE();
         });

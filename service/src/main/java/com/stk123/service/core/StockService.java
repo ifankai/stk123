@@ -226,16 +226,21 @@ public class StockService {
                 stks = stocks.stream().sorted(Comparator.comparing(stock -> stock.getRps(rpsStrategyCode).getValue(), Comparator.reverseOrder())).collect(Collectors.toList());
             }
             int order = 1;
+            Stock prev = null;
             for (Stock stock : stks) {
                 Rps rps = stock.getRps(rpsStrategyCode);
                 if (rps.getValue() == null) {
                     stock.setRpsPercentile(rpsStrategyCode, 50.0);
-                    order++;
-                    continue;
+                }else {
+                    stock.setRpsOrder(rpsStrategyCode, order);
+                    if(prev != null && rps.getValue().equals(prev.getRps(rpsStrategyCode).getValue())){
+                        stock.setRpsPercentile(rpsStrategyCode, prev.getRps(rpsStrategyCode).getPercentile());
+                    }else {
+                        stock.setRpsPercentile(rpsStrategyCode, order * 1.0 / stks.size() * 100);
+                    }
                 }
-                stock.setRpsOrder(rpsStrategyCode, order);
-                stock.setRpsPercentile(rpsStrategyCode, order * 1.0 / stks.size() * 100);
                 order++;
+                prev = stock;
             }
         }
 
@@ -246,16 +251,21 @@ public class StockService {
             });
             stks = stks.stream().sorted(Comparator.comparing(stock -> stock.getRps(rpsCode).getValue())).collect(Collectors.toList());
             int order = 1;
+            Stock prev = null;
             for (Stock stock : stks) {
                 Rps rps = stock.getRps(rpsCode);
                 if (rps.getValue() == null) {
                     stock.setRpsPercentile(rpsCode, 50.0);
-                    order++;
-                    continue;
+                }else {
+                    stock.setRpsOrder(rpsCode, order);
+                    if(prev != null && rps.getValue().equals(prev.getRps(rpsCode).getValue())){
+                        stock.setRpsPercentile(rpsCode, prev.getRps(rpsCode).getPercentile());
+                    }else {
+                        stock.setRpsPercentile(rpsCode, order * 1.0 / stks.size() * 100);
+                    }
                 }
-                stock.setRpsOrder(rpsCode, order);
-                stock.setRpsPercentile(rpsCode, order * 1.0 / stks.size() * 100);
                 order++;
+                prev = stock;
             }
         }
         return stks;
