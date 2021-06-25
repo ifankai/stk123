@@ -2,7 +2,9 @@ package com.stk123.service.core;
 
 import com.stk123.common.util.ListUtils;
 import com.stk123.common.util.PinYin4jUtils;
+import com.stk123.entity.StkDictionaryEntity;
 import com.stk123.entity.StkHolderEntity;
+import com.stk123.entity.StkNewsEntity;
 import com.stk123.model.core.Bar;
 import com.stk123.model.core.BarSeries;
 import com.stk123.model.core.Rps;
@@ -13,10 +15,8 @@ import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.model.projection.StockCodeNameProjection;
 import com.stk123.model.projection.StockProjection;
 import com.stk123.model.strategy.Strategy;
-import com.stk123.repository.BaseRepository;
-import com.stk123.repository.StkHolderRepository;
-import com.stk123.repository.StkKlineRepository;
-import com.stk123.repository.StkRepository;
+import com.stk123.repository.*;
+import com.stk123.service.StkConstant;
 import com.stk123.util.HttpUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -47,13 +47,17 @@ public class StockService {
     private StkHolderRepository stkHolderRepository;
     @Autowired
     private BacktestingService backtestingService;
+    @Autowired
+    private StkNewsRepository stkNewsRepository;
+    @Autowired
+    private StkDictionaryRepository stkDictionaryRepository;
 
     @Transactional
     public List<Stock> buildStocks(List<String> codes) {
         List<StockBasicProjection> list = BaseRepository.findAll1000(codes,
                 subCodes -> stkRepository.findAllByCodes(subCodes));
-
-        List<Stock> stocks = list.stream().map(projection -> Stock.build(projection)).collect(Collectors.toList());
+        Map<String, StockBasicProjection> map = list.stream().collect(Collectors.toMap(StockBasicProjection::getCode, Function.identity()));
+        List<Stock> stocks = codes.stream().filter(code -> map.get(code) != null).map(code -> Stock.build(map.get(code))).collect(Collectors.toList());
         return stocks;
     }
 
@@ -201,6 +205,21 @@ public class StockService {
         Map<String, StkHolderEntity> map = stkHolderRepository.findAllToMap();
         stocks.forEach(stock -> stock.setHolder(map.get(stock.getCode())));
         return stocks;
+    }
+
+    public List<Stock> buildNews(List<Stock> stocks, Date newCreateAfter){
+        List<Stock> list = BaseRepository.findAll1000(stocks,
+                subStocks -> {
+                    List<String> codes = subStocks.stream().map(Stock::getCode).collect(Collectors.toList());
+                    Map<String, List<StkNewsEntity>> map = stkNewsRepository.getAllByCodeInAndInfoCreateTimeAfterOrderByInsertTime(codes, newCreateAfter);
+                    subStocks.forEach(stock -> stock.setNews(map.get(stock.getCode())));
+                    return subStocks;
+                });
+        Map<String, StkDictionaryEntity> map = stkDictionaryRepository.getMapByType(StkConstant.DICT_NEWS);
+        list.forEach(stock -> {
+            stock.getNews().forEach(stkNewsEntity -> stkNewsEntity.setStkDictionaryEntity(map.get(stkNewsEntity.getType().toString())));
+        });
+        return list;
     }
 
     public List<Stock> calcRps(List<Stock> stocks, String rpsCode){

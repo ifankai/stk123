@@ -9,6 +9,7 @@ import com.stk123.common.util.ListUtils;
 import com.stk123.entity.StkHolderEntity;
 import com.stk123.entity.StkIndustryEntity;
 import com.stk123.entity.StkIndustryTypeEntity;
+import com.stk123.entity.StkNewsEntity;
 import com.stk123.model.bo.StkIndustryType;
 import com.stk123.model.json.View;
 import com.stk123.model.projection.IndustryProjection;
@@ -181,6 +182,7 @@ public class Stock {
     private List<Stock> stocks; //板块包含的所有股票
 
     private StkHolderEntity holder; //最新股东人数,人均持股金额
+    private List<StkNewsEntity> news;
 
     private BarSeries barSeries;
     private BarSeries barSeriesWeek;
@@ -741,7 +743,7 @@ public class Stock {
         final int[] a = {1};
 
         String info = displayAllStocks ? StringUtils.join(stocks.stream().map(stock->(a[0]++)+"."+stock.getNameAndCodeWithLink()+"["+CommonUtils.numberFormat2Digits(stock.getRps(rpsCode).getPercentile())+"("+stock.getRps(rpsCode).getRpsStrategies().stream().map(rs -> CommonUtils.numberFormat0Digits(stock.getRps(rs.getCode()).getPercentile())).collect(Collectors.toList())+")]").collect(Collectors.toList()), "<br/>") : "";
-        return info + CommonUtils.k("查看", stocks.stream().map(Stock::getCodeWithPlace).collect(Collectors.toList()));
+        return info + CommonUtils.k("查看", stocks.stream().map(Stock::getCode).collect(Collectors.toList()));
     }
 
     @Deprecated

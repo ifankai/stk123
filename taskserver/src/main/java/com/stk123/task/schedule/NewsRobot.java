@@ -13,6 +13,8 @@ import java.util.Map;
 
 import com.stk123.common.util.EmailUtils;
 import com.stk123.common.util.HtmlUtils;
+import com.stk123.model.bo.*;
+import com.stk123.service.DictService;
 import com.stk123.util.HttpUtils;
 import com.stk123.util.ServiceUtils;
 import com.stk123.common.util.*;
@@ -21,9 +23,6 @@ import org.apache.commons.lang.StringUtils;
 import org.htmlparser.Node;
 import org.htmlparser.tags.Span;
 
-import com.stk123.model.bo.Stk;
-import com.stk123.model.bo.StkImportInfo;
-import com.stk123.model.bo.StkImportInfoType;
 import com.stk123.model.bo.cust.StkFnDataCust;
 import com.stk123.model.Index;
 import com.stk123.model.Industry;
@@ -106,17 +105,17 @@ public class NewsRobot {
 	}
 	
 	public static void insert(Connection conn, Index index, List<Map> news) throws Exception {
-		List<StkImportInfoType> types = News.getTypes();
+        List<StkDictionary> types = DictService.getDictionary(2000);
 		Collections.reverse(news);
 		for(Map map : news){
 			String title = (String)map.get("title");
 			
-			for(StkImportInfoType type : types){
+			for(StkDictionary type : types){
 				boolean match = false;
-				String[] patterns = type.getMatchPattern().split(CommonConstant.MARK_SEMICOLON);
+				String[] patterns = type.getParam().split(CommonConstant.MARK_SEMICOLON);
 				for(String pattern : patterns){
 					if(ServiceUtils.getMatchString(title, pattern) != null){
-						if(type.getNotMatchPattern() != null && ServiceUtils.getMatchString(title, type.getNotMatchPattern().split(CommonConstant.MARK_SEMICOLON)) != null){
+						if(type.getParam2() != null && ServiceUtils.getMatchString(title, type.getParam2().split(CommonConstant.MARK_SEMICOLON)) != null){
 							continue;
 						}
 						match = true;
@@ -129,7 +128,7 @@ public class NewsRobot {
 					params.add(type.getType());
 					params.add(new Timestamp(ServiceUtils.addDay(((Date)map.get("date")),-5).getTime()));
 					params.add(new Timestamp(((Date)map.get("date")).getTime()));
-					List<StkImportInfo> infos = JdbcUtils.list(conn, "select * from stk_import_info where code=? and type=? and info_create_time between ? and ?", params, StkImportInfo.class);
+					List<StkNews> infos = JdbcUtils.list(conn, "select * from stk_news where code=? and type=? and info_create_time between ? and ?", params, StkNews.class);
 					if(infos.size() == 0){
 						params.clear();
 						params.add(index.getCode());
@@ -138,7 +137,7 @@ public class NewsRobot {
 						params.add((String)map.get("url"));
 						params.add((String)map.get("target"));
 						params.add(new Timestamp(((Date)map.get("date")).getTime()));
-						JdbcUtils.insert(conn, "insert into stk_import_info(id,code,type,insert_time,info,title,url_source,url_target,info_create_time) values (s_import_info_id.nextval,?,?,sysdate,null,?,?,?,?)", params);
+						JdbcUtils.insert(conn, "insert into stk_news(id,code,type,insert_time,info,title,url_source,url_target,info_create_time) values (s_news_id.nextval,?,?,sysdate,null,?,?,?,?)", params);
 						
 						//对合同、订单处理
 						if(type.getType() == 200){
@@ -154,7 +153,7 @@ public class NewsRobot {
 								params.add(index.getCode());
 								params.add(News.TYPE_1);
 								double percent = ServiceUtils.numberFormat(index.changePercent * 100, 2);
-								params.add("["+type.getName()+"] 半年来总额是主营收入(TTM)的 "+ percent +"%");
+								params.add("["+type.getText()+"] 半年来总额是主营收入(TTM)的 "+ percent +"%");
 								JdbcUtils.insert(conn, "insert into stk_import_info(id,code,type,insert_time,info) values (s_import_info_id.nextval,?,?,sysdate,?)", params);
 								
 								if(percent >= 300){
@@ -169,7 +168,7 @@ public class NewsRobot {
 								params.clear();
 								params.add(index.getCode());
 								params.add(News.TYPE_4);
-								params.add("["+type.getName()+"] 金额是总市值["+ServiceUtils.number2String(index.getTotalMarketValue(),2)+"亿]的 "+ServiceUtils.numberFormat(index.changePercent * 100, 2)+"%. - " + title);
+								params.add("["+type.getText()+"] 金额是总市值["+ServiceUtils.number2String(index.getTotalMarketValue(),2)+"亿]的 "+ServiceUtils.numberFormat(index.changePercent * 100, 2)+"%. - " + title);
 								JdbcUtils.insert(conn, "insert into stk_import_info(id,code,type,insert_time,info) values (s_import_info_id.nextval,?,?,sysdate,?)", params);
 							}
 						}
@@ -212,9 +211,9 @@ public class NewsRobot {
 			params.add(index.getCode());
 			params.add(new Timestamp(ServiceUtils.addDay(newsCreateDate,-180).getTime()));
 			params.add(new Timestamp(newsCreateDate.getTime()));
-			List<StkImportInfo> infos = JdbcUtils.list(conn, "select * from stk_import_info where code=? and type=200 and info_create_time between ? and ?", params, StkImportInfo.class);
+			List<StkNews> infos = JdbcUtils.list(conn, "select * from stk_news where code=? and type=200 and info_create_time between ? and ?", params, StkNews.class);
 			double total = 0.0;
-			for(StkImportInfo info : infos){
+			for(StkNews info : infos){
 				String t = info.getTitle();
 				if(t.contains("同比") || t.contains("环比"))continue;
 				amount = ServiceUtils.getMatchString(t, ServiceUtils.PATTERN_1);

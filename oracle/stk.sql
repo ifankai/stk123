@@ -349,6 +349,21 @@ create index idx_import_info__code on stk_import_info (code);
 create index idx_import_info__type on stk_import_info (type);
 
 
+create table stk_news as select * from stk_import_info where 1=1;
+alter table stk_news add constraint pk_news primary key (id);
+alter table stk_news
+  add constraint fk_new__code foreign key (code)
+  references stk (code);
+create sequence s_news_id
+　　INCREMENT BY 1
+　　START WITH 400000
+　　NOMAXVALUE
+　　NOCYCLE
+　　CACHE 10;
+create index idx_news__code on stk_news (code);
+create index idx_news__type on stk_news (type);
+
+
 create table stk_import_info_type(
   type   number(4),
   name   varchar2(200)
@@ -747,7 +762,11 @@ alter table stk_dictionary add param_3 varchar2(100);
 alter table stk_dictionary add param_4 varchar2(100);
 alter table stk_dictionary add param_5 varchar2(100);
 create index idx_dictionary_type on stk_dictionary (type);
-
+alter table stk_dictionary modify param varchar2(400);
+alter table stk_dictionary modify param_2 varchar2(400);
+alter table stk_dictionary modify param_3 varchar2(400);
+alter table stk_dictionary modify param_4 varchar2(400);
+alter table stk_dictionary modify param_5 varchar2(400);
 
 create table stk_label(
   id number(6),
@@ -2846,7 +2865,8 @@ select s.code,s.name from stk s,stk_industry i,stk_industry_type t
 where s.code=i.code and i.industry=t.id and t.source='csindex_zjh' and t.code='07'
 order by t.id,s.code;
 
-select * from stk_industry_type order by name asc
+select * from stk_industry_type where code='BK0900';
+select * from stk_industry where industry=125000 and code='002664';
 
 select sum(rate), name, count(*), sum(rate) / count(*) * 100
   from (select a.code, b.rate, c.name, fn_date
@@ -2932,9 +2952,13 @@ select * from stk_text where sub_type=100 order by insert_time desc;
 select * from stk where market=2 order by insert_time desc;
 select * from stk where code='605395';
 
-delete from stk_holder where code='000832';
+select * from stk_holder where code='000832';
 delete from stk_fn_data where code='000832';
 delete from stk where code='000832';
+
+select s.code, t.fn_date, t.holder, t.holding_amount, t.holder_change 
+        from (select code, fn_date, holder, holding_amount,holder_change, ROW_NUMBER() over(PARTITION by code order by fn_date desc) as num from stk_holder) t, stk s 
+        where t.code=s.code and t.num = 1 and t.holder_change<-10
 
 select * from stk_error_log;
 
@@ -2975,3 +2999,8 @@ select * from stk_text where reply_positive is not null;
 
 select * from stk_error_log order by insert_time desc;
 select * from stk_import_info order by insert_time desc;
+
+select * from stk_news where code='300490' and type<100 order by id desc;
+
+select * from stk_import_info_type;
+select * from stk_dictionary where type=2000 for update;
