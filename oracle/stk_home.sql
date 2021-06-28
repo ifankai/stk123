@@ -188,3 +188,6 @@ free -m
 
 ORA-28040: No matching authentication protocol
 https://logic.edchen.org/how-to-resolve-ora-28040-no-matching-authentication-protocol/
+
+java.sql.SQLException: ORA-01017: invalid username/password; logon denied
+Remove all ojdbc6.jar from war/jar

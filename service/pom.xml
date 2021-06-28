@@ -133,10 +133,6 @@
         </dependency>
         <dependency>
             <groupId>com.stk</groupId>
-            <artifactId>ojdbc6</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.stk</groupId>
             <artifactId>poi-scratchpad-3.11-20141221</artifactId>
         </dependency>
         <dependency>
