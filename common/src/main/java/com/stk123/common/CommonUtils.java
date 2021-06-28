@@ -932,6 +932,9 @@ public class CommonUtils {
         return "<a target='_blank' href='" + url + "'>" + title + "</a>";
     }
 
+    public static String k(String title, Set<String> codes){
+        return k(title, new ArrayList<>(codes));
+    }
     public static String k(String title, List<String> codes){
         return CommonUtils.wrapLink(title,"https://81.68.255.181:8443/bk/list/"+ StringUtils.join(codes, ","));
     }

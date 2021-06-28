@@ -478,6 +478,10 @@ public class BarTask extends AbstractTask {
                 List<List<String>> datasH = new ArrayList<>();
                 List<List<String>> datasU = new ArrayList<>();
 
+                Set<String> codeA = new LinkedHashSet<>();
+                Set<String> codeH = new LinkedHashSet<>();
+                Set<String> codeU = new LinkedHashSet<>();
+
                 String rowCode = null;
                 for(StrategyResult strategyResult : results){
                     Stock stock = stocks.stream().filter(stk -> stk.getCode().equals(strategyResult.getCode())).findFirst().orElse(null);
@@ -512,15 +516,22 @@ public class BarTask extends AbstractTask {
 
                     if(stock.isMarketCN()) {
                         datasA.add(data);
+                        codeA.add(stock.getCode());
                     }else if(stock.isMarketHK()){
                         datasH.add(data);
+                        codeH.add(stock.getCode());
                     }else if(stock.isMarketUS()){
                         datasU.add(data);
+                        codeU.add(stock.getCode());
                     }
                 }
 
                 List<String> titles = ListUtils.createList("标的", "日期/策略/来源", "日K线", "周K线", "历史策略回测通过率");
                 StringBuffer sb = new StringBuffer();
+                sb.append("A: ").append(CommonUtils.k("查看", codeA)).append("<br/>");
+                sb.append("H: ").append(CommonUtils.k("查看", codeH)).append("<br/>");
+                sb.append("U: ").append(CommonUtils.k("查看", codeU)).append("<br/><br/>");
+
                 sb.append("A股");        sb.append(CommonUtils.createHtmlTable(titles, datasA));sb.append("<br/>");
                 sb.append("H股");        sb.append(CommonUtils.createHtmlTable(titles, datasH));sb.append("<br/>");
                 sb.append("美股");       sb.append(CommonUtils.createHtmlTable(titles, datasU));sb.append("<br/>");
@@ -560,6 +571,7 @@ public class BarTask extends AbstractTask {
             List<StrategyResult> results = strategyBacktesting.getPassedStrategyResult();
             if(results.size() > 0) {
                 List<List<String>> datasA = new ArrayList<>();
+                Set<String> codeA = new LinkedHashSet<>();
 
                 String rowCode = null;
                 for (StrategyResult strategyResult : results) {
@@ -587,12 +599,15 @@ public class BarTask extends AbstractTask {
 
                     if(stock.isMarketCN()) {
                         datasA.add(data);
+                        codeA.add(stock.getCode());
                     }
 
                 }
 
                 List<String> titles = ListUtils.createList("标的", "日期/策略", "日K线", "周K线", "历史策略回测通过率");
                 StringBuffer sb = new StringBuffer();
+                sb.append("A: ").append(CommonUtils.k("查看", codeA)).append("<br/><br/>");
+
                 sb.append("A股");
                 sb.append(CommonUtils.createHtmlTable(titles, datasA));sb.append("<br/>");
 
