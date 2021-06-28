@@ -729,6 +729,40 @@ public class Filters {
         };
     }
 
+    //站上底部一堆放量
+    public static Filter<Stock> filter_011b(int days, double n){
+        return (strategy, stock) -> {
+            Bar today = stock.getBar();
+            if(today.getMACD().dif < today.getMACD().dea){
+                return FilterResult.FALSE("MACD没有上穿");
+            }
+
+            //days日内价格最低点
+            Bar lowest = today.getLowestBar(days, Bar.EnumValue.C);
+            //价格最低日 到 today的 天数
+            int days2 = today.getDaysBetween(today.getDate(), lowest.getDate());
+
+            //days天内最大5日均量
+            Bar k = today.before().getHighestBar(days2, Bar.EnumValue.V, 5, Bar.EnumCalculationMethod.MA);
+            //Bar k2 = k.getHighestBar(5, Bar.EnumValue.V);
+            if(k != null && today.getClose() >= Math.max(k.getClose(), k.getOpen()) && today.before().getClose() <= Math.max(k.getClose(), k.getOpen())){
+                Bar k4 = k.getHighestBar(5, Bar.EnumValue.V);
+                int cnt = k4.getBarCount(100, bar -> k4.getVolume()<bar.getVolume());
+                if(cnt >= 3){
+                    return FilterResult.FALSE("推量附近没有单日大量");
+                }
+                //days天内最小5日均量
+                Bar k3 = k.before().getLowestBar(15, Bar.EnumValue.V, 5, Bar.EnumCalculationMethod.MA);
+                double m = k.getMA(5, Bar.EnumValue.V) / k3.getMA(5, Bar.EnumValue.V);
+                if(m >= n) {
+                    return FilterResult.TRUE(m);
+                }
+                return FilterResult.FALSE(k3.getDate()+","+m);
+            }
+            return FilterResult.FALSE(k!=null?k.getDate():lowest.getDate());
+        };
+    }
+
     public static Filter<Stock> filter_0012a(Bar bar, int length) {
         return (strategy, stock) -> {
             Bar today = stock.getBar();
@@ -924,4 +958,15 @@ public class Filters {
     }
 
 
+    // 放量突破后回调再突破
+    public static Filter<Stock> filter_019a(int days) {
+        return (strategy, stock) -> {
+            Bar today = stock.getBar();
+            Bar bar = today.getHighestBar(30, bar1 -> {
+                return bar1.getSUM(5, Bar.EnumValue.V);
+            });
+
+            return FilterResult.FALSE();
+        };
+    }
 }

@@ -242,6 +242,13 @@ public class Strategies {
         strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
         return strategy;
     }
+    //放量突破后回调再突破
+    public static Strategy strategy_06d() {
+        Strategy<Stock> strategy = new Strategy<>("strategy_06d", "放量突破后回调再突破(06d)", Stock.class);
+        strategy.addFilter("站上一堆放量", Filters.filter_011b(120,4));
+        strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
+        return strategy;
+    }
 
 
     /**** 相似K线 ****/
@@ -339,6 +346,9 @@ public class Strategies {
         return strategy;
     }
 
+
+
+    /**************** Rps *********************/
 
     public static Strategy rps_01() {
         Strategy<Stock> strategy = new Strategy<>(Rps.CODE_BK_60,"板块60日涨幅", Stock.class);

@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import com.stk123.common.util.ConfigUtils;
+import org.apache.commons.lang.StringUtils;
 
 
 public class DBUtil {
@@ -24,7 +25,7 @@ public class DBUtil {
 	public static final String DB_ORACLE = "oracle";
 	public static final boolean isOracle = ConfigUtils.getProp(DB).equalsIgnoreCase(DB_ORACLE);
 	
-	public static final String DB_ORACLE_URL = ConfigUtils.getProp(DB_URL);
+	public static String DB_ORACLE_URL = ConfigUtils.getProp(DB_URL);
 	public static final String DB_ORACLE_USER = ConfigUtils.getProp(DB_USER);
 	public static final String DB_ORACLE_PASS = ConfigUtils.getProp(DB_PASS);
 	
@@ -84,6 +85,10 @@ public class DBUtil {
 		Class.forName(ORACLE_DRIVER);//
 		if(DB_ORACLE_URL == null){
 			throw new SQLException("Please set database configuration file!");
+		}else{
+			if(StringUtils.isNotEmpty(System.getProperty(DB_URL))){
+				DB_ORACLE_URL = System.getProperty(DB_URL);
+			}
 		}
 		//System.out.println(DB_ORACLE_URL);
 		Connection conn = DriverManager.getConnection(DB_ORACLE_URL,DB_ORACLE_USER,DB_ORACLE_PASS);

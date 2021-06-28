@@ -185,3 +185,6 @@ grep "Out of memory" /var/log/messages
 --²é¿´liunxÄÚ´æ
 top
 free -m
+
+ORA-28040: No matching authentication protocol
+https://logic.edchen.org/how-to-resolve-ora-28040-no-matching-authentication-protocol/

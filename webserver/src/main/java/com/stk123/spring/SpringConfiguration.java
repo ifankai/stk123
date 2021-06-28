@@ -1,6 +1,7 @@
 package com.stk123.spring;
 
 import com.alibaba.druid.pool.DruidDataSourceFactory;
+import com.stk123.common.db.util.DBUtil;
 import com.stk123.common.util.ConfigUtils;
 import com.stk123.common.util.JWhich;
 import lombok.extern.apachecommons.CommonsLog;
@@ -106,6 +107,10 @@ public class SpringConfiguration {
             properties.put("testWhileIdle", "false");
         } else {
             properties.putAll(ConfigUtils.getProps());
+            if(StringUtils.isNotEmpty(System.getProperty(DBUtil.DB_URL))){
+                String db_url = System.getProperty(DBUtil.DB_URL);
+                properties.put("url", db_url);
+            }
         }
 
         DataSource dataSource = null;

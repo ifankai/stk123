@@ -60,25 +60,25 @@
             <div class="row no-gutters" style="margin-top: 15px;">
                 <div class="col-1">
                     <div class="nav flex-column nav-tabs" th:id="'tabs-'+${stocks[dataIndex][code]}" role="tablist">
-                        <a class="nav-link active p-1" th:href="'#tabs-'+${stocks[dataIndex][code]}+'-1'" role="tab">日线</a>
-                        <a class="nav-link p-1" th:href="'#tabs-'+${stocks[dataIndex][code]}+'-2'" role="tab">周线</a>
-                        <a class="nav-link p-1" th:href="'#tabs-'+${stocks[dataIndex][code]}+'-3'" role="tab">月线</a>
-                        <a class="nav-link p-1" th:href="'#tabs-'+${stocks[dataIndex][code]}+'-4'" role="tab">新闻</a>
+                        <a class="nav-link active p-1" th:href="'#tab-'+${stocks[dataIndex][code]}+'-1'" role="tab">日线</a>
+                        <a class="nav-link p-1" th:href="'#tab-'+${stocks[dataIndex][code]}+'-2'" role="tab">周线</a>
+                        <a class="nav-link p-1" th:href="'#tab-'+${stocks[dataIndex][code]}+'-3'" role="tab">月线</a>
+                        <a class="nav-link p-1" th:href="'#tab-'+${stocks[dataIndex][code]}+'-4'" role="tab">新闻</a>
                     </div>
                 </div>
 
                 <div class="col-11">
                     <div class="tab-content">
-                        <div role="tabpanel" class="tab-pane fade show active" th:id="'tabs-'+${stocks[dataIndex][code]}+'-1'">
+                        <div role="tabpanel" class="tab-pane fade show active" th:id="'tab-'+${stocks[dataIndex][code]}+'-1'">
                             <span th:utext=="${stocks[dataIndex][daily]}"></span>
                         </div>
-                        <div role="tabpanel" class="tab-pane fade" th:id="'tabs-'+${stocks[dataIndex][code]}+'-2'">
+                        <div role="tabpanel" class="tab-pane fade" th:id="'tab-'+${stocks[dataIndex][code]}+'-2'">
                             <span th:utext=="${stocks[dataIndex][weekly]}"></span>
                         </div>
-                        <div role="tabpanel" class="tab-pane fade" th:id="'tabs-'+${stocks[dataIndex][code]}+'-3'">
+                        <div role="tabpanel" class="tab-pane fade" th:id="'tab-'+${stocks[dataIndex][code]}+'-3'">
                             <span th:utext=="${stocks[dataIndex][monthly]}"></span>
                         </div>
-                        <div role="tabpanel" class="tab-pane fade" th:id="'tabs-'+${stocks[dataIndex][code]}+'-4'" style="min-height: 300px">
+                        <div role="tabpanel" class="tab-pane fade" th:id="'tab-'+${stocks[dataIndex][code]}+'-4'" style="min-height: 300px">
                             <div class="container">
                                 <th:block th:if="${stocks[dataIndex][news] != null}">
                                     <th:block th:each="n : ${stocks[dataIndex][news]}">

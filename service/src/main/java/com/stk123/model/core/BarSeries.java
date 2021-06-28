@@ -114,6 +114,10 @@ public class BarSeries {
         return list.peek();
     }
 
+    public Bar getBar(){
+        return this.getFirst();
+    }
+
     public Bar getLast(){
         return list.peekLast();
     }
