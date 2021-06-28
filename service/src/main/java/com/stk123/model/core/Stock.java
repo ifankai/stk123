@@ -668,6 +668,9 @@ public class Stock {
     public String getWeekBarImage(){
         return getBarImage("weekly");
     }
+    public String getMonthBarImage(){
+        return getBarImage("monthly");
+    }
 
     public Double getMarketCap(){
         if(this.marketCap != null) return this.marketCap;

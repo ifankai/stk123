@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class Strategies {
 
     // ignore: 02a 选出来的标的太多，由02b替换
-    public static String STRATEGIES_MY_STOCKS = "01a,01b,01d,02b,03a,03b,04a,04b,04c,05a,05b,06a,06b,06c,10a";
+    public static String STRATEGIES_MY_STOCKS = "01a,01b,02b,03a,03b,04a,04b,04c,05a,05b,06a,06b,06c,10a"; //01d,
 
     public static String STRATEGIES_ALL_STOCKS = "01a,01b,01c,05b,06c,10a"; //,11a
 
@@ -68,7 +68,7 @@ public class Strategies {
         return strategy;
     }
     public static Strategy strategy_01c() {
-        return strategy_01("01c", 20, 50);
+        return strategy_01("01c", 30, 50);
     }
     public static Strategy strategy_01d() {
         return strategy_01("01d", 8, 50);

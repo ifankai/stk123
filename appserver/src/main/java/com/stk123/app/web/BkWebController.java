@@ -39,6 +39,7 @@ public class BkWebController {
             map.put("code", stock.getCode());
             map.put("daily", stock.getDayBarImage());
             map.put("weekly", stock.getWeekBarImage());
+            map.put("monthly", stock.getMonthBarImage());
             map.put("news", stock.getNews());
             maps.add(map);
         }
