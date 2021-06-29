@@ -458,7 +458,7 @@ public class BarTask extends AbstractTask {
             stocks = stockService.buildBarSeries(stocks, 500, realtime != null);
             stocks = stockService.buildIndustries(stocks);
             //建立板块关系，计算rps
-            buildBkAndCalcRps(stocks);
+            stockService.buildBkAndCalcRps(stocks, Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn);
             stockService.buildHolder(stocks);
 
             String stratgies = Strategies.STRATEGIES_MY_STOCKS;
@@ -553,7 +553,7 @@ public class BarTask extends AbstractTask {
     public void analyseAllStocks(){
         try {
             if(StocksAllCN == null) {
-                StocksAllCN = getAllStocks();
+                StocksAllCN = stockService.getAllStocksAndBks(Stock.EnumMarket.CN, realtime != null, Stock.EnumCate.INDEX_eastmoney_gn);
             }
             stockService.buildHolder(StocksAllCN);
 
@@ -624,11 +624,11 @@ public class BarTask extends AbstractTask {
 
     public void analyseBks(){
         try{
-            List<Stock> bks = getBks();
+            List<Stock> bks = stockService.getBks(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn);
             if(StocksAllCN == null) {
-                StocksAllCN = getAllStocks();
+                StocksAllCN = stockService.getAllStocksAndBks(Stock.EnumMarket.CN, realtime != null, Stock.EnumCate.INDEX_eastmoney_gn);
             }
-            buildBkAndCalcRps(StocksAllCN, bks);
+            stockService.buildBkAndCalcRps(StocksAllCN, bks);
 
             String strategies = Strategies.STRATEGIES_BK;
             if(StringUtils.isNotEmpty(strategy)){
@@ -733,7 +733,7 @@ public class BarTask extends AbstractTask {
             StocksMass = filterByHolder(StocksMass);
 
             //排除总市值小于50亿的
-            StocksMass = filterByMarketCap(StocksMass, 50);
+            StocksMass = StockService.filterByMarketCap(StocksMass, 50);
 
         }
 
@@ -781,7 +781,7 @@ public class BarTask extends AbstractTask {
         }).collect(Collectors.toList());
     }
 
-    public List<Stock> filterByMarketCap(List<Stock> stocks, double marketCap){
+    /*public List<Stock> filterByMarketCap(List<Stock> stocks, double marketCap){
         return stocks.stream().filter(stock -> {
             if(stock.isMarketCN() && stock.getMarketCap() < marketCap){
                 return false;
@@ -826,6 +826,6 @@ public class BarTask extends AbstractTask {
         buildBkAndCalcRps(stocks);
 
         return stocks;
-    }
+    }*/
 
 }

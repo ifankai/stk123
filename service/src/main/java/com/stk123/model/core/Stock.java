@@ -37,6 +37,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static com.stk123.model.core.Stock.EnumMarket.*;
@@ -154,7 +155,7 @@ public class Stock {
         }
     }
 
-    @JsonView(View.Default.class)
+    @JsonView({View.Default.class, View.Score.class})
     private String code;
 
     @JsonView(View.Default.class)
@@ -196,6 +197,7 @@ public class Stock {
     public Integer BarSeriesRows = BarSeriesRowsDefault;
 
     //相对强弱指标
+    @JsonView(View.Score.class)
     private Map<String, Rps> rps = new HashMap<>();
 
 
@@ -751,6 +753,24 @@ public class Stock {
         return info + CommonUtils.k("查看", stocks.stream().map(Stock::getCode).collect(Collectors.toList()));
     }
 
+    public class Score{
+        private Integer total;
+        @Getter
+        private Map<String,Integer> map = new LinkedHashMap<>();
+
+        public void addScore(String name, Supplier<Integer> supplier){
+            map.put(name, supplier.get());
+        }
+
+        public int getTotal(){
+            if(total == null) {
+                total = map.values().stream().mapToInt(value -> value).sum();
+            }
+            return total;
+        }
+
+    }
+
     @Deprecated
     public int getScore(String date){
         int days = 30;
@@ -763,18 +783,37 @@ public class Stock {
 
     //评分
     public int getScore(){
-        int days = 30;
+        /*int days = 30;
         int score = this.getBar().getScore(days);
         score += this.getBar().getScore(days/2);
         score += this.getBar().getScore(days/3);
         score += this.getScoreByBk();
-        score += this.getScoreByHolder();
+        score += this.getScoreByHolder();*/
+        return this.getScoreDetail().getTotal();
+    }
+
+    public Score getScoreDetail(){
+        int days = 30;
+        Score score = new Score();
+        //int score = this.getBar().getScore(days);
+        score.addScore( "bar1", () -> this.getBar().getScore(days));
+        score.addScore( "bar2", () -> this.getBar().getScore(days/2));
+        score.addScore( "bar3", () -> this.getBar().getScore(days/3));
+        //score += this.getBar().getScore(days/2);
+        //score += this.getBar().getScore(days/3);
+        //score += this.getScoreByBk();
+        score.addScore( "getScoreByBk", () -> this.getScoreByBk());
+        //score += this.getScoreByHolder();
+        score.addScore( "getScoreByHolder", () -> this.getScoreByHolder());
         return score;
     }
+
+
 
     public int getScoreByBk(){
         if(this.bks != null){
             Stock bk = this.getBkByMaxRps(Rps.CODE_BK_60);
+            if(bk == null) return 0;
             Rps rps = bk.getRps(Rps.CODE_BK_60);
             if(rps != null){
                 if(rps.getPercentile() >= 90){ //板块rps强度大于90百分位，则加10分

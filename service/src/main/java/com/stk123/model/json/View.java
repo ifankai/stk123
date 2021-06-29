@@ -8,4 +8,6 @@ public class View {
     static class ExtendedPublic extends Public { }
     public static class Internal extends ExtendedPublic { }
 
+    public static class Score { }
+
 }

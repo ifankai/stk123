@@ -1,5 +1,7 @@
 package com.stk123.model.core;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.stk123.model.json.View;
 import com.stk123.model.strategy.Strategy;
 import com.stk123.model.strategy.sample.Strategies;
 import lombok.Data;
@@ -51,8 +53,10 @@ public class Rps{
 
     private List<Strategy> rpsStrategies;
     private SingletonMap rps;
+    @JsonView(View.Score.class)
     private Double value;
     private Integer order;
+    @JsonView(View.Score.class)
     private Double percentile;
 
     public Rps(String code, List<Strategy> rpsStrategies){

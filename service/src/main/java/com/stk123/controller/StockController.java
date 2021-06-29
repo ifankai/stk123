@@ -22,8 +22,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/stock")
@@ -80,6 +80,22 @@ public class StockController {
         int cnt = stock.getScore();
 
         return RequestResult.success(cnt);
+    }
+
+    @RequestMapping(value = {"/score"})
+    @ResponseBody
+    public RequestResult score1(){
+        List<Stock> stocksAllCN = stockService.getAllStocksAndBks(Stock.EnumMarket.CN, false, Stock.EnumCate.INDEX_eastmoney_gn);
+        stocksAllCN = stocksAllCN.stream().sorted(Comparator.comparing(Stock::getScore, Comparator.reverseOrder())).collect(Collectors.toList());
+        List<Map> list = new ArrayList<>();
+        for(Stock stock : stocksAllCN){
+            Map map = new HashMap();
+            map.put("code", stock.getNameAndCode());
+            map.put("score", stock.getScoreDetail().getMap());
+            map.put("rps", stock.getRps());
+            list.add(map);
+        }
+        return RequestResult.success(list);
     }
 
 }

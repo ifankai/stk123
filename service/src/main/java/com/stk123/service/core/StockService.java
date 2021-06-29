@@ -35,6 +35,18 @@ import java.util.stream.Collectors;
 @CommonsLog
 public class StockService {
 
+    /**排除一些垃圾板块**/
+    // AB股[BK0498] AH股[BK0499] 上证380[BK0705] 转债标的[BK0528] 新三板[BK0600] 深股通[BK0804] 三板精选[BK0925] 昨日涨停[SZBK0815]
+    // B股[BK0636] QFII重仓[BK0535] 沪企改革[BK0672] 富时罗素[BK0867] 标准普尔[BK0879] 债转股[BK0980] 股权激励[BK0567] 融资融券[BK0596]
+    // 债转股[BK0980] 养老金[BK0823] 预亏预减[BK0570] 独角兽[BK0835] 基金重仓[BK0536] 创业板综[BK0742] 证金持股[BK0718] 创业成份[BK0638]
+    // 沪股通[BK0707] 深成500[BK0568] 预盈预增[BK0571] 送转预期[BK0633] 中证500[BK0701] MSCI中国[BK0821] 机构重仓[BK0552] 次新股[BK0501]
+    // 昨日触板[BK0817] HS300_[BK0500] 上证180_[BK0612] 深证100R[BK0743]
+    public String BK_REMOVE = "BK0498,BK0499,BK0705,BK0528,BK0600,BK0804,BK0925,BK0816,BK0815," +
+            "BK0636,BK0535,BK0672,BK0867,BK0879,BK0980,BK0567,BK0596"+
+            "BK0980,BK0823,BK0570,BK0835,BK0536,BK0742,BK0718,BK0638"+
+            "BK0707,BK0568,BK0571,BK0633,BK0701,BK0821,BK0552,BK0501"+
+            "BK0817,BK0500,BK0612,BK0743";
+
     @Autowired
     private StkRepository stkRepository;
     @Autowired
@@ -288,6 +300,55 @@ public class StockService {
             }
         }
         return stks;
+    }
+
+    public List<Stock> getAllStocksAndBks(Stock.EnumMarket market, boolean isIncludeRealtimeBar, Stock.EnumCate bkCate){
+        List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(market, Stock.EnumCate.STOCK);
+        //List<StockBasicProjection> list = stkRepository.findAllByCodes(ListUtils.createList("000630","000650","002038","002740","000651","002070","603876","600373","000002","000920","002801","000726","603588","002791","300474"));
+        list = list.stream().filter(stockBasicProjection -> !StringUtils.contains(stockBasicProjection.getName(), "退")).collect(Collectors.toList());
+
+        List<Stock> stocks = buildStocksWithProjection(list);
+        stocks = buildBarSeries(stocks, 500, isIncludeRealtimeBar);
+
+        //排除总市值小于40亿的
+        stocks = filterByMarketCap(stocks, 30);
+
+        stocks = buildIndustries(stocks);
+
+        //建立板块关系
+        //List<Stock> bks = getBks(market, bkCate);
+        //buildBk(stocks, bks);
+        buildBkAndCalcRps(stocks, market, bkCate);
+
+        return stocks;
+    }
+
+    public static List<Stock> filterByMarketCap(List<Stock> stocks, double marketCap){
+        return stocks.stream().filter(stock -> {
+            if(stock.isMarketCN() && stock.getMarketCap() < marketCap){
+                return false;
+            }
+            return true;
+        }).collect(Collectors.toList());
+    }
+
+    public void buildBkAndCalcRps(List<Stock> stocks, Stock.EnumMarket market, Stock.EnumCate bkCate){
+        //建立板块关系，计算rps
+        List<Stock> bks = getBks(market, bkCate);
+        buildBkAndCalcRps(stocks, bks);
+    }
+    public List<Stock> buildBkAndCalcRps(List<Stock> stocks, List<Stock> bks){
+        calcRps(bks, Rps.CODE_BK_60);
+        buildBk(stocks, bks);
+        return calcRps(bks, Rps.CODE_BK_STOCKS_SCORE_30);
+    }
+
+    public List<Stock> getBks(Stock.EnumMarket market, Stock.EnumCate bkCate){
+        List<StockBasicProjection> bkList = stkRepository.findAllByMarketAndCateOrderByCode(market, bkCate);
+        List<Stock> bks = buildStocksWithProjection(bkList);
+        bks = bks.stream().filter(stock -> !BK_REMOVE.contains(stock.getCode())).collect(Collectors.toList());
+        bks = buildBarSeries(bks, 250, false);
+        return bks;
     }
 
 
