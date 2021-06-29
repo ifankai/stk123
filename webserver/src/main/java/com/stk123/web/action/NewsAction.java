@@ -18,17 +18,17 @@ import com.stk123.web.context.StkContext;
 
 public class NewsAction {
 	
-	public final static String SQL_SELECT_IMPORT_INFO = "select * from stk_import_info where type>=100 and type not in (190) order by info_create_time desc,insert_time desc";
-	public final static String SQL_COUNT_IMPORT_INFO = "select count(1) from stk_import_info where type>=100 and type not in (190) order by info_create_time desc,insert_time desc";
+	public final static String SQL_SELECT_IMPORT_INFO = "select * from stk_news order by info_create_time desc,insert_time desc";
+	public final static String SQL_COUNT_IMPORT_INFO = "select count(1) from stk_news order by info_create_time desc,insert_time desc";
 
-	public final static String SQL_SELECT_IMPORT_INFO_BY_TYPE = "select * from stk_import_info where type=? order by info_create_time desc,insert_time desc";
-	public final static String SQL_COUNT_IMPORT_INFO_BY_TYPE = "select count(1) from stk_import_info where type=? order by info_create_time desc,insert_time desc";
+	public final static String SQL_SELECT_IMPORT_INFO_BY_TYPE = "select * from stk_news where type=? order by info_create_time desc,insert_time desc";
+	public final static String SQL_COUNT_IMPORT_INFO_BY_TYPE = "select count(1) from stk_news where type=? order by info_create_time desc,insert_time desc";
 	
-	public final static String SQL_SELECT_IMPORT_INFO_BY_CODE_TYPE = "select * from stk_import_info where code=? and type=? order by info_create_time desc,insert_time desc";
-	public final static String SQL_COUNT_IMPORT_INFO_BY_CODE_TYPE = "select count(1) from stk_import_info where code=? and type=? order by info_create_time desc,insert_time desc";
+	public final static String SQL_SELECT_IMPORT_INFO_BY_CODE_TYPE = "select * from stk_news where code=? and type=? order by info_create_time desc,insert_time desc";
+	public final static String SQL_COUNT_IMPORT_INFO_BY_CODE_TYPE = "select count(1) from stk_news where code=? and type=? order by info_create_time desc,insert_time desc";
 	
-	public final static String SQL_SELECT_IMPORT_INFO_BY_CODE = "select * from stk_import_info where code=? and type>=100 order by info_create_time desc,insert_time desc";
-	public final static String SQL_COUNT_IMPORT_INFO_BY_CODE = "select count(1) from stk_import_info where code=? and type>=100 order by info_create_time desc,insert_time desc";
+	public final static String SQL_SELECT_IMPORT_INFO_BY_CODE = "select * from stk_news where code=? order by info_create_time desc,insert_time desc";
+	public final static String SQL_COUNT_IMPORT_INFO_BY_CODE = "select count(1) from stk_news where code=? order by info_create_time desc,insert_time desc";
 
 	public void listNews() throws Exception {
 		StkContext sc = StkContext.getContext();
@@ -88,7 +88,7 @@ public class NewsAction {
 		List params = new ArrayList();
 		params.add(info.getCode());
 		params.add(info.getId());
-		return JdbcUtils.load(conn, "select * from (select * from stk_import_info where code=? and type>=100 and id<? order by info_create_time desc) where rownum=1", params, StkImportInfo.class);
+		return JdbcUtils.load(conn, "select * from (select * from stk_news where code=? and id<? order by info_create_time desc) where rownum=1", params, StkImportInfo.class);
 	}
 	
 	public final static String SQL_SELECT_IMPORT_INFO_MSG = "select * from stk_import_info where type<100 order by insert_time desc";
