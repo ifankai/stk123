@@ -10,6 +10,8 @@ import java.util.Properties;
 
 import com.stk123.common.db.TableTools;
 import com.stk123.common.db.util.CloseUtil;
+import com.stk123.common.db.util.DBUtil;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.util.ResourceUtils;
 
 public class ConfigUtils {
@@ -25,6 +27,12 @@ public class ConfigUtils {
 			String ip = inet.getHostAddress();
 			if(ip.startsWith("192")){
 				setProp("is_dev", "Y");
+			}
+			if(StringUtils.isNotEmpty(System.getProperty(DBUtil.DB_URL))){
+				String db_url = System.getProperty(DBUtil.DB_URL);
+				props.put("url", db_url);
+				props.put("db_url", db_url);
+				props.put("oracle.db_url", db_url);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -71,6 +79,12 @@ public class ConfigUtils {
         try {
             fis = resUrl.openStream();
             props.load(fis);
+			if(StringUtils.isNotEmpty(System.getProperty(DBUtil.DB_URL))){
+				String db_url = System.getProperty(DBUtil.DB_URL);
+				props.put("url", db_url);
+				props.put("db_url", db_url);
+				props.put("oracle.db_url", db_url);
+			}
         } finally {
         	CloseUtil.close(fis);
         }

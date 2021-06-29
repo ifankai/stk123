@@ -298,7 +298,9 @@ public class Stock {
         if(this.isMarketCN() && this.isCateIndexEastmoneyGn()){
             return CommonUtils.wrapLink(this.getNameAndCode(), "https://quote.eastmoney.com/bk/90."+this.getCode()+".html");
         }
-        return CommonUtils.wrapLink(this.getNameAndCode(), "https://xueqiu.com/S/"+this.getCodeWithPlace());
+        loadIfNull(this.name);
+        return CommonUtils.wrapLink((this.name==null?this.code:this.name), "https://xueqiu.com/S/"+this.getCodeWithPlace())
+                + "["+ CommonUtils.wrapLink(this.getCodeWithPlace(), "http://81.68.255.181:8088/stk?s="+this.getCode()) +"]";
     }
     public String getNameAndCodeWithLinkAndBold(){
         return "<b>"+this.getNameAndCodeWithLink()+"</b>";

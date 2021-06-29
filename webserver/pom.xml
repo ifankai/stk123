@@ -413,6 +413,54 @@
                     <!--</executions>-->
                 <!--</plugin>-->
 
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>3.0.0</version>
+                    <executions>
+                        <execution>
+                            <id>deploy</id>
+                            <!--<phase>install</phase>-->
+                            <goals>
+                                <goal>run</goal>
+                            </goals>
+                            <configuration>
+                                <target name="stk-deploy" description="Use antrun plugin to deploy with SCP and SSH">
+                                    <property file="../service/src/main/resources/password.properties" />
+
+                                    <!-- file to be transferred -->
+                                    <echo message="Transfering ${project.build.directory}\${project.build.finalName}.${project.packaging} ..." />
+                                    <scp trust="true" failonerror="true" verbose="off" sftp="true"
+                                         file="${project.build.directory}\${project.build.finalName}.${project.packaging}"
+                                         todir="${ftp.username}:${server.password}@${ftp.host}:${ftp.path}/${project.artifactId}.${project.packaging}" />
+
+                                    <taskdef name="scp" classname="org.apache.tools.ant.taskdefs.optional.ssh.Scp">
+                                        <classpath refid="maven.plugin.classpath" />
+                                    </taskdef>
+                                    <taskdef name="scp" classname="org.apache.tools.ant.taskdefs.optional.ssh.SSHExec">
+                                        <classpath refid="maven.plugin.classpath" />
+                                    </taskdef>
+                                </target>
+                            </configuration>
+                        </execution>
+
+
+                    </executions>
+
+                    <dependencies>
+                        <dependency>
+                            <groupId>ant</groupId>
+                            <artifactId>ant-commons-net</artifactId>
+                            <version>1.6.5</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.apache.ant</groupId>
+                            <artifactId>ant-jsch</artifactId>
+                            <version>1.10.9</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+
             </plugins>
         </pluginManagement>
     </build>

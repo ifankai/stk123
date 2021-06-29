@@ -47,6 +47,7 @@ public class SpringConfiguration {
 
     public SpringConfiguration() {
         log.info("SpringConfiguration容器启动初始化。。。");
+        log.info(DBUtil.DB_URL+":"+System.getProperty(DBUtil.DB_URL));
         try {
             log.info(JWhich.which("oracle.jdbc.driver.T4CConnection"));
         } catch (Exception e) {
