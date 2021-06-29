@@ -133,8 +133,10 @@ public class XueqiuStockArticleTask extends AbstractTask {
                 String text = post.getText();
 
                 //post.getUser().getId() == 0 公告
+                boolean isNotice = false;
                 if (post.getUser().getId() == 0) {
                     flag = true;
+                    isNotice = true;
                 } else {
                     if (ChineseUtils.length(HtmlUtils.removeHTML(text)) < 100) {//内容长度控制，太短的排除掉，100=50个中文
                         continue;
@@ -152,7 +154,7 @@ public class XueqiuStockArticleTask extends AbstractTask {
 
                 if (flag) {
                     int replyCount = post.getReply_count();
-                    if (replyCount >= 10) {
+                    if (replyCount >= 10 || (isNotice && replyCount >= 5)) {
 
                         if (!ids.contains(post.getId())) {
                             if (stkTextRepository.existsByCodeAndPostId(code, post.getId())) continue;
