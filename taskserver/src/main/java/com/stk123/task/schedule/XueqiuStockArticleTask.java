@@ -155,7 +155,7 @@ public class XueqiuStockArticleTask extends AbstractTask {
                     if (replyCount >= 10) {
 
                         if (!ids.contains(post.getId())) {
-                            if (stkTextRepository.existingByPostId(post.getId()) > 0) continue;
+                            if (stkTextRepository.existsByCodeAndPostId(code, post.getId())) continue;
 
                             StkTextEntity stkTextEntity = new StkTextEntity();
                             stkTextEntity.setUserId(post.getUser_id());
