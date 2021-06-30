@@ -132,7 +132,7 @@ public class NewsRobot {
 					if(infos.size() == 0){
 						params.clear();
 						params.add(index.getCode());
-						params.add(type.getType());
+						params.add(type.getKey());
 						params.add((String)map.get("title"));
 						params.add((String)map.get("url"));
 						params.add((String)map.get("target"));
@@ -140,7 +140,7 @@ public class NewsRobot {
 						JdbcUtils.insert(conn, "insert into stk_news(id,code,type,insert_time,info,title,url_source,url_target,info_create_time) values (s_news_id.nextval,?,?,sysdate,null,?,?,?,?)", params);
 						
 						//对合同、订单处理
-						if(type.getType() == 200){
+						if("200".equals(type.getKey())){
 							boolean flag = checkContactSumGreaterThanMainIncome(conn, index, title, (Date)map.get("date"));
 							Industry ind = index.getIndustryDefault();
 							if(ind != null){
@@ -162,7 +162,7 @@ public class NewsRobot {
 							}
 						}
 						//对定增、非公处理
-						if(type.getType() == 150){
+						if("150".equals(type.getKey())){
 							boolean flag = checkContactGreaterThanTotalMarketValue(index, title, 0.1);
 							if(flag){
 								params.clear();
@@ -174,7 +174,7 @@ public class NewsRobot {
 						}
 						
 						//非公开发行、员工持股,股权激励 监控
-						if(type.getType() == 120 || type.getType() == 150 || type.getType() == 130){
+						if("120".equals(type.getKey()) || "150".equals(type.getKey()) || "130".equals(type.getKey())){
 							//NoticeRobot.updateNotice(conn, index);
 						}
 						
