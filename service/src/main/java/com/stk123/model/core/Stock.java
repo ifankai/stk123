@@ -653,12 +653,14 @@ public class Stock {
     private String getBarImage(String period){
         String xueqiu = "https://xueqiu.com/S/"+this.getCodeWithPlace();
         if(this.isMarketCN()) {
+            String type = "weekly".equals(period)?"W":("monthly".equals(period)?"M":"");
             if(this.isCateIndexEastmoneyGn()){
-                String type = "weekly".equals(period)?"W":"";
                 xueqiu = "https://xueqiu.com/k?q="+this.getName()+"#/stock";
                 return CommonUtils.wrapLink("<img src='http://webquoteklinepic.eastmoney.com/GetPic.aspx?token=&nid=90."+this.getCodeWithPlace()+"&type="+type+"&unitWidth=-6&ef=&formula=MACD&imageType=KXL&_="+new Date().getTime()+"' />", xueqiu);
             }
-            return CommonUtils.wrapLink("<img src='http://image.sinajs.cn/newchart/"+period+"/n/" + this.getCodeWithPlace().toLowerCase() + ".gif' />", xueqiu);
+            // http://webquoteklinepic.eastmoney.com/GetPic.aspx?nid=0.002020&UnitWidth=-6&imageType=KXL&EF=&Formula=MACD&AT=1&&type=W&token=&_=
+            return CommonUtils.wrapLink("<img src='http://webquoteklinepic.eastmoney.com/GetPic.aspx?nid="+(this.isPlaceSH()?"1":"0")+"."+this.getCode()+"&UnitWidth=-6&imageType=KXL&EF=&Formula=MACD&AT=1&&type="+type+"&token=&_="+new Date().getTime()+"' />", xueqiu);
+            //return CommonUtils.wrapLink("<img src='http://image.sinajs.cn/newchart/"+period+"/n/" + this.getCodeWithPlace().toLowerCase() + ".gif' />", xueqiu);
         }else if(this.isMarketHK()){
             return CommonUtils.wrapLink("<img src='http://image.sinajs.cn/newchart/hk_stock/"+period+"/" + this.getCode() + ".gif' />", xueqiu);
         }else if(this.isMarketUS()){
