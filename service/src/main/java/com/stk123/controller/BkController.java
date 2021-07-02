@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
@@ -29,8 +31,11 @@ public class BkController {
         List<Stock> bks = stockService.buildStocks(code);
         Stock bk = bks.get(0);
         List<Stock> stocks = bk.getGreatestStocksInBkByRps(50, Rps.CODE_STOCK_SCORE_20);
-        List<String> codes = stocks.stream().map(Stock::getCodeWithPlace).collect(Collectors.toList());
-        return RequestResult.success(StringUtils.join(codes,","));
+        List<String> codes = stocks.stream().map(Stock::getCode).collect(Collectors.toList());
+        Map map = new HashMap();
+        map.put("codes", StringUtils.join(codes,","));
+        map.put("url", "http://81.68.255.181:8089/bk/list/"+StringUtils.join(codes,","));
+        return RequestResult.success(map);
     }
 
 }

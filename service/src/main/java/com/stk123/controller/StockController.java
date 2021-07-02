@@ -84,10 +84,14 @@ public class StockController {
 
     @RequestMapping(value = {"/score"})
     @ResponseBody
-    public RequestResult score1(){
+    public RequestResult score1(@RequestParam(value = "percentileFrom", required = false, defaultValue = "0")Double percentileFrom,
+                                @RequestParam(value = "percentileTo", required = false, defaultValue = "100")Double percentileTo
+    ){
         List<Stock> stocksAllCN = stockService.getAllStocksAndBks(Stock.EnumMarket.CN, false, Stock.EnumCate.INDEX_eastmoney_gn);
         stocksAllCN = stocksAllCN.stream().sorted(Comparator.comparing(Stock::getScore, Comparator.reverseOrder())).collect(Collectors.toList());
         List<Map> list = new ArrayList<>();
+        int size = stocksAllCN.size();
+        stocksAllCN = stocksAllCN.subList((int)(size*(100-percentileTo)/100), (int)(size*(100-percentileFrom)/100));
         for(Stock stock : stocksAllCN){
             Map map = new HashMap();
             map.put("code", stock.getNameAndCode());
@@ -95,7 +99,10 @@ public class StockController {
             map.put("rps", stock.getRps());
             list.add(map);
         }
-        return RequestResult.success(list);
+        Map result = new HashMap();
+        result.put("codes", StringUtils.join(stocksAllCN.stream().map(Stock::getCode).collect(Collectors.toList()), ","));
+        result.put("stocks", list);
+        return RequestResult.success(result);
     }
 
 }
