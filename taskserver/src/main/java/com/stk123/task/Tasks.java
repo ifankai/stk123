@@ -69,12 +69,12 @@ public class Tasks {
         taskContainer.start(XueqiuStockArticleTask.class);
         //taskContainer.start(TaskBuilder.of(BarTask.class, "HK"), TaskBuilder.of(SyncTask.class, "table=stk_text"));
     }
-    @Scheduled(cron = "0 0/10 * ? * *") //每10分钟1次
+    /*@Scheduled(cron = "0 0/10 * ? * *") //每10分钟1次
     public void syncTask() {
         if(!ArrayUtils.contains(environment.getActiveProfiles(), "company")) {
             taskContainer.start(SyncTask.class, "table=stk_text");
         }
-    }
+    }*/
 
     XueqiuUserJob xueqiuUserJob = new XueqiuUserJob();
     @Scheduled(cron = "0 0 3 ? * SAT")
