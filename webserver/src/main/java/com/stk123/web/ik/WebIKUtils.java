@@ -82,7 +82,7 @@ public class WebIKUtils extends IKUtils {
 		}
 		doc.add(new Field(DocumentField.TIME.value(),ServiceUtils.formatDate(time,ServiceUtils.sf_ymd12),customType1));
 		doc.add(new TextField(DocumentField.CONTENT.value(), text.getText(), Field.Store.YES));
-		doc.add(new Field(DocumentField.ORDER.value(), text.getDispOrder().toString(), customType2));
+		doc.add(new Field(DocumentField.ORDER.value(), text.getDispOrder()==null?"":text.getDispOrder().toString(), customType2));
 		doc.add(new Field(DocumentField.USERID.value(), text.getUserId().toString(), customType2));
 		return doc;
 	}

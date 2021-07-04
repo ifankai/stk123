@@ -168,9 +168,7 @@ public class Search {
 			IndexWriter iwriter = new IndexWriter(this.directoryUser, iwConfig);
 
 			conn = Pool.getPool().getConnection();
-			List params = new ArrayList();
-			params.add(this.userId);
-			List<StkText> texts = JdbcUtils.list(conn, "select * from stk_text where insert_time>=sysdate-350 and user_id=?", params, StkText.class);
+			List<StkText> texts = JdbcUtils.list(conn, "select * from stk_text where insert_time>=sysdate-350", StkText.class);
 			for(StkText text : texts){
 				Document doc = WebIKUtils.getDocument(text);
 				iwriter.addDocument(doc);
