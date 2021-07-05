@@ -62,6 +62,10 @@ public class XueqiuStockArticleTask extends AbstractTask {
                 return;
             }
 
+            if(stocks == null){
+                stocks = getStocks();
+            }
+
             int codeIndex = 0;
             Path path = Paths.get("./temp/task_xueqiu_article.txt");
             if(!Files.exists(path)){
@@ -71,7 +75,7 @@ public class XueqiuStockArticleTask extends AbstractTask {
                 codeIndex = Integer.parseInt(idx);
             }
 
-            if (stocks == null || codeIndex >= stocks.size()) {
+            if (codeIndex >= stocks.size()) {
                 stocks = getStocks();
                 codeIndex = 0;
             }

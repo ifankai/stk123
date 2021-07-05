@@ -1,6 +1,8 @@
 <%@ page import="com.stk123.util.ServiceUtils" %>
 <%@ page import="com.stk123.service.DictService" %>
 <%@ page import="com.stk123.service.StkService" %>
+<%@ page import="com.stk123.model.constant.TextConstant" %>
+<%@ page import="com.stk123.service.StkConstant" %>
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" errorPage="/common/error.jsp"%>
 <%@include file="/common/import.jsp" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -438,10 +440,10 @@ $(function() {
     <ul class="nav nav-tabs" role="tablist">
       <li class="active"><a href="#news-all" role="tab" data-toggle="tab">全部</a></li>
 <%
-	types = News.getTypes();
-	for(StkImportInfoType newType : types){
+    List<StkDictionary> newTypes = DictService.getDictionaryOrderByKey(StkConstant.DICT_NEWS);
+	for(StkDictionary newType : newTypes){
 %>      
-      <li><a href="#news-<%=newType.getType() %>" id="news-tab-<%=newType.getType() %>" data="<%=newType.getType()%>" role="tab" data-toggle="tab"><%=newType.getName() %></a></li>
+      <li><a href="#news-<%=newType.getKey() %>" id="news-tab-<%=newType.getKey() %>" data="<%=newType.getKey()%>" role="tab" data-toggle="tab"><%=newType.getText() %></a></li>
 <%
 	}
 %>      
@@ -457,13 +459,13 @@ $(function() {
 		<div class="pagination pagination-right" id="pager-news-all"></div>
       </div>
 <%
-	for(StkImportInfoType newType : types){
+	for(StkDictionary newType : newTypes){
 %>
-      <div class="tab-pane" id="news-<%=newType.getType()%>" >
-      	<div id="news-list-<%=newType.getType() %>" style="height:100%;overflow:auto;text-align:left;">
+      <div class="tab-pane" id="news-<%=newType.getKey()%>" >
+      	<div id="news-list-<%=newType.getKey() %>" style="height:100%;overflow:auto;text-align:left;">
       		<p style="text-align:center;"><span class="loading red" data-original-title="加载中，请等待…">加载…</span></p>
       	</div>
-		<div class="pagination pagination-right" id="pager-news-<%=newType.getType() %>"></div>
+		<div class="pagination pagination-right" id="pager-news-<%=newType.getKey() %>"></div>
 	  </div>
 <%
 	}

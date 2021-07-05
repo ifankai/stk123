@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import com.stk123.model.bo.StkDictionary;
 import com.stk123.common.db.connection.Pool;
@@ -73,15 +74,18 @@ public class DictService {
 	
 	public static List<StkDictionary> getDictionaryOrderByParam(Integer type){
 		List<StkDictionary> list = getDictionary(type);
-		Collections.sort(list, new Comparator<StkDictionary>(){
-			public int compare(StkDictionary arg0, StkDictionary arg1) {
-				int d0 = Integer.parseInt(arg0.getParam());
-				int d1 = Integer.parseInt(arg1.getParam());
-				return (d0-d1);
-			}
-		});
+		list.sort((arg0, arg1) -> {
+            int d0 = Integer.parseInt(arg0.getParam());
+            int d1 = Integer.parseInt(arg1.getParam());
+            return (d0 - d1);
+        });
 		return list;
 	}
+
+    public static List<StkDictionary> getDictionaryOrderByKey(Integer type){
+        List<StkDictionary> list = getDictionary(type);
+        return list.stream().sorted(Comparator.comparing(StkDictionary::getKey)).collect(Collectors.toList());
+    }
 	
 	public static Map<String, StkDictionary> getDict(Integer type){
 		return dict.get(type);

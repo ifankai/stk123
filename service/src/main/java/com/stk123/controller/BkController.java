@@ -1,5 +1,6 @@
 package com.stk123.controller;
 
+import com.stk123.common.CommonUtils;
 import com.stk123.model.RequestResult;
 import com.stk123.model.core.Rps;
 import com.stk123.model.core.Stock;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,16 +29,14 @@ public class BkController {
     private StockService stockService;
 
     @RequestMapping(value = "/score/{code}")
-    @ResponseBody
-    public RequestResult score(@PathVariable(value="code")String code){
+    public void score(@PathVariable(value="code")String code, HttpServletResponse response) throws IOException {
         List<Stock> bks = stockService.buildStocks(code);
         Stock bk = bks.get(0);
         List<Stock> stocks = bk.getGreatestStocksInBkByRps(50, Rps.CODE_STOCK_SCORE_20);
         List<String> codes = stocks.stream().map(Stock::getCode).collect(Collectors.toList());
-        Map map = new HashMap();
-        map.put("codes", StringUtils.join(codes,","));
-        map.put("url", "http://81.68.255.181:8089/bk/list/"+StringUtils.join(codes,","));
-        return RequestResult.success(map);
+        String url = CommonUtils.wrapLink(bk.getNameAndCode(), "http://81.68.255.181:8089/bk/list/"+StringUtils.join(codes,","));
+        response.setCharacterEncoding("utf-8");
+        response.getWriter().println(url);
     }
 
 }
