@@ -78,7 +78,7 @@
                         <div role="tabpanel" class="tab-pane fade" th:id="'tab-'+${stocks[dataIndex][code]}+'-3'">
                             <span th:utext=="${stocks[dataIndex][monthly]}"></span>
                         </div>
-                        <div role="tabpanel" class="tab-pane fade" th:id="'tab-'+${stocks[dataIndex][code]}+'-4'" style="min-height: 300px">
+                        <div role="tabpanel" class="tab-pane fade" th:id="'tab-'+${stocks[dataIndex][code]}+'-4'" style="min-height: 350px">
                             <div class="container">
                                 <th:block th:if="${stocks[dataIndex][news] != null}">
                                     <th:block th:each="n : ${stocks[dataIndex][news]}">
@@ -109,7 +109,7 @@
 </body>
 </html>
 <script type="text/javascript">
-  $("[id^='tabs-'] a").click(function (e) {
+  $("[id^='tabs-'] a").on("click mouseover", function (e) {
     e.preventDefault();
     $(this).tab('show')
   });

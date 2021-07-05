@@ -1,6 +1,7 @@
 package com.stk123.task.schedule;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stk123.common.CommonUtils;
 import com.stk123.common.util.Arrays;
 import com.stk123.common.util.ChineseUtils;
 import com.stk123.common.util.HtmlUtils;
@@ -25,6 +26,9 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -34,9 +38,6 @@ import java.util.stream.Collectors;
 public class XueqiuStockArticleTask extends AbstractTask {
 
     private static List<StockProjection> stocks;
-    private static int codeIndex = 0;
-    public static List<StkTextEntity> results = new ArrayList();
-    private static Set<Long> ids = new HashSet<Long>();
 
     @Setter
     private String code;
@@ -61,61 +62,46 @@ public class XueqiuStockArticleTask extends AbstractTask {
                 return;
             }
 
-            if (stocks == null) {
-                List<StockProjection> list = stkRepository.findAllByMarketAndCateAndHotGreaterThan(
-                        (List<Integer>) Arrays.toCollection(new int[]{Stock.EnumMarket.CN.getMarket(), Stock.EnumMarket.HK.getMarket()}),
-                        Stock.EnumCate.STOCK.getCate(), 1000);
-                List<StockProjection> stks = list.stream().filter(stk -> {
-                    if (stk.getMarket() == Stock.EnumMarket.CN.getMarket() && stk.getHot() >= 3000 && !StringUtils.contains(stk.getName(), "ST")) {
-                        return true;
-                    } else if (stk.getMarket() == Stock.EnumMarket.HK.getMarket()) {
-                        return true;
-                    }
-                    return false;
-                }).collect(Collectors.toList());
-                stocks = stks.stream().sorted(Comparator.comparing(e -> StringUtils.reverse(e.getCode()))).collect(Collectors.toList());
-                if (new Date().getDate() % 2 == 0) {
-                    Collections.reverse(stocks);
-                }
+            int codeIndex = 0;
+            Path path = Paths.get("./temp/task_xueqiu_article.txt");
+            if(!Files.exists(path)){
+                Files.createFile(path);
+            }else {
+                String idx = new String(Files.readAllBytes(path));
+                codeIndex = Integer.parseInt(idx);
             }
 
-            if (codeIndex >= stocks.size()) {
-                return;
+            if (stocks == null || codeIndex >= stocks.size()) {
+                stocks = getStocks();
+                codeIndex = 0;
             }
+            Files.write(path, String.valueOf(codeIndex+5).getBytes());
 
             for (int i = 0; i < 5 && codeIndex < stocks.size(); i++) {
                 StockProjection stk = stocks.get(codeIndex++);
-                log.info("XueqiuStockArticleTask=" + stk.getCode() + "[" + results.size() + "]");
                 List<StkTextEntity> list = getArticles(stk);
-                if (list.size() > 0) {
-                    results.addAll(list);
-                    if (results.size() >= 20) {
-                        //EmailUtils.send("雪球个股长文", StringUtils.join(results, "<br><br>"));
-                        results.clear();
-                    }
-                }
-                //System.out.println(results);
+                log.info("XueqiuStockArticleTask=" + stk.getCode() + "[" + list.size() + "]");
                 Thread.sleep(1000 * 12);
             }
-            if (codeIndex >= stocks.size()) {
-                if (results.size() > 0) {
-                    //EmailUtils.send("雪球个股长文2", StringUtils.join(results, "<br><br>"));
-                    results.clear();
-                }
-                stocks = null;
-                codeIndex = 0;
-                ids.clear();
-                return;
-            }
+
         } catch (Exception e) {
             log.error("XueqiuStockArticleTask", e);
-        } finally {
-            /*if (codeIndex >= stocks.size()) {
-                if (results.size() > 0) {
-                    //EmailUtils.send("雪球个股长文end", StringUtils.join(results, "<br><br>"));
-                }
-            }*/
         }
+    }
+
+    public synchronized List<StockProjection> getStocks(){
+        List<StockProjection> list = stkRepository.findAllByMarketAndCateAndHotGreaterThan(
+                (List<Integer>) Arrays.toCollection(new int[]{Stock.EnumMarket.CN.getMarket(), Stock.EnumMarket.HK.getMarket()}),
+                Stock.EnumCate.STOCK.getCate(), 1000);
+        List<StockProjection> stks = list.stream().filter(stk -> {
+            if (stk.getMarket() == Stock.EnumMarket.CN.getMarket() && stk.getHot() >= 3000 && !StringUtils.contains(stk.getName(), "ST")) {
+                return true;
+            } else if (stk.getMarket() == Stock.EnumMarket.HK.getMarket()) {
+                return true;
+            }
+            return false;
+        }).collect(Collectors.toList());
+        return stks.stream().sorted(Comparator.comparing(e -> StringUtils.reverse(e.getCode()))).collect(Collectors.toList());
     }
 
     //https://xueqiu.com/statuses/search.json?count=10&comment=0&symbol=SH603611&hl=0&source=all&sort=alpha&page=1&_=1507209904103
@@ -123,6 +109,7 @@ public class XueqiuStockArticleTask extends AbstractTask {
         String code = stk.getCode();
         String name = stk.getName();
         Stock stock = Stock.build(stk);
+        List<StkTextEntity> results = new ArrayList<>();
 
         List<XueqiuPost> list = getList(stock);
         for (XueqiuPost post : list) {
@@ -154,48 +141,63 @@ public class XueqiuStockArticleTask extends AbstractTask {
 
                 if (flag) {
                     int replyCount = post.getReply_count();
-                    if (replyCount >= 10 || (isNotice && replyCount >= 5)) {
+                    StkTextEntity stkTextEntity = null;
 
-                        if (!ids.contains(post.getId())) {
-                            if (stkTextRepository.existsByCodeAndPostId(code, post.getId())) continue;
-
-                            StkTextEntity stkTextEntity = new StkTextEntity();
-                            stkTextEntity.setUserId(post.getUser_id());
-                            stkTextEntity.setUserName(post.getUser().getScreen_name());
-                            stkTextEntity.setCode(code);
-                            stkTextEntity.setCreatedAt(new Date(post.getCreated_at()));
-                            stkTextEntity.setPostId(post.getId());
-                            stkTextEntity.setTitle(title);
-                            stkTextEntity.setText(text);
-                            stkTextEntity.setTextDesc(post.getDescription());
-                            stkTextEntity.setType(TextConstant.TYPE_XUEQIU);
-                            stkTextEntity.setSubType(TextConstant.SUB_TYPE_XUEQIU_DEFAUTL);
-                            stkTextEntity.setInsertTime(new Date());
-                            stkTextEntity.setCodeType(TextConstant.CODE_TYPE_STK);
-                            stkTextEntity.setFollowersCount(post.getUser().getFollowers_count());
-                            stkTextEntity.setReplyCount(post.getReply_count());
-                            stkTextEntity.setUserAvatar(StringUtils.split(post.getUser().getProfile_image_url(), ",")[1]);
-                            if(post.getUser().getId() == 0){
-                                stkTextEntity.setSubType(Text.SUB_TYPE_XUEQIU_NOTICE);
-                            }
-
-                            results.add(stkTextEntity);
-                            ids.add(post.getId());
-                            //stkTextRepository.save(stkTextEntity);
-                            try {
-                                textService.save(stkTextEntity);
-                            }catch (Exception e){
-                                log.info("Error:" + stkTextEntity);
-                                log.error("",e);
-                            }
+                    if(isNotice){
+                        if(replyCount >= 5){
+                            stkTextEntity = save(code, post);
                         }
 
+                    }else{
+                        if(replyCount >=5 && replyCount < 10){
+                            Date createAt = CommonUtils.addDay(new Date(), -30); //30天內都沒有评论
+                            int cnt = stkTextRepository.countAllByCodeAndCreatedAtGreaterThanEqual(code, createAt);
+                            if(cnt == 0){
+                                stkTextEntity = save(code, post);
+                            }
+                        }
+                        else if(replyCount >= 10){
+                            stkTextEntity = save(code, post);
+                        }
                     }
+
+                    if(stkTextEntity != null){
+                        results.add(stkTextEntity);
+                    }
+
                 }
             }
         }
 
         return results;
+    }
+
+    public StkTextEntity save(String code, XueqiuPost post) {
+        if (stkTextRepository.existsByCodeAndPostId(code, post.getId())){
+            return null;
+        }
+        StkTextEntity stkTextEntity = new StkTextEntity();
+        stkTextEntity.setUserId(post.getUser_id());
+        stkTextEntity.setUserName(post.getUser().getScreen_name());
+        stkTextEntity.setCode(code);
+        stkTextEntity.setCreatedAt(new Date(post.getCreated_at()));
+        stkTextEntity.setPostId(post.getId());
+        stkTextEntity.setTitle(post.getTitle());
+        stkTextEntity.setText(post.getText());
+        stkTextEntity.setTextDesc(post.getDescription());
+        stkTextEntity.setType(TextConstant.TYPE_XUEQIU);
+        stkTextEntity.setInsertTime(new Date());
+        stkTextEntity.setCodeType(TextConstant.CODE_TYPE_STK);
+        stkTextEntity.setFollowersCount(post.getUser().getFollowers_count());
+        stkTextEntity.setReplyCount(post.getReply_count());
+        stkTextEntity.setUserAvatar(StringUtils.split(post.getUser().getProfile_image_url(), ",")[1]);
+        if(post.getUser().getId() == 0){
+            stkTextEntity.setSubType(TextConstant.SUB_TYPE_XUEQIU_NOTICE);
+        }else{
+            stkTextEntity.setSubType(TextConstant.SUB_TYPE_XUEQIU_DEFAUTL);
+        }
+
+        return textService.save(stkTextEntity);
     }
 
     public List<XueqiuPost> getList(Stock stock) throws Exception {
