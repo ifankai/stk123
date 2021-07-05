@@ -60,6 +60,8 @@ public interface StkTextRepository extends JpaRepository<StkTextEntity, Long> {
 
     boolean existsByCodeAndPostId(String code, Long postId);
 
+    Integer countAllByCodeAndCreatedAtGreaterThanEqual(String code, Date createAt);
+
     @Modifying
     @Query(value = "update stk_text set read_date = sysdate where id in (:id)", nativeQuery = true)
     void updateAll2Readed(@Param("id") List<Long> ids);

@@ -24,8 +24,7 @@ web.rar
 /oracle/*.log
 oracle/stk.sql
 notice_cninfo_code.txt
-temp/notice_cninfo_code_szse.txt
-temp/notice_cninfo_code_hke.txt
+temp/**
 service/src/main/resources/password.properties
 cookie.txt
 oracle/DB_STK.DP
