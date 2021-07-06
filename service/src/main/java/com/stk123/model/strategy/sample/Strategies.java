@@ -399,6 +399,19 @@ public class Strategies {
         return strategies;
     }
 
+    public static Strategy rps_04() {
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_MONTH_VOLUME,"个股月线放量", Stock.class);
+        strategy.addFilter("个股月线放量", (strgy, stock) -> {
+            Bar bar = stock.getBarSeriesMonth().getBar();
+            double sum = bar.getSUM(3, Bar.EnumValue.V);
+            double minSum = bar.getLowest(10, bar1 -> bar1.getSUM(3, Bar.EnumValue.V));
+            double rpsValue = sum/minSum;
+            stock.setRpsValue(Rps.CODE_STOCK_MONTH_VOLUME, CommonUtils.numberFormat(rpsValue, 2));
+            return FilterResult.TRUE();
+        });
+        return strategy;
+    }
+
 
     //大跌后，有减持，问询函？
     public static Strategy strategy_0() {

@@ -32,7 +32,7 @@ public class BkController {
     public void score(@PathVariable(value="code")String code, HttpServletResponse response) throws IOException {
         List<Stock> bks = stockService.buildStocks(code);
         Stock bk = bks.get(0);
-        List<Stock> stocks = bk.getGreatestStocksInBkByRps(50, Rps.CODE_STOCK_SCORE_20);
+        List<Stock> stocks = bk.getGreatestStocksInBkByRps(100, Rps.CODE_STOCK_SCORE_20);
         List<String> codes = stocks.stream().map(Stock::getCode).collect(Collectors.toList());
         String url = CommonUtils.wrapLink(bk.getNameAndCode(), "http://81.68.255.181:8089/bk/list/"+StringUtils.join(codes,","));
         response.setCharacterEncoding("utf-8");

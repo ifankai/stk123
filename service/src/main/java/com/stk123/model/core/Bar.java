@@ -374,6 +374,19 @@ public class Bar implements Serializable, Cloneable {
         return ret;
     }
 
+	public Double getLowest(int n, Function<Bar, Double> function){
+		double value = 0.0;
+		Bar k = this;
+		for(int i=0;i<n;i++){
+			double tmp = function.apply(k);
+			if(value > tmp || value == 0.0){
+				value = tmp;
+			}
+			k = k.before(1);
+		}
+		return value;
+	}
+
 	/**
 	 * highest
 	 */

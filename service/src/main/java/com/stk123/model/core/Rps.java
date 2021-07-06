@@ -21,13 +21,15 @@ public class Rps{
     public final static String CODE_BK_60 = "rps_01";
     public final static String CODE_BK_STOCKS_SCORE_30 = "rps_02";
     public final static String CODE_STOCK_SCORE_20 = "rps_03";
+    public final static String CODE_STOCK_MONTH_VOLUME = "rps_04";
 
     public static Map<String, SingletonMap> CODE_NAME = new HashMap<>();
 
     static{
-        CODE_NAME.put(CODE_BK_60, new SingletonMap(CODE_BK_60, Strategies.rps_01().getName()));
-        CODE_NAME.put(CODE_BK_STOCKS_SCORE_30, new SingletonMap(CODE_BK_STOCKS_SCORE_30, Strategies.rps_02().getName()));
+        CODE_NAME.put(CODE_BK_60, new SingletonMap(Strategies.rps_01().getCode(), Strategies.rps_01().getName()));
+        CODE_NAME.put(CODE_BK_STOCKS_SCORE_30, new SingletonMap(Strategies.rps_02().getCode(), Strategies.rps_02().getName()));
         CODE_NAME.put(CODE_STOCK_SCORE_20, new SingletonMap(CODE_STOCK_SCORE_20, "个股score"));
+        CODE_NAME.put(CODE_STOCK_MONTH_VOLUME, new SingletonMap(Strategies.rps_04().getCode(), Strategies.rps_04().getName()));
     }
 
     @SneakyThrows
