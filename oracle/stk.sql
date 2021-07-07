@@ -316,6 +316,7 @@ create table stk_holder(
 );
 alter table stk_holder add holding_amount number(10,2);
 alter table stk_holder add holder_change number(10,2);
+alter table stk_holder add ten_owner_change number(10,2);
 alter table stk_holder
   add constraint fk_holder__code foreign key (code)
   references stk (code);
@@ -2985,22 +2986,31 @@ select * from stk_industry_type where id=124950;
 
 
 select * from stk where name like '%退%';
-select * from stk_holder order by code;
-select count(1) from stk_holder where fn_date='20210331' and holding_amount>100000
+select * from stk_holder where code='688063';
+select count(1) from stk_holder where fn_date='20210331' and holding_amount>100000;
+select * from stk_ownership where code='688063';
 
 
 select s.code, s.name, t.fn_date, t.holder, t.holding_amount, t.holder_change
   from (select code, fn_date, holder, holding_amount,holder_change, ROW_NUMBER() over(PARTITION by code order by fn_date desc) as num from stk_holder) t, stk s
  where t.code=s.code and t.num = 1 and t.code='600600';
  
-select * from stk_text where code='000069' order by insert_time desc; 
+select * from stk_text where code='000100' order by insert_time desc; 
 select * from stk_text where code='600519' order by insert_time desc; 
 select * from stk_text where reply_positive is not null;
 
 select * from stk_error_log order by insert_time desc;
 select * from stk_import_info order by insert_time desc;
 
-select * from stk_news where code='300490' and type<100 order by id desc;
+select * from stk_news order by id desc;--404410
+select * from stk_news where code='00004' order by id desc;
 
 select * from stk_import_info_type;
 select * from stk_dictionary where type=2000 for update;
+select s_news_id.nextval from dual;
+
+
+insert into stk_news(id,code,type,insert_time,info,title,url_source,url_target,info_create_time) values
+(s_news_id.nextval,'000045',120,sysdate,null,'深纺织Ａ(000045.SZ)：第一期员工持股计划尚未购买公司股票','https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllNewsStock.php?symbol=sz000045Page=1','https://cj.sina.cn/articles/view/5115326071/130e5ae7702001e0pb',sysdate);
+
+select count(1) from stk_text where insert_time>=sysdate-300;

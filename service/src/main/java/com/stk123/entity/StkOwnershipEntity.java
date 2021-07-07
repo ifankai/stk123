@@ -1,90 +1,47 @@
 package com.stk123.entity;
 
+import lombok.*;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 
-//@Entity
+@Entity
 @Table(name = "STK_OWNERSHIP")
+@IdClass(StkOwnershipEntity.CompositeKey.class)
+@Setter
+@Getter
 public class StkOwnershipEntity implements Serializable {
-    private String code;
-    private String fnDate;
-    private Long orgId;
-    private Long stkNum;
-    private Long rate;
-    private Long numChange;
-    private Long numChangeRate;
-    private StkOrganizationEntity stkOrganizationByOrgId;
-
     @Id
     @Column(name = "CODE", nullable = true, length = 10)
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
+    private String code;
 
     @Id
     @Column(name = "FN_DATE", nullable = true, length = 8)
-    public String getFnDate() {
-        return fnDate;
-    }
-
-    public void setFnDate(String fnDate) {
-        this.fnDate = fnDate;
-    }
+    private String fnDate;
 
     @Basic
     @Column(name = "ORG_ID", nullable = true, precision = 0)
-    public Long getOrgId() {
-        return orgId;
-    }
-
-    public void setOrgId(Long orgId) {
-        this.orgId = orgId;
-    }
+    private Integer orgId;
 
     @Basic
     @Column(name = "STK_NUM", nullable = true, precision = 2)
-    public Long getStkNum() {
-        return stkNum;
-    }
-
-    public void setStkNum(Long stkNum) {
-        this.stkNum = stkNum;
-    }
+    private Double stkNum;
 
     @Basic
     @Column(name = "RATE", nullable = true, precision = 2)
-    public Long getRate() {
-        return rate;
-    }
-
-    public void setRate(Long rate) {
-        this.rate = rate;
-    }
+    private Double rate;
 
     @Basic
     @Column(name = "NUM_CHANGE", nullable = true, precision = 2)
-    public Long getNumChange() {
-        return numChange;
-    }
-
-    public void setNumChange(Long numChange) {
-        this.numChange = numChange;
-    }
+    private Double numChange;
 
     @Basic
     @Column(name = "NUM_CHANGE_RATE", nullable = true, precision = 2)
-    public Long getNumChangeRate() {
-        return numChangeRate;
-    }
+    private Double numChangeRate;
 
-    public void setNumChangeRate(Long numChangeRate) {
-        this.numChangeRate = numChangeRate;
-    }
+    //private StkOrganizationEntity stkOrganizationByOrgId;
+
 
     @Override
     public boolean equals(Object o) {
@@ -93,20 +50,15 @@ public class StkOwnershipEntity implements Serializable {
         StkOwnershipEntity that = (StkOwnershipEntity) o;
         return Objects.equals(code, that.code) &&
                 Objects.equals(fnDate, that.fnDate) &&
-                Objects.equals(orgId, that.orgId) &&
-                Objects.equals(stkNum, that.stkNum) &&
-                Objects.equals(rate, that.rate) &&
-                Objects.equals(numChange, that.numChange) &&
-                Objects.equals(numChangeRate, that.numChangeRate);
+                Objects.equals(orgId, that.orgId);
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(code, fnDate, orgId, stkNum, rate, numChange, numChangeRate);
+        return Objects.hash(code, fnDate, orgId);
     }
 
-    @ManyToOne
+    /*@ManyToOne
     @JoinColumn(name = "ORG_ID", referencedColumnName = "ID")
     public StkOrganizationEntity getStkOrganizationByOrgId() {
         return stkOrganizationByOrgId;
@@ -114,5 +66,15 @@ public class StkOwnershipEntity implements Serializable {
 
     public void setStkOrganizationByOrgId(StkOrganizationEntity stkOrganizationByOrgId) {
         this.stkOrganizationByOrgId = stkOrganizationByOrgId;
+    }*/
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    public static class CompositeKey implements Serializable {
+        private String code;
+        private String fnDate;
+        private Integer orgId;
     }
 }

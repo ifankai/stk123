@@ -34,6 +34,10 @@ public class StkHolderEntity implements Serializable {
     @Column(name = "HOLDER_CHANGE", nullable = true, precision = 2)
     private Double holderChange;
 
+    @Basic
+    @Column(name = "TEN_OWNER_CHANGE", nullable = true, precision = 2)
+    private Double tenOwnerChange;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

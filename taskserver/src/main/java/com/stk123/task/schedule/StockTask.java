@@ -10,10 +10,7 @@ import com.stk123.entity.StkIndustryEntity;
 import com.stk123.entity.StkIndustryTypeEntity;
 import com.stk123.model.core.Stock;
 import com.stk123.model.projection.StockBasicProjection;
-import com.stk123.repository.StkHolderRepository;
-import com.stk123.repository.StkIndustryRepository;
-import com.stk123.repository.StkIndustryTypeRepository;
-import com.stk123.repository.StkRepository;
+import com.stk123.repository.*;
 import com.stk123.service.core.ErrorService;
 import com.stk123.service.core.HttpService;
 import com.stk123.service.core.StockService;
@@ -51,6 +48,8 @@ public class StockTask extends AbstractTask {
     private StkIndustryTypeRepository stkIndustryTypeRepository;
     @Autowired
     private StkIndustryRepository stkIndustryRepository;
+    @Autowired
+    private StkOwnershipRepository stkOwnershipRepository;
 
     private List<Stock> stocksCN = null;
 
@@ -110,9 +109,18 @@ public class StockTask extends AbstractTask {
                     if(!"-".equals(change) && stkHolderEntity.getHolderChange() == null) {
                         stkHolderEntity.setHolderChange(StringUtils.isEmpty(change) ? null : Double.parseDouble(change));
                     }
+                    if(stkHolderEntity.getTenOwnerChange() == null){
+                        List<Object> objects = stkOwnershipRepository.findTenOnwerChangeByCodeAndFnDate(stock.getCode(), holdDate);
+                        if(!objects.isEmpty()){
+                            Object[] row = (Object[]) objects.get(0);
+                            if(row[3] != null)
+                                stkHolderEntity.setTenOwnerChange(Double.parseDouble(row[3].toString()));
+                        }
+                    }
                     stkHolderRepository.save(stkHolderEntity);
                     //System.out.println(stkHolderEntity);
                 }
+
             } catch (Exception e) {
                 log.error("", e);
                 //System.out.println(stock.getCode());
@@ -124,7 +132,7 @@ public class StockTask extends AbstractTask {
     public void initCNStocks(){
         if(stocksCN == null) {
             List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.STOCK);
-            //List<StockBasicProjection> list = stkRepository.findAllByCodes(ListUtils.createList("600600"));
+            //List<StockBasicProjection> list = stkRepository.findAllByCodes(ListUtils.createList("688063"));
             stocksCN = stockService.buildStocksWithProjection(list);
         }
     }

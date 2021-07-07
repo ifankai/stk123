@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
 @Repository
 public interface StkHolderRepository extends JpaRepository<StkHolderEntity, StkHolderEntity.CompositeKey> {
 
-    String sql_findAll = "select s.code, t.fn_date, t.holder, t.holding_amount, t.holder_change " +
-        "from (select code, fn_date, holder, holding_amount,holder_change, ROW_NUMBER() over(PARTITION by code order by fn_date desc) as num from stk_holder) t, stk s "+
+    String sql_findAll = "select s.code, t.fn_date, t.holder, t.holding_amount, t.holder_change, t.ten_owner_change " +
+        "from (select code, fn_date, holder, holding_amount,holder_change,ten_owner_change, ROW_NUMBER() over(PARTITION by code order by fn_date desc) as num from stk_holder) t, stk s "+
         "where t.code=s.code and t.num = 1";
     default List<StkHolderEntity> findAll() {
         return BaseRepository.getInstance().list(sql_findAll, StkHolderEntity.class);
