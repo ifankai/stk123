@@ -300,7 +300,7 @@ public class Stock {
         loadIfNull(this.name);
         if(this.isMarketCN() && this.isCateIndexEastmoneyGn()){
             return CommonUtils.wrapLink(this.getName(), "https://quote.eastmoney.com/bk/90."+this.getCode()+".html")
-                    + "["+ CommonUtils.wrapLink(this.getCode(), "http://localhost:8082/bk/score/"+this.getCode()) +"]";
+                    + "["+ CommonUtils.wrapLink(this.getCode(), "http://81.68.255.181:8089/bk/"+this.getCode()) +"]";
         }
         return CommonUtils.wrapLink((this.name==null?this.code:this.name), "https://xueqiu.com/S/"+this.getCodeWithPlace())
                 + "["+ CommonUtils.wrapLink(this.getCodeWithPlace(), "http://81.68.255.181:8088/stk?s="+this.getCode()) +"]";
