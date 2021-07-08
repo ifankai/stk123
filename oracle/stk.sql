@@ -2987,6 +2987,14 @@ select * from stk_industry_type where id=124950;
 
 select * from stk where name like '%退%';
 select * from stk_holder where code='688063';
+select * from (select code ,fn_date,stk_num, 100 * (stk_num / sum(stk_num) over (order by code,fn_date desc rows between 1 following and 1 following) - 1) ten_owner_change  from
+(select code,fn_date,sum(stk_num) stk_num from stk_ownership group by code,fn_date having code='688063')) where fn_date='20210331';
+
+update stk_holder a set a.ten_owner_change = (select u.ten_owner_change from
+(select code ,fn_date,stk_num, 100 * (stk_num / sum(stk_num) over (order by code,fn_date desc rows between 1 following and 1 following) - 1) ten_owner_change from
+(select code,fn_date,sum(stk_num) stk_num from stk_ownership group by code,fn_date))  u
+ where a.code=u.code and a.fn_date=u.fn_date)
+
 select count(1) from stk_holder where fn_date='20210331' and holding_amount>100000;
 select * from stk_ownership where code='688063';
 
@@ -3013,4 +3021,5 @@ select s_news_id.nextval from dual;
 insert into stk_news(id,code,type,insert_time,info,title,url_source,url_target,info_create_time) values
 (s_news_id.nextval,'000045',120,sysdate,null,'深纺织Ａ(000045.SZ)：第一期员工持股计划尚未购买公司股票','https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllNewsStock.php?symbol=sz000045Page=1','https://cj.sina.cn/articles/view/5115326071/130e5ae7702001e0pb',sysdate);
 
-select count(1) from stk_text where insert_time>=sysdate-300;
+select count(1) from stk_text where insert_time>=sysdate-350;
+select * from stk_text  order by insert_time desc;

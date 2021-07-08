@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
@@ -168,13 +169,15 @@ public class Search {
 			IndexWriter iwriter = new IndexWriter(this.directoryUser, iwConfig);
 
 			conn = Pool.getPool().getConnection();
-			List<StkText> texts = JdbcUtils.list(conn, "select * from stk_text where insert_time>=sysdate-350", StkText.class);
-			for(StkText text : texts){
+			List<StkText> texts = JdbcUtils.list(conn, "select id,code,title,text,insert_time,update_time,disp_order,user_id from stk_text where insert_time>=sysdate-350", StkText.class);
+			/*for(StkText text : texts){
 				Document doc = WebIKUtils.getDocument(text);
 				iwriter.addDocument(doc);
-			}
+			}*/
+			iwriter.addDocuments(texts.stream().map(WebIKUtils::getDocument).collect(Collectors.toList()));
 			iwriter.commit();
 			iwriter.close();
+            System.out.println("Search.initUserText end");
 		}finally{
 			Pool.getPool().free(conn);
 		}
