@@ -121,20 +121,20 @@ public class BacktestingService {
             strategyBacktesting.test(stocks, startDate, endDate);
             strategyBacktesting.printDetail();
             strategyBacktesting.print();
-            saveStrategyResult(strategyBacktesting);
+            //saveStrategyResult(strategyBacktesting);
         }else {
             //每天task，用于记录哪些stock满足strategy（所有Filter为passed=true, 不关心expextFilter），记录结果到database
             strategyBacktesting.test(stocks);
             //strategyBacktesting.printDetail();
             strategyBacktesting.print();
-            savePassedStrategyResult(strategyBacktesting.getPassedStrategyResult());
+            //savePassedStrategyResult(strategyBacktesting.getPassedStrategyResult());
         }
 
         return strategyBacktesting;
     }
 
     public StrategyBacktesting backtesting(List<Stock> stocks, List<Strategy> strategies) {
-        return backtesting(new StrategyBacktesting(), stocks, strategies, null, null, false);
+        return backtesting(new StrategyBacktesting(false), stocks, strategies, null, null, false);
     }
 
     public void saveStrategyResult(StrategyBacktesting strategyBacktesting){

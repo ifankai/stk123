@@ -24,7 +24,7 @@ public class StrategyBacktesting {
     @Setter
     private int multipleThreadSize = 4;
 
-    private boolean printDetail = false;
+    private boolean printDetail = true;
 
     @Getter
     private String startDate;
@@ -175,14 +175,16 @@ public class StrategyBacktesting {
 
 
     public void print() {
-        for(Strategy strategy : this.getStrategies()){
-            System.out.println(strategy);
-        }
+        if(printDetail)
+            for(Strategy strategy : this.getStrategies()){
+                System.out.println(strategy);
+            }
     }
     public void printDetail(){
-        strategyResults.stream().forEach(strategyResult -> {
-            System.out.println(strategyResult);
-        });
+        if(printDetail)
+            strategyResults.stream().forEach(strategyResult -> {
+                System.out.println(strategyResult);
+            });
     }
 
     /**
