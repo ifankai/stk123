@@ -81,6 +81,7 @@ alter table stk_fn_type add re_calc varchar2(20);
 alter table stk_fn_type add tab number(1) default 0;
 alter table stk_fn_type add precision number(1) default 2;
 alter table stk_fn_type add colspan number(1);
+alter table stk_fn_type add code varchar2(20);
 
 
 create table stk_fn_data(
@@ -3021,5 +3022,8 @@ select s_news_id.nextval from dual;
 insert into stk_news(id,code,type,insert_time,info,title,url_source,url_target,info_create_time) values
 (s_news_id.nextval,'000045',120,sysdate,null,'深纺织Ａ(000045.SZ)：第一期员工持股计划尚未购买公司股票','https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllNewsStock.php?symbol=sz000045Page=1','https://cj.sina.cn/articles/view/5115326071/130e5ae7702001e0pb',sysdate);
 
-select count(1) from stk_text where insert_time>=sysdate-350;
+select count(1) from stk_text where insert_time>=sysdate-180;
 select * from stk_text  order by insert_time desc;
+
+select * from stk_fn_data where code='600107' and type=300 order by fn_date desc;
+select * from stk_fn_type for update;

@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 
 @Service
 @CommonsLog
-public class BarService {
+public class BarService extends BaseRepository {
 
     @Autowired
     private StkKlineRepository stkKlineRepository;
@@ -40,10 +40,6 @@ public class BarService {
     @Autowired
     private StockService stockService;
 
-
-    public <T> T save(T klineEntity){
-        return BaseRepository.getInstance().save(klineEntity);
-    }
 
     private final static String sql_queryTopNByCodeOrderByKlineDateDesc =
             "select code,kline_date as \"date\",open,close,high,low,volumn as volume,amount,last_close,percentage as change,hsl,pe_ttm,pb_ttm " +

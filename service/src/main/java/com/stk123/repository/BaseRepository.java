@@ -12,6 +12,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.support.Repositories;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -57,7 +58,11 @@ public class BaseRepository implements ApplicationContextAware {
     }
 
 
-    public <T, R extends JpaRepository> T save(T entity){
+//    public <T, R extends JpaRepository> T save(T entity){
+//        return (T) getRepository(entity.getClass()).save(entity);
+//    }
+
+    public static <T> T save(T entity){
         return (T) getRepository(entity.getClass()).save(entity);
     }
 
@@ -163,6 +168,10 @@ public class BaseRepository implements ApplicationContextAware {
         }
     }
 
+    public <T> T find(Class<T> entityClass, Object primaryKey) {
+        return em.find(entityClass, primaryKey);
+    }
+
     public int update(String sql, Object... params){
         Session session = em.unwrap(Session.class);
         NativeQuery q = session.createSQLQuery(sql);
@@ -174,6 +183,7 @@ public class BaseRepository implements ApplicationContextAware {
         return q.executeUpdate();
     }
 
+    @Transactional
     public <T> T saveOrUpdate(T entity){
         Session session = em.unwrap(Session.class);
         session.saveOrUpdate(entity);

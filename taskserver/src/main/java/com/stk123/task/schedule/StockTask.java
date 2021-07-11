@@ -4,16 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stk123.common.CommonUtils;
 import com.stk123.common.util.HtmlUtils;
 import com.stk123.common.util.ListUtils;
-import com.stk123.entity.StkEntity;
-import com.stk123.entity.StkHolderEntity;
-import com.stk123.entity.StkIndustryEntity;
-import com.stk123.entity.StkIndustryTypeEntity;
+import com.stk123.entity.*;
 import com.stk123.model.core.Stock;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.repository.*;
 import com.stk123.service.core.ErrorService;
+import com.stk123.service.core.FnService;
 import com.stk123.service.core.HttpService;
 import com.stk123.service.core.StockService;
+import com.stk123.util.HttpUtils;
 import com.stk123.util.ServiceUtils;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
@@ -43,6 +42,8 @@ public class StockTask extends AbstractTask {
     @Autowired
     private StockService stockService;
     @Autowired
+    private FnService fnService;
+    @Autowired
     private StkHolderRepository stkHolderRepository;
     @Autowired
     private StkIndustryTypeRepository stkIndustryTypeRepository;
@@ -50,6 +51,8 @@ public class StockTask extends AbstractTask {
     private StkIndustryRepository stkIndustryRepository;
     @Autowired
     private StkOwnershipRepository stkOwnershipRepository;
+    @Autowired
+    private StkFnTypeRepository stkFnTypeRepository;
 
     private List<Stock> stocksCN = null;
 
@@ -58,6 +61,7 @@ public class StockTask extends AbstractTask {
         this.runByName("initCNNewStock", this::initCNNewStock);
         this.runByName("initCNIndustryEasymoney", this::initCNIndustryEasymoney);
         this.runByName("initCNHolder", this::initCNHolder);
+        this.runByName("initCNFinance", this::initCNFinance);
     }
 
     public void initCNHolder() {
@@ -132,7 +136,7 @@ public class StockTask extends AbstractTask {
     public void initCNStocks(){
         if(stocksCN == null) {
             List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.STOCK);
-            //List<StockBasicProjection> list = stkRepository.findAllByCodes(ListUtils.createList("688063"));
+            //List<StockBasicProjection> list = stkRepository.findAllByCodes(ListUtils.createList("600107"));
             stocksCN = stockService.buildStocksWithProjection(list);
         }
     }
@@ -333,5 +337,46 @@ public class StockTask extends AbstractTask {
             log.error("initCNIndustryEasymoney", e);
         }
 
+    }
+
+    public void initCNFinance(){
+        initCNStocks();
+        ObjectMapper mapper = new ObjectMapper();
+
+        List<StkFnTypeEntity> types = stkFnTypeRepository.findAllByMarketAndCodeIsNotNull(Stock.EnumMarket.CN.getMarket());
+        for(Stock stock : stocksCN) {
+            try {
+                //http://f10.eastmoney.com/NewFinanceAnalysis/ZYZBAjaxNew?type=0&code=SH600107
+                String url = "http://f10.eastmoney.com/NewFinanceAnalysis/ZYZBAjaxNew?type=0&code=" + stock.getCodeWithPlace();
+                String json = httpService.getString(url);
+                Map map = mapper.readValue(json, HashMap.class);
+                List<Map> datas = (List)map.get("data");
+
+                for(Map data : datas) {
+                    String fnDateLong = (String) data.get("REPORT_DATE");
+                    String fnDate = StringUtils.substring(fnDateLong, 0, 10).replaceAll("-", "");
+
+                    for (StkFnTypeEntity type : types) {
+                        StkFnDataEntity entity = fnService.find(StkFnDataEntity.class, new StkFnDataEntity.CompositeKey(stock.getCode(), type.getType(), fnDate));
+                        if(entity == null) {
+                            entity = new StkFnDataEntity();
+                            entity.setCode(stock.getCode());
+                            entity.setType(type.getType());
+                            entity.setFnDate(fnDate);
+                            entity.setInsertTime(new Date());
+                        }else {
+                            entity.setUpdateTime(new Date());
+                        }
+                        Object obj = data.get(type.getCode());
+                        if (obj != null)
+                            entity.setFnValue((Double) data.get(type.getCode()));
+                        fnService.saveOrUpdate(entity);
+                    }
+                }
+
+            }catch(Exception e){
+                log.error("initCNFinance", e);
+            }
+        }
     }
 }
