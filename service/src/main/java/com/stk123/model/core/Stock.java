@@ -894,7 +894,8 @@ public class Stock {
         for(StkOwnershipEntity owner : this.getOwners()){
             if(StringUtils.contains(owner.getOrgName(), "香港中央结算") ||
                StringUtils.contains(owner.getOrgName(), "中央汇金资产") ||
-               StringUtils.contains(owner.getOrgName(), "中国证券金融股份")){
+               StringUtils.contains(owner.getOrgName(), "中国证券金融股份") ||
+               StringUtils.contains(owner.getOrgName(), "社保基金")){
                 score += 5;
                 break;
             }
