@@ -874,7 +874,11 @@ public class Stock {
                 }
             }
             if(stkHolderEntity.getTenOwnerChange() != null){
-                //@TODO
+                Double ownerChange = stkHolderEntity.getTenOwnerChange();
+                if(ownerChange > 0 && ownerChange < 100){
+                    if(ownerChange >= 10) score += 10;
+                    else score += ownerChange;
+                }
             }
         }
         return score;
