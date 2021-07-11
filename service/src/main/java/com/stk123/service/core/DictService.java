@@ -37,6 +37,14 @@ public class DictService {
         return dict.get(type).values();
     }
 
+    public Collection<StkDictionaryEntity> getDictionaryByTypes(Integer... types){
+        List<StkDictionaryEntity> dicts = new ArrayList<>();
+        for(Integer type :types){
+            dicts.addAll(dict.get(type).values());
+        }
+        return dicts;
+    }
+
     public Collection<StkDictionaryEntity> getDictionaryOrderByParam(Integer type){
         Collection<StkDictionaryEntity> list = getDictionary(type);
         return list.stream().sorted(Comparator.comparing(StkDictionaryEntity::getParam, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());

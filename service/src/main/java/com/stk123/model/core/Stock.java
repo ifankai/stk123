@@ -6,20 +6,16 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.common.CommonConstant;
 import com.stk123.common.CommonUtils;
 import com.stk123.common.util.ListUtils;
-import com.stk123.entity.StkHolderEntity;
-import com.stk123.entity.StkIndustryEntity;
-import com.stk123.entity.StkIndustryTypeEntity;
-import com.stk123.entity.StkNewsEntity;
-import com.stk123.model.bo.StkIndustryType;
+import com.stk123.entity.*;
 import com.stk123.model.json.View;
 import com.stk123.model.projection.IndustryProjection;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.model.projection.StockProjection;
 import com.stk123.model.strategy.Strategy;
-import com.stk123.repository.StkIndustryRepository;
-import com.stk123.repository.StkIndustryTypeRepository;
-import com.stk123.repository.StkRepository;
+import com.stk123.repository.*;
+import com.stk123.service.StkConstant;
 import com.stk123.service.core.BarService;
+import com.stk123.service.core.DictService;
 import com.stk123.service.core.StockService;
 import com.stk123.service.support.SpringApplicationContext;
 import com.stk123.util.HttpUtils;
@@ -28,6 +24,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.extern.apachecommons.CommonsLog;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +33,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.stk123.model.core.Stock.EnumMarket.*;
 import static com.stk123.model.core.Stock.EnumPlace.SH;
@@ -61,6 +58,12 @@ public class Stock {
     private StockService stockService;
     @Autowired
     private StkIndustryTypeRepository stkIndustryTypeRepository;
+    @Autowired
+    private StkOwnershipRepository stkOwnershipRepository;
+    @Autowired
+    private DictService dictService;
+    @Autowired
+    private StkHolderRepository stkHolderRepository;
 
     @AllArgsConstructor
     public enum EnumMarket {
@@ -183,7 +186,9 @@ public class Stock {
     private List<Stock> stocks; //板块包含的所有股票
 
     private StkHolderEntity holder; //最新股东人数,人均持股金额
+    private List<StkOwnershipEntity> owners; //十大流通股股东
     private List<StkNewsEntity> news;
+
 
     private BarSeries barSeries;
     private BarSeries barSeriesWeek;
@@ -757,7 +762,7 @@ public class Stock {
         return info + CommonUtils.k("查看", stocks.stream().map(Stock::getCode).collect(Collectors.toList()));
     }
 
-    public class Score{
+    public class Rating {
         private Integer total;
         @Getter
         private Map<String,Integer> map = new LinkedHashMap<>();
@@ -766,11 +771,22 @@ public class Stock {
             map.put(name, supplier.get());
         }
 
-        public int getTotal(){
+        public int getScore(){
             if(total == null) {
                 total = map.values().stream().mapToInt(value -> value).sum();
             }
             return total;
+        }
+
+        public int getScore(List<String> include, List<String> exclude){
+            Stream<String> filter = map.keySet().stream();
+            if(include != null && !include.isEmpty()){
+                filter = filter.filter(key -> include.stream().anyMatch(k -> StringUtils.containsIgnoreCase(key, k)));
+            }
+            if(exclude != null && !exclude.isEmpty()){
+                filter = filter.filter(key -> exclude.stream().noneMatch(k -> StringUtils.containsIgnoreCase(key, k)));
+            }
+            return filter.mapToInt(key -> map.get(key)).sum();
         }
 
     }
@@ -793,22 +809,28 @@ public class Stock {
         score += this.getBar().getScore(days/3);
         score += this.getScoreByBk();
         score += this.getScoreByHolder();*/
-        return this.getScoreDetail().getTotal();
+        return this.getRating().getScore();
     }
 
-    public Score getScoreDetail(){
+    /**
+     * @TODO 评级
+     * 1. 十大流通股里有基金、证券投资公司的加一颗星，有社保，港股通资金的加一颗星，有著名基金，私募如高毅等加一颗星
+     * 2. 人均持股金额大于50w的加一颗星，散户个数下降一定比例的加一颗星，十大流通股持股比例环比提供5%的加一颗星
+     * 3. 所属行业有rps大于90的加三颗星
+     * 4. 有股权激励，龙头，大订单，涨价等新闻的各加1颗星
+     * 5. 财务方面数据，如毛利率，主营收入，净利润，现金流优秀的个加一颗星
+     * 6. 。。。
+     */
+    public Rating getRating(){
         int days = 30;
-        Score score = new Score();
+        Rating score = new Rating();
         //int score = this.getBar().getScore(days);
-        score.addScore( "bar1", () -> this.getBar().getScore(days));
-        score.addScore( "bar2", () -> this.getBar().getScore(days/2));
-        score.addScore( "bar3", () -> this.getBar().getScore(days/3));
-        //score += this.getBar().getScore(days/2);
-        //score += this.getBar().getScore(days/3);
-        //score += this.getScoreByBk();
-        score.addScore( "getScoreByBk", () -> this.getScoreByBk());
-        //score += this.getScoreByHolder();
-        score.addScore( "getScoreByHolder", () -> this.getScoreByHolder());
+        score.addScore("jsm.bar1", () -> this.getBar().getScore(days));
+        score.addScore("jsm.bar2", () -> this.getBar().getScore(days/2));
+        score.addScore("jsm.bar3", () -> this.getBar().getScore(days/3));
+        score.addScore("jbm.bk", () -> this.getScoreByBk());
+        score.addScore("jbm.holder", () -> this.getScoreByHolder());
+        score.addScore("jbm.owners", this::getScoreByOwners);
         return score;
     }
 
@@ -851,21 +873,54 @@ public class Stock {
                     score += -5;
                 }
             }
+            if(stkHolderEntity.getTenOwnerChange() != null){
+                //@TODO
+            }
         }
         return score;
     }
 
-    /**
-     * @TODO 评星 （比评分模糊一点）
-     * 1. 十大流通股里有基金、证券投资公司的加一颗星，有社保，港股通资金的加一颗星，有著名基金，私募如高毅等加一颗星
-     * 2. 人均持股金额大于50w的加一颗星，散户个数下降一定比例的加一颗星，十大流通股持股比例环比提供5%的加一颗星
-     * 3. 所属行业有rps大于90的加三颗星
-     * 4. 有股权激励，龙头，大订单，涨价等新闻的各加1颗星
-     * 5. 财务方面数据，如毛利率，主营收入，净利润，现金流优秀的个加一颗星
-     * 6. 。。。
-     */
-    public int getStar(){
-        return 0;
+    public int getScoreByOwners(){
+        int score = 0;
+        List<StkOwnershipEntity> os = this.getOwners();
+        int cnt = (int) os.stream().filter(owner -> StringUtils.contains(owner.getOrgName(), "证券投资")).count();
+        if(cnt > 0 && cnt <= 3){
+            score += 3;
+        }else if(cnt > 3 && cnt <= 5){
+            score += cnt;
+        }else if(cnt > 5){
+            score += 5;
+        }
+        for(StkOwnershipEntity owner : this.getOwners()){
+            if(StringUtils.contains(owner.getOrgName(), "香港中央结算") ||
+               StringUtils.contains(owner.getOrgName(), "中央汇金资产") ||
+               StringUtils.contains(owner.getOrgName(), "中国证券金融股份")){
+                score += 5;
+                break;
+            }
+        }
+        Collection<StkDictionaryEntity> dicts = dictService.getDictionaryByTypes(StkConstant.DICT_NIUSAN, StkConstant.DICT_FAMOUS_FUNDS);
+        for(StkOwnershipEntity owner : this.getOwners()){
+            if(dicts.stream().anyMatch(dict -> StringUtils.contains(owner.getOrgName(), dict.getText()))){
+                score += 5;
+                break;
+            }
+        }
+        return score;
+    }
+
+    public List<StkOwnershipEntity> getOwners(){
+        if(owners == null){
+            owners = stkOwnershipRepository.findAllByCodeAndFnDateIsMax(Collections.singletonList(this.getCode()));
+        }
+        return this.owners;
+    }
+
+    public StkHolderEntity getHolder(){
+        if(this.holder == null){
+            holder = stkHolderRepository.findByCodeAndFnDateIsMax(this.getCode());
+        }
+        return this.holder;
     }
 
     @Override

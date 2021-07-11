@@ -1,7 +1,6 @@
 package com.stk123.app.web;
 
 import com.stk123.app.util.WebUtils;
-import com.stk123.common.CommonUtils;
 import com.stk123.model.core.Stock;
 import com.stk123.model.core.Stocks;
 import com.stk123.service.core.StockService;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -35,7 +33,7 @@ public class StrategyWebController {
                       @RequestParam(value = "to", required = false, defaultValue = "100")Double percentileTo,
                       Model model){
         if(Stocks.stocksAllCN == null) {
-            Stocks.stocksAllCN = stockService.getAllStocksAndBks(Stock.EnumMarket.CN, false, Stock.EnumCate.INDEX_eastmoney_gn);
+            Stocks.stocksAllCN = stockService.getStocksWithBks(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn, false);
         }
         List<Stock> stocks = Stocks.stocksAllCN;
         stocks = stockService.calcRps(stocks, rpsCode);

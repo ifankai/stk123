@@ -5,6 +5,7 @@ import com.stk123.common.util.PinYin4jUtils;
 import com.stk123.entity.StkDictionaryEntity;
 import com.stk123.entity.StkHolderEntity;
 import com.stk123.entity.StkNewsEntity;
+import com.stk123.entity.StkOwnershipEntity;
 import com.stk123.model.core.Bar;
 import com.stk123.model.core.BarSeries;
 import com.stk123.model.core.Rps;
@@ -63,6 +64,8 @@ public class StockService {
     private StkNewsRepository stkNewsRepository;
     @Autowired
     private StkDictionaryRepository stkDictionaryRepository;
+    @Autowired
+    private StkOwnershipRepository stkOwnershipRepository;
 
     @Transactional
     public List<Stock> buildStocks(List<String> codes) {
@@ -219,6 +222,16 @@ public class StockService {
         return stocks;
     }
 
+    public List<Stock> buildOwners(List<Stock> stocks){
+        return BaseRepository.findAll1000(stocks,
+                subStocks -> {
+                    List<String> codes = subStocks.stream().map(Stock::getCode).collect(Collectors.toList());
+                    Map<String, List<StkOwnershipEntity>> map = stkOwnershipRepository.getMapByCodeAndFnDateIsMax(codes);
+                    subStocks.forEach(stock -> stock.setOwners(map.get(stock.getCode())));
+                    return subStocks;
+                });
+    }
+
     public List<Stock> buildNews(List<Stock> stocks, Date newCreateAfter){
         List<Stock> list = BaseRepository.findAll1000(stocks,
                 subStocks -> {
@@ -302,24 +315,28 @@ public class StockService {
         return stks;
     }
 
-    public List<Stock> getAllStocksAndBks(Stock.EnumMarket market, boolean isIncludeRealtimeBar, Stock.EnumCate bkCate){
-        List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(market, Stock.EnumCate.STOCK);
-        //List<StockBasicProjection> list = stkRepository.findAllByCodes(ListUtils.createList("000630","000650","002038","002740","000651","002070","603876","600373","000002","000920","002801","000726","603588","002791","300474"));
-        list = list.stream().filter(stockBasicProjection -> !StringUtils.contains(stockBasicProjection.getName(), "退")).collect(Collectors.toList());
-
-        List<Stock> stocks = buildStocksWithProjection(list);
-        stocks = buildBarSeries(stocks, 500, isIncludeRealtimeBar);
-
-        //排除总市值小于40亿的
-        stocks = filterByMarketCap(stocks, 30);
-
-        stocks = buildIndustries(stocks);
-
-        //建立板块关系
-        //List<Stock> bks = getBks(market, bkCate);
-        //buildBk(stocks, bks);
+    public List<Stock> getStocksWithBks(List<Stock> stocks,Stock.EnumMarket market, Stock.EnumCate bkCate, boolean isIncludeRealtimeBar){
+        stocks = getStocksWithAllBuilds(stocks, isIncludeRealtimeBar);
         buildBkAndCalcRps(stocks, market, bkCate);
+        return stocks;
+    }
 
+    public List<Stock> getStocksWithBks(Stock.EnumMarket market, Stock.EnumCate bkCate, boolean isIncludeRealtimeBar){
+        List<Stock> stocks = getStocks(market, isIncludeRealtimeBar);
+        List<Stock> bks = getBks(market, bkCate);
+        buildBkAndCalcRps(stocks, bks);
+        return stocks;
+    }
+    public List<Stock> getBksWithStocks(Stock.EnumMarket market, Stock.EnumCate bkCate, boolean isIncludeRealtimeBar){
+        List<Stock> stocks = getStocks(market, isIncludeRealtimeBar);
+        List<Stock> bks = getBks(market, bkCate);
+        buildBkAndCalcRps(stocks, bks);
+        return bks;
+    }
+
+    public List<Stock> getStocksWithBks(Stock.EnumMarket market, List<Stock> bks, boolean isIncludeRealtimeBar){
+        List<Stock> stocks = getStocks(market, isIncludeRealtimeBar);
+        buildBkAndCalcRps(stocks, bks);
         return stocks;
     }
 
@@ -349,6 +366,27 @@ public class StockService {
         bks = bks.stream().filter(stock -> !BK_REMOVE.contains(stock.getCode())).collect(Collectors.toList());
         bks = buildBarSeries(bks, 250, false);
         return bks;
+    }
+
+    public List<Stock> getStocksWithAllBuilds(List<Stock> stocks, boolean isIncludeRealtimeBar){
+        stocks = buildBarSeries(stocks, 500, isIncludeRealtimeBar);
+        stocks = buildIndustries(stocks);
+        stocks = buildHolder(stocks);
+        stocks = buildOwners(stocks);
+        return stocks;
+    }
+    public List<Stock> getStocks(Stock.EnumMarket market, boolean isIncludeRealtimeBar){
+        List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(market, Stock.EnumCate.STOCK);
+        //List<StockBasicProjection> list = stkRepository.findAllByCodes(ListUtils.createList("000630","000650","002038","002740","000651","002070","603876","600373","000002","000920","002801","000726","603588","002791","300474"));
+        List<Stock> stocks = buildStocksWithProjection(list);
+
+        //排除总市值小于40亿的
+        stocks = filterByMarketCap(stocks, 30);
+        //排除退市的
+        stocks = stocks.stream().filter(stock -> !StringUtils.contains(stock.getName(), "退")).collect(Collectors.toList());
+
+        stocks = getStocksWithAllBuilds(stocks, isIncludeRealtimeBar);
+        return stocks;
     }
 
 

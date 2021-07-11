@@ -1,6 +1,5 @@
 package com.stk123.task.schedule;
 
-import com.google.common.collect.Sets;
 import com.stk123.common.CommonUtils;
 import com.stk123.common.util.EmailUtils;
 import com.stk123.common.util.ListUtils;
@@ -33,7 +32,6 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
-import org.springframework.data.domain.Range;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -59,6 +57,7 @@ public class BarTask extends AbstractTask {
     public static List<Stock> StocksAllCN = null;
     public static List<Stock> StocksMass = null;
     public static List<Stock> StocksH = null;
+    public static List<Stock> BkCN = null;
 
 
     private String today = TaskUtils.getToday();//"20160923";
@@ -455,11 +454,13 @@ public class BarTask extends AbstractTask {
             }
             log.info(stocks.stream().map(Stock::getCode).collect(Collectors.toList()));
 
-            stocks = stockService.buildBarSeries(stocks, 500, realtime != null);
+            /*stocks = stockService.buildBarSeries(stocks, 500, realtime != null);
             stocks = stockService.buildIndustries(stocks);
             //建立板块关系，计算rps
             stockService.buildBkAndCalcRps(stocks, Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn);
-            stockService.buildHolder(stocks);
+            stockService.buildHolder(stocks);*/
+
+            stocks = stockService.getStocksWithBks(stocks, Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn, realtime!=null);
 
             String stratgies = Strategies.STRATEGIES_MY_STOCKS;
             if(StringUtils.isNotEmpty(strategy)){
@@ -553,9 +554,9 @@ public class BarTask extends AbstractTask {
     public void analyseAllStocks(){
         try {
             if(StocksAllCN == null) {
-                StocksAllCN = stockService.getAllStocksAndBks(Stock.EnumMarket.CN, realtime != null, Stock.EnumCate.INDEX_eastmoney_gn);
+                StocksAllCN = stockService.getStocksWithBks(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn, realtime != null);
             }
-            stockService.buildHolder(StocksAllCN);
+            //stockService.buildHolder(StocksAllCN);
 
             String strategies = Strategies.STRATEGIES_ALL_STOCKS;
             if(StringUtils.isNotEmpty(strategy)){
@@ -624,11 +625,10 @@ public class BarTask extends AbstractTask {
 
     public void analyseBks(){
         try{
-            List<Stock> bks = stockService.getBks(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn);
-            if(StocksAllCN == null) {
-                StocksAllCN = stockService.getAllStocksAndBks(Stock.EnumMarket.CN, realtime != null, Stock.EnumCate.INDEX_eastmoney_gn);
+            if(BkCN == null) {
+                BkCN = stockService.getBksWithStocks(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn, realtime != null);
             }
-            stockService.buildBkAndCalcRps(StocksAllCN, bks);
+            List<Stock> bks = BkCN;
 
             String strategies = Strategies.STRATEGIES_BK;
             if(StringUtils.isNotEmpty(strategy)){

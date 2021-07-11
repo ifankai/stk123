@@ -2,6 +2,8 @@ package com.stk123.repository;
 
 import com.stk123.entity.StkHolderEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -24,5 +26,8 @@ public interface StkHolderRepository extends JpaRepository<StkHolderEntity, StkH
     }
 
     StkHolderEntity findByCodeAndFnDate(String code, String fnDate);
+
+    @Query(value = "select * from stk_holder a, (select code,max(fn_date) fn_date from stk_holder group by code) b where a.code=b.code and a.fn_date=b.fn_date and a.code=:code", nativeQuery = true)
+    StkHolderEntity findByCodeAndFnDateIsMax(@Param("code")String code);
 
 }

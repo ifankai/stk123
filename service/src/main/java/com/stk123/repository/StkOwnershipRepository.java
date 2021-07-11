@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.*;
 
 @Repository
 public interface StkOwnershipRepository extends JpaRepository<StkOwnershipEntity, StkOwnershipEntity.CompositeKey> {
@@ -15,4 +15,24 @@ public interface StkOwnershipRepository extends JpaRepository<StkOwnershipEntity
             "(select code,fn_date,sum(stk_num) stk_num from stk_ownership group by code,fn_date having code=:code)) where fn_date=:fnDate", nativeQuery = true)
     List<Object> findTenOnwerChangeByCodeAndFnDate(@Param("code")String code, @Param("fnDate")String fnDate);
 
+    //@Query(value = "select o.code,o.fn_date,o.org_id,o.stk_num,o.rate,o.num_change,o.num_change_rate,name as org_name from stk_ownership o, stk_organization g,(select code,max(fn_date) fn_date from stk_ownership group by code) a where o.org_id=g.id and o.code=a.code and o.fn_date=a.fn_date and o.code in (:codes)", nativeQuery = true)
+    //List<StkOwnershipEntity> findAllByCodeAndFnDateIsMax(@Param("codes") List<String> codes);
+
+    String sql_findAll = "select o.code,o.fn_date,o.org_id,o.stk_num,o.rate,o.num_change,o.num_change_rate,name as org_name from stk_ownership o, stk_organization g,(select code,max(fn_date) fn_date from stk_ownership group by code) a where o.org_id=g.id and o.code=a.code and o.fn_date=a.fn_date and o.code in (:1)";
+    default List<StkOwnershipEntity> findAllByCodeAndFnDateIsMax(List<String> codes) {
+        return BaseRepository.getInstance().list(sql_findAll, StkOwnershipEntity.class, codes);
+    }
+
+    default Map<String, List<StkOwnershipEntity>> getMapByCodeAndFnDateIsMax(List<String> codes){
+        List<StkOwnershipEntity> owners = findAllByCodeAndFnDateIsMax(codes);
+        Map<String, List<StkOwnershipEntity>> result = new LinkedHashMap<>(codes.size());
+        for(String code : codes) {
+            result.put(code, new ArrayList<>());
+        }
+        for(StkOwnershipEntity n : owners){
+            List<StkOwnershipEntity> list = result.get(n.getCode());
+            list.add(n);
+        }
+        return result;
+    }
 }

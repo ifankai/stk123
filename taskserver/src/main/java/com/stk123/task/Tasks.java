@@ -94,6 +94,7 @@ public class Tasks {
         BarTask.StocksMass = null;
         BarTask.StocksH = null;
         BarTask.StocksAllCN = null;
+        BarTask.BkCN = null;
         taskContainer.start(TaskBuilder.of(BarTask.class, "CN"),
                             TaskBuilder.of(BarTask.class, "HK"),
                             TaskBuilder.of(BarTask.class, "MyStocks"),

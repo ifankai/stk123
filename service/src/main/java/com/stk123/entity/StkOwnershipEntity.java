@@ -11,6 +11,7 @@ import java.util.Objects;
 @IdClass(StkOwnershipEntity.CompositeKey.class)
 @Setter
 @Getter
+@ToString
 public class StkOwnershipEntity implements Serializable {
     @Id
     @Column(name = "CODE", nullable = true, length = 10)
@@ -22,7 +23,7 @@ public class StkOwnershipEntity implements Serializable {
 
     @Basic
     @Column(name = "ORG_ID", nullable = true, precision = 0)
-    private Integer orgId;
+    private Long orgId;
 
     @Basic
     @Column(name = "STK_NUM", nullable = true, precision = 2)
@@ -40,7 +41,8 @@ public class StkOwnershipEntity implements Serializable {
     @Column(name = "NUM_CHANGE_RATE", nullable = true, precision = 2)
     private Double numChangeRate;
 
-    //private StkOrganizationEntity stkOrganizationByOrgId;
+    @Transient
+    private String orgName;
 
 
     @Override

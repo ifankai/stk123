@@ -1,15 +1,11 @@
 package com.stk123.controller;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.model.RequestResult;
-import com.stk123.model.core.BarSeries;
 import com.stk123.model.core.Stock;
 import com.stk123.model.core.Stocks;
-import com.stk123.model.json.View;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.repository.StkRepository;
 import com.stk123.repository.StkTextRepository;
-import com.stk123.service.XueqiuService;
 import com.stk123.service.core.BarService;
 import com.stk123.service.core.StockService;
 import lombok.extern.apachecommons.CommonsLog;
@@ -21,8 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -78,9 +72,9 @@ public class StockController {
     @ResponseBody
     public RequestResult score(@PathVariable(value = "code")String code){
         Stock stock = Stock.build(code);
-        int cnt = stock.getScore();
+        Stock.Rating rating = stock.getRating();
 
-        return RequestResult.success(cnt);
+        return RequestResult.success(rating);
     }
 
     @RequestMapping(value = {"/score"})
@@ -89,7 +83,7 @@ public class StockController {
                                 @RequestParam(value = "to", required = false, defaultValue = "100")Double percentileTo
     ){
         if(Stocks.stocksAllCN == null) {
-            Stocks.stocksAllCN = stockService.getAllStocksAndBks(Stock.EnumMarket.CN, false, Stock.EnumCate.INDEX_eastmoney_gn);
+            Stocks.stocksAllCN = stockService.getStocksWithBks(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn, false);
         }
         List<Stock> stocks = Stocks.stocksAllCN;
         stocks = stocks.stream().sorted(Comparator.comparing(Stock::getScore, Comparator.reverseOrder())).collect(Collectors.toList());
@@ -99,7 +93,7 @@ public class StockController {
         for(Stock stock : stocks){
             Map map = new HashMap();
             map.put("code", stock.getNameAndCode());
-            map.put("score", stock.getScoreDetail().getMap());
+            map.put("score", stock.getRating().getMap());
             map.put("rps", stock.getRps());
             list.add(map);
         }
