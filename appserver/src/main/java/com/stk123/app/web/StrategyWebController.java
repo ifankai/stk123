@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @CommonsLog
@@ -31,14 +32,20 @@ public class StrategyWebController {
     public String rps(@PathVariable(value = "rpsCode", required = true)String rpsCode,
                       @RequestParam(value = "from", required = false, defaultValue = "0")Double percentileFrom,
                       @RequestParam(value = "to", required = false, defaultValue = "100")Double percentileTo,
+                      @RequestParam(value = "bk", required = false)String bkCode,
                       Model model){
-        if(Stocks.stocksAllCN == null) {
+        if (Stocks.stocksAllCN == null) {
             Stocks.stocksAllCN = stockService.getStocksWithBks(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn, false);
         }
         List<Stock> stocks = Stocks.stocksAllCN;
+        if(bkCode != null){
+            stocks = stocks.stream().filter(stock -> stock.getBks().stream().anyMatch(bk -> bk.getCode().equals(bkCode))).collect(Collectors.toList());
+        }
+
         stocks = stockService.calcRps(stocks, rpsCode);
         int size = stocks.size();
-        stocks = stocks.subList((int)(size*(100-percentileTo)/100), (int)(size*(100-percentileFrom)/100));
+        if(percentileFrom != 0 || percentileTo != 100)
+            stocks = stocks.subList((int)(size*(100-percentileTo)/100), (int)(size*(100-percentileFrom)/100));
         model.addAttribute("stocks", WebUtils.getStockMap(stocks));
         return "k";
     }

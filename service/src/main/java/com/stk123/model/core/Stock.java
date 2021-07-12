@@ -887,7 +887,7 @@ public class Stock {
     public int getScoreByOwners(){
         int score = 0;
         List<StkOwnershipEntity> os = this.getOwners();
-        int cnt = (int) os.stream().filter(owner -> StringUtils.contains(owner.getOrgName(), "证券投资")).count();
+        int cnt = (int) os.stream().filter(owner -> StringUtils.contains(owner.getOrgName(), "证券投资基金")).count();
         if(cnt > 0 && cnt <= 3){
             score += 3;
         }else if(cnt > 3 && cnt <= 5){
