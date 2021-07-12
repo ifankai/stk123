@@ -3,6 +3,8 @@ package com.stk123.controller;
 import com.stk123.model.RequestResult;
 import com.stk123.model.core.Stock;
 import com.stk123.model.core.Stocks;
+import com.stk123.model.enumeration.EnumCate;
+import com.stk123.model.enumeration.EnumMarket;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.repository.StkRepository;
 import com.stk123.repository.StkTextRepository;
@@ -39,7 +41,7 @@ public class StockController {
     @ResponseBody
     public RequestResult list(@PathVariable(value = "market", required = false)String market,
                                @PathVariable(value = "cate", required = false)Integer cate){
-        Stock.EnumMarket em = Stock.EnumMarket.getMarket(market);
+        EnumMarket em = EnumMarket.getMarket(market);
         if(em == null){
             return RequestResult.failure("Should not be here.");
         }
@@ -83,7 +85,7 @@ public class StockController {
                                 @RequestParam(value = "to", required = false, defaultValue = "100")Double percentileTo
     ){
         if(Stocks.stocksAllCN == null) {
-            Stocks.stocksAllCN = stockService.getStocksWithBks(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn, false);
+            Stocks.stocksAllCN = stockService.getStocksWithBks(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn, false);
         }
         List<Stock> stocks = Stocks.stocksAllCN;
         stocks = stocks.stream().sorted(Comparator.comparing(Stock::getScore, Comparator.reverseOrder())).collect(Collectors.toList());

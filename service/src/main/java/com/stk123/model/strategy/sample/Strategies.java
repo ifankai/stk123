@@ -7,6 +7,7 @@ import com.stk123.model.core.Bar;
 import com.stk123.model.core.BarSeries;
 import com.stk123.model.core.Rps;
 import com.stk123.model.core.Stock;
+import com.stk123.model.enumeration.EnumCate;
 import com.stk123.model.strategy.Filter;
 import com.stk123.model.strategy.Strategy;
 import com.stk123.model.strategy.StrategyResult;
@@ -93,7 +94,7 @@ public class Strategies {
     //比strategy_02a多了MACD底背离
     public static Strategy strategy_02b() {
         Strategy<Stock> strategy = new Strategy<>("strategy_02b","策略002044美年健康20201231，底部一阳吃多阴，MACD底背离(02b)", Stock.class);
-        strategy.addFilter("股票", Filters.filter_mustStockCate(Stock.EnumCate.STOCK));
+        strategy.addFilter("股票", Filters.filter_mustStockCate(EnumCate.STOCK));
         strategy.addFilter("一阳吃5阴或阳", Stock::getBarSeries, Filters.filter_004(5));
         strategy.addFilter("一阳穿过5,10日均线", Stock::getBar, Filters.filter_005a(5, 10));
         strategy.addFilter("过去3天到100天的跌幅[-100,-20] or 过去3天到60天内最高点到低点的跌幅[-100,-30]",
@@ -108,7 +109,7 @@ public class Strategies {
     }
     public static Strategy strategy_02c() {
         Strategy<Stock> strategy = new Strategy<>("strategy_02c","策略002044美年健康20201231，底部一阳吃多阴，MACD底背离(02c)", Stock.class);
-        strategy.addFilter("行业", Filters.filter_mustStockCate(Stock.EnumCate.INDEX_eastmoney_gn));
+        strategy.addFilter("行业", Filters.filter_mustStockCate(EnumCate.INDEX_eastmoney_gn));
         strategy.addFilter("一阳吃5阴或阳", Stock::getBarSeries, Filters.filter_004(3));
         strategy.addFilter("过去3天到100天的跌幅[-100,-20] or 过去3天到60天内最高点到低点的跌幅[-100,-30]",
                 Stock::getBar,
@@ -122,7 +123,7 @@ public class Strategies {
     }
     public static Strategy strategy_02d() {
         Strategy<Stock> strategy = new Strategy<>("strategy_02d","策略002044美年健康20201231，底部一阳吃多阴，MACD底背离(02d)", Stock.class);
-        strategy.addFilter("股票", Filters.filter_mustStockCate(Stock.EnumCate.STOCK));
+        strategy.addFilter("股票", Filters.filter_mustStockCate(EnumCate.STOCK));
         strategy.addFilter("一阳吃5阴或阳", Stock::getBarSeries, Filters.filter_004(5));
         strategy.addFilter("一阳穿过5,10日均线", Stock::getBar, Filters.filter_005a(5, 10));
         strategy.addFilter("过去3天到100天的跌幅[-100,-20] or 过去3天到60天内最高点到低点的跌幅[-100,-30]",
@@ -141,7 +142,7 @@ public class Strategies {
     //002538 20200703 100天内，放量涨缩量跌，之后均线缠绕突破买入
     public static Strategy strategy_03a() {
         Strategy<Stock> strategy = new Strategy<>("strategy_03a","策略002538司尔特20200703，底部均线缠绕，一阳吃多阴(03a)", Stock.class);
-        strategy.addFilter("股票", Filters.filter_mustStockCate(Stock.EnumCate.STOCK));
+        strategy.addFilter("股票", Filters.filter_mustStockCate(EnumCate.STOCK));
         strategy.addFilter("一阳吃4阴或阳", Stock::getBarSeries, Filters.filter_004(4));
         strategy.addFilter("一阳穿过5, 10, 20, 30, 60日均线中的任何2根", Stock::getBar, Filters.filter_005b(2, 5, 10, 20, 30, 60));
         strategy.addFilter("均线线缠绕，且前100天内放量涨缩量跌", Filters.filter_007a(100, 13 ));
@@ -150,7 +151,7 @@ public class Strategies {
     }
     public static Strategy strategy_03b() {
         Strategy<Stock> strategy = new Strategy<>("strategy_03b","策略002538司尔特20200703，底部均线缠绕，一阳吃多阴(03b)", Stock.class);
-        strategy.addFilter("行业", Filters.filter_mustStockCate(Stock.EnumCate.INDEX_eastmoney_gn));
+        strategy.addFilter("行业", Filters.filter_mustStockCate(EnumCate.INDEX_eastmoney_gn));
         strategy.addFilter("一阳吃3阴或阳", Stock::getBarSeries, Filters.filter_004(3));
         strategy.addFilter("一阳穿过5, 10, 20, 30, 60日均线中的任何2根", Stock::getBar, Filters.filter_005b(2, 5, 10, 20, 30, 60));
         strategy.addFilter("均线线缠绕，且前100天内放量涨缩量跌", Filters.filter_007b(100, 6 ));
@@ -288,7 +289,7 @@ public class Strategies {
         Strategy<Stock> strategy = new Strategy<>(code, name, Stock.class);
         strategy.setSortable(10).setAsc(false).setCanTestHistory(false);
 
-        strategy.addFilter("行业", Filters.filter_mustStockCate(Stock.EnumCate.INDEX_eastmoney_gn));
+        strategy.addFilter("行业", Filters.filter_mustStockCate(EnumCate.INDEX_eastmoney_gn));
         Filter<Stock> filter = (strg, stock) -> {
             Bar bar = stock.getBar();
             Bar k = bar.before(turningPoint);
@@ -425,7 +426,7 @@ public class Strategies {
         String turningPoint = Strategies.getTurningPoint(60);
         System.out.println("turningPoint=="+turningPoint);
 
-        strategy.addFilter("行业", Filters.filter_mustStockCate(Stock.EnumCate.INDEX_eastmoney_gn));
+        strategy.addFilter("行业", Filters.filter_mustStockCate(EnumCate.INDEX_eastmoney_gn));
         Filter<Stock> filter = (strg, stock) -> {
             Bar bar = stock.getBar();
             Bar k = bar.before(turningPoint);

@@ -2,6 +2,8 @@ package com.stk123.repository;
 
 import com.stk123.entity.StkEntity;
 import com.stk123.model.core.Stock;
+import com.stk123.model.enumeration.EnumCate;
+import com.stk123.model.enumeration.EnumMarket;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.model.projection.StockCodeNameProjection;
 import com.stk123.model.projection.StockProjection;
@@ -27,7 +29,7 @@ public interface StkRepository extends JpaRepository<StkEntity, String> {
     @Query(value = "select code as code,name as name,market as market,cate as cate,place as place,totalCapital as totalCapital from StkEntity where market=:market and cate=:cate order by code")
     List<StockBasicProjection> findAllByMarketAndCateOrderByCode(@Param("market") Integer market, @Param("cate") Integer cate);
 
-    default List<StockBasicProjection> findAllByMarketAndCateOrderByCode(Stock.EnumMarket market, Stock.EnumCate cate) {
+    default List<StockBasicProjection> findAllByMarketAndCateOrderByCode(EnumMarket market, EnumCate cate) {
         return this.findAllByMarketAndCateOrderByCode(market.getMarket(), cate.getCate());
     }
 

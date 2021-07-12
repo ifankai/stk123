@@ -1,6 +1,7 @@
 package com.stk123.task.schedule;
 
 import com.stk123.model.core.Stock;
+import com.stk123.model.enumeration.EnumMarket;
 import com.stk123.service.task.Task;
 import com.stk123.task.tool.TaskUtils;
 import lombok.Setter;
@@ -23,7 +24,7 @@ public abstract class AbstractTask extends Task {
         super(canStop);
     }
 
-    protected Stock.EnumMarket market = Stock.EnumMarket.CN; //default A stock
+    protected EnumMarket market = EnumMarket.CN; //default A stock
 
     protected Map<String, Object> params = new LinkedHashMap<>();
     protected Map<String, Runnable> methods = new LinkedHashMap<>();
@@ -48,9 +49,9 @@ public abstract class AbstractTask extends Task {
                     }
                 }else{
                     if ("US".equalsIgnoreCase(arg)) {
-                        market = Stock.EnumMarket.US;
+                        market = EnumMarket.US;
                     }else if ("HK".equalsIgnoreCase(arg)) {
-                        market = Stock.EnumMarket.HK;
+                        market = EnumMarket.HK;
                     }
                     params.put(arg, true);
                 }

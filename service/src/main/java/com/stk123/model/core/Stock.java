@@ -7,6 +7,10 @@ import com.stk123.common.CommonConstant;
 import com.stk123.common.CommonUtils;
 import com.stk123.common.util.ListUtils;
 import com.stk123.entity.*;
+import com.stk123.model.enumeration.EnumCate;
+import com.stk123.model.enumeration.EnumMarket;
+import com.stk123.model.enumeration.EnumPeriod;
+import com.stk123.model.enumeration.EnumPlace;
 import com.stk123.model.json.View;
 import com.stk123.model.projection.IndustryProjection;
 import com.stk123.model.projection.StockBasicProjection;
@@ -24,7 +28,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.extern.apachecommons.CommonsLog;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +40,11 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.stk123.model.core.Stock.EnumMarket.*;
-import static com.stk123.model.core.Stock.EnumPlace.SH;
-import static com.stk123.model.core.Stock.EnumPlace.SZ;
+import static com.stk123.model.enumeration.EnumMarket.CN;
+import static com.stk123.model.enumeration.EnumMarket.HK;
+import static com.stk123.model.enumeration.EnumMarket.US;
+import static com.stk123.model.enumeration.EnumPlace.SH;
+import static com.stk123.model.enumeration.EnumPlace.SZ;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -65,98 +70,7 @@ public class Stock {
     @Autowired
     private StkHolderRepository stkHolderRepository;
 
-    @AllArgsConstructor
-    public enum EnumMarket {
-        CN(1), HK(3), US(2);
 
-        EnumMarket(Integer market){
-            this.market = market;
-        }
-        @Getter
-        private Integer market;
-
-        private String klineTable;
-
-        public String getKlineTable(){
-            return klineTable == null ? this.klineTable = this.select("stk_kline", "stk_kline_hk", "stk_kline_us") : klineTable;
-        }
-
-        /**
-         * @param name 1|2|3|cn|us|hk
-         */
-        public static EnumMarket getMarket(String name){
-            for(EnumMarket em : EnumMarket.values()){
-                if(em.name().equalsIgnoreCase(name) || name.equals(em.getMarket().toString())){
-                    return em;
-                }
-            }
-            return null;
-        }
-        public static EnumMarket getMarket(Integer market){
-            if(market == null) return null;
-            for(EnumMarket em : EnumMarket.values()){
-                if(em.getMarket().intValue() == market.intValue()){
-                    return em;
-                }
-            }
-            return null;
-        }
-        public <T> T select(T cn, T hk, T us){
-            switch (this){
-                case CN:
-                    return cn;
-                case HK:
-                    return hk;
-                case US:
-                    return us;
-                default:
-                    return null;
-            }
-        }
-        public String replaceKlineTable(String str){
-            return StringUtils.replace(str, "stk_kline", this.getKlineTable());
-        }
-    }
-
-    @AllArgsConstructor
-    public enum EnumPlace {
-        SH(1), SZ(2);
-
-        @Getter
-        private Integer place;
-
-        public static EnumPlace getPlace(Integer place) {
-            if(place == null) return null;
-            for(EnumPlace em : EnumPlace.values()){
-                if(em.getPlace().intValue() == place.intValue()){
-                    return em;
-                }
-            }
-            return null;
-        }
-
-        public static boolean isSH(Integer place){
-            return Objects.equals(SH.place, place);
-        }
-    }
-
-    @AllArgsConstructor
-    public enum EnumCate {
-        STOCK(1), INDEX(2), FUND(3), INDEX_10jqka(4), INDEX_eastmoney_gn(5);
-
-        @Getter
-        private Integer cate;
-
-        public static EnumCate getCate(Integer cate) {
-            if(cate == null) return null;
-            for(EnumCate em : EnumCate.values()){
-                if(em.getCate().intValue() == cate.intValue()){
-                    return em;
-                }
-            }
-            return null;
-        }
-    }
 
     @JsonView({View.Default.class, View.Score.class})
     private String code;
@@ -272,7 +186,7 @@ public class Stock {
         this.market = EnumMarket.getMarket(stockBasicProjection.getMarket());
         this.cate = EnumCate.getCate(stockBasicProjection.getCate());
         this.place = EnumPlace.getPlace(stockBasicProjection.getPlace());
-        if(this.market == EnumMarket.CN && this.place == null
+        if(this.market == CN && this.place == null
                 && (this.cate == EnumCate.STOCK || this.cate == EnumCate.INDEX)){
             setPlace();
         }
@@ -315,13 +229,13 @@ public class Stock {
     }
 
     public boolean isMarketCN(){
-        return this.market == EnumMarket.CN;
+        return this.market == CN;
     }
     public boolean isMarketUS(){
-        return this.market == EnumMarket.US;
+        return this.market == US;
     }
     public boolean isMarketHK(){
-        return this.market == EnumMarket.HK;
+        return this.market == HK;
     }
     public boolean isCateStock() {
         return this.cate == EnumCate.STOCK;
@@ -330,19 +244,19 @@ public class Stock {
         return this.cate == EnumCate.INDEX_eastmoney_gn;
     }
     public boolean isPlaceSH(){
-        return this.place == EnumPlace.SH;
+        return this.place == SH;
     }
 
     private void setPlace(){
         if(place != null) return;
         if(this.market == CN){
             if(this.code.length() == 8){//01000010 or SH000010
-                if(this.code.startsWith(CommonConstant.NUMBER_01) || this.code.startsWith(EnumPlace.SH.name())){
+                if(this.code.startsWith(CommonConstant.NUMBER_01) || this.code.startsWith(SH.name())){
                     this.place = SH;
                 }else{
                     this.place = SZ;
                 }
-                if(this.code.startsWith(EnumPlace.SH.name()) || this.code.startsWith(EnumPlace.SZ.name())){
+                if(this.code.startsWith(SH.name()) || this.code.startsWith(SZ.name())){
                     this.code = this.code.substring(2, 8);
                 }
             }else{
@@ -366,7 +280,7 @@ public class Stock {
     //input:SH000010 return:000010
     public static String getCodeWithoutPlace(String codeWithPlace){
         if(codeWithPlace.length() == 8){
-            if(codeWithPlace.startsWith(EnumPlace.SH.name()) || codeWithPlace.startsWith(EnumPlace.SZ.name())){
+            if(codeWithPlace.startsWith(SH.name()) || codeWithPlace.startsWith(SZ.name())){
                 String code = codeWithPlace.substring(2, 8);
                 if(StringUtils.isNumeric(code)){
                     return code;
@@ -401,7 +315,7 @@ public class Stock {
         }
         return this.barSeries;
     }
-    public synchronized BarSeries getBarSeries(BarSeries.EnumPeriod period){
+    public synchronized BarSeries getBarSeries(EnumPeriod period){
         return period.select(this.getBarSeries(), this.getBarSeriesWeek(), this.getBarSeriesMonth());
         /*switch (period) {
             case W:
@@ -645,7 +559,7 @@ public class Stock {
         if(TURNING_POINTS.get(days) != null){
             return TURNING_POINTS.get(days);
         }
-        List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn);
+        List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(CN, EnumCate.INDEX_eastmoney_gn);
         List<Stock> stocks = list.stream().map(Stock::build).collect(Collectors.toList());
         Bar b = this.getBar().getHighestBar(days, bar -> {
            List<Bar> bars = stocks.stream().map(stock1 -> stock1.getBar()!=null ? stock1.getBar().before(bar.getDate()) : null).filter(Objects::nonNull).collect(Collectors.toList());

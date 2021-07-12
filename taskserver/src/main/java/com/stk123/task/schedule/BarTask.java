@@ -10,6 +10,8 @@ import com.stk123.entity.StkPeEntity;
 import com.stk123.model.core.Bar;
 import com.stk123.model.core.Rps;
 import com.stk123.model.core.Stock;
+import com.stk123.model.enumeration.EnumCate;
+import com.stk123.model.enumeration.EnumMarket;
 import com.stk123.model.mass.*;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.model.strategy.StrategyBacktesting;
@@ -119,7 +121,7 @@ public class BarTask extends AbstractTask {
         log.info("初始化CN的大盘指数");
         StockBasicProjection scn = null;
         try{
-            List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.INDEX);
+            List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(EnumMarket.CN, EnumCate.INDEX);
             for (StockBasicProjection codeName : list) {
                 log.info(codeName.getCode());
                 scn = codeName;
@@ -136,7 +138,7 @@ public class BarTask extends AbstractTask {
         }
 
         try{
-            List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn);
+            List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn);
             for (StockBasicProjection codeName : list) {
                 log.info(codeName.getCode());
                 scn = codeName;
@@ -158,7 +160,7 @@ public class BarTask extends AbstractTask {
         }
 
         try {
-            List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.STOCK);
+            List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(EnumMarket.CN, EnumCate.STOCK);
             log.info("CN initKLines..........start");
             initKLines(list, 4);
             log.info("CN initKLines..........end");
@@ -181,7 +183,7 @@ public class BarTask extends AbstractTask {
 
     public void initHK() {
         try{
-            List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.HK, Stock.EnumCate.STOCK);
+            List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(EnumMarket.HK, EnumCate.STOCK);
             log.info("HK initKLines..........start");
             initKLines(list, 4);
             log.info("HK initKLines..........end");
@@ -194,7 +196,7 @@ public class BarTask extends AbstractTask {
     public void initUS(){
         log.info("初始化US的大盘指数");
         try{
-            List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.US, Stock.EnumCate.INDEX);
+            List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(EnumMarket.US, EnumCate.INDEX);
             log.info("US index K ..........start");
             initKLines(list, 1);
             log.info("US index K ..........end");
@@ -205,7 +207,7 @@ public class BarTask extends AbstractTask {
 
         log.info("初始化US的个股");
         try{
-            List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.US, Stock.EnumCate.STOCK);
+            List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(EnumMarket.US, EnumCate.STOCK);
             //List<StockBasicProjection> list = stkRepository.findAllByCodes(Arrays.asList("BIDU"));
             log.info("US initKLines..........start");
             initKLines(list, 4);
@@ -237,7 +239,7 @@ public class BarTask extends AbstractTask {
         log.info("2. check growth stk average pe "+new Date());
         List<StkIndustryEntity> inds = stkIndustryRepository.findAllByIndustry(1783);
         List<String> codes = inds.stream().map(StkIndustryEntity::getCode).collect(Collectors.toList());
-        List<Bar> list = barService.findAllByKlineDateAndCodeIn(today, codes, Stock.EnumMarket.CN);
+        List<Bar> list = barService.findAllByKlineDateAndCodeIn(today, codes, EnumMarket.CN);
 
         double gtotalPE = 0.0;
         double gtotalPB = 0.0;
@@ -295,7 +297,7 @@ public class BarTask extends AbstractTask {
 
 
     public void analyseHK(){
-        Map<String, BigDecimal> peMap = barService.calcAvgMidPeTtm(today, Stock.EnumMarket.HK);
+        Map<String, BigDecimal> peMap = barService.calcAvgMidPeTtm(today, EnumMarket.HK);
         StkPeEntity stkPeEntity = stkPeRepository.findOrCreateById(today);
         stkPeEntity.setReportDate(today);
         Double avgPe = NumberUtils.toDouble(peMap.get("avg_pe_ttm"));
@@ -308,7 +310,7 @@ public class BarTask extends AbstractTask {
     public void analyseUS(){
         StkKlineUsEntity stkKlineUsEntity = stkKlineUsRepository.findTop1ByCodeOrderByKlineDateDesc(".DJI");
         today = stkKlineUsEntity.getKlineDate();
-        Map<String, BigDecimal> peMap = barService.calcAvgMidPeTtm(today, Stock.EnumMarket.US);
+        Map<String, BigDecimal> peMap = barService.calcAvgMidPeTtm(today, EnumMarket.US);
         StkPeEntity stkPeEntity = stkPeRepository.findOrCreateById(today);
         stkPeEntity.setReportDate(today);
         Double avgPe = NumberUtils.toDouble(peMap.get("avg_pe_ttm"));
@@ -460,7 +462,7 @@ public class BarTask extends AbstractTask {
             stockService.buildBkAndCalcRps(stocks, Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn);
             stockService.buildHolder(stocks);*/
 
-            stocks = stockService.getStocksWithBks(stocks, Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn, realtime!=null);
+            stocks = stockService.getStocksWithBks(stocks, EnumMarket.CN, EnumCate.INDEX_eastmoney_gn, realtime!=null);
 
             String stratgies = Strategies.STRATEGIES_MY_STOCKS;
             if(StringUtils.isNotEmpty(strategy)){
@@ -554,7 +556,7 @@ public class BarTask extends AbstractTask {
     public void analyseAllStocks(){
         try {
             if(StocksAllCN == null) {
-                StocksAllCN = stockService.getStocksWithBks(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn, realtime != null);
+                StocksAllCN = stockService.getStocksWithBks(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn, realtime != null);
             }
             //stockService.buildHolder(StocksAllCN);
 
@@ -626,7 +628,7 @@ public class BarTask extends AbstractTask {
     public void analyseBks(){
         try{
             if(BkCN == null) {
-                BkCN = stockService.getBksWithStocks(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn, realtime != null);
+                BkCN = stockService.getBksWithStocks(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn, realtime != null);
             }
             List<Stock> bks = BkCN;
 
@@ -692,7 +694,7 @@ public class BarTask extends AbstractTask {
     //相似算法
     public void analyseMass(){
         if(StocksMass == null) {
-            List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.STOCK);
+            List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(EnumMarket.CN, EnumCate.STOCK);
             //List<StockBasicProjection> list = stkRepository.findAllByCodes(ListUtils.createList("000630","000650","002038","002740","000651","002070","603876","600373","000002","000920","002801","000726","603588","002791","300474"));
             list = list.stream().filter(stockBasicProjection -> !StringUtils.contains(stockBasicProjection.getName(), "退")).collect(Collectors.toList());
 

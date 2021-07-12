@@ -3,6 +3,8 @@ package com.stk123.app.web;
 import com.stk123.app.util.WebUtils;
 import com.stk123.model.core.Stock;
 import com.stk123.model.core.Stocks;
+import com.stk123.model.enumeration.EnumCate;
+import com.stk123.model.enumeration.EnumMarket;
 import com.stk123.service.core.StockService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +37,7 @@ public class StrategyWebController {
                       @RequestParam(value = "bk", required = false)String bkCode,
                       Model model){
         if (Stocks.stocksAllCN == null) {
-            Stocks.stocksAllCN = stockService.getStocksWithBks(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn, false);
+            Stocks.stocksAllCN = stockService.getStocksWithBks(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn, false);
         }
         List<Stock> stocks = Stocks.stocksAllCN;
         if(bkCode != null){

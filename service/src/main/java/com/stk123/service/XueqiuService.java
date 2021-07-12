@@ -341,12 +341,12 @@ public class XueqiuService {
 						String code = s.substring(2);
 						String place = s.substring(0, 2);
 						stock = com.stk123.model.core.Stock.build(code, null,
-								com.stk123.model.core.Stock.EnumMarket.CN,
-								com.stk123.model.core.Stock.EnumPlace.valueOf(place));
+								com.stk123.model.enumeration.EnumMarket.CN,
+								com.stk123.model.enumeration.EnumPlace.valueOf(place));
 						careA.add(stock);
 					}else {
 						if(StringUtils.startsWith(s,"HK")){
-							stock = com.stk123.model.core.Stock.build(s, null, com.stk123.model.core.Stock.EnumMarket.HK, null);
+							stock = com.stk123.model.core.Stock.build(s, null, com.stk123.model.enumeration.EnumMarket.HK, null);
 						}else {
 							stock = com.stk123.model.core.Stock.build(s, null);
 						}

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.entity.StkKlineEntity;
 import com.stk123.model.RequestResult;
 import com.stk123.model.core.BarSeries;
+import com.stk123.model.enumeration.EnumPeriod;
 import com.stk123.model.strategy.Strategy;
 import com.stk123.model.json.View;
 import com.stk123.service.core.BarService;
@@ -44,7 +45,7 @@ public class KController {
         List<StkKlineEntity> ks = null;
         String[] codes = StringUtils.split(code, ",");
         LinkedHashMap<String, BarSeries> results = new LinkedHashMap<>();
-        BarSeries.EnumPeriod enumPeriod = ServiceUtils.searchEnum(BarSeries.EnumPeriod.class, period, BarSeries.EnumPeriod.DAY);
+        EnumPeriod enumPeriod = ServiceUtils.searchEnum(EnumPeriod.class, period, EnumPeriod.DAY);
 
         System.out.println(enumPeriod);
         switch (enumPeriod){

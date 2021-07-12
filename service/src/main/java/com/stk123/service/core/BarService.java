@@ -9,6 +9,8 @@ import com.stk123.entity.StkKlineUsEntity;
 import com.stk123.model.core.Bar;
 import com.stk123.model.core.BarSeries;
 import com.stk123.model.core.Stock;
+import com.stk123.model.enumeration.EnumCate;
+import com.stk123.model.enumeration.EnumMarket;
 import com.stk123.repository.BaseRepository;
 import com.stk123.repository.StkKlineHkRepository;
 import com.stk123.repository.StkKlineRepository;
@@ -45,7 +47,7 @@ public class BarService extends BaseRepository {
             "select code,kline_date as \"date\",open,close,high,low,volumn as volume,amount,last_close,percentage as change,hsl,pe_ttm,pb_ttm " +
             "from (select * from stk_kline t where code = :1 order by kline_date desc) where rownum <= :2";
     @Transactional
-    public BarSeries queryTopNByCodeOrderByKlineDateDesc(String code, Stock.EnumMarket market, Integer rows) {
+    public BarSeries queryTopNByCodeOrderByKlineDateDesc(String code, EnumMarket market, Integer rows) {
         String sql = market.replaceKlineTable(sql_queryTopNByCodeOrderByKlineDateDesc);
         List<Bar> list = BaseRepository.getInstance().list(sql, Bar.class, code, rows);
         BarSeries bs = new BarSeries();
@@ -59,7 +61,7 @@ public class BarService extends BaseRepository {
             "select code,kline_date as \"date\",open,close,high,low,volumn as volume,amount,last_close,percentage as change,hsl,pe_ttm,pb_ttm from (select t.*, rank() over(partition by t.code order by t.kline_date desc) as rn " +
             "from stk_kline t where t.code in (:1)) where rn <= :2";
     @Transactional
-    public LinkedHashMap<String, BarSeries> queryTopNByCodeListOrderByKlineDateDesc(List<String> codes, Stock.EnumMarket market, Integer rows) {
+    public LinkedHashMap<String, BarSeries> queryTopNByCodeListOrderByKlineDateDesc(List<String> codes, EnumMarket market, Integer rows) {
         String sql = market.replaceKlineTable(sql_queryTopNByCodeListOrderByKlineDateDesc);
         List<Bar> list = BaseRepository.getInstance().list(sql, Bar.class, codes, rows);
         LinkedHashMap<String, BarSeries> result = new LinkedHashMap<>(codes.size());
@@ -76,7 +78,7 @@ public class BarService extends BaseRepository {
     @Transactional
     public LinkedHashMap<String, BarSeries> queryTopNByStockListOrderByKlineDateDesc(List<Stock> stocks, Integer rows) {
         LinkedHashMap<String, BarSeries> result = new LinkedHashMap<>();
-        for(Stock.EnumMarket emStock : Stock.EnumMarket.values()){
+        for(EnumMarket emStock : EnumMarket.values()){
             List<Stock> stockList = stocks.stream().filter(s -> s.getMarket() == emStock).collect(Collectors.toList());
             List<String> codes = stockList.stream().map(s -> s.getCode()).collect(Collectors.toList());
             LinkedHashMap<String, BarSeries> map = queryTopNByCodeListOrderByKlineDateDesc(codes, emStock, rows);
@@ -95,7 +97,7 @@ public class BarService extends BaseRepository {
     private final static String sql_findAllByKlineDateAndCodeIn = "select code,kline_date as \"date\",open,close,high,low,volumn as volume,amount,last_close,percentage as change,hsl,pe_ttm,pb_ttm " +
             "from stk_kline where kline_date=:1 and code in (:2)";
     @Transactional
-    public List<Bar> findAllByKlineDateAndCodeIn(String klineDate, List<String> codes, Stock.EnumMarket market){
+    public List<Bar> findAllByKlineDateAndCodeIn(String klineDate, List<String> codes, EnumMarket market){
         String sql = market.replaceKlineTable(sql_findAllByKlineDateAndCodeIn);
         return BaseRepository.getInstance().list(sql, Bar.class, klineDate, codes);
     }
@@ -112,7 +114,7 @@ public class BarService extends BaseRepository {
         return null;
     }
 
-    public <T> T findTop1ByCodeOrderByKlineDateDesc(String code, Stock.EnumMarket market){
+    public <T> T findTop1ByCodeOrderByKlineDateDesc(String code, EnumMarket market){
         return market.select((T) stkKlineRepository.findTop1ByCodeOrderByKlineDateDesc(code),
                 (T) stkKlineHkRepository.findTop1ByCodeOrderByKlineDateDesc(code),
                 (T) stkKlineUsRepository.findTop1ByCodeOrderByKlineDateDesc(code));
@@ -121,7 +123,7 @@ public class BarService extends BaseRepository {
     private final static String sql_calcAvgMidPeTtm = "select avg(pe_ttm) as avg_pe_ttm,median(pe_ttm) as mid_pe_ttm " +
             "from stk_kline where kline_date=:1 and pe_ttm is not null and pe_ttm>3 and pe_ttm<200";
     @Transactional
-    public Map<String, BigDecimal> calcAvgMidPeTtm(String kdate, Stock.EnumMarket market){
+    public Map<String, BigDecimal> calcAvgMidPeTtm(String kdate, EnumMarket market){
         String sql = market.replaceKlineTable(sql_calcAvgMidPeTtm);
         return BaseRepository.getInstance().uniqueResult(sql, kdate);
     }
@@ -133,7 +135,7 @@ public class BarService extends BaseRepository {
 
         String code = stock.getCode();
         if(stock.isMarketCN()){
-            if(stock.getCate() == Stock.EnumCate.INDEX){
+            if(stock.getCate() == EnumCate.INDEX){
                 String tmp = null;
                 if(code.length() == 6){
                     tmp = (stock.isPlaceSH()?"sse":"szse") + (code.equals("999999")?"000001":code);
@@ -170,7 +172,7 @@ public class BarService extends BaseRepository {
 
                 }
 
-            }else if(stock.getCate() == Stock.EnumCate.STOCK){
+            }else if(stock.getCate() == EnumCate.STOCK){
                 updateKline(stock, n);
             }
 
@@ -213,15 +215,15 @@ public class BarService extends BaseRepository {
     //from finance.qq.com
     public void initKLine(Stock stock) throws Exception {
         String code = stock.getCode();
-        Stock.EnumCate cate = stock.getCate();
+        EnumCate cate = stock.getCate();
 
         if(stock.isMarketCN()){
             boolean isSH = stock.isPlaceSH();
             String codeWithPlace = stock.getCodeWithPlace();
             String page = null;
-            if(cate == Stock.EnumCate.STOCK){
+            if(cate == EnumCate.STOCK){
                 codeWithPlace = codeWithPlace.toLowerCase();
-            }else if(cate == Stock.EnumCate.INDEX){
+            }else if(cate == EnumCate.INDEX){
                 if("SH999999".equals(code)){
                     codeWithPlace = "sh000001";
                 }else{
@@ -231,7 +233,7 @@ public class BarService extends BaseRepository {
                         codeWithPlace = codeWithPlace.toLowerCase();
                     }
                 }
-            }else if(cate == Stock.EnumCate.INDEX_10jqka){
+            }else if(cate == EnumCate.INDEX_10jqka){
                 //http://q.10jqka.com.cn/stock/gn/
                 //http://q.10jqka.com.cn/gn/detail/code/308709/
                 //http://d.10jqka.com.cn/v2/line/bk_885910/01/last.js
@@ -280,7 +282,7 @@ public class BarService extends BaseRepository {
                 }
 
                 return;
-            }else if(cate == Stock.EnumCate.INDEX_eastmoney_gn){
+            }else if(cate == EnumCate.INDEX_eastmoney_gn){
                 updateKline(stock, 14);
                 return;
             }
@@ -316,7 +318,7 @@ public class BarService extends BaseRepository {
                     double pettm = 0;
                     double pbttm = 0;
                     double psttm = 0;
-                    if(stock.getCate() == Stock.EnumCate.STOCK){
+                    if(stock.getCate() == EnumCate.STOCK){
                         hsl = Double.parseDouble(ss[38]);
                         if(ss[39].length()>0){
                             pettm = Double.parseDouble(ss[39]);

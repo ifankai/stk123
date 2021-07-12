@@ -6,6 +6,9 @@ import com.stk123.common.util.HtmlUtils;
 import com.stk123.common.util.ListUtils;
 import com.stk123.entity.*;
 import com.stk123.model.core.Stock;
+import com.stk123.model.enumeration.EnumCate;
+import com.stk123.model.enumeration.EnumMarket;
+import com.stk123.model.enumeration.EnumPlace;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.repository.*;
 import com.stk123.service.core.ErrorService;
@@ -135,7 +138,7 @@ public class StockTask extends AbstractTask {
 
     public void initCNStocks(){
         if(stocksCN == null) {
-            List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.STOCK);
+            List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(EnumMarket.CN, EnumCate.STOCK);
             //List<StockBasicProjection> list = stkRepository.findAllByCodes(ListUtils.createList("600107"));
             stocksCN = stockService.buildStocksWithProjection(list);
         }
@@ -167,9 +170,9 @@ public class StockTask extends AbstractTask {
                             stkEntity.setCode(code);
                             stkEntity.setName(name);
                             stkEntity.setInsertTime(new Date());
-                            stkEntity.setMarket(Stock.EnumMarket.CN.getMarket());
-                            stkEntity.setCate(Stock.EnumCate.STOCK.getCate());
-                            stkEntity.setPlace(code.startsWith("6")?Stock.EnumPlace.SH.getPlace():Stock.EnumPlace.SZ.getPlace());
+                            stkEntity.setMarket(EnumMarket.CN.getMarket());
+                            stkEntity.setCate(EnumCate.STOCK.getCate());
+                            stkEntity.setPlace(code.startsWith("6")?EnumPlace.SH.getPlace():EnumPlace.SZ.getPlace());
                             log.info("[新股]"+code+","+name);
                         }else{
                             stkEntity = stk.get();
@@ -201,7 +204,7 @@ public class StockTask extends AbstractTask {
      * f189: 上市时间
      */
     public void updateCNStockBasicInfo(StkEntity stkEntity) throws Exception {
-        String scode = (Stock.EnumPlace.isSH(stkEntity.getPlace())?"1.":"0.") + stkEntity.getCode();
+        String scode = (EnumPlace.isSH(stkEntity.getPlace())?"1.":"0.") + stkEntity.getCode();
         String url = "http://push2.eastmoney.com/api/qt/stock/get?ut=&invt=2&fltt=2&fields=f84,f189&secid="+ scode +"&cb=jQuery&_="+new Date().getTime();
         String page = httpService.getString(url);
         System.out.println("updateCNStockBasicInfo:"+page);
@@ -287,8 +290,8 @@ public class StockTask extends AbstractTask {
                     stkEntity.setCode(code);
                     stkEntity.setName(name);
                     stkEntity.setInsertTime(new Date());
-                    stkEntity.setMarket(Stock.EnumMarket.CN.getMarket());
-                    stkEntity.setCate(Stock.EnumCate.INDEX_eastmoney_gn.getCate());
+                    stkEntity.setMarket(EnumMarket.CN.getMarket());
+                    stkEntity.setCate(EnumCate.INDEX_eastmoney_gn.getCate());
                     stkEntity.setAddress("eastmoney_gn");
                     log.info("[新股(INDEX_eastmoney_gn)]"+code+","+name);
                 }else{
@@ -343,7 +346,7 @@ public class StockTask extends AbstractTask {
         initCNStocks();
         ObjectMapper mapper = new ObjectMapper();
 
-        List<StkFnTypeEntity> types = stkFnTypeRepository.findAllByMarketAndCodeIsNotNull(Stock.EnumMarket.CN.getMarket());
+        List<StkFnTypeEntity> types = stkFnTypeRepository.findAllByMarketAndCodeIsNotNull(EnumMarket.CN.getMarket());
         for(Stock stock : stocksCN) {
             try {
                 //http://f10.eastmoney.com/NewFinanceAnalysis/ZYZBAjaxNew?type=0&code=SH600107

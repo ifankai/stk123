@@ -9,6 +9,8 @@ import com.stk123.entity.StkTextEntity;
 import com.stk123.model.Text;
 import com.stk123.model.constant.TextConstant;
 import com.stk123.model.core.Stock;
+import com.stk123.model.enumeration.EnumCate;
+import com.stk123.model.enumeration.EnumMarket;
 import com.stk123.model.projection.StockProjection;
 import com.stk123.model.xueqiu.XueqiuPost;
 import com.stk123.model.xueqiu.XueqiuPostRoot;
@@ -95,12 +97,12 @@ public class XueqiuStockArticleTask extends AbstractTask {
 
     public synchronized List<StockProjection> getStocks(){
         List<StockProjection> list = stkRepository.findAllByMarketAndCateAndHotGreaterThan(
-                (List<Integer>) Arrays.toCollection(new int[]{Stock.EnumMarket.CN.getMarket(), Stock.EnumMarket.HK.getMarket()}),
-                Stock.EnumCate.STOCK.getCate(), 1000);
+                (List<Integer>) Arrays.toCollection(new int[]{EnumMarket.CN.getMarket(), EnumMarket.HK.getMarket()}),
+                EnumCate.STOCK.getCate(), 1000);
         List<StockProjection> stks = list.stream().filter(stk -> {
-            if (stk.getMarket() == Stock.EnumMarket.CN.getMarket() && stk.getHot() >= 3000 && !StringUtils.contains(stk.getName(), "ST")) {
+            if (stk.getMarket() == EnumMarket.CN.getMarket() && stk.getHot() >= 3000 && !StringUtils.contains(stk.getName(), "ST")) {
                 return true;
-            } else if (stk.getMarket() == Stock.EnumMarket.HK.getMarket()) {
+            } else if (stk.getMarket() == EnumMarket.HK.getMarket()) {
                 return true;
             }
             return false;

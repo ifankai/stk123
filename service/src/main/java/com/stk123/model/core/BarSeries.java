@@ -1,48 +1,16 @@
 package com.stk123.model.core;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.stk123.model.enumeration.EnumPeriod;
 import com.stk123.model.json.View;
 import com.stk123.util.ServiceUtils;
-import lombok.Data;
 import lombok.Getter;
-import org.apache.commons.lang3.time.DateUtils;
 
-import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
-import static com.stk123.model.core.BarSeries.EnumPeriod.DAY;
+import static com.stk123.model.enumeration.EnumPeriod.DAY;
 
 public class BarSeries {
-
-    public enum EnumPeriod {
-        DAY,D, WEEK,W, MONTH,M;
-
-        public static EnumPeriod getPeriod(String name){
-            for(EnumPeriod em : EnumPeriod.values()){
-                if(em.name().equalsIgnoreCase(name)){
-                    return em;
-                }
-            }
-            return null;
-        }
-
-        public <T> T select(T d, T w, T m){
-            switch (this) {
-                case W:
-                case WEEK:
-                    return w;
-                case M:
-                case MONTH:
-                    return m;
-                default:
-                    return d;
-            }
-        }
-
-    }
 
     private boolean restoration = false; //是否前复权，默认为false, 通过BarService.updateKline() 统一更新为前复权数据
     private double restorationChange = 1; //
@@ -54,6 +22,8 @@ public class BarSeries {
 
     private Bar first;
 
+
+    //////////////////////////////////////////////////////////////////////////////////////
 
     public BarSeries(){
         this(false);

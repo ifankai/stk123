@@ -11,6 +11,8 @@ import com.stk123.model.core.BarSeries;
 import com.stk123.model.core.Rps;
 import com.stk123.model.core.Stock;
 import com.stk123.model.dto.SearchResult;
+import com.stk123.model.enumeration.EnumCate;
+import com.stk123.model.enumeration.EnumMarket;
 import com.stk123.model.projection.IndustryProjection;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.model.projection.StockCodeNameProjection;
@@ -315,26 +317,26 @@ public class StockService {
         return stks;
     }
 
-    public List<Stock> getStocksWithBks(List<Stock> stocks,Stock.EnumMarket market, Stock.EnumCate bkCate, boolean isIncludeRealtimeBar){
+    public List<Stock> getStocksWithBks(List<Stock> stocks, EnumMarket market, EnumCate bkCate, boolean isIncludeRealtimeBar){
         stocks = getStocksWithAllBuilds(stocks, isIncludeRealtimeBar);
         buildBkAndCalcRps(stocks, market, bkCate);
         return stocks;
     }
 
-    public List<Stock> getStocksWithBks(Stock.EnumMarket market, Stock.EnumCate bkCate, boolean isIncludeRealtimeBar){
+    public List<Stock> getStocksWithBks(EnumMarket market, EnumCate bkCate, boolean isIncludeRealtimeBar){
         List<Stock> stocks = getStocks(market, isIncludeRealtimeBar);
         List<Stock> bks = getBks(market, bkCate);
         buildBkAndCalcRps(stocks, bks);
         return stocks;
     }
-    public List<Stock> getBksWithStocks(Stock.EnumMarket market, Stock.EnumCate bkCate, boolean isIncludeRealtimeBar){
+    public List<Stock> getBksWithStocks(EnumMarket market, EnumCate bkCate, boolean isIncludeRealtimeBar){
         List<Stock> stocks = getStocks(market, isIncludeRealtimeBar);
         List<Stock> bks = getBks(market, bkCate);
         buildBkAndCalcRps(stocks, bks);
         return bks;
     }
 
-    public List<Stock> getStocksWithBks(Stock.EnumMarket market, List<Stock> bks, boolean isIncludeRealtimeBar){
+    public List<Stock> getStocksWithBks(EnumMarket market, List<Stock> bks, boolean isIncludeRealtimeBar){
         List<Stock> stocks = getStocks(market, isIncludeRealtimeBar);
         buildBkAndCalcRps(stocks, bks);
         return stocks;
@@ -349,7 +351,7 @@ public class StockService {
         }).collect(Collectors.toList());
     }
 
-    public void buildBkAndCalcRps(List<Stock> stocks, Stock.EnumMarket market, Stock.EnumCate bkCate){
+    public void buildBkAndCalcRps(List<Stock> stocks, EnumMarket market, EnumCate bkCate){
         //建立板块关系，计算rps
         List<Stock> bks = getBks(market, bkCate);
         buildBkAndCalcRps(stocks, bks);
@@ -360,7 +362,7 @@ public class StockService {
         return calcRps(bks, Rps.CODE_BK_STOCKS_SCORE_30);
     }
 
-    public List<Stock> getBks(Stock.EnumMarket market, Stock.EnumCate bkCate){
+    public List<Stock> getBks(EnumMarket market, EnumCate bkCate){
         List<StockBasicProjection> bkList = stkRepository.findAllByMarketAndCateOrderByCode(market, bkCate);
         List<Stock> bks = buildStocksWithProjection(bkList);
         bks = bks.stream().filter(stock -> !BK_REMOVE.contains(stock.getCode())).collect(Collectors.toList());
@@ -375,8 +377,8 @@ public class StockService {
         stocks = buildOwners(stocks);
         return stocks;
     }
-    public List<Stock> getStocks(Stock.EnumMarket market, boolean isIncludeRealtimeBar){
-        List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(market, Stock.EnumCate.STOCK);
+    public List<Stock> getStocks(EnumMarket market, boolean isIncludeRealtimeBar){
+        List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(market, EnumCate.STOCK);
         //List<StockBasicProjection> list = stkRepository.findAllByCodes(ListUtils.createList("000630","000650","002038","002740","000651","002070","603876","600373","000002","000920","002801","000726","603588","002791","300474"));
         List<Stock> stocks = buildStocksWithProjection(list);
 

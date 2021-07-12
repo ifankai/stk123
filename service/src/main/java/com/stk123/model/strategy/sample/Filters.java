@@ -2,6 +2,7 @@ package com.stk123.model.strategy.sample;
 
 import com.stk123.common.CommonUtils;
 import com.stk123.model.core.*;
+import com.stk123.model.enumeration.EnumCate;
 import com.stk123.model.strategy.Filter;
 import com.stk123.model.strategy.result.FilterResult;
 import com.stk123.model.strategy.result.FilterResultBetween;
@@ -35,9 +36,9 @@ public class Filters {
         };
     }
 
-    public static Filter<Stock> filter_mustStockCate(Stock.EnumCate cate) {
+    public static Filter<Stock> filter_mustStockCate(EnumCate cate) {
         return (strategy, stock) -> {
-            Stock.EnumCate ec = stock.getCate();
+            EnumCate ec = stock.getCate();
             if(ec.equals(cate)){
                 return FilterResult.TRUE();
             }
