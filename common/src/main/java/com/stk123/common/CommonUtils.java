@@ -20,6 +20,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.io.*;
 import java.math.BigDecimal;
+import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.Time;
 import java.text.*;
@@ -944,21 +945,6 @@ public class CommonUtils {
         return CommonUtils.numberFormat(Math.pow(endValue/startValue,1.0/years) - 1D, 4) * 100;
     }
 
-    private static Boolean isDev = null;
-
-    public static boolean isDev() {
-        if(isDev != null)return isDev;
-        Connection conn = null;
-        try{
-            conn = DBUtil.getConnection();
-            return isDev = true;
-        }catch(Exception e){
-            return isDev = false;
-        }finally{
-            CloseUtil.close(conn);
-        }
-    }
-
     public static double getAmount万(String amount){
         int n = 1;
         String dd = StringUtils.replace(amount, "万", "");
@@ -1269,6 +1255,16 @@ public class CommonUtils {
             strBuilder.append(" ");
         str = strBuilder.toString();
         return str;
+    }
+
+    @SneakyThrows
+    public static boolean isDevelopment(){
+        InetAddress inet = InetAddress.getLocalHost();
+        String ip = inet.getHostAddress();
+        if(ip.startsWith("192")){
+            return true;
+        }
+        return false;
     }
 }
 

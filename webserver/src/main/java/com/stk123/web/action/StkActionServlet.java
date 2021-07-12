@@ -16,9 +16,7 @@ public class StkActionServlet extends ActionServlet {
 	public void init() throws ServletException {
     	try {
     		super.init();
-    		if(ServiceUtils.isDev()){
-    			WebIKUtils.init();
-    		}
+			WebIKUtils.init();
 
 		} catch (Exception e) {
 			e.printStackTrace();

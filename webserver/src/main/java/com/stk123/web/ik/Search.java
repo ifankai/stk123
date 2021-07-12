@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.stk123.common.CommonUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
@@ -169,7 +170,8 @@ public class Search {
 			IndexWriter iwriter = new IndexWriter(this.directoryUser, iwConfig);
 
 			conn = Pool.getPool().getConnection();
-			List<StkText> texts = JdbcUtils.list(conn, "select id,code,title,text,insert_time,update_time,disp_order,user_id from stk_text where insert_time>=sysdate-350", StkText.class);
+			String days = CommonUtils.isDevelopment() ? "700" : "100";
+			List<StkText> texts = JdbcUtils.list(conn, "select id,code,title,text,insert_time,update_time,disp_order,user_id from stk_text where insert_time>=sysdate-"+days, StkText.class);
 			/*for(StkText text : texts){
 				Document doc = WebIKUtils.getDocument(text);
 				iwriter.addDocument(doc);

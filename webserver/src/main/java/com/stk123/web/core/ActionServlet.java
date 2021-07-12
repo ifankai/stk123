@@ -88,10 +88,10 @@ public class ActionServlet extends HttpServlet {
 		    ConvertUtils.register(new LongConverter(null), Long.class);
 		    ConvertUtils.register(new ShortConverter(null), Short.class);
 
-		    if(ServiceUtils.isDev()){
+		    if(ServiceUtils.isDevelopment()){
 		    	System.out.println("This is localhost");
 		    }else{
-		    	System.out.println("This is stk123.cn");
+		    	System.out.println("This is production");
 		    }
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -205,17 +205,7 @@ public class ActionServlet extends HttpServlet {
     			ctx.put(CommonConstant.SESSION_CURRENT_USER, user);
             	//throw new ServletException("请重新登陆!");
             }
-            if(!ServiceUtils.isDev()){
-            	StkUser su = new StkUser();
-            	su.setId(1);
-            	su.setNickname("Stk123之路");
-            	User user = new User(su);
-            	if(session == null){
-            		session = request.getSession();
-            	}
-            	session.setAttribute(CommonConstant.SESSION_CURRENT_USER, user);
-            	ctx.put(CommonConstant.SESSION_CURRENT_USER, user);
-            }
+
             ActionContext.setContext(ctx);
             return ctx;
         }

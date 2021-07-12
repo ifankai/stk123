@@ -8,6 +8,7 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.util.Properties;
 
+import com.stk123.common.CommonUtils;
 import com.stk123.common.db.TableTools;
 import com.stk123.common.db.util.CloseUtil;
 import com.stk123.common.db.util.DBUtil;
@@ -25,7 +26,7 @@ public class ConfigUtils {
 			
 			InetAddress inet = InetAddress.getLocalHost();
 			String ip = inet.getHostAddress();
-			if(ip.startsWith("192")){
+			if(CommonUtils.isDevelopment()){
 				setProp("is_dev", "Y");
 			}
 			if(StringUtils.isNotEmpty(System.getProperty(DBUtil.DB_URL))){

@@ -149,17 +149,12 @@ public class WebIKUtils extends IKUtils {
 			Pool.getPool().free(conn);
 		}
 
-		Runnable ik = () -> {
-            try {
-                Search.initStkAndIndustryAndIndex();
-                Search search = new Search(1);
-                search.initUserText();
-                search.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        };
-		new Thread(ik).start();
+
+		Search.initStkAndIndustryAndIndex();
+		Search search = new Search(1);
+		search.initUserText();
+		search.close();
+
 	}
 	
 	public static IndexWriterConfig getConfig(){

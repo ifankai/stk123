@@ -36,10 +36,6 @@ public class AuthorizationServletFilter implements Filter {
 		HttpServletRequest request = (HttpServletRequest) servletRequest;
 		HttpServletResponse response = (HttpServletResponse) servletResponse;
         try {
-        	if(!ServiceUtils.isDev()){
-        		filterChain.doFilter(servletRequest, servletResponse);
-        		return;
-        	}
             //ActionHelper.initializeOasisUser(request);
         	String requestURI = request.getRequestURI().substring(request.getRequestURI().lastIndexOf("/", request.getRequestURI().length()));   
             //登陆页就不需要进行验证了   
