@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -23,6 +24,7 @@ public interface StkOwnershipRepository extends JpaRepository<StkOwnershipEntity
         return BaseRepository.getInstance().list(sql_findAll, StkOwnershipEntity.class, codes);
     }
 
+    @Transactional
     default Map<String, List<StkOwnershipEntity>> getMapByCodeAndFnDateIsMax(List<String> codes){
         List<StkOwnershipEntity> owners = findAllByCodeAndFnDateIsMax(codes);
         Map<String, List<StkOwnershipEntity>> result = new LinkedHashMap<>(codes.size());
