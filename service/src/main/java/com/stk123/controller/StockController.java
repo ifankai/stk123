@@ -95,7 +95,7 @@ public class StockController {
         for(Stock stock : stocks){
             Map map = new HashMap();
             map.put("code", stock.getNameAndCode());
-            map.put("score", stock.getRating().getMap());
+            map.put("score", stock.getRating().toMap());
             map.put("rps", stock.getRps());
             list.add(map);
         }
