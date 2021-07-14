@@ -69,6 +69,8 @@ public class Stock {
     private DictService dictService;
     @Autowired
     private StkHolderRepository stkHolderRepository;
+    @Autowired
+    private StkNewsRepository stkNewsRepository;
 
 
 
@@ -703,6 +705,10 @@ public class Stock {
             return filter.mapToInt(key -> map.get(key)).sum();
         }
 
+        public String toHtml(){
+            return StringUtils.join(map.entrySet().stream().map(m -> m.getKey()+":"+m.getValue()), "<br/>");
+        }
+
     }
 
     @Deprecated
@@ -717,12 +723,6 @@ public class Stock {
 
     //评分
     public int getScore(){
-        /*int days = 30;
-        int score = this.getBar().getScore(days);
-        score += this.getBar().getScore(days/2);
-        score += this.getBar().getScore(days/3);
-        score += this.getScoreByBk();
-        score += this.getScoreByHolder();*/
         return this.getRating().getScore();
     }
 
@@ -737,15 +737,15 @@ public class Stock {
      */
     public Rating getRating(){
         int days = 30;
-        Rating score = new Rating();
-        //int score = this.getBar().getScore(days);
-        score.addScore("jsm.bar1", () -> this.getBar().getScore(days));
-        score.addScore("jsm.bar2", () -> this.getBar().getScore(days/2));
-        score.addScore("jsm.bar3", () -> this.getBar().getScore(days/3));
-        score.addScore("jbm.bk", () -> this.getScoreByBk());
-        score.addScore("jbm.holder", () -> this.getScoreByHolder());
-        score.addScore("jbm.owners", this::getScoreByOwners);
-        return score;
+        Rating rating = new Rating();
+        rating.addScore("jsm.bar1", () -> this.getBar().getScore(days));
+        rating.addScore("jsm.bar2", () -> this.getBar().getScore(days/2));
+        rating.addScore("jsm.bar3", () -> this.getBar().getScore(days/3));
+        rating.addScore("jbm.bk", () -> this.getScoreByBk());
+        rating.addScore("jbm.holder", () -> this.getScoreByHolder());
+        rating.addScore("jbm.owners", this::getScoreByOwners);
+        rating.addScore("jbm.news", this::getScoreByNews);
+        return rating;
     }
 
 
@@ -828,6 +828,18 @@ public class Stock {
         return score;
     }
 
+    public int getScoreByNews(){
+        int score = 0;
+        List<StkNewsEntity> news = this.getNews();
+        long cnt = news.stream().map(n -> n.getType()).distinct().filter(
+                type -> type == StkConstant.NEWS_TYPE_220 //	高成长
+                || type == StkConstant.NEWS_TYPE_240 //	龙头
+                || type == StkConstant.NEWS_TYPE_250 //	业绩大幅增长
+                || type == StkConstant.NEWS_TYPE_130 //	股权激励
+        ).count();
+        return score += cnt * 5;
+    }
+
     public List<StkOwnershipEntity> getOwners(){
         if(owners == null){
             owners = stkOwnershipRepository.findAllByCodeAndFnDateIsMax(Collections.singletonList(this.getCode()));
@@ -840,6 +852,16 @@ public class Stock {
             holder = stkHolderRepository.findByCodeAndFnDateIsMax(this.getCode());
         }
         return this.holder;
+    }
+
+    public List<StkNewsEntity> getNews(int days){
+        if(this.news == null){
+            news = stkNewsRepository.findAllByCodeInAndInfoCreateTimeAfterOrderByInsertTimeDesc(Collections.singletonList(this.getCode()), CommonUtils.addDay(new Date(), days));
+        }
+        return news;
+    }
+    public List<StkNewsEntity> getNews(){
+        return this.getNews(-180);
     }
 
     @Override

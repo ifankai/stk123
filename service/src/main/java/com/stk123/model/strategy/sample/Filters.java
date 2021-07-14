@@ -891,11 +891,12 @@ public class Filters {
     public static Filter<Stock> filter_015b(int days, int score) {
 
         return (strategy, stock) -> {
-            int sum = stock.getScore();
+            Stock.Rating rating = stock.getRating();
+            int sum = rating.getScore();
             if(sum < score){
                 return FilterResult.FALSE("score:"+sum);
             }
-            return FilterResult.Sortable((double) sum).addResult("score:"+sum);
+            return FilterResult.Sortable((double) sum).addResult("score:"+sum+"<br/>"+rating.toHtml());
         };
     }
 

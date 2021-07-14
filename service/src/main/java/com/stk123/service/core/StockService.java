@@ -1,5 +1,6 @@
 package com.stk123.service.core;
 
+import com.stk123.common.CommonUtils;
 import com.stk123.common.util.ListUtils;
 import com.stk123.common.util.PinYin4jUtils;
 import com.stk123.entity.StkDictionaryEntity;
@@ -267,27 +268,11 @@ public class StockService {
         for(Strategy rpsStrategy : rpsStrategies) {
             String rpsStrategyCode = rpsStrategy.getCode();
             if(rpsStrategy.getAsc()) {
-                stks = stocks.stream().sorted(Comparator.comparing(stock -> stock.getRps(rpsStrategyCode).getValue())).collect(Collectors.toList());
+                stks = stocks.stream().sorted(Comparator.nullsLast(Comparator.comparing(stock -> stock.getRps(rpsStrategyCode)==null?null:stock.getRps(rpsStrategyCode).getValue()))).collect(Collectors.toList());
             }else{
-                stks = stocks.stream().sorted(Comparator.comparing(stock -> stock.getRps(rpsStrategyCode).getValue(), Comparator.reverseOrder())).collect(Collectors.toList());
+                stks = stocks.stream().sorted(Comparator.nullsLast(Comparator.comparing(stock -> stock.getRps(rpsStrategyCode)==null?null:stock.getRps(rpsStrategyCode).getValue(), Comparator.reverseOrder()))).collect(Collectors.toList());
             }
-            int order = 1;
-            Stock prev = null;
-            for (Stock stock : stks) {
-                Rps rps = stock.getRps(rpsStrategyCode);
-                if (rps.getValue() == null) {
-                    stock.setRpsPercentile(rpsStrategyCode, 50.0);
-                }else {
-                    stock.setRpsOrder(rpsStrategyCode, order);
-                    if(prev != null && rps.getValue().equals(prev.getRps(rpsStrategyCode).getValue())){
-                        stock.setRpsPercentile(rpsStrategyCode, prev.getRps(rpsStrategyCode).getPercentile());
-                    }else {
-                        stock.setRpsPercentile(rpsStrategyCode, order * 1.0 / stks.size() * 100);
-                    }
-                }
-                order++;
-                prev = stock;
-            }
+            stks = setOrderAndPercentile(stks, rpsStrategyCode);
         }
 
         if(rpsStrategies.size() > 1) {
@@ -295,26 +280,31 @@ public class StockService {
                 double sum = rpsStrategies.stream().mapToDouble(rpsStrategy -> stock.getRps(rpsStrategy.getCode()).getPercentile() * rpsStrategy.getWeight()).sum();
                 stock.setRpsValue(rpsCode, sum);
             });
-            stks = stks.stream().sorted(Comparator.comparing(stock -> stock.getRps(rpsCode).getValue())).collect(Collectors.toList());
-            int order = 1;
-            Stock prev = null;
-            for (Stock stock : stks) {
-                Rps rps = stock.getRps(rpsCode);
-                if (rps.getValue() == null) {
-                    stock.setRpsPercentile(rpsCode, 50.0);
-                }else {
-                    stock.setRpsOrder(rpsCode, order);
-                    if(prev != null && rps.getValue().equals(prev.getRps(rpsCode).getValue())){
-                        stock.setRpsPercentile(rpsCode, prev.getRps(rpsCode).getPercentile());
-                    }else {
-                        stock.setRpsPercentile(rpsCode, order * 1.0 / stks.size() * 100);
-                    }
-                }
-                order++;
-                prev = stock;
-            }
+            stks = stks.stream().sorted(Comparator.nullsLast(Comparator.comparing(stock -> stock.getRps(rpsCode)==null?null:stock.getRps(rpsCode).getValue()))).collect(Collectors.toList());
+            stks = setOrderAndPercentile(stks, rpsCode);
         }
         return stks;
+    }
+
+    private List<Stock> setOrderAndPercentile(List<Stock> stocks, String rpsCode){
+        int order = 1;
+        Stock prev = null;
+        for (Stock stock : stocks) {
+            Rps rps = stock.getRps(rpsCode);
+            if (rps.getValue() == null) {
+                stock.setRpsPercentile(rpsCode, 0.0);
+            }else {
+                stock.setRpsOrder(rpsCode, order);
+                if(prev != null && rps.getValue().equals(prev.getRps(rpsCode).getValue())){
+                    stock.setRpsPercentile(rpsCode, prev.getRps(rpsCode).getPercentile());
+                }else {
+                    stock.setRpsPercentile(rpsCode, order * 1.0 / stocks.size() * 100);
+                }
+            }
+            order++;
+            prev = stock;
+        }
+        return stocks;
     }
 
     public List<Stock> getStocksWithBks(List<Stock> stocks, EnumMarket market, EnumCate bkCate, boolean isIncludeRealtimeBar){
@@ -375,6 +365,7 @@ public class StockService {
         stocks = buildIndustries(stocks);
         stocks = buildHolder(stocks);
         stocks = buildOwners(stocks);
+        stocks = buildNews(stocks, CommonUtils.addDay(new Date(), -180));
         return stocks;
     }
     public List<Stock> getStocks(EnumMarket market, boolean isIncludeRealtimeBar){
