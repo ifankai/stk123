@@ -682,7 +682,7 @@ public class Stock {
     public static class Rating {
         private Integer total;
         @Getter
-        private Node root = new Node("root", null);
+        private Node root = new Node("score", null);
 
         @Data
         class Node{
@@ -828,11 +828,11 @@ public class Stock {
 
     public static void main(String[] args) {
         Rating rating = new Stock.Rating();
-        rating.addScore("root", "jsm", null);
+        rating.addScore("score", "jsm", null);
         rating.addScore("jsm","bar1", () -> 11);
         rating.addScore("jsm","bar2", () -> 12);
         rating.addScore("jsm","bar3", () -> 13);
-        rating.addScore("root", "jbm", null);
+        rating.addScore("score", "jbm", null);
         rating.addScore("jbm","bk", () -> 21);
         rating.addScore("jbm","holder", () -> 22);
         rating.addScore("jbm","owners", () -> 23);
@@ -877,11 +877,11 @@ public class Stock {
 //        rating.addScore("jbm.owners", this::getScoreByOwners);
 //        rating.addScore("jbm.news", this::getScoreByNews);
 
-        rating.addScore("root", "jsm", null);
+        rating.addScore("score", "jsm", null);
         rating.addScore("jsm","bar1", () -> this.getBar().getScore(days));
         rating.addScore("jsm","bar2", () -> this.getBar().getScore(days/2));
         rating.addScore("jsm","bar3", () -> this.getBar().getScore(days/3));
-        rating.addScore("root", "jbm", null);
+        rating.addScore("score", "jbm", null);
         rating.addScore("jbm","bk", () -> this.getScoreByBk());
         rating.addScore("jbm","holder", () -> this.getScoreByHolder());
         rating.addScore("jbm","owners", this::getScoreByOwners);

@@ -896,7 +896,8 @@ public class Filters {
             if(sum < score){
                 return FilterResult.FALSE("score:"+sum);
             }
-            return FilterResult.Sortable((double) sum).addResult("score:"+sum+"<br/>"+rating.toHtml());
+            //return FilterResult.Sortable((double) sum).addResult("score:"+sum+"<br/>"+rating.toHtml());
+            return FilterResult.Sortable((double) sum).addResult(rating.toHtml());
         };
     }
 
