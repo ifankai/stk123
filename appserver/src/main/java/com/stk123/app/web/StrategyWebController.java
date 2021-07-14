@@ -32,8 +32,9 @@ public class StrategyWebController {
 
     @RequestMapping("/rps/{rpsCode}")
     public String rps(@PathVariable(value = "rpsCode", required = true)String rpsCode,
-                      @RequestParam(value = "from", required = false, defaultValue = "0")Double percentileFrom,
+                      @RequestParam(value = "from", required = false, defaultValue = "90")Double percentileFrom,
                       @RequestParam(value = "to", required = false, defaultValue = "100")Double percentileTo,
+                      @RequestParam(value = "topn", required = false, defaultValue = "100")int topN,
                       @RequestParam(value = "bk", required = false)String bkCode,
                       Model model){
         if (Stocks.stocksAllCN == null) {
@@ -48,6 +49,7 @@ public class StrategyWebController {
         int size = stocks.size();
         if(percentileFrom != 0 || percentileTo != 100)
             stocks = stocks.subList((int)(size*(100-percentileTo)/100), (int)(size*(100-percentileFrom)/100));
+        stocks = stocks.subList(0, Math.min(topN, stocks.size()));
         model.addAttribute("stocks", WebUtils.getStockMap(stocks));
         return "k";
     }

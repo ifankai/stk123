@@ -1,6 +1,7 @@
 package com.stk123.model.core;
 
 import cn.hutool.core.util.ObjectUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.common.CommonConstant;
@@ -24,8 +25,6 @@ import com.stk123.service.core.StockService;
 import com.stk123.service.support.SpringApplicationContext;
 import com.stk123.util.HttpUtils;
 import com.stk123.util.ServiceUtils;
-import javafx.scene.Parent;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.extern.apachecommons.CommonsLog;
@@ -39,7 +38,6 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.stk123.model.enumeration.EnumMarket.CN;
 import static com.stk123.model.enumeration.EnumMarket.HK;
@@ -121,6 +119,9 @@ public class Stock {
     //相对强弱指标
     @JsonView(View.Score.class)
     private Map<String, Rps> rps = new HashMap<>();
+
+    //评级
+    private Rating rating;
 
 
     //////////////////////////////////////////////////////////////////////////////////////
@@ -679,164 +680,20 @@ public class Stock {
         return info + CommonUtils.k("查看", stocks.stream().map(Stock::getCode).collect(Collectors.toList()));
     }
 
-    public static class Rating {
-        private Integer total;
-        @Getter
-        private Node root = new Node("score", null);
-
-        @Data
-        class Node{
-            String name;
-            Supplier<Integer> formula;
-            Integer total;
-            List<Node> nodes;
-            Node parent;
-
-            Node(String name, Supplier<Integer> formula){
-                this.name = name;
-                this.formula = formula;
-            }
-
-            String getPath(){
-                String path = name;
-                while(parent != null){
-                    path = parent.getPath()+"."+name;
-                }
-                return path;
-            }
-
-            Node find(String name){
-                if(name.equals(this.name)){
-                    return this;
-                }
-                if(StringUtils.indexOf(name, ".") >= 0) {
-                    String n = StringUtils.substringBefore(name, ".");
-                    for (Node node : nodes) {
-                        if (node.getName().equals(n)) {
-                            return node.find(StringUtils.substringAfter(name, "."));
-                        }
-                    }
-                }else{
-                    if(nodes != null){
-                        return nodes.stream().filter(node -> node.getName().equals(name)).findFirst().get();
-                    }
-                }
-                return null;
-            }
-
-            void addChild(String name, Supplier<Integer> supplier){
-                if(nodes == null){
-                    nodes = new ArrayList<>();
-                }
-                Node child = new Node(name, supplier);
-                child.setParent(this);
-                nodes.add(child);
-            }
-
-            int calclate(){
-                int total = 0;
-                if(nodes == null){
-                    return this.total = this.formula.get();
-                }else {
-                    for (Node node : nodes) {
-                        total += node.calclate();
-                    }
-                }
-                this.total = total;
-                return this.total;
-            }
-        }
-
-        public int calculate(){
-            return root.calclate();
-        }
-
-        public void addScore(String name, Supplier<Integer> formula){
-            root.addChild(name, formula);
-        }
-
-        public void addScore(String parentName, String name, Supplier<Integer> formula){
-            Node parent = root.find(parentName);
-            parent.addChild(name, formula);
-        }
-
-        public int getScore(){
-            if(total == null) {
-                total = root.calclate();
-            }
-            return total;
-        }
-
-        /*public int getScore(List<String> include, List<String> exclude){
-            Stream<String> filter = map.keySet().stream();
-            if(include != null && !include.isEmpty()){
-                filter = filter.filter(key -> include.stream().anyMatch(k -> StringUtils.containsIgnoreCase(key, k)));
-            }
-            if(exclude != null && !exclude.isEmpty()){
-                filter = filter.filter(key -> exclude.stream().noneMatch(k -> StringUtils.containsIgnoreCase(key, k)));
-            }
-            return filter.mapToInt(key -> map.get(key)).sum();
-        }*/
-
-        public String toHtml(){
-            StringBuilder builder = new StringBuilder();
-            dumpNode(builder, root, "- ");
-            return builder.toString();
-        }
-
-        private void dumpNode(StringBuilder builder, Node node, String prefix) {
-            if (node != null) {
-                builder.append(prefix);
-                builder.append(node.getName()+":"+node.getTotal());
-                builder.append("<br/>\n");
-                prefix = "  " + prefix;
-
-                if(node.getNodes() != null)
-                    for (Node child : node.getNodes()) {
-                        dumpNode(builder, child, prefix);
-                    }
-            }
-
-        }
-
-        public Map toMap(){
-            Map map = new LinkedHashMap();
-            dumpNode(map, root);
-            return map;
-        }
-        private void dumpNode(Map map, Node node){
-            if (node != null) {
-                if(node.getNodes() != null) {
-                    List list = new ArrayList();
-                    map.put("name", node.getName());
-                    map.put("score", node.getTotal());
-                    map.put("children", list);
-                    for (Node child : node.getNodes()) {
-                        Map childMap = new LinkedHashMap();
-                        list.add(childMap);
-                        dumpNode(childMap, child);
-                    }
-                }else{
-                    map.put("name", node.getName());
-                    map.put("score", node.getTotal());
-                }
-            }
-        }
-
-
-    }
-
     public static void main(String[] args) {
-        Rating rating = new Stock.Rating();
-        rating.addScore("score", "jsm", null);
+        Rating rating = new Rating();
+        rating.addScore("jsm");
         rating.addScore("jsm","bar1", () -> 11);
         rating.addScore("jsm","bar2", () -> 12);
         rating.addScore("jsm","bar3", () -> 13);
-        rating.addScore("score", "jbm", null);
+        rating.addScore("jbm");
         rating.addScore("jbm","bk", () -> 21);
         rating.addScore("jbm","holder", () -> 22);
         rating.addScore("jbm","owners", () -> 23);
         rating.addScore("jbm","news", () -> 24);
+        rating.addScore("jbm", "fn");
+        rating.addScore("fn", "fn1", () -> 31);
+        rating.setInclude("fn1");
         rating.calculate();
         System.out.println(rating.toHtml());
         System.out.println(rating.toMap());
@@ -867,21 +724,16 @@ public class Stock {
      * 6. 。。。
      */
     public Rating getRating(){
+        if(rating != null){
+            return this.rating;
+        }
+        this.rating = new Rating();
         int days = 30;
-        Rating rating = new Rating();
-//        rating.addScore("jsm.bar1", () -> this.getBar().getScore(days));
-//        rating.addScore("jsm.bar2", () -> this.getBar().getScore(days/2));
-//        rating.addScore("jsm.bar3", () -> this.getBar().getScore(days/3));
-//        rating.addScore("jbm.bk", () -> this.getScoreByBk());
-//        rating.addScore("jbm.holder", () -> this.getScoreByHolder());
-//        rating.addScore("jbm.owners", this::getScoreByOwners);
-//        rating.addScore("jbm.news", this::getScoreByNews);
-
-        rating.addScore("score", "jsm", null);
+        rating.addScore("jsm");
         rating.addScore("jsm","bar1", () -> this.getBar().getScore(days));
         rating.addScore("jsm","bar2", () -> this.getBar().getScore(days/2));
         rating.addScore("jsm","bar3", () -> this.getBar().getScore(days/3));
-        rating.addScore("score", "jbm", null);
+        rating.addScore("jbm");
         rating.addScore("jbm","bk", () -> this.getScoreByBk());
         rating.addScore("jbm","holder", () -> this.getScoreByHolder());
         rating.addScore("jbm","owners", this::getScoreByOwners);

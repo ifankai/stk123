@@ -1,6 +1,7 @@
 package com.stk123.controller;
 
 import com.stk123.model.RequestResult;
+import com.stk123.model.core.Rating;
 import com.stk123.model.core.Stock;
 import com.stk123.model.core.Stocks;
 import com.stk123.model.enumeration.EnumCate;
@@ -74,8 +75,7 @@ public class StockController {
     @ResponseBody
     public RequestResult score(@PathVariable(value = "code")String code){
         Stock stock = Stock.build(code);
-        Stock.Rating rating = stock.getRating();
-
+        Rating rating = stock.getRating();
         return RequestResult.success(rating);
     }
 
@@ -95,7 +95,7 @@ public class StockController {
         for(Stock stock : stocks){
             Map map = new HashMap();
             map.put("code", stock.getNameAndCode());
-            map.put("score", stock.getRating().toMap());
+            map.put("rating", stock.getRating().toMap());
             map.put("rps", stock.getRps());
             list.add(map);
         }

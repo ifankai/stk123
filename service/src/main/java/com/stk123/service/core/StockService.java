@@ -268,9 +268,9 @@ public class StockService {
         for(Strategy rpsStrategy : rpsStrategies) {
             String rpsStrategyCode = rpsStrategy.getCode();
             if(rpsStrategy.getAsc()) {
-                stks = stocks.stream().sorted(Comparator.nullsLast(Comparator.comparing(stock -> stock.getRps(rpsStrategyCode)==null?null:stock.getRps(rpsStrategyCode).getValue()))).collect(Collectors.toList());
+                stks = stocks.stream().sorted(Comparator.comparing(stock -> stock.getRps(rpsStrategyCode)==null?null:stock.getRps(rpsStrategyCode).getValue(), Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
             }else{
-                stks = stocks.stream().sorted(Comparator.nullsLast(Comparator.comparing(stock -> stock.getRps(rpsStrategyCode)==null?null:stock.getRps(rpsStrategyCode).getValue(), Comparator.reverseOrder()))).collect(Collectors.toList());
+                stks = stocks.stream().sorted(Comparator.comparing(stock -> stock.getRps(rpsStrategyCode)==null?null:stock.getRps(rpsStrategyCode).getValue(), Comparator.nullsLast(Comparator.reverseOrder()))).collect(Collectors.toList());
             }
             stks = setOrderAndPercentile(stks, rpsStrategyCode);
         }
@@ -280,7 +280,7 @@ public class StockService {
                 double sum = rpsStrategies.stream().mapToDouble(rpsStrategy -> stock.getRps(rpsStrategy.getCode()).getPercentile() * rpsStrategy.getWeight()).sum();
                 stock.setRpsValue(rpsCode, sum);
             });
-            stks = stks.stream().sorted(Comparator.nullsLast(Comparator.comparing(stock -> stock.getRps(rpsCode)==null?null:stock.getRps(rpsCode).getValue()))).collect(Collectors.toList());
+            stks = stks.stream().sorted(Comparator.comparing(stock -> stock.getRps(rpsCode)==null?null:stock.getRps(rpsCode).getValue(), Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
             stks = setOrderAndPercentile(stks, rpsCode);
         }
         return stks;

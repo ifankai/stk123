@@ -891,7 +891,7 @@ public class Filters {
     public static Filter<Stock> filter_015b(int days, int score) {
 
         return (strategy, stock) -> {
-            Stock.Rating rating = stock.getRating();
+            Rating rating = stock.getRating();
             int sum = rating.getScore();
             if(sum < score){
                 return FilterResult.FALSE("score:"+sum);
