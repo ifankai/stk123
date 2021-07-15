@@ -131,7 +131,7 @@ public class Rating {
             builder.append(prefix);
             builder.append(node.getType()+":"+node.getScore());
             builder.append("<br/>\n");
-            prefix = "  " + prefix;
+            prefix = "&nbsp;" + prefix;
 
             if(node.getNodes() != null)
                 for (Node child : node.getNodes()) {

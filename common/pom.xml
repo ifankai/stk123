@@ -221,6 +221,15 @@
             <artifactId>guava</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>kryonet</groupId>
+            <artifactId>kryonet</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.esotericsoftware.kryo</groupId>
+            <artifactId>kryo</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

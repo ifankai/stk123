@@ -1,8 +1,12 @@
 package com.stk123.app;
 
+import com.esotericsoftware.kryonet.Server;
+import com.stk123.app.config.WebProperties;
 import com.stk123.app.web.CookieController;
+import com.stk123.common.util.chat.ChatServer;
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -10,10 +14,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -47,13 +53,15 @@ public class WebApplication {
     @Value("${server.port}")
     private Integer httpsPort;
 
+    @Autowired
+    private WebProperties webProperties;
+
 	public static void main(String[] args) {
 		SpringApplication.run(WebApplication.class, args);
 
 		try {
 			Path path = Paths.get("./cookie.txt");
-			String cookie = new String(Files.readAllBytes(path));
-			CookieController.COOKIE = cookie;
+            CookieController.COOKIE = new String(Files.readAllBytes(path));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -88,5 +96,16 @@ public class WebApplication {
         return connector;
     }
 
+    @Bean
+    public ChatServer getChatServer() throws Exception {
+	    return new ChatServer();
+    }
+
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void doSomethingAfterStartup() {
+        System.out.println("do something after WebApplication startup..........");
+        System.out.println(webProperties.getTitle());
+    }
 
 }

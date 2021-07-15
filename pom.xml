@@ -44,6 +44,13 @@
 
     </properties>
 
+    <repositories>
+        <repository>
+            <id>clojars</id>
+            <url>http://clojars.org/repo/</url>
+        </repository>
+    </repositories>
+
     <dependencyManagement>
         <dependencies>
 <!--
@@ -385,6 +392,16 @@
                 <version>27.0-jre</version>
             </dependency>
 
+            <dependency>
+                <groupId>kryonet</groupId>
+                <artifactId>kryonet</artifactId>
+                <version>2.21</version>
+            </dependency>
+            <dependency>
+                <groupId>com.esotericsoftware.kryo</groupId>
+                <artifactId>kryo</artifactId>
+                <version>2.21</version>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>
