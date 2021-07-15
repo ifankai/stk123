@@ -183,6 +183,8 @@ public class CommonUtils {
         System.out.println(parseDate("20201010"));
 
         System.out.println(addHour(new Date(), -2));
+
+        isDevelopment();
     }
 
     public static void printStackTrace(){
@@ -1260,8 +1262,8 @@ public class CommonUtils {
     @SneakyThrows
     public static boolean isDevelopment(){
         InetAddress inet = InetAddress.getLocalHost();
-        String ip = inet.getHostAddress();
-        if(ip.startsWith("192")){
+        String ip = inet.getHostName();
+        if(ip.startsWith("fankai-")){ //fankai-PC
             return true;
         }
         return false;

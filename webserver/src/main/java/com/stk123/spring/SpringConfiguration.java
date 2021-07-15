@@ -39,7 +39,7 @@ import java.util.Map;
                 //@ComponentScan.Filter(type = FilterType.ANNOTATION, classes = {EnableWebMvc.class}), //排除 @EnableWebMvc，和下面一行效果一样
                 @ComponentScan.Filter(type = FilterType.REGEX, pattern = {"com.stk123.spring.config.*"})
             })
-@PropertySource({"classpath:stk.properties", "classpath:db.properties"})
+@PropertySource({"classpath:stk.properties"})
 @EnableJpaRepositories
 @EnableTransactionManagement//(mode = AdviceMode.ASPECTJ)
 @CommonsLog

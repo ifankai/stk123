@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Getter
 public class WebProperties {
-    @Value("${com.neo.title}")
-    private String title;
+    @Value("${stk.environment}")
+    private String environment;
 
 }

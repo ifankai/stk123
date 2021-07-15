@@ -105,7 +105,7 @@ public class WebApplication {
     @EventListener(ApplicationReadyEvent.class)
     public void doSomethingAfterStartup() {
         System.out.println("do something after WebApplication startup..........");
-        System.out.println(webProperties.getTitle());
+        System.out.println(webProperties.getEnvironment());
     }
 
 }

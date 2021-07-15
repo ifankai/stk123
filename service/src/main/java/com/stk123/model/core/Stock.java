@@ -807,7 +807,9 @@ public class Stock {
             if(StringUtils.contains(owner.getOrgName(), "香港中央结算") ||
                StringUtils.contains(owner.getOrgName(), "中央汇金资产") ||
                StringUtils.contains(owner.getOrgName(), "中国证券金融股份") ||
-               StringUtils.contains(owner.getOrgName(), "社保基金")){
+               StringUtils.contains(owner.getOrgName(), "社保基金" ) ||
+               StringUtils.contains(owner.getOrgName(), "养老保险基金")
+                    ){
                 score += 5;
                 break;
             }
@@ -831,7 +833,8 @@ public class Stock {
                 || type == StkConstant.NEWS_TYPE_250 //	业绩大幅增长
                 || type == StkConstant.NEWS_TYPE_130 //	股权激励
         ).count();
-        return score += cnt * 5;
+        score += cnt * 5;
+        return score;
     }
 
     public List<StkOwnershipEntity> getOwners(){
