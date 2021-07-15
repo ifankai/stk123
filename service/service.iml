@@ -2,11 +2,26 @@
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="Spring" name="Spring">
-      <configuration />
+      <configuration>
+        <fileset id="fileset" name="Spring Application Context" removed="false">
+          <file>file://$MODULE_DIR$/src/main/java/com/stk123/config/BeanConfig.java</file>
+          <file>file://$MODULE_DIR$/src/main/java/com/stk123/config/EsAutoConfiguration.java</file>
+          <file>file://$MODULE_DIR$/src/main/java/com/stk123/ServiceApplication.java</file>
+          <file>file://$MODULE_DIR$/src/main/java/com/stk123/config/WebConfig.java</file>
+        </fileset>
+      </configuration>
     </facet>
     <facet type="web" name="Web">
       <configuration>
         <webroots />
+      </configuration>
+    </facet>
+    <facet type="jpa" name="JPA">
+      <configuration>
+        <setting name="validation-enabled" value="true" />
+        <setting name="provider-name" value="Hibernate" />
+        <datasource-mapping />
+        <naming-strategy-map />
       </configuration>
     </facet>
   </component>

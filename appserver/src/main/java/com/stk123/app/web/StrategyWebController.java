@@ -7,6 +7,7 @@ import com.stk123.model.enumeration.EnumCate;
 import com.stk123.model.enumeration.EnumMarket;
 import com.stk123.service.core.StockService;
 import lombok.extern.apachecommons.CommonsLog;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -34,23 +35,33 @@ public class StrategyWebController {
     public String rps(@PathVariable(value = "rpsCode", required = true)String rpsCode,
                       @RequestParam(value = "from", required = false, defaultValue = "90")Double percentileFrom,
                       @RequestParam(value = "to", required = false, defaultValue = "100")Double percentileTo,
-                      @RequestParam(value = "topn", required = false, defaultValue = "100")int topN,
+                      @RequestParam(value = "top", required = false, defaultValue = "100")Integer top,
                       @RequestParam(value = "bk", required = false)String bkCode,
+                      @RequestParam(value = "codes", required = false)String codes,
                       Model model){
-        if (Stocks.stocksAllCN == null) {
-            Stocks.stocksAllCN = stockService.getStocksWithBks(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn, false);
+        List<Stock> stocks;
+        if(codes != null){
+            String[] codeArray = StringUtils.split(codes, ",");
+            stocks = stockService.buildStocks(codeArray);
+        }else {
+            if (Stocks.stocksAllCN == null) {
+                Stocks.stocksAllCN = stockService.getStocksWithBks(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn, false);
+            }
+            stocks = Stocks.stocksAllCN;
         }
-        List<Stock> stocks = Stocks.stocksAllCN;
         if(bkCode != null){
             stocks = stocks.stream().filter(stock -> stock.getBks().stream().anyMatch(bk -> bk.getCode().equals(bkCode))).collect(Collectors.toList());
         }
-
         stocks = stockService.calcRps(stocks, rpsCode);
         int size = stocks.size();
-        if(percentileFrom != 0 || percentileTo != 100)
-            stocks = stocks.subList((int)(size*(100-percentileTo)/100), (int)(size*(100-percentileFrom)/100));
-        stocks = stocks.subList(0, Math.min(topN, stocks.size()));
+        if(percentileFrom != 90 || percentileTo != 100) {
+            stocks = stocks.subList((int) (size * (100 - percentileTo) / 100), (int) (size * (100 - percentileFrom) / 100));
+        }
+        if(top != null) {
+            stocks = stocks.subList(0, Math.min(top, stocks.size()));
+        }
         model.addAttribute("stocks", WebUtils.getStockMap(stocks));
         return "k";
     }
+
 }
