@@ -25,6 +25,8 @@ public class Rps{
     public final static String CODE_STOCK_SCORE_20 = "rps_03";
     public final static String CODE_STOCK_MONTH_3_VOLUME = "rps_04";
     public final static String CODE_STOCK_MONTH_1_VOLUME = "rps_05";
+    public final static String CODE_STOCK_WEEK_1_VOLUME = "rps_06";
+    public final static String CODE_STOCK_WEEK_2_VOLUME = "rps_07";
 
     private static Map<String, String> CODE_NAME = new HashMap<>();
 

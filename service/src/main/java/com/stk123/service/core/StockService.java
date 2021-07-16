@@ -91,7 +91,11 @@ public class StockService {
     public List<Stock> buildStocksWithIndustries(List<StockProjection> stockProjections) {
         List<Stock> stocks = stockProjections.stream().map(projection -> Stock.build(projection)).collect(Collectors.toList());
         Map<String, List<IndustryProjection>> map = industryService.findAllToMap();
-        stocks.forEach(stock -> stock.setIndustries(map.get(stock.getCode())));
+        stocks.forEach(stock -> {
+            List<IndustryProjection> industryProjectionList = map.get(stock.getCode());
+            if(industryProjectionList == null) industryProjectionList = Collections.EMPTY_LIST;
+            stock.setIndustries(industryProjectionList);
+        });
         return stocks;
     }
 
@@ -135,7 +139,11 @@ public class StockService {
         return BaseRepository.findAll1000(stocks,
                 subStocks -> {
                     LinkedHashMap<String, BarSeries> map = barService.queryTopNByStockListOrderByKlineDateDesc(subStocks, rows);
-                    subStocks.forEach(stock -> stock.setBarSeries(map.get(stock.getCode())));
+                    subStocks.forEach(stock -> {
+                        BarSeries bs = map.get(stock.getCode());
+                        if(bs == null) bs = new BarSeries();
+                        stock.setBarSeries(bs);
+                    });
                     if(isIncludeRealtimeBar){
                         ListUtils.eachSubList(subStocks, 250, this::buildBarSeriesWithRealtimeBar);
                         //this.buildBarSeriesWithRealtimeBar(subStocks);
@@ -220,7 +228,12 @@ public class StockService {
 
     public List<Stock> buildHolder(List<Stock> stocks){
         Map<String, StkHolderEntity> map = stkHolderRepository.findAllToMap();
-        stocks.forEach(stock -> stock.setHolder(map.get(stock.getCode())));
+        stocks.forEach(stock -> {
+            StkHolderEntity stkHolderEntity = map.get(stock.getCode());
+            if(stkHolderEntity == null) stkHolderEntity = new StkHolderEntity();
+            stock.setHolder(stkHolderEntity);
+
+        });
         return stocks;
     }
 
@@ -229,7 +242,12 @@ public class StockService {
                 subStocks -> {
                     List<String> codes = subStocks.stream().map(Stock::getCode).collect(Collectors.toList());
                     Map<String, List<StkOwnershipEntity>> map = stkOwnershipRepository.getMapByCodeAndFnDateIsMax(codes);
-                    subStocks.forEach(stock -> stock.setOwners(map.get(stock.getCode())));
+
+                    subStocks.forEach(stock -> {
+                        List<StkOwnershipEntity> list = map.get(stock.getCode());
+                        if(list == null) list = Collections.EMPTY_LIST;
+                        stock.setOwners(list);
+                    });
                     return subStocks;
                 });
     }
@@ -239,7 +257,11 @@ public class StockService {
                 subStocks -> {
                     List<String> codes = subStocks.stream().map(Stock::getCode).collect(Collectors.toList());
                     Map<String, List<StkNewsEntity>> map = stkNewsRepository.getAllByCodeInAndInfoCreateTimeAfterOrderByInsertTime(codes, newCreateAfter);
-                    subStocks.forEach(stock -> stock.setNews(map.get(stock.getCode())));
+                    subStocks.forEach(stock -> {
+                        List<StkNewsEntity> news = map.get(stock.getCode());
+                        if(news == null) news = Collections.EMPTY_LIST;
+                        stock.setNews(news);
+                    });
                     return subStocks;
                 });
         Map<String, StkDictionaryEntity> map = stkDictionaryRepository.getMapByType(StkConstant.DICT_NEWS);
@@ -254,7 +276,11 @@ public class StockService {
                 subStocks -> {
                     List<String> codes = subStocks.stream().map(Stock::getCode).collect(Collectors.toList());
                     Map<String, List<StkImportInfoEntity>> map = stkImportInfoRepository.getAllByCodeInAndInsertTimeAfterOrderByInsertTime(codes, dateAfter);
-                    subStocks.forEach(stock -> stock.setInfos(map.get(stock.getCode())));
+                    subStocks.forEach(stock -> {
+                        List<StkImportInfoEntity> infos = map.get(stock.getCode());
+                        if(infos == null) infos = Collections.EMPTY_LIST;
+                        stock.setInfos(infos);
+                    });
                     return subStocks;
                 });
     }

@@ -22,9 +22,9 @@ import java.util.stream.Collectors;
 public class StrategyBacktesting {
 
     @Setter
-    private int multipleThreadSize = 4;
+    private int multipleThreadSize = 8;
 
-    private boolean printDetail = true;
+    private boolean printDetail = false; //true;
 
     @Getter
     private String startDate;

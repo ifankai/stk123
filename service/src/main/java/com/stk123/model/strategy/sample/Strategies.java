@@ -428,6 +428,34 @@ public class Strategies {
         return strategy;
     }
 
+    public static Strategy rps_06() {
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_WEEK_1_VOLUME,"1周放量", Stock.class);
+        strategy.setAsc(false);
+        strategy.addFilter("1周放量", (strgy, stock) -> {
+            Bar bar = stock.getBarSeriesWeek().getBar();
+            double sum = bar.getVolume();
+            double minSum = bar.before().getVolume();
+            double rpsValue = sum/minSum;
+            stock.setRpsValue(Rps.CODE_STOCK_WEEK_1_VOLUME, CommonUtils.numberFormat(rpsValue, 2));
+            return FilterResult.TRUE();
+        });
+        return strategy;
+    }
+
+    public static Strategy rps_07() {
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_WEEK_2_VOLUME,"2周放量", Stock.class);
+        strategy.setAsc(false);
+        strategy.addFilter("2周放量", (strgy, stock) -> {
+            Bar bar = stock.getBarSeriesWeek().getBar();
+            double sum = bar.getVolume()+bar.before().getVolume();
+            double minSum = bar.before().before().getVolume() + bar.before().before().before().getVolume();
+            double rpsValue = sum/minSum;
+            stock.setRpsValue(Rps.CODE_STOCK_WEEK_2_VOLUME, CommonUtils.numberFormat(rpsValue, 2));
+            return FilterResult.TRUE();
+        });
+        return strategy;
+    }
+
 
     //大跌后，有减持，问询函？
     public static Strategy strategy_0() {

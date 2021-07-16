@@ -20,6 +20,7 @@ public interface StkOwnershipRepository extends JpaRepository<StkOwnershipEntity
     //List<StkOwnershipEntity> findAllByCodeAndFnDateIsMax(@Param("codes") List<String> codes);
 
     String sql_findAll = "select o.code,o.fn_date,o.org_id,o.stk_num,o.rate,o.num_change,o.num_change_rate,name as org_name from stk_ownership o, stk_organization g,(select code,max(fn_date) fn_date from stk_ownership group by code) a where o.org_id=g.id and o.code=a.code and o.fn_date=a.fn_date and o.code in (:1)";
+    @Transactional
     default List<StkOwnershipEntity> findAllByCodeAndFnDateIsMax(List<String> codes) {
         return BaseRepository.getInstance().list(sql_findAll, StkOwnershipEntity.class, codes);
     }

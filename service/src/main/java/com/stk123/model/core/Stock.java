@@ -822,6 +822,7 @@ public class Stock {
                 || type.equals(StkConstant.NEWS_TYPE_240) //	龙头
                 || type.equals(StkConstant.NEWS_TYPE_250) //	业绩大幅增长
                 || type.equals(StkConstant.NEWS_TYPE_130) //	股权激励
+                || type.equals(StkConstant.NEWS_TYPE_210) //	拐点|扭亏
         ).count();
         score += cnt * 5;
         return score;

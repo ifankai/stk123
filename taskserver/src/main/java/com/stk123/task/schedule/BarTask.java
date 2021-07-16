@@ -612,22 +612,20 @@ public class BarTask extends AbstractTask {
                 // rps start
                 StringBuffer rps = new StringBuffer();
                 if(realtime == null) {
-                    Strategy rps_04 = Strategies.rps_04();
-                    List<Stock> rpsStocks = stockService.calcRps(StocksAllCN, rps_04.getCode());
-                    rpsStocks = rpsStocks.subList(0, Math.min(200, rpsStocks.size()));
-                    rps.append("["+rps_04.getCode()+"]"+rps_04.getName() + ": " + CommonUtils.k("查看", rpsStocks.stream().map(Stock::getCode).collect(Collectors.toList())));
-                    rps.append("<br/>");
+                    List<Strategy> rpsStrategies = ListUtils.createList(Strategies.rps_04(), Strategies.rps_05(),
+                            Strategies.rps_06(), Strategies.rps_07());
 
-                    Strategy rps_05 = Strategies.rps_05();
-                    rpsStocks = stockService.calcRps(StocksAllCN, rps_05.getCode());
-                    rpsStocks = rpsStocks.subList(0, Math.min(200, rpsStocks.size()));
-                    rps.append("["+rps_05.getCode()+"]"+rps_05.getName() + ": " + CommonUtils.k("查看", rpsStocks.stream().map(Stock::getCode).collect(Collectors.toList())));
-                    rps.append("<br/>");
+                    for(Strategy rpsStrategy : rpsStrategies){
+                        List<Stock> rpsStocks = stockService.calcRps(StocksAllCN, rpsStrategy.getCode());
+                        rpsStocks = rpsStocks.subList(0, Math.min(150, rpsStocks.size()));
+                        rps.append("["+rpsStrategy.getCode()+"]"+rpsStrategy.getName() + ": " + CommonUtils.k("查看", rpsStocks.stream().map(Stock::getCode).collect(Collectors.toList())));
+                        rps.append("<br/>");
+                    }
                 }
                 // rps end
 
                 StringBuffer sb = new StringBuffer();
-                sb.append(rps);
+                sb.append(rps).append("<br/>");
                 sb.append("A: ").append(CommonUtils.k("查看", codeA)).append("<br/><br/>");
 
                 sb.append("A股");
