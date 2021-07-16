@@ -3,25 +3,26 @@ package com.stk123.service;
 public class StkConstant {
 
     /** dict **/
-    public final static Integer DICT_MONITOR_K_PARAM1 = new Integer(1);
-    public final static Integer DICT_MONITOR_K_PARAM2 = new Integer(2);
+    public final static Integer DICT_MONITOR_K_PARAM1 = 1;
+    public final static Integer DICT_MONITOR_K_PARAM2 = 2;
 
-    public final static Integer DICT_XUEQIU_COMMENT = new Integer(3);
-    public final static Integer DICT_XUEQIU_ARTICLE = new Integer(4);
-    public final static Integer DICT_XUEQIU_ZHUTIE = new Integer(5);//雪球主贴
+    public final static Integer DICT_XUEQIU_COMMENT = 3;
+    public final static Integer DICT_XUEQIU_ARTICLE = 4;
+    public final static Integer DICT_XUEQIU_ZHUTIE = 5;    //雪球主贴
 
-    public final static Integer DICT_NIUSAN = new Integer(20);//牛散
-    public final static Integer DICT_FAMOUS_FUNDS = new Integer(21);//著名基金  insert into stk_dictionary select 21,1,'华夏大盘精选',null,1,null,null,null,null from dual;
+    public final static Integer DICT_NIUSAN = 20;         //牛散
+    public final static Integer DICT_FAMOUS_FUNDS = 21;   //著名基金  insert into stk_dictionary select 21,1,'华夏大盘精选',null,1,null,null,null,null from dual;
 
-    public final static Integer DICT_INTERNET_SEARCH_TYPE = new Integer(10);//internet search type
+    public final static Integer DICT_INTERNET_SEARCH_TYPE = 10;//internet search type
 
-    public final static Integer DICT_STKS_COLUMN_NAMES = new Integer(1000);//多股同列下显示的列名
-    public final static Integer DICT_INDUSTRY_SOURCE = new Integer(300);//行业分类来源
-    public final static Integer DICT_TEXT_SUB_TYPE = new Integer(400);//文档子类型
+    public final static Integer DICT_STKS_COLUMN_NAMES = 1000;  //多股同列下显示的列名
+    public final static Integer DICT_INDUSTRY_SOURCE = 300;     //行业分类来源
+    public final static Integer DICT_TEXT_SUB_TYPE = 400;       //文档子类型
 
-    public final static Integer DICT_NEWS = 2000;
+    public final static Integer DICT_NEWS = 2000;           //stk_news.type
 
-    //news type
+
+    /** stk_news.type **/
     public final static Integer NEWS_TYPE_100 = 100;  //	举牌
     public final static Integer NEWS_TYPE_120 = 120;  //	增持|员工持股
     public final static Integer NEWS_TYPE_121 = 121;  //	回购
@@ -42,11 +43,13 @@ public class StkConstant {
     public final static Integer NEWS_TYPE_290 = 290;  //	涨价
 
 
-    //important info
-    public final static int IMPORT_TYPE_1 = 1; //订单|中标|合同
-    public final static int IMPORT_TYPE_3 = 3; //牛散
-    public final static int IMPORT_TYPE_4 = 4; //增发|定增|非公
-    public final static int IMPORT_TYPE_5 = 5; //股权激励
-    public final static int IMPORT_TYPE_20 = 20; //主营远大于利润
-    public final static int IMPORT_TYPE_21 = 21; //募集资金使用大于80%
+    /** stk_important_info.type **/
+    public final static int IMPORT_INFO_TYPE_1 = 1;   //订单|中标|合同
+    public final static int IMPORT_INFO_TYPE_3 = 3;   //牛散
+    public final static int IMPORT_INFO_TYPE_4 = 4;   //增发|定增|非公
+    public final static int IMPORT_INFO_TYPE_5 = 5;   //股权激励
+    public final static int IMPORT_INFO_TYPE_20 = 20; //主营远大于利润
+    public final static int IMPORT_INFO_TYPE_21 = 21; //募集资金使用大于80%
+
+
 }

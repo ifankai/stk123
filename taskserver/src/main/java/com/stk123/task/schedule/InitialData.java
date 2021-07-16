@@ -1388,7 +1388,7 @@ public class InitialData {
 				String orgName = StringUtils.trim(data.get(0));
 				params.clear();
 				params.add(orgName);
-				StkOrganization org = JdbcUtils.load(conn, "select * from stk_organization where name=?",params, StkOrganization.class);
+				StkOrganization org = JdbcUtils.load( "select * from stk_organization where name=?",params, StkOrganization.class);
 				if(org == null){
 					long seq = JdbcUtils.getSequence(conn, "s_organization_id");
 					params.clear();

@@ -67,7 +67,8 @@ public class Stock {
     private StkHolderRepository stkHolderRepository;
     @Autowired
     private StkNewsRepository stkNewsRepository;
-
+    @Autowired
+    private StkImportInfoRepository stkImportInfoRepository;
 
 
     @JsonView({View.Default.class, View.Score.class})
@@ -100,6 +101,7 @@ public class Stock {
     private StkHolderEntity holder; //最新股东人数,人均持股金额
     private List<StkOwnershipEntity> owners; //十大流通股股东
     private List<StkNewsEntity> news;
+    private List<StkImportInfoEntity> infos; //系统生成的信息
 
 
     private BarSeries barSeries;
@@ -725,6 +727,7 @@ public class Stock {
         rating.addScore("jbm","holder", () -> this.getScoreByHolder());
         rating.addScore("jbm","owners", this::getScoreByOwners);
         rating.addScore("jbm","news", this::getScoreByNews);
+        rating.addScore("jbm","infos", this::getScoreByInfos);
         rating.calculate();
         return rating;
     }
@@ -814,13 +817,29 @@ public class Stock {
     public int getScoreByNews(){
         int score = 0;
         List<StkNewsEntity> news = this.getNews();
-        long cnt = news.stream().map(n -> n.getType()).distinct().filter(
-                type -> type == StkConstant.NEWS_TYPE_220 //	高成长
-                || type == StkConstant.NEWS_TYPE_240 //	龙头
-                || type == StkConstant.NEWS_TYPE_250 //	业绩大幅增长
-                || type == StkConstant.NEWS_TYPE_130 //	股权激励
+        int  cnt = (int) news.stream().map(StkNewsEntity::getType).distinct().filter(
+                type -> type.equals(StkConstant.NEWS_TYPE_220) //	高成长
+                || type.equals(StkConstant.NEWS_TYPE_240) //	龙头
+                || type.equals(StkConstant.NEWS_TYPE_250) //	业绩大幅增长
+                || type.equals(StkConstant.NEWS_TYPE_130) //	股权激励
         ).count();
         score += cnt * 5;
+        return score;
+    }
+
+    public int getScoreByInfos(){
+        int score = 0;
+        List<StkImportInfoEntity> infos = this.getInfos();
+        Optional<StkImportInfoEntity> info = infos.stream().filter(infoEntity -> infoEntity.getType().equals(StkConstant.IMPORT_INFO_TYPE_1)).findFirst(); //订单|中标|合同
+        if(info.isPresent()) {
+            double percent = Double.parseDouble(StringUtils.substringBetween(info.get().getInfo(), "(TTM)的 ", "%"));
+            if(percent >= 100){
+                score += 10;
+            }
+            if(percent >= 200){
+                score += 5;
+            }
+        }
         return score;
     }
 
@@ -840,12 +859,22 @@ public class Stock {
 
     public List<StkNewsEntity> getNews(int days){
         if(this.news == null){
-            news = stkNewsRepository.findAllByCodeInAndInfoCreateTimeAfterOrderByInsertTimeDesc(Collections.singletonList(this.getCode()), CommonUtils.addDay(new Date(), days));
+            news = stkNewsRepository.findAllByCodeAndInfoCreateTimeAfterOrderByInsertTimeDesc(this.getCode(), CommonUtils.addDay(new Date(), days));
         }
         return news;
     }
     public List<StkNewsEntity> getNews(){
         return this.getNews(-180);
+    }
+
+    public List<StkImportInfoEntity> getInfos(int days){
+        if(this.infos == null){
+            infos = stkImportInfoRepository.findAllByCodeAndInsertTimeAfterOrderByInsertTimeDesc(this.getCode(), CommonUtils.addDay(new Date(), days));
+        }
+        return infos;
+    }
+    public List<StkImportInfoEntity> getInfos(){
+        return this.getInfos(-180);
     }
 
     @Override

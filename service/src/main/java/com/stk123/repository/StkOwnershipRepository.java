@@ -28,11 +28,12 @@ public interface StkOwnershipRepository extends JpaRepository<StkOwnershipEntity
     default Map<String, List<StkOwnershipEntity>> getMapByCodeAndFnDateIsMax(List<String> codes){
         List<StkOwnershipEntity> owners = findAllByCodeAndFnDateIsMax(codes);
         Map<String, List<StkOwnershipEntity>> result = new LinkedHashMap<>(codes.size());
-        for(String code : codes) {
-            result.put(code, new ArrayList<>());
-        }
         for(StkOwnershipEntity n : owners){
             List<StkOwnershipEntity> list = result.get(n.getCode());
+            if(list == null){
+                list = new ArrayList<>();
+                result.put(n.getCode(), new ArrayList<>());
+            }
             list.add(n);
         }
         return result;

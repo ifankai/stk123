@@ -3,10 +3,7 @@ package com.stk123.service.core;
 import com.stk123.common.CommonUtils;
 import com.stk123.common.util.ListUtils;
 import com.stk123.common.util.PinYin4jUtils;
-import com.stk123.entity.StkDictionaryEntity;
-import com.stk123.entity.StkHolderEntity;
-import com.stk123.entity.StkNewsEntity;
-import com.stk123.entity.StkOwnershipEntity;
+import com.stk123.entity.*;
 import com.stk123.model.core.Bar;
 import com.stk123.model.core.BarSeries;
 import com.stk123.model.core.Rps;
@@ -69,6 +66,8 @@ public class StockService {
     private StkDictionaryRepository stkDictionaryRepository;
     @Autowired
     private StkOwnershipRepository stkOwnershipRepository;
+    @Autowired
+    private StkImportInfoRepository stkImportInfoRepository;
 
     @Transactional
     public List<Stock> buildStocks(List<String> codes) {
@@ -250,6 +249,16 @@ public class StockService {
         return list;
     }
 
+    public List<Stock> buildImportInfos(List<Stock> stocks, Date dateAfter){
+        return BaseRepository.findAll1000(stocks,
+                subStocks -> {
+                    List<String> codes = subStocks.stream().map(Stock::getCode).collect(Collectors.toList());
+                    Map<String, List<StkImportInfoEntity>> map = stkImportInfoRepository.getAllByCodeInAndInsertTimeAfterOrderByInsertTime(codes, dateAfter);
+                    subStocks.forEach(stock -> stock.setInfos(map.get(stock.getCode())));
+                    return subStocks;
+                });
+    }
+
     public List<Stock> calcRps(List<Stock> stocks, String rpsCode){
         //这里一定要new一个strategy，否则当运行同个strategy的多个调用calcRps方法时，strategy实例会混乱，并且报错：
         //java.util.ConcurrentModificationException at java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1390)
@@ -366,6 +375,7 @@ public class StockService {
         stocks = buildHolder(stocks);
         stocks = buildOwners(stocks);
         stocks = buildNews(stocks, CommonUtils.addDay(new Date(), -180));
+        stocks = buildImportInfos(stocks, CommonUtils.addDay(new Date(), -180));
         return stocks;
     }
     public List<Stock> getStocks(EnumMarket market, boolean isIncludeRealtimeBar){

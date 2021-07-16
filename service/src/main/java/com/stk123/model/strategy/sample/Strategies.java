@@ -362,7 +362,7 @@ public class Strategies {
         });
         return strategy;
     }
-    
+
     //板块内个股score前5的排序
     public static Strategy rps_02() {
         Strategy<Stock> strategy = new Strategy<>(Rps.CODE_BK_STOCKS_SCORE_30,"板块个股前5", Stock.class);
