@@ -3,6 +3,7 @@ package com.stk123.model.core;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.model.json.View;
 import com.stk123.model.strategy.Strategy;
+import com.stk123.model.strategy.StrategyGroup;
 import com.stk123.model.strategy.sample.Strategies;
 import lombok.Data;
 import lombok.SneakyThrows;
@@ -11,6 +12,7 @@ import org.apache.commons.collections.map.SingletonMap;
 import org.apache.commons.lang.StringUtils;
 import org.reflections.ReflectionUtils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -21,19 +23,33 @@ public class Rps{
     public final static String CODE_BK_60 = "rps_01";
     public final static String CODE_BK_STOCKS_SCORE_30 = "rps_02";
     public final static String CODE_STOCK_SCORE_20 = "rps_03";
-    public final static String CODE_STOCK_MONTH_VOLUME = "rps_04";
+    public final static String CODE_STOCK_MONTH_3_VOLUME = "rps_04";
+    public final static String CODE_STOCK_MONTH_1_VOLUME = "rps_05";
 
-    public static Map<String, SingletonMap> CODE_NAME = new HashMap<>();
+    private static Map<String, String> CODE_NAME = new HashMap<>();
 
     static{
-        CODE_NAME.put(CODE_BK_60, new SingletonMap(Strategies.rps_01().getCode(), Strategies.rps_01().getName()));
-        CODE_NAME.put(CODE_BK_STOCKS_SCORE_30, new SingletonMap(Strategies.rps_02().getCode(), Strategies.rps_02().getName()));
-        CODE_NAME.put(CODE_STOCK_SCORE_20, new SingletonMap(CODE_STOCK_SCORE_20, "个股score"));
-        CODE_NAME.put(CODE_STOCK_MONTH_VOLUME, new SingletonMap(Strategies.rps_04().getCode(), Strategies.rps_04().getName()));
+        Set<Method> methods = ReflectionUtils.getAllMethods(Strategies.class);
+        for(Method method : methods) {
+            if(StringUtils.startsWith(method.getName(), "rps")){
+                try {
+                    Object obj = method.invoke(null, null);
+                    if(obj instanceof Strategy) {
+                        Strategy strategy = (Strategy<?>) obj;
+                        CODE_NAME.put(strategy.getCode(), strategy.getName());
+                    }else if(obj instanceof StrategyGroup){
+                        StrategyGroup strategyGroup = (StrategyGroup) obj;
+                        CODE_NAME.put(strategyGroup.getCode(), strategyGroup.getName());
+                    }
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     @SneakyThrows
-    public static List<Strategy> newRpsStrategy(String rpsCode){
+    public static List<Strategy> newRpsStrategies(String rpsCode){
         Set<Method> methods = ReflectionUtils.getAllMethods(Strategies.class,
                 method -> StringUtils.equalsIgnoreCase(method.getName(), rpsCode));
         List<Strategy> strategies = new ArrayList<>();
@@ -42,8 +58,8 @@ public class Rps{
                 Object obj = method.invoke(null, null);
                 if(obj instanceof Strategy) {
                     strategies.add((Strategy<?>) obj);
-                }else if(obj instanceof List){
-                    strategies.addAll((List) obj);
+                }else if(obj instanceof StrategyGroup){
+                    strategies.addAll(((StrategyGroup) obj).getStrategies());
                 }
             }
         }else {
@@ -54,7 +70,7 @@ public class Rps{
 
 
     private List<Strategy> rpsStrategies;
-    private SingletonMap rps;
+    private String code;
     @JsonView(View.Score.class)
     private Double value;
     private Integer order;
@@ -62,11 +78,11 @@ public class Rps{
     private Double percentile;
 
     public Rps(String code, List<Strategy> rpsStrategies){
-        this.rps = CODE_NAME.get(code);
+        this.code = code;
         this.rpsStrategies = rpsStrategies;
     }
 
     public String getName(){
-        return (String) this.rps.getValue();
+        return CODE_NAME.get(this.code);
     }
 }

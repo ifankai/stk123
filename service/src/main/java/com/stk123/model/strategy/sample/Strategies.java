@@ -10,6 +10,7 @@ import com.stk123.model.core.Stock;
 import com.stk123.model.enumeration.EnumCate;
 import com.stk123.model.strategy.Filter;
 import com.stk123.model.strategy.Strategy;
+import com.stk123.model.strategy.StrategyGroup;
 import com.stk123.model.strategy.StrategyResult;
 import com.stk123.model.strategy.result.FilterResult;
 
@@ -361,6 +362,7 @@ public class Strategies {
         });
         return strategy;
     }
+    
     //板块内个股score前5的排序
     public static Strategy rps_02() {
         Strategy<Stock> strategy = new Strategy<>(Rps.CODE_BK_STOCKS_SCORE_30,"板块个股前5", Stock.class);
@@ -374,41 +376,53 @@ public class Strategies {
         });
         return strategy;
     }
-    public static List<Strategy> rps_03() {
-        List<Strategy> strategies = new ArrayList<>();
-        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_SCORE_20+"_01","个股score"+"_01", Stock.class);
-        strategy.addFilter("个股score"+"_01", (strgy, stock) -> {
+
+    public static StrategyGroup rps_03() {
+        StrategyGroup<Stock> strategyGroup = new StrategyGroup<>(Rps.CODE_STOCK_SCORE_20, "个股score", Stock.class);
+        Strategy<Stock> strategy1 = strategyGroup.createStrategy();
+        strategy1.addFilter(strategy1.getName(), (strgy, stock) -> {
             double rpsValue = stock.getScore();
-            stock.setRpsValue(Rps.CODE_STOCK_SCORE_20+"_01", rpsValue);
+            stock.setRpsValue(strategy1.getCode(), rpsValue);
             return FilterResult.TRUE();
         });
-        strategies.add(strategy);
 
-        Strategy<Stock> strategy2 = new Strategy<>(Rps.CODE_STOCK_SCORE_20+"_02","个股score"+"_02", Stock.class);
+        Strategy<Stock> strategy2 = strategyGroup.createStrategy();
         strategy2.setAsc(false);
         strategy2.setWeight(0.3);
-        strategy2.addFilter("个股score"+"_02", (strgy, stock) -> {
+        strategy2.addFilter(strategy2.getName(), (strgy, stock) -> {
             double low = stock.getBar().getLowest(20, Bar.EnumValue.C);
             double high = stock.getBar().getHighest(20, Bar.EnumValue.C);
             double rpsValue = high/low;
             if(rpsValue < 0) rpsValue = 0;
-            stock.setRpsValue(Rps.CODE_STOCK_SCORE_20+"_02", CommonUtils.numberFormat(rpsValue, 2));
+            stock.setRpsValue(strategy2.getCode(), CommonUtils.numberFormat(rpsValue, 2));
             return FilterResult.TRUE();
         });
-        strategies.add(strategy2);
-
-        return strategies;
+        return strategyGroup;
     }
 
     public static Strategy rps_04() {
-        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_MONTH_VOLUME,"个股月线放量", Stock.class);
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_MONTH_3_VOLUME,"3个月放量", Stock.class);
         strategy.setAsc(false);
-        strategy.addFilter("个股月线放量", (strgy, stock) -> {
+        strategy.addFilter("3个月放量", (strgy, stock) -> {
             Bar bar = stock.getBarSeriesMonth().getBar();
             double sum = bar.getSUM(3, Bar.EnumValue.V);
             double minSum = bar.getLowest(15, bar1 -> bar1.getSUM(3, Bar.EnumValue.V));
             double rpsValue = sum/minSum;
-            stock.setRpsValue(Rps.CODE_STOCK_MONTH_VOLUME, CommonUtils.numberFormat(rpsValue, 2));
+            stock.setRpsValue(Rps.CODE_STOCK_MONTH_3_VOLUME, CommonUtils.numberFormat(rpsValue, 2));
+            return FilterResult.TRUE();
+        });
+        return strategy;
+    }
+
+    public static Strategy rps_05() {
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_MONTH_1_VOLUME,"1个月放量", Stock.class);
+        strategy.setAsc(false);
+        strategy.addFilter("1个月放量", (strgy, stock) -> {
+            Bar bar = stock.getBarSeriesMonth().getBar();
+            double sum = bar.getVolume();
+            double minSum = bar.before().getVolume();
+            double rpsValue = sum/minSum;
+            stock.setRpsValue(Rps.CODE_STOCK_MONTH_1_VOLUME, CommonUtils.numberFormat(rpsValue, 2));
             return FilterResult.TRUE();
         });
         return strategy;

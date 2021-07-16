@@ -14,6 +14,7 @@ import com.stk123.model.enumeration.EnumCate;
 import com.stk123.model.enumeration.EnumMarket;
 import com.stk123.model.mass.*;
 import com.stk123.model.projection.StockBasicProjection;
+import com.stk123.model.strategy.Strategy;
 import com.stk123.model.strategy.StrategyBacktesting;
 import com.stk123.model.strategy.StrategyResult;
 import com.stk123.model.strategy.sample.Strategies;
@@ -607,11 +608,30 @@ public class BarTask extends AbstractTask {
 
                 }
 
-                List<String> titles = ListUtils.createList("标的", "日期/策略", "日K线", "周K线", "历史策略回测通过率");
+
+                // rps start
+                StringBuffer rps = new StringBuffer();
+                if(realtime == null) {
+                    Strategy rps_04 = Strategies.rps_04();
+                    List<Stock> rpsStocks = stockService.calcRps(StocksAllCN, rps_04.getCode());
+                    rpsStocks = rpsStocks.subList(0, Math.min(200, rpsStocks.size()));
+                    rps.append("["+rps_04.getCode()+"]"+rps_04.getName() + ": " + CommonUtils.k("查看", rpsStocks.stream().map(Stock::getCode).collect(Collectors.toList())));
+                    rps.append("<br/>");
+
+                    Strategy rps_05 = Strategies.rps_05();
+                    rpsStocks = stockService.calcRps(StocksAllCN, rps_05.getCode());
+                    rpsStocks = rpsStocks.subList(0, Math.min(200, rpsStocks.size()));
+                    rps.append("["+rps_05.getCode()+"]"+rps_05.getName() + ": " + CommonUtils.k("查看", rpsStocks.stream().map(Stock::getCode).collect(Collectors.toList())));
+                    rps.append("<br/>");
+                }
+                // rps end
+
                 StringBuffer sb = new StringBuffer();
+                sb.append(rps);
                 sb.append("A: ").append(CommonUtils.k("查看", codeA)).append("<br/><br/>");
 
                 sb.append("A股");
+                List<String> titles = ListUtils.createList("标的", "日期/策略", "日K线", "周K线", "历史策略回测通过率");
                 sb.append(CommonUtils.createHtmlTable(titles, datasA));sb.append("<br/>");
 
                 EmailUtils.send((realtime!=null?"[实时]":"")+"全市场策略发现 A股" + (datasA.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count()) + "个", sb.toString());
@@ -782,52 +802,5 @@ public class BarTask extends AbstractTask {
             return false;
         }).collect(Collectors.toList());
     }
-
-    /*public List<Stock> filterByMarketCap(List<Stock> stocks, double marketCap){
-        return stocks.stream().filter(stock -> {
-            if(stock.isMarketCN() && stock.getMarketCap() < marketCap){
-                return false;
-            }
-            return true;
-        }).collect(Collectors.toList());
-    }
-
-    public void buildBkAndCalcRps(List<Stock> stocks){
-        //建立板块关系，计算rps
-        List<Stock> bks = getBks();
-        buildBkAndCalcRps(stocks, bks);
-    }
-    public void buildBkAndCalcRps(List<Stock> stocks, List<Stock> bks){
-        stockService.calcRps(bks, Rps.CODE_BK_60);
-        stockService.buildBk(stocks, bks);
-        stockService.calcRps(bks, Rps.CODE_BK_STOCKS_SCORE_30);
-    }
-
-    public List<Stock> getBks(){
-        List<StockBasicProjection> bkList = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.INDEX_eastmoney_gn);
-        List<Stock> bks = stockService.buildStocksWithProjection(bkList);
-        bks = bks.stream().filter(stock -> !BK_REMOVE.contains(stock.getCode())).collect(Collectors.toList());
-        bks = stockService.buildBarSeries(bks, 250, false);
-        return bks;
-    }
-
-    public List<Stock> getAllStocks(){
-        List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(Stock.EnumMarket.CN, Stock.EnumCate.STOCK);
-        //List<StockBasicProjection> list = stkRepository.findAllByCodes(ListUtils.createList("000630","000650","002038","002740","000651","002070","603876","600373","000002","000920","002801","000726","603588","002791","300474"));
-        list = list.stream().filter(stockBasicProjection -> !StringUtils.contains(stockBasicProjection.getName(), "退")).collect(Collectors.toList());
-
-        List<Stock> stocks = stockService.buildStocksWithProjection(list);
-        stocks = stockService.buildBarSeries(stocks, 500, realtime != null);
-
-        //排除总市值小于40亿的
-        stocks = filterByMarketCap(stocks, 30);
-
-        stocks = stockService.buildIndustries(stocks);
-
-        //建立板块关系，计算rps
-        buildBkAndCalcRps(stocks);
-
-        return stocks;
-    }*/
 
 }

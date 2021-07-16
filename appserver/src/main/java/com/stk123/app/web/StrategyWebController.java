@@ -35,7 +35,7 @@ public class StrategyWebController {
     public String rps(@PathVariable(value = "rpsCode", required = true)String rpsCode,
                       @RequestParam(value = "from", required = false, defaultValue = "90")Double percentileFrom,
                       @RequestParam(value = "to", required = false, defaultValue = "100")Double percentileTo,
-                      @RequestParam(value = "top", required = false, defaultValue = "100")Integer top,
+                      @RequestParam(value = "top", required = false, defaultValue = "200")Integer top,
                       @RequestParam(value = "bk", required = false)String bkCode,
                       @RequestParam(value = "codes", required = false)String codes,
                       Model model){

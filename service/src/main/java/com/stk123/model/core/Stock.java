@@ -1,7 +1,6 @@
 package com.stk123.model.core;
 
 import cn.hutool.core.util.ObjectUtil;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.common.CommonConstant;
@@ -26,7 +25,6 @@ import com.stk123.service.support.SpringApplicationContext;
 import com.stk123.util.HttpUtils;
 import com.stk123.util.ServiceUtils;
 import lombok.Data;
-import lombok.Getter;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -36,7 +34,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static com.stk123.model.enumeration.EnumMarket.CN;
@@ -321,16 +318,6 @@ public class Stock {
     }
     public synchronized BarSeries getBarSeries(EnumPeriod period){
         return period.select(this.getBarSeries(), this.getBarSeriesWeek(), this.getBarSeriesMonth());
-        /*switch (period) {
-            case W:
-            case WEEK:
-                return this.getBarSeriesWeek();
-            case M:
-            case MONTH:
-                return this.getBarSeriesMonth();
-            default:
-                return this.getBarSeries();
-        }*/
     }
 
 
@@ -390,8 +377,8 @@ public class Stock {
             int a = -1;
             Bar kw = null;
             for (Bar k : this.getBarSeries().getList()) {
-                Date kd = ServiceUtils.parseDate(k.getDate());
-                int month = kd.getMonth();
+                //Date kd = ServiceUtils.parseDate(k.getDate());
+                int month = Integer.parseInt(StringUtils.substring(k.getDate(), 4, 6));
                 if (a == -1 || month != a) {
                     if (kw != null) {
                         this.barSeriesMonth.add(kw);

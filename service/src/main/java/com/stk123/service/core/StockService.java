@@ -253,7 +253,7 @@ public class StockService {
     public List<Stock> calcRps(List<Stock> stocks, String rpsCode){
         //这里一定要new一个strategy，否则当运行同个strategy的多个调用calcRps方法时，strategy实例会混乱，并且报错：
         //java.util.ConcurrentModificationException at java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1390)
-        List<Strategy> strategies = Rps.newRpsStrategy(rpsCode);
+        List<Strategy> strategies = Rps.newRpsStrategies(rpsCode);
         return calcRps(stocks, rpsCode, strategies);
     }
     private List<Stock> calcRps(List<Stock> stocks, String rpsCode, List<Strategy> rpsStrategies){

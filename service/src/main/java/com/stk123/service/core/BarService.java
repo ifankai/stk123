@@ -65,11 +65,12 @@ public class BarService extends BaseRepository {
         String sql = market.replaceKlineTable(sql_queryTopNByCodeListOrderByKlineDateDesc);
         List<Bar> list = BaseRepository.getInstance().list(sql, Bar.class, codes, rows);
         LinkedHashMap<String, BarSeries> result = new LinkedHashMap<>(codes.size());
-        for(String code : codes) {
-            result.put(code, new BarSeries());
-        }
         for(Bar bar : list){
             BarSeries bs = result.get(bar.getCode());
+            if(bs == null){
+                bs = new BarSeries();
+                result.put(bar.getCode(), bs);
+            }
             bs.add(bar);
         }
         return result;
@@ -78,11 +79,12 @@ public class BarService extends BaseRepository {
     @Transactional
     public LinkedHashMap<String, BarSeries> queryTopNByStockListOrderByKlineDateDesc(List<Stock> stocks, Integer rows) {
         LinkedHashMap<String, BarSeries> result = new LinkedHashMap<>();
-        for(EnumMarket emStock : EnumMarket.values()){
-            List<Stock> stockList = stocks.stream().filter(s -> s.getMarket() == emStock).collect(Collectors.toList());
-            List<String> codes = stockList.stream().map(s -> s.getCode()).collect(Collectors.toList());
-            LinkedHashMap<String, BarSeries> map = queryTopNByCodeListOrderByKlineDateDesc(codes, emStock, rows);
-            result.putAll(map);
+        for(EnumMarket market : EnumMarket.values()){
+            List<String> codes = stocks.stream().filter(s -> s.getMarket() == market).map(Stock::getCode).collect(Collectors.toList());
+            if(!codes.isEmpty()) {
+                LinkedHashMap<String, BarSeries> map = queryTopNByCodeListOrderByKlineDateDesc(codes, market, rows);
+                result.putAll(map);
+            }
         }
         return result;
     }
