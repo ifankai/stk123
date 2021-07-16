@@ -2,9 +2,11 @@ package com.stk123.repository;
 
 import com.stk123.entity.StkImportInfoEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
+@Repository
 public interface StkImportInfoRepository extends JpaRepository<StkImportInfoEntity, Integer> {
 
     List<StkImportInfoEntity> findAllByCodeAndInsertTimeAfterOrderByInsertTimeDesc(String code, Date insertTime);
