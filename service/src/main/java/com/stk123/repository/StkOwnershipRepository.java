@@ -33,7 +33,7 @@ public interface StkOwnershipRepository extends JpaRepository<StkOwnershipEntity
             List<StkOwnershipEntity> list = result.get(n.getCode());
             if(list == null){
                 list = new ArrayList<>();
-                result.put(n.getCode(), new ArrayList<>());
+                result.put(n.getCode(), list);
             }
             list.add(n);
         }

@@ -1,7 +1,6 @@
 package com.stk123.common.util;
 
-import java.awt.Color;
-import java.awt.Paint;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,18 +8,14 @@ import java.io.OutputStream;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
 
+import cn.hutool.core.util.NumberUtil;
+import lombok.SneakyThrows;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartFrame;
 import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.DateAxis;
-import org.jfree.chart.axis.DateTickMarkPosition;
-import org.jfree.chart.axis.DateTickUnit;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.NumberTickUnit;
-import org.jfree.chart.axis.SegmentedTimeline;
-import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.axis.*;
 import org.jfree.chart.encoders.EncoderUtil;
 import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
@@ -41,6 +36,7 @@ import org.jfree.data.time.ohlc.OHLCSeries;
 import org.jfree.data.time.ohlc.OHLCSeriesCollection;
 
 import com.stk123.common.db.TableTools;
+import org.jfree.ui.RectangleInsets;
 
 
 public class ChartUtils {
@@ -79,9 +75,10 @@ public class ChartUtils {
 	        chartDate.addValue(20.50, "", "20160813");  
 	        chartDate.addValue(0.50, "", "20160814");  
 	        chartDate.addValue(24.0, "", "20160815");
-			
+            byte[] bytes = createBarChart(chartDate, 470, 80);
+            System.out.println(ImageUtils.getImageStr(bytes));
             FileOutputStream output = new FileOutputStream(path+"test.png");
-            output.write(createBarChart(chartDate, 470, 80));
+            output.write(bytes);
         } finally {
 			if (conn != null) conn.close();
 		}
@@ -95,20 +92,37 @@ public class ChartUtils {
         ChartUtilities.writeChartAsPNG(output, chart, 800, 600); 
 	}
 	
-	public static byte[] createBarChart(final DefaultCategoryDataset dataset, int width, int height) throws Exception{
+	@SneakyThrows
+    public static byte[] createBarChart(final DefaultCategoryDataset dataset, int width, int height) {
         JFreeChart chart = ChartFactory.createBarChart(null,null,null,dataset,PlotOrientation.VERTICAL,true,true,false);
-        chart.setBackgroundPaint(Color.WHITE); 
+        chart.setBackgroundPaint(Color.WHITE);
         chart.removeLegend();
-        
+        chart.setBorderStroke(new BasicStroke(0));
+
         CategoryPlot plot = chart.getCategoryPlot();
         plot.setBackgroundPaint(Color.WHITE);
         plot.getDomainAxis().setVisible(false);
-        
-        ValueAxis rangeAxis = plot.getRangeAxis();
+
+        plot.setDomainGridlinesVisible(true);      //网格竖线是否显示
+        plot.setRangeGridlinePaint(Color.black);    //设置网格横线颜色
+        plot.setRangeGridlinesVisible(true);       //网格横线是否显示
+
+        plot.setAxisOffset(new RectangleInsets(0, 25, 0, 0));
+
+        //ValueAxis rangeAxis = plot.getRangeAxis();
         //设置Y轴的最大值
         //rangeAxis.setUpperBound(50);
         //rangeAxis.setLowerBound(-50);
-        
+
+        CategoryAxis domainAxis = plot.getDomainAxis();
+        domainAxis.setUpperMargin(0.010);
+        domainAxis.setLowerMargin(0.005);
+
+        ValueAxis rAxis = plot.getRangeAxis();            //对Y轴做操作
+        rAxis.setLabelAngle(1.6);
+
+        //rAxis.setStandardTickUnits(new NumberTickUnitSource(true, ));
+
         BarRenderer renderer = new BarRenderer(){
         	public Paint getItemPaint(int i, int j) {  
                 if(dataset.getValue(0, j).doubleValue() >= 0){

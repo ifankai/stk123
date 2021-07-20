@@ -2,6 +2,8 @@ package com.stk123.repository;
 
 import com.stk123.entity.StkCapitalFlowEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -25,7 +27,7 @@ public interface StkCapitalFlowRepository extends JpaRepository<StkCapitalFlowEn
             List<StkCapitalFlowEntity> list = result.get(n.getCode());
             if(list == null){
                 list = new ArrayList<>();
-                result.put(n.getCode(), new ArrayList<>());
+                result.put(n.getCode(), list);
             }
             list.add(n);
         }

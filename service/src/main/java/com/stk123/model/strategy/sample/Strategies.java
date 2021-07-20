@@ -404,6 +404,10 @@ public class Strategies {
         Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_MONTH_3_VOLUME,"3个月放量", Stock.class);
         strategy.setAsc(false);
         strategy.addFilter("3个月放量", (strgy, stock) -> {
+            if(stock.getBarSeries().size() < 60){
+                stock.setRpsValue(strategy.getCode(), 0.0);
+                return FilterResult.TRUE();
+            }
             Bar bar = stock.getBarSeriesMonth().getBar();
             double sum = bar.getSUM(3, Bar.EnumValue.V);
             double minSum = bar.getLowest(15, bar1 -> bar1.getSUM(3, Bar.EnumValue.V));
@@ -418,6 +422,10 @@ public class Strategies {
         Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_MONTH_1_VOLUME,"1个月放量", Stock.class);
         strategy.setAsc(false);
         strategy.addFilter("1个月放量", (strgy, stock) -> {
+            if(stock.getBarSeries().size() < 60){
+                stock.setRpsValue(strategy.getCode(), 0.0);
+                return FilterResult.TRUE();
+            }
             Bar bar = stock.getBarSeriesMonth().getBar();
             double sum = bar.getVolume();
             double minSum = bar.before().getVolume();
@@ -432,6 +440,10 @@ public class Strategies {
         Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_WEEK_1_VOLUME_A,"1周放量", Stock.class);
         strategy.setAsc(false);
         strategy.addFilter("1周放量", (strgy, stock) -> {
+            if(stock.getBarSeries().size() < 60){
+                stock.setRpsValue(strategy.getCode(), 0.0);
+                return FilterResult.TRUE();
+            }
             Bar bar = stock.getBarSeriesWeek().getBar();
             double sum = bar.getVolume();
             double minSum = bar.before().getVolume();
@@ -446,6 +458,10 @@ public class Strategies {
         Strategy<Stock> strategy = strategyGroup.createStrategy();
         strategy.setAsc(false);
         strategy.addFilter("1周放量", (strgy, stock) -> {
+            if(stock.getBarSeries().size() < 60){
+                stock.setRpsValue(strategy.getCode(), 0.0);
+                return FilterResult.TRUE();
+            }
             Bar bar = stock.getBarSeriesWeek().getBar();
             double sum = bar.getVolume();
             double minSum = bar.before().getVolume();

@@ -79,7 +79,7 @@ public class Rating {
 
         int calculate(){
             int score = 0;
-            if(nodes == null){
+            if(nodes == null && this.formula != null){
                 if(include == null){
                     return this.score = this.formula.get();
                 }else {

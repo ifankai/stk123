@@ -91,17 +91,17 @@ public class Tasks {
 
     @Scheduled(cron = "0 10 16 ? * MON-SAT")
     public void initialKLine() {
-        BarTask.StocksMass = null;
-        BarTask.StocksH = null;
-        BarTask.StocksAllCN = null;
-        BarTask.BkCN = null;
-        taskContainer.start(TaskBuilder.of(BarTask.class, "CN"),
-                            TaskBuilder.of(BarTask.class, "HK"),
-                            TaskBuilder.of(BarTask.class, "MyStocks"),
-                            TaskBuilder.of(BarTask.class, "AllStocks"),
-                            TaskBuilder.of(BarTask.class, "Bks"),
-                            //TaskBuilder.of(SyncTask.class, "table=stk_task_log"),
-                            TaskBuilder.of(BarTask.class, "Mass"));
+        taskContainer.start(
+                TaskBuilder.of(BarTask.class, "clearAll"),
+                TaskBuilder.of(BarTask.class, "CN"),
+                TaskBuilder.of(BarTask.class, "HK"),
+                TaskBuilder.of(BarTask.class, "MyStocks"),
+                TaskBuilder.of(BarTask.class, "AllStocks"),
+                TaskBuilder.of(BarTask.class, "Bks"),
+                //TaskBuilder.of(SyncTask.class, "table=stk_task_log"),
+                TaskBuilder.of(BarTask.class, "Mass"),
+                TaskBuilder.of(BarTask.class, "clearAll")
+        );
     }
 
     @Scheduled(cron = "0 0 11 ? * MON-FRI")

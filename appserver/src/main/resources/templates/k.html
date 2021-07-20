@@ -72,25 +72,7 @@
                         <div role="tabpanel" class="tab-pane fade show active" th:id="'tab-'+${stocks[dataIndex][code]}+'-1'">
                             <span th:utext=="${stocks[dataIndex][daily]}"></span>
                             <span>
-                                <img height="80" width="470" style="margin-top: -100px;margin-left: 30px;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAA8CAYAAACejN4VAAAD+0lEQVR42u3dMUuqfRzH4fPS1CUQ
-JWhsqkEodGtramhsigaVXoDLGTRfQEvgpmObTUItOlaSv4f/DecGfcjqIB3P4frARf7NBjvL+XJr
-/ghJkiRJ+qZ++BVIkiRJMkAkSZIkGSCSJEmSZIBIkiRJ+rcGSKFQyH2mxWIRzWYzqtVqpt1uZ/dJ
-kiRJMkC+NEQ+U6/Xi1qtFpPJJJNu9/t9v3VJkiTJANn8AKnX6zEYDPJzut1oNPzWJUmSJANk8wOk
-XC7HbDbLz9PpNCqVytqfGQ6HS+fj4+M4ODgAAAC20MXFxfYMkGKxGPP5PD+n26VSae3P3N7eLp3T
-k0r3AQAA2+fs7OzvvAKSrnykJ9DpdJbuPzo6ivF4HKPRKPt++urs7Ozs7Ozs7OzsvB3nrRogv/Me
-EFdAAADAFZBPDZDV+7vd7pf/CpYBAgAABkg+MFatGyC/PgckvewqabVaH34OiAECAAAGyLdlgAAA
-gAFigAAAAAYIAABggBggAABggBggAACAAWKAAACAAWKAAAAABggAAGCAGCAAAGCAGCAAAIABYoAA
-AIABYoAAAAB/eoAsFotoNptRrVYz7XY7u++9CoXC/xggAABggHyqXq8XtVotJpNJJt3u9/trB4gr
-IAAAYID81gCp1+sxGAzyc7rdaDQMEAAAMEA2P0DK5XLMZrP8PJ1Oo1KprB0gu7u7sbOzE4eHh/Hz
-5894e3szQAAAwAD5uGKxGPP5PD+n26VS6cOfe319jfv7++xqydXVlQECAAAGyOavgKz2+Pj47uOH
-w2H2BDqdztL9R0dHMR6PYzQaZd9PX52dnZ2dnZ2dnZ2dt+O8Ve8BWe3p6Sn29vZcAQEAAFdAPq7b
-7a79K1irbzo/PT3NXnr1/PwcDw8PcXJyEpeXlwYIAAAYIJ//HJD0Mqqk1WotfQ7I6gC5u7vLXkKV
-3oS+v78f19fX8fLyYoAAAIAB4pPQAQAAA8Q/LAAAGCAGCAAAGCAGCAAAYIAYIAAAYIAYIAAAgAFi
-gAAAgAFigAAAAAYIAABggBggAABggBggAACAAWKAAACAAZJaLBbRbDajWq1m2u12dt+mHm+AAACA
-AZLX6/WiVqvFZDLJpNv9fn9jjzdAAADAAMmr1+sxGAzyc7rdaDQ29ngDBAAADJC8crkcs9ksP0+n
-06hUKht7vAECAAAGSF6xWIz5fJ6f0+1SqbSxxxsgAABggHzLFZDhcJg9gZubm6X7z8/PsycFAABs
-n/T/9b/6PSCSJEmS/t2+NEC63e7av2pVKBS+9HhJkiRJBsi7/fpcj/QyqqTVai19rsfqAPno8ZIk
-SZIMEEmSJEkyQCRJkiQZIJIkSZJkgEiSJEnarv4DFtwHQ3hoURkAAAAASUVORK5CYII=">
+                                <img height="80" width="503" style="margin-top: -100px;" th:src="'data:image/png;base64,'+${stocks[dataIndex][dailyFlowImg]}">
                             </span>
                         </div>
                         <div role="tabpanel" class="tab-pane fade" th:id="'tab-'+${stocks[dataIndex][code]}+'-2'">

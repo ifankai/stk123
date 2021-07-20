@@ -15,6 +15,7 @@ public class WebUtils {
             Map<String, Object> map = new HashMap<>();
             map.put("code", stock.getCode());
             map.put("daily", stock.getDayBarImage());
+            map.put("dailyFlowImg", stock.getDayFlowImage());
             map.put("weekly", stock.getWeekBarImage());
             map.put("monthly", stock.getMonthBarImage());
             map.put("news", stock.getNews());

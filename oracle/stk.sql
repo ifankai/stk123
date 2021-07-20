@@ -715,8 +715,8 @@ alter table stk_report_daily add remark_2 varchar2(40);
 create index idx_report_daily_type_date on stk_report_daily (type, report_date);
 
 create table stk_capital_flow(
-  code varchar2(10),
-  flow_date varchar2(8),
+  code varchar2(10) not null,
+  flow_date varchar2(8) not null,
   main_amount number(20,2),
   main_percent number(8,2),
   super_large_amount number(20,2),
@@ -3028,4 +3028,5 @@ select * from stk_text  order by insert_time desc;
 select * from stk_fn_data where code='600107' and type=300 order by fn_date desc;
 select * from stk_fn_type for update;
 
-select * from stk_capital_flow;
+select * from stk_capital_flow where code='002346' order by flow_date desc;
+select * from stk_capital_flow order by insert_time desc;

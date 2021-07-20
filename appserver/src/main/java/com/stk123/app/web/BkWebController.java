@@ -37,6 +37,8 @@ public class BkWebController {
     public String show(@PathVariable(value = "codes", required = true)String codes, Model model){
         String[] stks = StringUtils.split(codes, ",");
         List<Stock> stocks = stockService.buildStocks(stks);
+        stockService.buildBarSeries(stocks, 100, false);
+        stockService.buildCapitalFlow(stocks, CommonUtils.addDay(new Date(), -90));
         stocks = stockService.buildNews(stocks, CommonUtils.addDay(new Date(), -180));
 
         model.addAttribute("stocks", WebUtils.getStockMap(stocks));

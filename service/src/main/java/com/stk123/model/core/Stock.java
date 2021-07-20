@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.common.CommonConstant;
 import com.stk123.common.CommonUtils;
+import com.stk123.common.util.ChartUtils;
+import com.stk123.common.util.ImageUtils;
 import com.stk123.common.util.ListUtils;
 import com.stk123.entity.*;
 import com.stk123.model.enumeration.EnumCate;
@@ -28,6 +30,7 @@ import lombok.Data;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.jfree.data.category.DefaultCategoryDataset;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -609,6 +612,17 @@ public class Stock {
     }
     public String getMonthBarImage(){
         return getBarImage("M");
+    }
+
+    public String getDayFlowImage(){
+        DefaultCategoryDataset chartDate = new DefaultCategoryDataset();
+        Bar barBefore = this.getBar().before(59);
+        while(barBefore != null){
+            chartDate.addValue(barBefore.getCapitalFlowAmount()/10000_0000, "", barBefore.getDate());
+            barBefore = barBefore.after();
+        }
+        byte[] bytes = ChartUtils.createBarChart(chartDate, 500, 80);
+        return ImageUtils.getImageStr(bytes);
     }
 
     public Double getMarketCap(){
