@@ -68,6 +68,8 @@ public class StockService {
     private StkOwnershipRepository stkOwnershipRepository;
     @Autowired
     private StkImportInfoRepository stkImportInfoRepository;
+    @Autowired
+    private StkCapitalFlowRepository stkCapitalFlowRepository;
 
     @Transactional
     public List<Stock> buildStocks(List<String> codes) {
@@ -148,6 +150,22 @@ public class StockService {
                         ListUtils.eachSubList(subStocks, 250, this::buildBarSeriesWithRealtimeBar);
                         //this.buildBarSeriesWithRealtimeBar(subStocks);
                     }
+                    return subStocks;
+                });
+    }
+
+    // should be called after buildBarSeries
+    public List<Stock> buildCapitalFlow(List<Stock> stocks, String date){
+        return BaseRepository.findAll1000(stocks,
+                subStocks -> {
+                    List<String> codes = subStocks.stream().map(Stock::getCode).collect(Collectors.toList());
+                    Map<String, List<StkCapitalFlowEntity>> map = stkCapitalFlowRepository.getAllByCodeInAndFlowDateGreaterThanEqualOrderByFlowDateDesc(codes, date);
+                    subStocks.forEach(stock -> {
+                        List<StkCapitalFlowEntity> flows = map.get(stock.getCode());
+                        if(flows == null) flows = Collections.EMPTY_LIST;
+                        stock.setFlows(flows);
+                        stock.buildCapitalFlow();
+                    });
                     return subStocks;
                 });
     }
@@ -397,6 +415,7 @@ public class StockService {
 
     public List<Stock> getStocksWithAllBuilds(List<Stock> stocks, boolean isIncludeRealtimeBar){
         stocks = buildBarSeries(stocks, 500, isIncludeRealtimeBar);
+        stocks = buildCapitalFlow(stocks, CommonUtils.formatDate(CommonUtils.addDay(new Date(), -60), CommonUtils.sf_ymd2));
         stocks = buildIndustries(stocks);
         stocks = buildHolder(stocks);
         stocks = buildOwners(stocks);

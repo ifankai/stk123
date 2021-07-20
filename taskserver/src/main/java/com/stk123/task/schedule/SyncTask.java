@@ -73,7 +73,7 @@ public class SyncTask extends AbstractTask {
         String dateStart = CommonUtils.formatDate(CommonUtils.addDay(new Date(), -800), CommonUtils.sf_ymd2);
         //PARALLEL=4  //ORA-39094: 在此数据库版本中不支持并行执行。
         //expdp stk/stkpwd@XE directory=DPUMP_DIR dumpfile=db_stk.dp REUSE_DUMPFILES=Y SCHEMAS=stk QUERY=STK_ERROR_LOG:\"WHERE 1<>1\",STK_KLINE_US:\"WHERE kline_date>=\'20210101\'\",STK_KLINE:\"WHERE kline_date>=\'20210101\'\",STK_DATA_EASTMONEY_GUBA:\"WHERE 1<>1\",STK_FN_DATA_BAK:\"WHERE 1<>1\",STK_DATA_PPI:\"WHERE 1<>1\",STK_CAPITAL_FLOW:\"WHERE 1<>1\",STK_MONITOR:\"WHERE 1<>1\"
-        String expdp = "expdp stk/stkpwd@XE directory=DPUMP_DIR dumpfile="+dpFile+" REUSE_DUMPFILES=Y SCHEMAS=stk QUERY=STK_ERROR_LOG:\\\"WHERE 1<>1\\\",STK_KLINE_US:\\\"WHERE kline_date>=\\'"+dateStartUS+"\\'\\\",STK_KLINE:\\\"WHERE kline_date>=\\'"+dateStart+"\\'\\\",STK_KLINE_HK:\\\"WHERE kline_date>=\\'"+dateStart+"\\'\\\",STK_DATA_EASTMONEY_GUBA:\\\"WHERE 1<>1\\\",STK_FN_DATA_BAK:\\\"WHERE 1<>1\\\",STK_DATA_PPI:\\\"WHERE 1<>1\\\",STK_CAPITAL_FLOW:\\\"WHERE 1<>1\\\",STK_MONITOR:\\\"WHERE 1<>1\\\"";
+        String expdp = "expdp stk/stkpwd@XE directory=DPUMP_DIR dumpfile="+dpFile+" REUSE_DUMPFILES=Y SCHEMAS=stk QUERY=STK_ERROR_LOG:\\\"WHERE 1<>1\\\",STK_KLINE_US:\\\"WHERE kline_date>=\\'"+dateStartUS+"\\'\\\",STK_KLINE:\\\"WHERE kline_date>=\\'"+dateStart+"\\'\\\",STK_KLINE_HK:\\\"WHERE kline_date>=\\'"+dateStart+"\\'\\\",STK_DATA_EASTMONEY_GUBA:\\\"WHERE 1<>1\\\",STK_FN_DATA_BAK:\\\"WHERE 1<>1\\\",STK_DATA_PPI:\\\"WHERE 1<>1\\\",STK_CAPITAL_FLOW:\\\"WHERE flow_date>=\\'"+dateStart+"\\'\\\",STK_MONITOR:\\\"WHERE 1<>1\\\"";
         log.info(expdp);
         log.info("begin to expdp:"+dpFile);
         TaskUtils.cmd(expdp);

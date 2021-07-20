@@ -3027,3 +3027,5 @@ select * from stk_text  order by insert_time desc;
 
 select * from stk_fn_data where code='600107' and type=300 order by fn_date desc;
 select * from stk_fn_type for update;
+
+select * from stk_capital_flow;

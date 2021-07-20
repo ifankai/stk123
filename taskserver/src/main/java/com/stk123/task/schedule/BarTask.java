@@ -1,12 +1,10 @@
 package com.stk123.task.schedule;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stk123.common.CommonUtils;
 import com.stk123.common.util.EmailUtils;
 import com.stk123.common.util.ListUtils;
-import com.stk123.entity.StkHolderEntity;
-import com.stk123.entity.StkIndustryEntity;
-import com.stk123.entity.StkKlineUsEntity;
-import com.stk123.entity.StkPeEntity;
+import com.stk123.entity.*;
 import com.stk123.model.core.Bar;
 import com.stk123.model.core.Rps;
 import com.stk123.model.core.Stock;
@@ -26,6 +24,7 @@ import com.stk123.service.core.BarService;
 import com.stk123.service.core.StockService;
 import com.stk123.task.tool.TaskUtils;
 import com.stk123.util.ExceptionUtils;
+import com.stk123.util.HttpUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -96,6 +95,8 @@ public class BarTask extends AbstractTask {
     private BacktestingService backtestingService;
     @Autowired
     private StockService stockService;
+    @Autowired
+    private StkCapitalFlowRepository stkCapitalFlowRepository;
 
     public static void main(String[] args) throws Exception {
         BarTask task = new BarTask();
@@ -114,6 +115,7 @@ public class BarTask extends AbstractTask {
         this.runByName("analyseMass", this::analyseMass);
         this.runByName("analyseAllStocks", this::analyseAllStocks);
         this.runByName("analyseBks", this::analyseBks);
+        this.runByName("test", this::updateCNCapitalFlow);
     }
 
     public void initCN() {
@@ -176,8 +178,11 @@ public class BarTask extends AbstractTask {
                     EmailUtils.send("[BarTask出错]修补K线数据出错 code=" + stockBasicProjection.getCode(), e);
                 }
             }
+
+            updateCNCapitalFlow(list.stream().map(StockBasicProjection::getCode).collect(Collectors.toList()));
+
         }catch(Exception e){
-            log.error("error", e);
+            log.error("initCN error", e);
             EmailUtils.send("[BarTask出错]个股K线下载出错 code="+ (scn != null ? scn.getCode() : null), e);
         }
     }
@@ -189,7 +194,7 @@ public class BarTask extends AbstractTask {
             initKLines(list, 4);
             log.info("HK initKLines..........end");
         }catch(Exception e){
-            log.error("error", e);
+            log.error("initHK error", e);
             EmailUtils.send("Initial HK Stock K Line Error", e);
         }
     }
@@ -214,7 +219,7 @@ public class BarTask extends AbstractTask {
             initKLines(list, 4);
             log.info("US initKLines..........end");
         }catch(Exception e){
-            log.error("error", e);
+            log.error("initUS error", e);
             EmailUtils.send("Initial US Stock K Line Error", e);
         }
 
@@ -612,13 +617,15 @@ public class BarTask extends AbstractTask {
                 // rps start
                 StringBuffer rps = new StringBuffer();
                 if(realtime == null) {
-                    List<Strategy> rpsStrategies = ListUtils.createList(Strategies.rps_04(), Strategies.rps_05(),
-                            Strategies.rps_06(), Strategies.rps_07());
+                    List<String> rpsList = ListUtils.createList(Strategies.rps_04().getCode(), Strategies.rps_05().getCode(),
+                            Strategies.rps_06a().getCode(), Strategies.rps_06b().getCode(), Strategies.rps_07().getCode(),
+                            Strategies.rps_08().getCode(), Strategies.rps_09().getCode(), Strategies.rps_10().getCode(),
+                            Strategies.rps_11().getCode());
 
-                    for(Strategy rpsStrategy : rpsStrategies){
-                        List<Stock> rpsStocks = stockService.calcRps(StocksAllCN, rpsStrategy.getCode());
+                    for(String rpsCode : rpsList){
+                        List<Stock> rpsStocks = stockService.calcRps(StocksAllCN, rpsCode);
                         rpsStocks = rpsStocks.subList(0, Math.min(150, rpsStocks.size()));
-                        rps.append("["+rpsStrategy.getCode()+"]"+rpsStrategy.getName() + ": " + CommonUtils.k("查看", rpsStocks.stream().map(Stock::getCode).collect(Collectors.toList())));
+                        rps.append("["+rpsCode+"]"+Rps.getName(rpsCode) + ": " + CommonUtils.k("查看", rpsStocks.stream().map(Stock::getCode).collect(Collectors.toList())));
                         rps.append("<br/>");
                     }
                 }
@@ -801,4 +808,62 @@ public class BarTask extends AbstractTask {
         }).collect(Collectors.toList());
     }
 
+    public void updateCNCapitalFlow(){
+        //List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(EnumMarket.CN, EnumCate.STOCK);
+        updateCNCapitalFlow(Collections.singletonList("002346"));
+    }
+
+    public void updateCNCapitalFlow(List<String> codes){
+        for(String code : codes) {
+            try {
+                //http://push2his.eastmoney.com/api/qt/stock/fflow/daykline/get?cb=jQuery1123004606016255487422_1626750887144&lmt=0&klt=101&fields1=f1%2Cf2%2Cf3%2Cf7&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf62%2Cf63%2Cf64%2Cf65&ut=b2884a393a59ad64002292a3e90d46a5&secid=0.002346&_=1626750887145
+                long time = new Date().getTime();
+                String scode = (Stock.build(code).isPlaceSH()?"1.":"0.") + code;
+                String url = "http://push2his.eastmoney.com/api/qt/stock/fflow/daykline/get?cb=jQuery" + time + "&lmt=0&klt=101&fields1=f1%2Cf2%2Cf3%2Cf7&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf62%2Cf63%2Cf64%2Cf65&ut=&secid="+scode+"&_=" + time;
+                String page = HttpUtils.get(url, null);
+                String json = StringUtils.substringBetween(page, "jQuery"+time+"(", ");");
+
+                ObjectMapper objectMapper = new ObjectMapper();
+                Map map = objectMapper.readValue(json, HashMap.class);
+                List<String> list = (List<String>) map.get("klines");
+                for(String s : list){
+                    String[] ss = s.split(",");
+                    String date = ss[0];
+                    StkCapitalFlowEntity stkCapitalFlowEntity = stkCapitalFlowRepository.findByCodeAndFlowDate(code, date);
+                    if(stkCapitalFlowEntity == null) {
+
+                        String mainAmount = ss[1];
+                        String mainPercent = ss[6];
+                        String superLargeAmount = ss[5];
+                        String superLargePercent = ss[10];
+                        String largeAmount = ss[4];
+                        String largePercent = ss[9];
+                        String middleAmount = ss[3];
+                        String middlePercent = ss[8];
+                        String smallAmount = ss[2];
+                        String samllPercent = ss[7];
+
+                        stkCapitalFlowEntity = new StkCapitalFlowEntity();
+                        stkCapitalFlowEntity.setFlowDate(date);
+                        stkCapitalFlowEntity.setMainAmount(Double.parseDouble(mainAmount));
+                        stkCapitalFlowEntity.setMainPercent(Double.parseDouble(mainPercent));
+                        stkCapitalFlowEntity.setSuperLargeAmount(Double.parseDouble(superLargeAmount));
+                        stkCapitalFlowEntity.setSuperLargePercent(Double.parseDouble(superLargePercent));
+                        stkCapitalFlowEntity.setLargeAmount(Double.parseDouble(largeAmount));
+                        stkCapitalFlowEntity.setLargePercent(Double.parseDouble(largePercent));
+                        stkCapitalFlowEntity.setMiddleAmount(Double.parseDouble(middleAmount));
+                        stkCapitalFlowEntity.setMiddlePercent(Double.parseDouble(middlePercent));
+                        stkCapitalFlowEntity.setSmallAmount(Double.parseDouble(smallAmount));
+                        stkCapitalFlowEntity.setSmallPercent(Double.parseDouble(samllPercent));
+                        stkCapitalFlowEntity.setInsertTime(new Date());
+
+                        stkCapitalFlowRepository.save(stkCapitalFlowEntity);
+                    }
+                }
+
+            }catch (Exception e){
+                log.error("updateCapitalFlow error:"+code, e);
+            }
+        }
+    }
 }

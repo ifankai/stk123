@@ -69,6 +69,8 @@ public class Stock {
     private StkNewsRepository stkNewsRepository;
     @Autowired
     private StkImportInfoRepository stkImportInfoRepository;
+    @Autowired
+    private StkCapitalFlowRepository stkCapitalFlowRepository;
 
 
     @JsonView({View.Default.class, View.Score.class})
@@ -107,6 +109,7 @@ public class Stock {
     private BarSeries barSeries;
     private BarSeries barSeriesWeek;
     private BarSeries barSeriesMonth;
+    private List<StkCapitalFlowEntity> flows; //资金流
 
     //是否包含今天最新的k线价格，用于交易时间实时监控
     private boolean isIncludeRealtimeBar = false;
@@ -345,12 +348,14 @@ public class Stock {
                     kw.setLow(k.getLow());
                     kw.setVolume(k.getVolume());
                     kw.setAmount(k.getAmount());
+                    kw.setCapitalFlowAmount(k.getCapitalFlowAmount());
                 }else{
                     kw.setOpen(k.getOpen());
                     kw.setHigh(Math.max(k.getHigh(), kw.getHigh()));
                     kw.setLow(Math.min(k.getLow(), kw.getLow()));
                     kw.setVolume(kw.getVolume()+k.getVolume());
                     kw.setAmount(kw.getAmount()+k.getAmount());
+                    kw.setCapitalFlowAmount(kw.getCapitalFlowAmount()+k.getCapitalFlowAmount());
                 }
                 a = monday;
             }
@@ -393,12 +398,14 @@ public class Stock {
                     kw.setLow(k.getLow());
                     kw.setVolume(k.getVolume());
                     kw.setAmount(k.getAmount());
+                    kw.setCapitalFlowAmount(k.getCapitalFlowAmount());
                 } else {
                     kw.setOpen(k.getOpen());
                     kw.setHigh(Math.max(k.getHigh(), kw.getHigh()));
                     kw.setLow(Math.min(k.getLow(), kw.getLow()));
-                    kw.setVolume(kw.getVolume() + k.getVolume());
+                    kw.setVolume(kw.getVolume()+k.getVolume());
                     kw.setAmount(kw.getAmount()+k.getAmount());
+                    kw.setCapitalFlowAmount(kw.getCapitalFlowAmount()+k.getCapitalFlowAmount());
                 }
                 a = month;
             }
@@ -481,6 +488,18 @@ public class Stock {
             }
         }
         return this;
+    }
+
+    public void buildCapitalFlow(){
+        if(flows == null) {
+            this.flows = stkCapitalFlowRepository.findAllByCodeAndFlowDateGreaterThanEqualOrderByFlowDateDesc(this.getCode(), CommonUtils.formatDate(CommonUtils.addDay(new Date(), -60), CommonUtils.sf_ymd2));
+        }
+        if(this.barSeries != null){
+            for(StkCapitalFlowEntity flowEntity : this.flows) {
+                Bar bar = this.barSeries.getBar(flowEntity.getFlowDate());
+                bar.setCapitalFlowAmount(flowEntity.getMainAmount());
+            }
+        }
     }
 
 
@@ -718,20 +737,21 @@ public class Stock {
         }
         this.rating = new Rating();
         int days = 30;
-        rating.addScore("jsm");
+        rating.addScore("jsm"); //技术面
         rating.addScore("jsm","bar1", () -> this.getBar().getScore(days));
         rating.addScore("jsm","bar2", () -> this.getBar().getScore(days/2));
         rating.addScore("jsm","bar3", () -> this.getBar().getScore(days/3));
-        rating.addScore("jbm");
+        rating.addScore("jbm"); //基本面
         rating.addScore("jbm","bk", () -> this.getScoreByBk());
         rating.addScore("jbm","holder", () -> this.getScoreByHolder());
         rating.addScore("jbm","owners", this::getScoreByOwners);
         rating.addScore("jbm","news", this::getScoreByNews);
         rating.addScore("jbm","infos", this::getScoreByInfos);
+        rating.addScore("zjm"); //资金面
+        rating.addScore("zjm","flows", this::getScoreByFlows);
         rating.calculate();
         return rating;
     }
-
 
 
     public int getScoreByBk(){
@@ -843,6 +863,12 @@ public class Stock {
         }
         return score;
     }
+
+    public int getScoreByFlows() {
+        int score = 0;
+        return score;
+    }
+
 
     public List<StkOwnershipEntity> getOwners(){
         if(owners == null){

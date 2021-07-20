@@ -28,6 +28,7 @@ import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.chart.renderer.xy.CandlestickRenderer;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
@@ -44,12 +45,11 @@ import com.stk123.common.db.TableTools;
 
 public class ChartUtils {
 	
-	private static final String path = "D:\\share\\workspace\\stock\\chart\\";
+	private static final String path = "D:\\";
 	
 	public static void main(final String[] args) throws Exception {
 		//ChartUtils.genTimeSeries(); 
 		//ChartUtils.KLineCombineChart();
-		ConfigUtils.setPropsFromResource(TableTools.class, "db.properties");
 		Connection conn = null;
 		try {
 			/*conn = DBUtil.getConnection();
@@ -63,7 +63,16 @@ public class ChartUtils {
 			createLineChart(dataset,null,null,null,"999999");*/
 			
 			DefaultCategoryDataset chartDate = new DefaultCategoryDataset();  
-	        // 增加测试数据，第一个参数是访问量，最后一个是时间，中间是显示用不考虑  
+	        // 增加测试数据，第一个参数是访问量，最后一个是时间，中间是显示用不考虑
+            chartDate.addValue(0, "", "20160801");
+            chartDate.addValue(0, "", "20160802");
+            chartDate.addValue(0, "", "20160803");
+            chartDate.addValue(0, "", "20160804");
+            chartDate.addValue(0, "", "20160805");
+            chartDate.addValue(0, "", "20160806");
+            chartDate.addValue(0, "", "20160807");
+            chartDate.addValue(0, "", "20160808");
+            chartDate.addValue(0, "", "20160809");
 	        chartDate.addValue(-10.90, "", "20160810");  
 	        chartDate.addValue(14.10, "", "20160811");  
 	        chartDate.addValue(30.50, "", "20160812");  
@@ -71,8 +80,9 @@ public class ChartUtils {
 	        chartDate.addValue(0.50, "", "20160814");  
 	        chartDate.addValue(24.0, "", "20160815");
 			
-			createBarChart(chartDate, 800, 600);
-		} finally {
+            FileOutputStream output = new FileOutputStream(path+"test.png");
+            output.write(createBarChart(chartDate, 470, 80));
+        } finally {
 			if (conn != null) conn.close();
 		}
 	}
@@ -91,6 +101,7 @@ public class ChartUtils {
         chart.removeLegend();
         
         CategoryPlot plot = chart.getCategoryPlot();
+        plot.setBackgroundPaint(Color.WHITE);
         plot.getDomainAxis().setVisible(false);
         
         ValueAxis rangeAxis = plot.getRangeAxis();
@@ -101,15 +112,17 @@ public class ChartUtils {
         BarRenderer renderer = new BarRenderer(){
         	public Paint getItemPaint(int i, int j) {  
                 if(dataset.getValue(0, j).doubleValue() >= 0){
-                	return Color.RED;
+                	return new Color(255,43,43);
                 }
-                return Color.GREEN;
+                return new Color(0, 128, 0);
             } 
         };
         renderer.setItemLabelAnchorOffset(0); //把值设置为0
 	    //显示每个柱的数值，并修改该数值的字体属性
-	    renderer.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator());
-	    renderer.setBaseItemLabelsVisible(true);
+//	    renderer.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator());
+//	    renderer.setBaseItemLabelsVisible(true);
+        renderer.setShadowVisible(false);//不显示阴影
+        renderer.setBarPainter(new StandardBarPainter());
 	    plot.setRenderer(renderer);
         
         /*FileOutputStream output = new FileOutputStream(path + "123.png");

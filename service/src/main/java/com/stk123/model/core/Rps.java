@@ -25,8 +25,13 @@ public class Rps{
     public final static String CODE_STOCK_SCORE_20 = "rps_03";
     public final static String CODE_STOCK_MONTH_3_VOLUME = "rps_04";
     public final static String CODE_STOCK_MONTH_1_VOLUME = "rps_05";
-    public final static String CODE_STOCK_WEEK_1_VOLUME = "rps_06";
+    public final static String CODE_STOCK_WEEK_1_VOLUME_A = "rps_06a";
+    public final static String CODE_STOCK_WEEK_1_VOLUME_B = "rps_06b";
     public final static String CODE_STOCK_WEEK_2_VOLUME = "rps_07";
+    public final static String CODE_STOCK_WEEK_3_VOLUME = "rps_08";
+    public final static String CODE_STOCK_DAY_1_VOLUME = "rps_09";
+    public final static String CODE_STOCK_DAY_2_VOLUME = "rps_10";
+    public final static String CODE_STOCK_DAY_3_VOLUME = "rps_11";
 
     private static Map<String, String> CODE_NAME = new HashMap<>();
 
@@ -86,5 +91,8 @@ public class Rps{
 
     public String getName(){
         return CODE_NAME.get(this.code);
+    }
+    public static String getName(String code){
+        return CODE_NAME.get(code);
     }
 }
