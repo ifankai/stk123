@@ -2987,6 +2987,7 @@ select * from stk_industry_type where id=124950;
 
 
 select * from stk where name like '%退%';
+select * from stk where code='000022';
 select * from stk_holder where code='688063';
 select * from (select code ,fn_date,stk_num, 100 * (stk_num / sum(stk_num) over (order by code,fn_date desc rows between 1 following and 1 following) - 1) ten_owner_change  from
 (select code,fn_date,sum(stk_num) stk_num from stk_ownership group by code,fn_date having code='688063')) where fn_date='20210331';

@@ -207,7 +207,7 @@ public class StockTask extends AbstractTask {
         String scode = (EnumPlace.isSH(stkEntity.getPlace())?"1.":"0.") + stkEntity.getCode();
         String url = "http://push2.eastmoney.com/api/qt/stock/get?ut=&invt=2&fltt=2&fields=f84,f189&secid="+ scode +"&cb=jQuery&_="+new Date().getTime();
         String page = httpService.getString(url);
-        System.out.println("updateCNStockBasicInfo:"+page);
+        //System.out.println("updateCNStockBasicInfo:"+page);
         String json = StringUtils.substringBetween(page, "(", ")");
         ObjectMapper mapper = new ObjectMapper();
         Map map = mapper.readValue(json, HashMap.class);
@@ -378,7 +378,7 @@ public class StockTask extends AbstractTask {
                 }
 
             }catch(Exception e){
-                log.error("initCNFinance", e);
+                log.error("initCNFinance error:"+stock.getCode(), e);
             }
         }
     }

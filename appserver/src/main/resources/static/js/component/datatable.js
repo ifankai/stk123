@@ -25,7 +25,7 @@ var _datatableLang =
     };
 
 var _datatableTemplate = `
-<div>
+<div class="dataTables_wrapper dt-bootstrap4">
     <table :id="'_datatable_'+datatableId"  class="table table-striped table-bordered" style="width:100%"></table>
 </div>
 `;
@@ -59,12 +59,12 @@ const _datatable = {
         this.$nextTick(function() {
             $('#_datatable_' + this.datatableId).DataTable({
                 language: _datatableLang,
-                "dom": 'l<"toolbar">frtip',
+                //"dom": 'lpfrti',
                 //data: this.data,
                 //columns: this.columns
                 ...this.$props
             });
-            $("div.toolbar").html('<span>Custom tool bar! Text/images etc.</span>');
+            //$("div.toolbar").html('<span>Custom tool bar! Text/images etc.</span>');
         });
     }
 };

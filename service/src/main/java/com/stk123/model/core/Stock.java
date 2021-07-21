@@ -616,6 +616,7 @@ public class Stock {
 
     public String getDayFlowImage(){
         DefaultCategoryDataset chartDate = new DefaultCategoryDataset();
+        if(this.getBar() == null) return null;
         Bar barBefore = this.getBar().before(59);
         while(barBefore != null){
             chartDate.addValue(barBefore.getCapitalFlowAmount()/10000_0000, "", barBefore.getDate());
