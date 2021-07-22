@@ -9,9 +9,9 @@
 <!--    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">-->
 
     <!-- DataTables -->
-    <link rel="stylesheet" href="../static/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
-    <link rel="stylesheet" href="../static/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
-    <link rel="stylesheet" href="../static/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <link rel="stylesheet" href="/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
     <style>
         table.dataTable tbody th, table.dataTable tbody td, table.dataTable thead th, table.dataTable thead td {
             padding: 1px 2px;
@@ -699,13 +699,13 @@
 <script src="https://cdn.jsdelivr.net/npm/axios@0.21.1/dist/axios.min.js"></script>
 <!--<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>-->
 
-<script src="../static/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
-<script src="../static/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
-<script src="../static/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
-<script src="../static/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
-<script src="../static/adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
-<script src="../static/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
-<script src="../static/js/component/datatable.js"></script>
+<script src="/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="/adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="/js/component/datatable.js"></script>
 <script th:inline="javascript">
     var codes = [[${codes}]];
 </script>
@@ -716,11 +716,27 @@
                 title: "标题",
                 common:{
                     news:{
-                        columns: [null,null,null],
+                        columns: [{data:"stkDictionaryEntity.text"},{data:"title"},{data:"infoCreateTime"},{data:"urlTarget"}],
                         ordering: false,
                         //columns: [{title:"a"},{title:"b"}],
                         columnDefs: [
-                            { className: "td-nowrap", "targets": [ 0,2 ] }
+                            { className: "td-nowrap", "targets": [ 0,2 ] },
+                            {
+                                "render": function(data, type, row) {
+                                    return '['+data+']';
+                                },
+                                "targets": 0
+                            },
+                            {
+                                "render": function(data, type, row) {
+                                    return '<a target="_blank" href="'+row[3]+'">'+data+'</a>';
+                                },
+                                "targets": 1
+                            },
+                            {
+                                "visible": false,
+                                "targets": [3]
+                            }
                         ]
                     }
                 },
@@ -728,52 +744,8 @@
                     {
                         code:'002346',
                         news:{
-                            data: [['[调研]', '<a href="#">投资者提问：传言深圳罗湖区区长调研瑞和股份，请问是否属实？</a>','2021-06-30'],
-                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
-                                ['[减持]', '<a href="#">瑞和股份：两位高管减持计划完成 减持股份9万股</a>','2021-05-25'],
-                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
-                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
-                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
-                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
-                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
-                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
-                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
-                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
-                                [3, 4,3], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4]]
-                        }
-                    },
-                    {
-                        code:'002347',
-                        news:{
-                            data: [['[调研]', '<a href="#">投资者提问：传言深圳罗湖区区长调研瑞和股份，请问是否属实？</a>','2021-06-30'],
-                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
-                                ['[减持]', '<a href="#">瑞和股份：两位高管减持计划完成 减持股份9万股</a>','2021-05-25'],
-                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
-                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
-                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
-                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
-                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
-                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
-                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
-                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
-                                [3, 4,3], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4]]
-                        }
-                    },
-                    {
-                        code:'002348',
-                        news:{
-                            data: [['[调研]', '<a href="#">002348投资者提问：传言深圳罗湖区区长调研瑞和股份，请问是否属实？</a>','2021-06-30'],
-                                ['[订单|中标|合同]', '<a href="#">002348瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
-                                ['[减持]', '<a href="#">瑞和股份：两位高管减持计划完成 减持股份9万股</a>','2021-05-25'],
-                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
-                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
-                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
-                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
-                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
-                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
-                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
-                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
-                                [3, 4,3], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4]]
+                            data: [{type:"[调研]", title:'<a href="#">投资者提问：传言深圳罗湖区区长调研瑞和股份，请问是否属实？</a>',infoDate:{date:'2021-06-30'}},
+                              {type:'[订单|中标|合同]', title:'<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>',infoDate:{date:'2021-06-30'}}]
                         }
                     }
                 ]
@@ -786,16 +758,21 @@
             cancelMethods:function (){
                 console.log("cancel")
             },
-            getStocks: function () {
-                axios.get("/stock/"+codes).then (function (res) {
-                    console.log(res.data);
-                    this.stocks = res.data;
-                });
+            setStocks: function (stocks) {
+                this.stocks = stocks;
             }
         },
-        mounted() {
+        created() {
             console.log(this.$route);
-            getStocks();
+            //this.$nextTick(function() {
+                /*axios.get("/stock/" + codes).then(function (res) {
+                    console.log(res.data.data);
+                    let stocks = res.data.data;
+                    stocks.forEach(function (stock) {stock.news = {data:stock.news}});
+                    this.stocks = stocks;
+                    console.log(this.stocks);
+                });*/
+            //});
         }
     });
 

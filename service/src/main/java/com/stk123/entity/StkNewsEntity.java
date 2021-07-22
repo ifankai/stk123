@@ -1,5 +1,8 @@
 package com.stk123.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.stk123.model.json.View;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -39,6 +42,7 @@ public class StkNewsEntity {
 
     @Basic
     @Column(name = "TITLE", nullable = true, length = 1000)
+    @JsonView(View.All.class)
     private String title;
 
     @Basic
@@ -47,13 +51,17 @@ public class StkNewsEntity {
 
     @Basic
     @Column(name = "URL_TARGET", nullable = true, length = 1000)
+    @JsonView(View.All.class)
     private String urlTarget;
 
     @Basic
     @Column(name = "INFO_CREATE_TIME", nullable = true)
+    @JsonView(View.All.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date infoCreateTime;
 
     @Transient
+    @JsonView(View.All.class)
     private StkDictionaryEntity stkDictionaryEntity;
 
     @Override

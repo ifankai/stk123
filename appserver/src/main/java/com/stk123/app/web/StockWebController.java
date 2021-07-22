@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @CommonsLog
 public class StockWebController {
 
-    @RequestMapping("/{code}")
-    public String stock(@PathVariable(value = "code", required = true)String code, Model model){
-        model.addAttribute("title", code);
-        return "stock";
+    @RequestMapping("/{codes}")
+    public String stock(@PathVariable(value = "codes", required = true)String codes, Model model){
+        model.addAttribute("codes", codes);
+        return "stk";
     }
 }
