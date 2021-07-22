@@ -1,11 +1,11 @@
 var _datatableLang =
     {
         "sProcessing":   "处理中...",
-        "sLengthMenu":   "显示 _MENU_ 行",
+        "sLengthMenu":   "显示_MENU_行",
         "sZeroRecords":  "没有匹配结果",
-        "sInfo":         "第 _START_ 至 _END_ 行，共 _TOTAL_ 行",
-        "sInfoEmpty":    "第 0 至 0 行结果，共 0 行",
-        "sInfoFiltered": "(由 _MAX_ 行过滤)",
+        "sInfo":         "第_START_至_END_行，共_TOTAL_行",
+        "sInfoEmpty":    "第0至0行结果，共0行",
+        "sInfoFiltered": "(由_MAX_行过滤)",
         "sInfoPostFix":  "",
         "sSearch":       "搜索:",
         "sUrl":          "",
@@ -26,7 +26,7 @@ var _datatableLang =
 
 var _datatableTemplate = `
 <div class="dataTables_wrapper dt-bootstrap4">
-    <table :id="'_datatable_'+datatableId"  class="table table-striped table-bordered" style="width:100%"></table>
+    <table :id="'_datatable_'+datatableId"  class="table table-hover table-valign-middle" style="width:100%"></table>
 </div>
 `;
 let _datatable_id = 0;
@@ -36,7 +36,9 @@ const _datatable = {
         id: undefined,
         title: {},
         columns: {},
-        data: {}
+        data: {},
+        ordering:{},
+        columnDefs:{}
     },
     //emits: ['click'],
     data: function () {
@@ -59,7 +61,7 @@ const _datatable = {
         this.$nextTick(function() {
             $('#_datatable_' + this.datatableId).DataTable({
                 language: _datatableLang,
-                //"dom": 'lpfrti',
+                "dom": 'ipft',
                 //data: this.data,
                 //columns: this.columns
                 ...this.$props

@@ -6,30 +6,86 @@
     <title>小智慧</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
+<!--    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">-->
+
+    <!-- DataTables -->
+    <link rel="stylesheet" href="../static/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="../static/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="../static/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
     <style>
         table.dataTable tbody th, table.dataTable tbody td, table.dataTable thead th, table.dataTable thead td {
             padding: 1px 2px;
         }
-        .dataTables_wrapper .dataTables_info {
-            padding-top: 0.2rem;
+        div.dataTables_wrapper div.dataTables_info {
+            padding-top: .1em;
+            float: left;
         }
-        .dataTables_wrapper .dataTables_paginate .paginate_button {
-            padding: 0;
+        div.dataTables_wrapper div.dataTables_filter{
+            padding-top: .1em;
+            float: right;
+            margin-right: .2rem;
         }
-        .table-striped tbody tr:nth-of-type(odd) {
-            background-color: #f8f9fa;
+        div.dataTables_wrapper div.dataTables_paginate{
+            float: right;
         }
+        div.dataTables_wrapper div.dataTables_paginate ul.pagination{
+            margin: 0;
+        }
+        .table thead th {
+            border-bottom: 1px solid #dee2e6;
+        }
+        .td-nowrap{
+            white-space: nowrap;
+        }
+        table.dataTable>thead .sorting:before,
+        table.dataTable>thead .sorting:after,
+        table.dataTable>thead .sorting_asc:before,
+        table.dataTable>thead .sorting_asc:after,
+        table.dataTable>thead .sorting_desc:before,
+        table.dataTable>thead .sorting_desc:after,
+        table.dataTable>thead .sorting_asc_disabled:before,
+        table.dataTable>thead .sorting_asc_disabled:after,
+        table.dataTable>thead .sorting_desc_disabled:before,
+        table.dataTable>thead .sorting_desc_disabled:after{
+            bottom: 0;
+        }
+        .pagination-sm {
+            margin: .1rem 0;
+        }
+        .custom-select-sm, .form-control-sm {
+            height: calc(1.5rem);
+            padding-top: .25rem;
+            padding-bottom: .25rem;
+            padding-left: .5rem;
+            font-size: 50%;
+        }
+        .page-link {
+            padding: .2rem .5rem;
+            font-size: .8rem;
+            line-height: 1.5;
+        }
+
         label {
-            font-size: .2rem;
-            font-weight: 400;
-            margin-bottom: .2rem;
+            margin-bottom: 0;
         }
-        .card-header, .card-body {
-            padding: .4rem .5rem;
+        .card-header {
+            padding: .4rem .4rem;
+        }
+        .card-body {
+            padding: .2rem .4rem;
+        }
+        .card-header>.card-tools {
+            float: right;
+            margin-right: -.25rem;
+        }
+        .card-title{
+            margin: .2rem 0 0 0.2rem;
         }
         .btn-group-sm>.btn, .btn-sm {
             padding: .05rem .8rem;
+        }
+        .text-sm .nav-link {
+            padding: .4rem .1rem;
         }
     </style>
 </head>
@@ -46,6 +102,12 @@
                 </li>
                 <li class="nav-item d-none d-sm-inline-block">
                     <a href="#" class="nav-link">Contact</a>
+                </li>
+                <li class="nav-item d-none d-sm-inline-block">
+                    <a href="#" id="nav-1" class="nav-link">日线</a>
+                </li>
+                <li class="nav-item d-none d-sm-inline-block">
+                    <a href="#" id="nav-2" class="nav-link">周线</a>
                 </li>
             </ul>
 
@@ -175,9 +237,9 @@
 
         <!-- Main content -->
         <section class="content">
-            <div class="container"><!-- 如果要全屏:container-fluid -->
+            <div class="container-fluid"><!-- 如果要全屏:container-fluid -->
                 <div class="row">
-                    <div class="col-12">
+                    <div class="col-12 col-md-10" style="margin: auto">
                         <!-- Default box -->
                         <div class="card">
                             <div class="card-header">
@@ -206,48 +268,136 @@
                 </div>
 
                 <div class="row">
+                    <section v-for="idx in [0,1]" class="col-lg-6 connectedSortable">
+                        <!-- Custom tabs (Charts with tabs)-->
+                        <template v-for="(stock, index) in stocks" :key="stock.code">
+                            <div class="card" v-if="index % 2 === idx">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <i class="fas fa-chart-pie mr-1"></i>
+                                        <span v-text="stock.code"></span>
+                                    </h3>
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-tool" title="Contacts" data-widget="chat-pane-toggle">
+                                            <i class="fas fa-comments"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div><!-- /.card-header -->
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-1 col-sm-1">
+                                            <div class="nav flex-column nav-tabs h-100" role="tablist" aria-orientation="vertical">
+                                                <a class="nav-link active" :href="'#tab-1-'+stock.code" data-toggle="tab">日线</a>
+                                                <a class="nav-link" :href="'#tab-2-'+stock.code" data-toggle="tab">周线</a>
+                                            </div>
+                                        </div>
+                                        <div class="col-11 col-sm-11">
+                                            <div class="tab-content p-0">
+                                                <div class="tab-pane active" :id="'tab-1-'+stock.code">
+                                                    <datatable :="{...common.news, ...stock.news}"></datatable>
+                                                </div>
+                                                <div class="tab-pane" :id="'tab-2-'+stock.code">
+                                                    <div class="row">
+                                                        <div class="col-12  col-sm-12">
+                                                            <div class="d-flex justify-content-between align-items-center border-bottom">
+                                                                <p class="text-info">[调研]</p>
+                                                                <p class="d-flex flex-column text-right mb-0">
+                                                                    <span class="font-weight-bold"><i class="ion ion-android-arrow-up text-success"></i> 12% </span>
+                                                                    <span class="text-muted">CONVERSION RATE</span>
+                                                                </p>
+                                                            </div>
+                                                            <div class="d-flex justify-content-between align-items-center border-bottom">
+                                                                <p class="text-success text-xl"><i class="ion ion-ios-refresh-empty"></i></p>
+                                                                <p class="d-flex flex-column text-right mb-0"><span class="font-weight-bold"><i class="ion ion-android-arrow-up text-success"></i> 12% </span><span class="text-muted">CONVERSION RATE</span></p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-12  col-sm-12">
+                                                            <div class="float-right">
+                                                                <ul class="pagination pagination-sm">
+                                                                    <li class="page-item"><a href="#" class="page-link">&laquo;</a></li>
+                                                                    <li class="page-item"><a href="#" class="page-link">1</a></li>
+                                                                    <li class="page-item"><a href="#" class="page-link">2</a></li>
+                                                                    <li class="page-item"><a href="#" class="page-link">3</a></li>
+                                                                    <li class="page-item"><a href="#" class="page-link">&raquo;</a></li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div><!-- /.card-body -->
+                            </div>
+                        </template>
+                        <!-- /.card -->
+                    </section>
+                </div>
+
+                <div class="row" style="display: none">
                     <!-- Left col -->
                     <section class="col-lg-6 connectedSortable">
                         <!-- Custom tabs (Charts with tabs)-->
+
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">
-                                    <i class="fas fa-chart-pie mr-1"></i>
-                                    Sales
-                                </h3>
+                                <h3 class="card-title">Online Store Overview</h3>
                                 <div class="card-tools">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown" data-offset="-52">
-                                            <i class="fas fa-bars"></i>
-                                        </button>
-                                        <div class="dropdown-menu" role="menu">
-                                            <a class="nav-link" href="#revenue-chart" data-toggle="tab">Area</a>
-                                            <a class="nav-link" href="#sales-chart" data-toggle="tab">Clear events</a>
-                                        </div>
-                                    </div>
-                                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                        <i class="fas fa-minus"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-tool" title="Contacts" data-widget="chat-pane-toggle">
-                                        <i class="fas fa-comments"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-tool" data-card-widget="remove">
-                                        <i class="fas fa-times"></i>
-                                    </button>
+                                    <a href="#" class="btn btn-sm btn-tool">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-sm btn-tool">
+                                        <i class="fas fa-bars"></i>
+                                    </a>
                                 </div>
-                            </div><!-- /.card-header -->
+                            </div>
                             <div class="card-body">
-                                <div class="tab-content p-0">
-                                    <div class="chart tab-pane active" id="revenue-chart">
-                                        <datatable :="$data" id="123"></datatable>
-                                    </div>
-                                    <div class="chart tab-pane" id="sales-chart">
-                                        sssssssssssss
-                                    </div>
+                                <div class="d-flex justify-content-between align-items-center border-bottom mb-3">
+                                    <p class="text-success text-xl">
+                                        <i class="ion ion-ios-refresh-empty"></i>
+                                    </p>
+                                    <p class="d-flex flex-column text-right">
+                                        <span class="font-weight-bold">
+                                          <i class="ion ion-android-arrow-up text-success"></i> 12%
+                                        </span>
+                                        <span class="text-muted">CONVERSION RATE</span>
+                                    </p>
                                 </div>
-                            </div><!-- /.card-body -->
+                                <!-- /.d-flex -->
+                                <div class="d-flex justify-content-between align-items-center border-bottom mb-3">
+                                    <p class="text-warning text-xl">
+                                        <i class="ion ion-ios-cart-outline"></i>
+                                    </p>
+                                    <p class="d-flex flex-column text-right">
+                                        <span class="font-weight-bold">
+                                          <i class="ion ion-android-arrow-up text-warning"></i> 0.8%
+                                        </span>
+                                        <span class="text-muted">SALES RATE</span>
+                                    </p>
+                                </div>
+                                <!-- /.d-flex -->
+                                <div class="d-flex justify-content-between align-items-center mb-0">
+                                    <p class="text-danger text-xl">
+                                        <i class="ion ion-ios-people-outline"></i>
+                                    </p>
+                                    <p class="d-flex flex-column text-right">
+                                        <span class="font-weight-bold">
+                                          <i class="ion ion-android-arrow-down text-danger"></i> 1%
+                                        </span>
+                                        <span class="text-muted">REGISTRATION RATE</span>
+                                    </p>
+                                </div>
+                                <!-- /.d-flex -->
+                            </div>
                         </div>
-                        <!-- /.card -->
 
                         <!-- TO DO List -->
                         <div class="card">
@@ -273,9 +423,9 @@
                                     <li>
                                         <!-- drag handle -->
                                         <span class="handle">
-                      <i class="fas fa-ellipsis-v"></i>
-                      <i class="fas fa-ellipsis-v"></i>
-                    </span>
+                                          <i class="fas fa-ellipsis-v"></i>
+                                          <i class="fas fa-ellipsis-v"></i>
+                                        </span>
                                         <!-- checkbox -->
                                         <div  class="icheck-primary d-inline ml-2">
                                             <input type="checkbox" value="" name="todo1" id="todoCheck1">
@@ -292,10 +442,10 @@
                                         </div>
                                     </li>
                                     <li>
-                    <span class="handle">
-                      <i class="fas fa-ellipsis-v"></i>
-                      <i class="fas fa-ellipsis-v"></i>
-                    </span>
+                                        <span class="handle">
+                                          <i class="fas fa-ellipsis-v"></i>
+                                          <i class="fas fa-ellipsis-v"></i>
+                                        </span>
                                         <div  class="icheck-primary d-inline ml-2">
                                             <input type="checkbox" value="" name="todo2" id="todoCheck2" checked>
                                             <label for="todoCheck2"></label>
@@ -308,10 +458,10 @@
                                         </div>
                                     </li>
                                     <li>
-                    <span class="handle">
-                      <i class="fas fa-ellipsis-v"></i>
-                      <i class="fas fa-ellipsis-v"></i>
-                    </span>
+                                        <span class="handle">
+                                          <i class="fas fa-ellipsis-v"></i>
+                                          <i class="fas fa-ellipsis-v"></i>
+                                        </span>
                                         <div  class="icheck-primary d-inline ml-2">
                                             <input type="checkbox" value="" name="todo3" id="todoCheck3">
                                             <label for="todoCheck3"></label>
@@ -546,15 +696,87 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue@3.1.1/dist/vue.global.js"></script>
-<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios@0.21.1/dist/axios.min.js"></script>
+<!--<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>-->
+
+<script src="../static/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="../static/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="../static/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="../static/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="../static/adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="../static/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
 <script src="../static/js/component/datatable.js"></script>
+<script th:inline="javascript">
+    var codes = [[${codes}]];
+</script>
 <script>
     const app = Vue.createApp({
         data() {
             return {
                 title: "标题",
-                columns: [{title:"a"},{title:"b"}],
-                data: [[1, 2], [3, 4], [3, 4], [3, 4], [3, 4], [3, 4], [3, 4], [3, 4], [3, 4], [3, 4], [3, 4], [3, 4], [3, 4]]
+                common:{
+                    news:{
+                        columns: [null,null,null],
+                        ordering: false,
+                        //columns: [{title:"a"},{title:"b"}],
+                        columnDefs: [
+                            { className: "td-nowrap", "targets": [ 0,2 ] }
+                        ]
+                    }
+                },
+                stocks:[
+                    {
+                        code:'002346',
+                        news:{
+                            data: [['[调研]', '<a href="#">投资者提问：传言深圳罗湖区区长调研瑞和股份，请问是否属实？</a>','2021-06-30'],
+                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
+                                ['[减持]', '<a href="#">瑞和股份：两位高管减持计划完成 减持股份9万股</a>','2021-05-25'],
+                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
+                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
+                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
+                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
+                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
+                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
+                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
+                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
+                                [3, 4,3], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4]]
+                        }
+                    },
+                    {
+                        code:'002347',
+                        news:{
+                            data: [['[调研]', '<a href="#">投资者提问：传言深圳罗湖区区长调研瑞和股份，请问是否属实？</a>','2021-06-30'],
+                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
+                                ['[减持]', '<a href="#">瑞和股份：两位高管减持计划完成 减持股份9万股</a>','2021-05-25'],
+                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
+                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
+                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
+                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
+                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
+                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
+                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
+                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
+                                [3, 4,3], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4]]
+                        }
+                    },
+                    {
+                        code:'002348',
+                        news:{
+                            data: [['[调研]', '<a href="#">002348投资者提问：传言深圳罗湖区区长调研瑞和股份，请问是否属实？</a>','2021-06-30'],
+                                ['[订单|中标|合同]', '<a href="#">002348瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
+                                ['[减持]', '<a href="#">瑞和股份：两位高管减持计划完成 减持股份9万股</a>','2021-05-25'],
+                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
+                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
+                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
+                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
+                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
+                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
+                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
+                                ['[订单|中标|合同]', '<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>','2021-06-07'],
+                                [3, 4,3], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4], [3,3, 4]]
+                        }
+                    }
+                ]
             }
         },
         methods:{
@@ -563,12 +785,26 @@
             },
             cancelMethods:function (){
                 console.log("cancel")
+            },
+            getStocks: function () {
+                axios.get("/stock/"+codes).then (function (res) {
+                    console.log(res.data);
+                    this.stocks = res.data;
+                });
             }
+        },
+        mounted() {
+            console.log(this.$route);
+            getStocks();
         }
     });
 
     app.component('datatable', _datatable);
     app.mount('#app');
 
+    $("[id^='nav-']").click(function (e) {
+        var flag = $(this).prop("id").substring(3,6);
+        $("[href^='#tab"+flag+"']").click()
+    });
 </script>
 

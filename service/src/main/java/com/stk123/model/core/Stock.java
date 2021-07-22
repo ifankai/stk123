@@ -105,6 +105,7 @@ public class Stock {
 
     private StkHolderEntity holder; //最新股东人数,人均持股金额
     private List<StkOwnershipEntity> owners; //十大流通股股东
+    @JsonView(View.All.class)
     private List<StkNewsEntity> news;
     private List<StkImportInfoEntity> infos; //系统生成的信息
 
@@ -224,6 +225,7 @@ public class Stock {
         loadIfNull(this.name);
         return (this.name==null?this.code:this.name) + "["+ this.getCodeWithPlace() +"]";
     }
+    @JsonView(View.All.class)
     public String getNameAndCodeWithLink(){
         loadIfNull(this.name);
         if(this.isMarketCN() && this.isCateIndexEastmoneyGn()){
@@ -604,16 +606,20 @@ public class Stock {
         }
         return "";
     }
+    @JsonView(View.All.class)
     public String getDayBarImage(){
         return getBarImage("D");
     }
+    @JsonView(View.All.class)
     public String getWeekBarImage(){
         return getBarImage("W");
     }
+    @JsonView(View.All.class)
     public String getMonthBarImage(){
         return getBarImage("M");
     }
 
+    @JsonView(View.All.class)
     public String getDayFlowImage(){
         DefaultCategoryDataset chartDate = new DefaultCategoryDataset();
         if(this.getBar() == null) return null;

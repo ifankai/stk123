@@ -1,11 +1,14 @@
 package com.stk123.controller;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.stk123.common.CommonUtils;
 import com.stk123.model.RequestResult;
 import com.stk123.model.core.Rating;
 import com.stk123.model.core.Stock;
 import com.stk123.model.core.Stocks;
 import com.stk123.model.enumeration.EnumCate;
 import com.stk123.model.enumeration.EnumMarket;
+import com.stk123.model.json.View;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.repository.StkRepository;
 import com.stk123.repository.StkTextRepository;
@@ -112,4 +115,15 @@ public class StockController {
         return RequestResult.success();
     }
 
+    @RequestMapping(value = {"/{codes}"})
+    @ResponseBody
+    @JsonView(View.All.class)
+    public RequestResult stocks(@PathVariable(value = "codes")String codes){
+        String[] stks = StringUtils.split(codes, ",");
+        List<Stock> stocks = stockService.buildStocks(stks);
+        stockService.buildBarSeries(stocks, 100, false);
+        stockService.buildCapitalFlow(stocks, CommonUtils.addDay(new Date(), -90));
+        stocks = stockService.buildNews(stocks, CommonUtils.addDay(new Date(), -180));
+        return RequestResult.success(stocks);
+    }
 }

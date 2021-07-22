@@ -10,4 +10,5 @@ public class View {
 
     public static class Score { }
 
+    public static class All extends Default { }
 }
