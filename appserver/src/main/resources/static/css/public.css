@@ -1,0 +1,71 @@
+table.dataTable tbody th, table.dataTable tbody td, table.dataTable thead th, table.dataTable thead td {
+    padding: 1px 2px;
+}
+div.dataTables_wrapper div.dataTables_info {
+    padding-top: .1em;
+    float: left;
+}
+div.dataTables_wrapper div.dataTables_filter{
+    padding-top: .1em;
+    float: right;
+    margin-right: .2rem;
+}
+div.dataTables_wrapper div.dataTables_paginate{
+    float: right;
+}
+div.dataTables_wrapper div.dataTables_paginate ul.pagination{
+    margin: 0;
+}
+.table thead th {
+    border-bottom: 1px solid #dee2e6;
+}
+table.dataTable>thead .sorting:before,
+table.dataTable>thead .sorting:after,
+table.dataTable>thead .sorting_asc:before,
+table.dataTable>thead .sorting_asc:after,
+table.dataTable>thead .sorting_desc:before,
+table.dataTable>thead .sorting_desc:after,
+table.dataTable>thead .sorting_asc_disabled:before,
+table.dataTable>thead .sorting_asc_disabled:after,
+table.dataTable>thead .sorting_desc_disabled:before,
+table.dataTable>thead .sorting_desc_disabled:after{
+    bottom: 0;
+}
+.pagination-sm {
+    margin: .1rem 0;
+}
+.custom-select-sm, .form-control-sm {
+    height: calc(1.5rem);
+    padding-top: .25rem;
+    padding-bottom: .25rem;
+    padding-left: .5rem;
+    font-size: 50%;
+}
+.page-link {
+    padding: .2rem .5rem;
+    font-size: .8rem;
+    line-height: 1.5;
+}
+
+label {
+    margin-bottom: 0;
+}
+.card-header {
+    padding: .4rem .4rem;
+}
+.card-body {
+    padding: .2rem .4rem;
+}
+.card-header>.card-tools {
+    float: right;
+    margin-right: -.25rem;
+}
+.card-title{
+    margin: .2rem 0 0 0.2rem;
+}
+.btn-group-sm>.btn, .btn-sm {
+    padding: .05rem .8rem;
+}
+.text-sm .nav-link {
+    padding: .4rem .1rem;
+}

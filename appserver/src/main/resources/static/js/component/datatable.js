@@ -54,7 +54,7 @@ const _datatable = {
     },
     mounted() {
         this.datatableId = this.id === undefined ? ++_datatable_id : this.id;
-        console.log('datatable id:', '_datatable_'+this.datatableId);
+        //console.log('datatable id:', '_datatable_'+this.datatableId);
 
         //当你修改了data 的值然后马上获取这个 dom 元素的值，是不能获取到更新后的值，
         //你需要使用 $nextTick 这个回调，让修改后的 data 值渲染更新到 dom 元素之后再获取，才能成功。

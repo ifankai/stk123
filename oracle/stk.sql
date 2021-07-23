@@ -3031,3 +3031,6 @@ select * from stk_fn_type for update;
 
 select * from stk_capital_flow where code='002346' order by flow_date desc;
 select * from stk_capital_flow order by insert_time desc;
+
+update stk_dictionary set param_2 ='中签率;大单流出;大单封跌停' where type=2000 and key = '200';
+update stk_dictionary set text ='资产置换|转让' where type=2000 and key = '180';
