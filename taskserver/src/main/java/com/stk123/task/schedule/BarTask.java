@@ -410,7 +410,7 @@ public class BarTask extends AbstractTask {
                 XueqiuService.clearFollowStks();
                 Set<String> myList = XueqiuService.getFollowStks("全部");
                 Set<String> iList = XueqiuService.getFollowStks("我的");
-                if (myList.isEmpty() || iList.isEmpty()) {
+                if (myList == null || myList.isEmpty() || iList == null || iList.isEmpty()) {
                     EmailUtils.send("雪球抓取自选股失败", "雪球抓取自选股失败");
                     return;
                 }
