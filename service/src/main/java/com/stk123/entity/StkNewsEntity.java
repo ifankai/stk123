@@ -63,8 +63,7 @@ public class StkNewsEntity {
 
     @Transient
     @JsonView(View.All.class)
-    @JsonProperty("dict")
-    private StkDictionaryEntity stkDictionaryEntity;
+    private StkDictionaryEntity dict;
 
     @Override
     public boolean equals(Object o) {

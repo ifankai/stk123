@@ -285,7 +285,7 @@ public class StockService {
                 });
         Map<String, StkDictionaryEntity> map = stkDictionaryRepository.getMapByType(StkConstant.DICT_NEWS);
         list.forEach(stock -> {
-            stock.getNews().forEach(stkNewsEntity -> stkNewsEntity.setStkDictionaryEntity(map.get(stkNewsEntity.getType().toString())));
+            stock.getNews().forEach(stkNewsEntity -> stkNewsEntity.setDict(map.get(stkNewsEntity.getType().toString())));
         });
         return list;
     }
