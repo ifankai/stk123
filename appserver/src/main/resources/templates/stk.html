@@ -671,7 +671,7 @@
 <script src="/js/component/datatable.js"></script>
 
 <script th:inline="javascript">
-    var codes = [[${codes}]];
+    const codes = [[${codes}]];
     const app = Vue.createApp({
         data() {
             return {
@@ -698,12 +698,12 @@
             },
         },
         mounted() {
-            var _this = this;
+            let _this = this;
             axios.get("/stock/" + codes).then(function (res) {
                 let stocks = res.data.data;
                 stocks.forEach(stock => {
                     stock.news.forEach(n => {
-                        n.type = '['+n.stkDictionaryEntity.text+']';
+                        n.type = '['+n.dict.text+']';
                         n.title = '<a target="_blank" href="'+n.urlTarget+'">'+n.title+'</a>';
                     })
                     stock.news = {data: stock.news}

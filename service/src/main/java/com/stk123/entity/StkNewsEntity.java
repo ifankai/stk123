@@ -1,6 +1,7 @@
 package com.stk123.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.model.json.View;
 import lombok.Getter;
@@ -62,6 +63,7 @@ public class StkNewsEntity {
 
     @Transient
     @JsonView(View.All.class)
+    @JsonProperty("dict")
     private StkDictionaryEntity stkDictionaryEntity;
 
     @Override
