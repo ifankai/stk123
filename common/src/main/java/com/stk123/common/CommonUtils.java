@@ -939,7 +939,7 @@ public class CommonUtils {
         return k(title, new ArrayList<>(codes));
     }
     public static String k(String title, List<String> codes){
-        return CommonUtils.wrapLink(title,"https://81.68.255.181:8443/bk/list/"+ StringUtils.join(codes, ","));
+        return CommonUtils.wrapLink(title,"https://81.68.255.181:8443/S/"+ StringUtils.join(codes, ","));
     }
 
     //计算复合增长率

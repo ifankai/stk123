@@ -34,7 +34,7 @@ public class BkController {
         Stock bk = bks.get(0);
         List<Stock> stocks = bk.getGreatestStocksInBkByRps(100, Rps.CODE_STOCK_SCORE_20);
         List<String> codes = stocks.stream().map(Stock::getCode).collect(Collectors.toList());
-        String url = CommonUtils.wrapLink(bk.getNameAndCode(), "http://81.68.255.181:8089/bk/list/"+StringUtils.join(codes,","));
+        String url = CommonUtils.wrapLink(bk.getNameAndCode(), "http://81.68.255.181:8089/S/"+StringUtils.join(codes,","));
         response.setCharacterEncoding("utf-8");
         response.getWriter().println(url);
     }

@@ -68,7 +68,18 @@ const _datatable = {
             });
             //$("div.toolbar").html('<span>Custom tool bar! Text/images etc.</span>');
         });
-    }
+    },
+    /*watch: {
+        data: function (newVal, oldVal){
+            $('#_datatable_' + this.datatableId).DataTable({
+                language: _datatableLang,
+                "dom": 'ipft',
+                //data: this.data,
+                //columns: this.columns
+                ...this.$props
+            });
+        }
+    }*/
 };
 
 

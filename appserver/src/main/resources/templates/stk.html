@@ -93,28 +93,51 @@
 <!-- Site wrapper -->
 <div id="app" class="wrapper">
     <!-- Navbar -->
-    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-        <div class="container">
+    <nav class="main-header navbar navbar-expand-md navbar-white navbar-light">
+        <div class="container-md">
+            <button class="navbar-toggler order-1" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
             <!-- Left navbar links -->
-            <ul class="navbar-nav">
-                <li class="nav-item d-none d-sm-inline-block">
-                    <a href="../../index3.html" class="nav-link">Home</a>
-                </li>
-                <li class="nav-item d-none d-sm-inline-block">
-                    <a href="#" class="nav-link">Contact</a>
-                </li>
-                <li class="nav-item d-none d-sm-inline-block">
-                    <a href="#" id="nav-1" class="nav-link">日线</a>
-                </li>
-                <li class="nav-item d-none d-sm-inline-block">
-                    <a href="#" id="nav-2" class="nav-link">周线</a>
-                </li>
-            </ul>
+            <div class="collapse navbar-collapse order-3" id="navbarCollapse">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a href="../../index3.html" class="nav-link">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" id="nav-1" class="nav-link">日线</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" id="nav-2" class="nav-link">周线</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" id="nav-3" class="nav-link">月线</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" id="nav-4" class="nav-link">新闻</a>
+                    </li>
+                </ul>
+
+            </div>
+
 
             <!-- Right navbar links -->
-            <ul class="navbar-nav ml-auto">
+            <ul class="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto">
                 <!-- Navbar Search -->
                 <li class="nav-item">
+                    <!-- SEARCH FORM -->
+                    <form class="form-inline ml-0 ml-md-3">
+                        <div class="input-group input-group-sm">
+                            <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
+                            <div class="input-group-append">
+                                <button class="btn btn-navbar" type="submit">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </li>
+                <li class="nav-item" style="display: none">
                     <a class="nav-link" data-widget="navbar-search" href="#" role="button">
                         <i class="fas fa-search"></i>
                     </a>
@@ -237,8 +260,8 @@
 
         <!-- Main content -->
         <section class="content">
-            <div class="container-fluid"><!-- 如果要全屏:container-fluid -->
-                <div class="row">
+            <div class="container-md"><!-- 如果要全屏:container-fluid -->
+                <div class="row" style="display: none">
                     <div class="col-12 col-md-10" style="margin: auto">
                         <!-- Default box -->
                         <div class="card">
@@ -274,8 +297,7 @@
                             <div class="card" v-if="index % 2 === idx">
                                 <div class="card-header">
                                     <h3 class="card-title">
-                                        <i class="fas fa-chart-pie mr-1"></i>
-                                        <span v-text="stock.code"></span>
+                                        <span v-html="stock.nameAndCodeWithLink"></span>
                                     </h3>
                                     <div class="card-tools">
                                         <button type="button" class="btn btn-tool" title="Contacts" data-widget="chat-pane-toggle">
@@ -291,18 +313,33 @@
                                 </div><!-- /.card-header -->
                                 <div class="card-body">
                                     <div class="row">
-                                        <div class="col-1 col-sm-1">
+                                        <div class="col-1 col-md-1 pr-0">
                                             <div class="nav flex-column nav-tabs h-100" role="tablist" aria-orientation="vertical">
                                                 <a class="nav-link active" :href="'#tab-1-'+stock.code" data-toggle="tab">日线</a>
                                                 <a class="nav-link" :href="'#tab-2-'+stock.code" data-toggle="tab">周线</a>
+                                                <a class="nav-link" :href="'#tab-3-'+stock.code" data-toggle="tab">月线</a>
+                                                <a class="nav-link" :href="'#tab-4-'+stock.code" data-toggle="tab">新闻</a>
                                             </div>
                                         </div>
                                         <div class="col-11 col-sm-11">
                                             <div class="tab-content p-0">
                                                 <div class="tab-pane active" :id="'tab-1-'+stock.code">
-                                                    <datatable :="{...common.news, ...stock.news}"></datatable>
+                                                    <span v-html="stock.dayBarImage"></span>
+                                                    <span style="display: flex;margin-right: 6px;">
+                                                        <img height="80" style="margin-top: -80px;width: 100%" :src="'data:image/png;base64,'+stock.dayFlowImage">
+                                                    </span>
                                                 </div>
                                                 <div class="tab-pane" :id="'tab-2-'+stock.code">
+                                                    <span v-html="stock.weekBarImage"></span>
+                                                </div>
+                                                <div class="tab-pane" :id="'tab-3-'+stock.code">
+                                                    <span v-html="stock.monthBarImage"></span>
+                                                </div>
+                                                <div class="tab-pane" :id="'tab-4-'+stock.code">
+                                                    <datatable :="{...common.news, ...stock.news}"></datatable>
+                                                </div>
+
+                                                <div class="tab-pane" :id="'tab-12-'+stock.code" style="display: none">
                                                     <div class="row">
                                                         <div class="col-12  col-sm-12">
                                                             <div class="d-flex justify-content-between align-items-center border-bottom">
@@ -708,47 +745,21 @@
 <script src="/js/component/datatable.js"></script>
 <script th:inline="javascript">
     var codes = [[${codes}]];
-</script>
-<script>
     const app = Vue.createApp({
         data() {
             return {
                 title: "标题",
                 common:{
                     news:{
-                        columns: [{data:"stkDictionaryEntity.text"},{data:"title"},{data:"infoCreateTime"},{data:"urlTarget"}],
+                        columns: [{data:"type"},{data:"title"},{data:"infoCreateTime"}],
                         ordering: false,
                         //columns: [{title:"a"},{title:"b"}],
                         columnDefs: [
-                            { className: "td-nowrap", "targets": [ 0,2 ] },
-                            {
-                                "render": function(data, type, row) {
-                                    return '['+data+']';
-                                },
-                                "targets": 0
-                            },
-                            {
-                                "render": function(data, type, row) {
-                                    return '<a target="_blank" href="'+row[3]+'">'+data+'</a>';
-                                },
-                                "targets": 1
-                            },
-                            {
-                                "visible": false,
-                                "targets": [3]
-                            }
+                            { className: "td-nowrap", "targets": [ 0,2 ] }
                         ]
                     }
                 },
-                stocks:[
-                    {
-                        code:'002346',
-                        news:{
-                            data: [{type:"[调研]", title:'<a href="#">投资者提问：传言深圳罗湖区区长调研瑞和股份，请问是否属实？</a>',infoDate:{date:'2021-06-30'}},
-                              {type:'[订单|中标|合同]', title:'<a href="#">瑞和股份状告河南新田城置业，系建设工程合同纠纷</a>',infoDate:{date:'2021-06-30'}}]
-                        }
-                    }
-                ]
+                stocks:[]
             }
         },
         methods:{
@@ -758,21 +769,21 @@
             cancelMethods:function (){
                 console.log("cancel")
             },
-            setStocks: function (stocks) {
-                this.stocks = stocks;
-            }
         },
-        created() {
-            console.log(this.$route);
-            //this.$nextTick(function() {
-                /*axios.get("/stock/" + codes).then(function (res) {
-                    console.log(res.data.data);
-                    let stocks = res.data.data;
-                    stocks.forEach(function (stock) {stock.news = {data:stock.news}});
-                    this.stocks = stocks;
-                    console.log(this.stocks);
-                });*/
-            //});
+        mounted() {
+            var _this = this;
+            axios.get("/stock/" + codes).then(function (res) {
+                let stocks = res.data.data;
+                stocks.forEach(stock => {
+                    stock.news.forEach(n => {
+                        n.type = '['+n.stkDictionaryEntity.text+']';
+                        n.title = '<a target="_blank" href="'+n.urlTarget+'">'+n.title+'</a>';
+                    })
+                    stock.news = {data: stock.news}
+                });
+                _this.stocks = stocks;
+                console.log(_this.$data);
+            });
         }
     });
 
@@ -780,6 +791,7 @@
     app.mount('#app');
 
     $("[id^='nav-']").click(function (e) {
+        e.preventDefault();
         var flag = $(this).prop("id").substring(3,6);
         $("[href^='#tab"+flag+"']").click()
     });
