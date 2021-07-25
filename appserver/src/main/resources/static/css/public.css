@@ -50,11 +50,20 @@ table.dataTable>thead .sorting_desc_disabled:after{
 label {
     margin-bottom: 0;
 }
+label:not(.form-check-label):not(.custom-file-label) {
+    font-weight: 500;
+}
+.custom-control-label{
+    line-height: 1.45rem;
+}
 .card-header {
     padding: .4rem .4rem;
 }
 .card-body {
     padding: .2rem .4rem;
+}
+.card-footer {
+    padding: 0.05rem 1rem;
 }
 .card-header>.card-tools {
     float: right;
@@ -68,4 +77,11 @@ label {
 }
 .text-sm .nav-link {
     padding: .4rem .1rem;
+}
+.form-group {
+    margin-bottom: 0;
+}
+.callout{
+    margin-bottom: 0;
+    padding: .4rem;
 }

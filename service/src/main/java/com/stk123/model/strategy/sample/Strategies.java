@@ -400,8 +400,10 @@ public class Strategies {
         return strategyGroup;
     }
 
-    public static Strategy rps_04() {
-        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_MONTH_3_VOLUME,"3个月放量", Stock.class);
+    public static StrategyGroup rps_04() {
+        StrategyGroup<Stock> strategyGroup = new StrategyGroup<>(Rps.CODE_STOCK_MONTH_3_VOLUME, "3个月放量", Stock.class);
+
+        Strategy<Stock> strategy = strategyGroup.createStrategy();
         strategy.setAsc(false);
         strategy.addFilter("3个月放量", (strgy, stock) -> {
             if(stock.getBarSeries().size() < 60){
@@ -412,10 +414,20 @@ public class Strategies {
             double sum = bar.getSUM(3, Bar.EnumValue.V);
             double minSum = bar.getLowest(15, bar1 -> bar1.getSUM(3, Bar.EnumValue.V));
             double rpsValue = sum/minSum;
-            stock.setRpsValue(Rps.CODE_STOCK_MONTH_3_VOLUME, CommonUtils.numberFormat(rpsValue, 2));
+            stock.setRpsValue(strategy.getCode(), CommonUtils.numberFormat(rpsValue, 2));
             return FilterResult.TRUE();
         });
-        return strategy;
+
+        Strategy<Stock> strategy2 = strategyGroup.createStrategy();
+        strategy2.setAsc(false);
+        strategy2.setWeight(0.5);
+        strategy2.addFilter("站上K线个数", Filters.filter_rps_01(strategy2.getCode(), 250));
+
+        Strategy<Stock> strategy3 = strategyGroup.createStrategy();
+        strategy3.setWeight(0.3);
+        strategy3.addFilter("最低点涨幅", Filters.filter_rps_02(strategy3.getCode(), 250));
+
+        return strategyGroup;
     }
 
     public static Strategy rps_05() {
@@ -501,6 +513,10 @@ public class Strategies {
         strategy.setAsc(false);
         strategy.addFilter("3周放量", (strgy, stock) -> {
             Bar bar = stock.getBarSeriesWeek().getBar();
+            if(bar == null || bar.before() == null){
+                stock.setRpsValue(strategy.getCode(), 0.0);
+                return FilterResult.TRUE();
+            }
             double sum = bar.getVolume()+bar.before().getVolume()+bar.before(2).getVolume();
             double minSum = bar.before(3).getVolume() + bar.before(4).getVolume() + bar.before(5).getVolume();
             double rpsValue = sum/minSum;
@@ -613,6 +629,36 @@ public class Strategies {
         return strategyGroup;
     }
 
+    public static StrategyGroup rps_12() {
+        StrategyGroup<Stock> strategyGroup = new StrategyGroup<>(Rps.CODE_STOCK_DAY_120_VOLUME, "120天放量", Stock.class);
+
+        Strategy<Stock> strategy = strategyGroup.createStrategy();
+        strategy.setAsc(false);
+        strategy.addFilter("120天放量", (strgy, stock) -> {
+            if(stock.getBarSeries().size() < 240){
+                stock.setRpsValue(strategy.getCode(), 0.0);
+                return FilterResult.TRUE();
+            }
+            Bar bar = stock.getBar();
+            double sum = bar.getSUM(120, Bar.EnumValue.V);
+            double minSum = bar.before(120).getSUM(120, Bar.EnumValue.V);
+            double rpsValue = sum/minSum;
+            stock.setRpsValue(strategy.getCode(), CommonUtils.numberFormat(rpsValue, 2));
+            return FilterResult.TRUE();
+        });
+
+        Strategy<Stock> strategy2 = strategyGroup.createStrategy();
+        strategy2.setAsc(false);
+        strategy2.setWeight(0.5);
+        strategy2.addFilter("站上K线个数", Filters.filter_rps_01(strategy2.getCode(), 250));
+
+        Strategy<Stock> strategy3 = strategyGroup.createStrategy();
+        strategy3.setWeight(0.3);
+        strategy3.addFilter("最低点涨幅", Filters.filter_rps_02(strategy3.getCode(), 250));
+
+        return strategyGroup;
+    }
+
 
     //大跌后，有减持，问询函？
     public static Strategy strategy_0() {
@@ -639,5 +685,8 @@ public class Strategies {
         strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
         return strategy;
     }
+
+
+
 
 }

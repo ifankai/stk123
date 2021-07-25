@@ -4,6 +4,7 @@ import com.stk123.util.ExceptionUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.apachecommons.CommonsLog;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +47,7 @@ public abstract class Task<R> {
 
     public void run(String... args) {
         this.startTime = LocalDateTime.now();
-        log.info("["+this.getClass().getSimpleName()+"]..start, id:"+this.id);
+        log.info("["+this.getClass().getSimpleName()+"]..start, id:"+this.id+", param:"+ StringUtils.join(args,","));
         try {
             status = EnumStatus.RUNNING;
             execute(args);

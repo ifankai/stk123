@@ -255,6 +255,7 @@ public class Filters {
     public static Filter<Bar> filter_001b(int numberBeforeFirst, int numberBeforeParam1, double
             min, double max) {
         return (strategy, bar) -> {
+            if(bar == null) return FilterResult.FALSE();
             Bar todayBefore = bar.before(numberBeforeFirst);
             Bar highestBar = todayBefore.getHighestBar(numberBeforeParam1, Bar.EnumValue.H);
             double change = (todayBefore.getHigh() - highestBar.getHigh())/highestBar.getHigh();
@@ -311,6 +312,7 @@ public class Filters {
      */
     public static Filter<BarSeries> filter_004(int n){
         return (strategy, bs) -> {
+            if(bs == null) return FilterResult.FALSE();
             Bar bar = bs.getFirst();
             double p = bar.getChange();
             if(p > 0){
@@ -637,6 +639,7 @@ public class Filters {
     //突破中、长期趋势线
     public static Filter<BarSeries> filter_008b(int m, int n, double d, double percentLowest2Today){
         return (strategy, bs) -> {
+            if(bs == null) return FilterResult.FALSE();
             Bar today = bs.getFirst();
             if(today.isBreakTrendLine(m, n, d)){
                 double lowest = today.getLowest(n*2, Bar.EnumValue.L);
@@ -652,7 +655,7 @@ public class Filters {
     public static Filter<Stock> filter_008c(int m, int left, int right, double percentLowest2Today){
         return (strategy, stock) -> {
             Bar today = stock.getBar();
-            if(today.isBreakTrendline(m, left, right, percentLowest2Today)){
+            if(today != null && today.isBreakTrendline(m, left, right, percentLowest2Today)){
                 return FilterResult.TRUE();
             }
             return FilterResult.FALSE();
@@ -970,6 +973,36 @@ public class Filters {
             });
 
             return FilterResult.FALSE();
+        };
+    }
+
+
+
+    //站上K线个数
+    public static Filter<Stock> filter_rps_01(String rpsCode, int days) {
+        return (strgy, stock) -> {
+            if(stock.getBarSeries().size() < 60){
+                stock.setRpsValue(rpsCode, 0.0);
+                return FilterResult.TRUE();
+            }
+            Bar today = stock.getBar();
+            int cnt = stock.getBar().getBarCount(days, bar -> today.getClose() > bar.getClose());
+            stock.setRpsValue(rpsCode, (double) cnt);
+            return FilterResult.TRUE();
+        };
+    }
+
+    //最低点涨幅
+    public static Filter<Stock> filter_rps_02(String rpsCode, int days) {
+        return (strgy, stock) -> {
+            if(stock.getBarSeries().size() < 60){
+                stock.setRpsValue(rpsCode, 0.0);
+                return FilterResult.TRUE();
+            }
+            Bar today = stock.getBar();
+            double lowest = stock.getBar().getLowest(days, Bar.EnumValue.C);
+            stock.setRpsValue(rpsCode, today.getClose()/lowest);
+            return FilterResult.TRUE();
         };
     }
 }

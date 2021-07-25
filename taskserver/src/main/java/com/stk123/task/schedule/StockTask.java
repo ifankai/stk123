@@ -70,10 +70,11 @@ public class StockTask extends AbstractTask {
     public void initCNHolder() {
         initCNStocks();
         for(Stock stock : stocksCN) {
-            System.out.println(stock.getCode());
-            String page = httpService.getString("http://basic.10jqka.com.cn/"+stock.getCode()+"/holder.html", "gbk");
-            //System.out.println("page="+page);
+            log.info("initCNHolder:"+stock.getCode());
             try {
+                String page = httpService.getString("http://basic.10jqka.com.cn/"+stock.getCode()+"/holder.html", "gbk");
+                //System.out.println("page="+page);
+
                 Node div = HtmlUtils.getNodeByAttribute(page, "GBK", "class", "data_tbody");
                 if(div == null) continue;
                 Node table1 = HtmlUtils.getNodeByAttribute(div, null, "class", "top_thead");
@@ -129,7 +130,7 @@ public class StockTask extends AbstractTask {
                 }
 
             } catch (Exception e) {
-                log.error("", e);
+                log.error("initCNHolder", e);
                 //System.out.println(stock.getCode());
                 break;
             }
@@ -139,7 +140,7 @@ public class StockTask extends AbstractTask {
     public void initCNStocks(){
         if(stocksCN == null) {
             List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(EnumMarket.CN, EnumCate.STOCK);
-            //List<StockBasicProjection> list = stkRepository.findAllByCodes(ListUtils.createList("600107"));
+            //List<StockBasicProjection> list = stkRepository.findAllByCodes(ListUtils.createList("603667"));
             stocksCN = stockService.buildStocksWithProjection(list);
         }
     }
@@ -348,6 +349,7 @@ public class StockTask extends AbstractTask {
 
         List<StkFnTypeEntity> types = stkFnTypeRepository.findAllByMarketAndCodeIsNotNull(EnumMarket.CN.getMarket());
         for(Stock stock : stocksCN) {
+            log.info("initCNFinance:"+stock.getCode());
             try {
                 //http://f10.eastmoney.com/NewFinanceAnalysis/ZYZBAjaxNew?type=0&code=SH600107
                 String url = "http://f10.eastmoney.com/NewFinanceAnalysis/ZYZBAjaxNew?type=0&code=" + stock.getCodeWithPlace();

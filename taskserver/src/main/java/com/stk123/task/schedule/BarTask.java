@@ -124,6 +124,7 @@ public class BarTask extends AbstractTask {
         BarTask.StocksH = null;
         BarTask.StocksAllCN = null;
         BarTask.BkCN = null;
+        System.gc();
     }
 
     public void initCN() {
@@ -465,7 +466,7 @@ public class BarTask extends AbstractTask {
                 allList = allList.stream().filter(stockWrapper -> !excludeList.contains(stockWrapper.getCode())).collect(Collectors.toSet());
             }
 
-            log.info("allList.size="+allList.size()+", "+allList);
+            log.info("allList.size="+allList.size());
 
             List<Stock> stocks = stockService.buildStocks(allList.stream().map(StockWrapper::getCode).collect(Collectors.toList()));
             if(market != null){
@@ -548,9 +549,9 @@ public class BarTask extends AbstractTask {
 
                 List<String> titles = ListUtils.createList("标的", "日期/策略/来源", "日K线", "周K线", "历史策略回测通过率");
                 StringBuffer sb = new StringBuffer();
-                sb.append("A: ").append(CommonUtils.k("查看", codeA)).append("<br/>");
-                sb.append("H: ").append(CommonUtils.k("查看", codeH)).append("<br/>");
-                sb.append("U: ").append(CommonUtils.k("查看", codeU)).append("<br/><br/>");
+                sb.append("A: ").append(CommonUtils.k("查看", "自选股A", codeA)).append("<br/>");
+                sb.append("H: ").append(CommonUtils.k("查看", "自选股H", codeH)).append("<br/>");
+                sb.append("U: ").append(CommonUtils.k("查看", "自选股U", codeU)).append("<br/><br/>");
 
                 sb.append("A股");        sb.append(CommonUtils.createHtmlTable(titles, datasA));sb.append("<br/>");
                 sb.append("H股");        sb.append(CommonUtils.createHtmlTable(titles, datasH));sb.append("<br/>");
@@ -628,7 +629,8 @@ public class BarTask extends AbstractTask {
                 // rps start
                 StringBuffer rps = new StringBuffer();
                 if(realtime == null) {
-                    List<String> rpsList = ListUtils.createList(Strategies.rps_04().getCode(), Strategies.rps_05().getCode(),
+                    List<String> rpsList = ListUtils.createList(Strategies.rps_12().getCode(),
+                            Strategies.rps_04().getCode(), Strategies.rps_05().getCode(),
                             Strategies.rps_06a().getCode(), Strategies.rps_06b().getCode(), Strategies.rps_07().getCode(),
                             Strategies.rps_08().getCode(), Strategies.rps_09().getCode(), Strategies.rps_10().getCode(),
                             Strategies.rps_11().getCode());
@@ -636,7 +638,7 @@ public class BarTask extends AbstractTask {
                     for(String rpsCode : rpsList){
                         List<Stock> rpsStocks = stockService.calcRps(StocksAllCN, rpsCode);
                         rpsStocks = rpsStocks.subList(0, Math.min(150, rpsStocks.size()));
-                        rps.append("["+rpsCode+"]"+Rps.getName(rpsCode) + ": " + CommonUtils.k("查看", rpsStocks.stream().map(Stock::getCode).collect(Collectors.toList())));
+                        rps.append("["+rpsCode+"]"+Rps.getName(rpsCode) + ": " + CommonUtils.k("查看", Rps.getNameAndCode(rowCode), rpsStocks.stream().map(Stock::getCode).collect(Collectors.toList())));
                         rps.append("<br/>");
                     }
                 }
@@ -644,7 +646,7 @@ public class BarTask extends AbstractTask {
 
                 StringBuffer sb = new StringBuffer();
                 sb.append(rps).append("<br/>");
-                sb.append("A: ").append(CommonUtils.k("查看", codeA)).append("<br/><br/>");
+                sb.append("A: ").append(CommonUtils.k("查看", "全市场A", codeA)).append("<br/><br/>");
 
                 sb.append("A股");
                 List<String> titles = ListUtils.createList("标的", "日期/策略", "日K线", "周K线", "历史策略回测通过率");
@@ -824,7 +826,7 @@ public class BarTask extends AbstractTask {
     }
 
     public void updateCNCapitalFlow(String code){
-        System.out.println("updateCNCapitalFlow:"+code);
+        log.info("updateCNCapitalFlow:"+code);
         try {
             //http://push2his.eastmoney.com/api/qt/stock/fflow/daykline/get?cb=jQuery1123004606016255487422_1626750887144&lmt=0&klt=101&fields1=f1%2Cf2%2Cf3%2Cf7&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf62%2Cf63%2Cf64%2Cf65&ut=b2884a393a59ad64002292a3e90d46a5&secid=0.002346&_=1626750887145
             long time = new Date().getTime();

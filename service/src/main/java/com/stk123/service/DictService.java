@@ -65,7 +65,8 @@ public class DictService {
 	
 	public static List<StkDictionary> getDictionary(Integer type){
 		try {
-			init();
+		    if(dict.isEmpty())
+			    init();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

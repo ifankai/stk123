@@ -89,7 +89,7 @@ public class Tasks {
     }
 
 
-    @Scheduled(cron = "0 10 16 ? * MON-SAT")
+    @Scheduled(cron = "0 40 18 ? * MON-SAT")
     public void initialKLine() {
         taskContainer.start(
                 TaskBuilder.of(BarTask.class, "clearAll"),

@@ -170,7 +170,7 @@ public class Search {
 			IndexWriter iwriter = new IndexWriter(this.directoryUser, iwConfig);
 
 			conn = Pool.getPool().getConnection();
-			String days = CommonUtils.isDevelopment() ? "700" : "100";
+			String days = CommonUtils.isDevelopment() ? "350" : "100";
 			List<StkText> texts = JdbcUtils.list(conn, "select id,code,title,text,insert_time,update_time,disp_order,user_id from stk_text where insert_time>=sysdate-"+days, StkText.class);
 			/*for(StkText text : texts){
 				Document doc = WebIKUtils.getDocument(text);

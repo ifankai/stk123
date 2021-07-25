@@ -32,6 +32,7 @@ public class Rps{
     public final static String CODE_STOCK_DAY_1_VOLUME = "rps_09";
     public final static String CODE_STOCK_DAY_2_VOLUME = "rps_10";
     public final static String CODE_STOCK_DAY_3_VOLUME = "rps_11";
+    public final static String CODE_STOCK_DAY_120_VOLUME = "rps_12";
 
     private static Map<String, String> CODE_NAME = new HashMap<>();
 
@@ -77,11 +78,12 @@ public class Rps{
 
 
     private List<Strategy> rpsStrategies;
+    @JsonView(View.All.class)
     private String code;
-    @JsonView(View.Score.class)
+    @JsonView({View.Score.class, View.All.class})
     private Double value;
     private Integer order;
-    @JsonView(View.Score.class)
+    @JsonView({View.Score.class, View.All.class})
     private Double percentile;
 
     public Rps(String code, List<Strategy> rpsStrategies){
@@ -93,6 +95,10 @@ public class Rps{
         return CODE_NAME.get(this.code);
     }
     public static String getName(String code){
-        return CODE_NAME.get(code);
+        return CODE_NAME.get(code.toLowerCase());
+    }
+
+    public static String getNameAndCode(String code){
+        return Rps.getName(code)+"["+code+"]";
     }
 }

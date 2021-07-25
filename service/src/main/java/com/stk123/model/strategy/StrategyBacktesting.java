@@ -295,7 +295,7 @@ public class StrategyBacktesting {
         }
     }
 
-    public static <V> List<V> run(List<Callable<V>> tasks, int poolSize) {
+    public synchronized static <V> List<V> run(List<Callable<V>> tasks, int poolSize) {
         // 创建一个线程池
         ExecutorService exec = Executors.newFixedThreadPool(poolSize);
         // 调用CompletionService的take方法是，会返回按完成顺序放回任务的结果
@@ -307,7 +307,7 @@ public class StrategyBacktesting {
 			//list.add(f);
 		}
         // 创建多个有返回值的任务
-        List<V> results = new ArrayList<>();
+        List<V> results = Collections.synchronizedList(new ArrayList<>());
         // 获取所有并发任务的运行结果
         for (int i = 0; i < tasks.size(); i++) {
             //从Future对象上获取任务的返回值，并输出到控制台

@@ -367,6 +367,12 @@ public class StockService {
         return stocks;
     }
 
+    public List<Stock> getStocksWithBks(List<Stock> stocks, List<Stock> bks, boolean isIncludeRealtimeBar){
+        stocks = getStocksWithAllBuilds(stocks, isIncludeRealtimeBar);
+        buildBkAndCalcRps(stocks, bks);
+        return stocks;
+    }
+
     public List<Stock> getStocksWithBks(EnumMarket market, EnumCate bkCate, boolean isIncludeRealtimeBar){
         List<Stock> stocks = getStocks(market, isIncludeRealtimeBar);
         List<Stock> bks = getBks(market, bkCate);
@@ -412,6 +418,10 @@ public class StockService {
         bks = bks.stream().filter(stock -> !BK_REMOVE.contains(stock.getCode())).collect(Collectors.toList());
         bks = buildBarSeries(bks, 250, false);
         return bks;
+    }
+
+    public Set<Stock> getBks(List<Stock> stocks){
+        return stocks.stream().flatMap(stock -> stock.getBks().stream()).collect(Collectors.toSet());
     }
 
     public List<Stock> getStocksWithAllBuilds(List<Stock> stocks, boolean isIncludeRealtimeBar){

@@ -1,6 +1,7 @@
 package com.stk123.model.core;
 
 import cn.hutool.core.util.ObjectUtil;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.common.CommonConstant;
@@ -100,6 +101,7 @@ public class Stock {
     private StockProjection stock;
 
     private List<IndustryProjection> industries; //行业
+    @JsonView(View.All.class)
     private List<Stock> bks; //板块 eastmoney_gn
     private List<Stock> stocks; //板块包含的所有股票
 
@@ -123,10 +125,11 @@ public class Stock {
     public Integer BarSeriesRows = BarSeriesRowsDefault;
 
     //相对强弱指标
-    @JsonView(View.Score.class)
+    @JsonView({View.Score.class, View.All.class})
     private Map<String, Rps> rps = new HashMap<>();
 
     //评级
+    @JsonView(View.All.class)
     private Rating rating;
 
 
@@ -621,6 +624,7 @@ public class Stock {
 
     @JsonView(View.All.class)
     public String getDayFlowImage(){
+        if(this.isCateIndexEastmoneyGn())return null;
         DefaultCategoryDataset chartDate = new DefaultCategoryDataset();
         if(this.getBar() == null) return null;
         Bar barBefore = this.getBar().before(59);
@@ -706,7 +710,7 @@ public class Stock {
         final int[] a = {1};
 
         String info = displayAllStocks ? StringUtils.join(stocks.stream().map(stock->(a[0]++)+"."+stock.getNameAndCodeWithLink()+"["+CommonUtils.numberFormat2Digits(stock.getRps(rpsCode).getPercentile())+"("+stock.getRps(rpsCode).getRpsStrategies().stream().map(rs -> CommonUtils.numberFormat0Digits(stock.getRps(rs.getCode()).getPercentile())).collect(Collectors.toList())+")]").collect(Collectors.toList()), "<br/>") : "";
-        return info + CommonUtils.k("查看", stocks.stream().map(Stock::getCode).collect(Collectors.toList()));
+        return info + CommonUtils.k("查看", this.getNameAndCode()+","+Rps.getNameAndCode(rpsCode), stocks.stream().map(Stock::getCode).collect(Collectors.toList()));
     }
 
     public static void main(String[] args) {
@@ -752,7 +756,7 @@ public class Stock {
      * 5. 财务方面数据，如毛利率，主营收入，净利润，现金流优秀的个加一颗星
      * 6. 。。。
      */
-    public Rating getRating(){
+    public synchronized Rating getRating(){
         if(rating != null){
             return this.rating;
         }

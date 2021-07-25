@@ -9,7 +9,8 @@ import java.util.List;
 @Component
 public class Stocks {
 
-    public static List<Stock> stocksAllCN = null;
+    public static List<Stock> StocksAllCN = null;
+    public static List<Stock> BKsEasymoneyGn = null;
 
     private static StockService stockService;
 

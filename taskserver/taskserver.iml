@@ -16,6 +16,7 @@
         <datasource-mapping>
           <factory-entry name="entityManagerFactory" />
         </datasource-mapping>
+        <naming-strategy-map />
       </configuration>
     </facet>
   </component>
@@ -29,8 +30,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: kryonet:kryonet:2.21" level="project" />
-    <orderEntry type="library" name="Maven: org.objenesis:objenesis:2.1" level="project" />
     <orderEntry type="module" module-name="common" />
     <orderEntry type="library" name="Maven: com.stk:commons-digester:1.0" level="project" />
     <orderEntry type="library" name="Maven: com.stk:IKAnalyzer2012FF_u1:1.0" level="project" />

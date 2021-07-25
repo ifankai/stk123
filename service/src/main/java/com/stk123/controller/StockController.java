@@ -1,9 +1,9 @@
 package com.stk123.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.stk123.common.CommonUtils;
 import com.stk123.model.RequestResult;
 import com.stk123.model.core.Rating;
+import com.stk123.model.core.Rps;
 import com.stk123.model.core.Stock;
 import com.stk123.model.core.Stocks;
 import com.stk123.model.enumeration.EnumCate;
@@ -87,10 +87,10 @@ public class StockController {
     public RequestResult score1(@RequestParam(value = "from", required = false, defaultValue = "0")Double percentileFrom,
                                 @RequestParam(value = "to", required = false, defaultValue = "100")Double percentileTo
     ){
-        if(Stocks.stocksAllCN == null) {
-            Stocks.stocksAllCN = stockService.getStocksWithBks(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn, false);
+        if(Stocks.StocksAllCN == null) {
+            Stocks.StocksAllCN = stockService.getStocksWithBks(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn, false);
         }
-        List<Stock> stocks = Stocks.stocksAllCN;
+        List<Stock> stocks = Stocks.StocksAllCN;
         stocks = stocks.stream().sorted(Comparator.comparing(Stock::getScore, Comparator.reverseOrder())).collect(Collectors.toList());
         List<Map> list = new ArrayList<>();
         int size = stocks.size();
@@ -111,19 +111,51 @@ public class StockController {
     @RequestMapping(value = {"/clear"})
     @ResponseBody
     public RequestResult clear(){
-        Stocks.stocksAllCN = null;
+        Stocks.StocksAllCN = null;
         return RequestResult.success();
     }
 
-    @RequestMapping(value = {"/{codes}"})
+    @RequestMapping(value = {"/{code}"})
     @ResponseBody
     @JsonView(View.All.class)
-    public RequestResult stocks(@PathVariable(value = "codes")String codes){
-        String[] stks = StringUtils.split(codes, ",");
-        List<Stock> stocks = stockService.buildStocks(stks);
-        stockService.buildBarSeries(stocks, 100, false);
-        stockService.buildCapitalFlow(stocks, CommonUtils.addDay(new Date(), -90));
-        stocks = stockService.buildNews(stocks, CommonUtils.addDay(new Date(), -180));
-        return RequestResult.success(stocks);
+    public RequestResult stocks(@PathVariable(value = "code")String code){
+        boolean isRps = Rps.getName(code) != null;
+        List<Stock> stocks;
+        if(isRps){
+            if (Stocks.StocksAllCN == null) {
+                if(Stocks.BKsEasymoneyGn == null){
+                    Stocks.BKsEasymoneyGn = stockService.getBks(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn);
+                }
+                Stocks.StocksAllCN = stockService.getStocksWithBks(EnumMarket.CN, Stocks.BKsEasymoneyGn, false);
+            }
+            stocks = Stocks.StocksAllCN;
+            stocks = stockService.calcRps(stocks, code);
+            stocks = stocks.subList(0, Math.min(200, stocks.size()));
+        }else {
+            String[] stks = StringUtils.split(code, ",");
+            stocks = stockService.buildStocks(stks);
+            if(Stocks.BKsEasymoneyGn == null){
+                Stocks.BKsEasymoneyGn = stockService.getBks(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn);
+            }
+            stocks = stockService.getStocksWithBks(stocks, Stocks.BKsEasymoneyGn, false);
+            //stocks = stockService.getStocksWithAllBuilds(stocks, false);
+        }
+
+        Set<Stock> bks = stockService.getBks(stocks);
+        List<Map> bksList = new ArrayList<>();
+        for(Stock bk : bks){
+            Map map = new HashMap();
+            map.put("name", bk.getNameAndCode());
+            map.put("code", bk.getCode());
+            List<Stock> finalStocks = stocks;
+            map.put("stocks", bk.getStocks().stream().filter(stock -> finalStocks.stream().anyMatch(stock::equals)).map(Stock::getCode).collect(Collectors.toList()));
+            bksList.add(map);
+        }
+        bksList = bksList.stream().sorted(Comparator.comparing(bk -> ((List)bk.get("stocks")).size(), Comparator.reverseOrder())).collect(Collectors.toList());
+
+        Map result = new HashMap();
+        result.put("bks", bksList);
+        result.put("stocks", stocks);
+        return RequestResult.success(result);
     }
 }

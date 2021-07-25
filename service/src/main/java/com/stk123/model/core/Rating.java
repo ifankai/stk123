@@ -2,21 +2,22 @@ package com.stk123.model.core;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.stk123.model.json.View;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class Rating {
+    @JsonView(View.All.class)
     private Integer total;
     @Getter
-    private Node rating = new Node("stock", null);
+    @JsonView(View.All.class)
+    private Node root = new Node("stock", null);
 
     @Setter
     private String include;
@@ -30,10 +31,13 @@ public class Rating {
     @Data
     @JsonInclude(JsonInclude.Include.NON_NULL)
     class Node{
+        @JsonView(View.All.class)
         String type;
         @JsonIgnore
         Supplier<Integer> formula;
+        @JsonView(View.All.class)
         Integer score;
+        @JsonView(View.All.class)
         List<Node> nodes;
         @JsonIgnore
         Node parent;
@@ -70,14 +74,14 @@ public class Rating {
 
         void addChild(String type, Supplier<Integer> supplier){
             if(nodes == null){
-                nodes = new ArrayList<>();
+                nodes = Collections.synchronizedList(new ArrayList<>());
             }
             Node child = new Node(type, supplier);
             child.setParent(this);
             nodes.add(child);
         }
 
-        int calculate(){
+        synchronized int calculate(){
             int score = 0;
             if(nodes == null && this.formula != null){
                 if(include == null){
@@ -87,8 +91,10 @@ public class Rating {
                         return this.score = this.formula.get();
                 }
             }else {
-                for (Node node : nodes) {
-                    score += node.calculate();
+                if(nodes != null) {
+                    for (Node node : nodes) {
+                        score += node.calculate();
+                    }
                 }
             }
             this.score = score;
@@ -98,18 +104,18 @@ public class Rating {
     }
 
     public int calculate(){
-        total = rating.calculate();
+        total = root.calculate();
         return this.total;
     }
 
     public void addScore(String type){
-        addScore(rating.getType(), type, null);
+        addScore(root.getType(), type, null);
     }
     public void addScore(String parentType, String type) {
         addScore(parentType, type, null);
     }
     public void addScore(String parentType, String type, Supplier<Integer> formula){
-        Node parent = rating.find(parentType);
+        Node parent = root.find(parentType);
         parent.addChild(type, formula);
     }
 
@@ -122,7 +128,7 @@ public class Rating {
 
     public String toHtml(){
         StringBuilder builder = new StringBuilder();
-        dumpNode(builder, rating, "- ");
+        dumpNode(builder, root, "- ");
         return builder.toString();
     }
 
@@ -143,7 +149,7 @@ public class Rating {
 
     public Map toMap(){
         Map map = new LinkedHashMap();
-        dumpNode(map, rating);
+        dumpNode(map, root);
         return map;
     }
     private void dumpNode(Map map, Node node){

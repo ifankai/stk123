@@ -44,10 +44,10 @@ public class StrategyWebController {
             String[] codeArray = StringUtils.split(codes, ",");
             stocks = stockService.buildStocks(codeArray);
         }else {
-            if (Stocks.stocksAllCN == null) {
-                Stocks.stocksAllCN = stockService.getStocksWithBks(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn, false);
+            if (Stocks.StocksAllCN == null) {
+                Stocks.StocksAllCN = stockService.getStocksWithBks(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn, false);
             }
-            stocks = Stocks.stocksAllCN;
+            stocks = Stocks.StocksAllCN;
         }
         if(bkCode != null){
             stocks = stocks.stream().filter(stock -> stock.getBks().stream().anyMatch(bk -> bk.getCode().equals(bkCode))).collect(Collectors.toList());

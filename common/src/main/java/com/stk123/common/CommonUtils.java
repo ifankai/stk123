@@ -1,5 +1,6 @@
 package com.stk123.common;
 
+import cn.hutool.core.net.URLDecoder;
 import com.stk123.common.db.util.CloseUtil;
 import com.stk123.common.db.util.DBUtil;
 import com.stk123.common.html.HtmlTable;
@@ -10,6 +11,7 @@ import com.stk123.common.util.collection.IntRange;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.apachecommons.CommonsLog;
+import org.apache.commons.codec.net.URLCodec;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.time.FastDateFormat;
@@ -21,6 +23,7 @@ import java.awt.datatransfer.Transferable;
 import java.io.*;
 import java.math.BigDecimal;
 import java.net.InetAddress;
+import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.Time;
 import java.text.*;
@@ -938,8 +941,14 @@ public class CommonUtils {
     public static String k(String title, Set<String> codes){
         return k(title, new ArrayList<>(codes));
     }
+    public static String k(String name, String title, Set<String> codes){
+        return k(title, new ArrayList<>(codes));
+    }
     public static String k(String title, List<String> codes){
-        return CommonUtils.wrapLink(title,"https://81.68.255.181:8443/S/"+ StringUtils.join(codes, ","));
+        return k(title, title, codes);
+    }
+    public static String k(String name, String title, List<String> codes){
+        return CommonUtils.wrapLink(name,"https://81.68.255.181:8443/S/"+StringUtils.join(codes, ",")+"?title="+ URLDecoder.decode(title, Charset.forName("UTF-8")));
     }
 
     //计算复合增长率

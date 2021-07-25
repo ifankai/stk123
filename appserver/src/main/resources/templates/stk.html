@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>小智慧</title>
+    <title th:utext="${title} != null?'小智慧 ['+${title}+']':'小智慧'"></title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css">
 <!--    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">-->
@@ -12,10 +12,17 @@
     <link rel="stylesheet" href="/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
     <link rel="stylesheet" href="/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
     <link rel="stylesheet" href="/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <link rel="stylesheet" href="/adminlte/plugins/pace-progress/themes/black/pace-theme-loading-bar.css">
 
     <link rel="stylesheet" href="/css/public.css">
 </head>
-<body class="hold-transition layout-top-nav layout-navbar-fixed text-sm">
+<body class="hold-transition layout-top-nav layout-navbar-fixed text-sm pace-primary pace-done">
+<div class="pace pace-inactive">
+    <div class="pace-progress" data-progress-text="100%" data-progress="99" style="transform: translate3d(100%, 0px, 0px);">
+        <div class="pace-progress-inner"></div>
+    </div>
+    <div class="pace-activity"></div>
+</div>
 <!-- Site wrapper -->
 <div id="app" class="wrapper">
     <!-- Navbar -->
@@ -41,6 +48,12 @@
                     </li>
                     <li class="nav-item">
                         <a href="#" id="nav-4" class="nav-link">新闻</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" @click="filterStocks('002121')" class="nav-link">测试</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" @click="filterStocks('000761')" class="nav-link">测试</a>
                     </li>
                 </ul>
 
@@ -187,29 +200,41 @@
         <!-- Main content -->
         <section class="content">
             <div class="container-md"><!-- 如果要全屏:container-fluid -->
-                <div class="row" style="display: none">
+                <div class="row">
                     <div class="col-12 col-md-10" style="margin: auto">
                         <!-- Default box -->
-                        <div class="card">
+                        <div class="card" v-if="!loading">
                             <div class="card-header">
-                                <h3 class="card-title">Title</h3>
-
+                                <h3 class="card-title">统计信息</h3>
+                                <div class="custom-control custom-control-inline custom-radio" style="margin-left: .5rem;margin-top: .01rem;">
+                                    <input ref="refBkFilterAll" @change="filterAllBks" class="custom-control-input" type="radio" id="bk-rb-0" name="bkFilter" checked/>
+                                    <label for="bk-rb-0" class="custom-control-label">全部</label>
+                                </div>
                                 <div class="card-tools">
+                                    <button type="button" @click="sortByRating" class="btn btn-primary btn-xs">按个股评分排序</button>
+                                    <button type="button" @click="sortByRps01" class="btn btn-primary btn-xs ml-1">按个股板块60日涨幅(rps_01)排序</button>
                                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                                         <i class="fas fa-minus"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
-                                        <i class="fas fa-times"></i>
                                     </button>
                                 </div>
                             </div>
                             <div class="card-body">
-                                Start creating your amazing application!
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="callout callout-info">
+                                            <!-- checkbox -->
+                                            <div class="form-group">
+                                                <div v-for="(bk,index) in bksTopN" :key="bk.code" class="custom-control custom-control-inline custom-radio">
+                                                    <input @change="filterBk(bk)" class="custom-control-input" type="radio" :id="'bk-rb-'+bk.code" name="bkFilter"/>
+                                                    <label :for="'bk-rb-'+bk.code" v-text="bk.name+' ('+bk.stocks.length+')'" class="custom-control-label"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <!-- /.card-body -->
-                            <div class="card-footer">
-                                Footer
-                            </div>
+                            <div class="card-footer"></div>
                             <!-- /.card-footer-->
                         </div>
                         <!-- /.card -->
@@ -223,7 +248,7 @@
                             <div class="card" v-if="index % 2 === idx">
                                 <div class="card-header">
                                     <h3 class="card-title">
-                                        <b v-html="stock.nameAndCodeWithLink"></b>
+                                        <span v-html="stock.nameAndCodeWithLink"></span> (<span v-text="stock.order"></span>) 评分:<span v-text="stock.rating.total"></span>
                                     </h3>
                                     <div class="card-tools">
                                         <button type="button" class="btn btn-tool" title="Contacts" data-widget="chat-pane-toggle">
@@ -299,6 +324,9 @@
                                         </div>
                                     </div>
                                 </div><!-- /.card-body -->
+
+                                <div class="card-footer"></div>
+
                             </div>
                         </template>
                         <!-- /.card -->
@@ -667,6 +695,7 @@
 <script src="/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
 <script src="/adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
 <script src="/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="/adminlte/plugins/pace-progress/pace.min.js"></script>
 
 <script src="/js/component/datatable.js"></script>
 
@@ -676,6 +705,7 @@
         data() {
             return {
                 title: "标题",
+                loading: true,
                 common:{
                     news:{
                         columns: [{data:"type"},{data:"title"},{data:"infoCreateTime"}],
@@ -686,7 +716,8 @@
                         ]
                     }
                 },
-                stocks:[]
+                stocks:[],
+                bks:[]
             }
         },
         methods:{
@@ -696,12 +727,52 @@
             cancelMethods:function (){
                 console.log("cancel")
             },
+            filterAllBks:function (){
+                if (this.$refs.refBkFilterAll.checked) {
+                    this.stocks = this._stocks;
+                } else {
+                    this.stocks = [];
+                }
+            },
+            filterBk:function (bk) {
+                Pace.start();
+                this.stocks = this._stocks.filter(stock => stock.bks.find(bk1 => bk1.code==bk.code));
+                Pace.stop();
+            },
+            filterStocks:function (code){
+                this.stocks = this._stocks.filter(stock => stock.code==code)
+            },
+            sortByRating:function () {
+                Pace.start();
+                this.stocks = this.stocks.concat().sort((a, b) => b.rating.total - a.rating.total)
+                Pace.stop();
+            },
+            sortByRps01:function () {
+                Pace.start();
+                this.stocks = this.stocks.concat().sort((a, b) => {
+                    let n = Math.max(...b.bks.map(bk => bk.rps.rps_01.percentile)) - Math.max(...a.bks.map(bk => bk.rps.rps_01.percentile));
+                    if(n == 0){
+                        n = b.rating.total - a.rating.total;
+                    }
+                    return n
+                })
+                Pace.stop();
+            }
+        },
+        computed: {
+            bksTopN: function () {
+                return this.bks.slice(0, 10);
+            }  
         },
         mounted() {
             let _this = this;
             axios.get("/stock/" + codes).then(function (res) {
-                let stocks = res.data.data;
+                let data = res.data.data;
+                console.log(data);
+                let stocks = data.stocks;
+                let i = 1;
                 stocks.forEach(stock => {
+                    stock.order = i++;
                     stock.news.forEach(n => {
                         n.type = '['+n.dict.text+']';
                         n.title = '<a target="_blank" href="'+n.urlTarget+'">'+n.title+'</a>';
@@ -709,8 +780,21 @@
                     stock.news = {data: stock.news}
                 });
                 _this.stocks = stocks;
+                _this._stocks = stocks; //保留原创数据
+                _this.bks = data.bks;
+                _this._bks = data.bks;
+                _this.loading = false;
                 console.log(_this.$data);
+                console.log('mounted')
             });
+        },
+        created () {
+        },
+        beforeCreate(){
+            console.log('beforeCreate')
+        },
+        updated(){
+            console.log('updated')
         }
     });
 
