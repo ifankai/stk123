@@ -19,4 +19,9 @@ public class Stocks {
         Stocks.stockService = stockService;
     }
 
+    public static void clear(){
+        Stocks.StocksAllCN = null;
+        Stocks.BKsEasymoneyGn = null;
+    }
+
 }

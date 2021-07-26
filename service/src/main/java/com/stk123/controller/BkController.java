@@ -1,9 +1,14 @@
 package com.stk123.controller;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.common.CommonUtils;
 import com.stk123.model.RequestResult;
 import com.stk123.model.core.Rps;
 import com.stk123.model.core.Stock;
+import com.stk123.model.core.Stocks;
+import com.stk123.model.enumeration.EnumCate;
+import com.stk123.model.enumeration.EnumMarket;
+import com.stk123.model.json.View;
 import com.stk123.service.core.StockService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
@@ -15,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +33,37 @@ public class BkController {
 
     @Autowired
     private StockService stockService;
+
+    @RequestMapping(value = {"/{bkCode}"})
+    @ResponseBody
+    @JsonView(View.All.class)
+    public RequestResult bks(@PathVariable(value = "bkCode")String bkCode){
+        return bks(bkCode, null);
+    }
+
+    @RequestMapping(value = {"/{bkCode}/{rpsCode}"})
+    @ResponseBody
+    @JsonView(View.All.class)
+    public RequestResult bksAndRps(@PathVariable(value = "bkCode")String bkCode,
+                             @PathVariable(value = "rpsCode", required = false)String rpsCode){
+        return bks(bkCode, rpsCode);
+    }
+
+    private RequestResult bks(String bkCode, String rpsCode){
+        List<Stock> bks = stockService.buildStocks(bkCode);
+        List<Stock> stocks = bks.get(0).getStocks();
+
+        if(Stocks.BKsEasymoneyGn == null){
+            Stocks.BKsEasymoneyGn = Collections.synchronizedList(stockService.getBks(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn));
+        }
+        stocks = stockService.getStocksWithBks(stocks, Stocks.BKsEasymoneyGn, false);
+        if(StringUtils.isNotEmpty(rpsCode)){
+            stocks = stockService.calcRps(stocks, rpsCode);
+        }
+
+        Map result = stockService.getStocksAsMap(stocks);
+        return RequestResult.success(result);
+    }
 
     @RequestMapping(value = "/score/{code}")
     public void score(@PathVariable(value="code")String code, HttpServletResponse response) throws IOException {

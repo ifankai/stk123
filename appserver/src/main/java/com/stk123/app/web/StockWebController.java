@@ -17,9 +17,9 @@ public class StockWebController {
     public String stock(@PathVariable(value = "code", required = true)String code,
                         @RequestParam(value="title", required = false) String title,
                         Model model){
-        boolean isRps = Rps.getName(code) != null;
-        model.addAttribute("title", isRps ? Rps.getNameAndCode(code) : title);
-        model.addAttribute("codes", code);
+        model.addAttribute("title", title);
+        model.addAttribute("code", code);
+        model.addAttribute("codeType", "stock");
         return "stk";
     }
 }

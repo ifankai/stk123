@@ -1,6 +1,7 @@
 package com.stk123.model.core;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.stk123.common.util.ListUtils;
 import com.stk123.model.json.View;
 import com.stk123.model.strategy.Strategy;
 import com.stk123.model.strategy.StrategyGroup;
@@ -54,6 +55,14 @@ public class Rps{
                 }
             }
         }
+    }
+
+    public static List<String> getAllRpsCodeOnStock(){
+        return ListUtils.createList(Strategies.rps_12().getCode(),
+                Strategies.rps_04().getCode(), Strategies.rps_05().getCode(),
+                Strategies.rps_06a().getCode(), Strategies.rps_06b().getCode(), Strategies.rps_07().getCode(),
+                Strategies.rps_08().getCode(), Strategies.rps_09().getCode(), Strategies.rps_10().getCode(),
+                Strategies.rps_11().getCode());
     }
 
     @SneakyThrows

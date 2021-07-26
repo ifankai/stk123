@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.extern.apachecommons.CommonsLog;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
@@ -31,7 +32,7 @@ public class FilterExecutor<X, B> {
     @Getter
     private int counterNotPassed;
     @Getter
-    private List<FilterResult> results = new ArrayList<>();
+    private List<FilterResult> results = Collections.synchronizedList(new ArrayList<>());
     @Getter
     private Strategy strategy;
 

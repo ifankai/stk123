@@ -448,6 +448,26 @@ public class StockService {
         return stocks;
     }
 
+    public Map getStocksAsMap(List<Stock> stocks){
+        Set<Stock> bks = getBks(stocks);
+        List<Map> bksList = new ArrayList<>();
+        for(Stock bk : bks){
+            Map map = new HashMap();
+            map.put("name", bk.getNameAndCode());
+            map.put("nameWithLink", bk.getNameAndCodeWithLink());
+            map.put("code", bk.getCode());
+            List<Stock> finalStocks = stocks;
+            map.put("stocks", bk.getStocks().stream().filter(stock -> finalStocks.stream().anyMatch(stock::equals)).map(Stock::getCode).collect(Collectors.toList()));
+            bksList.add(map);
+        }
+        bksList = bksList.stream().sorted(Comparator.comparing(bk -> ((List)bk.get("stocks")).size(), Comparator.reverseOrder())).collect(Collectors.toList());
+
+        Map result = new HashMap();
+        result.put("bks", bksList);
+        result.put("stocks", stocks);
+        return result;
+    }
+
 
     @Getter
     @Setter

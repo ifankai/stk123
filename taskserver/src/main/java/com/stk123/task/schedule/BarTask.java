@@ -629,11 +629,7 @@ public class BarTask extends AbstractTask {
                 // rps start
                 StringBuffer rps = new StringBuffer();
                 if(realtime == null) {
-                    List<String> rpsList = ListUtils.createList(Strategies.rps_12().getCode(),
-                            Strategies.rps_04().getCode(), Strategies.rps_05().getCode(),
-                            Strategies.rps_06a().getCode(), Strategies.rps_06b().getCode(), Strategies.rps_07().getCode(),
-                            Strategies.rps_08().getCode(), Strategies.rps_09().getCode(), Strategies.rps_10().getCode(),
-                            Strategies.rps_11().getCode());
+                    List<String> rpsList = Rps.getAllRpsCodeOnStock();
 
                     for(String rpsCode : rpsList){
                         List<Stock> rpsStocks = stockService.calcRps(StocksAllCN, rpsCode);

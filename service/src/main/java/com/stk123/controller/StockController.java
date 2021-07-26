@@ -111,7 +111,7 @@ public class StockController {
     @RequestMapping(value = {"/clear"})
     @ResponseBody
     public RequestResult clear(){
-        Stocks.StocksAllCN = null;
+        Stocks.clear();
         return RequestResult.success();
     }
 
@@ -119,43 +119,13 @@ public class StockController {
     @ResponseBody
     @JsonView(View.All.class)
     public RequestResult stocks(@PathVariable(value = "code")String code){
-        boolean isRps = Rps.getName(code) != null;
-        List<Stock> stocks;
-        if(isRps){
-            if (Stocks.StocksAllCN == null) {
-                if(Stocks.BKsEasymoneyGn == null){
-                    Stocks.BKsEasymoneyGn = stockService.getBks(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn);
-                }
-                Stocks.StocksAllCN = stockService.getStocksWithBks(EnumMarket.CN, Stocks.BKsEasymoneyGn, false);
-            }
-            stocks = Stocks.StocksAllCN;
-            stocks = stockService.calcRps(stocks, code);
-            stocks = stocks.subList(0, Math.min(200, stocks.size()));
-        }else {
-            String[] stks = StringUtils.split(code, ",");
-            stocks = stockService.buildStocks(stks);
-            if(Stocks.BKsEasymoneyGn == null){
-                Stocks.BKsEasymoneyGn = stockService.getBks(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn);
-            }
-            stocks = stockService.getStocksWithBks(stocks, Stocks.BKsEasymoneyGn, false);
-            //stocks = stockService.getStocksWithAllBuilds(stocks, false);
+        String[] stks = StringUtils.split(code, ",");
+        List<Stock> stocks = stockService.buildStocks(stks);
+        if (Stocks.BKsEasymoneyGn == null) {
+            Stocks.BKsEasymoneyGn = Collections.synchronizedList(stockService.getBks(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn));
         }
-
-        Set<Stock> bks = stockService.getBks(stocks);
-        List<Map> bksList = new ArrayList<>();
-        for(Stock bk : bks){
-            Map map = new HashMap();
-            map.put("name", bk.getNameAndCode());
-            map.put("code", bk.getCode());
-            List<Stock> finalStocks = stocks;
-            map.put("stocks", bk.getStocks().stream().filter(stock -> finalStocks.stream().anyMatch(stock::equals)).map(Stock::getCode).collect(Collectors.toList()));
-            bksList.add(map);
-        }
-        bksList = bksList.stream().sorted(Comparator.comparing(bk -> ((List)bk.get("stocks")).size(), Comparator.reverseOrder())).collect(Collectors.toList());
-
-        Map result = new HashMap();
-        result.put("bks", bksList);
-        result.put("stocks", stocks);
+        stocks = stockService.getStocksWithBks(stocks, Stocks.BKsEasymoneyGn, false);
+        Map result = stockService.getStocksAsMap(stocks);
         return RequestResult.success(result);
     }
 }

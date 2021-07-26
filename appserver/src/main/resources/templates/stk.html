@@ -205,7 +205,7 @@
                         <!-- Default box -->
                         <div class="card" v-if="!loading">
                             <div class="card-header">
-                                <h3 class="card-title">统计信息</h3>
+                                <h3 v-text="title" class="card-title"></h3>
                                 <div class="custom-control custom-control-inline custom-radio" style="margin-left: .5rem;margin-top: .01rem;">
                                     <input ref="refBkFilterAll" @change="filterAllBks" class="custom-control-input" type="radio" id="bk-rb-0" name="bkFilter" checked/>
                                     <label for="bk-rb-0" class="custom-control-label">全部</label>
@@ -213,6 +213,15 @@
                                 <div class="card-tools">
                                     <button type="button" @click="sortByRating" class="btn btn-primary btn-xs">按个股评分排序</button>
                                     <button type="button" @click="sortByRps01" class="btn btn-primary btn-xs ml-1">按个股板块60日涨幅(rps_01)排序</button>
+                                    <div class="btn-group ml-1">
+                                        <button type="button" class="btn btn-primary btn-xs">RPS排序</button>
+                                        <button type="button" class="btn btn-primary btn-xs dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">
+                                            <span class="sr-only">Toggle Dropdown</span>
+                                        </button>
+                                        <div class="dropdown-menu" role="menu" style="">
+                                            <a v-for="rps in common.rpss" @click="sortByRps(rps.code, rps.name)" v-text="rps.name+'['+rps.code+']'" class="dropdown-item"></a>
+                                        </div>
+                                    </div>
                                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                                         <i class="fas fa-minus"></i>
                                     </button>
@@ -700,11 +709,35 @@
 <script src="/js/component/datatable.js"></script>
 
 <script th:inline="javascript">
-    const codes = [[${codes}]];
+    const title = [[${title}]];
+    const code = [[${code}]];
+    const codeType = [[${codeType}]];
+
+    function parseStocks(_this, res){
+        let data = res.data.data;
+        console.log(data);
+        let stocks = data.stocks;
+        let i = 1;
+        stocks.forEach(stock => {
+            stock.order = i++;
+            stock.news.forEach(n => {
+                n.type = '['+n.dict.text+']';
+                n.title = '<a target="_blank" href="'+n.urlTarget+'">'+n.title+'</a>';
+            })
+            stock.news = {data: stock.news}
+        });
+        _this.stocks = stocks;
+        _this._stocks = stocks; //保留原创数据
+        _this.bks = data.bks;
+        _this._bks = data.bks;
+        _this.loading = false;
+        console.log(_this.$data);
+    }
+
     const app = Vue.createApp({
         data() {
             return {
-                title: "标题",
+                title: title,
                 loading: true,
                 common:{
                     news:{
@@ -751,11 +784,20 @@
                 Pace.start();
                 this.stocks = this.stocks.concat().sort((a, b) => {
                     let n = Math.max(...b.bks.map(bk => bk.rps.rps_01.percentile)) - Math.max(...a.bks.map(bk => bk.rps.rps_01.percentile));
-                    if(n == 0){
+                    if(n === 0){
                         n = b.rating.total - a.rating.total;
                     }
                     return n
                 })
+                Pace.stop();
+            },
+            sortByRps:function (rpsCode, rpsName){
+                Pace.start();
+                this.title = this.title + ' 当前根据['+rpsName+'('+rpsCode+')]排序';
+                let _this = this;
+                axios.get("/rps/"+rpsCode+"/"+codeType+"/"+code).then(function (res) {
+                    parseStocks(_this, res);
+                });
                 Pace.stop();
             }
         },
@@ -766,27 +808,39 @@
         },
         mounted() {
             let _this = this;
-            axios.get("/stock/" + codes).then(function (res) {
-                let data = res.data.data;
-                console.log(data);
-                let stocks = data.stocks;
-                let i = 1;
-                stocks.forEach(stock => {
-                    stock.order = i++;
-                    stock.news.forEach(n => {
-                        n.type = '['+n.dict.text+']';
-                        n.title = '<a target="_blank" href="'+n.urlTarget+'">'+n.title+'</a>';
-                    })
-                    stock.news = {data: stock.news}
-                });
-                _this.stocks = stocks;
-                _this._stocks = stocks; //保留原创数据
-                _this.bks = data.bks;
-                _this._bks = data.bks;
-                _this.loading = false;
-                console.log(_this.$data);
+            axios.get("/rps/list").then(function(res){
+                _this.common.rpss = res.data.data;
+            });
+
+            axios.get("/"+codeType+"/" + code).then(function (res) {
+                parseStocks(_this, res);
                 console.log('mounted')
             });
+
+            /*this.bks = [
+                {code:'BK0825',name:"新零售[BK0825]", stocks:['600600']},
+                {code:'BK0549',name:"深圳特区[BK0549]", stocks:['002620']}
+            ];
+            this.stocks = [
+                {
+                    cate: "STOCK",
+                    code: "002620",
+                    dayBarImage: "<a target='_blank' href='https://xueqiu.com/S/SZ002620'><img width='100%' src='http://webquoteklinepic.eastmoney.com/GetPic.aspx?nid=0.002620&UnitWidth=-6&imageType=KXL&EF=&Formula=MACD&AT=1&&type=D&token=&_=1627286644203' /></a>",
+                    dayFlowImage: "",
+                    market: "CN",
+                    monthBarImage: "<a target='_blank' href='https://xueqiu.com/S/SZ002620'><img width='100%' src='http://webquoteklinepic.eastmoney.com/GetPic.aspx?nid=0.002620&UnitWidth=-6&imageType=KXL&EF=&Formula=MACD&AT=1&&type=M&token=&_=1627286644203' /></a>",
+                    name: "瑞和股份",
+                    nameAndCodeWithLink: "<a target='_blank' href='https://xueqiu.com/S/SZ002620'>瑞和股份</a>[<a target='_blank' href='http://81.68.255.181:8088/stk?s=002620'>SZ002620</a>]",
+                    news: {data: []},
+                    order: 1,
+                    place: "SZ",
+                    rating:{
+                        root: {type: "stock", score: 74, nodes: []},
+                        total: 74
+                    }
+                },
+            ];
+            this.loading = false;*/
         },
         created () {
         },

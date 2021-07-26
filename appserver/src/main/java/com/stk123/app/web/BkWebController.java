@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.*;
 
 @Controller
-@RequestMapping("/bk")
+@RequestMapping({"/b","/B"})
 @CommonsLog
 public class BkWebController {
 
@@ -25,11 +25,10 @@ public class BkWebController {
     @RequestMapping("/{bkCode}")
     public String bk(@PathVariable(value = "bkCode", required = true)String bkCode, Model model){
         List<Stock> bks = stockService.buildStocks(bkCode);
-        List<Stock> stocks = bks.get(0).getStocks();
-        stocks = stockService.buildNews(stocks, CommonUtils.addDay(new Date(), -180));
-
-        model.addAttribute("stocks", WebUtils.getStockMap(stocks));
-        return "k";
+        model.addAttribute("title", bks.get(0).getNameAndCode());
+        model.addAttribute("code", bkCode);
+        model.addAttribute("codeType", "bk");
+        return "stk";
     }
 
 
