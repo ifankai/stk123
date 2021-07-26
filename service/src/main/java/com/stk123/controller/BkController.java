@@ -44,12 +44,8 @@ public class BkController {
     @RequestMapping(value = {"/{bkCode}/{rpsCode}"})
     @ResponseBody
     @JsonView(View.All.class)
-    public RequestResult bksAndRps(@PathVariable(value = "bkCode")String bkCode,
+    public RequestResult bks(@PathVariable(value = "bkCode")String bkCode,
                              @PathVariable(value = "rpsCode", required = false)String rpsCode){
-        return bks(bkCode, rpsCode);
-    }
-
-    private RequestResult bks(String bkCode, String rpsCode){
         List<Stock> bks = stockService.buildStocks(bkCode);
         List<Stock> stocks = bks.get(0).getStocks();
 

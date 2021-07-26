@@ -31,7 +31,7 @@ public class StrategyWebController {
         return "k";
     }
 
-    @RequestMapping("/rps/{rpsCode}")
+    /*@RequestMapping("/rps/{rpsCode}")
     public String rps(@PathVariable(value = "rpsCode", required = true)String rpsCode,
                       @RequestParam(value = "from", required = false, defaultValue = "90")Double percentileFrom,
                       @RequestParam(value = "to", required = false, defaultValue = "100")Double percentileTo,
@@ -62,6 +62,6 @@ public class StrategyWebController {
         }
         model.addAttribute("stocks", WebUtils.getStockMap(stocks));
         return "k";
-    }
+    }*/
 
 }

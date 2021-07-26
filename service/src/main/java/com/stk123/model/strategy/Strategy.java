@@ -56,7 +56,7 @@ public class Strategy<X> {
     @Getter@Setter
     private StrategyBacktesting strategyBacktesting;
     @Getter@Setter
-    private double weight = 1; //策略权重
+    private double weight = 1d; //策略权重
 
     public Strategy(String code, String name, Class<X> xClass) {
         this.code = code;

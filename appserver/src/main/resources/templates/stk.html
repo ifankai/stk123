@@ -208,15 +208,15 @@
                                 <h3 v-text="title" class="card-title"></h3>
                                 <div class="custom-control custom-control-inline custom-radio" style="margin-left: .5rem;margin-top: .01rem;">
                                     <input ref="refBkFilterAll" @change="filterAllBks" class="custom-control-input" type="radio" id="bk-rb-0" name="bkFilter" checked/>
-                                    <label for="bk-rb-0" class="custom-control-label">全部</label>
+                                    <label for="bk-rb-0" class="custom-control-label">全部<span v-text="'('+total+')'"></span></label>
                                 </div>
                                 <div class="card-tools">
                                     <button type="button" @click="sortByRating" class="btn btn-primary btn-xs">按个股评分排序</button>
                                     <button type="button" @click="sortByRps01" class="btn btn-primary btn-xs ml-1">按个股板块60日涨幅(rps_01)排序</button>
                                     <div class="btn-group ml-1">
-                                        <button type="button" class="btn btn-primary btn-xs">RPS排序</button>
+                                        <button v-text="seletedRpsName" type="button" class="btn btn-primary btn-xs"></button>
                                         <button type="button" class="btn btn-primary btn-xs dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">
-                                            <span class="sr-only">Toggle Dropdown</span>
+                                            <span class="sr-only">RPS排序</span>
                                         </button>
                                         <div class="dropdown-menu" role="menu" style="">
                                             <a v-for="rps in common.rpss" @click="sortByRps(rps.code, rps.name)" v-text="rps.name+'['+rps.code+']'" class="dropdown-item"></a>
@@ -727,7 +727,7 @@
             stock.news = {data: stock.news}
         });
         _this.stocks = stocks;
-        _this._stocks = stocks; //保留原创数据
+        _this._stocks = stocks;
         _this.bks = data.bks;
         _this._bks = data.bks;
         _this.loading = false;
@@ -739,6 +739,7 @@
             return {
                 title: title,
                 loading: true,
+                seletedRpsName: 'RPS排序',
                 common:{
                     news:{
                         columns: [{data:"type"},{data:"title"},{data:"infoCreateTime"}],
@@ -749,6 +750,7 @@
                         ]
                     }
                 },
+                total:0,
                 stocks:[],
                 bks:[]
             }
@@ -793,7 +795,7 @@
             },
             sortByRps:function (rpsCode, rpsName){
                 Pace.start();
-                this.title = this.title + ' 当前根据['+rpsName+'('+rpsCode+')]排序';
+                this.seletedRpsName = rpsName+'['+rpsCode+']';
                 let _this = this;
                 axios.get("/rps/"+rpsCode+"/"+codeType+"/"+code).then(function (res) {
                     parseStocks(_this, res);
@@ -814,6 +816,7 @@
 
             axios.get("/"+codeType+"/" + code).then(function (res) {
                 parseStocks(_this, res);
+                _this.total = _this.stocks.length;
                 console.log('mounted')
             });
 

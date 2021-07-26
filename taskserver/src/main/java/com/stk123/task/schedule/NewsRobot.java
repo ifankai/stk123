@@ -127,7 +127,7 @@ public class NewsRobot {
 					params.add(index.getCode());
 					params.add(type.getKey());
 					params.add(new Timestamp(ServiceUtils.addDay(((Date)map.get("date")),-5).getTime()));
-					params.add(new Timestamp(((Date)map.get("date")).getTime()));
+					params.add(new Timestamp(ServiceUtils.addDay(((Date)map.get("date")),1).getTime()));
 					List<StkNews> infos = JdbcUtils.list(conn, "select * from stk_news where code=? and type=? and info_create_time between ? and ?", params, StkNews.class);
 					if(infos.size() == 0){
 						params.clear();

@@ -407,7 +407,7 @@ public class Strategies {
         strategy.setAsc(false);
         strategy.addFilter("3个月放量", (strgy, stock) -> {
             if(stock.getBarSeries().size() < 60){
-                stock.setRpsValue(strategy.getCode(), 0.0);
+                stock.setRpsValue(strategy.getCode(), -999.0);
                 return FilterResult.TRUE();
             }
             Bar bar = stock.getBarSeriesMonth().getBar();
@@ -435,7 +435,7 @@ public class Strategies {
         strategy.setAsc(false);
         strategy.addFilter("1个月放量", (strgy, stock) -> {
             if(stock.getBarSeries().size() < 60){
-                stock.setRpsValue(strategy.getCode(), 0.0);
+                stock.setRpsValue(strategy.getCode(), -999.0);
                 return FilterResult.TRUE();
             }
             Bar bar = stock.getBarSeriesMonth().getBar();
@@ -453,7 +453,7 @@ public class Strategies {
         strategy.setAsc(false);
         strategy.addFilter("1周放量", (strgy, stock) -> {
             if(stock.getBarSeries().size() < 60){
-                stock.setRpsValue(strategy.getCode(), 0.0);
+                stock.setRpsValue(strategy.getCode(), -999.0);
                 return FilterResult.TRUE();
             }
             Bar bar = stock.getBarSeriesWeek().getBar();
@@ -471,7 +471,7 @@ public class Strategies {
         strategy.setAsc(false);
         strategy.addFilter("1周放量", (strgy, stock) -> {
             if(stock.getBarSeries().size() < 60){
-                stock.setRpsValue(strategy.getCode(), 0.0);
+                stock.setRpsValue(strategy.getCode(), -999.0);
                 return FilterResult.TRUE();
             }
             Bar bar = stock.getBarSeriesWeek().getBar();
@@ -512,11 +512,11 @@ public class Strategies {
         Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_WEEK_3_VOLUME,"3周放量", Stock.class);
         strategy.setAsc(false);
         strategy.addFilter("3周放量", (strgy, stock) -> {
-            Bar bar = stock.getBarSeriesWeek().getBar();
-            if(bar == null || bar.before() == null){
-                stock.setRpsValue(strategy.getCode(), 0.0);
+            if(stock.getBarSeries().size() < 60){
+                stock.setRpsValue(strategy.getCode(), -999.0);
                 return FilterResult.TRUE();
             }
+            Bar bar = stock.getBarSeriesWeek().getBar();
             double sum = bar.getVolume()+bar.before().getVolume()+bar.before(2).getVolume();
             double minSum = bar.before(3).getVolume() + bar.before(4).getVolume() + bar.before(5).getVolume();
             double rpsValue = sum/minSum;
@@ -532,7 +532,7 @@ public class Strategies {
         strategy.setAsc(false);
         strategy.addFilter("1天放量", (strgy, stock) -> {
             if(stock.getBarSeries().size() < 60){
-                stock.setRpsValue(strategy.getCode(), 0.0);
+                stock.setRpsValue(strategy.getCode(), -999.0);
                 return FilterResult.TRUE();
             }
             Bar bar = stock.getBar();
@@ -548,7 +548,7 @@ public class Strategies {
         //strategy2.setWeight(0.5);
         strategy2.addFilter("1天资金流", (strgy, stock) -> {
             if(stock.getBarSeries().size() < 60){
-                stock.setRpsValue(strategy.getCode(), 0.0);
+                stock.setRpsValue(strategy.getCode(), -999.0);
                 return FilterResult.TRUE();
             }
             Bar bar = stock.getBar();
@@ -565,7 +565,7 @@ public class Strategies {
         strategy.setAsc(false);
         strategy.addFilter("2天放量", (strgy, stock) -> {
             if(stock.getBarSeries().size() < 60){
-                stock.setRpsValue(strategy.getCode(), 0.0);
+                stock.setRpsValue(strategy.getCode(), -999.0);
                 return FilterResult.TRUE();
             }
             Bar bar = stock.getBar();
@@ -581,7 +581,7 @@ public class Strategies {
         //strategy2.setWeight(0.5);
         strategy2.addFilter("2天资金流", (strgy, stock) -> {
             if(stock.getBarSeries().size() < 60){
-                stock.setRpsValue(strategy.getCode(), 0.0);
+                stock.setRpsValue(strategy.getCode(), -999.0);
                 return FilterResult.TRUE();
             }
             Bar bar = stock.getBar();
@@ -600,7 +600,7 @@ public class Strategies {
         strategy.setAsc(false);
         strategy.addFilter("3天放量", (strgy, stock) -> {
             if(stock.getBarSeries().size() < 60){
-                stock.setRpsValue(strategy.getCode(), 0.0);
+                stock.setRpsValue(strategy.getCode(), -999.0);
                 return FilterResult.TRUE();
             }
             Bar bar = stock.getBar();
@@ -616,7 +616,7 @@ public class Strategies {
         //strategy2.setWeight(0.5);
         strategy2.addFilter("3天资金流", (strgy, stock) -> {
             if(stock.getBarSeries().size() < 60){
-                stock.setRpsValue(strategy.getCode(), 0.0);
+                stock.setRpsValue(strategy.getCode(), -999.0);
                 return FilterResult.TRUE();
             }
             Bar bar = stock.getBar();
@@ -636,7 +636,7 @@ public class Strategies {
         strategy.setAsc(false);
         strategy.addFilter("120天放量", (strgy, stock) -> {
             if(stock.getBarSeries().size() < 240){
-                stock.setRpsValue(strategy.getCode(), 0.0);
+                stock.setRpsValue(strategy.getCode(), -999.0);
                 return FilterResult.TRUE();
             }
             Bar bar = stock.getBar();
