@@ -1,8 +1,10 @@
 package com.stk123.task;
 
 import com.stk123.common.util.WeatherUtils;
+import com.stk123.model.core.Stocks;
 import com.stk123.service.task.TaskBuilder;
 import com.stk123.service.task.TaskContainer;
+import com.stk123.task.config.TaskCondition;
 import com.stk123.task.quartz.job.ResearchReportJob;
 import com.stk123.task.quartz.job.XueqiuUserJob;
 import com.stk123.task.schedule.*;
@@ -10,12 +12,14 @@ import com.stk123.task.tool.TaskUtils;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
 @CommonsLog
+@Conditional({TaskCondition.class})
 public class Tasks {
 
     @Autowired
@@ -108,7 +112,7 @@ public class Tasks {
     @Scheduled(cron = "0 30 14 ? * MON-FRI")
     public void klineRealtime() {
         taskContainer.start(BarTask.class, "MyStocks", "realtime=1", "market=cn,hk");
-        BarTask.StocksAllCN = null;
+        Stocks.StocksAllCN = null;
         taskContainer.start(BarTask.class, "AllStocks", "realtime=1");
     }
 

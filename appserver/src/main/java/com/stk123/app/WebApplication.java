@@ -4,6 +4,8 @@ import com.esotericsoftware.kryonet.Server;
 import com.stk123.app.config.WebProperties;
 import com.stk123.app.web.CookieController;
 import com.stk123.common.util.chat.ChatServer;
+import com.stk123.task.Tasks;
+import com.stk123.task.config.TaskConfig;
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,7 @@ import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactor
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -38,9 +41,11 @@ import java.nio.file.Paths;
  */
 //@SpringBootApplication(exclude={DataSourceAutoConfiguration.class,HibernateJpaAutoConfiguration.class})
 @SpringBootApplication(scanBasePackages =
-        {"com.stk123.app","com.stk123.service","com.stk123.service.core","com.stk123.controller","com.stk123.entity","com.stk123.repository","com.stk123.model","com.stk123.config"})
+        {"com.stk123.app","com.stk123.service","com.stk123.service.core","com.stk123.controller","com.stk123.entity","com.stk123.repository","com.stk123.model","com.stk123.config"
+         ,"com.stk123.task.schedule","com.stk123.task.aop","com.stk123.task.controller"})
 @EnableJpaRepositories({"com.stk123.entity","com.stk123.repository"})
 @EntityScan({"com.stk123.entity"})
+@Import({Tasks.class})
 @EnableTransactionManagement
 @Configuration
 @EnableScheduling

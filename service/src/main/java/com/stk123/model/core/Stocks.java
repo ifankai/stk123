@@ -11,6 +11,8 @@ public class Stocks {
 
     public static List<Stock> StocksAllCN = null;
     public static List<Stock> BKsEasymoneyGn = null;
+    public static List<Stock> StocksMass = null;
+    public static List<Stock> StocksH = null;
 
     private static StockService stockService;
 

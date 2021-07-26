@@ -51,10 +51,5 @@ public class TaskApplication {
     @EventListener(ApplicationReadyEvent.class)
     public void doSomethingAfterStartup() {
         System.out.println("doSomethingAfterStartup..........");
-        String task = environment.getProperty(TaskCondition.taskNeedToRun);
-        if(task != null){
-            tasks.runSingleTask();
-            System.exit(0);
-        }
     }
 }

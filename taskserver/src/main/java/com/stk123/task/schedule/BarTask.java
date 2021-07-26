@@ -8,6 +8,7 @@ import com.stk123.entity.*;
 import com.stk123.model.core.Bar;
 import com.stk123.model.core.Rps;
 import com.stk123.model.core.Stock;
+import com.stk123.model.core.Stocks;
 import com.stk123.model.enumeration.EnumCate;
 import com.stk123.model.enumeration.EnumMarket;
 import com.stk123.model.mass.*;
@@ -56,10 +57,10 @@ public class BarTask extends AbstractTask {
     private String market;
     private String strategy;
 
-    public static List<Stock> StocksAllCN = null;
+/*    public static List<Stock> StocksAllCN = null;
     public static List<Stock> StocksMass = null;
     public static List<Stock> StocksH = null;
-    public static List<Stock> BkCN = null;
+    public static List<Stock> BkCN = null;*/
 
 
     private String today = TaskUtils.getToday();//"20160923";
@@ -120,10 +121,7 @@ public class BarTask extends AbstractTask {
     }
 
     public void clearAll(){
-        BarTask.StocksMass = null;
-        BarTask.StocksH = null;
-        BarTask.StocksAllCN = null;
-        BarTask.BkCN = null;
+        Stocks.clear();
         System.gc();
     }
 
@@ -573,9 +571,10 @@ public class BarTask extends AbstractTask {
 
     public void analyseAllStocks(){
         try {
-            if(StocksAllCN == null) {
-                StocksAllCN = stockService.getStocksWithBks(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn, realtime != null);
+            if(Stocks.StocksAllCN == null) {
+                Stocks.StocksAllCN = stockService.getStocksWithBks(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn, realtime != null);
             }
+            List<Stock> stocks = Stocks.StocksAllCN;
             //stockService.buildHolder(StocksAllCN);
 
             String strategies = Strategies.STRATEGIES_ALL_STOCKS;
@@ -585,7 +584,7 @@ public class BarTask extends AbstractTask {
 
             StrategyBacktesting strategyBacktesting = new StrategyBacktesting();
             backtestingService.backtestingOnStock(strategyBacktesting,
-                    StocksAllCN,
+                    stocks,
                     Arrays.asList(StringUtils.split(strategies, ",")),
                     startDate, endDate, realtime!=null);
 
@@ -596,7 +595,7 @@ public class BarTask extends AbstractTask {
 
                 String rowCode = null;
                 for (StrategyResult strategyResult : results) {
-                    Stock stock = StocksAllCN.stream().filter(stk -> stk.getCode().equals(strategyResult.getCode())).findFirst().orElse(null);
+                    Stock stock = stocks.stream().filter(stk -> stk.getCode().equals(strategyResult.getCode())).findFirst().orElse(null);
 
                     StrategyBacktesting backtesting = backtestingService.backtestingAllHistory(strategyResult.getCode(), strategyResult.getStrategy().getCode(), false);
 
@@ -632,7 +631,7 @@ public class BarTask extends AbstractTask {
                     List<String> rpsList = Rps.getAllRpsCodeOnStock();
 
                     for(String rpsCode : rpsList){
-                        List<Stock> rpsStocks = stockService.calcRps(StocksAllCN, rpsCode);
+                        List<Stock> rpsStocks = stockService.calcRps(stocks, rpsCode);
                         rpsStocks = rpsStocks.subList(0, Math.min(150, rpsStocks.size()));
                         rps.append("["+rpsCode+"]"+Rps.getName(rpsCode) + ": " + CommonUtils.k("查看", Rps.getNameAndCode(rowCode), rpsStocks.stream().map(Stock::getCode).collect(Collectors.toList())));
                         rps.append("<br/>");
@@ -661,10 +660,10 @@ public class BarTask extends AbstractTask {
 
     public void analyseBks(){
         try{
-            if(BkCN == null) {
-                BkCN = stockService.getBksWithStocks(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn, realtime != null);
+            if(Stocks.BKsEasymoneyGn == null) {
+                Stocks.BKsEasymoneyGn = stockService.getBksWithStocks(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn, realtime != null);
             }
-            List<Stock> bks = BkCN;
+            List<Stock> bks = Stocks.BKsEasymoneyGn;
 
             String strategies = Strategies.STRATEGIES_BK;
             if(StringUtils.isNotEmpty(strategy)){
@@ -727,16 +726,16 @@ public class BarTask extends AbstractTask {
 
     //相似算法
     public void analyseMass(){
-        if(StocksMass == null) {
+        if(Stocks.StocksMass == null) {
             List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(EnumMarket.CN, EnumCate.STOCK);
             //List<StockBasicProjection> list = stkRepository.findAllByCodes(ListUtils.createList("000630","000650","002038","002740","000651","002070","603876","600373","000002","000920","002801","000726","603588","002791","300474"));
             list = list.stream().filter(stockBasicProjection -> !StringUtils.contains(stockBasicProjection.getName(), "退")).collect(Collectors.toList());
 
-            StocksMass = stockService.buildStocksWithProjection(list);
-            StocksMass = stockService.buildBarSeries(StocksMass, 500, realtime != null);
-            stockService.buildHolder(StocksMass);
+            Stocks.StocksMass = stockService.buildStocksWithProjection(list);
+            Stocks.StocksMass = stockService.buildBarSeries(Stocks.StocksMass, 500, realtime != null);
+            stockService.buildHolder(Stocks.StocksMass);
 
-            StocksMass = StocksMass.stream().filter(stock -> {
+            Stocks.StocksMass = Stocks.StocksMass.stream().filter(stock -> {
                 try {
                     //250日最低点发生在最近50日内
                     Bar bar250 = stock.getBar().getLowestBar(250, Bar.EnumValue.C);
@@ -766,10 +765,10 @@ public class BarTask extends AbstractTask {
             }).collect(Collectors.toList());
 
             //排除 人均持股 20万以下的
-            StocksMass = filterByHolder(StocksMass);
+            Stocks.StocksMass = filterByHolder(Stocks.StocksMass);
 
             //排除总市值小于50亿的
-            StocksMass = StockService.filterByMarketCap(StocksMass, 50);
+            Stocks.StocksMass = StockService.filterByMarketCap(Stocks.StocksMass, 50);
 
         }
 
@@ -782,7 +781,7 @@ public class BarTask extends AbstractTask {
         }*/
 
 
-        MassResult massResultA = Mass.execute(StocksMass);
+        MassResult massResultA = Mass.execute(Stocks.StocksMass);
 
         int count = massResultA.getCount();
         List<String> titles = ListUtils.createList("标的", "日期", "日K线", "周K线");
