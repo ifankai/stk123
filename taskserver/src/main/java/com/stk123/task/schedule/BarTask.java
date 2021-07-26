@@ -57,12 +57,6 @@ public class BarTask extends AbstractTask {
     private String market;
     private String strategy;
 
-/*    public static List<Stock> StocksAllCN = null;
-    public static List<Stock> StocksMass = null;
-    public static List<Stock> StocksH = null;
-    public static List<Stock> BkCN = null;*/
-
-
     private String today = TaskUtils.getToday();//"20160923";
     private final Date now = new Date();
     private int dayOfWeek = TaskUtils.getDayOfWeek(now);
