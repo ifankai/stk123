@@ -218,6 +218,7 @@ alter table stk_industry_type add us_name varchar2(200);
 alter table stk_industry_type add code varchar2(20);
 alter table stk_industry_type add parent_code varchar2(20);
 create index idx_industry_type_name on stk_industry_type (name);
+create index idx_industry_type_source on stk_industry_type (source);
 
 create sequence s_industry_type_id
 　　INCREMENT BY 1
@@ -3034,3 +3035,8 @@ select * from stk_capital_flow order by insert_time desc;
 
 update stk_dictionary set param_2 ='中签率;大单流出;大单封跌停' where type=2000 and key = '200';
 update stk_dictionary set text ='资产置换|转让' where type=2000 and key = '180';
+
+create index idx_industry_type_source on stk_industry_type (source);
+
+select code,kline_date ,open,close,high,low,volumn as volume,amount,last_close,percentage as change,hsl,pe_ttm,pb_ttm from (select t.*, rank() over(partition by t.code order by t.kline_date desc) as rn
+from stk_kline t where t.code in ('002346','600600','600601','601958','600531','000758','000060','600497','000807','000751','600395','600456','002340','002237','000612','600459','000960','600251')) where rn <= 1

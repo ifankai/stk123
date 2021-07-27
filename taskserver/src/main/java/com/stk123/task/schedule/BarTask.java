@@ -572,7 +572,7 @@ public class BarTask extends AbstractTask {
     public void analyseAllStocks(){
         try {
             if(Stocks.StocksAllCN == null) {
-                Stocks.StocksAllCN = stockService.getStocksWithBks(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn, realtime != null);
+                Stocks.StocksAllCN = stockService.getStocksWithBksAndCalcBkRps(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn, realtime != null);
             }
             List<Stock> stocks = Stocks.StocksAllCN;
             //stockService.buildHolder(StocksAllCN);
@@ -661,7 +661,7 @@ public class BarTask extends AbstractTask {
     public void analyseBks(){
         try{
             if(Stocks.BKsEasymoneyGn == null) {
-                Stocks.BKsEasymoneyGn = stockService.getBksWithStocks(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn, realtime != null);
+                Stocks.BKsEasymoneyGn = stockService.getBksWithStocksAndCalcBkRps(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn, realtime != null);
             }
             List<Stock> bks = Stocks.BKsEasymoneyGn;
 

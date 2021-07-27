@@ -88,7 +88,7 @@ public class StockController {
                                 @RequestParam(value = "to", required = false, defaultValue = "100")Double percentileTo
     ){
         if(Stocks.StocksAllCN == null) {
-            Stocks.StocksAllCN = stockService.getStocksWithBks(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn, false);
+            Stocks.StocksAllCN = Collections.synchronizedList(stockService.getStocksWithBksAndCalcBkRps(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn, false));
         }
         List<Stock> stocks = Stocks.StocksAllCN;
         stocks = stocks.stream().sorted(Comparator.comparing(Stock::getScore, Comparator.reverseOrder())).collect(Collectors.toList());
@@ -122,9 +122,9 @@ public class StockController {
         String[] stks = StringUtils.split(code, ",");
         List<Stock> stocks = stockService.buildStocks(stks);
         if (Stocks.BKsEasymoneyGn == null) {
-            Stocks.BKsEasymoneyGn = Collections.synchronizedList(stockService.getBks(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn));
+            Stocks.BKsEasymoneyGn = Collections.synchronizedList(stockService.getBksAndCalcBkRps(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn));
         }
-        stocks = stockService.getStocksWithBks(stocks, Stocks.BKsEasymoneyGn, false);
+        stocks = stockService.getStocksWithBks(stocks, Stocks.BKsEasymoneyGn, 60, false);
         Map result = stockService.getStocksAsMap(stocks);
         return RequestResult.success(result);
     }

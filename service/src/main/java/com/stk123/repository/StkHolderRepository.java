@@ -21,8 +21,19 @@ public interface StkHolderRepository extends JpaRepository<StkHolderEntity, StkH
         return BaseRepository.getInstance().list(sql_findAll, StkHolderEntity.class);
     }
 
+    String sql_findAllByCodes = "select s.code, t.fn_date, t.holder, t.holding_amount, t.holder_change, t.ten_owner_change " +
+            "from (select code, fn_date, holder, holding_amount,holder_change,ten_owner_change, ROW_NUMBER() over(PARTITION by code order by fn_date desc) as num from stk_holder) t, stk s "+
+            "where t.code=s.code and t.code in (:1) and t.num = 1";
+    default List<StkHolderEntity> findAll(List<String> codes) {
+        return BaseRepository.getInstance().list(sql_findAllByCodes, StkHolderEntity.class, codes);
+    }
+
     default Map<String, StkHolderEntity> findAllToMap() {
         return findAll().stream().collect(Collectors.toMap(StkHolderEntity::getCode, Function.identity()));
+    }
+
+    default Map<String, StkHolderEntity> findAllToMap(List<String> codes) {
+        return findAll(codes).stream().collect(Collectors.toMap(StkHolderEntity::getCode, Function.identity()));
     }
 
     StkHolderEntity findByCodeAndFnDate(String code, String fnDate);

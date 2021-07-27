@@ -21,14 +21,17 @@ import com.stk123.service.StkConstant;
 import com.stk123.util.HttpUtils;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -55,10 +58,12 @@ public class StockService {
     @Autowired
     private IndustryService industryService;
     @Autowired
+    @Lazy //because of StockService has @Async method, so it will result in the 循环依赖 (barService has property stockService), so add @Lazy to resolve it
     private BarService barService;
     @Autowired
     private StkHolderRepository stkHolderRepository;
     @Autowired
+    @Lazy //the same as above
     private BacktestingService backtestingService;
     @Autowired
     private StkNewsRepository stkNewsRepository;
@@ -70,6 +75,8 @@ public class StockService {
     private StkImportInfoRepository stkImportInfoRepository;
     @Autowired
     private StkCapitalFlowRepository stkCapitalFlowRepository;
+    @Autowired
+    private StockAsyncService stockAsyncService;
 
     @Transactional
     public List<Stock> buildStocks(List<String> codes) {
@@ -102,9 +109,15 @@ public class StockService {
     }
 
     public List<Stock> buildIndustries(List<Stock> stocks) {
-        Map<String, List<IndustryProjection>> map = industryService.findAllToMap();
+        Map<String, List<IndustryProjection>> map = null;
+        if(stocks.size() < 500){
+            map = industryService.findAllToMap(stocks.stream().map(Stock::getCode).collect(Collectors.toList()));
+        }else {
+            map = industryService.findAllToMap();
+        }
+        Map<String, List<IndustryProjection>> finalMap = map;
         stocks.forEach(stock -> {
-            List<IndustryProjection> industries = map.get(stock.getCode());
+            List<IndustryProjection> industries = finalMap.get(stock.getCode());
             if(industries == null){
                 stock.setIndustries(new ArrayList<>());
             }else {
@@ -246,9 +259,15 @@ public class StockService {
     }
 
     public List<Stock> buildHolder(List<Stock> stocks){
-        Map<String, StkHolderEntity> map = stkHolderRepository.findAllToMap();
+        Map<String, StkHolderEntity> map = null;
+        if(stocks.size() <= 500){
+            map =stkHolderRepository.findAllToMap(stocks.stream().map(Stock::getCode).collect(Collectors.toList()));
+        }else {
+            map =stkHolderRepository.findAllToMap();
+        }
+        Map<String, StkHolderEntity> finalMap = map;
         stocks.forEach(stock -> {
-            StkHolderEntity stkHolderEntity = map.get(stock.getCode());
+            StkHolderEntity stkHolderEntity = finalMap.get(stock.getCode());
             if(stkHolderEntity == null) stkHolderEntity = new StkHolderEntity();
             stock.setHolder(stkHolderEntity);
 
@@ -363,32 +382,46 @@ public class StockService {
 
     public List<Stock> getStocksWithBks(List<Stock> stocks, EnumMarket market, EnumCate bkCate, boolean isIncludeRealtimeBar){
         stocks = getStocksWithAllBuilds(stocks, isIncludeRealtimeBar);
-        buildBkAndCalcRps(stocks, market, bkCate);
+        buildBkAndCalcBkRps(stocks, market, bkCate);
+        return stocks;
+    }
+
+    public List<Stock> getStocksWithBks(List<Stock> stocks, List<Stock> bks, int barSize, boolean isIncludeRealtimeBar){
+        stocks = getStocksWithAllBuilds(stocks, barSize, isIncludeRealtimeBar);
+        //buildBkAndCalcRps(stocks, bks);
+        buildBk(stocks, bks);
         return stocks;
     }
 
     public List<Stock> getStocksWithBks(List<Stock> stocks, List<Stock> bks, boolean isIncludeRealtimeBar){
-        stocks = getStocksWithAllBuilds(stocks, isIncludeRealtimeBar);
-        buildBkAndCalcRps(stocks, bks);
+        return getStocksWithBks(stocks, bks, 500, isIncludeRealtimeBar);
+    }
+
+    public List<Stock> getStocksWithBksAndCalcBkRps(EnumMarket market, EnumCate bkCate, boolean isIncludeRealtimeBar){
+        List<Stock> stocks = getStocks(market, isIncludeRealtimeBar);
+        List<Stock> bks = getBks(market, bkCate);
+        buildBkAndCalcBkRps(stocks, bks);
         return stocks;
     }
 
     public List<Stock> getStocksWithBks(EnumMarket market, EnumCate bkCate, boolean isIncludeRealtimeBar){
         List<Stock> stocks = getStocks(market, isIncludeRealtimeBar);
         List<Stock> bks = getBks(market, bkCate);
-        buildBkAndCalcRps(stocks, bks);
+        buildBk(stocks, bks);
         return stocks;
     }
-    public List<Stock> getBksWithStocks(EnumMarket market, EnumCate bkCate, boolean isIncludeRealtimeBar){
+
+    public List<Stock> getBksWithStocksAndCalcBkRps(EnumMarket market, EnumCate bkCate, boolean isIncludeRealtimeBar){
         List<Stock> stocks = getStocks(market, isIncludeRealtimeBar);
         List<Stock> bks = getBks(market, bkCate);
-        buildBkAndCalcRps(stocks, bks);
+        buildBkAndCalcBkRps(stocks, bks);
         return bks;
     }
 
     public List<Stock> getStocksWithBks(EnumMarket market, List<Stock> bks, boolean isIncludeRealtimeBar){
         List<Stock> stocks = getStocks(market, isIncludeRealtimeBar);
-        buildBkAndCalcRps(stocks, bks);
+        //buildBkAndCalcRps(stocks, bks);
+        buildBk(stocks, bks);
         return stocks;
     }
 
@@ -401,14 +434,19 @@ public class StockService {
         }).collect(Collectors.toList());
     }
 
-    public void buildBkAndCalcRps(List<Stock> stocks, EnumMarket market, EnumCate bkCate){
+    public void buildBkAndCalcBkRps(List<Stock> stocks, EnumMarket market, EnumCate bkCate){
         //建立板块关系，计算rps
         List<Stock> bks = getBks(market, bkCate);
-        buildBkAndCalcRps(stocks, bks);
+        buildBkAndCalcBkRps(stocks, bks);
     }
-    public List<Stock> buildBkAndCalcRps(List<Stock> stocks, List<Stock> bks){
+    public List<Stock> buildBkAndCalcBkRps(List<Stock> stocks, List<Stock> bks){
         calcRps(bks, Rps.CODE_BK_60);
         buildBk(stocks, bks);
+        return calcRps(bks, Rps.CODE_BK_STOCKS_SCORE_30);
+    }
+
+    public List<Stock> calcBkRps(List<Stock> bks){
+        calcRps(bks, Rps.CODE_BK_60);
         return calcRps(bks, Rps.CODE_BK_STOCKS_SCORE_30);
     }
 
@@ -420,20 +458,74 @@ public class StockService {
         return bks;
     }
 
+    public List<Stock> getBksAndCalcBkRps(EnumMarket market, EnumCate bkCate){
+        List<Stock> bks = getBks(market, bkCate);
+        return calcRps(bks, Rps.CODE_BK_60);
+    }
+
     public Set<Stock> getBks(List<Stock> stocks){
         return stocks.stream().flatMap(stock -> stock.getBks().stream()).collect(Collectors.toSet());
     }
 
-    public List<Stock> getStocksWithAllBuilds(List<Stock> stocks, boolean isIncludeRealtimeBar){
-        stocks = buildBarSeries(stocks, 500, isIncludeRealtimeBar);
-        stocks = buildCapitalFlow(stocks, CommonUtils.addDay(new Date(), -60));
-        stocks = buildIndustries(stocks);
-        stocks = buildHolder(stocks);
-        stocks = buildOwners(stocks);
-        stocks = buildNews(stocks, CommonUtils.addDay(new Date(), -180));
-        stocks = buildImportInfos(stocks, CommonUtils.addDay(new Date(), -180));
+    @SneakyThrows
+    public List<Stock> getStocksWithAllBuildsAsync(List<Stock> stocks, int barSize, boolean isIncludeRealtimeBar){
+        long time = System.currentTimeMillis();
+        log.info("getStocksWithAllBuildsAsync start:"+time);
+        Future<List<Stock>> futureBs = stockAsyncService.buildBarSeriesAndCapitalFlow(stocks, barSize, isIncludeRealtimeBar);
+        Future<List<Stock>> futureIndustries = stockAsyncService.buildIndustries(stocks);
+        Future<List<Stock>> futureHolder = stockAsyncService.buildHolder(stocks);
+        Future<List<Stock>> futureOwner = stockAsyncService.buildOwners(stocks);
+        Future<List<Stock>> futureNews = stockAsyncService.buildNews(stocks, CommonUtils.addDay(new Date(), -180));
+        Future<List<Stock>> futureInfo = stockAsyncService.buildImportInfos(stocks, CommonUtils.addDay(new Date(), -180));
+        log.info("getStocksWithAllBuildsAsync:"+time);
+        while (true) {
+            if (futureBs.isDone() && futureIndustries.isDone() && futureHolder.isDone() && futureOwner.isDone()
+                && futureNews.isDone() && futureInfo.isDone()) {
+                break;
+            }
+            Thread.sleep(20);
+        }
+        long time2 = System.currentTimeMillis();
+        log.info("getStocksWithAllBuildsAsync:"+(time2-time)/1000);
         return stocks;
     }
+
+    public List<Stock> getStocksWithAllBuilds(List<Stock> stocks, int barSize, boolean isIncludeRealtimeBar){
+        return getStocksWithAllBuildsAsync(stocks, barSize, isIncludeRealtimeBar);
+
+        /*long time = System.currentTimeMillis();
+        log.info("getStocksWithAllBuilds:"+time);
+
+        stocks = buildBarSeries(stocks, barSize, isIncludeRealtimeBar);
+        long time2 = System.currentTimeMillis();
+        log.info("buildBarSeries:"+(time2-time)/1000);
+
+        stocks = buildCapitalFlow(stocks, CommonUtils.addDay(new Date(), -60));
+        time2 = System.currentTimeMillis();
+        log.info("buildCapitalFlow:"+(time2-time)/1000);
+
+        stocks = buildIndustries(stocks);
+        time2 = System.currentTimeMillis();
+        log.info("buildIndustries:"+(time2-time)/1000);
+        stocks = buildHolder(stocks);
+        time2 = System.currentTimeMillis();
+        log.info("buildHolder:"+(time2-time)/1000);
+        stocks = buildOwners(stocks);
+        time2 = System.currentTimeMillis();
+        log.info("buildOwners:"+(time2-time)/1000);
+        stocks = buildNews(stocks, CommonUtils.addDay(new Date(), -180));
+        time2 = System.currentTimeMillis();
+        log.info("buildNews:"+(time2-time)/1000);
+        stocks = buildImportInfos(stocks, CommonUtils.addDay(new Date(), -180));
+        time2 = System.currentTimeMillis();
+        log.info("buildImportInfos:"+(time2-time)/1000);
+        return stocks;*/
+    }
+
+    public List<Stock> getStocksWithAllBuilds(List<Stock> stocks, boolean isIncludeRealtimeBar){
+        return getStocksWithAllBuilds(stocks, 500, isIncludeRealtimeBar);
+    }
+
     public List<Stock> getStocks(EnumMarket market, boolean isIncludeRealtimeBar){
         List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(market, EnumCate.STOCK);
         //List<StockBasicProjection> list = stkRepository.findAllByCodes(ListUtils.createList("000630","000650","002038","002740","000651","002070","603876","600373","000002","000920","002801","000726","603588","002791","300474"));
@@ -456,6 +548,7 @@ public class StockService {
             map.put("name", bk.getNameAndCode());
             map.put("nameWithLink", bk.getNameAndCodeWithLink());
             map.put("code", bk.getCode());
+            map.put("rps", bk.getRps());
             List<Stock> finalStocks = stocks;
             map.put("stocks", bk.getStocks().stream().filter(stock -> finalStocks.stream().anyMatch(stock::equals)).map(Stock::getCode).collect(Collectors.toList()));
             bksList.add(map);

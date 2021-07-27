@@ -13,9 +13,12 @@ import com.stk123.model.strategy.Strategy;
 import com.stk123.model.strategy.StrategyGroup;
 import com.stk123.model.strategy.StrategyResult;
 import com.stk123.model.strategy.result.FilterResult;
+import lombok.SneakyThrows;
+import org.apache.commons.lang.StringUtils;
+import org.reflections.ReflectionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.reflect.Method;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Strategies {
@@ -27,11 +30,33 @@ public class Strategies {
 
     public static String STRATEGIES_BK = "01a,01b,02b,03a,04a,04b,04c,05a,05b,06a,06b,06c,08a,08b,08c,10a"; //03b,
 
+    @SneakyThrows
+    public static List<Strategy> getStrategies(){
+        List<String> strategies = new ArrayList<>();
+        String[] my = StringUtils.split(STRATEGIES_MY_STOCKS, ",");
+        strategies.addAll(Arrays.asList(my));
+        String[] all = StringUtils.split(STRATEGIES_ALL_STOCKS, ",");
+        strategies.addAll(Arrays.asList(all));
+//        String[] bk = StringUtils.split(STRATEGIES_BK, ",");
+//        strategies.addAll(Arrays.asList(bk));
+        strategies = strategies.stream().distinct().collect(Collectors.toList());
+
+        List<String> finalStrategies = strategies;
+        Set<Method> methods = ReflectionUtils.getAllMethods(Strategies.class,
+                method -> finalStrategies.stream().anyMatch(name -> StringUtils.equalsIgnoreCase(method.getName(), "strategy_"+name) || StringUtils.equalsIgnoreCase(method.getName(), name)));
+        List<Strategy> result = new ArrayList<>();
+        for (Method method : methods) {
+            Strategy strategy = (Strategy<?>) method.invoke(null, null);
+            if(strategy == null) continue;
+            result.add(strategy);
+        }
+        return result;
+    }
 
     /**** 阳线放量 阴线缩量 *****/
-    //2天放量3天缩量
+    //2天放量3天缩量 策略603096新经典20201106，一段跌幅后底部放量(01a)
     public static Strategy strategy_01a() {
-        Strategy<BarSeries> strategy = new Strategy<>("strategy_01a","策略603096新经典20201106，一段跌幅后底部放量(01a)", BarSeries.class);
+        Strategy<BarSeries> strategy = new Strategy<>("strategy_01a","底部放量(01a)", BarSeries.class);
         strategy.addFilter("过去3天到80天的跌幅", BarSeries::getFirst, Filters.filter_001b(3,80,-50,-20));
         strategy.addFilter("底部2天放量3天缩量", Filters.filter_002());
         strategy.addFilter("今日十字星", BarSeries::getFirst, Filters.filter_003(0.5));
