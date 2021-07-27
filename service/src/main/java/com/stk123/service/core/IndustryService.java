@@ -20,9 +20,19 @@ public class IndustryService {
     private StkIndustryRepository stkIndustryRepository;
 
     @Transactional
+    public Map<String, List<IndustryProjection>> findAllToMap(List<String> codes){
+        List<IndustryProjection> all = stkIndustryRepository.findAllByCodeAndSource(codes, Arrays.asList(StringUtils.split(SOURCE_EASTMONEY_GN, ",")));
+        return toMap(all);
+    }
+
+    @Transactional
     public Map<String, List<IndustryProjection>> findAllToMap(){
+        List<IndustryProjection> all = stkIndustryRepository.findAllBySource(Arrays.asList(StringUtils.split(SOURCE_EASTMONEY_GN, ",")));
+        return toMap(all);
+    }
+
+    private Map<String, List<IndustryProjection>> toMap(List<IndustryProjection> all){
         Map<String, List<IndustryProjection>> results = new HashMap<>();
-        List<IndustryProjection> all = stkIndustryRepository.findAllBySource(Arrays.asList(StringUtils.split(DEFAULT_SOURCES, ",")));
         for(IndustryProjection projection : all){
             List<IndustryProjection> list = results.get(projection.getCode());
             if(list == null){

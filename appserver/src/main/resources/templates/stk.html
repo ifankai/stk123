@@ -49,12 +49,6 @@
                     <li class="nav-item">
                         <a href="#" id="nav-4" class="nav-link">新闻</a>
                     </li>
-                    <li class="nav-item">
-                        <a href="#" @click="filterStocks('002121')" class="nav-link">测试</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" @click="filterStocks('000761')" class="nav-link">测试</a>
-                    </li>
                 </ul>
 
             </div>
@@ -208,17 +202,25 @@
                                 <h3 v-text="title" class="card-title"></h3>
                                 <div class="custom-control custom-control-inline custom-radio" style="margin-left: .5rem;margin-top: .01rem;">
                                     <input ref="refBkFilterAll" @change="filterAllBks" class="custom-control-input" type="radio" id="bk-rb-0" name="bkFilter" checked/>
-                                    <label for="bk-rb-0" class="custom-control-label">全部<span v-text="'('+total+')'"></span></label>
+                                    <label for="bk-rb-0" class="custom-control-label">全部<span v-text="' ('+total+')'"></span></label>
                                 </div>
                                 <div class="card-tools">
-                                    <button type="button" @click="sortByRating" class="btn btn-primary btn-xs">按个股评分排序</button>
-                                    <button type="button" @click="sortByRps01" class="btn btn-primary btn-xs ml-1">按个股板块60日涨幅(rps_01)排序</button>
                                     <div class="btn-group ml-1">
-                                        <button v-text="seletedRpsName" type="button" class="btn btn-primary btn-xs"></button>
                                         <button type="button" class="btn btn-primary btn-xs dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">
-                                            <span class="sr-only">RPS排序</span>
+                                            <span v-text="seletedStrategyName"></span>
                                         </button>
-                                        <div class="dropdown-menu" role="menu" style="">
+                                        <div class="dropdown-menu left-10" role="menu">
+                                            <a v-for="strategy in common.strategies" @click="filterByStrategy(strategy.code, strategy.name)" v-text="strategy.name" class="dropdown-item"></a>
+                                        </div>
+                                    </div>
+                                    <div class="btn-group ml-1">
+                                        <button type="button" class="btn btn-primary btn-xs dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">
+                                            <span v-text="seletedRpsName"></span>
+                                        </button>
+                                        <div class="dropdown-menu" role="menu">
+                                            <a @click="sortByRating" class="dropdown-item">按个股评分排序</a>
+                                            <a @click="sortByRps01" class="dropdown-item">按板块60日涨幅排序[rps_01]</a>
+                                            <div class="dropdown-divider"></div>
                                             <a v-for="rps in common.rpss" @click="sortByRps(rps.code, rps.name)" v-text="rps.name+'['+rps.code+']'" class="dropdown-item"></a>
                                         </div>
                                     </div>
@@ -740,6 +742,7 @@
                 title: title,
                 loading: true,
                 seletedRpsName: 'RPS排序',
+                seletedStrategyName: 'Strategy过滤',
                 common:{
                     news:{
                         columns: [{data:"type"},{data:"title"},{data:"infoCreateTime"}],
@@ -762,6 +765,9 @@
             cancelMethods:function (){
                 console.log("cancel")
             },
+            clickRps:function () {
+                this.$refs.btnRps.click();
+            },
             filterAllBks:function (){
                 if (this.$refs.refBkFilterAll.checked) {
                     this.stocks = this._stocks;
@@ -777,13 +783,24 @@
             filterStocks:function (code){
                 this.stocks = this._stocks.filter(stock => stock.code==code)
             },
-            sortByRating:function () {
+            filterByStrategy:function (strategyCode, strategyName){
                 Pace.start();
+                this.seletedStrategyName = strategyName+'['+strategyCode+']';
+                let _this = this;
+                axios.get("/strategy/"+strategyCode+"/"+codeType+"/"+code).then(function (res) {
+                    parseStocks(_this, res);
+                });
+                Pace.stop();
+            },
+            sortByRating:function (e) {
+                Pace.start();
+                this.seletedRpsName = e.target.innerText;
                 this.stocks = this.stocks.concat().sort((a, b) => b.rating.total - a.rating.total)
                 Pace.stop();
             },
-            sortByRps01:function () {
+            sortByRps01:function (e) {
                 Pace.start();
+                this.seletedRpsName = e.target.innerText;
                 this.stocks = this.stocks.concat().sort((a, b) => {
                     let n = Math.max(...b.bks.map(bk => bk.rps.rps_01.percentile)) - Math.max(...a.bks.map(bk => bk.rps.rps_01.percentile));
                     if(n === 0){
@@ -812,6 +829,10 @@
             let _this = this;
             axios.get("/rps/list").then(function(res){
                 _this.common.rpss = res.data.data;
+            });
+
+            axios.get("/strategy/list").then(function(res){
+                _this.common.strategies = res.data.data;
             });
 
             axios.get("/"+codeType+"/" + code).then(function (res) {

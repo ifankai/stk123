@@ -50,7 +50,7 @@ public class BkController {
         List<Stock> stocks = bks.get(0).getStocks();
 
         if(Stocks.BKsEasymoneyGn == null){
-            Stocks.BKsEasymoneyGn = Collections.synchronizedList(stockService.getBks(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn));
+            Stocks.BKsEasymoneyGn = Collections.synchronizedList(stockService.getBksAndCalcBkRps(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn));
         }
         stocks = stockService.getStocksWithBks(stocks, Stocks.BKsEasymoneyGn, false);
         if(StringUtils.isNotEmpty(rpsCode)){

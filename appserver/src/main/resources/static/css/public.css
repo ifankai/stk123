@@ -57,7 +57,7 @@ label:not(.form-check-label):not(.custom-file-label) {
     line-height: 1.45rem;
 }
 .card-header {
-    padding: .4rem .4rem;
+    padding: .4rem .4rem .2rem .4rem;
 }
 .card-body {
     padding: .2rem .4rem;
@@ -84,4 +84,7 @@ label:not(.form-check-label):not(.custom-file-label) {
 .callout{
     margin-bottom: 0;
     padding: .4rem;
+}
+.left-10{
+    left: -12rem;
 }
