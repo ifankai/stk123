@@ -82,8 +82,8 @@ label:not(.form-check-label):not(.custom-file-label) {
     margin-bottom: 0;
 }
 .callout{
-    margin-bottom: 0;
-    padding: .4rem;
+    margin: 0.2rem 0;
+    padding: .2rem;
 }
 .left-10{
     left: -12rem;

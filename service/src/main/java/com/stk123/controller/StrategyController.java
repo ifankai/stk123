@@ -35,19 +35,12 @@ public class StrategyController {
     @Autowired
     private BacktestingService backtestingService;
 
-    @RequestMapping(value = {"/{strategyCode}"})
+    @RequestMapping(value = {"/{strategyCode}", "/{strategyCode}/{type}/{codes}"})
     @ResponseBody
     @JsonView(View.All.class)
-    public RequestResult strategy(@PathVariable(value = "strategyCode")String strategyCode){
-        return rps(strategyCode, null, null);
-    }
-
-    @RequestMapping(value = {"/{strategyCode}/{type}/{codes}"})
-    @ResponseBody
-    @JsonView(View.All.class)
-    public RequestResult rps(@PathVariable(value = "strategyCode")String strategyCode,
-                             @PathVariable(value = "type", required = false)String type,
-                             @PathVariable(value = "codes", required = false)String codes){
+    public RequestResult strategy(@PathVariable(value = "strategyCode")String strategyCode,
+                                  @PathVariable(value = "type", required = false)String type,
+                                  @PathVariable(value = "codes", required = false)String codes){
         List<Stock> stocks;
         if(StringUtils.isNotEmpty(type) && StringUtils.isNotEmpty(codes)){
             if("stock".equals(type)) {

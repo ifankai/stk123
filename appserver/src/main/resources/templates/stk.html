@@ -200,9 +200,9 @@
                         <div class="card" v-if="!loading">
                             <div class="card-header">
                                 <h3 v-text="title" class="card-title"></h3>
-                                <div class="custom-control custom-control-inline custom-radio" style="margin-left: .5rem;margin-top: .01rem;">
-                                    <input ref="refBkFilterAll" @change="filterAllBks" class="custom-control-input" type="radio" id="bk-rb-0" name="bkFilter" checked/>
-                                    <label for="bk-rb-0" class="custom-control-label">全部<span v-text="' ('+total+')'"></span></label>
+                                <div class="custom-control custom-control-inline custom-checkbox" style="margin-left: .5rem;margin-top: .01rem;">
+                                    <input v-model="selectAllStocks" class="custom-control-input" type="checkbox" id="bk-rb-0" name="bkFilterAll" checked/>
+                                    <label for="bk-rb-0" class="custom-control-label">全部股票<span v-text="' ('+total+')'"></span></label>
                                 </div>
                                 <div class="card-tools">
                                     <div class="btn-group ml-1">
@@ -233,11 +233,28 @@
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="callout callout-info">
-                                            <!-- checkbox -->
+                                            <!-- 板块 -->
                                             <div class="form-group">
                                                 <div v-for="(bk,index) in bksTopN" :key="bk.code" class="custom-control custom-control-inline custom-radio">
-                                                    <input @change="filterBk(bk)" class="custom-control-input" type="radio" :id="'bk-rb-'+bk.code" name="bkFilter"/>
+                                                    <input @change="filterBk(bk)" :value="bk.code" v-model="bkSelected" :id="'bk-rb-'+bk.code" class="custom-control-input" type="radio" name="bkFilter"/>
                                                     <label :for="'bk-rb-'+bk.code" v-text="bk.name+' ('+bk.stocks.length+')'" class="custom-control-label"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="callout callout-info">
+                                            <!-- 牛散 -->
+                                            <div class="form-group">
+                                                <div class="custom-control custom-control-inline custom-checkbox">
+                                                    <input v-model="selectAllNiusan" class="custom-control-input" type="checkbox" id="niusan-cb-0" name="niusanFilter" checked/>
+                                                    <label for="niusan-cb-0" class="custom-control-label">全部牛散</label>
+                                                </div>
+                                                <div v-for="(niusan,index) in common.niusans" :key="niusan.key" class="custom-control custom-control-inline custom-checkbox">
+                                                    <input v-model="niusanSelected" :value="niusan.key" :id="'niusan-cb-'+niusan.key" number class="custom-control-input" type="checkbox" name="niusanFilter"/>
+                                                    <label :for="'niusan-cb-'+niusan.key" v-text="niusan.text+' ('+niusan.count+')'" class="custom-control-label"></label>
                                                 </div>
                                             </div>
                                         </div>
@@ -720,6 +737,7 @@
         console.log(data);
         let stocks = data.stocks;
         let i = 1;
+        _this.common.niusans.forEach(ns => ns.count=0);
         stocks.forEach(stock => {
             stock.order = i++;
             stock.news.forEach(n => {
@@ -727,7 +745,18 @@
                 n.title = '<a target="_blank" href="'+n.urlTarget+'">'+n.title+'</a>';
             })
             stock.news = {data: stock.news}
+            stock.owners.forEach(owner => {
+                _this.common.niusans.forEach(ns => {
+                    if(owner.orgName.indexOf(ns.text) >= 0) ns.count++;
+                });
+            })
+            /*_this.common.niusans.forEach(ns => {
+                if(ns.count > 0) _this.niusanSelected.push(ns.key);
+            });*/
         });
+        _this.common.niusans = _this.common.niusans.filter(ns => ns.count > 0);
+        _this.common.niusans.sort((a,b) => b.count - a.count);
+
         _this.stocks = stocks;
         _this._stocks = stocks;
         _this.bks = data.bks;
@@ -743,6 +772,8 @@
                 loading: true,
                 seletedRpsName: 'RPS排序',
                 seletedStrategyName: 'Strategy过滤',
+                niusanSelected: [],
+                bkSelected: [],
                 common:{
                     news:{
                         columns: [{data:"type"},{data:"title"},{data:"infoCreateTime"}],
@@ -751,11 +782,21 @@
                         columnDefs: [
                             { className: "text-nowrap", "targets": [ 0,2 ] }
                         ]
-                    }
+                    },
+                    niusans:[]
                 },
                 total:0,
                 stocks:[],
                 bks:[]
+            }
+        },
+        watch:{
+            niusanSelected:function (newVal, oldVal) {
+                if(newVal.length > 0){
+                    let nsName = this.common.niusans.map(ns => ns.text);
+                    this.stocks = this.stocks.filter(stock =>  stock.owners.find(owner => nsName.includes(owner.orgName)) );
+                }else{
+                }
             }
         },
         methods:{
@@ -823,7 +864,33 @@
         computed: {
             bksTopN: function () {
                 return this.bks.slice(0, 10);
-            }  
+            },
+            selectAllStocks:{
+                get: function () {
+                    return this.stocks.length === this._stocks.length;
+                },
+                set: function (value) {
+                    if(value) {
+                        this.stocks = this._stocks;
+                        this.bkSelected = [];
+                        this.niusanSelected = [];
+                    }
+                }
+            },
+            selectAllNiusan: {
+                get: function () {
+                    return this.common.niusans ? this.niusanSelected.length == this.common.niusans.length : false;
+                },
+                set: function (value) {
+                    let selected = [];
+                    if (value) {
+                        this.common.niusans.forEach(function (niusan) {
+                            selected.push(niusan.key);
+                        });
+                    }
+                    this.niusanSelected = selected;
+                }
+            }
         },
         mounted() {
             let _this = this;
@@ -833,6 +900,11 @@
 
             axios.get("/strategy/list").then(function(res){
                 _this.common.strategies = res.data.data;
+            });
+
+            axios.get("/dict/20").then(function(res){
+                _this.common.niusans = res.data.data;
+                console.log(_this.common.niusans)
             });
 
             axios.get("/"+codeType+"/" + code).then(function (res) {
@@ -873,6 +945,8 @@
         },
         updated(){
             console.log('updated')
+            console.log('niusanSelected', this.niusanSelected)
+            console.log('bkSelected', this.bkSelected)
         }
     });
 

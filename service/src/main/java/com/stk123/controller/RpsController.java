@@ -28,14 +28,7 @@ public class RpsController {
     @Autowired
     private StockService stockService;
 
-    @RequestMapping(value = {"/{rpsCode}"})
-    @ResponseBody
-    @JsonView(View.All.class)
-    public RequestResult rps(@PathVariable(value = "rpsCode")String rpsCode){
-        return rps(rpsCode, null, null);
-    }
-
-    @RequestMapping(value = {"/{rpsCode}/{type}/{codes}"})
+    @RequestMapping(value = {"/{rpsCode}", "/{rpsCode}/{type}/{codes}"})
     @ResponseBody
     @JsonView(View.All.class)
     public RequestResult rps(@PathVariable(value = "rpsCode")String rpsCode,

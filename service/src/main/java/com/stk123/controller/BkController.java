@@ -34,14 +34,7 @@ public class BkController {
     @Autowired
     private StockService stockService;
 
-    @RequestMapping(value = {"/{bkCode}"})
-    @ResponseBody
-    @JsonView(View.All.class)
-    public RequestResult bks(@PathVariable(value = "bkCode")String bkCode){
-        return bks(bkCode, null);
-    }
-
-    @RequestMapping(value = {"/{bkCode}/{rpsCode}"})
+    @RequestMapping(value = {"/{bkCode}", "/{bkCode}/{rpsCode}"})
     @ResponseBody
     @JsonView(View.All.class)
     public RequestResult bks(@PathVariable(value = "bkCode")String bkCode,

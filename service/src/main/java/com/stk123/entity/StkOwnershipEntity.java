@@ -1,5 +1,7 @@
 package com.stk123.entity;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.stk123.model.json.View;
 import lombok.*;
 
 import javax.persistence.*;
@@ -19,6 +21,7 @@ public class StkOwnershipEntity implements Serializable {
 
     @Id
     @Column(name = "FN_DATE", nullable = true, length = 8)
+    @JsonView(View.All.class)
     private String fnDate;
 
     @Basic
@@ -39,9 +42,11 @@ public class StkOwnershipEntity implements Serializable {
 
     @Basic
     @Column(name = "NUM_CHANGE_RATE", nullable = true, precision = 2)
+    @JsonView(View.All.class)
     private Double numChangeRate;
 
     @Transient
+    @JsonView(View.All.class)
     private String orgName;
 
 

@@ -106,6 +106,7 @@ public class Stock {
     private List<Stock> stocks; //板块包含的所有股票
 
     private StkHolderEntity holder; //最新股东人数,人均持股金额
+    @JsonView(View.All.class)
     private List<StkOwnershipEntity> owners; //十大流通股股东
     @JsonView(View.All.class)
     private List<StkNewsEntity> news;

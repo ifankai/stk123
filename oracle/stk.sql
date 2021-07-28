@@ -2999,7 +2999,8 @@ update stk_holder a set a.ten_owner_change = (select u.ten_owner_change from
  where a.code=u.code and a.fn_date=u.fn_date)
 
 select count(1) from stk_holder where fn_date='20210331' and holding_amount>100000;
-select * from stk_ownership where code='688063';
+select * from stk_ownership where org_id=237543 and fn_date='20210331';
+select * from stk_organization where name = '赵建平';
 
 
 select s.code, s.name, t.fn_date, t.holder, t.holding_amount, t.holder_change
