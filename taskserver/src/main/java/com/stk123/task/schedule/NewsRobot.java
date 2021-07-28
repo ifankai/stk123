@@ -77,7 +77,7 @@ public class NewsRobot {
 			List<Stk> stks = JdbcUtils.list(conn, "select code,name from stk_hk order by code", Stk.class);
 			//List<Stk> stks = JdbcUtils.list(conn, "select code,name from stk_hk where code='00853' order by code", Stk.class);
 			for(Stk stk : stks){
-				System.out.println(stk.getCode());
+				log.info(stk.getCode());
 				Index index =  new Index(conn,stk.getCode(),stk.getName());
 				List<Map> news = parseNewsFromSinaHK(index, date);
 				insert(conn, index, news);
@@ -94,7 +94,7 @@ public class NewsRobot {
 			List<Stk> stks = JdbcUtils.list(conn, "select code,name from stk_cn order by code", Stk.class);
 			//List<Stk> stks = JdbcUtils.list(conn, "select code,name from stk_cn where code='000009' order by code", Stk.class);
 			for(Stk stk : stks){
-				System.out.println(stk.getCode());
+                log.info(stk.getCode());
 				Index index =  new Index(conn,stk.getCode(),stk.getName());
 				List<Map> news = parseNewsFromSina(index, date);
 				insert(conn, index, news);
