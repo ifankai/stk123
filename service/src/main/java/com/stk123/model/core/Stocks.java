@@ -24,6 +24,8 @@ public class Stocks {
     public static void clear(){
         Stocks.StocksAllCN = null;
         Stocks.BKsEasymoneyGn = null;
+        Stocks.StocksMass = null;
+        Stocks.StocksH = null;
     }
 
 }

@@ -10,6 +10,7 @@ import com.stk123.model.strategy.StrategyResult;
 import com.stk123.model.strategy.sample.Strategies;
 import com.stk123.util.ServiceUtils;
 import lombok.SneakyThrows;
+import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
 import org.reflections.ReflectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@CommonsLog
 public class BacktestingService {
 
     ParameterizedTypeReference<RequestResult<LinkedHashMap<String, BarSeries>>> typeRef = new ParameterizedTypeReference<RequestResult<LinkedHashMap<String, BarSeries>>>(){};
@@ -72,7 +74,10 @@ public class BacktestingService {
     }
 
     public StrategyBacktesting backtesting(List<String> codes, List<String> strategies, String startDate, String endDate, boolean isIncludeRealtimeBar) {
+        long start = System.currentTimeMillis();
         List<Stock> stocks = stockService.buildStocks(codes);
+        long end = System.currentTimeMillis();
+        log.info("buildStocks cost:"+(end-start)/1000.0);
         return backtestingOnStock(stocks, strategies, startDate, endDate, isIncludeRealtimeBar);
     }
 

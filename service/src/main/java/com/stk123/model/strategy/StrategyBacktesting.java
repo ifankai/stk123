@@ -295,9 +295,21 @@ public class StrategyBacktesting {
         }
     }
 
-    public synchronized static <V> List<V> run(List<Callable<V>> tasks, int poolSize) {
+    public static <V> List<V> run(List<Callable<V>> tasks, int poolSize) {
+        long start = System.currentTimeMillis();
+
+        List<V> results = new ArrayList<>();
+        tasks.parallelStream().forEach(task ->{
+            try {
+                V v = task.call();
+                results.add(v);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
         // 创建一个线程池
-        ExecutorService exec = Executors.newFixedThreadPool(poolSize);
+        /*ExecutorService exec = Executors.newFixedThreadPool(poolSize);
         // 调用CompletionService的take方法是，会返回按完成顺序放回任务的结果
         CompletionService pool = new ExecutorCompletionService(exec);
         for (int i = 0; i < tasks.size(); i++) {
@@ -320,7 +332,9 @@ public class StrategyBacktesting {
             }
         }
         // 关闭线程池
-        exec.shutdown();
+        exec.shutdown();*/
+        long end = System.currentTimeMillis();
+        log.info("strategy backtesting run end, cost:"+(end-start)/1000.0);
         return results;
     }
 }

@@ -38,7 +38,7 @@
                         <a href="../../index3.html" class="nav-link">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a href="#" id="nav-1" class="nav-link">日线</a>
+<!--                        <a href="#" id="nav-1" class="nav-link">日线</a>-->
                     </li>
                     <li class="nav-item">
                         <a href="#" id="nav-2" class="nav-link">周线</a>
@@ -205,6 +205,14 @@
                                     <label for="bk-rb-0" class="custom-control-label">全部股票<span v-text="' ('+total+')'"></span></label>
                                 </div>
                                 <div class="card-tools">
+                                    <div class="btn-group ml-1">
+                                        <button type="button" class="btn btn-primary btn-xs dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">
+                                            <span v-text="seletedTabName"></span>
+                                        </button>
+                                        <div class="dropdown-menu" role="menu">
+                                            <a href="#" id="nav-1" class="dropdown-item nav-link">日线</a>
+                                        </div>
+                                    </div>
                                     <div class="btn-group ml-1">
                                         <button type="button" class="btn btn-primary btn-xs dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">
                                             <span v-text="seletedStrategyName"></span>
@@ -770,10 +778,11 @@
             return {
                 title: title,
                 loading: true,
+                seletedTabName: '日线',
                 seletedRpsName: 'RPS排序',
                 seletedStrategyName: 'Strategy过滤',
-                niusanSelected: [],
                 bkSelected: [],
+                niusanSelected: [],
                 common:{
                     news:{
                         columns: [{data:"type"},{data:"title"},{data:"infoCreateTime"}],
@@ -955,6 +964,7 @@
 
     $("[id^='nav-']").click(function (e) {
         e.preventDefault();
+        console.log('kkkkkkkkkkk')
         var flag = $(this).prop("id").substring(3,6);
         $("[href^='#tab"+flag+"']").click()
     });

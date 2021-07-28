@@ -78,6 +78,11 @@ public class StockService {
     @Autowired
     private StockAsyncService stockAsyncService;
 
+    public List<Stock> buildStocks(EnumMarket market, EnumCate cate){
+        List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(market, cate);
+        return buildStocksWithProjection(list);
+    }
+
     @Transactional
     public List<Stock> buildStocks(List<String> codes) {
         List<StockBasicProjection> list = BaseRepository.findAll1000(codes,
@@ -469,15 +474,13 @@ public class StockService {
 
     @SneakyThrows
     public List<Stock> getStocksWithAllBuildsAsync(List<Stock> stocks, int barSize, boolean isIncludeRealtimeBar){
-        long time = System.currentTimeMillis();
-        log.info("getStocksWithAllBuildsAsync start:"+time);
+        long start = System.currentTimeMillis();
         Future<List<Stock>> futureBs = stockAsyncService.buildBarSeriesAndCapitalFlow(stocks, barSize, isIncludeRealtimeBar);
         Future<List<Stock>> futureIndustries = stockAsyncService.buildIndustries(stocks);
         Future<List<Stock>> futureHolder = stockAsyncService.buildHolder(stocks);
         Future<List<Stock>> futureOwner = stockAsyncService.buildOwners(stocks);
         Future<List<Stock>> futureNews = stockAsyncService.buildNews(stocks, CommonUtils.addDay(new Date(), -180));
         Future<List<Stock>> futureInfo = stockAsyncService.buildImportInfos(stocks, CommonUtils.addDay(new Date(), -180));
-        log.info("getStocksWithAllBuildsAsync:"+time);
         while (true) {
             if (futureBs.isDone() && futureIndustries.isDone() && futureHolder.isDone() && futureOwner.isDone()
                 && futureNews.isDone() && futureInfo.isDone()) {
@@ -485,8 +488,8 @@ public class StockService {
             }
             Thread.sleep(20);
         }
-        long time2 = System.currentTimeMillis();
-        log.info("getStocksWithAllBuildsAsync:"+(time2-time)/1000);
+        long end = System.currentTimeMillis();
+        log.info("getStocksWithAllBuildsAsync cost:"+(end-start)/1000);
         return stocks;
     }
 
