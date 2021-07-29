@@ -45,6 +45,9 @@ public class RpsController {
             }else{
                 stocks = Collections.EMPTY_LIST;
             }
+            if (Stocks.BKsEasymoneyGn == null) {
+                Stocks.BKsEasymoneyGn = Collections.synchronizedList(stockService.getBksAndCalcBkRps(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn));
+            }
             stocks = stockService.getStocksWithBks(stocks, Stocks.BKsEasymoneyGn, false);
         }else {
             if (Stocks.StocksAllCN == null) {
