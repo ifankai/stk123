@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/strategy")
@@ -64,11 +65,7 @@ public class StrategyController {
         }
         StrategyBacktesting strategyBacktesting = backtestingService.backtestingOnStock(stocks, Collections.singletonList(strategyCode));
         List<StrategyResult> results = strategyBacktesting.getPassedStrategyResult();
-        List<Stock> finalStocks = new ArrayList<>();
-        for(StrategyResult strategyResult : results){
-            Stock stock = stocks.stream().filter(stock1 -> stock1.getCode().equals(strategyResult.getCode())).findFirst().orElse(null);
-            finalStocks.add(stock);
-        }
+        List<Stock> finalStocks = results.stream().map(StrategyResult::getStock).distinct().collect(Collectors.toList());
         finalStocks = finalStocks.subList(0, Math.min(200, finalStocks.size()));
 
         Map result = stockService.getStocksAsMap(finalStocks);

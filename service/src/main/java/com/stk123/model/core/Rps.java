@@ -1,24 +1,21 @@
 package com.stk123.model.core;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.common.util.ListUtils;
-import com.stk123.model.json.View;
 import com.stk123.model.strategy.Strategy;
-import com.stk123.model.strategy.StrategyGroup;
 import com.stk123.model.strategy.sample.Strategies;
-import lombok.Data;
 import lombok.SneakyThrows;
-import lombok.ToString;
-import org.apache.commons.collections.map.SingletonMap;
+import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
 import org.reflections.ReflectionUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-@Data
-@ToString
+@CommonsLog
 public class Rps{
 
     public final static String CODE_BK_60 = "rps_01";
@@ -35,79 +32,41 @@ public class Rps{
     public final static String CODE_STOCK_DAY_3_VOLUME = "rps_11";
     public final static String CODE_STOCK_DAY_120_VOLUME = "rps_12";
 
-    private static Map<String, String> CODE_NAME = new HashMap<>();
+    private static Map<String, Strategy> CODE_STRATEGY = new HashMap<>();
 
     static{
         Set<Method> methods = ReflectionUtils.getAllMethods(Strategies.class);
         for(Method method : methods) {
             if(StringUtils.startsWith(method.getName(), "rps")){
                 try {
-                    Object obj = method.invoke(null, null);
-                    if(obj instanceof Strategy) {
-                        Strategy strategy = (Strategy<?>) obj;
-                        CODE_NAME.put(strategy.getCode(), strategy.getName());
-                    }else if(obj instanceof StrategyGroup){
-                        StrategyGroup strategyGroup = (StrategyGroup) obj;
-                        CODE_NAME.put(strategyGroup.getCode(), strategyGroup.getName());
-                    }
+                    Strategy strategy = (Strategy<?>) method.invoke(null, null);
+                    CODE_STRATEGY.put(strategy.getCode(), strategy);
                 } catch (IllegalAccessException | InvocationTargetException e) {
-                    e.printStackTrace();
+                    log.error(e);
                 }
             }
         }
     }
 
-    public static List<String> getAllRpsCodeOnStock(){
-        return ListUtils.createList(Strategies.rps_12().getCode(),
-                Strategies.rps_04().getCode(), Strategies.rps_05().getCode(),
-                Strategies.rps_06a().getCode(), Strategies.rps_06b().getCode(), Strategies.rps_07().getCode(),
-                Strategies.rps_08().getCode(), Strategies.rps_09().getCode(), Strategies.rps_10().getCode(),
-                Strategies.rps_11().getCode());
+    public static List<Strategy> getAllRpsStrategyOnStock(){
+        return ListUtils.createList(Strategies.rps_12(), Strategies.rps_04(), Strategies.rps_05(),
+                Strategies.rps_06a(), Strategies.rps_06b(), Strategies.rps_07(), Strategies.rps_08(),
+                Strategies.rps_09(), Strategies.rps_10(), Strategies.rps_11());
     }
 
     @SneakyThrows
-    public static List<Strategy> newRpsStrategies(String rpsCode){
+    public static Strategy newRpsStrategies(String rpsCode){
         Set<Method> methods = ReflectionUtils.getAllMethods(Strategies.class,
                 method -> StringUtils.equalsIgnoreCase(method.getName(), rpsCode));
-        List<Strategy> strategies = new ArrayList<>();
         if(methods.size() >= 1) {
             for(Method method : methods) {
-                Object obj = method.invoke(null, null);
-                if(obj instanceof Strategy) {
-                    strategies.add((Strategy<?>) obj);
-                }else if(obj instanceof StrategyGroup){
-                    strategies.addAll(((StrategyGroup) obj).getStrategies());
-                }
+                return (Strategy<?>) method.invoke(null, null);
             }
-        }else {
-            throw new RuntimeException("Can not find matched method name in Strategies.class:" + rpsCode);
         }
-        return strategies;
+        throw new RuntimeException("Can not find matched method name in Strategies.class:" + rpsCode);
     }
 
-
-    private List<Strategy> rpsStrategies;
-    @JsonView(View.All.class)
-    private String code;
-    @JsonView({View.Score.class, View.All.class})
-    private Double value;
-    private Integer order;
-    @JsonView({View.Score.class, View.All.class})
-    private Double percentile;
-
-    public Rps(String code, List<Strategy> rpsStrategies){
-        this.code = code;
-        this.rpsStrategies = rpsStrategies;
-    }
-
-    public String getName(){
-        return CODE_NAME.get(this.code);
-    }
-    public static String getName(String code){
-        return CODE_NAME.get(code.toLowerCase());
-    }
-
-    public static String getNameAndCode(String code){
-        return Rps.getName(code)+"["+code+"]";
+    public static Strategy getRpsStrategy(String code){
+        return CODE_STRATEGY.get(code);
     }
 }

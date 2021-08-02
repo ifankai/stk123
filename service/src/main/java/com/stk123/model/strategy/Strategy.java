@@ -41,22 +41,23 @@ public class Strategy<X> {
     private int countOfAllStrategyResult; //Strategy总共执行次数，即StrategyResult的个数
     @Getter
     private int countOfPassedStrategyResult; //Strategy执行通过的次数，即filterExecutors都通过的次数
-    @Getter
+
     private int countOfPassedExpectStrategyResult; //expect filter通过次数
 
-    @Getter
+    @Setter
     private List<StrategyResult> strategyResults = Collections.synchronizedList(new ArrayList<>());
 
     @Getter
-    private Integer topN = null;
-    @Getter
-    private Boolean asc = true;
+    private Integer topN = Integer.MAX_VALUE;
+//    @Getter
+//    private Boolean asc = true;
     @Getter@Setter
     private boolean canTestHistory = true;
     @Getter@Setter
     private StrategyBacktesting strategyBacktesting;
-    @Getter@Setter
-    private double weight = 1d; //策略权重
+    //@Getter@Setter
+    //private double weight = 1d; //策略权重
+    private int filterCounter = 1;
 
     public Strategy(String code, String name, Class<X> xClass) {
         this.code = code;
@@ -68,18 +69,22 @@ public class Strategy<X> {
         this.expectFilterExecutor = new FilterExecutor(null,null, x->x, expectFilter);
     }*/
 
+    public String getNameWithCode(){
+        return this.name+"["+this.code+"]";
+    }
+
     public Strategy<X> setSortable(int topN){
         this.topN = topN;
         //this.canTestHistory = false;
         return this;
     }
-    public Strategy setAsc(boolean asc){
-        this.asc = asc;
-        return this;
-    }
 
     public boolean isSortable() {
         return this.topN != null;
+    }
+
+    public List<StrategyResult> getStrategyResults(){
+        return this.strategyResults;
     }
 
     /**
@@ -88,38 +93,46 @@ public class Strategy<X> {
      */
     public void addFilter(String code, String name, Function<X, ?> function, Filter<?> filter){
         this.filterExecutors.add(new FilterExecutor(code, name, this, function, filter));
-        checkSortableFilter();
+        //checkSortableFilter();
+    }
+    public void addFilter(String code, String name, Function<X, ?> function, Filter<?> filter,double weight){
+        this.filterExecutors.add(new FilterExecutor(code, name, this, function, filter, true, weight));
+    }
+    public void addFilter(String code, String name, Function<X, ?> function, Filter<?> filter, boolean asc, double weight){
+        this.filterExecutors.add(new FilterExecutor(code, name, this, function, filter, asc, weight));
+    }
+    public void addFilter(String code, String name, Function<X, ?> function, Filter<?> filter, boolean asc){
+        this.filterExecutors.add(new FilterExecutor(code, name, this, function, filter, asc));
     }
     public void addFilter(String name, Function<X, ?> function, Filter<?> filter){
-        this.filterExecutors.add(new FilterExecutor(null, name, this, function, filter));
-        checkSortableFilter();
+        this.filterExecutors.add(new FilterExecutor(this.getCode()+"_"+(filterCounter++), name, this, function, filter));
     }
     public void addFilter(String code, String name, Filter<X> filter){
         addFilter(code, name, (x)->x, filter);
     }
+    public void addFilter(String name, Filter<X> filter, boolean asc, double weight){
+        addFilter(this.getCode()+"_"+(filterCounter++), name, (x)->x, filter, asc, weight);
+    }
+    public void addFilter(String name, Filter<X> filter, boolean asc){
+        addFilter(this.getCode()+"_"+(filterCounter++), name, (x)->x, filter, asc);
+    }
+    public void addFilter(String name, Filter<X> filter, double weight){
+        addFilter(this.getCode()+"_"+(filterCounter++), name, (x)->x, filter, weight);
+    }
     public void addFilter(String name, Filter<X> filter){
-        addFilter(null, name, (x)->x, filter);
+        addFilter(this.getCode()+"_"+(filterCounter++), name, (x)->x, filter);
     }
     public void addFilter(Function<X, ?> function, Filter<?> filter){
-        addFilter(null, null, function, filter);
+        addFilter(this.getCode()+"_"+(filterCounter++), null, function, filter);
     }
     public void addFilter(Filter<X> filter){
-        addFilter(null, null, (x)->x, filter);
+        addFilter(this.getCode()+"_"+(filterCounter++), null, (x)->x, filter);
     }
 
     public int getFilterCount(){
         return this.filterExecutors.size();
     }
 
-    private void checkSortableFilter(){
-        if(this.isSortable()){
-            long count = this.filterExecutors.stream().filter(fe -> fe.getFilter() instanceof Sortable).count();
-            if(count > 1){
-                throw new RuntimeException("Sortable Strategy only allow one sortable filter, but now have more than one.");
-            }
-        }
-    }
-    
     /**
      * @TODO 可以增加多个expect filter
      */
@@ -233,6 +246,10 @@ public class Strategy<X> {
             sb.append(table.toHtml());
         }
         return sb.toString();
+    }
+
+    public FilterExecutor getFilterExecutor(String code){
+        return this.filterExecutors.stream().filter(fe -> fe.getCode().equals(code)).findFirst().orElse(null);
     }
 
     @Override

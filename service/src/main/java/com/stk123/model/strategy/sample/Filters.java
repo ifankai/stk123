@@ -10,7 +10,6 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,7 +54,7 @@ public class Filters {
     }
 
     public static Filter<Stock> filter_mustRpsGreatThan(String rpsCode, int n) {
-        return (strategy, stock) -> stock.getMaxRpsInAllBk(rpsCode).getPercentile() >= n ? FilterResult.TRUE() : FilterResult.FALSE();
+        return (strategy, stock) -> stock.getMaxBkRpsInBks(rpsCode).getPercentile() >= n ? FilterResult.TRUE() : FilterResult.FALSE();
     }
 
     public static Filter<Stock> filter_mustBarSmallUpperShadow(double percent) {
@@ -900,7 +899,7 @@ public class Filters {
                 return FilterResult.FALSE("score:"+sum);
             }
             //return FilterResult.Sortable((double) sum).addResult("score:"+sum+"<br/>"+rating.toHtml());
-            return FilterResult.Sortable((double) sum).addResult(rating.toHtml());
+            return FilterResult.Sortable((double) sum).addResult(rating);
         };
     }
 
@@ -979,30 +978,27 @@ public class Filters {
 
 
     //站上K线个数
-    public static Filter<Stock> filter_rps_01(String rpsCode, int days) {
+    public static Filter<Stock> filter_rps_01(int days) {
         return (strgy, stock) -> {
             if(stock.getBarSeries().size() < 60){
-                stock.setRpsValue(rpsCode, 0.0);
-                return FilterResult.TRUE();
+                return FilterResult.FALSE();
             }
             Bar today = stock.getBar();
             int cnt = stock.getBar().getBarCount(days, bar -> today.getClose() > bar.getClose());
-            stock.setRpsValue(rpsCode, (double) cnt);
-            return FilterResult.TRUE();
+            //stock.setRpsValue(rpsCode, (double) cnt);
+            return FilterResult.Sortable(cnt);
         };
     }
 
     //最低点涨幅
-    public static Filter<Stock> filter_rps_02(String rpsCode, int days) {
+    public static Filter<Stock> filter_rps_02(int days) {
         return (strgy, stock) -> {
             if(stock.getBarSeries().size() < 60){
-                stock.setRpsValue(rpsCode, 0.0);
-                return FilterResult.TRUE();
+                return FilterResult.FALSE();
             }
             Bar today = stock.getBar();
             double lowest = stock.getBar().getLowest(days, Bar.EnumValue.C);
-            stock.setRpsValue(rpsCode, today.getClose()/lowest);
-            return FilterResult.TRUE();
+            return FilterResult.Sortable(today.getClose()/lowest);
         };
     }
 }

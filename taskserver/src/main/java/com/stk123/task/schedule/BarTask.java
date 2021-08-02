@@ -497,23 +497,23 @@ public class BarTask extends AbstractTask {
 
                 String rowCode = null;
                 for(StrategyResult strategyResult : results){
-                    Stock stock = stocks.stream().filter(stk -> stk.getCode().equals(strategyResult.getCode())).findFirst().orElse(null);
+                    Stock stock = strategyResult.getStock(); //stocks.stream().filter(stk -> stk.getCode().equals(strategyResult.getCode())).findFirst().orElse(null);
 
                     List<String> sources = new ArrayList<>();
                     for (StockWrapper stockWrapper : allList) {
-                        if (stockWrapper.getCode().equals(strategyResult.getCode())) {
+                        if (stockWrapper.getCode().equals(stock.getCode())) {
                             Set<String> stockWrapperSources = stockWrapper.getSources();
                             sources.addAll(stockWrapperSources);
                         }
                     }
 
-                    StrategyBacktesting backtesting = backtestingService.backtestingAllHistory(strategyResult.getCode(), strategyResult.getStrategy().getCode(), false);
+                    StrategyBacktesting backtesting = backtestingService.backtestingAllHistory(stock.getCode(), strategyResult.getStrategy().getCode(), false);
 
                     boolean displayCode = true;
-                    if(strategyResult.getCode().equals(rowCode)){
+                    if(stock.getCode().equals(rowCode)){
                         displayCode = false;
                     }else{
-                        rowCode = strategyResult.getCode();
+                        rowCode = stock.getCode();
                     }
 
                     List<String> data = ListUtils.createList(
@@ -565,10 +565,7 @@ public class BarTask extends AbstractTask {
 
     public void analyseAllStocks(){
         try {
-            if(Stocks.StocksAllCN == null) {
-                Stocks.StocksAllCN = stockService.getStocksWithBksAndCalcBkRps(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn, realtime != null);
-            }
-            List<Stock> stocks = Stocks.StocksAllCN;
+            List<Stock> stocks = Stocks.getStocksWithBks();
             //stockService.buildHolder(StocksAllCN);
 
             String strategies = Strategies.STRATEGIES_ALL_STOCKS;
@@ -589,15 +586,15 @@ public class BarTask extends AbstractTask {
 
                 String rowCode = null;
                 for (StrategyResult strategyResult : results) {
-                    Stock stock = stocks.stream().filter(stk -> stk.getCode().equals(strategyResult.getCode())).findFirst().orElse(null);
+                    Stock stock = strategyResult.getStock(); //stocks.stream().filter(stk -> stk.getCode().equals(strategyResult.getCode())).findFirst().orElse(null);
 
-                    StrategyBacktesting backtesting = backtestingService.backtestingAllHistory(strategyResult.getCode(), strategyResult.getStrategy().getCode(), false);
+                    StrategyBacktesting backtesting = backtestingService.backtestingAllHistory(stock.getCode(), strategyResult.getStrategy().getCode(), false);
 
                     boolean displayCode = true;
-                    if(strategyResult.getCode().equals(rowCode)){
+                    if(stock.getCode().equals(rowCode)){
                         displayCode = false;
                     }else{
-                        rowCode = strategyResult.getCode();
+                        rowCode = stock.getCode();
                     }
 
                     List<String> data = ListUtils.createList(
@@ -622,12 +619,13 @@ public class BarTask extends AbstractTask {
                 // rps start
                 StringBuffer rps = new StringBuffer();
                 if(realtime == null) {
-                    List<String> rpsList = Rps.getAllRpsCodeOnStock();
+                    List<Strategy> rpsList = Rps.getAllRpsStrategyOnStock();
 
-                    for(String rpsCode : rpsList){
-                        List<Stock> rpsStocks = stockService.calcRps(stocks, rpsCode);
+                    for(Strategy rpsStrategy : rpsList){
+                        //List<StrategyResult> srs = stockService.calcRps(stocks, rpsStrategy.getCode());
+                        List<Stock> rpsStocks = stockService.calcRps(stocks, rpsStrategy.getCode()).stream().map(StrategyResult::getStock).collect(Collectors.toList());
                         rpsStocks = rpsStocks.subList(0, Math.min(150, rpsStocks.size()));
-                        rps.append("["+rpsCode+"]"+Rps.getName(rpsCode) + ": " + CommonUtils.k("查看", Rps.getNameAndCode(rowCode), rpsStocks.stream().map(Stock::getCode).collect(Collectors.toList())));
+                        rps.append(rpsStrategy.getNameWithCode() + ": " + CommonUtils.k("查看", rpsStrategy.getNameWithCode(), rpsStocks.stream().map(Stock::getCode).collect(Collectors.toList())));
                         rps.append("<br/>");
                     }
                 }
@@ -654,10 +652,7 @@ public class BarTask extends AbstractTask {
 
     public void analyseBks(){
         try{
-            if(Stocks.BKsEasymoneyGn == null) {
-                Stocks.BKsEasymoneyGn = stockService.getBksWithStocksAndCalcBkRps(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn, realtime != null);
-            }
-            List<Stock> bks = Stocks.BKsEasymoneyGn;
+            List<Stock> bks = Stocks.getBksWithStocks();
 
             String strategies = Strategies.STRATEGIES_BK;
             if(StringUtils.isNotEmpty(strategy)){
@@ -677,14 +672,14 @@ public class BarTask extends AbstractTask {
 
                 String rowCode = null;
                 for(StrategyResult strategyResult : results){
-                    Stock bk = bks.stream().filter(stk -> stk.getCode().equals(strategyResult.getCode())).findFirst().orElse(null);
+                    Stock bk = strategyResult.getStock();//bks.stream().filter(stk -> stk.getCode().equals(strategyResult.getCode())).findFirst().orElse(null);
 
                     Stock.TURNING_POINTS.clear();
                     boolean displayCode = true;
-                    if(strategyResult.getCode().equals(rowCode)){
+                    if(bk.getCode().equals(rowCode)){
                         displayCode = false;
                     }else{
-                        rowCode = strategyResult.getCode();
+                        rowCode = bk.getCode();
                     }
 
                     List<String> data = ListUtils.createList(

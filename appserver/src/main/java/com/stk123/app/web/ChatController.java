@@ -10,14 +10,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class HelloController {
+public class ChatController {
 
-	@Autowired
+/*	@Autowired
 	private ChatServer chatServer;
 	
     @RequestMapping("/hello")
 	public String hello(Locale locale, Model model) throws Exception {
 		return chatServer.sendMessage("hello word", 3);
-	}
+	}*/
 
 }

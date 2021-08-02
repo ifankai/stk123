@@ -11,6 +11,7 @@ import java.util.Objects;
 @IdClass(StkIndustryEntity.CompositeKey.class)
 @Getter
 @Setter
+@ToString
 public class StkIndustryEntity implements Serializable {
 
     @Id

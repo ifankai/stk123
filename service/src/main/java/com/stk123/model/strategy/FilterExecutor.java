@@ -9,6 +9,7 @@ import lombok.extern.apachecommons.CommonsLog;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -35,14 +36,28 @@ public class FilterExecutor<X, B> {
     private List<FilterResult> results = Collections.synchronizedList(new ArrayList<>());
     @Getter
     private Strategy strategy;
+    @Getter
+    private boolean asc = true;
+    @Getter
+    private double weight = 1.0;
 
-    public FilterExecutor(String code, String name, Strategy strategy, Function<X, B> function, Filter<B> filter){
+    public FilterExecutor(String code, String name, Strategy strategy, Function<X, B> function, Filter<B> filter, boolean asc, double weight){
         this.code = code;
         this.name = name;
         this.strategy = strategy;
         this.function = function;
         this.filter = filter;
+        this.asc = asc;
+        this.weight = weight;
         this.counterPassed = 0;
+    }
+
+    public FilterExecutor(String code, String name, Strategy strategy, Function<X, B> function, Filter<B> filter, boolean asc) {
+        this(code, name, strategy, function, filter, asc, 1.0);
+    }
+
+    public FilterExecutor(String code, String name, Strategy strategy, Function<X, B> function, Filter<B> filter){
+        this(code, name, strategy, function, filter, true, 1.0);
     }
 
     public FilterResult execute(X b) {
@@ -70,4 +85,16 @@ public class FilterExecutor<X, B> {
         return this.counterNotPassed + this.counterPassed;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FilterExecutor<?, ?> that = (FilterExecutor<?, ?>) o;
+        return Objects.equals(code, that.code);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(code);
+    }
 }

@@ -192,6 +192,31 @@
 						</configuration>
 					</execution>
 
+					<execution>
+						<id>download</id>
+						<!--<phase>install</phase>-->
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target name="stk-download" description="Use antrun plugin to deploy with SCP and SSH">
+								<property file="../service/src/main/resources/password.properties" />
+
+								<!-- file to be transferred -->
+								<echo message="downloading dp file ..." />
+								<scp trust="true" failonerror="true" verbose="off" sftp="true"
+									 file="${ftp.username}:${server.password}@${ftp.host}:/root/stk/oracle"
+									 todir="d:/apps/oracle/DB_STK.DP" />
+
+								<taskdef name="scp" classname="org.apache.tools.ant.taskdefs.optional.ssh.Scp">
+									<classpath refid="maven.plugin.classpath" />
+								</taskdef>
+								<taskdef name="scp" classname="org.apache.tools.ant.taskdefs.optional.ssh.SSHExec">
+									<classpath refid="maven.plugin.classpath" />
+								</taskdef>
+							</target>
+						</configuration>
+					</execution>
 
 				</executions>
 

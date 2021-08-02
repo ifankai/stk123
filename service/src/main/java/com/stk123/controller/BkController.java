@@ -9,6 +9,7 @@ import com.stk123.model.core.Stocks;
 import com.stk123.model.enumeration.EnumCate;
 import com.stk123.model.enumeration.EnumMarket;
 import com.stk123.model.json.View;
+import com.stk123.model.strategy.StrategyResult;
 import com.stk123.service.core.StockService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
@@ -39,19 +40,18 @@ public class BkController {
     @JsonView(View.All.class)
     public RequestResult bks(@PathVariable(value = "bkCode")String bkCode,
                              @PathVariable(value = "rpsCode", required = false)String rpsCode){
-        List<Stock> bks = stockService.buildStocks(bkCode);
-        List<Stock> stocks = bks.get(0).getStocks();
+        List<Stock> bk = stockService.buildStocks(bkCode);
+        List<Stock> stocks = bk.get(0).getStocks();
+        stocks = stockService.getStocksWithBks(stocks, Stocks.getBks(), false);
 
-        if(Stocks.BKsEasymoneyGn == null){
-            Stocks.BKsEasymoneyGn = Collections.synchronizedList(stockService.getBksAndCalcBkRps(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn));
-        }
-        stocks = stockService.getStocksWithBks(stocks, Stocks.BKsEasymoneyGn, false);
         if(StringUtils.isNotEmpty(rpsCode)){
-            stocks = stockService.calcRps(stocks, rpsCode);
+            List<StrategyResult> strategyResults = stockService.calcRps(stocks, rpsCode);
+            Map result = stockService.getStrategyResultAsMap(strategyResults);
+            return RequestResult.success(result);
+        }else{
+            Map result = stockService.getStocksAsMap(stocks);
+            return RequestResult.success(result);
         }
-
-        Map result = stockService.getStocksAsMap(stocks);
-        return RequestResult.success(result);
     }
 
     @RequestMapping(value = "/score/{code}")

@@ -1,5 +1,6 @@
 package com.stk123.controller;
 
+import com.stk123.entity.StkIndustryEntity;
 import com.stk123.model.RequestResult;
 import com.stk123.model.core.Bar;
 import com.stk123.model.core.BarSeries;
@@ -75,9 +76,11 @@ public class TestController {
 //        System.out.println(stock.getBar().before(10).getChange(-7, Bar.EnumValue.C));
 
         Stock stock = Stock.build("300581");
-        int cnt = stock.getScore("20210528");
-
-        return RequestResult.success(cnt);
+        List<StkIndustryEntity> stkIndustryEntities = stock.getIndustries();
+        stkIndustryEntities.forEach(stkIndustryEntity -> {
+            System.out.println(stkIndustryEntity);
+        });
+        return RequestResult.success();
     }
 
 

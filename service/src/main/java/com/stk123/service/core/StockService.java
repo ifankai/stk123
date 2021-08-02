@@ -4,10 +4,7 @@ import com.stk123.common.CommonUtils;
 import com.stk123.common.util.ListUtils;
 import com.stk123.common.util.PinYin4jUtils;
 import com.stk123.entity.*;
-import com.stk123.model.core.Bar;
-import com.stk123.model.core.BarSeries;
-import com.stk123.model.core.Rps;
-import com.stk123.model.core.Stock;
+import com.stk123.model.core.*;
 import com.stk123.model.dto.SearchResult;
 import com.stk123.model.enumeration.EnumCate;
 import com.stk123.model.enumeration.EnumMarket;
@@ -16,6 +13,9 @@ import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.model.projection.StockCodeNameProjection;
 import com.stk123.model.projection.StockProjection;
 import com.stk123.model.strategy.Strategy;
+import com.stk123.model.strategy.StrategyBacktesting;
+import com.stk123.model.strategy.StrategyResult;
+import com.stk123.model.strategy.result.FilterResult;
 import com.stk123.repository.*;
 import com.stk123.service.StkConstant;
 import com.stk123.util.HttpUtils;
@@ -104,9 +104,9 @@ public class StockService {
     @Transactional
     public List<Stock> buildStocksWithIndustries(List<StockProjection> stockProjections) {
         List<Stock> stocks = stockProjections.stream().map(projection -> Stock.build(projection)).collect(Collectors.toList());
-        Map<String, List<IndustryProjection>> map = industryService.findAllToMap();
+        Map<String, List<StkIndustryEntity>> map = industryService.findAllToMap();
         stocks.forEach(stock -> {
-            List<IndustryProjection> industryProjectionList = map.get(stock.getCode());
+            List<StkIndustryEntity> industryProjectionList = map.get(stock.getCode());
             if(industryProjectionList == null) industryProjectionList = Collections.EMPTY_LIST;
             stock.setIndustries(industryProjectionList);
         });
@@ -114,15 +114,15 @@ public class StockService {
     }
 
     public List<Stock> buildIndustries(List<Stock> stocks) {
-        Map<String, List<IndustryProjection>> map = null;
+        Map<String, List<StkIndustryEntity>> map = null;
         if(stocks.size() < 500){
             map = industryService.findAllToMap(stocks.stream().map(Stock::getCode).collect(Collectors.toList()));
         }else {
             map = industryService.findAllToMap();
         }
-        Map<String, List<IndustryProjection>> finalMap = map;
+        Map<String, List<StkIndustryEntity>> finalMap = map;
         stocks.forEach(stock -> {
-            List<IndustryProjection> industries = finalMap.get(stock.getCode());
+            List<StkIndustryEntity> industries = finalMap.get(stock.getCode());
             if(industries == null){
                 stock.setIndustries(new ArrayList<>());
             }else {
@@ -136,11 +136,11 @@ public class StockService {
         Map<String, Stock> bkMap = bks.stream().collect(Collectors.toMap(Stock::getCode, Function.identity()));
         stocks.forEach(stock -> {
             stock.initBks();
-            List<IndustryProjection> industryProjections = stock.getIndustries();
+            List<StkIndustryEntity> industryProjections = stock.getIndustries();
             
-            List <IndustryProjection> bkList = industryProjections.stream().filter(industryProjection -> IndustryService.SOURCE_EASTMONEY_GN.equals(industryProjection.getSource())).collect(Collectors.toList());
+            List <StkIndustryEntity> bkList = industryProjections.stream().filter(industryProjection -> IndustryService.SOURCE_EASTMONEY_GN.equals(industryProjection.getStkIndustryTypeEntity().getSource())).collect(Collectors.toList());
             bkList.forEach(industryProjection -> {
-                Stock bk = bkMap.get(industryProjection.getBkCode());
+                Stock bk = bkMap.get(industryProjection.getStkIndustryTypeEntity().getCode());
                 if (bk != null) {
                     stock.addBk(bk);
                     bk.addStock(stock);
@@ -328,66 +328,28 @@ public class StockService {
                 });
     }
 
-    public List<Stock> calcRps(List<Stock> stocks, String rpsCode){
+    public List<StrategyResult> calcRps(List<Stock> stocks, String rpsCode){
         //这里一定要new一个strategy，否则当运行同个strategy的多个调用calcRps方法时，strategy实例会混乱，并且报错：
         //java.util.ConcurrentModificationException at java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1390)
-        List<Strategy> strategies = Rps.newRpsStrategies(rpsCode);
-        return calcRps(stocks, rpsCode, strategies);
-    }
-    private List<Stock> calcRps(List<Stock> stocks, String rpsCode, List<Strategy> rpsStrategies){
-        stocks.forEach(stock -> {
-            stock.createRps(rpsCode, rpsStrategies);
-            for(Strategy strategy : rpsStrategies){
-                stock.createRps(strategy.getCode(), Collections.singletonList(strategy));
-            }
-        });
-        backtestingService.backtesting(stocks, rpsStrategies);
-        List<Stock> stks = stocks;
-        for(Strategy rpsStrategy : rpsStrategies) {
-            String rpsStrategyCode = rpsStrategy.getCode();
-            if(rpsStrategy.getAsc()) {
-                stks = stocks.stream().sorted(Comparator.comparing(stock -> stock.getRps(rpsStrategyCode)==null?null:stock.getRps(rpsStrategyCode).getValue(), Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
-            }else{
-                stks = stocks.stream().sorted(Comparator.comparing(stock -> stock.getRps(rpsStrategyCode)==null?null:stock.getRps(rpsStrategyCode).getValue(), Comparator.nullsLast(Comparator.reverseOrder()))).collect(Collectors.toList());
-            }
-            stks = setOrderAndPercentile(stks, rpsStrategyCode);
-        }
-
-        if(rpsStrategies.size() > 1) {
-            stks.forEach(stock -> {
-                double sum = rpsStrategies.stream().mapToDouble(rpsStrategy -> stock.getRps(rpsStrategy.getCode()).getPercentile() * rpsStrategy.getWeight()).sum();
-                stock.setRpsValue(rpsCode, sum);
-            });
-            stks = stks.stream().sorted(Comparator.comparing(stock -> stock.getRps(rpsCode)==null?null:stock.getRps(rpsCode).getValue(), Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
-            stks = setOrderAndPercentile(stks, rpsCode);
-        }
-        return stks;
-    }
-
-    private List<Stock> setOrderAndPercentile(List<Stock> stocks, String rpsCode){
-        int order = 1;
-        Stock prev = null;
-        for (Stock stock : stocks) {
-            Rps rps = stock.getRps(rpsCode);
-            if (rps.getValue() == null) {
-                stock.setRpsPercentile(rpsCode, 0.0);
-            }else {
-                stock.setRpsOrder(rpsCode, order);
-                if(prev != null && rps.getValue().equals(prev.getRps(rpsCode).getValue())){
-                    stock.setRpsPercentile(rpsCode, prev.getRps(rpsCode).getPercentile());
-                }else {
-                    stock.setRpsPercentile(rpsCode, order * 1.0 / stocks.size() * 100);
-                }
-            }
-            order++;
-            prev = stock;
-        }
-        return stocks;
+        Strategy strategy = Rps.newRpsStrategies(rpsCode);
+        StrategyBacktesting strategyBacktesting = backtestingService.backtesting(stocks, Collections.singletonList(strategy));
+        return strategyBacktesting.getPassedStrategyResult();
     }
 
     public List<Stock> getStocksWithBks(List<Stock> stocks, EnumMarket market, EnumCate bkCate, boolean isIncludeRealtimeBar){
         stocks = getStocksWithAllBuilds(stocks, isIncludeRealtimeBar);
-        buildBkAndCalcBkRps(stocks, market, bkCate);
+        //buildBkAndCalcBkRps(stocks, market, bkCate);
+        List<Stock> bks = getBks(market, bkCate);
+        buildBk(stocks, bks);
+        return stocks;
+    }
+
+    public List<Stock> getStocks(List<String> codes){
+        List<Stock> stocks = Stocks.getStocksOrNull(codes);
+        if(stocks != null && stocks.size() == codes.size()) return stocks;
+        stocks = buildStocks(codes);
+        stocks = getStocksWithBks(stocks, Stocks.getBks(), 60, false);
+        Stocks.putStocks(stocks);
         return stocks;
     }
 
@@ -444,13 +406,13 @@ public class StockService {
         List<Stock> bks = getBks(market, bkCate);
         buildBkAndCalcBkRps(stocks, bks);
     }
-    public List<Stock> buildBkAndCalcBkRps(List<Stock> stocks, List<Stock> bks){
+    public List<StrategyResult> buildBkAndCalcBkRps(List<Stock> stocks, List<Stock> bks){
         calcRps(bks, Rps.CODE_BK_60);
         buildBk(stocks, bks);
         return calcRps(bks, Rps.CODE_BK_STOCKS_SCORE_30);
     }
 
-    public List<Stock> calcBkRps(List<Stock> bks){
+    public List<StrategyResult> calcBkRps(List<Stock> bks){
         calcRps(bks, Rps.CODE_BK_60);
         return calcRps(bks, Rps.CODE_BK_STOCKS_SCORE_30);
     }
@@ -463,7 +425,7 @@ public class StockService {
         return bks;
     }
 
-    public List<Stock> getBksAndCalcBkRps(EnumMarket market, EnumCate bkCate){
+    public List<StrategyResult> getBksAndCalcBkRps(EnumMarket market, EnumCate bkCate){
         List<Stock> bks = getBks(market, bkCate);
         return calcRps(bks, Rps.CODE_BK_60);
     }
@@ -543,27 +505,49 @@ public class StockService {
         return stocks;
     }
 
-    public Map getStocksAsMap(List<Stock> stocks){
+    public Map<String, List> getStrategyResultAsMap(List<StrategyResult> srs){
+        List<Stock> stocks = srs.stream().map(StrategyResult::getStock).collect(Collectors.toList());
+        Map<String, List> result = new HashMap<>();
+        result.put("bks", getBksAsMap(stocks));
+        List<Map> stocksMap = new ArrayList<>();
+        for(StrategyResult strategyResult : srs){
+            Map map = new HashMap();
+            map.put("stock", strategyResult.getStock());
+            map.put("rps", strategyResult);
+            stocksMap.add(map);
+        }
+        result.put("stocks", stocksMap);
+        return result;
+    }
+
+    public Map<String, List> getStocksAsMap(List<Stock> stocks){
+        Map<String, List> result = new HashMap<>();
+        result.put("bks", getBksAsMap(stocks));
+        List<Map> stocksMap = new ArrayList<>();
+        for(Stock stock : stocks){
+            Map map = new HashMap();
+            map.put("stock", stock);
+            stocksMap.add(map);
+        }
+        result.put("stocks", stocksMap);
+        return result;
+    }
+
+    private List<Map> getBksAsMap(List<Stock> stocks) {
         Set<Stock> bks = getBks(stocks);
         List<Map> bksList = new ArrayList<>();
-        for(Stock bk : bks){
+        for (Stock bk : bks) {
             Map map = new HashMap();
             map.put("name", bk.getNameAndCode());
             map.put("nameWithLink", bk.getNameAndCodeWithLink());
             map.put("code", bk.getCode());
-            map.put("rps", bk.getRps());
             List<Stock> finalStocks = stocks;
             map.put("stocks", bk.getStocks().stream().filter(stock -> finalStocks.stream().anyMatch(stock::equals)).map(Stock::getCode).collect(Collectors.toList()));
+            map.put("rps", Stocks.getBkRps(bk.getCode()));
             bksList.add(map);
         }
-        bksList = bksList.stream().sorted(Comparator.comparing(bk -> ((List)bk.get("stocks")).size(), Comparator.reverseOrder())).collect(Collectors.toList());
-
-        Map result = new HashMap();
-        result.put("bks", bksList);
-        result.put("stocks", stocks);
-        return result;
+        return bksList.stream().sorted(Comparator.comparing(bk -> ((List) bk.get("stocks")).size(), Comparator.reverseOrder())).collect(Collectors.toList());
     }
-
 
     @Getter
     @Setter

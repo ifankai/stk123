@@ -1,5 +1,7 @@
 package com.stk123.app;
 
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import com.esotericsoftware.kryonet.Server;
 import com.stk123.app.config.WebProperties;
 import com.stk123.app.web.CookieController;
@@ -24,10 +26,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.jdbc.datasource.init.DatabasePopulator;
+import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -60,6 +66,9 @@ public class WebApplication {
 
     @Autowired
     private WebProperties webProperties;
+
+    @Autowired
+    private DataSource dataSource;
 
 	public static void main(String[] args) {
 		SpringApplication.run(WebApplication.class, args);
@@ -101,16 +110,24 @@ public class WebApplication {
         return connector;
     }
 
-    @Bean
+    /*@Bean
     public ChatServer getChatServer() throws Exception {
 	    return new ChatServer();
-    }
+    }*/
 
 
     @EventListener(ApplicationReadyEvent.class)
     public void doSomethingAfterStartup() {
         System.out.println("do something after WebApplication startup..........");
         System.out.println(webProperties.getEnvironment());
+
+        try {
+            Resource initSchema = new ClassPathResource("schema.sql");
+            DatabasePopulator databasePopulator = new ResourceDatabasePopulator(initSchema);
+            DatabasePopulatorUtils.execute(databasePopulator, dataSource);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
     }
 
 }

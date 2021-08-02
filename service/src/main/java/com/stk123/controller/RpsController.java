@@ -8,6 +8,8 @@ import com.stk123.model.core.Stocks;
 import com.stk123.model.enumeration.EnumCate;
 import com.stk123.model.enumeration.EnumMarket;
 import com.stk123.model.json.View;
+import com.stk123.model.strategy.Strategy;
+import com.stk123.model.strategy.StrategyResult;
 import com.stk123.service.core.StockService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.StringUtils;
@@ -45,34 +47,25 @@ public class RpsController {
             }else{
                 stocks = Collections.EMPTY_LIST;
             }
-            if (Stocks.BKsEasymoneyGn == null) {
-                Stocks.BKsEasymoneyGn = Collections.synchronizedList(stockService.getBksAndCalcBkRps(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn));
-            }
-            stocks = stockService.getStocksWithBks(stocks, Stocks.BKsEasymoneyGn, false);
+            stocks = stockService.getStocksWithBks(stocks, Stocks.getBks(), false);
         }else {
-            if (Stocks.StocksAllCN == null) {
-                if (Stocks.BKsEasymoneyGn == null) {
-                    Stocks.BKsEasymoneyGn = Collections.synchronizedList(stockService.getBksAndCalcBkRps(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn));
-                }
-                Stocks.StocksAllCN = Collections.synchronizedList(stockService.getStocksWithBks(EnumMarket.CN, Stocks.BKsEasymoneyGn, false));
-            }
-            stocks = Stocks.StocksAllCN;
+            stocks = Stocks.getStocksWithBks();
         }
-        stocks = stockService.calcRps(stocks, rpsCode);
-        stocks = stocks.subList(0, Math.min(200, stocks.size()));
+        List<StrategyResult> strategyResults = stockService.calcRps(stocks, rpsCode);
+        strategyResults = strategyResults.subList(0, Math.min(200, strategyResults.size()));
 
-        Map result = stockService.getStocksAsMap(stocks);
+        Map result = stockService.getStrategyResultAsMap(strategyResults);
         return RequestResult.success(result);
     }
 
     @RequestMapping(value = {"/list"})
     public RequestResult listRpsCodeOnStock(){
-        List<String> rpss = Rps.getAllRpsCodeOnStock();
+        List<Strategy> rpss = Rps.getAllRpsStrategyOnStock();
         List<Map<String,String>> result = new ArrayList<>(rpss.size());
-        for(String rpsCode : rpss){
+        for(Strategy rps : rpss){
             Map<String,String> map = new HashMap<>();
-            map.put("code", rpsCode);
-            map.put("name", Rps.getName(rpsCode));
+            map.put("code", rps.getCode());
+            map.put("name", rps.getName());
             result.add(map);
         }
         return RequestResult.success(result);

@@ -6,10 +6,10 @@ import com.stk123.model.core.Rating;
 import com.stk123.model.core.Rps;
 import com.stk123.model.core.Stock;
 import com.stk123.model.core.Stocks;
-import com.stk123.model.enumeration.EnumCate;
 import com.stk123.model.enumeration.EnumMarket;
 import com.stk123.model.json.View;
 import com.stk123.model.projection.StockBasicProjection;
+import com.stk123.model.strategy.StrategyResult;
 import com.stk123.repository.StkRepository;
 import com.stk123.repository.StkTextRepository;
 import com.stk123.service.core.BarService;
@@ -87,10 +87,7 @@ public class StockController {
     public RequestResult score1(@RequestParam(value = "from", required = false, defaultValue = "0")Double percentileFrom,
                                 @RequestParam(value = "to", required = false, defaultValue = "100")Double percentileTo
     ){
-        if(Stocks.StocksAllCN == null) {
-            Stocks.StocksAllCN = Collections.synchronizedList(stockService.getStocksWithBksAndCalcBkRps(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn, false));
-        }
-        List<Stock> stocks = Stocks.StocksAllCN;
+        List<Stock> stocks = Stocks.getStocksWithBks();
         stocks = stocks.stream().sorted(Comparator.comparing(Stock::getScore, Comparator.reverseOrder())).collect(Collectors.toList());
         List<Map> list = new ArrayList<>();
         int size = stocks.size();
@@ -99,7 +96,6 @@ public class StockController {
             Map map = new HashMap();
             map.put("code", stock.getNameAndCode());
             map.put("rating", stock.getRating().toMap());
-            map.put("rps", stock.getRps());
             list.add(map);
         }
         Map result = new HashMap();
@@ -115,17 +111,23 @@ public class StockController {
         return RequestResult.success();
     }
 
-    @RequestMapping(value = {"/{code}"})
+    @RequestMapping(value = {"/{code}", "/rps/{rpsCode}/{code}"})
     @ResponseBody
     @JsonView(View.All.class)
-    public RequestResult stocks(@PathVariable(value = "code")String code){
+    public RequestResult stocks(@PathVariable(value = "code")String code,
+                                @PathVariable(value = "rpsCode", required = false)String rpsCode){
         String[] stks = StringUtils.split(code, ",");
-        List<Stock> stocks = stockService.buildStocks(stks);
-        if (Stocks.BKsEasymoneyGn == null) {
-            Stocks.BKsEasymoneyGn = Collections.synchronizedList(stockService.getBksAndCalcBkRps(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn));
+        //List<Stock> stocks = stockService.buildStocks(stks);
+        //stocks = stockService.getStocksWithBks(stocks, Stocks.getBks(), 60, false);
+        List<Stock> stocks = stockService.getStocks(Arrays.asList(stks));
+
+        Map result = null;
+        if(StringUtils.isNotEmpty(rpsCode)) {
+            List<StrategyResult> srs = stockService.calcRps(stocks, Rps.CODE_STOCK_SCORE_20);
+            result = stockService.getStrategyResultAsMap(srs);
+        }else{
+            result = stockService.getStocksAsMap(stocks);
         }
-        stocks = stockService.getStocksWithBks(stocks, Stocks.BKsEasymoneyGn, 60, false);
-        Map result = stockService.getStocksAsMap(stocks);
         return RequestResult.success(result);
     }
 }

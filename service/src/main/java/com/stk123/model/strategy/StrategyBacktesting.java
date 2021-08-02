@@ -4,18 +4,13 @@ import com.stk123.model.core.Bar;
 import com.stk123.model.core.BarSeries;
 import com.stk123.model.core.Stock;
 import com.stk123.model.strategy.result.FilterResult;
-import com.stk123.model.strategy.result.FilterResultBetween;
-import com.stk123.model.strategy.result.FilterResultEquals;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 @CommonsLog
@@ -24,7 +19,7 @@ public class StrategyBacktesting {
     @Setter
     private int multipleThreadSize = 8;
 
-    private boolean printDetail = false; //true;
+    private boolean printDetail = false;
 
     @Getter
     private String startDate;
@@ -35,12 +30,6 @@ public class StrategyBacktesting {
 
     @Getter
     private List<Strategy> strategies = new ArrayList<>();
-
-    @Getter
-    private LinkedHashMap<Stock, List<StrategyResult>> stockStrategyResults = new LinkedHashMap<>();
-
-    private List<StrategyResult> strategyResults = new ArrayList<>();
-
 
 
     public StrategyBacktesting(){}
@@ -53,74 +42,72 @@ public class StrategyBacktesting {
         this.strategies.add(strategy);
     }
 
-
-    public void test_single_thread(List<Stock> stocks) {
-        for (Stock stock : stocks) {
-            List<StrategyResult> strategyResults = new ArrayList<>();
-            for(Strategy strategy : strategies) {
-                strategy.setExpectFilterRunOrNot(false); //不关注expectFilter，即不用跑expectFilter，用于每天task
-                StrategyResult resultSet = this.test(strategy, stock);
-                //System.out.println("backingtest:" + stock.getCode() + "," + resultSet);
-                strategyResults.add(resultSet);
-            }
-            this.stockStrategyResults.put(stock, strategyResults);
-        }
-    }
-
     public void test(List<Stock> stocks) {
         List<Callable<StrategyResult>> tasks = new ArrayList<>();
+        long start = System.currentTimeMillis();
         for (Stock stock : stocks) {
             for(Strategy strategy : strategies) {
                 strategy.setExpectFilterRunOrNot(false); //不关注expectFilter，即不用跑expectFilter，用于每天task
-                Callable<StrategyResult> task = () -> {
-                    //sSystem.out.println("run ............................ "+Thread.currentThread().getId());
-                    return this.test(strategy, stock);
-                };
+                Callable<StrategyResult> task = () -> this.test(strategy, stock);
                 tasks.add(task);
             }
         }
-        List<StrategyResult> results = run(tasks, multipleThreadSize);
+        long end = System.currentTimeMillis();
+        log.info("strategy backtesting for each, cost:"+(end-start)/1000.0);
+
+        run(tasks, multipleThreadSize);
         for(Strategy strategy : strategies) {
             if(strategy.isSortable()) {
-                List<StrategyResult> all = results.stream().filter(strategyResult -> strategyResult.getStrategy().getCode().equals(strategy.getCode()) && strategyResult.isFilterAllPassed()).collect(Collectors.toList());
-                if(strategy.getAsc()){
-                    all = all.stream().sorted(Comparator.comparing(StrategyResult::getSortableValue)).collect(Collectors.toList());
-                }else {
-                    all = all.stream().sorted(Comparator.comparing(StrategyResult::getSortableValue, Comparator.reverseOrder())).collect(Collectors.toList());
-                }
-                int j = 0;
-                for (StrategyResult sr : all) {
-                    if (sr.isFilterAllPassed() && j++ < strategy.getTopN()) {
-                        sr.setSortablePassed(true);
-                    } else {
-                        sr.setSortablePassed(false);
+                //List<StrategyResult> all = results.stream().filter(strategyResult -> strategyResult.getStrategy().getCode().equals(strategy.getCode()) && strategyResult.isFilterAllPassed()).collect(Collectors.toList());
+                List<StrategyResult> all = (List<StrategyResult>)strategy.getStrategyResults().stream().collect(Collectors.toList());
+                all = all.stream().filter(sr -> sr.isFilterAllPassed()).collect(Collectors.toList());
+
+                List<FilterResult> filterResults = all.stream().flatMap(strategyResult -> strategyResult.getSortableFilterResults().stream()).collect(Collectors.toList());
+                Map<String, List<FilterResult>> filterResultsGroupBy = filterResults.stream().collect(Collectors.groupingBy(FilterResult::getCode));
+
+                filterResultsGroupBy.entrySet().forEach(entry -> {
+                    FilterExecutor fe = strategy.getFilterExecutor(entry.getKey());
+                    log.info("fecode========================"+entry.getKey());
+                    List<FilterResult> frList = entry.getValue();
+                    if(fe.isAsc()){
+                        frList = frList.stream().map(s -> (Sortable)s).sorted(Comparator.comparingDouble(Sortable::getValue)).map(s -> (FilterResult)s).collect(Collectors.toList());
+                    }else{
+                        frList = frList.stream().map(s -> (Sortable)s).sorted(Comparator.comparing(Sortable::getValue, Comparator.reverseOrder())).map(s -> (FilterResult)s).collect(Collectors.toList());
                     }
+                    //System.out.println(sortedFr);
+
+                    int order = 1;
+                    Sortable prev = null;
+                    for(FilterResult fr : frList){
+                        Sortable sortable = (Sortable) fr;
+                        sortable.setOrder(order);
+                        if(prev != null && sortable.getValue() == prev.getValue()){
+                            sortable.setPercentile(prev.getPercentile());
+                        }else {
+                            sortable.setPercentile(order * 1.0 / frList.size() * 100);
+                        }
+                        order++;
+                        prev = sortable;
+                    }
+                });
+
+                for (StrategyResult strategyResult : all) {
+                    strategyResult.calcPercentile();
                 }
+                all = all.stream().sorted(Comparator.comparing(StrategyResult::getPercentile)).collect(Collectors.toList());
+
+                if(strategy.getTopN() != null && strategy.getTopN() < all.size()){
+                    all = all.subList(0, strategy.getTopN());
+                }
+                //System.out.println(all);
+                strategy.setStrategyResults(all);
+                //strategyResults.addAll(all);
+            }else{
+                //strategyResults.addAll(results);
             }
             if(strategy.getPostExecutor() != null){
                 strategy.getPostExecutor().accept(strategy);
             }
-        }
-        strategyResults.addAll(results);
-    }
-
-
-    public void test_single_thread(List<Stock> stocks, String startDate, String endDate) {
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.codes = StringUtils.join(stocks.stream().map(Stock::getCode).collect(Collectors.toList()),",");
-        for (Stock stock : stocks) {
-            //info("code:"+stock.getCode()+".................start");
-            List<StrategyResult> strategyResults = new ArrayList<>();
-            for(Strategy strategy : strategies) {
-                List<StrategyResult> results = this.test(strategy, stock, startDate, endDate);
-                //int n = resultSets.stream().map(StrategyResult::getCountOfExecutedFilter).reduce(0, (a, b) -> a + b);
-                //n = resultSets.stream().mapToInt(StrategyResult::getCountOfExecutedFilter).sum();
-                //System.out.println("backingtest:" + stock.getCode() + "," + results);
-                strategyResults.addAll(results);
-            }
-            this.stockStrategyResults.put(stock, strategyResults);
-            //info("code:"+stock.getCode()+"...................end");
         }
     }
 
@@ -147,8 +134,8 @@ public class StrategyBacktesting {
                 tasks.add(task);
             }
         }
-        List<List<StrategyResult>> results = run(tasks, multipleThreadSize);
-        results.forEach(sr -> strategyResults.addAll(sr));
+        run(tasks, multipleThreadSize);
+        //results.forEach(sr -> strategyResults.addAll(sr));
     }
 
     public void testAllHistory(List<Stock> stocks) {
@@ -161,14 +148,10 @@ public class StrategyBacktesting {
             };
             tasks.add(task);
         }
-        List<List<StrategyResult>> results = run(tasks, multipleThreadSize);
-        results.forEach(sr -> strategyResults.addAll(sr));
+        run(tasks, multipleThreadSize);
+        //results.forEach(sr -> strategyResults.addAll(sr));
     }
 
-
-    /*public List<StrategyResult> getStrategyResultByStock(Stock stock) {
-        return stockStrategyResults.get(stock);
-    }*/
     public List<StrategyResult> getStrategyResultByStrategy(Strategy strategy) {
         return Objects.requireNonNull(strategies.stream().filter(strategy1 -> strategy1.getName().equals(strategy.getName())).findFirst().orElse(null)).getStrategyResults();
     }
@@ -181,23 +164,28 @@ public class StrategyBacktesting {
             }
     }
     public void printDetail(){
-        if(printDetail)
-            strategyResults.stream().forEach(strategyResult -> {
-                System.out.println(strategyResult);
-            });
+        if(printDetail){
+            for(Strategy strategy : this.getStrategies()){
+                strategy.getStrategyResults().stream().forEach(strategyResult -> {
+                    System.out.println(strategyResult);
+                });
+            }
+        }
     }
 
     /**
      * 返回通过了所有条件过滤器的结果（指策略里所有条件过滤器都通过）
      */
     public List<StrategyResult> getPassedStrategyResult(){
-        List<StrategyResult> passedResults = new ArrayList<>();
+        /*List<StrategyResult> passedResults = new ArrayList<>();
         strategyResults.forEach(strategyResult -> {
             if(strategyResult.isFilterAllPassed()){
                 passedResults.add(strategyResult);
             }
         });
-        return passedResults;
+        return passedResults;*/
+        List<StrategyResult> passedResults = (List<StrategyResult>) this.getStrategies().stream().flatMap(strategy -> strategy.getStrategyResults().stream()).collect(Collectors.toList());
+        return passedResults.stream().filter(StrategyResult::isFilterAllPassed).collect(Collectors.toList());
     }
 
     /**
@@ -205,7 +193,7 @@ public class StrategyBacktesting {
      */
     public List<StrategyResult> getPassedStrategyResultForExpectFilter(){
         List<StrategyResult> passedResults = new ArrayList<>();
-        strategyResults.forEach(strategyResult -> {
+        this.getPassedStrategyResult().forEach(strategyResult -> {
             List<FilterResult> list = strategyResult.getExpectFilterResults();
             List<FilterResult> passedList = list.stream().filter(r -> r.pass()).collect(Collectors.toList());
             if (!passedList.isEmpty()) {
@@ -226,7 +214,7 @@ public class StrategyBacktesting {
         }else {
             throw new RuntimeException("Not support X generic class: "+strategy.getXClass());
         }
-        strategyResult.setCode(stock.getCode());
+        strategyResult.setStock(stock);
         BarSeries bs = stock.getBarSeries();
         if(bs != null && bs.getFirst() != null) {
             strategyResult.setDate(bs.getFirst().getDate());
@@ -247,7 +235,7 @@ public class StrategyBacktesting {
             do {
                 StrategyResult strategyResult = this.test(strategy, stock);
                 strategyResult.setDate(bar.getDate());
-                strategyResult.setCode(stock.getCode());
+                strategyResult.setStock(stock);
                 //info(strategyResult);
                 strategyResults.add(strategyResult);
                 bar = bar.after();
@@ -275,7 +263,7 @@ public class StrategyBacktesting {
                     if(strategy.isCanTestHistory()) {
                         StrategyResult strategyResult = this.test(strategy, stock);
                         strategyResult.setDate(finalBar.getDate());
-                        strategyResult.setCode(stock.getCode());
+                        strategyResult.setStock(stock);
                         //info(strategyResult);
                         strategyResults.add(strategyResult);
                     }
@@ -295,14 +283,14 @@ public class StrategyBacktesting {
         }
     }
 
-    public static <V> List<V> run(List<Callable<V>> tasks, int poolSize) {
+    public static <V> void run(List<Callable<V>> tasks, int poolSize) {
         long start = System.currentTimeMillis();
 
-        List<V> results = new ArrayList<>();
+        //List<V> results = new ArrayList<>();
         tasks.parallelStream().forEach(task ->{
             try {
                 V v = task.call();
-                results.add(v);
+                //results.add(v);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -335,6 +323,6 @@ public class StrategyBacktesting {
         exec.shutdown();*/
         long end = System.currentTimeMillis();
         log.info("strategy backtesting run end, cost:"+(end-start)/1000.0);
-        return results;
+        //return results;
     }
 }

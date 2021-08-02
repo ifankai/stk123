@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title th:utext="${title} != null?'小智慧 ['+${title}+']':'小智慧'"></title>
+    <title th:utext="${title} != null?'小智慧 - '+${title}:'小智慧'"></title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css">
 <!--    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">-->
@@ -197,7 +197,7 @@
                 <div class="row">
                     <div class="col-12 col-md-10" style="margin: auto">
                         <!-- Default box -->
-                        <div class="card" v-if="!loading">
+                        <div class="card" v-show="!loading" v-if="!loading" style="display: none">
                             <div class="card-header">
                                 <h3 v-text="title" class="card-title"></h3>
                                 <div class="custom-control custom-control-inline custom-checkbox" style="margin-left: .5rem;margin-top: .01rem;">
@@ -280,11 +280,11 @@
                 <div class="row">
                     <section v-for="idx in [0,1]" class="col-lg-6 connectedSortable">
                         <!-- Custom tabs (Charts with tabs)-->
-                        <template v-for="(stock, index) in stocks" :key="stock.code">
-                            <div class="card" v-if="index % 2 === idx">
+                        <template v-for="(stk, index) in stocks">
+                            <div class="card" v-if="index % 2 === idx" :key="stk.stock.code">
                                 <div class="card-header">
                                     <h3 class="card-title">
-                                        <span v-html="stock.nameAndCodeWithLink"></span> (<span v-text="stock.order"></span>) 评分:<span v-text="stock.rating.total"></span>
+                                        <span v-html="stk.stock.nameAndCodeWithLink"></span> (<span v-text="stk.stock.order"></span>) 评分:<span v-text="stk.stock.rating.total"></span>
                                     </h3>
                                     <div class="card-tools">
                                         <button type="button" class="btn btn-tool" title="Contacts" data-widget="chat-pane-toggle">
@@ -302,31 +302,31 @@
                                     <div class="row">
                                         <div class="col-1 col-md-1 pr-0">
                                             <div class="nav flex-column nav-tabs h-100" role="tablist" aria-orientation="vertical">
-                                                <a class="nav-link active" :href="'#tab-1-'+stock.code" data-toggle="tab">日线</a>
-                                                <a class="nav-link" :href="'#tab-2-'+stock.code" data-toggle="tab">周线</a>
-                                                <a class="nav-link" :href="'#tab-3-'+stock.code" data-toggle="tab">月线</a>
-                                                <a class="nav-link" :href="'#tab-4-'+stock.code" data-toggle="tab">新闻</a>
+                                                <a class="nav-link active" :href="'#tab-1-'+stk.stock.code" data-toggle="tab">日线</a>
+                                                <a class="nav-link" :href="'#tab-2-'+stk.stock.code" data-toggle="tab">周线</a>
+                                                <a class="nav-link" :href="'#tab-3-'+stk.stock.code" data-toggle="tab">月线</a>
+                                                <a class="nav-link" :href="'#tab-4-'+stk.stock.code" data-toggle="tab">新闻</a>
                                             </div>
                                         </div>
                                         <div class="col-11 col-sm-11">
                                             <div class="tab-content p-0">
-                                                <div class="tab-pane active" :id="'tab-1-'+stock.code">
-                                                    <span v-html="stock.dayBarImage"></span>
+                                                <div class="tab-pane active" :id="'tab-1-'+stk.stock.code">
+                                                    <span v-html="stk.stock.dayBarImage"></span>
                                                     <span style="display: flex;margin-right: 6px;">
-                                                        <img height="80" style="margin-top: -80px;width: 100%" :src="'data:image/png;base64,'+stock.dayFlowImage">
+                                                        <img height="80" style="margin-top: -80px;width: 100%" :src="'data:image/png;base64,'+stk.stock.dayFlowImage">
                                                     </span>
                                                 </div>
-                                                <div class="tab-pane" :id="'tab-2-'+stock.code">
-                                                    <span v-html="stock.weekBarImage"></span>
+                                                <div class="tab-pane" :id="'tab-2-'+stk.stock.code">
+                                                    <span v-html="stk.stock.weekBarImage"></span>
                                                 </div>
-                                                <div class="tab-pane" :id="'tab-3-'+stock.code">
-                                                    <span v-html="stock.monthBarImage"></span>
+                                                <div class="tab-pane" :id="'tab-3-'+stk.stock.code">
+                                                    <span v-html="stk.stock.monthBarImage"></span>
                                                 </div>
-                                                <div class="tab-pane" :id="'tab-4-'+stock.code">
-                                                    <datatable :="{...common.news, ...stock.news}"></datatable>
+                                                <div class="tab-pane" :id="'tab-4-'+stk.stock.code">
+                                                    <datatable :="{...common.news, ...stk.stock.news}"></datatable>
                                                 </div>
 
-                                                <div class="tab-pane" :id="'tab-12-'+stock.code" style="display: none">
+                                                <div class="tab-pane" :id="'tab-12-'+stk.stock.code" style="display: none">
                                                     <div class="row">
                                                         <div class="col-12  col-sm-12">
                                                             <div class="d-flex justify-content-between align-items-center border-bottom">
@@ -746,14 +746,14 @@
         let stocks = data.stocks;
         let i = 1;
         _this.common.niusans.forEach(ns => ns.count=0);
-        stocks.forEach(stock => {
-            stock.order = i++;
-            stock.news.forEach(n => {
+        stocks.forEach(stk => {
+            stk.stock.order = i++;
+            stk.stock.news.forEach(n => {
                 n.type = '['+n.dict.text+']';
                 n.title = '<a target="_blank" href="'+n.urlTarget+'">'+n.title+'</a>';
             })
-            stock.news = {data: stock.news}
-            stock.owners.forEach(owner => {
+            stk.stock.news = {data: stk.stock.news}
+            stk.stock.owners.forEach(owner => {
                 _this.common.niusans.forEach(ns => {
                     if(owner.orgName.indexOf(ns.text) >= 0) ns.count++;
                 });
@@ -827,11 +827,11 @@
             },
             filterBk:function (bk) {
                 Pace.start();
-                this.stocks = this._stocks.filter(stock => stock.bks.find(bk1 => bk1.code==bk.code));
+                this.stocks = this._stocks.filter(stk => stk.stock.bks.find(bk1 => bk1.code==bk.code));
                 Pace.stop();
             },
             filterStocks:function (code){
-                this.stocks = this._stocks.filter(stock => stock.code==code)
+                this.stocks = this._stocks.filter(stk => stk.stock.code==code)
             },
             filterByStrategy:function (strategyCode, strategyName){
                 Pace.start();
@@ -845,16 +845,19 @@
             sortByRating:function (e) {
                 Pace.start();
                 this.seletedRpsName = e.target.innerText;
-                this.stocks = this.stocks.concat().sort((a, b) => b.rating.total - a.rating.total)
+                this.stocks = this.stocks.concat().sort((a, b) => b.stock.rating.total - a.stock.rating.total)
                 Pace.stop();
+            },
+            findRpsByBk:function (bkCode) {
+                return this.bks.find(bk => bk.code==bkCode);
             },
             sortByRps01:function (e) {
                 Pace.start();
                 this.seletedRpsName = e.target.innerText;
                 this.stocks = this.stocks.concat().sort((a, b) => {
-                    let n = Math.max(...b.bks.map(bk => bk.rps.rps_01.percentile)) - Math.max(...a.bks.map(bk => bk.rps.rps_01.percentile));
+                    let n = Math.max(...b.stock.bks.map(bk => findRpsByBk(bk.code).rps.rps_01.percentile)) - Math.max(...a.stock.bks.map(bk => findRpsByBk(bk.code).rps.rps_01.percentile));
                     if(n === 0){
-                        n = b.rating.total - a.rating.total;
+                        n = b.stock.rating.total - a.stock.rating.total;
                     }
                     return n
                 })
@@ -922,30 +925,6 @@
                 console.log('mounted')
             });
 
-            /*this.bks = [
-                {code:'BK0825',name:"新零售[BK0825]", stocks:['600600']},
-                {code:'BK0549',name:"深圳特区[BK0549]", stocks:['002620']}
-            ];
-            this.stocks = [
-                {
-                    cate: "STOCK",
-                    code: "002620",
-                    dayBarImage: "<a target='_blank' href='https://xueqiu.com/S/SZ002620'><img width='100%' src='http://webquoteklinepic.eastmoney.com/GetPic.aspx?nid=0.002620&UnitWidth=-6&imageType=KXL&EF=&Formula=MACD&AT=1&&type=D&token=&_=1627286644203' /></a>",
-                    dayFlowImage: "",
-                    market: "CN",
-                    monthBarImage: "<a target='_blank' href='https://xueqiu.com/S/SZ002620'><img width='100%' src='http://webquoteklinepic.eastmoney.com/GetPic.aspx?nid=0.002620&UnitWidth=-6&imageType=KXL&EF=&Formula=MACD&AT=1&&type=M&token=&_=1627286644203' /></a>",
-                    name: "瑞和股份",
-                    nameAndCodeWithLink: "<a target='_blank' href='https://xueqiu.com/S/SZ002620'>瑞和股份</a>[<a target='_blank' href='http://81.68.255.181:8088/stk?s=002620'>SZ002620</a>]",
-                    news: {data: []},
-                    order: 1,
-                    place: "SZ",
-                    rating:{
-                        root: {type: "stock", score: 74, nodes: []},
-                        total: 74
-                    }
-                },
-            ];
-            this.loading = false;*/
         },
         created () {
         },

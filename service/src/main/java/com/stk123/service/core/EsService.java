@@ -422,7 +422,7 @@ public class EsService {
             pinyin = "["+String.join("", Arrays.asList(PinYin4jUtils.getHeadByString(StringUtils.replace(stock.getName(), " ", ""))))+"]";
         }
         esDocument.setTitle(stock.getNameAndCodeWithLink() + pinyin);
-        esDocument.setDesc(StringUtils.join(stock.getIndustries().stream().map(IndustryProjection::getName).collect(Collectors.toList()), ", "));
+        esDocument.setDesc(StringUtils.join(stock.getIndustries().stream().map(ind -> ind.getStkIndustryTypeEntity().getName()).collect(Collectors.toList()), ", "));
         esDocument.setContent((stock.getStock().getF9()==null?"":stock.getStock().getF9()) + "<br/>" + "TODO 十大流通股东");
         esDocument.setId(stock.getCodeWithPlace());
         esDocument.setCode(stock.getCode());

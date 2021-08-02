@@ -1,7 +1,6 @@
 package com.stk123.model.core;
 
 import cn.hutool.core.util.ObjectUtil;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.common.CommonConstant;
@@ -18,7 +17,9 @@ import com.stk123.model.json.View;
 import com.stk123.model.projection.IndustryProjection;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.model.projection.StockProjection;
+import com.stk123.model.strategy.Sortable;
 import com.stk123.model.strategy.Strategy;
+import com.stk123.model.strategy.StrategyResult;
 import com.stk123.repository.*;
 import com.stk123.service.StkConstant;
 import com.stk123.service.core.BarService;
@@ -100,7 +101,7 @@ public class Stock {
 
     private StockProjection stock;
 
-    private List<IndustryProjection> industries; //行业
+    private List<StkIndustryEntity> industries; //行业
     @JsonView(View.All.class)
     private List<Stock> bks; //板块 eastmoney_gn
     private List<Stock> stocks; //板块包含的所有股票
@@ -126,8 +127,8 @@ public class Stock {
     public Integer BarSeriesRows = BarSeriesRowsDefault;
 
     //相对强弱指标
-    @JsonView({View.Score.class, View.All.class})
-    private Map<String, Rps> rps = new HashMap<>();
+    /*@JsonView({View.Score.class, View.All.class})
+    private Map<String, Rps> rps = new HashMap<>();*/
 
     //评级
     @JsonView(View.All.class)
@@ -512,7 +513,7 @@ public class Stock {
     }
 
 
-    public synchronized List<IndustryProjection> getIndustries(){
+    public synchronized List<StkIndustryEntity> getIndustries(){
         if(industries == null){
             return this.industries = stkIndustryRepository.findAllByCode(this.getCode());
         }
@@ -567,7 +568,7 @@ public class Stock {
             if(this.industries == null){
                 this.industries = stkIndustryRepository.findAllByCode(this.getCode());
             }
-            this.bks = stockService.buildStocks(this.industries.stream().map(IndustryProjection::getBkCode).collect(Collectors.toList()));
+            this.bks = stockService.buildStocks(this.industries.stream().map(ind -> ind.getStkIndustryTypeEntity().getCode()).collect(Collectors.toList()));
         }
         return this.bks;
     }
@@ -647,71 +648,53 @@ public class Stock {
         return this.marketCap;
     }
 
-    public void setRpsValue(String rpsCode, Double rpsValue){
-        Rps rps = getRps(rpsCode);
-        rps.setValue(rpsValue);
-    }
-    public void setRpsOrder(String rpsCode, Integer rpsOrder){
-        Rps rps = getRps(rpsCode);
-        rps.setOrder(rpsOrder);
-    }
-    public void setRpsPercentile(String rpsCode, Double rpsPercentile){
-        Rps rps = getRps(rpsCode);
-        rps.setPercentile(rpsPercentile);
-    }
-    public Rps getRps(String rpsCode){
-        return rps.get(rpsCode);
-    }
-    public Rps createRps(String rpsCode, List<Strategy> strategies){
-        Rps rps = getRps(rpsCode);
-        if (rps == null) {
-            rps = new Rps(rpsCode, strategies);
-            this.rps.put(rpsCode, rps);
-        }
-        return rps;
-    }
-    public Stock getBkByMaxRps(String rpsCode){
-        return getBks().stream().filter(Objects::nonNull).max(Comparator.comparingDouble(stk -> stk.getRps(rpsCode)==null?0:stk.getRps(rpsCode).getPercentile())).orElse(null);
-    }
-    public Rps getMaxRpsInAllBk(String rpsCode){
-        return getBkByMaxRps(rpsCode).getRps(rpsCode);
+
+    //用于bk
+    public List<StrategyResult> getMaxStockRpsInStocks(int topN, String rpsCode){
+        List<StrategyResult> srs = stockService.calcRps(this.getStocks(), rpsCode);
+        return new ArrayList<>(ListUtils.greatest(srs, topN, StrategyResult::getPercentile));
     }
 
     //用于bk
     public List<Stock> getGreatestStocksInBkByRps(int topN, String rpsCode){
-        List<Stock> stocks = stockService.calcRps(this.getStocks(), rpsCode);
-        return ListUtils.greatest(stocks, topN, stock1 -> stock1.getRps(rpsCode).getPercentile());
+        return getMaxStockRpsInStocks(topN, rpsCode).stream().map(StrategyResult::getStock).collect(Collectors.toList());
     }
 
+
+    //用于stock
+    public StrategyResult getMaxBkRpsInBks(String rpsCode){
+        if(!this.isCateStock()){
+            throw new RuntimeException("Only for stock.");
+        }
+        return getBks().stream().map(bk -> Stocks.getBkRps(rpsCode, bk.getCode())).filter(Objects::nonNull).max(Comparator.comparingDouble(StrategyResult::getPercentile)).orElse(null);
+    }
     //用于stock
     public String getBkInfo(){
         if(!getBks().isEmpty()){
-            Stock bk = this.getBkByMaxRps(Rps.CODE_BK_60);
-            Rps rps = bk.getRps(Rps.CODE_BK_60);
-            //List<Stock> top5a = rps.getPercentile()>=90?bk.getGreatestStocksInBkByRps(Rps.CODE_BK_STOCKS_SCORE_30, 5):null;
+            StrategyResult sr = this.getMaxBkRpsInBks(Rps.CODE_BK_60);
+            Stock bk = sr.getStock();
 
-            Stock bk2 = this.getBkByMaxRps(Rps.CODE_BK_STOCKS_SCORE_30);
-            Rps rps2 = bk2.getRps(Rps.CODE_BK_STOCKS_SCORE_30);
-            //List<Stock> top5b = rps2.getPercentile()>=90?(List<Stock>)bk2.getData().get("top5"):null;
+            StrategyResult sr2 = this.getMaxBkRpsInBks(Rps.CODE_BK_STOCKS_SCORE_30);
+            Stock bk2 = sr2.getStock();
 
-            //final int[] a = {1}, b = {1};
             return "<br/>"+bk.getNameAndCodeWithLink()+bk.getStocksInfo(15,false, Rps.CODE_STOCK_SCORE_20)+
-                   "<br/>"+rps.getName()+":"+CommonUtils.numberFormat2Digits(rps.getPercentile())+
-                    //(top5a==null?"":("<br/>"+StringUtils.join(top5a.stream().map(stock->(a[0]++)+"."+stock.getNameAndCodeWithLink()).collect(Collectors.toList()), "<br/>"))+CommonUtils.k("查看",top5a.stream().map(Stock::getCodeWithPlace).collect(Collectors.toList())))+
+                   "<br/>"+sr.getStrategy().getName()+":"+CommonUtils.numberFormat2Digits(sr.getPercentile())+
                    "<br/>"+bk2.getNameAndCodeWithLink()+bk2.getStocksInfo(15,false, Rps.CODE_STOCK_SCORE_20)+
-                   "<br/>"+rps2.getName()+"["+rps2.getValue()+"]:"+CommonUtils.numberFormat2Digits(rps2.getPercentile());
-                    //(top5b==null?"":("<br/>"+StringUtils.join(top5b.stream().map(stock->(b[0]++)+"."+stock.getNameAndCodeWithLink()).collect(Collectors.toList()), "<br/>"))+CommonUtils.k("查看",top5b.stream().map(Stock::getCodeWithPlace).collect(Collectors.toList())));
+                   "<br/>"+sr2.getStrategy().getName()+":"+CommonUtils.numberFormat2Digits(sr2.getPercentile());
         }
         return "";
     }
 
     //用于bk
     public String getStocksInfo(int topN, boolean displayAllStocks, String rpsCode){
-        List<Stock> stocks = this.getGreatestStocksInBkByRps(topN, rpsCode);
+        //List<Stock> stocks = this.getGreatestStocksInBkByRps(topN, rpsCode);
+        List<StrategyResult> srs = this.getMaxStockRpsInStocks(topN, rpsCode);
+        if(srs.isEmpty()) return "";
+        List<Stock> stocks = srs.stream().map(StrategyResult::getStock).collect(Collectors.toList());
         final int[] a = {1};
-
-        String info = displayAllStocks ? StringUtils.join(stocks.stream().map(stock->(a[0]++)+"."+stock.getNameAndCodeWithLink()+"["+CommonUtils.numberFormat2Digits(stock.getRps(rpsCode).getPercentile())+"("+stock.getRps(rpsCode).getRpsStrategies().stream().map(rs -> CommonUtils.numberFormat0Digits(stock.getRps(rs.getCode()).getPercentile())).collect(Collectors.toList())+")]").collect(Collectors.toList()), "<br/>") : "";
-        return info + CommonUtils.k("查看", this.getNameAndCode()+","+Rps.getNameAndCode(rpsCode), stocks.stream().map(Stock::getCode).collect(Collectors.toList()));
+        Strategy rpsStrategy = srs.get(0).getStrategy();
+        String info = displayAllStocks ? StringUtils.join(srs.stream().map(sr->(a[0]++)+"."+sr.getStock().getNameAndCodeWithLink()+"["+CommonUtils.numberFormat2Digits(sr.getPercentile())+"("+sr.getFilterResults().stream().map(f -> (Sortable)f).map(s -> CommonUtils.numberFormat0Digits(s.getPercentile())).collect(Collectors.toList())+")]").collect(Collectors.toList()), "<br/>") : "";
+        return info + CommonUtils.k("查看", this.getNameAndCode()+","+rpsStrategy.getNameWithCode(), stocks.stream().map(Stock::getCode).collect(Collectors.toList()));
     }
 
     public static void main(String[] args) {
@@ -758,6 +741,7 @@ public class Stock {
      * 6. 。。。
      */
     public synchronized Rating getRating(){
+        if(!this.isCateStock()) return null;
         if(rating != null){
             return this.rating;
         }
@@ -782,15 +766,12 @@ public class Stock {
 
     public int getScoreByBk(){
         if(this.bks != null){
-            Stock bk = this.getBkByMaxRps(Rps.CODE_BK_60);
-            if(bk == null) return 0;
-            Rps rps = bk.getRps(Rps.CODE_BK_60);
-            if(rps != null){
-                if(rps.getPercentile() >= 90){ //板块rps强度大于90百分位，则加10分
-                    return 15;
-                }else if(rps.getPercentile() >= 80){
-                    return 10;
-                }
+            StrategyResult sr = this.getMaxBkRpsInBks(Rps.CODE_BK_60);
+            if(sr == null) return 0;
+            if(sr.getPercentile() >= 90){ //板块rps强度大于90百分位，则加10分
+                return 15;
+            }else if(sr.getPercentile() >= 80){
+                return 10;
             }
         }
         return 0;

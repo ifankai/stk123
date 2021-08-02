@@ -76,6 +76,7 @@ public class BacktestingService {
     public StrategyBacktesting backtesting(List<String> codes, List<String> strategies, String startDate, String endDate, boolean isIncludeRealtimeBar) {
         long start = System.currentTimeMillis();
         List<Stock> stocks = stockService.buildStocks(codes);
+        stockService.buildBarSeries(stocks, 120, false);
         long end = System.currentTimeMillis();
         log.info("buildStocks cost:"+(end-start)/1000.0);
         return backtestingOnStock(stocks, strategies, startDate, endDate, isIncludeRealtimeBar);
@@ -170,7 +171,7 @@ public class BacktestingService {
                 stkTaskLogEntity.setStrategyCode(passedResult.getStrategy().getCode());
                 stkTaskLogEntity.setStrategyName(passedResult.getStrategy().getName());
                 stkTaskLogEntity.setStrategyPassDate(passedResult.getDate());
-                stkTaskLogEntity.setCode(passedResult.getCode());
+                stkTaskLogEntity.setCode(passedResult.getStock().getCode());
                 stkTaskLogEntity.setStatus(1);
                 stkTaskLogEntity.setInsertTime(new Date());
                 stkTaskLogEntity.setTaskLog(passedResult.toJson());
