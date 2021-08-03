@@ -1,6 +1,5 @@
 package com.stk123.app.web;
 
-import com.stk123.model.core.Rps;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +19,6 @@ public class StockWebController {
         model.addAttribute("title", title);
         model.addAttribute("code", code);
         model.addAttribute("codeType", "stock");
-        return "stk";
+        return "stocks";
     }
 }

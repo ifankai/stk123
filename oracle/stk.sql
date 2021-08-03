@@ -1004,9 +1004,11 @@ alter table stk_report_header add constraint pk_report_header_id primary key (id
 create index idx_report_header_date_type on stk_report_header (report_date,type);
 create sequence s_report_header_id INCREMENT BY 1 START WITH 10000 NOMAXVALUE NOCYCLE CACHE 10;
 
+drop table stk_report_detail;
 create table stk_report_detail(
     id number(6),
     header_id number(8),
+    strategy_date varchar2(10),
     strategy_code varchar2(20),
     strategy_output varchar2(2000),
     code varchar2(10),
@@ -3074,3 +3076,8 @@ select code,kline_date ,open,close,high,low,volumn as volume,amount,last_close,p
 from stk_kline t where t.code in ('002346','600600','600601','601958','600531','000758','000060','600497','000807','000751','600395','600456','002340','002237','000612','600459','000960','600251')) where rn <= 1
 
 select * from stk_report_header;
+select * from stk_report_detail;
+
+
+delete from stk_report_detail;
+delete from stk_report_header;

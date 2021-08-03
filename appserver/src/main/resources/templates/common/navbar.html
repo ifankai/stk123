@@ -1,65 +1,157 @@
-<header class="navbar navbar-fixed-top">
-    <div class="navbar-inner">
-        <div class="container">
-            <a class="brand" href="/">小智慧365</a>
-            <div class="search">
-                <div class="input-append">
-                    <input size="10px" type="text" id="stkcode" placeholder="搜索 股票/行业/指标/文档" onclick="suggest(this.value,event,this.id,false,getStks);" onkeyup="suggest(this.value,event,this.id,false,getStks);" onkeydown="return tabfix(this.value,event);" onblur="clearSuggest();"/>
-                    <span class="icon-search"></span>
-                </div>
-                <p class="nodisplay"><input class="nodisplayd" type="text" id="keyIndex" /></p>
-                <p class="nodisplay"><input class="nodisplayd" type="text" id="sortIndex" /></p>
-                <div id="results"></div>
-            </div>
-            <div class="nav-collapse navigation">
-                <ul class="nav" role="navigation">
-                    <li class="divider-vertical"></li>
-                    <li><a target="_blank" href="/article"><span class="icon-edit"></span> 文档编辑</a></li>
-                    <li><a target="_blank" href="/data"><span class="icon-picture"></span> 数据指标</a></li>
-                    <li><a target="_blank" href="/industry"><span class="icon-table"></span> 行业分类</a></li>
-                    <li><a target="_blank" href="/main"><span class="icon-globe"></span> 每日指标</a></li>
-                    <li class="searching">
-                        <a target="_blank" href="/earning"><span class="icon-globe icon-earning"></span> 业绩预告</a>
-                        <div class="btn-group" style="padding:0px">
-                            <ul class="dropdown-menu">
-                                <a href="/screener?from=us" target="_blank">美股筛选器</a>
-                                <a href="/screener?from=cn" target="_blank">A股筛选器</a>
-                            </ul>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-            <div class="nav-collapse user">
-                <div class="user-info pull-right">
-                    <div class="btn-group">
-                        <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                            <div><strong th:text="${test}"></strong></div>
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a href=""><span class="icon-cogs"></span> 个人资料</a></li>
-                            <li><a target="_blank" href="/main"><span class="icon-book"></span> 每日指标</a></li>
-                            <li><a target="_blank" href="/search?q=%E4%B8%80%E5%B9%B4%E6%9C%9F"><span class="icon-book"></span> 一年期牛基</a></li>
-                            <li><a target="_blank" href="/search?q=%E6%88%90%E7%AB%8B%E4%BB%A5%E6%9D%A5%E7%89%9B%E5%9F%BA"><span class="icon-book"></span> 成立以来牛基</a></li>
-                            <li><a target="_blank" href="http://data.eastmoney.com/report/ylyc.html"><span class="icon-book"></span> 东方财富-盈利预测</a></li>
-                            <li><a target="_blank" href="http://data.eastmoney.com/bbsj/201506/yjyg.html"><span class="icon-book"></span> 东方财富-业绩预告</a></li>
-                            <li><a target="_blank" href="http://data.eastmoney.com/IF/Data/Contract.html"><span class="icon-book"></span> 东方财富-期指持仓</a></li>
-                            <li><a target="_blank" href="http://data.eastmoney.com/rzrq/sh.html"><span class="icon-book"></span> 东方财富-融资融券</a></li>
-                            <li><a target="_blank" href="http://data.eastmoney.com/bkzj/hgt.html"><span class="icon-book"></span> 东方财富-沪股通资金流向</a></li>
-                            <li><a target="_blank" href="http://data.eastmoney.com/bkzj/jlr.html"><span class="icon-book"></span> 东方财富-行业板块资金流向</a></li>
-                            <li><a target="_blank" href="http://data.eastmoney.com/cjsj/bankTransfer.html"><span class="icon-book"></span> 东方财富-银证转账</a></li>
-                            <li><a target="_blank" href="http://data.eastmoney.com/xg/xg/default.html"><span class="icon-book"></span> 东方财富-新股申购</a></li>
-                            <li><a target="_blank" href="http://data.eastmoney.com/executive/gdzjc.html"><span class="icon-book"></span> 东方财富-股东增减持</a></li>
-                            <li><a target="_blank" href="http://data.eastmoney.com/gpzy/pledgeRatio.aspx"><span class="icon-book"></span> 东方财富-上市公司质押比例</a></li>
-                            <li><a target="_blank" href="http://www.cninfo.com.cn/disclosure/prbookinfo.jsp?desc=0&&order=2&&&market=szmb&&stockCode=&&sjplrq="><span class="icon-book"></span> 定期报告预约披露时间表</a></li>
+<!-- Navbar -->
+<nav class="main-header navbar navbar-expand-md navbar-white navbar-light">
+    <div class="container-md">
+        <button class="navbar-toggler order-1" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <!-- Left navbar links -->
+        <div class="collapse navbar-collapse order-3" id="navbarCollapse">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a href="../../index3.html" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item dropdown" style="display: none" v-if="selectedTabName!=undefined" :style="{display:selectedTabName!=undefined?'block':'none'}">
+                    <a v-text="selectedTabName" id="stockCardTabs" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">日线</a>
+                    <ul aria-labelledby="stockCardTabs" class="dropdown-menu border-0 shadow">
+                        <li><a @click.prevent="selectTab(1,$event)" href="#" class="dropdown-item">日线</a></li>
+                        <li><a @click.prevent="selectTab(2,$event)" href="#" class="dropdown-item">周线</a></li>
+                        <li><a @click.prevent="selectTab(3,$event)" href="#" class="dropdown-item">月线</a></li>
+                        <li><a @click.prevent="selectTab(4,$event)" href="#" class="dropdown-item">新闻</a></li>
+                    </ul>
+                </li>
+            </ul>
 
-                            <li><a target="_blank" href="/dailyreport/<%=ServiceUtils.getToday() %>/index.html"><span class="icon-book"></span> 策略模型</a></li>
-                            <li><a target="_blank" href="https://www.jisilu.cn/data/indicator/"><span class="icon-book"></span> 市场的估值</a></li>
-                            <li><a href="javascript:logout()"><span class="icon-signout"></span> 退出</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
         </div>
+
+
+        <!-- Right navbar links -->
+        <ul class="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto">
+            <!-- Navbar Search -->
+            <li class="nav-item">
+                <!-- SEARCH FORM -->
+                <form class="form-inline ml-0 ml-md-3">
+                    <div class="input-group input-group-sm">
+                        <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
+                        <div class="input-group-append">
+                            <button class="btn btn-navbar" type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </li>
+            <li class="nav-item" style="display: none">
+                <a class="nav-link" data-widget="navbar-search" href="#" role="button">
+                    <i class="fas fa-search"></i>
+                </a>
+                <div class="navbar-search-block">
+                    <form class="form-inline">
+                        <div class="input-group input-group-sm">
+                            <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
+                            <div class="input-group-append">
+                                <button class="btn btn-navbar" type="submit">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                                <button class="btn btn-navbar" type="button" data-widget="navbar-search">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </li>
+
+            <!-- Messages Dropdown Menu -->
+            <li class="nav-item dropdown">
+                <a class="nav-link" data-toggle="dropdown" href="#">
+                    <i class="far fa-comments"></i>
+                    <span class="badge badge-danger navbar-badge">3</span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                    <a href="#" class="dropdown-item">
+                        <!-- Message Start -->
+                        <div class="media">
+                            <img src="../../dist/img/user1-128x128.jpg" alt="User Avatar" class="img-size-50 mr-3 img-circle">
+                            <div class="media-body">
+                                <h3 class="dropdown-item-title">
+                                    Brad Diesel
+                                    <span class="float-right text-sm text-danger"><i class="fas fa-star"></i></span>
+                                </h3>
+                                <p class="text-sm">Call me whenever you can...</p>
+                                <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
+                            </div>
+                        </div>
+                        <!-- Message End -->
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item">
+                        <!-- Message Start -->
+                        <div class="media">
+                            <img src="../../dist/img/user8-128x128.jpg" alt="User Avatar" class="img-size-50 img-circle mr-3">
+                            <div class="media-body">
+                                <h3 class="dropdown-item-title">
+                                    John Pierce
+                                    <span class="float-right text-sm text-muted"><i class="fas fa-star"></i></span>
+                                </h3>
+                                <p class="text-sm">I got your message bro</p>
+                                <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
+                            </div>
+                        </div>
+                        <!-- Message End -->
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item">
+                        <!-- Message Start -->
+                        <div class="media">
+                            <img src="../../dist/img/user3-128x128.jpg" alt="User Avatar" class="img-size-50 img-circle mr-3">
+                            <div class="media-body">
+                                <h3 class="dropdown-item-title">
+                                    Nora Silvester
+                                    <span class="float-right text-sm text-warning"><i class="fas fa-star"></i></span>
+                                </h3>
+                                <p class="text-sm">The subject goes here</p>
+                                <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
+                            </div>
+                        </div>
+                        <!-- Message End -->
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item dropdown-footer">See All Messages</a>
+                </div>
+            </li>
+            <!-- Notifications Dropdown Menu -->
+            <li class="nav-item dropdown">
+                <a class="nav-link" data-toggle="dropdown" href="#">
+                    <i class="far fa-bell"></i>
+                    <span class="badge badge-warning navbar-badge">15</span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                    <span class="dropdown-item dropdown-header">15 Notifications</span>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-envelope mr-2"></i> 4 new messages
+                        <span class="float-right text-muted text-sm">3 mins</span>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-users mr-2"></i> 8 friend requests
+                        <span class="float-right text-muted text-sm">12 hours</span>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-file mr-2"></i> 3 new reports
+                        <span class="float-right text-muted text-sm">2 days</span>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+                    <i class="fas fa-expand-arrows-alt"></i>
+                </a>
+            </li>
+        </ul>
     </div>
-</header>
+</nav>
+<!-- /.navbar -->

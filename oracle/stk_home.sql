@@ -128,10 +128,11 @@ select sys_context('userenv', 'con_name') from dual;
 select con_id, dbid, guid, name , open_mode from v$pdbs;
 alter session set container=XEPDB1;
 
-. oraenv
-sqlplus system/password1
-sqlplus stk/stkpwd@localhost:1539/xepdb1
+C:\Users\KaiFan>lsnrctl status
 
+C:\Users\KaiFan>sqlplus system/password1 as sysdba
+SQL> alter session set container=XEPDB1;
+impdp stk/stkpwd@localhost:1521/XEPDB1 directory=DPUMP_DIR dumpfile=DB_STK.DP SCHEMAS=stk logfile=DB_STK.DP.log table_exists_action=replace
 
 --create stk table space
 create tablespace stk_tablespace_1 datafile 'D:\oradata\stk_data_1.dbf' size 2048M autoextend on next 200M maxsize 10240M extent management local;
@@ -147,6 +148,10 @@ select group#,sequence#,bytes/1024/1024 sizeMB,members,status from v$log;
 select group#,status,type,member from v$logfile;
 
 --centos:
+. oraenv
+sqlplus system/password1
+sqlplus stk/stkpwd@localhost:1539/xepdb1
+
 create tablespace stk_tablespace_1 datafile '/opt/oracle/oradata/XE/stk_data_1.dbf' size 2048M autoextend on next 200M maxsize 10240M extent management local;
 create tablespace stk_tablespace_2 datafile '/opt/oracle/oradata/XE/stk_data_2.dbf' size 2048M autoextend on next 200M maxsize 10240M extent management local;
 create temporary tablespace stk_tablespace_temp tempfile '/opt/oracle/oradata/XE/stk_temp.dbf' size 1024M autoextend on next 200M maxsize 10240m extent management local;
@@ -191,3 +196,4 @@ https://logic.edchen.org/how-to-resolve-ora-28040-no-matching-authentication-pro
 
 java.sql.SQLException: ORA-01017: invalid username/password; logon denied
 Remove all ojdbc6.jar from war/jar
+

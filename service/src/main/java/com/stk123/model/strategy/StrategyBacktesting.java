@@ -44,7 +44,6 @@ public class StrategyBacktesting {
 
     public void test(List<Stock> stocks) {
         List<Callable<StrategyResult>> tasks = new ArrayList<>();
-        long start = System.currentTimeMillis();
         for (Stock stock : stocks) {
             for(Strategy strategy : strategies) {
                 strategy.setExpectFilterRunOrNot(false); //不关注expectFilter，即不用跑expectFilter，用于每天task
@@ -52,8 +51,6 @@ public class StrategyBacktesting {
                 tasks.add(task);
             }
         }
-        long end = System.currentTimeMillis();
-        log.info("strategy backtesting for each, cost:"+(end-start)/1000.0);
 
         run(tasks, multipleThreadSize);
         for(Strategy strategy : strategies) {
@@ -67,7 +64,6 @@ public class StrategyBacktesting {
 
                 filterResultsGroupBy.entrySet().forEach(entry -> {
                     FilterExecutor fe = strategy.getFilterExecutor(entry.getKey());
-                    log.info("fecode========================"+entry.getKey());
                     List<FilterResult> frList = entry.getValue();
                     if(fe.isAsc()){
                         frList = frList.stream().map(s -> (Sortable)s).sorted(Comparator.comparingDouble(Sortable::getValue)).map(s -> (FilterResult)s).collect(Collectors.toList());

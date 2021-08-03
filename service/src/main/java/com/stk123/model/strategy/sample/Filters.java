@@ -899,7 +899,7 @@ public class Filters {
                 return FilterResult.FALSE("score:"+sum);
             }
             //return FilterResult.Sortable((double) sum).addResult("score:"+sum+"<br/>"+rating.toHtml());
-            return FilterResult.Sortable((double) sum).addResult(rating);
+            return FilterResult.Sortable((double) sum).addResult(rating.toHtml());
         };
     }
 

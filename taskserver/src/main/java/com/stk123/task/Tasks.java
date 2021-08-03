@@ -99,11 +99,11 @@ public class Tasks {
                 TaskBuilder.of(BarTask.class, "clearAll"),
                 TaskBuilder.of(BarTask.class, "CN"),
                 TaskBuilder.of(BarTask.class, "HK"),
-                TaskBuilder.of(BarTask.class, "MyStocks"),
-                TaskBuilder.of(BarTask.class, "AllStocks"),
-                TaskBuilder.of(BarTask.class, "Bks"),
+                TaskBuilder.of(BarTask.class, "MyStocks", "report=1"),
+                TaskBuilder.of(BarTask.class, "AllStocks", "report=1"),
+                TaskBuilder.of(BarTask.class, "Bks", "report=1"),
                 //TaskBuilder.of(SyncTask.class, "table=stk_task_log"),
-                TaskBuilder.of(BarTask.class, "Mass"),
+                TaskBuilder.of(BarTask.class, "Mass", "report=1"),
                 TaskBuilder.of(BarTask.class, "clearAll")
         );
     }

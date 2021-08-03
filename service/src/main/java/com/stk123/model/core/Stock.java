@@ -28,6 +28,7 @@ import com.stk123.service.core.StockService;
 import com.stk123.service.support.SpringApplicationContext;
 import com.stk123.util.HttpUtils;
 import com.stk123.util.ServiceUtils;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.StringUtils;
@@ -668,6 +669,65 @@ public class Stock {
         }
         return getBks().stream().map(bk -> Stocks.getBkRps(rpsCode, bk.getCode())).filter(Objects::nonNull).max(Comparator.comparingDouble(StrategyResult::getPercentile)).orElse(null);
     }
+
+    @Data
+    @AllArgsConstructor
+    public static class StockInfoList{
+        private Stock bk;
+        private List<StrategyResult> stockSrs;
+
+        public String toHtml(boolean displayAllStocks){
+            if(stockSrs.isEmpty()) return "";
+            List<Stock> stocks = stockSrs.stream().map(StrategyResult::getStock).collect(Collectors.toList());
+            final int[] a = {1};
+            Strategy rpsStrategy = stockSrs.get(0).getStrategy();
+            String info = displayAllStocks ? StringUtils.join(stockSrs.stream().map(sr->(a[0]++)+"."+sr.getStock().getNameAndCodeWithLink()+"["+CommonUtils.numberFormat2Digits(sr.getPercentile())+"("+sr.getFilterResults().stream().map(f -> (Sortable)f).map(s -> CommonUtils.numberFormat0Digits(s.getPercentile())).collect(Collectors.toList())+")]").collect(Collectors.toList()), "<br/>") : "";
+            return info + CommonUtils.k("查看", bk.getNameAndCode()+","+rpsStrategy.getNameWithCode(), stocks.stream().map(Stock::getCode).collect(Collectors.toList()));
+        }
+        public String getCodes(){
+            return StringUtils.join(stockSrs.stream().map(StrategyResult::getStock).map(Stock::getCode).collect(Collectors.toList()), ",");
+        }
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class BkInfo{
+        private StrategyResult bkSr;
+        private StockInfoList stockInfoList;
+    }
+    @Data
+    public static class BkInfoList{
+        private List<BkInfo> bkInfos;
+
+        public String toHtml(){
+            StringBuilder sb = new StringBuilder();
+            for(BkInfo bkInfo : bkInfos){
+                Stock bk = bkInfo.getBkSr().getStock();
+                sb.append("<br/>"+bk.getNameAndCodeWithLink()).append(bkInfo.stockInfoList.toHtml(false));
+                sb.append("<br/>"+bkInfo.getBkSr().getStrategy().getName()+":").append(CommonUtils.numberFormat2Digits(bkInfo.getBkSr().getPercentile()));
+            }
+            return sb.toString();
+        }
+    }
+
+    //用于stock
+    public BkInfoList getBkInfos(int topN, String... rpsCodes){
+        BkInfoList bkInfoList = new BkInfoList();
+        if(!getBks().isEmpty()){
+            List<BkInfo> list = new ArrayList<>();
+            for(String rpsCode : rpsCodes) {
+                StrategyResult bkSr = this.getMaxBkRpsInBks(rpsCode);
+                if(bkSr != null) {
+                    StockInfoList stockInfoList = bkSr.getStock().getStocksInfos(topN, Rps.CODE_STOCK_SCORE_20);
+                    BkInfo bkInfo = new BkInfo(bkSr, stockInfoList);
+                    list.add(bkInfo);
+                }
+            }
+            bkInfoList.setBkInfos(list);
+        }
+        return bkInfoList;
+    }
+
     //用于stock
     public String getBkInfo(){
         if(!getBks().isEmpty()){
@@ -683,6 +743,12 @@ public class Stock {
                    "<br/>"+sr2.getStrategy().getName()+":"+CommonUtils.numberFormat2Digits(sr2.getPercentile());
         }
         return "";
+    }
+
+    //用于bk
+    public StockInfoList getStocksInfos(int topN, String rpsCode){
+        List<StrategyResult> srs = this.getMaxStockRpsInStocks(topN, rpsCode);
+        return new StockInfoList(this, srs);
     }
 
     //用于bk

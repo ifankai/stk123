@@ -4,10 +4,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-//@Entity
+@Entity
 @Table(name = "STK_REPORT_HEADER")
 @Getter
 @Setter
@@ -47,7 +48,12 @@ public class StkReportHeaderEntity {
     @Column(name = "INSERT_TIME", nullable = false)
     private Date insertTime;
 
-    @OneToMany
+    @OneToMany(cascade=CascadeType.ALL)
     @JoinColumn(name = "HEADER_ID")
     private List<StkReportDetailEntity> stkReportDetailEntities;
+
+    public void addDetail(StkReportDetailEntity stkReportDetailEntity){
+        if(stkReportDetailEntities == null) stkReportDetailEntities = new ArrayList<>();
+        this.stkReportDetailEntities.add(stkReportDetailEntity);
+    }
 }

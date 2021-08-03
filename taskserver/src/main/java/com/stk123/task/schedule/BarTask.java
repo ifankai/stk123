@@ -22,6 +22,7 @@ import com.stk123.repository.*;
 import com.stk123.service.XueqiuService;
 import com.stk123.service.core.BacktestingService;
 import com.stk123.service.core.BarService;
+import com.stk123.service.core.ReportService;
 import com.stk123.service.core.StockService;
 import com.stk123.task.tool.TaskUtils;
 import com.stk123.util.ExceptionUtils;
@@ -56,6 +57,7 @@ public class BarTask extends AbstractTask {
     private String realtime;
     private String market;
     private String strategy;
+    private String report;
 
     private String today = TaskUtils.getToday();//"20160923";
     private final Date now = new Date();
@@ -92,6 +94,8 @@ public class BarTask extends AbstractTask {
     private StockService stockService;
     @Autowired
     private StkCapitalFlowRepository stkCapitalFlowRepository;
+    @Autowired
+    private ReportService reportService;
 
     public static void main(String[] args) throws Exception {
         BarTask task = new BarTask();
@@ -394,6 +398,7 @@ public class BarTask extends AbstractTask {
 
     public void analyseMyStocks(){
         try {
+            StkReportHeaderEntity stkReportHeaderEntity = null;
             Set<StockWrapper> allList = new LinkedHashSet<>();
 
             if(code != null){
@@ -495,6 +500,11 @@ public class BarTask extends AbstractTask {
                 Set<String> codeH = new LinkedHashSet<>();
                 Set<String> codeU = new LinkedHashSet<>();
 
+                if(StringUtils.isNotEmpty(report)){
+                    StrategyResult strategyResult = results.get(0);
+                    stkReportHeaderEntity = reportService.createReportHeaderEntity(strategyResult.getDate(), "mystocks", realtime!=null?1:0, "自选股策略");
+                }
+
                 String rowCode = null;
                 for(StrategyResult strategyResult : results){
                     Stock stock = strategyResult.getStock(); //stocks.stream().filter(stk -> stk.getCode().equals(strategyResult.getCode())).findFirst().orElse(null);
@@ -507,7 +517,7 @@ public class BarTask extends AbstractTask {
                         }
                     }
 
-                    StrategyBacktesting backtesting = backtestingService.backtestingAllHistory(stock.getCode(), strategyResult.getStrategy().getCode(), false);
+                    StrategyBacktesting backtestingAllHistory = backtestingService.backtestingAllHistory(stock.getCode(), strategyResult.getStrategy().getCode(), false);
 
                     boolean displayCode = true;
                     if(stock.getCode().equals(rowCode)){
@@ -516,16 +526,29 @@ public class BarTask extends AbstractTask {
                         rowCode = stock.getCode();
                     }
 
+                    Stock.BkInfoList bkInfoList = stock.getBkInfos(15, Rps.CODE_BK_60, Rps.CODE_BK_STOCKS_SCORE_30);
                     List<String> data = ListUtils.createList(
-                            displayCode ? stock.getNameAndCodeWithLinkAndBold() + stock.getBkInfo() : "",
+                            displayCode ? stock.getNameAndCodeWithLinkAndBold() + bkInfoList.toHtml() : "",
                             strategyResult.getDate()+
                                     "<br/>"+strategyResult.getStrategy().getName().replaceAll("，", "<br/>")+
                                     "<br/>"+StringUtils.join(sources, "<br/>"),
                             displayCode?stock.getDayBarImage():"",displayCode?stock.getWeekBarImage():"",
                             //backtesting.getStrategies().get(0).getPassRateString().replaceAll("]", "]<br/>") +
                             //        (StringUtils.isNotEmpty(backtesting.getStrategies().get(0).getPassedFilterResultLog()) ? "<br/>"+backtesting.getStrategies().get(0).getPassedFilterResultLog() : "")
-                            backtesting.getStrategies().get(0).getPassRateString().replaceAll("]", "]<br/>")
+                            backtestingAllHistory.getStrategies().get(0).getPassRateString().replaceAll("]", "]<br/>")
                     );
+
+                    if(stkReportHeaderEntity != null){
+                        StkReportDetailEntity stkReportDetailEntity = reportService.createReportDetailEntity(stock.getCode(),strategyResult.getStrategy().getCode(), strategyResult.getDate(),
+                                StringUtils.join(sources, "<br/>")+";"+StringUtils.join(strategyResult.getResults(),"<br/>"),
+                                StringUtils.join(bkInfoList.getBkInfos().stream().map(bkInfo -> bkInfo.getBkSr().getStrategy().getCode()).collect(Collectors.toList()), ";"),
+                                StringUtils.join(bkInfoList.getBkInfos().stream().map(bkInfo -> CommonUtils.numberFormat2Digits(bkInfo.getBkSr().getPercentile())).collect(Collectors.toList()), ";"),
+                                StringUtils.join(bkInfoList.getBkInfos().stream().map(bkInfo -> bkInfo.getBkSr().getStock().getCode()).collect(Collectors.toList()), ";"),
+                                StringUtils.join(bkInfoList.getBkInfos().stream().map(bkInfo -> bkInfo.getStockInfoList().getCodes()).collect(Collectors.toList()), ";"),
+                                backtestingAllHistory.getStrategies().get(0).getPassRateString()
+                                );
+                        stkReportHeaderEntity.addDetail(stkReportDetailEntity);
+                    }
 
                     if(stock.isMarketCN()) {
                         datasA.add(data);
@@ -537,6 +560,10 @@ public class BarTask extends AbstractTask {
                         datasU.add(data);
                         codeU.add(stock.getCode());
                     }
+                }
+
+                if(stkReportHeaderEntity != null){
+                    reportService.save(stkReportHeaderEntity);
                 }
 
                 List<String> titles = ListUtils.createList("标的", "日期/策略/来源", "日K线", "周K线", "历史策略回测通过率");
@@ -565,6 +592,7 @@ public class BarTask extends AbstractTask {
 
     public void analyseAllStocks(){
         try {
+            StkReportHeaderEntity stkReportHeaderEntity = null;
             List<Stock> stocks = Stocks.getStocksWithBks();
             //stockService.buildHolder(StocksAllCN);
 
@@ -584,11 +612,16 @@ public class BarTask extends AbstractTask {
                 List<List<String>> datasA = new ArrayList<>();
                 Set<String> codeA = new LinkedHashSet<>();
 
+                if(StringUtils.isNotEmpty(report)){
+                    StrategyResult strategyResult1 = results.get(0);
+                    stkReportHeaderEntity = reportService.createReportHeaderEntity(strategyResult1.getDate(), "allstocks", realtime!=null?1:0, "全市场策略");
+                }
+
                 String rowCode = null;
                 for (StrategyResult strategyResult : results) {
                     Stock stock = strategyResult.getStock(); //stocks.stream().filter(stk -> stk.getCode().equals(strategyResult.getCode())).findFirst().orElse(null);
 
-                    StrategyBacktesting backtesting = backtestingService.backtestingAllHistory(stock.getCode(), strategyResult.getStrategy().getCode(), false);
+                    StrategyBacktesting backtestingAllHistory = backtestingService.backtestingAllHistory(stock.getCode(), strategyResult.getStrategy().getCode(), false);
 
                     boolean displayCode = true;
                     if(stock.getCode().equals(rowCode)){
@@ -597,15 +630,16 @@ public class BarTask extends AbstractTask {
                         rowCode = stock.getCode();
                     }
 
+                    Stock.BkInfoList bkInfoList = stock.getBkInfos(15, Rps.CODE_BK_60, Rps.CODE_BK_STOCKS_SCORE_30);
                     List<String> data = ListUtils.createList(
-                            displayCode ? stock.getNameAndCodeWithLinkAndBold() + stock.getBkInfo() : "",
+                            displayCode ? stock.getNameAndCodeWithLinkAndBold() + bkInfoList.toHtml() : "",
                             strategyResult.getDate()+"<br/>"
                                     + strategyResult.getStrategy().getName().replaceAll("，", "<br/>")
                                     + "<br/>-----------<br/>" + StringUtils.join(strategyResult.getResults(),"<br/>"),
                             displayCode?stock.getDayBarImage():"",displayCode?stock.getWeekBarImage():"",
                             //backtesting.getStrategies().get(0).getPassRateString().replaceAll("]", "]<br/>") +
                             //        (StringUtils.isNotEmpty(backtesting.getStrategies().get(0).getPassedFilterResultLog()) ? "<br/>"+backtesting.getStrategies().get(0).getPassedFilterResultLog() : "")
-                            backtesting.getStrategies().get(0).getPassRateString().replaceAll("]", "]<br/>")
+                            backtestingAllHistory.getStrategies().get(0).getPassRateString().replaceAll("]", "]<br/>")
                     );
 
                     if(stock.isMarketCN()) {
@@ -613,8 +647,23 @@ public class BarTask extends AbstractTask {
                         codeA.add(stock.getCode());
                     }
 
+                    if(stkReportHeaderEntity != null){
+                        StkReportDetailEntity stkReportDetailEntity = reportService.createReportDetailEntity(stock.getCode(),strategyResult.getStrategy().getCode(), strategyResult.getDate(),
+                                StringUtils.join(strategyResult.getResults(),"<br/>"),
+                                StringUtils.join(bkInfoList.getBkInfos().stream().map(bkInfo -> bkInfo.getBkSr().getStrategy().getCode()).collect(Collectors.toList()), ";"),
+                                StringUtils.join(bkInfoList.getBkInfos().stream().map(bkInfo -> CommonUtils.numberFormat2Digits(bkInfo.getBkSr().getPercentile())).collect(Collectors.toList()), ";"),
+                                StringUtils.join(bkInfoList.getBkInfos().stream().map(bkInfo -> bkInfo.getBkSr().getStock().getCode()).collect(Collectors.toList()), ";"),
+                                StringUtils.join(bkInfoList.getBkInfos().stream().map(bkInfo -> bkInfo.getStockInfoList().getCodes()).collect(Collectors.toList()), ";"),
+                                backtestingAllHistory.getStrategies().get(0).getPassRateString()
+                        );
+                        stkReportHeaderEntity.addDetail(stkReportDetailEntity);
+                    }
                 }
 
+                // report save
+                if(stkReportHeaderEntity != null){
+                    reportService.save(stkReportHeaderEntity);
+                }
 
                 // rps start
                 StringBuffer rps = new StringBuffer();
@@ -652,6 +701,7 @@ public class BarTask extends AbstractTask {
 
     public void analyseBks(){
         try{
+            StkReportHeaderEntity stkReportHeaderEntity = null;
             List<Stock> bks = Stocks.getBksWithStocks();
 
             String strategies = Strategies.STRATEGIES_BK;
@@ -670,6 +720,11 @@ public class BarTask extends AbstractTask {
                 List<List<String>> datasBk1 = new ArrayList<>();
                 List<List<String>> datasBk2 = new ArrayList<>();
 
+                if(StringUtils.isNotEmpty(report)){
+                    StrategyResult strategyResult = results.get(0);
+                    stkReportHeaderEntity = reportService.createReportHeaderEntity(strategyResult.getDate(), "bks", realtime!=null?1:0, "板块策略");
+                }
+
                 String rowCode = null;
                 for(StrategyResult strategyResult : results){
                     Stock bk = strategyResult.getStock();//bks.stream().filter(stk -> stk.getCode().equals(strategyResult.getCode())).findFirst().orElse(null);
@@ -682,12 +737,13 @@ public class BarTask extends AbstractTask {
                         rowCode = bk.getCode();
                     }
 
+                    Stock.StockInfoList stockInfoList = bk.getStocksInfos(15, Rps.CODE_STOCK_SCORE_20);
                     List<String> data = ListUtils.createList(
                             displayCode ? bk.getNameAndCodeWithLinkAndBold() : "",
                             strategyResult.getDate()+
                                     "<br/>"+strategyResult.getStrategy().getName().replaceAll("，", "<br/>"),
                             displayCode ? bk.getDayBarImage() : "",
-                            displayCode ? bk.getStocksInfo(15, true, Rps.CODE_STOCK_SCORE_20) : ""
+                            displayCode ? stockInfoList.toHtml(true) : ""
                     );
                     if(bk.isCateIndexEastmoneyGn()) {
                         if (strategyResult.getStrategy().getCode().startsWith("strategy_08")) { //板块阶段强势策略
@@ -696,6 +752,20 @@ public class BarTask extends AbstractTask {
                             datasBk1.add(data);
                         }
                     }
+
+                    if(stkReportHeaderEntity != null){
+                        StkReportDetailEntity stkReportDetailEntity = reportService.createReportDetailEntity(bk.getCode(), strategyResult.getStrategy().getCode(),
+                                strategyResult.getDate(),
+                                StringUtils.join(strategyResult.getResults(),"<br/>"),
+                                Rps.CODE_STOCK_SCORE_20, null,
+                                stockInfoList.getBk().getCode(),
+                                stockInfoList.getCodes(),null );
+                        stkReportHeaderEntity.addDetail(stkReportDetailEntity);
+                    }
+                }
+
+                if(stkReportHeaderEntity != null){
+                    reportService.save(stkReportHeaderEntity);
                 }
 
                 List<String> titles = ListUtils.createList("标的", "日期/策略/来源", "K线", "Rps["+Rps.CODE_STOCK_SCORE_20+"]");

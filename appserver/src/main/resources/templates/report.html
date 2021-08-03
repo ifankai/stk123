@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>小智慧 - 日报</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css">
+    <!-- DataTables -->
+    <link rel="stylesheet" href="/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <link rel="stylesheet" href="/adminlte/plugins/pace-progress/themes/black/pace-theme-loading-bar.css">
+<!--    <link rel="stylesheet" href="/css/public.css">-->
+    <style>
+        .info-box{
+            min-height: unset;
+            margin-bottom: .3rem;
+            padding: .1rem;
+        }
+    </style>
+</head>
+<body class="hold-transition layout-top-nav layout-navbar-fixed text-sm pace-primary pace-done">
+<div class="pace pace-inactive">
+    <div class="pace-progress" data-progress-text="100%" data-progress="99" style="transform: translate3d(100%, 0px, 0px);">
+        <div class="pace-progress-inner"></div>
+    </div>
+    <div class="pace-activity"></div>
+</div>
+<!-- Site wrapper -->
+<div id="app" class="wrapper">
+    <div th:replace="common/navbar"></div>
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header"></section>
+
+        <section class="content">
+            <div class="container-md">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Pagination Month</h3>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th v-for="bk in common.bks.columns" v-text="bk.title" class="text-center"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>20日板块阶段强势(08a)</td>
+                                            <td v-for="bk in common.bks.columns">
+                                                <div v-for="code in bk.data._08a" class="info-box">
+                                                    <div class="info-box-content">
+                                                        <span v-text="code" class="info-box-text"></span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>60日板块阶段强势(08b)</td>
+                                            <td v-for="bk in common.bks.columns">
+                                                <div v-for="code in bk.data._08b" class="info-box">
+                                                    <div class="info-box-content">
+                                                        <span v-text="code" class="info-box-text"></span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>120日板块阶段强势(08c)</td>
+                                            <td v-for="bk in common.bks.columns">
+                                                <div v-for="code in bk.data._08c" class="info-box">
+                                                    <div class="info-box-content">
+                                                        <span v-text="code" class="info-box-text"></span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <nav class="mt-3">
+                                    <div class="nav nav-tabs" id="product-tab" role="tablist">
+                                        <a class="nav-item nav-link active" id="product-desc-tab" data-toggle="tab" href="#product-desc" role="tab" aria-controls="product-desc" aria-selected="true">热点板块</a>
+                                        <a class="nav-item nav-link" id="product-comments-tab" data-toggle="tab" href="#product-comments" role="tab" aria-controls="product-comments" aria-selected="false">mystocks</a>
+                                        <a class="nav-item nav-link" id="product-rating-tab" data-toggle="tab" href="#product-rating" role="tab" aria-controls="product-rating" aria-selected="false">allstocks</a>
+                                    </div>
+                                </nav>
+                                <div class="tab-content p-3" id="nav-tabContent">
+                                    <div class="tab-pane fade show active" id="product-desc" role="tabpanel" aria-labelledby="product-desc-tab"> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi vitae condimentum erat. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Sed posuere, purus at efficitur hendrerit, augue elit lacinia arcu, a eleifend sem elit et nunc. Sed rutrum vestibulum est, sit amet cursus dolor fermentum vel. Suspendisse mi nibh, congue et ante et, commodo mattis lacus. Duis varius finibus purus sed venenatis. Vivamus varius metus quam, id dapibus velit mattis eu. Praesent et semper risus. Vestibulum erat erat, condimentum at elit at, bibendum placerat orci. Nullam gravida velit mauris, in pellentesque urna pellentesque viverra. Nullam non pellentesque justo, et ultricies neque. Praesent vel metus rutrum, tempus erat a, rutrum ante. Quisque interdum efficitur nunc vitae consectetur. Suspendisse venenatis, tortor non convallis interdum, urna mi molestie eros, vel tempor justo lacus ac justo. Fusce id enim a erat fringilla sollicitudin ultrices vel metus. </div>
+                                    <div class="tab-pane fade" id="product-comments" role="tabpanel" aria-labelledby="product-comments-tab"> Vivamus rhoncus nisl sed venenatis luctus. Sed condimentum risus ut tortor feugiat laoreet. Suspendisse potenti. Donec et finibus sem, ut commodo lectus. Cras eget neque dignissim, placerat orci interdum, venenatis odio. Nulla turpis elit, consequat eu eros ac, consectetur fringilla urna. Duis gravida ex pulvinar mauris ornare, eget porttitor enim vulputate. Mauris hendrerit, massa nec aliquam cursus, ex elit euismod lorem, vehicula rhoncus nisl dui sit amet eros. Nulla turpis lorem, dignissim a sapien eget, ultrices venenatis dolor. Curabitur vel turpis at magna elementum hendrerit vel id dui. Curabitur a ex ullamcorper, ornare velit vel, tincidunt ipsum. </div>
+                                    <div class="tab-pane fade" id="product-rating" role="tabpanel" aria-labelledby="product-rating-tab"> Cras ut ipsum ornare, aliquam ipsum non, posuere elit. In hac habitasse platea dictumst. Aenean elementum leo augue, id fermentum risus efficitur vel. Nulla iaculis malesuada scelerisque. Praesent vel ipsum felis. Ut molestie, purus aliquam placerat sollicitudin, mi ligula euismod neque, non bibendum nibh neque et erat. Etiam dignissim aliquam ligula, aliquet feugiat nibh rhoncus ut. Aliquam efficitur lacinia lacinia. Morbi ac molestie lectus, vitae hendrerit nisl. Nullam metus odio, malesuada in vehicula at, consectetur nec justo. Quisque suscipit odio velit, at accumsan urna vestibulum a. Proin dictum, urna ut varius consectetur, sapien justo porta lectus, at mollis nisi orci et nulla. Donec pellentesque tortor vel nisl commodo ullamcorper. Donec varius massa at semper posuere. Integer finibus orci vitae vehicula placerat. </div>
+                                </div>
+
+                            </div>
+
+
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+
+                </div>
+            </div>
+        </section>
+
+    </div>
+    <div th:replace="common/footer"></div>
+</div>
+<!-- ./wrapper -->
+</body>
+</html>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@3.1.1/dist/vue.global.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios@0.21.1/dist/axios.min.js"></script>
+
+<script src="/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="/adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="/adminlte/plugins/pace-progress/pace.min.js"></script>
+
+<script src="/js/component/datatable.js"></script>
+
+<script th:inline="javascript">
+    const app = Vue.createApp({
+        data() {
+            return {
+                loading: true,
+                common:{
+                    bks:{
+                        columns: [
+                            {title:"2021-08-01", data:{_08a:["600600","601600"], _08b:["600600","601600","000001"], _08c:["600600","601600","000001"]}},
+                            {title:"2021-08-02", data:{_08a:["600600","601600"], _08b:["600600"], _08c:["600600","601600"]}},
+                            {title:"2021-08-03", data:{_08a:["600600"], _08b:["600600","601600","000001"], _08c:["600600","601600","000001"]}},
+                            {title:"2021-08-04", data:{_08a:["600600","601600"], _08b:["600600","601600","000001"], _08c:["600600","601600","000001"]}},
+                            {title:"2021-08-05", data:{_08a:["600600","601600"], _08b:["600600"], _08c:["600600","601600"]}},
+                            {title:"2021-08-06", data:{_08a:["600600"], _08b:["600600","601600","000001"], _08c:["600600","601600","000001"]}},
+                            {title:"2021-08-07", data:{_08a:["600600"], _08b:["600600","601600","000001"], _08c:["600600","601600","000001"]}}
+                        ],
+                        ordering: false,
+                        //columns: [{title:"a"},{title:"b"}],
+                        columnDefs: [
+                            { className: "text-nowrap", "targets": [ 0,2 ] }
+                        ]
+                    }
+                }
+            }
+        },
+        methods:{
+
+        },
+        mounted() {
+            let _this = this;
+        }
+    });
+
+    app.component('datatable', _datatable);
+    app.mount('#app');
+</script>

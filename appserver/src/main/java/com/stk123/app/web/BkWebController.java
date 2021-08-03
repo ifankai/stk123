@@ -28,7 +28,7 @@ public class BkWebController {
         model.addAttribute("title", bks.get(0).getNameAndCode());
         model.addAttribute("code", bkCode);
         model.addAttribute("codeType", "bk");
-        return "stk";
+        return "stocks";
     }
 
 

@@ -5,7 +5,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
-//@Entity
+@Entity
 @Table(name = "STK_REPORT_DETAIL")
 @Getter
 @Setter
@@ -24,6 +24,10 @@ public class StkReportDetailEntity {
     @Basic
     @Column(name = "STRATEGY_CODE", length = 20)
     private String strategyCode;
+
+    @Basic
+    @Column(name = "STRATEGY_DATE", length = 10)
+    private String strategyDate;
 
     @Basic
     @Column(name = "STRATEGY_OUTPUT", length = 2000)
