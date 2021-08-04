@@ -677,7 +677,7 @@ public class Stock {
         private List<StrategyResult> stockSrs;
 
         public String toHtml(boolean displayAllStocks){
-            if(stockSrs.isEmpty()) return "";
+            if(stockSrs == null || stockSrs.isEmpty()) return "";
             List<Stock> stocks = stockSrs.stream().map(StrategyResult::getStock).collect(Collectors.toList());
             final int[] a = {1};
             Strategy rpsStrategy = stockSrs.get(0).getStrategy();
@@ -700,6 +700,7 @@ public class Stock {
         private List<BkInfo> bkInfos;
 
         public String toHtml(){
+            if(bkInfos == null) return "";
             StringBuilder sb = new StringBuilder();
             for(BkInfo bkInfo : bkInfos){
                 Stock bk = bkInfo.getBkSr().getStock();
