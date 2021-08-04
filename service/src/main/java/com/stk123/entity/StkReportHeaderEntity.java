@@ -1,5 +1,6 @@
 package com.stk123.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -50,6 +51,7 @@ public class StkReportHeaderEntity {
 
     @OneToMany(cascade=CascadeType.ALL)
     @JoinColumn(name = "HEADER_ID")
+    @JsonProperty("details")
     private List<StkReportDetailEntity> stkReportDetailEntities;
 
     public void addDetail(StkReportDetailEntity stkReportDetailEntity){

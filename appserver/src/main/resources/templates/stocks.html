@@ -118,11 +118,11 @@
                                         <span v-html="stk.stock.nameAndCodeWithLink"></span> (<span v-text="stk.stock.order"></span>) 评分:<span v-text="stk.stock.rating.total"></span>
                                     </h3>
                                     <div class="card-tools">
-                                        <button type="button" class="btn btn-tool" title="Contacts" data-widget="chat-pane-toggle">
-                                            <i class="fas fa-comments"></i>
+                                        <button @click="addToLookPool($event, stk)" title="加入观察池" type="button" class="btn btn-tool">
+                                            <i class="fas fa-eye" :class="stk.isAddedToLookPool?'fa-eye-slash':''"></i>
                                         </button>
-                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                            <i class="fas fa-minus"></i>
+                                        <button title="加入自选池" type="button" class="btn btn-tool">
+                                            <i class="fas fa-plus"></i>
                                         </button>
                                         <button type="button" class="btn btn-tool" data-card-widget="remove">
                                             <i class="fas fa-times"></i>
@@ -332,10 +332,10 @@
                                         </div>
                                     </li>
                                     <li>
-                    <span class="handle">
-                      <i class="fas fa-ellipsis-v"></i>
-                      <i class="fas fa-ellipsis-v"></i>
-                    </span>
+                                        <span class="handle">
+                                          <i class="fas fa-ellipsis-v"></i>
+                                          <i class="fas fa-ellipsis-v"></i>
+                                        </span>
                                         <div  class="icheck-primary d-inline ml-2">
                                             <input type="checkbox" value="" name="todo4" id="todoCheck4">
                                             <label for="todoCheck4"></label>
@@ -348,10 +348,10 @@
                                         </div>
                                     </li>
                                     <li>
-                    <span class="handle">
-                      <i class="fas fa-ellipsis-v"></i>
-                      <i class="fas fa-ellipsis-v"></i>
-                    </span>
+                                        <span class="handle">
+                                          <i class="fas fa-ellipsis-v"></i>
+                                          <i class="fas fa-ellipsis-v"></i>
+                                        </span>
                                         <div  class="icheck-primary d-inline ml-2">
                                             <input type="checkbox" value="" name="todo5" id="todoCheck5">
                                             <label for="todoCheck5"></label>
@@ -364,10 +364,10 @@
                                         </div>
                                     </li>
                                     <li>
-                    <span class="handle">
-                      <i class="fas fa-ellipsis-v"></i>
-                      <i class="fas fa-ellipsis-v"></i>
-                    </span>
+                                        <span class="handle">
+                                          <i class="fas fa-ellipsis-v"></i>
+                                          <i class="fas fa-ellipsis-v"></i>
+                                        </span>
                                         <div  class="icheck-primary d-inline ml-2">
                                             <input type="checkbox" value="" name="todo6" id="todoCheck6">
                                             <label for="todoCheck6"></label>
@@ -607,6 +607,7 @@
                 seletedStrategyName: 'Strategy过滤',
                 bkSelected: [],
                 niusanSelected: [],
+                stockLookPool:[],
                 common:{
                     news:{
                         columns: [{data:"type"},{data:"title"},{data:"infoCreateTime"}],
@@ -699,6 +700,29 @@
                     parseStocks(_this, res);
                 });
                 Pace.stop();
+            },
+            addToLookPool:function (e, stk) {
+                if(!stk.isAddedToLookPool) {
+                    var btn = $(e.target);
+                    var image = $('<img width="30px" height="30px" src="' + btn.data("image") + '"/>').css({
+                        "position": "fixed",
+                        "z-index": "99999"
+                    });
+                    btn.prepend(image);
+                    var position = $('#stock-look-pool').position();
+                    image.animate({
+                        top: position.top,
+                        left: position.left
+                    }, 500, "linear", function () {
+                        image.remove();
+                    });
+                    this.stockLookPool.push(stk);
+                    stk.isAddedToLookPool = true;
+                }
+            },
+            removeStockFromLookPool:function(stk){
+                stk.isAddedToLookPool = false;
+                this.stockLookPool = this.stockLookPool.filter(s => s.stock.code !== stk.stock.code);
             }
         },
         computed: {

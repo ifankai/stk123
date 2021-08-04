@@ -18,6 +18,12 @@
             margin-bottom: .3rem;
             padding: .1rem;
         }
+        .report-date{
+            background-color: #f8f9fa;
+        }
+        .same-bk{
+            background-color: #d2d6de;
+        }
     </style>
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed text-sm pace-primary pace-done">
@@ -47,36 +53,16 @@
                                     <thead>
                                         <tr>
                                             <th></th>
-                                            <th v-for="bk in common.bks.columns" v-text="bk.title" class="text-center"></th>
+                                            <th v-for="bk in hotBks" v-text="bk.title" class="text-center" :class="bk.title==reportDate?'report-date':''"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>20日板块阶段强势(08a)</td>
-                                            <td v-for="bk in common.bks.columns">
-                                                <div v-for="code in bk.data._08a" class="info-box">
+                                        <tr v-for="type in common.hotBks">
+                                            <td v-text="type.name"></td>
+                                            <td v-for="bk in hotBks" :class="bk.title==reportDate?'report-date':''">
+                                                <div v-for="item in bk.data[type.type]" @mouseover="filterSameBk(item)" @mouseleave="filterSameBk({code:'-1'})" class="info-box callout" :class="item.class">
                                                     <div class="info-box-content">
-                                                        <span v-text="code" class="info-box-text"></span>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>60日板块阶段强势(08b)</td>
-                                            <td v-for="bk in common.bks.columns">
-                                                <div v-for="code in bk.data._08b" class="info-box">
-                                                    <div class="info-box-content">
-                                                        <span v-text="code" class="info-box-text"></span>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>120日板块阶段强势(08c)</td>
-                                            <td v-for="bk in common.bks.columns">
-                                                <div v-for="code in bk.data._08c" class="info-box">
-                                                    <div class="info-box-content">
-                                                        <span v-text="code" class="info-box-text"></span>
+                                                        <span v-text="item.code" class="info-box-text"></span>
                                                     </div>
                                                 </div>
                                             </td>
@@ -138,28 +124,26 @@
         data() {
             return {
                 loading: true,
+                reportDate: '2021-08-06',
                 common:{
-                    bks:{
-                        columns: [
-                            {title:"2021-08-01", data:{_08a:["600600","601600"], _08b:["600600","601600","000001"], _08c:["600600","601600","000001"]}},
-                            {title:"2021-08-02", data:{_08a:["600600","601600"], _08b:["600600"], _08c:["600600","601600"]}},
-                            {title:"2021-08-03", data:{_08a:["600600"], _08b:["600600","601600","000001"], _08c:["600600","601600","000001"]}},
-                            {title:"2021-08-04", data:{_08a:["600600","601600"], _08b:["600600","601600","000001"], _08c:["600600","601600","000001"]}},
-                            {title:"2021-08-05", data:{_08a:["600600","601600"], _08b:["600600"], _08c:["600600","601600"]}},
-                            {title:"2021-08-06", data:{_08a:["600600"], _08b:["600600","601600","000001"], _08c:["600600","601600","000001"]}},
-                            {title:"2021-08-07", data:{_08a:["600600"], _08b:["600600","601600","000001"], _08c:["600600","601600","000001"]}}
-                        ],
-                        ordering: false,
-                        //columns: [{title:"a"},{title:"b"}],
-                        columnDefs: [
-                            { className: "text-nowrap", "targets": [ 0,2 ] }
-                        ]
-                    }
-                }
+                    hotBks:[{type:'strategy_08a', name:'20日板块阶段强势(08a)'},{type:'strategy_08b', name:'60日板块阶段强势(08b)'},{type:'strategy_08c', name:'120日板块阶段强势(08c)'}]
+                },
+                hotBks:[
+                    {title:"2021-08-01", data:{strategy_08a:[{code:"600600"},{code:"601600"}], strategy_08b:[{code:"600600"},{code:"601600"},{code:"000001"}], strategy_08c:[{code:"600600"},{code:"601600"},{code:"000001"}]}},
+                    {title:"2021-08-02", data:{strategy_08a:[{code:"600600"},{code:"601600"}], strategy_08b:[{code:"600600"}], strategy_08c:[{code:"600600"},{code:"601600"}]}},
+                    {title:"2021-08-03", data:{strategy_08a:[{code:"600600"}], strategy_08b:[{code:"600600"},{code:"601600"},{code:"000001"}], strategy_08c:[{code:"600600"},{code:"601600"},{code:"000001"}]}},
+                    {title:"2021-08-04", data:{strategy_08a:[{code:"600600"},{code:"601600"}], strategy_08b:[{code:"600600"},{code:"601600"},{code:"000001"}], strategy_08c:[{code:"600600"},{code:"601600"},{code:"000001"}]}},
+                    {title:"2021-08-05", data:{strategy_08a:[{code:"600600"},{code:"601600"}], strategy_08b:[{code:"600600"}], strategy_08c:[{code:"600600"},{code:"601600"}]}},
+                    {title:"2021-08-06", data:{strategy_08a:[{code:"600600"}], strategy_08b:[{code:"600600"},{code:"601600"},{code:"000001"}], strategy_08c:[{code:"600600"},{code:"601600"},{code:"000001"}]}},
+                    {title:"2021-08-07", data:{strategy_08a:[{code:"600600"}], strategy_08b:[{code:"600600"},{code:"601600"},{code:"000001"}], strategy_08c:[{code:"600600"},{code:"601600"},{code:"000001"}]}}
+                ]
+
             }
         },
         methods:{
-
+            filterSameBk:function (item) {
+                this.hotBks.forEach(bk => Object.keys(bk.data).forEach(key => bk.data[key].forEach(itm => itm.class=(item.code === itm.code?'callout-danger':'') )));
+            }
         },
         mounted() {
             let _this = this;

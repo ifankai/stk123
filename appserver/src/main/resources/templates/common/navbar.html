@@ -11,7 +11,7 @@
                     <a href="../../index3.html" class="nav-link">Home</a>
                 </li>
                 <li class="nav-item dropdown" style="display: none" v-if="selectedTabName!=undefined" :style="{display:selectedTabName!=undefined?'block':'none'}">
-                    <a v-text="selectedTabName" id="stockCardTabs" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">日线</a>
+                    <a v-text="selectedTabName" id="stockCardTabs" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"></a>
                     <ul aria-labelledby="stockCardTabs" class="dropdown-menu border-0 shadow">
                         <li><a @click.prevent="selectTab(1,$event)" href="#" class="dropdown-item">日线</a></li>
                         <li><a @click.prevent="selectTab(2,$event)" href="#" class="dropdown-item">周线</a></li>
@@ -120,30 +120,27 @@
                 </div>
             </li>
             <!-- Notifications Dropdown Menu -->
-            <li class="nav-item dropdown">
+            <li id="stock-look-pool" class="nav-item dropdown">
                 <a class="nav-link" data-toggle="dropdown" href="#">
-                    <i class="far fa-bell"></i>
-                    <span class="badge badge-warning navbar-badge">15</span>
+                    <i class="fas fa-list"></i>
+                    <span v-if="stockLookPool && stockLookPool.length > 0" v-text="stockLookPool?stockLookPool.length:'0'" class="badge badge-warning navbar-badge"></span>
                 </a>
-                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                    <span class="dropdown-item dropdown-header">15 Notifications</span>
+                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" onclick="event.stopPropagation()">
+                    <span class="dropdown-item dropdown-header">观察池(页面关闭后会清空)</span>
                     <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item">
-                        <i class="fas fa-envelope mr-2"></i> 4 new messages
-                        <span class="float-right text-muted text-sm">3 mins</span>
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item">
-                        <i class="fas fa-users mr-2"></i> 8 friend requests
-                        <span class="float-right text-muted text-sm">12 hours</span>
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item">
-                        <i class="fas fa-file mr-2"></i> 3 new reports
-                        <span class="float-right text-muted text-sm">2 days</span>
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
+                    <template v-for="stk in stockLookPool">
+                        <div class="dropdown-item">
+                            <i class="fas fa-eye mr-2"></i> <span v-html="stk.stock.nameAndCodeWithLink"></span>
+                            <button @click.prevent="removeStockFromLookPool(stk)" type="button" class="btn btn-tool float-right" data-card-widget="remove">
+                                <i class="fas fa-trash-alt" style="margin-top: 11px;"></i>
+                            </button>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                    </template>
+                    <div class="btn-group w-100">
+                        <button type="button" class="btn"><a href="#">查看全部</a></button>
+                        <button type="button" class="btn"><a href="#">清空</a></button>
+                    </div>
                 </div>
             </li>
             <li class="nav-item">
