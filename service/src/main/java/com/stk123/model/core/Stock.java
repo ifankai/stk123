@@ -697,10 +697,9 @@ public class Stock {
     }
     @Data
     public static class BkInfoList{
-        private List<BkInfo> bkInfos;
+        private List<BkInfo> bkInfos = new ArrayList<>();
 
         public String toHtml(){
-            if(bkInfos == null) return "";
             StringBuilder sb = new StringBuilder();
             for(BkInfo bkInfo : bkInfos){
                 Stock bk = bkInfo.getBkSr().getStock();
