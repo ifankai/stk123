@@ -299,7 +299,7 @@ public class BarTask extends AbstractTask {
         List<String> pe3 = new ArrayList<String>();
         pe3.add("全市场");pe3.add(stotalPE);pe3.add(smidPE);pe3.add(stotalPB);pe3.add(smidPB);pe3.add("");
         pe.add(pe3);
-        EmailUtils.sendAndReport("平均PE:"+ stotalPE +",中位PE:"+smidPE+",整体PB:"+stotalPB+",中位PB:"+smidPB+
+        EmailUtils.send("平均PE:"+ stotalPE +",中位PE:"+smidPE+",整体PB:"+stotalPB+",中位PB:"+smidPB+
                                       ";成长股平均PE:"+saveragePE+",PB:"+saveragePB+",日期:"+today,
                                  TaskUtils.createHtmlTable(null, pe) + "<br>" + peAndpeg );
     }

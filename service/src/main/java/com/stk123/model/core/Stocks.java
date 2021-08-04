@@ -85,7 +85,10 @@ public class Stocks {
 
     public static void clear(){
         Stocks.StocksAllCN = null;
+        Stocks.StocksAllCN_Map = Collections.synchronizedMap(new HashMap<>());
         Stocks.BKsEasymoneyGn = null;
+        Stocks.BKsEasymoneyGn_Map = null;
+        Stocks.BKsEasymoneyGn_Rps = new HashMap<>();
         Stocks.StocksMass = null;
         Stocks.StocksH = null;
     }
