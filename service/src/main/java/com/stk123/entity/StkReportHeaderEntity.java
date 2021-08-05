@@ -1,6 +1,8 @@
 package com.stk123.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.stk123.model.json.View;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,18 +25,22 @@ public class StkReportHeaderEntity {
 
     @Basic
     @Column(name = "REPORT_DATE", length = 10)
+    @JsonView(View.All.class)
     private String reportDate;
 
     @Basic
     @Column(name = "TYPE", length = 20)
+    @JsonView(View.All.class)
     private String type;
 
     @Basic
     @Column(name = "REALTIME", precision = 0)
+    @JsonView(View.All.class)
     private Integer realtime;
 
     @Basic
     @Column(name = "NAME", length = 200)
+    @JsonView(View.All.class)
     private String name;
 
     @Basic
@@ -47,11 +53,13 @@ public class StkReportHeaderEntity {
 
     @Basic
     @Column(name = "INSERT_TIME", nullable = false)
+    @JsonView(View.All.class)
     private Date insertTime;
 
     @OneToMany(cascade=CascadeType.ALL)
     @JoinColumn(name = "HEADER_ID")
     @JsonProperty("details")
+    @JsonView(View.All.class)
     private List<StkReportDetailEntity> stkReportDetailEntities;
 
     public void addDetail(StkReportDetailEntity stkReportDetailEntity){

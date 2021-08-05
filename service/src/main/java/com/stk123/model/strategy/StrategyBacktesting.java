@@ -52,7 +52,11 @@ public class StrategyBacktesting {
             }
         }
 
+        long start = System.currentTimeMillis();
         run(tasks, multipleThreadSize);
+        long end = System.currentTimeMillis();
+        log.info("strategy["+strategies.stream().map(Strategy::getCode).collect(Collectors.joining())+"] backtesting run end, cost:"+(end-start)/1000.0);
+
         for(Strategy strategy : strategies) {
             if(strategy.isSortable()) {
                 //List<StrategyResult> all = results.stream().filter(strategyResult -> strategyResult.getStrategy().getCode().equals(strategy.getCode()) && strategyResult.isFilterAllPassed()).collect(Collectors.toList());
@@ -280,8 +284,6 @@ public class StrategyBacktesting {
     }
 
     public static <V> void run(List<Callable<V>> tasks, int poolSize) {
-        long start = System.currentTimeMillis();
-
         //List<V> results = new ArrayList<>();
         tasks.parallelStream().forEach(task ->{
             try {
@@ -317,8 +319,6 @@ public class StrategyBacktesting {
         }
         // 关闭线程池
         exec.shutdown();*/
-        long end = System.currentTimeMillis();
-        log.info("strategy backtesting run end, cost:"+(end-start)/1000.0);
         //return results;
     }
 }

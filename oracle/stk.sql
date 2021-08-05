@@ -3078,7 +3078,17 @@ from stk_kline t where t.code in ('002346','600600','600601','601958','600531','
 select * from stk_report_header;
 select * from stk_report_detail;
 
-select report_date from (select report_date, rownum rn from  (select report_date from stk_report_header where report_date > '20210801'
-group by report_date order by report_date desc)) where rn<=2;
 
-select d.* from stk_report_header h, stk_report_detail d where h.id=d.header_id and h.report_date in ('') and h.type='bks' and d.strategy_code like 'strategy_08%'
+delete from stk_report_detail;
+delete from stk_report_header;
+
+
+select report_date from (select report_date, rownum rn from  (select report_date from stk_report_header where report_date <= '20210805'
+group by report_date order by report_date desc)) where rn<=7;
+
+select report_date from (select report_date, rownum rn from
+    (select report_date from stk_report_header where report_date <= '20210805'
+    group by report_date order by report_date desc)) where rn <= 7;
+
+select d.* from stk_report_header h, stk_report_detail d where h.id=d.header_id and h.report_date in ('')
+                                                           and h.type='bks' and d.strategy_code like 'strategy_08%'

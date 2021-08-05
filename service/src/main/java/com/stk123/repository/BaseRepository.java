@@ -108,6 +108,27 @@ public class BaseRepository implements ApplicationContextAware {
         return list;
     }
 
+    public List<Map> list2Map(String sql, Object... params) {
+        Session session = em.unwrap(Session.class);
+        NativeQuery q = session.createSQLQuery(sql);
+        if(params!=null){
+            for(int i=0,len=params.length;i<len;i++){
+                setParameter(q, i, params[i]);
+            }
+        }
+//        q.setResultTransformer(Transformers.aliasToBean(dto));
+        q.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+        //q.setResultTransformer(new CustomJpaResultTransformer(q, dto));
+
+        //Expected type: java.lang.Long, actual value: java.math.BigDecimal
+//        q.addScalar("num", StandardBasicTypes.LONG);
+
+        //session.getSessionFactory().getTypeHelper().heuristicType("long");
+
+        List<Map> list = q.list();
+        return list;
+    }
+
     private void setParameter(NativeQuery q, int i, Object param){
         if(param instanceof Object[]) {
             q.setParameterList(String.valueOf(i + 1), (Object[]) param);

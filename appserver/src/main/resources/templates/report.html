@@ -15,14 +15,30 @@
     <style>
         .info-box{
             min-height: unset;
-            margin-bottom: .3rem;
-            padding: .1rem;
+            margin-bottom: .1rem;
+            padding: .01rem;
+            font-size: .1rem;
+        }
+        .callout a{
+             text-decoration: none;
+        }
+        .callout a:hover{
+             color: unset;
+        }
+        .info-box .info-box-content {
+            line-height:unset;
         }
         .report-date{
             background-color: #f8f9fa;
         }
         .same-bk{
             background-color: #d2d6de;
+        }
+        .table td.td-hotbk{
+            padding: .2rem .5rem;
+        }
+        .callout-danger a{
+            color: var(--danger);
         }
     </style>
 </head>
@@ -59,10 +75,10 @@
                                     <tbody>
                                         <tr v-for="type in common.hotBks">
                                             <td v-text="type.name"></td>
-                                            <td v-for="bk in hotBks" :class="bk.title==reportDate?'report-date':''">
+                                            <td v-for="bk in hotBks" class="td-hotbk" :class="bk.title==reportDate?'report-date':''">
                                                 <div v-for="item in bk.data[type.type]" @mouseover="filterSameBk(item)" @mouseleave="filterSameBk({code:'-1'})" class="info-box callout" :class="item.class">
                                                     <div class="info-box-content">
-                                                        <span v-text="item.code" class="info-box-text"></span>
+                                                        <span v-html="item.nameAndCodeWithLink" class="info-box-text"></span>
                                                     </div>
                                                 </div>
                                             </td>
@@ -78,7 +94,9 @@
                                     </div>
                                 </nav>
                                 <div class="tab-content p-3" id="nav-tabContent">
-                                    <div class="tab-pane fade show active" id="product-desc" role="tabpanel" aria-labelledby="product-desc-tab"> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi vitae condimentum erat. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Sed posuere, purus at efficitur hendrerit, augue elit lacinia arcu, a eleifend sem elit et nunc. Sed rutrum vestibulum est, sit amet cursus dolor fermentum vel. Suspendisse mi nibh, congue et ante et, commodo mattis lacus. Duis varius finibus purus sed venenatis. Vivamus varius metus quam, id dapibus velit mattis eu. Praesent et semper risus. Vestibulum erat erat, condimentum at elit at, bibendum placerat orci. Nullam gravida velit mauris, in pellentesque urna pellentesque viverra. Nullam non pellentesque justo, et ultricies neque. Praesent vel metus rutrum, tempus erat a, rutrum ante. Quisque interdum efficitur nunc vitae consectetur. Suspendisse venenatis, tortor non convallis interdum, urna mi molestie eros, vel tempor justo lacus ac justo. Fusce id enim a erat fringilla sollicitudin ultrices vel metus. </div>
+                                    <div class="tab-pane fade show active" id="product-desc" role="tabpanel" aria-labelledby="product-desc-tab">
+                                        <datatable :="{...common.currentHotBks, ...currentHotBksData}"></datatable>
+                                    </div>
                                     <div class="tab-pane fade" id="product-comments" role="tabpanel" aria-labelledby="product-comments-tab"> Vivamus rhoncus nisl sed venenatis luctus. Sed condimentum risus ut tortor feugiat laoreet. Suspendisse potenti. Donec et finibus sem, ut commodo lectus. Cras eget neque dignissim, placerat orci interdum, venenatis odio. Nulla turpis elit, consequat eu eros ac, consectetur fringilla urna. Duis gravida ex pulvinar mauris ornare, eget porttitor enim vulputate. Mauris hendrerit, massa nec aliquam cursus, ex elit euismod lorem, vehicula rhoncus nisl dui sit amet eros. Nulla turpis lorem, dignissim a sapien eget, ultrices venenatis dolor. Curabitur vel turpis at magna elementum hendrerit vel id dui. Curabitur a ex ullamcorper, ornare velit vel, tincidunt ipsum. </div>
                                     <div class="tab-pane fade" id="product-rating" role="tabpanel" aria-labelledby="product-rating-tab"> Cras ut ipsum ornare, aliquam ipsum non, posuere elit. In hac habitasse platea dictumst. Aenean elementum leo augue, id fermentum risus efficitur vel. Nulla iaculis malesuada scelerisque. Praesent vel ipsum felis. Ut molestie, purus aliquam placerat sollicitudin, mi ligula euismod neque, non bibendum nibh neque et erat. Etiam dignissim aliquam ligula, aliquet feugiat nibh rhoncus ut. Aliquam efficitur lacinia lacinia. Morbi ac molestie lectus, vitae hendrerit nisl. Nullam metus odio, malesuada in vehicula at, consectetur nec justo. Quisque suscipit odio velit, at accumsan urna vestibulum a. Proin dictum, urna ut varius consectetur, sapien justo porta lectus, at mollis nisi orci et nulla. Donec pellentesque tortor vel nisl commodo ullamcorper. Donec varius massa at semper posuere. Integer finibus orci vitae vehicula placerat. </div>
                                 </div>
@@ -120,13 +138,23 @@
 <script src="/js/component/datatable.js"></script>
 
 <script th:inline="javascript">
+    const reportDate = [[${reportDate}]];
+
     const app = Vue.createApp({
         data() {
             return {
                 loading: true,
                 reportDate: '2021-08-06',
                 common:{
-                    hotBks:[{type:'strategy_08a', name:'20日板块阶段强势(08a)'},{type:'strategy_08b', name:'60日板块阶段强势(08b)'},{type:'strategy_08c', name:'120日板块阶段强势(08c)'}]
+                    hotBks:[{type:'strategy_08a', name:'20日板块阶段强势(08a)'},{type:'strategy_08b', name:'60日板块阶段强势(08b)'},{type:'strategy_08c', name:'120日板块阶段强势(08c)'}],
+                    currentHotBks:{
+                        columns: [{title:"板块", data:"nameAndCodeWithLink"},{title:"日期/策略", data:"title"},{title:"日线", data:"dayBarImage"},{title:"周线", data:"weekBarImage"}],
+                        ordering: false,
+                        //columns: [{title:"a"},{title:"b"}],
+                        columnDefs: [
+                            { className: "text-nowrap", "targets": [ 0,2 ] }
+                        ]
+                    }
                 },
                 hotBks:[
                     {title:"2021-08-01", data:{strategy_08a:[{code:"600600"},{code:"601600"}], strategy_08b:[{code:"600600"},{code:"601600"},{code:"000001"}], strategy_08c:[{code:"600600"},{code:"601600"},{code:"000001"}]}},
@@ -136,8 +164,15 @@
                     {title:"2021-08-05", data:{strategy_08a:[{code:"600600"},{code:"601600"}], strategy_08b:[{code:"600600"}], strategy_08c:[{code:"600600"},{code:"601600"}]}},
                     {title:"2021-08-06", data:{strategy_08a:[{code:"600600"}], strategy_08b:[{code:"600600"},{code:"601600"},{code:"000001"}], strategy_08c:[{code:"600600"},{code:"601600"},{code:"000001"}]}},
                     {title:"2021-08-07", data:{strategy_08a:[{code:"600600"}], strategy_08b:[{code:"600600"},{code:"601600"},{code:"000001"}], strategy_08c:[{code:"600600"},{code:"601600"},{code:"000001"}]}}
-                ]
-
+                ],
+                currentHotBksData:{data:[
+                        {
+                            nameAndCodeWithLink:"<a target='_blank' href='https://quote.eastmoney.com/bk/90.BK0951.html'>刀片电池</a>[<a target='_blank' href='http://81.68.255.181:8089/B/BK0951'>BK0951</a>]",
+                            title:"<datatable :='{...common.currentHotBks, ...currentHotBksData}'></datatable>",
+                            dayBarImage:"<a target='_blank' href='https://xueqiu.com/k?q=刀片电池#/stock'><img width='100%' src='http://webquoteklinepic.eastmoney.com/GetPic.aspx?token=&nid=90.BK0951&type=D&unitWidth=-6&ef=&formula=MACD&imageType=KXL&_=1628150090294' /></a>",
+                            weekBarImage:"<a target='_blank' href='https://xueqiu.com/k?q=刀片电池#/stock'><img width='100%' src='http://webquoteklinepic.eastmoney.com/GetPic.aspx?token=&nid=90.BK0951&type=W&unitWidth=-6&ef=&formula=MACD&imageType=KXL&_=1628150090294' /></a>"
+                        }
+                    ]}
             }
         },
         methods:{
@@ -147,6 +182,12 @@
         },
         mounted() {
             let _this = this;
+            axios.get("/rpt/"+reportDate).then(function (res) {
+                let data = res.data.data;
+                _this.reportDate = data.reportDate;
+                _this.hotBks = data.hotBks;
+                console.log('mounted', _this.$data)
+            });
         }
     });
 

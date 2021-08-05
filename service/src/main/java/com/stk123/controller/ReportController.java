@@ -6,6 +6,7 @@ import com.stk123.model.RequestResult;
 import com.stk123.model.json.View;
 import com.stk123.repository.StkReportHeaderRepository;
 import com.stk123.service.core.ReportService;
+import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
@@ -18,15 +19,15 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/rpt")
+@CommonsLog
 public class ReportController {
 
     @Autowired
     private ReportService reportService;
 
-    @RequestMapping({"","/{reportDate}"})
+    @RequestMapping({"","/","/{reportDate}"})
     @JsonView(View.All.class)
-    public RequestResult report(@PathVariable(value = "reportDate", required = false)String reportDate,
-                                Model model){
+    public RequestResult report(@PathVariable(value = "reportDate", required = false)String reportDate){
         Date rptDate = new Date();
         if(StringUtils.isNotEmpty(reportDate)){
             String date = StringUtils.replace(reportDate, "-", "");

@@ -35,6 +35,7 @@ const _datatable = {
     props: {
         id: undefined,
         title: {},
+        _dom: {}, //如果直接用 dom='lfrtip' 和 不设置 dom 表格的样式不一样，只能判断一下了
         columns: {},
         data: {},
         ordering:{},
@@ -59,13 +60,17 @@ const _datatable = {
         //当你修改了data 的值然后马上获取这个 dom 元素的值，是不能获取到更新后的值，
         //你需要使用 $nextTick 这个回调，让修改后的 data 值渲染更新到 dom 元素之后再获取，才能成功。
         this.$nextTick(function() {
-            $('#_datatable_' + this.datatableId).DataTable({
+            let opt = {
                 language: _datatableLang,
-                "dom": 'ipft',
+                //dom:'lfrtip',
                 //data: this.data,
                 //columns: this.columns
                 ...this.$props
-            });
+            }
+            if(this._dom != null){
+                opt.dom = this._dom;
+            }
+            $('#_datatable_' + this.datatableId).DataTable(opt);
             //$("div.toolbar").html('<span>Custom tool bar! Text/images etc.</span>');
         });
     },
