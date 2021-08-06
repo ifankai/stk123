@@ -232,14 +232,29 @@ public class Stock {
         return (this.name==null?this.code:this.name) + "["+ this.getCodeWithPlace() +"]";
     }
     @JsonView(View.All.class)
+    public String getNameWithLink(){
+        loadIfNull(this.name);
+        if(this.isMarketCN() && this.isCateIndexEastmoneyGn()){
+            return CommonUtils.wrapLink(this.getName(), "/B/"+this.getCode());
+        }
+        return CommonUtils.wrapLink(this.getName(), "http://81.68.255.181:8088/stk?s="+this.getCode());
+    }
+    @JsonView(View.All.class)
     public String getNameAndCodeWithLink(){
+        return getNameAndCodeWithLinkBreak(false);
+    }
+    @JsonView(View.All.class)
+    public String getNameAndCodeWithLinkBreak(){
+        return getNameAndCodeWithLinkBreak(true);
+    }
+    public String getNameAndCodeWithLinkBreak(boolean br){
         loadIfNull(this.name);
         if(this.isMarketCN() && this.isCateIndexEastmoneyGn()){
             return CommonUtils.wrapLink(this.getName(), "https://quote.eastmoney.com/bk/90."+this.getCode()+".html")
-                    + "["+ CommonUtils.wrapLink(this.getCode(), "http://81.68.255.181:8089/B/"+this.getCode()) +"]";
+                    + (br?"<br/>":"")+"["+ CommonUtils.wrapLink(this.getCode(), "http://81.68.255.181:8089/B/"+this.getCode()) +"]";
         }
         return CommonUtils.wrapLink((this.name==null?this.code:this.name), "https://xueqiu.com/S/"+this.getCodeWithPlace())
-                + "["+ CommonUtils.wrapLink(this.getCodeWithPlace(), "http://81.68.255.181:8088/stk?s="+this.getCode()) +"]";
+                + (br?"<br/>":"")+"["+ CommonUtils.wrapLink(this.getCodeWithPlace(), "http://81.68.255.181:8088/stk?s="+this.getCode()) +"]";
     }
     public String getNameAndCodeWithLinkAndBold(){
         return "<b>"+this.getNameAndCodeWithLink()+"</b>";

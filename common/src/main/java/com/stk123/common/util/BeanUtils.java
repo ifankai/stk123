@@ -1,12 +1,20 @@
 package com.stk123.common.util;
 
+import cn.hutool.core.bean.BeanUtil;
 import lombok.Data;
+import lombok.SneakyThrows;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.modelmapper.TypeMap;
 import org.modelmapper.spi.DestinationSetter;
 import org.modelmapper.spi.SourceGetter;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * modelmapper
@@ -59,6 +67,16 @@ public class BeanUtils {
             });
         return modelMapper.map(source, destination);
     }*/
+
+    @SneakyThrows
+    public static Map toMap(Object object, String... properties){
+        Map map = new HashMap();
+        for(String property : properties) {
+            Object obj = PropertyUtils.getProperty(object, property);
+            map.put(property, obj);
+        }
+        return map;
+    }
 
     public static void main(String[] args) {
         A a = new A();

@@ -10,14 +10,30 @@
     <link rel="stylesheet" href="/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
     <link rel="stylesheet" href="/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
     <link rel="stylesheet" href="/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
-    <link rel="stylesheet" href="/adminlte/plugins/pace-progress/themes/black/pace-theme-loading-bar.css">
+    <link rel="stylesheet" href="/adminlte/plugins/pace-progress/themes/black/pace-theme-minimal.css">
 <!--    <link rel="stylesheet" href="/css/public.css">-->
     <style>
+        .font-size-5{
+            font-size: .5rem;
+        }
         .info-box{
             min-height: unset;
             margin-bottom: .1rem;
             padding: .01rem;
             font-size: .1rem;
+        }
+        .table-hotbk .info-box .info-box-content{
+            -webkit-flex-direction: inherit;
+            -ms-flex-direction: unset;
+            flex-direction: unset;
+            -webkit-justify-content: unset;
+            justify-content: unset;
+            line-height:unset;
+        }
+        .table-hotbk .one{
+            font-weight: 500;
+            color: var(--danger);
+            margin-left: .4rem;
         }
         .callout a{
              text-decoration: none;
@@ -25,11 +41,9 @@
         .callout a:hover{
              color: unset;
         }
-        .info-box .info-box-content {
-            line-height:unset;
-        }
         .report-date{
             background-color: #f8f9fa;
+            color: unset !important;
         }
         .same-bk{
             background-color: #d2d6de;
@@ -40,7 +54,70 @@
         .callout-danger a{
             color: var(--danger);
         }
-    </style>
+        .img-width img{
+            width: 380px;
+            padding: 2px;
+        }
+
+        table.dataTable tbody th, table.dataTable tbody td, table.dataTable thead th, table.dataTable thead td {
+            padding: 1px 2px;
+        }
+        div.dataTables_wrapper div.dataTables_info {
+            padding-top: .1em;
+            float: left;
+        }
+        div.dataTables_wrapper div.dataTables_filter{
+            padding-top: .1em;
+            float: right;
+            margin-right: .2rem;
+        }
+        div.dataTables_wrapper div.dataTables_paginate{
+            float: right;
+        }
+        div.dataTables_wrapper div.dataTables_paginate ul.pagination{
+            margin: 0;
+        }
+        .table thead th {
+            border-bottom: 1px solid #dee2e6;
+            padding: 0 .75rem;
+            color: #9ba2a8;
+            text-align: center;
+        }
+        table.dataTable>thead .sorting:before,
+        table.dataTable>thead .sorting:after,
+        table.dataTable>thead .sorting_asc:before,
+        table.dataTable>thead .sorting_asc:after,
+        table.dataTable>thead .sorting_desc:before,
+        table.dataTable>thead .sorting_desc:after,
+        table.dataTable>thead .sorting_asc_disabled:before,
+        table.dataTable>thead .sorting_asc_disabled:after,
+        table.dataTable>thead .sorting_desc_disabled:before,
+        table.dataTable>thead .sorting_desc_disabled:after{
+            bottom: 0;
+        }
+        .pagination-sm {
+            margin: .1rem 0;
+        }
+        .custom-select-sm, .form-control-sm {
+            height: calc(1.5rem);
+            padding-top: .15rem;
+            padding-bottom: .25rem;
+            padding-left: .5rem;
+            font-size: 50%;
+        }
+        .page-link {
+            padding: .2rem .5rem;
+            font-size: .8rem;
+            line-height: 1.5;
+        }
+
+        #report-tabContent label {
+            margin-bottom: 0;
+        }
+        #report-tabContent label:not(.form-check-label):not(.custom-file-label) {
+            font-weight: 500;
+        }
+</style>
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed text-sm pace-primary pace-done">
 <div class="pace pace-inactive">
@@ -62,40 +139,52 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">Pagination Month</h3>
+                                <h3 class="card-title">统计报告</h3>
                             </div>
                             <div class="card-body">
-                                <table class="table table-bordered">
+                                <table class="table table-bordered table-hotbk">
                                     <thead>
                                         <tr>
-                                            <th></th>
-                                            <th v-for="bk in hotBks" v-text="bk.title" class="text-center" :class="bk.title==reportDate?'report-date':''"></th>
+                                            <th>[热点板块日历]</th>
+                                            <th v-for="bk in hotBks" class="text-center" :class="bk.title==reportDate?'report-date':''">
+                                                <a v-text="dateFormat(bk.title)" @click.prevent="gotoReport(bk.title)" href="#" style="color: unset"></a>
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr v-for="type in common.hotBks">
                                             <td v-text="type.name"></td>
                                             <td v-for="bk in hotBks" class="td-hotbk" :class="bk.title==reportDate?'report-date':''">
-                                                <div v-for="item in bk.data[type.type]" @mouseover="filterSameBk(item)" @mouseleave="filterSameBk({code:'-1'})" class="info-box callout" :class="item.class">
-                                                    <div class="info-box-content">
-                                                        <span v-html="item.nameAndCodeWithLink" class="info-box-text"></span>
-                                                    </div>
+                                                <div class="row">
+                                                    <section v-for="idx in [0,1]" class="col-lg-6 connectedSortable">
+                                                        <template v-for="(item,index) in bk.data[type.type]">
+                                                            <div v-if="index % 2 === idx" @mouseover="filterSameBk(item)" @mouseleave="filterSameBk({code:'-1'})" class="info-box callout" :class="item.class">
+                                                                <div class="info-box-content">
+                                                                    <span v-html="item.nameWithLink" class="info-box-text"></span>
+                                                                    <div v-if="inHotBksNew(item)">
+                                                                        <small class="one" title="新出现的板块">new</small>
+                                                                    </div>
+
+                                                                </div>
+                                                            </div>
+                                                        </template>
+                                                    </section>
                                                 </div>
                                             </td>
                                         </tr>
                                     </tbody>
                                 </table>
 
-                                <nav class="mt-3">
+                                <nav class="mt-2">
                                     <div class="nav nav-tabs" id="product-tab" role="tablist">
                                         <a class="nav-item nav-link active" id="product-desc-tab" data-toggle="tab" href="#product-desc" role="tab" aria-controls="product-desc" aria-selected="true">热点板块</a>
                                         <a class="nav-item nav-link" id="product-comments-tab" data-toggle="tab" href="#product-comments" role="tab" aria-controls="product-comments" aria-selected="false">mystocks</a>
                                         <a class="nav-item nav-link" id="product-rating-tab" data-toggle="tab" href="#product-rating" role="tab" aria-controls="product-rating" aria-selected="false">allstocks</a>
                                     </div>
                                 </nav>
-                                <div class="tab-content p-3" id="nav-tabContent">
+                                <div class="tab-content p-1" id="report-tabContent">
                                     <div class="tab-pane fade show active" id="product-desc" role="tabpanel" aria-labelledby="product-desc-tab">
-                                        <datatable :="{...common.currentHotBks, ...currentHotBksData}"></datatable>
+                                        <datatable :="{...common.currentHotBks, ...currentHotBks}"></datatable>
                                     </div>
                                     <div class="tab-pane fade" id="product-comments" role="tabpanel" aria-labelledby="product-comments-tab"> Vivamus rhoncus nisl sed venenatis luctus. Sed condimentum risus ut tortor feugiat laoreet. Suspendisse potenti. Donec et finibus sem, ut commodo lectus. Cras eget neque dignissim, placerat orci interdum, venenatis odio. Nulla turpis elit, consequat eu eros ac, consectetur fringilla urna. Duis gravida ex pulvinar mauris ornare, eget porttitor enim vulputate. Mauris hendrerit, massa nec aliquam cursus, ex elit euismod lorem, vehicula rhoncus nisl dui sit amet eros. Nulla turpis lorem, dignissim a sapien eget, ultrices venenatis dolor. Curabitur vel turpis at magna elementum hendrerit vel id dui. Curabitur a ex ullamcorper, ornare velit vel, tincidunt ipsum. </div>
                                     <div class="tab-pane fade" id="product-rating" role="tabpanel" aria-labelledby="product-rating-tab"> Cras ut ipsum ornare, aliquam ipsum non, posuere elit. In hac habitasse platea dictumst. Aenean elementum leo augue, id fermentum risus efficitur vel. Nulla iaculis malesuada scelerisque. Praesent vel ipsum felis. Ut molestie, purus aliquam placerat sollicitudin, mi ligula euismod neque, non bibendum nibh neque et erat. Etiam dignissim aliquam ligula, aliquet feugiat nibh rhoncus ut. Aliquam efficitur lacinia lacinia. Morbi ac molestie lectus, vitae hendrerit nisl. Nullam metus odio, malesuada in vehicula at, consectetur nec justo. Quisque suscipit odio velit, at accumsan urna vestibulum a. Proin dictum, urna ut varius consectetur, sapien justo porta lectus, at mollis nisi orci et nulla. Donec pellentesque tortor vel nisl commodo ullamcorper. Donec varius massa at semper posuere. Integer finibus orci vitae vehicula placerat. </div>
@@ -135,6 +224,7 @@
 <script src="/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
 <script src="/adminlte/plugins/pace-progress/pace.min.js"></script>
 
+<script src="/js/public.js"></script>
 <script src="/js/component/datatable.js"></script>
 
 <script th:inline="javascript">
@@ -144,40 +234,49 @@
         data() {
             return {
                 loading: true,
-                reportDate: '2021-08-06',
+                reportDate: '',
                 common:{
-                    hotBks:[{type:'strategy_08a', name:'20日板块阶段强势(08a)'},{type:'strategy_08b', name:'60日板块阶段强势(08b)'},{type:'strategy_08c', name:'120日板块阶段强势(08c)'}],
+                    hotBks:[{type:'strategy_08a', name:'20日强势板块(08a)'},{type:'strategy_08b', name:'60日强势板块(08b)'},{type:'strategy_08c', name:'120日强势板块(08c)'}],
                     currentHotBks:{
-                        columns: [{title:"板块", data:"nameAndCodeWithLink"},{title:"日期/策略", data:"title"},{title:"日线", data:"dayBarImage"},{title:"周线", data:"weekBarImage"}],
+                        columns: [
+                            {title:"板块", data:"nameAndCodeWithLink"},
+                            {title:"日期/策略", data:"strategyDateAndCode"},
+                            {title:"日线", data:"dayBarImage"},
+                            {title:"周线", data:"weekBarImage"},
+                            {title:"板块个股", data:"bkStocks"},
+                            {title:"查看", data:"action"}
+                        ],
                         ordering: false,
-                        //columns: [{title:"a"},{title:"b"}],
                         columnDefs: [
-                            { className: "text-nowrap", "targets": [ 0,2 ] }
+                            { className: "text-nowrap font-size-5", "targets": [ 0,1,4,5 ] },
+                            { className: "img-width font-size-5", "targets": [ 2,3 ] }
                         ]
                     }
                 },
-                hotBks:[
-                    {title:"2021-08-01", data:{strategy_08a:[{code:"600600"},{code:"601600"}], strategy_08b:[{code:"600600"},{code:"601600"},{code:"000001"}], strategy_08c:[{code:"600600"},{code:"601600"},{code:"000001"}]}},
-                    {title:"2021-08-02", data:{strategy_08a:[{code:"600600"},{code:"601600"}], strategy_08b:[{code:"600600"}], strategy_08c:[{code:"600600"},{code:"601600"}]}},
-                    {title:"2021-08-03", data:{strategy_08a:[{code:"600600"}], strategy_08b:[{code:"600600"},{code:"601600"},{code:"000001"}], strategy_08c:[{code:"600600"},{code:"601600"},{code:"000001"}]}},
-                    {title:"2021-08-04", data:{strategy_08a:[{code:"600600"},{code:"601600"}], strategy_08b:[{code:"600600"},{code:"601600"},{code:"000001"}], strategy_08c:[{code:"600600"},{code:"601600"},{code:"000001"}]}},
-                    {title:"2021-08-05", data:{strategy_08a:[{code:"600600"},{code:"601600"}], strategy_08b:[{code:"600600"}], strategy_08c:[{code:"600600"},{code:"601600"}]}},
-                    {title:"2021-08-06", data:{strategy_08a:[{code:"600600"}], strategy_08b:[{code:"600600"},{code:"601600"},{code:"000001"}], strategy_08c:[{code:"600600"},{code:"601600"},{code:"000001"}]}},
-                    {title:"2021-08-07", data:{strategy_08a:[{code:"600600"}], strategy_08b:[{code:"600600"},{code:"601600"},{code:"000001"}], strategy_08c:[{code:"600600"},{code:"601600"},{code:"000001"}]}}
-                ],
-                currentHotBksData:{data:[
-                        {
-                            nameAndCodeWithLink:"<a target='_blank' href='https://quote.eastmoney.com/bk/90.BK0951.html'>刀片电池</a>[<a target='_blank' href='http://81.68.255.181:8089/B/BK0951'>BK0951</a>]",
-                            title:"<datatable :='{...common.currentHotBks, ...currentHotBksData}'></datatable>",
-                            dayBarImage:"<a target='_blank' href='https://xueqiu.com/k?q=刀片电池#/stock'><img width='100%' src='http://webquoteklinepic.eastmoney.com/GetPic.aspx?token=&nid=90.BK0951&type=D&unitWidth=-6&ef=&formula=MACD&imageType=KXL&_=1628150090294' /></a>",
-                            weekBarImage:"<a target='_blank' href='https://xueqiu.com/k?q=刀片电池#/stock'><img width='100%' src='http://webquoteklinepic.eastmoney.com/GetPic.aspx?token=&nid=90.BK0951&type=W&unitWidth=-6&ef=&formula=MACD&imageType=KXL&_=1628150090294' /></a>"
-                        }
-                    ]}
+                hotBks:[],
+                hotBksNew:[],
+                currentHotBks:{
+                    data:[]
+                }
             }
         },
         methods:{
             filterSameBk:function (item) {
                 this.hotBks.forEach(bk => Object.keys(bk.data).forEach(key => bk.data[key].forEach(itm => itm.class=(item.code === itm.code?'callout-danger':'') )));
+            },
+            inHotBksNew:function (item) {
+                return this.hotBksNew.indexOf(item.code) >= 0;
+            },
+            dateFormat:function (date){
+                return dateFormat(date);
+            },
+            gotoReport:function (reportDate) {
+                window.open('/report/'+reportDate);
+            }
+        },
+        computed: {
+            reportDateShow:function (){
+                return dateFormat(this.reportDate);
             }
         },
         mounted() {
@@ -186,6 +285,14 @@
                 let data = res.data.data;
                 _this.reportDate = data.reportDate;
                 _this.hotBks = data.hotBks;
+                _this.hotBksNew = data.hotBksNew;
+                data.currentHotBks.forEach((item, index) => {
+                    Object.assign(data.currentHotBks[index], item.bk)
+                    data.currentHotBks[index].strategyDateAndCode = dateFormat(data.currentHotBks[index].strategyDate) + '<br/>' +item.details.map(detail => detail.strategyCode).join('<br/>');
+                    data.currentHotBks[index].bkStocks = data.currentHotBks[index].details[0].stocks.map(detail => detail.nameWithLink).join('<br/>');
+                    data.currentHotBks[index].action = data.currentHotBks[index].details[0].action;
+                });
+                _this.currentHotBks = {data: data.currentHotBks};
                 console.log('mounted', _this.$data)
             });
         }

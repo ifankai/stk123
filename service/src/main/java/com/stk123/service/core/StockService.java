@@ -1,6 +1,8 @@
 package com.stk123.service.core;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.stk123.common.CommonUtils;
+import com.stk123.common.util.BeanUtils;
 import com.stk123.common.util.ListUtils;
 import com.stk123.common.util.PinYin4jUtils;
 import com.stk123.entity.*;
@@ -24,6 +26,7 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.apachecommons.CommonsLog;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -344,6 +347,19 @@ public class StockService {
         return stocks;
     }
 
+    @SneakyThrows
+    public List<Map> getStocksAsMap(List<String> codes, String... properties ){
+        List<Stock> stocks = this.getStocks(codes);
+        List<Map> list = new ArrayList<>();
+        for(Stock stock : stocks) {
+            list.add(BeanUtils.toMap(stock, properties));
+        }
+        return list;
+    }
+
+    public List<Stock> getStocks(String... codes){
+        return this.getStocks(Arrays.asList(codes));
+    }
     public List<Stock> getStocks(List<String> codes){
         List<Stock> stocks = Stocks.getStocksOrNull(codes);
         if(stocks != null && stocks.size() == codes.size()) return stocks;

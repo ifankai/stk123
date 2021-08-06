@@ -1,5 +1,8 @@
 package com.stk123.service.core;
 
+import cn.hutool.core.lang.Pair;
+import cn.hutool.core.map.MapUtil;
+import com.stk123.common.CommonUtils;
 import com.stk123.entity.StkReportDetailEntity;
 import com.stk123.entity.StkReportHeaderEntity;
 import com.stk123.model.core.Stock;
@@ -7,6 +10,7 @@ import com.stk123.repository.BaseRepository;
 import com.stk123.repository.StkReportHeaderRepository;
 import lombok.Data;
 import lombok.extern.apachecommons.CommonsLog;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @CommonsLog
@@ -71,11 +76,11 @@ public class ReportService {
 
     public Map findReportAsMap(String reportDate){
         Map result = new HashMap();
-        List<Map> reportDatesMap = findTopReportDate(reportDate, 7);
+        List<Map> reportDatesMap = findTopReportDate(CommonUtils.addDay2String(reportDate, 1), 5);
         List<String> reportDates = reportDatesMap.stream().map(map -> (String)map.get("REPORT_DATE")).collect(Collectors.toList());
 
         String reportDateShow = null;
-        if(!reportDates.contains(reportDate)){
+        if(!reportDates.isEmpty() && !reportDates.contains(reportDate)){
             reportDateShow = reportDates.get(reportDates.size()-1);
         }else {
             reportDateShow = reportDate;
@@ -96,11 +101,11 @@ public class ReportService {
             map.put("title", rptDate);
 
             Map mapBy08 = new HashMap();
-            List<StkReportHeaderEntity> headersByReportDate =
+            List<StkReportHeaderEntity> headersByBkAndReportDate =
                     bks.stream().filter(stkReportHeaderEntity -> rptDate.equals(stkReportHeaderEntity.getReportDate())).collect(Collectors.toList());
             for(String strategy08 : strategy08s){
                 List<StkReportDetailEntity> detailByStrategyAndReportDate =
-                        headersByReportDate.stream().flatMap(stkReportHeaderEntity -> stkReportHeaderEntity.getStkReportDetailEntities().stream())
+                        headersByBkAndReportDate.stream().flatMap(stkReportHeaderEntity -> stkReportHeaderEntity.getStkReportDetailEntities().stream())
                                 .filter(stkReportDetailEntity -> StringUtils.startsWith(stkReportDetailEntity.getStrategyCode(), strategy08)).collect(Collectors.toList());
                 List<Stock> bks08 = stockService.getStocks(detailByStrategyAndReportDate.stream().map(StkReportDetailEntity::getCode).collect(Collectors.toList()));
                 bksMap.putAll(bks08.stream().collect(Collectors.toMap(Stock::getCode, Function.identity())));
@@ -113,13 +118,28 @@ public class ReportService {
 
         String finalRptDate = reportDateShow;
         List<StkReportHeaderEntity> bksByToday = bks.stream().filter(stkReportHeaderEntity -> finalRptDate.equals(stkReportHeaderEntity.getReportDate())).collect(Collectors.toList());
+        List<StkReportHeaderEntity> bksByNotToday = bks.stream().filter(stkReportHeaderEntity -> !finalRptDate.equals(stkReportHeaderEntity.getReportDate())).collect(Collectors.toList());
 
-        Map<String, List<StkReportDetailEntity>> groupbyCodeMap = bksByToday.stream().flatMap(stkReportHeaderEntity -> stkReportHeaderEntity.getStkReportDetailEntities().stream()).collect(Collectors.groupingBy(StkReportDetailEntity::getCode));
+        Stream<String> bkCodeByToday = bksByToday.stream().flatMap(stkReportHeaderEntity -> stkReportHeaderEntity.getStkReportDetailEntities().stream()).map(StkReportDetailEntity::getCode);
+        List<String> bkCodeByNotToday = bksByNotToday.stream().flatMap(stkReportHeaderEntity -> stkReportHeaderEntity.getStkReportDetailEntities().stream()).map(StkReportDetailEntity::getCode).collect(Collectors.toList());
+        List<String> bkCodeNew = bkCodeByToday.filter(s -> !bkCodeByNotToday.contains(s)).collect(Collectors.toList());
+        result.put("hotBksNew", bkCodeNew);
+
+        Map<String, List<StkReportDetailEntity>> groupbyCodeMap = bksByToday.stream().flatMap(stkReportHeaderEntity -> stkReportHeaderEntity.getStkReportDetailEntities().stream()).
+                filter(s -> StringUtils.startsWith(s.getStrategyCode(), "strategy_08")).collect(Collectors.groupingBy(StkReportDetailEntity::getCode));
         List<Map> groupbyCodeList = groupbyCodeMap.entrySet().stream().sorted(Comparator.comparing(e -> e.getValue().size(), Comparator.reverseOrder())).map(e -> {
             Map map = new HashMap();
+            Stock bk = bksMap.get(e.getKey());
             map.put("code", e.getKey());
-            map.put("details", e.getValue());
-            map.put("bk", bksMap.get(e.getKey()));
+            map.put("strategyDate", finalRptDate);
+
+            map.put("details", e.getValue().stream().map(detail -> new HashMap<String, Object>() {{
+                    put("strategyCode", detail.getStrategyCode());
+                    put("stocks", stockService.getStocksAsMap(Arrays.asList(StringUtils.split(detail.getRpsStockCode(), ",")), "code", "nameWithLink"));
+                    put("action", CommonUtils.a2stocks("查看", bk.getName(), Arrays.asList(StringUtils.split(detail.getRpsStockCode(), ",")) ));
+                }}
+            ));
+            map.put("bk", bk);
             return map;
         }).collect(Collectors.toList());
         result.put("currentHotBks", groupbyCodeList);

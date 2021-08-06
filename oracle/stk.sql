@@ -3091,4 +3091,6 @@ select report_date from (select report_date, rownum rn from
     group by report_date order by report_date desc)) where rn <= 7;
 
 select d.* from stk_report_header h, stk_report_detail d where h.id=d.header_id and h.report_date in ('')
-                                                           and h.type='bks' and d.strategy_code like 'strategy_08%'
+                                                           and h.type='bks' and d.strategy_code like 'strategy_08%';
+
+select * from stk where code='BK0619'

@@ -653,8 +653,13 @@ public class CommonUtils {
         return cal.get(type);
     }
 
-    public static Date addDay(String yyyyMMdd, int i) throws ParseException{
+    @SneakyThrows
+    public static Date addDay(String yyyyMMdd, int i) {
         return addDay(CommonUtils.sf_ymd2.parse(yyyyMMdd),i);
+    }
+    @SneakyThrows
+    public static String addDay2String(String yyyyMMdd, int i) {
+        return CommonUtils.formatDate(addDay(CommonUtils.sf_ymd2.parse(yyyyMMdd),i), CommonUtils.sf_ymd2);
     }
 
     public static Date addDay(Date date, int i){
@@ -949,6 +954,10 @@ public class CommonUtils {
     }
     public static String k(String name, String title, List<String> codes){
         return CommonUtils.wrapLink(name,"https://81.68.255.181:8443/S/"+StringUtils.join(codes, ",")+"?title="+ URLDecoder.decode(title, Charset.forName("UTF-8")));
+    }
+
+    public static String a2stocks(String name, String title, List<String> codes){
+        return CommonUtils.wrapLink(name,"/S/"+StringUtils.join(codes, ",")+"?title="+ URLDecoder.decode(title, Charset.forName("UTF-8")));
     }
 
     //计算复合增长率

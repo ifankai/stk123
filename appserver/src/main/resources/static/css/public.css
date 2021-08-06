@@ -36,7 +36,7 @@ table.dataTable>thead .sorting_desc_disabled:after{
 }
 .custom-select-sm, .form-control-sm {
     height: calc(1.5rem);
-    padding-top: .25rem;
+    padding-top: .15rem;
     padding-bottom: .25rem;
     padding-left: .5rem;
     font-size: 50%;

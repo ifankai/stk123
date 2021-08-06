@@ -31,7 +31,7 @@ public class ReportController {
         Date rptDate = new Date();
         if(StringUtils.isNotEmpty(reportDate)){
             String date = StringUtils.replace(reportDate, "-", "");
-            rptDate = CommonUtils.addDay(CommonUtils.parseDate(date), 1);
+            rptDate = CommonUtils.parseDate(date);
         }
         Map map = reportService.findReportAsMap(CommonUtils.formatDate(rptDate, CommonUtils.sf_ymd2));
         return RequestResult.success(map);
