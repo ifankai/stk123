@@ -704,6 +704,7 @@
                 Pace.stop();
             },
             addToLookPool:function (e, stk) {
+                let _this = this;
                 if(!stk.isAddedToLookPool) {
                     var btn = $(e.target);
                     var image = $('<img width="30px" height="30px" src="' + btn.data("image") + '"/>').css({
@@ -717,9 +718,10 @@
                         left: position.left
                     }, 500, "linear", function () {
                         image.remove();
+                        _this.stockLookPool.push(stk);
+                        stk.isAddedToLookPool = true;
                     });
-                    this.stockLookPool.push(stk);
-                    stk.isAddedToLookPool = true;
+
                 }
             },
             removeStockFromLookPool:function(stk){

@@ -1,0 +1,21 @@
+<script>
+
+    const Hello = {
+        props: ['text'],
+        template: '<div>{{ text }}</div>',
+    };
+
+    // create component constructor
+    const vm = Vue.createApp(Object.assign({}, Hello, {
+        data(){
+            return {
+                text: 'HI :)'
+            }
+        }
+    }));
+
+    const wrapper = document.createElement("div")
+    vm.mount(wrapper)
+    console.log('hello', wrapper.innerHTML)
+
+</script>

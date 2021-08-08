@@ -502,7 +502,13 @@ public class BarTask extends AbstractTask {
 
                 if(StringUtils.isNotEmpty(report)){
                     StrategyResult strategyResult = results.get(0);
-                    stkReportHeaderEntity = reportService.createReportHeaderEntity(strategyResult.getDate(), "mystocks", realtime!=null?1:0, "自选股策略");
+                    String type = "mystocks";
+                    String name = "自选股策略";
+                    if(realtime!=null){
+                        type = type+"_"+report;
+                        name = name+"[盘中"+report.toUpperCase()+"]";
+                    }
+                    stkReportHeaderEntity = reportService.createReportHeaderEntity(strategyResult.getDate(), type, realtime!=null?1:0, name);
                 }
 
                 String rowCode = null;
@@ -614,7 +620,13 @@ public class BarTask extends AbstractTask {
 
                 if(StringUtils.isNotEmpty(report)){
                     StrategyResult strategyResult1 = results.get(0);
-                    stkReportHeaderEntity = reportService.createReportHeaderEntity(strategyResult1.getDate(), "allstocks", realtime!=null?1:0, "全市场策略");
+                    String type = "allstocks";
+                    String name = "全市场策略";
+                    if(realtime!=null){
+                        type = type+"_"+report;
+                        name = name+"[盘中"+report.toUpperCase()+"]";
+                    }
+                    stkReportHeaderEntity = reportService.createReportHeaderEntity(strategyResult1.getDate(), type, realtime!=null?1:0, name);
                 }
 
                 String rowCode = null;

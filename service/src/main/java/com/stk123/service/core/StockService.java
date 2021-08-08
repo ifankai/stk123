@@ -467,7 +467,7 @@ public class StockService {
             Thread.sleep(20);
         }
         long end = System.currentTimeMillis();
-        log.info("getStocksWithAllBuildsAsync cost:"+(end-start)/1000);
+        log.info("getStocksWithAllBuildsAsync cost time:"+(end-start)/1000 + "s, build stock size:"+stocks.size());
         return stocks;
     }
 

@@ -32,6 +32,7 @@ public class Stocks {
     }
 
     public synchronized static void initBks(){
+        if(Stocks.BKsEasymoneyGn != null) return;
         Stocks.BKsEasymoneyGn = stockService.getBks(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn);
         Stocks.BKsEasymoneyGn_Map = Stocks.BKsEasymoneyGn.stream().collect(Collectors.toMap(Stock::getCode, Function.identity()));
         List<StrategyResult> strategyResults = stockService.calcRps(Stocks.BKsEasymoneyGn, Rps.CODE_BK_60);
@@ -55,6 +56,7 @@ public class Stocks {
     }
 
     public synchronized static void initStocks(){
+        if(Stocks.StocksAllCN != null) return;
         Stocks.StocksAllCN = stockService.getStocks(EnumMarket.CN, false);
         Stocks.StocksAllCN_Map = Stocks.StocksAllCN.stream().collect(Collectors.toMap(Stock::getCode, Function.identity()));
         List<Stock> bks = getBks();

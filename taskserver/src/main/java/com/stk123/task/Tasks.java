@@ -93,7 +93,7 @@ public class Tasks {
     }
 
 
-    @Scheduled(cron = "0 10 16 ? * MON-SAT")
+    @Scheduled(cron = "0 10 16 ? * MON-FRI")
     public void initialKLine() {
         taskContainer.start(
                 TaskBuilder.of(BarTask.class, "clearAll"),
@@ -109,11 +109,17 @@ public class Tasks {
     }
 
     @Scheduled(cron = "0 0 11 ? * MON-FRI")
-    @Scheduled(cron = "0 30 14 ? * MON-FRI")
-    public void klineRealtime() {
-        taskContainer.start(BarTask.class, "MyStocks", "realtime=1", "market=cn,hk");
+    public void klineRealtime_am() {
+        taskContainer.start(BarTask.class, "MyStocks", "realtime=1", "market=cn,hk", "report=am");
         Stocks.StocksAllCN = null;
-        taskContainer.start(BarTask.class, "AllStocks", "realtime=1");
+        taskContainer.start(BarTask.class, "AllStocks", "realtime=1", "report=1");
+    }
+
+    @Scheduled(cron = "0 30 14 ? * MON-FRI")
+    public void klineRealtime_pm() {
+        taskContainer.start(BarTask.class, "MyStocks", "realtime=1", "market=cn,hk", "report=pm");
+        Stocks.StocksAllCN = null;
+        taskContainer.start(BarTask.class, "AllStocks", "realtime=1", "report=1");
     }
 
     @Scheduled(cron = "0 30 5 ? * TUE-SAT")

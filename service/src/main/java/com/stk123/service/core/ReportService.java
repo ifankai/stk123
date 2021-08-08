@@ -98,20 +98,31 @@ public class ReportService {
         List<Map> hotBks = new ArrayList<>();
         for(String rptDate : reportDates){
             Map map = new HashMap();
-            map.put("title", rptDate);
+            map.put("reportDate", rptDate);
 
-            Map mapBy08 = new HashMap();
+            List<StkReportDetailEntity> hotBkDetailList = new ArrayList<>();
             List<StkReportHeaderEntity> headersByBkAndReportDate =
                     bks.stream().filter(stkReportHeaderEntity -> rptDate.equals(stkReportHeaderEntity.getReportDate())).collect(Collectors.toList());
             for(String strategy08 : strategy08s){
                 List<StkReportDetailEntity> detailByStrategyAndReportDate =
                         headersByBkAndReportDate.stream().flatMap(stkReportHeaderEntity -> stkReportHeaderEntity.getStkReportDetailEntities().stream())
                                 .filter(stkReportDetailEntity -> StringUtils.startsWith(stkReportDetailEntity.getStrategyCode(), strategy08)).collect(Collectors.toList());
-                List<Stock> bks08 = stockService.getStocks(detailByStrategyAndReportDate.stream().map(StkReportDetailEntity::getCode).collect(Collectors.toList()));
+                List<Stock> bks08 = stockService.getStocks(detailByStrategyAndReportDate.stream().map(StkReportDetailEntity::getCode).distinct().collect(Collectors.toList()));
                 bksMap.putAll(bks08.stream().collect(Collectors.toMap(Stock::getCode, Function.identity())));
-                mapBy08.put(strategy08, bks08);
+                hotBkDetailList.addAll(detailByStrategyAndReportDate);
             }
-            map.put("data", mapBy08);
+
+            Map<String,Set<String>> hotBkStrategyMap = hotBkDetailList.stream().collect(Collectors.groupingBy(StkReportDetailEntity::getCode, Collectors.mapping(StkReportDetailEntity::getStrategyCode, Collectors.toSet())));
+            Map<String, Set<String>> hotBkStrategyMapSort = hotBkStrategyMap.entrySet().stream().sorted(Comparator.comparing(stringSetEntry -> calculateStrategy(stringSetEntry.getValue()), Comparator.reverseOrder())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldVal, newVal) -> oldVal,  LinkedHashMap::new));
+
+            List<Map> hotBkList = hotBkStrategyMapSort.keySet().stream().map(s -> {
+                return new HashMap(){{
+                    put("stock", bksMap.get(s));
+                    put("strategies", hotBkStrategyMap.get(s));
+                }};
+            }).collect(Collectors.toList());
+
+            map.put("data", hotBkList);
             hotBks.add(map);
         }
         result.put("hotBks", hotBks);
@@ -133,10 +144,10 @@ public class ReportService {
             map.put("code", e.getKey());
             map.put("strategyDate", finalRptDate);
 
-            map.put("details", e.getValue().stream().map(detail -> new HashMap<String, Object>() {{
+            map.put("details", e.getValue().stream().distinct().map(detail -> new HashMap<String, Object>() {{
                     put("strategyCode", detail.getStrategyCode());
                     put("stocks", stockService.getStocksAsMap(Arrays.asList(StringUtils.split(detail.getRpsStockCode(), ",")), "code", "nameWithLink"));
-                    put("action", CommonUtils.a2stocks("查看", bk.getName(), Arrays.asList(StringUtils.split(detail.getRpsStockCode(), ",")) ));
+                    put("action", CommonUtils.a2stocks("查看<br/>板块<br/>个股", bk.getName(), Arrays.asList(StringUtils.split(detail.getRpsStockCode(), ",")) ));
                 }}
             ));
             map.put("bk", bk);
@@ -145,10 +156,24 @@ public class ReportService {
         result.put("currentHotBks", groupbyCodeList);
 
 
+
         List<StkReportHeaderEntity> mystocksByToday = headers.stream().filter(stkReportHeaderEntity -> "mystocks".equals(stkReportHeaderEntity.getType()) && finalRptDate.equals(stkReportHeaderEntity.getReportDate())).collect(Collectors.toList());
 
         return result;
     }
 
+    private int calculateStrategy(Set<String> strategies){
+        return strategies.stream().mapToInt(s -> getStrategyScore(s)).sum();
+    }
+    private int getStrategyScore(String strategy){
+        if("strategy_08c".equals(strategy)){
+            return 5;
+        }else if("strategy_08b".equals(strategy)){
+            return 3;
+        }else if("strategy_08a".equals(strategy)){
+            return 1;
+        }
+        return 0;
+    }
 
 }

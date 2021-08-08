@@ -13,14 +13,26 @@
     <link rel="stylesheet" href="/adminlte/plugins/pace-progress/themes/black/pace-theme-minimal.css">
 <!--    <link rel="stylesheet" href="/css/public.css">-->
     <style>
-        .font-size-5{
-            font-size: .5rem;
+        @media (min-width: 1200px) {
+            .img-width img {
+                width: 410px;
+                padding: 2px;
+            }
+            .container{
+                max-width: 1350px;
+            }
         }
+        @media (max-width: 650px) {
+            .container{
+                min-width: 615px;
+            }
+        }
+
         .info-box{
             min-height: unset;
-            margin-bottom: .1rem;
+            margin: .1rem .5rem;
             padding: .01rem;
-            font-size: .1rem;
+            //font-size: .1rem;
         }
         .table-hotbk .info-box .info-box-content{
             -webkit-flex-direction: inherit;
@@ -36,13 +48,14 @@
             margin-left: .4rem;
         }
         .callout a{
-             text-decoration: none;
+            text-decoration: none;
+            color: unset;
         }
         .callout a:hover{
              color: unset;
         }
         .report-date{
-            background-color: #f8f9fa;
+            background-color: #e9eaea;
             color: unset !important;
         }
         .same-bk{
@@ -54,9 +67,16 @@
         .callout-danger a{
             color: var(--danger);
         }
-        .img-width img{
-            width: 380px;
-            padding: 2px;
+        .callout-hotbk{
+            width: 12%;
+            margin-left: 2px;
+        }
+        .callout-hotbk .progress{
+            margin: 2px 0 !important;
+            height: 5px;
+        }
+        .callout-hotbk .progress-bar{
+            background-color: #f88e8e !important;
         }
 
         table.dataTable tbody th, table.dataTable tbody td, table.dataTable thead th, table.dataTable thead td {
@@ -134,7 +154,7 @@
         <section class="content-header"></section>
 
         <section class="content">
-            <div class="container-md">
+            <div class="container">
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
@@ -145,30 +165,43 @@
                                 <table class="table table-bordered table-hotbk">
                                     <thead>
                                         <tr>
-                                            <th>[热点板块日历]</th>
-                                            <th v-for="bk in hotBks" class="text-center" :class="bk.title==reportDate?'report-date':''">
-                                                <a v-text="dateFormat(bk.title)" @click.prevent="gotoReport(bk.title)" href="#" style="color: unset"></a>
+                                            <th v-for="bk in hotBks" class="text-center text-nowrap" :class="bk.reportDate==reportDate?'report-date':''">
+                                                <a v-text="dateFormat(bk.reportDate)" @click.prevent="gotoReport(bk.reportDate)" href="#" style="color: unset"></a>
                                             </th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="type in common.hotBks">
-                                            <td v-text="type.name"></td>
-                                            <td v-for="bk in hotBks" class="td-hotbk" :class="bk.title==reportDate?'report-date':''">
+                                        <tr>
+                                            <td v-for="bk in hotBks" class="td-hotbk text-center" :class="bk.reportDate==reportDate?'report-date':''">
                                                 <div class="row">
-                                                    <section v-for="idx in [0,1]" class="col-lg-6 connectedSortable">
-                                                        <template v-for="(item,index) in bk.data[type.type]">
-                                                            <div v-if="index % 2 === idx" @mouseover="filterSameBk(item)" @mouseleave="filterSameBk({code:'-1'})" class="info-box callout" :class="item.class">
+                                                        <template v-for="(item,index) in bk.data">
+                                                            <div @mouseover="filterSameBk(item)" @mouseleave="filterSameBk({stock:{code:'-1'}})" class="info-box callout" :class="item.class">
+                                                                <div class="callout-hotbk">
+                                                                    <div class="progress">
+                                                                        <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" :style="{width: item.strategies.includes('strategy_08c')?100+'%':0}">
+                                                                            <span class="sr-only">120日强势板块(08c)</span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="progress">
+                                                                        <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" :style="{width: item.strategies.includes('strategy_08b')?60+'%':0}">
+                                                                            <span class="sr-only">60日强势板块(08b)</span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="progress">
+                                                                        <div class="progress-bar" role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100" :style="{width: item.strategies.includes('strategy_08a')?30+'%':0}">
+                                                                            <span class="sr-only">20日强势板块(08a)</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
                                                                 <div class="info-box-content">
-                                                                    <span v-html="item.nameWithLink" class="info-box-text"></span>
+
+                                                                    <span v-html="item.stock.nameWithLink" class="info-box-text"></span>
                                                                     <div v-if="inHotBksNew(item)">
                                                                         <small class="one" title="新出现的板块">new</small>
                                                                     </div>
-
                                                                 </div>
                                                             </div>
                                                         </template>
-                                                    </section>
                                                 </div>
                                             </td>
                                         </tr>
@@ -204,7 +237,11 @@
             </div>
         </section>
 
+        <a id="back-to-top" href="#" class="btn btn-outline-primary back-to-top" role="button" aria-label="Scroll to top">
+            <i class="fas fa-chevron-up"></i>
+        </a>
     </div>
+
     <div th:replace="common/footer"></div>
 </div>
 <!-- ./wrapper -->
@@ -248,8 +285,8 @@
                         ],
                         ordering: false,
                         columnDefs: [
-                            { className: "text-nowrap font-size-5", "targets": [ 0,1,4,5 ] },
-                            { className: "img-width font-size-5", "targets": [ 2,3 ] }
+                            { className: "text-nowrap text-center", "targets": [ 0,1,4,5 ] },
+                            { className: "img-width", "targets": [ 2,3 ] }
                         ]
                     }
                 },
@@ -262,10 +299,10 @@
         },
         methods:{
             filterSameBk:function (item) {
-                this.hotBks.forEach(bk => Object.keys(bk.data).forEach(key => bk.data[key].forEach(itm => itm.class=(item.code === itm.code?'callout-danger':'') )));
+                this.hotBks.forEach(bk => bk.data.forEach(itm => itm.class=(item.stock.code === itm.stock.code?'callout-danger':'') ));
             },
             inHotBksNew:function (item) {
-                return this.hotBksNew.indexOf(item.code) >= 0;
+                return this.hotBksNew.indexOf(item.stock.code) >= 0;
             },
             dateFormat:function (date){
                 return dateFormat(date);
@@ -288,7 +325,7 @@
                 _this.hotBksNew = data.hotBksNew;
                 data.currentHotBks.forEach((item, index) => {
                     Object.assign(data.currentHotBks[index], item.bk)
-                    data.currentHotBks[index].strategyDateAndCode = dateFormat(data.currentHotBks[index].strategyDate) + '<br/>' +item.details.map(detail => detail.strategyCode).join('<br/>');
+                    data.currentHotBks[index].strategyDateAndCode = dateFormat(data.currentHotBks[index].strategyDate) + '<br/>(' +item.details.map(detail => detail.strategyCode.split('_')[1]).join(', ') +')';
                     data.currentHotBks[index].bkStocks = data.currentHotBks[index].details[0].stocks.map(detail => detail.nameWithLink).join('<br/>');
                     data.currentHotBks[index].action = data.currentHotBks[index].details[0].action;
                 });
