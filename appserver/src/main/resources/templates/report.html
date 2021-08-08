@@ -30,7 +30,7 @@
 
         .info-box{
             min-height: unset;
-            margin: .1rem .5rem;
+            margin: .1rem;
             padding: .01rem;
             //font-size: .1rem;
         }
@@ -40,7 +40,7 @@
             flex-direction: unset;
             -webkit-justify-content: unset;
             justify-content: unset;
-            line-height:unset;
+            padding: 0 5px;
         }
         .table-hotbk .one{
             font-weight: 500;
@@ -174,8 +174,9 @@
                                         <tr>
                                             <td v-for="bk in hotBks" class="td-hotbk text-center" :class="bk.reportDate==reportDate?'report-date':''">
                                                 <div class="row">
+                                                    <section v-for="idx in [0,1]" class="col-lg-6 connectedSortable" style="padding-left: unset;">
                                                         <template v-for="(item,index) in bk.data">
-                                                            <div @mouseover="filterSameBk(item)" @mouseleave="filterSameBk({stock:{code:'-1'}})" class="info-box callout" :class="item.class">
+                                                            <div v-if="index % 2 === idx" :key="item.stock.code" @mouseover="filterSameBk(item)" @mouseleave="filterSameBk({stock:{code:'-1'}})" class="info-box callout" :class="item.class">
                                                                 <div class="callout-hotbk">
                                                                     <div class="progress">
                                                                         <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" :style="{width: item.strategies.includes('strategy_08c')?100+'%':0}">
@@ -202,6 +203,7 @@
                                                                 </div>
                                                             </div>
                                                         </template>
+                                                    </section>
                                                 </div>
                                             </td>
                                         </tr>
