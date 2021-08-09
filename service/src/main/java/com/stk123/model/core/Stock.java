@@ -260,6 +260,9 @@ public class Stock {
         return "<b>"+this.getNameAndCodeWithLink()+"</b>";
     }
 
+    public boolean isMarket(EnumMarket market){
+        return this.market == market;
+    }
     public boolean isMarketCN(){
         return this.market == CN;
     }

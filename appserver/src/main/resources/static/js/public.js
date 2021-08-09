@@ -10,3 +10,18 @@ function dateFormat(value, pattern) {
         return _dateFormat(value, pattern);
     }
 }
+function isVisible(elment) {
+    var vpH = $(window).height(), // Viewport Height
+        st = $(window).scrollTop(), // Scroll Top
+        y = $(elment).offset().top;
+    return y <= (vpH + st);
+}
+
+$(window).scroll(function() {
+    if($(this).scrollTop() <= 300) {
+        $('#back-to-top').fadeOut();
+    } else {
+        $('#back-to-top').css('position','fixed');
+        $('#back-to-top').fadeIn();
+    }
+});

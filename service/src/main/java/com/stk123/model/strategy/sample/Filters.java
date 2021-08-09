@@ -241,7 +241,7 @@ public class Filters {
         return (strategy, bar) -> {
             Bar todayBefore = bar.before(numberBeforeFirst);
             double change = todayBefore.getChange(numberBeforeParam1, Bar.EnumValue.C);
-            return new FilterResultBetween(change*100, min, max).addResult("实际涨跌幅：" + change*100);
+            return new FilterResultBetween(change*100, min, max); //.addResult("实际涨跌幅：" + change*100)
         };
     }
 
@@ -258,7 +258,7 @@ public class Filters {
             Bar todayBefore = bar.before(numberBeforeFirst);
             Bar highestBar = todayBefore.getHighestBar(numberBeforeParam1, Bar.EnumValue.H);
             double change = (todayBefore.getHigh() - highestBar.getHigh())/highestBar.getHigh();
-            return new FilterResultBetween(change*100, min, max).addResult("实际最高点到低点涨跌幅：" + CommonUtils.numberFormat2Digits(change*100));
+            return new FilterResultBetween(change*100, min, max);
         };
     }
 
