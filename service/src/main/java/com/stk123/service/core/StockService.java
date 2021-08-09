@@ -357,6 +357,11 @@ public class StockService {
         return list;
     }
 
+    /*** [start] get stock/bk from cache first, then from database ***/
+    public Stock getStock(String code){
+        List<Stock> stocks = this.getStocks(code);
+        return stocks.isEmpty() ? null : stocks.get(0);
+    }
     public List<Stock> getStocks(String... codes){
         return this.getStocks(Arrays.asList(codes));
     }
@@ -368,6 +373,20 @@ public class StockService {
         Stocks.putStocks(stocks);
         return stocks;
     }
+    public Stock getBk(String code){
+        List<Stock> bks = this.getBks(code);
+        return bks.isEmpty() ? null : bks.get(0);
+    }
+    public List<Stock> getBks(String... codes){
+        return this.getBks(Arrays.asList(codes));
+    }
+    public List<Stock> getBks(List<String> codes){
+        List<Stock> stocks = Stocks.getBksOrNull(codes);
+        if(stocks != null && stocks.size() == codes.size()) return stocks;
+        Stocks.getBks();
+        return Stocks.getBksOrNull(codes);
+    }
+    /*** [end] get stock/bk from cache first, then from database ***/
 
     public List<Stock> getStocksWithBks(List<Stock> stocks, List<Stock> bks, int barSize, boolean isIncludeRealtimeBar){
         stocks = getStocksWithAllBuilds(stocks, barSize, isIncludeRealtimeBar);
@@ -444,10 +463,6 @@ public class StockService {
     public List<StrategyResult> getBksAndCalcBkRps(EnumMarket market, EnumCate bkCate){
         List<Stock> bks = getBks(market, bkCate);
         return calcRps(bks, Rps.CODE_BK_60);
-    }
-
-    public Set<Stock> getBks(List<Stock> stocks){
-        return stocks.stream().flatMap(stock -> stock.getBks().stream()).collect(Collectors.toSet());
     }
 
     @SneakyThrows
@@ -550,7 +565,7 @@ public class StockService {
     }
 
     private List<Map> getBksAsMap(List<Stock> stocks) {
-        Set<Stock> bks = getBks(stocks);
+        Set<Stock> bks = stocks.stream().flatMap(stock -> stock.getBks().stream()).collect(Collectors.toSet());
         List<Map> bksList = new ArrayList<>();
         for (Stock bk : bks) {
             Map map = new HashMap();

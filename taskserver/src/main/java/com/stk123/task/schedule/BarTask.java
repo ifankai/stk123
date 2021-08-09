@@ -546,7 +546,7 @@ public class BarTask extends AbstractTask {
 
                     if(stkReportHeaderEntity != null){
                         StkReportDetailEntity stkReportDetailEntity = reportService.createReportDetailEntity(stock.getCode(),strategyResult.getStrategy().getCode(), strategyResult.getDate(),
-                                StringUtils.join(sources, "<br/>")+";"+StringUtils.join(strategyResult.getResults(),"<br/>"),
+                                StringUtils.join(sources, "<br/>")+"<br/>"+StringUtils.join(strategyResult.getResults(),"<br/>"),
                                 StringUtils.join(bkInfoList.getBkInfos().stream().map(bkInfo -> bkInfo.getBkSr().getStrategy().getCode()).collect(Collectors.toList()), ";"),
                                 StringUtils.join(bkInfoList.getBkInfos().stream().map(bkInfo -> CommonUtils.numberFormat2Digits(bkInfo.getBkSr().getPercentile())).collect(Collectors.toList()), ";"),
                                 StringUtils.join(bkInfoList.getBkInfos().stream().map(bkInfo -> bkInfo.getBkSr().getStock().getCode()).collect(Collectors.toList()), ";"),

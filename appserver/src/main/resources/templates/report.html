@@ -26,6 +26,7 @@
             .container{
                 min-width: 615px;
             }
+
         }
 
         .info-box{
@@ -102,6 +103,7 @@
             padding: 0 .75rem;
             color: #9ba2a8;
             text-align: center;
+            white-space: nowrap;
         }
         table.dataTable>thead .sorting:before,
         table.dataTable>thead .sorting:after,
@@ -137,6 +139,20 @@
         #report-tabContent label:not(.form-check-label):not(.custom-file-label) {
             font-weight: 500;
         }
+        .subtable{
+            font-size: .2rem;
+            text-align: left;
+        }
+        .subtable th{
+            color: #9ba2a8;
+            font-size: .15rem;
+        }
+        .badge-outline {
+            border: 1px solid;
+        }
+        .btn-tab{
+            margin-left: 20px;
+        }
 </style>
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed text-sm pace-primary pace-done">
@@ -159,48 +175,44 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">统计报告</h3>
+                                <h3 class="card-title">板块统计信息</h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="收起">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                </div>
                             </div>
-                            <div class="card-body">
-                                <table class="table table-bordered table-hotbk">
-                                    <thead>
-                                        <tr>
-                                            <th v-for="bk in hotBks" class="text-center text-nowrap" :class="bk.reportDate==reportDate?'report-date':''">
-                                                <a v-text="dateFormat(bk.reportDate)" @click.prevent="gotoReport(bk.reportDate)" href="#" style="color: unset"></a>
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td v-for="bk in hotBks" class="td-hotbk text-center" :class="bk.reportDate==reportDate?'report-date':''">
-                                                <div class="row">
-                                                    <section v-for="idx in [0,1]" class="col-lg-6 connectedSortable" style="padding-left: unset;">
-                                                        <template v-for="(item,index) in bk.data">
-                                                            <div v-if="index % 2 === idx" :key="item.stock.code" @mouseover="filterSameBk(item)" @mouseleave="filterSameBk({stock:{code:'-1'}})" class="info-box callout" :class="item.class">
-                                                                <div class="callout-hotbk">
-                                                                    <div class="progress">
-                                                                        <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" :style="{width: item.strategies.includes('strategy_08c')?100+'%':0}">
-                                                                            <span class="sr-only">120日强势板块(08c)</span>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="progress">
-                                                                        <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" :style="{width: item.strategies.includes('strategy_08b')?60+'%':0}">
-                                                                            <span class="sr-only">60日强势板块(08b)</span>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="progress">
-                                                                        <div class="progress-bar" role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100" :style="{width: item.strategies.includes('strategy_08a')?30+'%':0}">
-                                                                            <span class="sr-only">20日强势板块(08a)</span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="info-box-content">
 
-                                                                    <span v-html="item.stock.nameWithLink" class="info-box-text"></span>
-                                                                    <div v-if="inHotBksNew(item)">
-                                                                        <small class="one" title="新出现的板块">new</small>
-                                                                    </div>
-                                                                </div>
+                            <div class="card-body">
+
+                                <nav>
+                                    <div class="nav nav-tabs" id="hobk-tab" role="tablist">
+                                        <a class="nav-item nav-link active" id="hotbk-calendar-tab" data-toggle="tab" href="#hotbk-calendar" role="tab" aria-controls="hotbk-calendar" aria-selected="true">热点板块日历</a>
+                                        <a v-text="reportDate && '板块详情 ['+dateFormat(reportDate)+']'" class="nav-item nav-link" id="hotbk-detail-tab" data-toggle="tab" href="#hotbk-detail" role="tab" aria-controls="hotbk-detail" aria-selected="false"></a>
+                                    </div>
+                                </nav>
+                                <div class="tab-content p-1" id="hotbk-tabContent">
+                                    <div class="tab-pane fade show active" id="hotbk-calendar" role="tabpanel" aria-labelledby="hotbk-calendar-tab">
+                                        <table class="table table-bordered table-hotbk">
+                                            <thead>
+                                                <tr>
+                                                    <th v-for="bk in hotBks" class="text-center text-nowrap" :class="bk.reportDate==reportDate?'report-date':''">
+                                                        <a v-text="dateFormat(bk.reportDate)" @click.prevent="gotoReport(bk.reportDate)" href="#" style="color: unset"></a>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                                <td v-for="bk in hotBks" class="td-hotbk text-center" :class="bk.reportDate==reportDate?'report-date':''">
+                                                    <div class="row">
+                                                        <section v-for="idx in [0,1]" class="col-lg-6 connectedSortable">
+                                                            <template v-for="(item,index) in bk.data">
+                                                                <div v-if="index % 2 === idx" @mouseover="filterSameBk(item)" @mouseleave="filterSameBk({stock:{code:'-1'}})" class="info-box callout" :class="item.class">
+                                                                    <div class="callout-hotbk">
+                                                                        <div class="progress">
+                                                                            <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" :style="{width: item.strategies.includes('strategy_08c')?100+'%':0}">
+                                                                                <span class="sr-only">120日强势板块(08c)</span>
+                                                                            </div>
                                                             </div>
                                                         </template>
                                                     </section>
@@ -215,19 +227,68 @@
                                         <a class="nav-item nav-link active" id="product-desc-tab" data-toggle="tab" href="#product-desc" role="tab" aria-controls="product-desc" aria-selected="true">热点板块</a>
                                         <a class="nav-item nav-link" id="product-comments-tab" data-toggle="tab" href="#product-comments" role="tab" aria-controls="product-comments" aria-selected="false">mystocks</a>
                                         <a class="nav-item nav-link" id="product-rating-tab" data-toggle="tab" href="#product-rating" role="tab" aria-controls="product-rating" aria-selected="false">allstocks</a>
+
                                     </div>
-                                </nav>
-                                <div class="tab-content p-1" id="report-tabContent">
-                                    <div class="tab-pane fade show active" id="product-desc" role="tabpanel" aria-labelledby="product-desc-tab">
+                                    <div class="tab-pane fade" id="hotbk-detail" role="tabpanel" aria-labelledby="hotbk-detail-tab">
                                         <datatable :="{...common.currentHotBks, ...currentHotBks}"></datatable>
                                     </div>
-                                    <div class="tab-pane fade" id="product-comments" role="tabpanel" aria-labelledby="product-comments-tab"> Vivamus rhoncus nisl sed venenatis luctus. Sed condimentum risus ut tortor feugiat laoreet. Suspendisse potenti. Donec et finibus sem, ut commodo lectus. Cras eget neque dignissim, placerat orci interdum, venenatis odio. Nulla turpis elit, consequat eu eros ac, consectetur fringilla urna. Duis gravida ex pulvinar mauris ornare, eget porttitor enim vulputate. Mauris hendrerit, massa nec aliquam cursus, ex elit euismod lorem, vehicula rhoncus nisl dui sit amet eros. Nulla turpis lorem, dignissim a sapien eget, ultrices venenatis dolor. Curabitur vel turpis at magna elementum hendrerit vel id dui. Curabitur a ex ullamcorper, ornare velit vel, tincidunt ipsum. </div>
-                                    <div class="tab-pane fade" id="product-rating" role="tabpanel" aria-labelledby="product-rating-tab"> Cras ut ipsum ornare, aliquam ipsum non, posuere elit. In hac habitasse platea dictumst. Aenean elementum leo augue, id fermentum risus efficitur vel. Nulla iaculis malesuada scelerisque. Praesent vel ipsum felis. Ut molestie, purus aliquam placerat sollicitudin, mi ligula euismod neque, non bibendum nibh neque et erat. Etiam dignissim aliquam ligula, aliquet feugiat nibh rhoncus ut. Aliquam efficitur lacinia lacinia. Morbi ac molestie lectus, vitae hendrerit nisl. Nullam metus odio, malesuada in vehicula at, consectetur nec justo. Quisque suscipit odio velit, at accumsan urna vestibulum a. Proin dictum, urna ut varius consectetur, sapien justo porta lectus, at mollis nisi orci et nulla. Donec pellentesque tortor vel nisl commodo ullamcorper. Donec varius massa at semper posuere. Integer finibus orci vitae vehicula placerat. </div>
                                 </div>
 
                             </div>
+                        </div>
 
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 v-text="reportDate && '股票统计信息 ['+dateFormat(reportDate)+']'" class="card-title"></h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="收起">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                </div>
+                            </div>
 
+                            <div class="card-body">
+                                <nav>
+                                    <div class="nav nav-tabs" id="report-tab" role="tablist">
+                                        <a class="nav-item nav-link active" id="report-allstocks-tab" data-toggle="tab" href="#report-allstocks" role="tab" aria-controls="report-allstocks" aria-selected="true">
+                                            全市场策略
+                                            <span v-text="currentAllStocks.data.length" class="badge badge-outline"></span>
+                                        </a>
+                                        <a class="nav-item nav-link" id="report-mystocks-a-tab" data-toggle="tab" href="#report-mystocks-a" role="tab" aria-controls="report-mystocks-a" aria-selected="false">
+                                            自选股策略(A股)
+                                            <span v-text="currentMyStocksA.data.length" class="badge badge-outline"></span>
+                                        </a>
+                                        <a class="nav-item nav-link" id="report-mystocks-h-tab" data-toggle="tab" href="#report-mystocks-h" role="tab" aria-controls="report-mystocks-h" aria-selected="false">
+                                            自选股策略(H股)
+                                            <span v-text="currentMyStocksH.data.length" class="badge badge-outline"></span>
+                                        </a>
+                                        <a class="nav-item nav-link" id="report-mystocks-u-tab" data-toggle="tab" href="#report-mystocks-u" role="tab" aria-controls="report-mystocks-u" aria-selected="false">
+                                            自选股策略(美股)
+                                            <span v-text="currentMyStocksU.data.length" class="badge badge-outline"></span>
+                                        </a>
+                                        <span class="btn-tab">
+                                            <button type="button" class="btn btn-outline-primary btn-xs" style="margin-bottom: -11px;"><i class="fas fa-th"></i> 查看全部</button>
+                                        </span>
+                                    </div>
+
+                                </nav>
+
+                                <div class="tab-content p-1" id="report-tabContent">
+                                    <div class="tab-pane fade show active" id="report-allstocks" role="tabpanel" aria-labelledby="report-allstocks-tab">
+                                        <datatable :="{...common.allStocks, ...currentAllStocks}"></datatable>
+                                    </div>
+                                    <div class="tab-pane fade" id="report-mystocks-a" role="tabpanel" aria-labelledby="report-mystocks-a-tab">
+                                        <datatable :="{...common.allStocks, ...currentMyStocksA}"></datatable>
+                                    </div>
+                                    <div class="tab-pane fade" id="report-mystocks-h" role="tabpanel" aria-labelledby="report-mystocks-h-tab">
+                                        <datatable :="{...common.allStocks, ...currentMyStocksH}"></datatable>
+                                    </div>
+                                    <div class="tab-pane fade" id="report-mystocks-u" role="tabpanel" aria-labelledby="report-mystocks-u-tab">
+                                        <datatable :="{...common.allStocks, ...currentMyStocksU}"></datatable>
+                                    </div>
+                                </div>
+
+                            </div>
 
                         </div>
                     </div>
@@ -239,7 +300,7 @@
             </div>
         </section>
 
-        <a id="back-to-top" href="#" class="btn btn-outline-primary back-to-top" role="button" aria-label="Scroll to top">
+        <a id="back-to-top" href="#" class="btn btn-outline-primary back-to-top" style="display: none" role="button" aria-label="Scroll to top">
             <i class="fas fa-chevron-up"></i>
         </a>
     </div>
@@ -290,13 +351,25 @@
                             { className: "text-nowrap text-center", "targets": [ 0,1,4,5 ] },
                             { className: "img-width", "targets": [ 2,3 ] }
                         ]
+                    },
+                    allStocks:{
+                        columns: [
+                            {title:"股票/日期/策略/板块", data:"stockAndBk"},
+                            {title:"策略输出", data:"strategyOutput"},
+                            {title:"日线", data:"dayBarImage"},
+                            {title:"周线", data:"weekBarImage"}
+                        ],
+                        ordering: false,
+                        columnDefs: [
+                            { className: "text-center", "targets": [ 0 ] }, //text-nowrap
+                            { className: "img-width", "targets": [ 2,3 ] }
+                        ]
                     }
                 },
                 hotBks:[],
                 hotBksNew:[],
-                currentHotBks:{
-                    data:[]
-                }
+                currentHotBks:{data:[]},currentAllStocks:{data:[]},
+                currentMyStocksA:{data:[]},currentMyStocksH:{data:[]},currentMyStocksU:{data:[]},
             }
         },
         methods:{
@@ -311,7 +384,7 @@
             },
             gotoReport:function (reportDate) {
                 window.open('/report/'+reportDate);
-            }
+            },
         },
         computed: {
             reportDateShow:function (){
@@ -332,6 +405,15 @@
                     data.currentHotBks[index].action = data.currentHotBks[index].details[0].action;
                 });
                 _this.currentHotBks = {data: data.currentHotBks};
+                _this.currentAllStocks = {data: data.currentAllStocks};
+                _this.currentAllStocks.data = convertStocks(_this.currentAllStocks.data);
+                _this.currentMyStocksA = {data: data.currentMyStocksA};
+                _this.currentMyStocksA.data = convertStocks(_this.currentMyStocksA.data);
+                _this.currentMyStocksH = {data: data.currentMyStocksH};
+                _this.currentMyStocksH.data = convertStocks(_this.currentMyStocksH.data);
+                _this.currentMyStocksU = {data: data.currentMyStocksU};
+                _this.currentMyStocksU.data = convertStocks(_this.currentMyStocksU.data);
+
                 console.log('mounted', _this.$data)
             });
         }
@@ -339,4 +421,33 @@
 
     app.component('datatable', _datatable);
     app.mount('#app');
+
+    function convertStocks(data){
+        data.forEach(stock =>{
+            /*if(stock.bks) {
+                let bkRows = stock.bks.map(bk =>
+                    '<tr><td>' + bk.bk.nameWithLink + '<br/><a title="查看板块精选个股" target="_blank" href="/S/'+bk.bkRpsStockCode+'"><i class="fas fa-th"></i></a></td><td>' + bk.bkRpsName + '<br/>' + bk.bkRpsPercentile + '</td>'
+                )
+                stock.bksHtml = '<table class="subtable text-nowrap"><tr><th>板块</th><th>策略/百分位</th></tr>' + bkRows.join('') + '</table>'
+            }else{
+                stock.bksHtml = ''
+            }*/
+
+            if(stock.bks) {
+                stock.bksHtml = '<table class="subtable text-nowrap">' +
+                    '<tr><td>板块</td>'+ stock.bks.map(bk => '<td class="text-center">'+bk.bk.nameWithLink+'</td>').join('') + '</tr>'+
+                    '<tr><td>策略</td>'+ stock.bks.map(bk => '<td class="text-center">'+bk.bkRpsName+'</td>').join('') + '</tr>'+
+                    '<tr><td>百分位</td>'+ stock.bks.map(bk => '<td class="text-center">'+bk.bkRpsPercentile+'</td>').join('') + '</tr>'+
+                    '<tr><td>查看</td>'+ stock.bks.map(bk => '<td class="text-center"><a title="查看板块精选个股" target="_blank" href="/S/'+bk.bkRpsStockCode+'"><i class="fas fa-th"></i></a></td>').join('') + '</tr>'+
+                    '</table>';
+            }else{
+                stock.bksHtml = ''
+            }
+            stock.stockAndBk = '<table><tr><td>'+stock.nameAndCodeWithLink + '</td></tr>' +
+                '<tr><td>' + dateFormat(stock.strategyDate) + '</td></tr>' +
+                '<tr><td>策略：' + stock.strategyName + '</td></tr>' + '<tr><td>&nbsp;</td></tr>' +
+                '<tr><td>' + stock.bksHtml + '</td></tr></table>';
+        })
+        return data;
+    }
 </script>

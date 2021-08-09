@@ -11,16 +11,16 @@ import com.stk123.model.strategy.Filter;
 import com.stk123.model.strategy.Strategy;
 import com.stk123.model.strategy.result.FilterResult;
 import lombok.SneakyThrows;
+import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
 import org.reflections.ReflectionUtils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
+@CommonsLog
 public class Strategies {
 
     // ignore: 02a 选出来的标的太多，由02b替换
@@ -29,6 +29,29 @@ public class Strategies {
     public static String STRATEGIES_ALL_STOCKS = "01a,01b,01c,05b,06c,10a"; //,11a
 
     public static String STRATEGIES_BK = "01a,01b,02b,03a,04a,04b,04c,05a,05b,06a,06b,06c,08a,08b,08c,10a"; //03b,
+
+
+    private static Map<String, Strategy> CODE_STRATEGY = new HashMap<>();
+
+    static{
+        Set<Method> methods = ReflectionUtils.getAllMethods(Strategies.class);
+        for(Method method : methods) {
+            if((StringUtils.startsWith(method.getName(), "strategy") ||  StringUtils.startsWith(method.getName(), "rps"))
+                && method.getParameterCount() == 0 && method.getReturnType().isAssignableFrom(Strategy.class)){
+                try {
+                    //log.info("all strategy:"+method.getName());
+                    Strategy strategy = (Strategy<?>) method.invoke(null, null);
+                    CODE_STRATEGY.put(strategy.getCode(), strategy);
+                } catch (Exception e) {
+                    log.error("strategy error:"+method.getName(), e);
+                }
+            }
+        }
+    }
+
+    public static Strategy getStrategy(String code){
+        return CODE_STRATEGY.get(code);
+    }
 
     @SneakyThrows
     public static List<Strategy> getStrategies(){
@@ -103,8 +126,9 @@ public class Strategies {
 
 
     /**** 一阳吃多阴 ****/
+    //策略002044美年健康20201231，底部一阳吃多阴(02a)
     public static Strategy strategy_02a() {
-        Strategy<BarSeries> strategy = new Strategy<>("strategy_02a","策略002044美年健康20201231，底部一阳吃多阴(02a)", BarSeries.class);
+        Strategy<BarSeries> strategy = new Strategy<>("strategy_02a","底部一阳吃多阴(02a)", BarSeries.class);
         strategy.addFilter("一阳吃5阴或阳", Filters.filter_004(5));
         strategy.addFilter("一阳穿过5,10日均线", BarSeries::getFirst, Filters.filter_005a(5, 10));
         strategy.addFilter("120均线斜率平缓或向上", BarSeries::getFirst, Filters.filter_maSlope(60, 120, -12, 100));
@@ -118,8 +142,9 @@ public class Strategies {
         return strategy;
     }
     //比strategy_02a多了MACD底背离
+    //策略002044美年健康20201231，底部一阳吃多阴，MACD底背离(02b)
     public static Strategy strategy_02b() {
-        Strategy<Stock> strategy = new Strategy<>("strategy_02b","策略002044美年健康20201231，底部一阳吃多阴，MACD底背离(02b)", Stock.class);
+        Strategy<Stock> strategy = new Strategy<>("strategy_02b","底部一阳吃多阴，MACD底背离(02b)", Stock.class);
         strategy.addFilter("股票", Filters.filter_mustStockCate(EnumCate.STOCK));
         strategy.addFilter("一阳吃5阴或阳", Stock::getBarSeries, Filters.filter_004(5));
         strategy.addFilter("一阳穿过5,10日均线", Stock::getBar, Filters.filter_005a(5, 10));
@@ -133,8 +158,9 @@ public class Strategies {
         strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
         return strategy;
     }
+    //策略002044美年健康20201231，底部一阳吃多阴，MACD底背离(02c)
     public static Strategy strategy_02c() {
-        Strategy<Stock> strategy = new Strategy<>("strategy_02c","策略002044美年健康20201231，底部一阳吃多阴，MACD底背离(02c)", Stock.class);
+        Strategy<Stock> strategy = new Strategy<>("strategy_02c","底部一阳吃多阴，MACD底背离(02c)", Stock.class);
         strategy.addFilter("行业", Filters.filter_mustStockCate(EnumCate.INDEX_eastmoney_gn));
         strategy.addFilter("一阳吃5阴或阳", Stock::getBarSeries, Filters.filter_004(3));
         strategy.addFilter("过去3天到100天的跌幅[-100,-20] or 过去3天到60天内最高点到低点的跌幅[-100,-30]",
@@ -147,8 +173,9 @@ public class Strategies {
         strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
         return strategy;
     }
+    //策略002044美年健康20201231，底部一阳吃多阴，MACD底背离(02d)
     public static Strategy strategy_02d() {
-        Strategy<Stock> strategy = new Strategy<>("strategy_02d","策略002044美年健康20201231，底部一阳吃多阴，MACD底背离(02d)", Stock.class);
+        Strategy<Stock> strategy = new Strategy<>("strategy_02d","底部一阳吃多阴，MACD底背离(02d)", Stock.class);
         strategy.addFilter("股票", Filters.filter_mustStockCate(EnumCate.STOCK));
         strategy.addFilter("一阳吃5阴或阳", Stock::getBarSeries, Filters.filter_004(5));
         strategy.addFilter("一阳穿过5,10日均线", Stock::getBar, Filters.filter_005a(5, 10));
@@ -634,9 +661,9 @@ public class Strategies {
 
 
     //大跌后，有减持，问询函？
-    public static Strategy strategy_0() {
+    /*public static Strategy strategy_0() {
         return null;
-    }
+    }*/
 
     public static Strategy strategy_TEST() {
         Strategy<Stock> strategy = new Strategy<>("strategy_TEST","Strategy TEST", Stock.class);

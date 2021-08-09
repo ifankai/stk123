@@ -5,7 +5,10 @@ import cn.hutool.core.map.MapUtil;
 import com.stk123.common.CommonUtils;
 import com.stk123.entity.StkReportDetailEntity;
 import com.stk123.entity.StkReportHeaderEntity;
+import com.stk123.model.core.Rps;
 import com.stk123.model.core.Stock;
+import com.stk123.model.enumeration.EnumMarket;
+import com.stk123.model.strategy.sample.Strategies;
 import com.stk123.repository.BaseRepository;
 import com.stk123.repository.StkReportHeaderRepository;
 import lombok.Data;
@@ -147,7 +150,8 @@ public class ReportService {
             map.put("details", e.getValue().stream().distinct().map(detail -> new HashMap<String, Object>() {{
                     put("strategyCode", detail.getStrategyCode());
                     put("stocks", stockService.getStocksAsMap(Arrays.asList(StringUtils.split(detail.getRpsStockCode(), ",")), "code", "nameWithLink"));
-                    put("action", CommonUtils.a2stocks("查看<br/>板块<br/>个股", bk.getName(), Arrays.asList(StringUtils.split(detail.getRpsStockCode(), ",")) ));
+                    String a = "<a title='查看板块精选个股' target='_blank' href='/S/"+detail.getRpsStockCode()+"'><i class='fas fa-th'></i></a>";
+                    put("action", a);
                 }}
             ));
             map.put("bk", bk);
@@ -155,11 +159,53 @@ public class ReportService {
         }).collect(Collectors.toList());
         result.put("currentHotBks", groupbyCodeList);
 
-
-
-        List<StkReportHeaderEntity> mystocksByToday = headers.stream().filter(stkReportHeaderEntity -> "mystocks".equals(stkReportHeaderEntity.getType()) && finalRptDate.equals(stkReportHeaderEntity.getReportDate())).collect(Collectors.toList());
+        result.put("currentAllStocks", getStocksByType(headers, "allstocks", finalRptDate, EnumMarket.CN));
+        result.put("currentMyStocksA", getStocksByType(headers, "mystocks", finalRptDate, EnumMarket.CN));
+        result.put("currentMyStocksH", getStocksByType(headers, "mystocks", finalRptDate, EnumMarket.HK));
+        result.put("currentMyStocksU", getStocksByType(headers, "mystocks", finalRptDate, EnumMarket.US));
 
         return result;
+    }
+
+    private List<Map> getStocksByType(List<StkReportHeaderEntity> headers, String type, String finalRptDate, EnumMarket market){
+        List<StkReportHeaderEntity> allstocksHeaderByToday = headers.stream().filter(stkReportHeaderEntity -> type.equals(stkReportHeaderEntity.getType()) && finalRptDate.equals(stkReportHeaderEntity.getReportDate())).collect(Collectors.toList());
+        List<StkReportDetailEntity> allstocksDetailByToday = allstocksHeaderByToday.stream().flatMap(stkReportHeaderEntity -> stkReportHeaderEntity.getStkReportDetailEntities().stream()).collect(Collectors.toList());
+        List<Map> allstocksList = new ArrayList<>();
+        for(StkReportDetailEntity detail : allstocksDetailByToday){
+            Stock stock = stockService.getStock(detail.getCode());
+            if(!stock.isMarket(market)) continue;
+            Map map = new HashMap();
+            map.put("strategyDate", detail.getStrategyDate());
+            map.put("strategyCode", detail.getStrategyCode());
+            map.put("strategyName", Strategies.getStrategy(detail.getStrategyCode()).getName());
+            map.put("strategyOutput", detail.getStrategyOutput());
+            //map.put("strategy", detail.getStrategyDate() + "<br/>" + Strategies.getStrategy(detail.getStrategyCode()).getName() + "<br/>-----<br/>" + detail.getStrategyOutput());
+            //map.put("text", detail.getText());
+            map.put("code", stock.getCode());
+            map.put("nameAndCodeWithLink", stock.getNameAndCodeWithLink());
+            map.put("dayBarImage", stock.getDayBarImage());
+            map.put("weekBarImage", stock.getWeekBarImage());
+            if(detail.getRpsBkCode() != null) {
+                List<Map> bkList = new ArrayList<>();
+                String[] bkCodeArray = StringUtils.split(detail.getRpsBkCode(), ";");
+                String[] bkRpsCodeArray = StringUtils.split(detail.getRpsCode(), ";");
+                String[] bkRpsPercentileArray = StringUtils.split(detail.getRpsPercentile(), ";");
+                String[] bkRpsStockCodeArray = StringUtils.split(detail.getRpsStockCode(), ";");
+                for (int i = 0; i < bkCodeArray.length; i++) {
+                    String bkCode = bkCodeArray[i];
+                    Map bkMap = new HashMap();
+                    bkMap.put("bk", stockService.getBk(bkCode));
+                    bkMap.put("bkRpsCode", bkRpsCodeArray[i]);
+                    bkMap.put("bkRpsName", Rps.getRpsStrategy(bkRpsCodeArray[i]).getName());
+                    bkMap.put("bkRpsPercentile", bkRpsPercentileArray[i]);
+                    bkMap.put("bkRpsStockCode", bkRpsStockCodeArray[i]);
+                    bkList.add(bkMap);
+                }
+                map.put("bks", bkList);
+            }
+            allstocksList.add(map);
+        }
+        return allstocksList;
     }
 
     private int calculateStrategy(Set<String> strategies){
