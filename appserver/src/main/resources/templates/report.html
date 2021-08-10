@@ -45,6 +45,9 @@
             padding-left: .3rem;
             font-size: 1vw;
         }
+        .info-box-content:after{
+            clear:both;
+        }
         .table-hotbk .one{
             font-weight: 500;
             color: var(--danger);
@@ -53,6 +56,7 @@
         .callout a{
             text-decoration: none;
             color: unset;
+            font-size: 1rem;
         }
         .callout a:hover{
             color: unset;
@@ -65,7 +69,7 @@
             background-color: #d2d6de;
         }
         .table td.td-hotbk{
-            padding: .2rem .5rem;
+            padding: .2rem .8rem;
         }
         .callout-danger a{
             color: var(--danger);
@@ -143,7 +147,7 @@
             font-weight: 500;
         }
         .subtable{
-            font-size: .2rem;
+            font-size: .8rem;
             text-align: left;
             margin: auto;
         }
@@ -216,7 +220,7 @@
                                                 <tr>
                                                     <td v-for="bk in hotBks" class="td-hotbk text-center" :class="bk.reportDate==reportDate?'report-date':''">
                                                         <div class="row">
-                                                            <section v-for="idx in [0,1]" class="col-lg-6 connectedSortable" :style="{'padding-left':(idx==1?1:7)+'px'}">
+                                                            <section v-for="idx in [0,1]" class="col-lg-6 connectedSortable" style="padding: 0 3px">
                                                                 <template v-for="(item,index) in bk.data">
                                                                     <div v-if="index % 2 === idx" @mouseover="filterSameBk(item)" @mouseleave="filterSameBk({stock:{code:'-1'}})" class="info-box callout" :class="item.class">
                                                                         <div class="callout-hotbk">
@@ -237,7 +241,6 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="info-box-content">
-
                                                                             <span v-html="item.stock.nameWithLink" class="info-box-text"></span>
                                                                             <div v-if="inHotBksNew(item)">
                                                                                 <small class="one" title="新出现的板块">new</small>
@@ -506,7 +509,7 @@
             }else{
                 stock.bksHtml = ''
             }
-            stock.stockAndBk = '<table style="margin: auto"><tr><td>'+stock.nameAndCodeWithLink + '</td></tr>' +
+            stock.stockAndBk = '<table style="margin: auto;font-size: 1rem"><tr><td>'+stock.nameAndCodeWithLink + '</td></tr>' +
                 '<tr><td>' + dateFormat(stock.strategyDate) + '</td></tr>' +
                 '<tr><td>' + createTableOrNot('策略',stock.strategyName) + '</td></tr>' + '<tr><td>&nbsp;</td></tr>' +
                 (stock.bksHtml==''?'' : ('<tr><td>' + stock.bksHtml + '</td></tr>')) +

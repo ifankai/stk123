@@ -183,7 +183,7 @@ public class ReportService {
             Map map = new HashMap();
             map.put("strategyDate", detail.getStrategyDate());
             map.put("strategyCode", details.stream().map(StkReportDetailEntity::getStrategyCode).collect(Collectors.toList()));
-            map.put("strategyName", details.stream().map(d -> Strategies.getStrategy(d.getStrategyCode()).getName()).collect(Collectors.toList()));
+            map.put("strategyName", details.stream().map(d -> Strategies.getStrategy(d.getStrategyCode()).getName()).distinct().collect(Collectors.toList()));
             map.put("strategyOutput", details.stream().filter(d -> d.getStrategyOutput()!=null).flatMap(d -> Arrays.asList(d.getStrategyOutput().split("<br/>")).stream()).distinct().collect(Collectors.joining("<br/>")));
             //map.put("strategy", detail.getStrategyDate() + "<br/>" + Strategies.getStrategy(detail.getStrategyCode()).getName() + "<br/>-----<br/>" + detail.getStrategyOutput());
             //map.put("text", detail.getText());
