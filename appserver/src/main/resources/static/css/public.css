@@ -76,7 +76,8 @@ label:not(.form-check-label):not(.custom-file-label) {
     padding: .05rem .8rem;
 }
 .text-sm .nav-link {
-    padding: .4rem .1rem;
+    font-size: .9rem;
+    padding: .4rem .2rem .4rem 4px;
 }
 .form-group {
     margin-bottom: 0;

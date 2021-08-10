@@ -39,7 +39,7 @@
                         <div class="card" v-show="!loading" v-if="!loading" style="display: none">
                             <div class="card-header">
                                 <h3 v-text="title" class="card-title"></h3>
-                                <div class="custom-control custom-control-inline custom-checkbox" style="margin-left: .5rem;margin-top: .01rem;">
+                                <div class="custom-control custom-control-inline custom-checkbox" style="margin-left: .5rem;margin-top: .1rem;">
                                     <input v-model="selectAllStocks" class="custom-control-input" type="checkbox" id="bk-rb-0" name="bkFilterAll" checked/>
                                     <label for="bk-rb-0" class="custom-control-label">全部股票<span v-text="' ('+total+')'"></span></label>
                                 </div>
@@ -57,10 +57,13 @@
                                             <span v-text="seletedRpsName"></span>
                                         </button>
                                         <div class="dropdown-menu" role="menu">
-                                            <a @click="sortByRating" class="dropdown-item">按个股评分排序</a>
-                                            <a @click="sortByRps01" class="dropdown-item">按板块60日涨幅排序[rps_01]</a>
+                                            <a @click="sortByRating" class="dropdown-item">按个股评分排序(00)</a>
+                                            <a @click="sortByRps01" class="dropdown-item">按板块60日涨幅排序(01)</a>
                                             <div class="dropdown-divider"></div>
-                                            <a v-for="rps in common.rpss" @click="sortByRps(rps.code, rps.name)" v-text="rps.name+'['+rps.code+']'" class="dropdown-item"></a>
+                                            <template v-for="rps in common.rpss">
+                                                <div v-if="rps.code==0" class="dropdown-divider"></div>
+                                                <a v-else @click="sortByRps(rps)" v-text="rps.name+'('+rps.codeNo+')'" class="dropdown-item"></a>
+                                            </template>
                                         </div>
                                     </div>
                                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -69,7 +72,7 @@
                                 </div>
                             </div>
                             <div class="card-body">
-                                <div class="row">
+                                <div v-if="bksTopN.length > 0" class="row">
                                     <div class="col-12">
                                         <div class="callout callout-info">
                                             <!-- 板块 -->
@@ -115,7 +118,7 @@
                             <div class="card" v-if="index % 2 === idx" :key="stk.stock.code">
                                 <div class="card-header">
                                     <h3 class="card-title">
-                                        <span v-html="stk.stock.nameAndCodeWithLink"></span> (<span v-text="stk.stock.order"></span>) 评分:<span v-text="stk.stock.rating.total"></span>
+                                        <span v-html="stk.stock.nameAndCodeWithLink"></span> 评分:<span v-text="stk.stock.rating.total"></span>
                                     </h3>
                                     <div class="card-tools">
                                         <button @click="addToLookPool($event, stk)" title="加入观察池" type="button" class="btn btn-tool">
@@ -609,7 +612,7 @@
                 selectedTabName: '日线',
                 selectedTabIndex: 1,
                 seletedRpsName: 'RPS排序',
-                seletedStrategyName: 'Strategy过滤',
+                seletedStrategyName: '模型策略过滤',
                 bkSelected: [],
                 niusanSelected: [],
                 stockLookPool:[],
@@ -699,11 +702,11 @@
                 })
                 Pace.stop();
             },
-            sortByRps:function (rpsCode, rpsName){
+            sortByRps:function (rps){
                 Pace.start();
-                this.seletedRpsName = rpsName+'['+rpsCode+']';
+                this.seletedRpsName = rps.name+'('+rps.codeNo+')';
                 let _this = this;
-                axios.get("/rps/"+rpsCode+"/"+codeType+"/"+code).then(function (res) {
+                axios.get("/rps/"+rps.code+"/"+codeType+"/"+code).then(function (res) {
                     parseStocks(_this, res);
                 });
                 Pace.stop();
@@ -769,6 +772,7 @@
             let _this = this;
             axios.get("/rps/list").then(function(res){
                 _this.common.rpss = res.data.data;
+                _this.common.rpss.forEach(rps => rps.codeNo = rps.code.split('_')[1])
             });
 
             axios.get("/strategy/list").then(function(res){

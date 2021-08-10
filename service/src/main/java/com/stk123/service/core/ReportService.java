@@ -64,7 +64,7 @@ public class ReportService {
 
     private static String sql_findTopReportDate = "select report_date from (select report_date, rownum rn from  " +
             "(select report_date from stk_report_header where report_date <= :1 " +
-            "group by report_date order by report_date asc)) where rn <= :2";
+            "group by report_date order by report_date desc)) where rn <= :2";
     @Transactional
     public List<Map> findTopReportDate(String reportDate, int topN) {
         return BaseRepository.getInstance().list2Map(sql_findTopReportDate, reportDate, topN);
@@ -80,7 +80,7 @@ public class ReportService {
     public Map findReportAsMap(String reportDate){
         Map result = new HashMap();
         List<Map> reportDatesMap = findTopReportDate(CommonUtils.addDay2String(reportDate, 1), 5);
-        List<String> reportDates = reportDatesMap.stream().map(map -> (String)map.get("REPORT_DATE")).collect(Collectors.toList());
+        List<String> reportDates = reportDatesMap.stream().map(map -> (String)map.get("REPORT_DATE")).sorted(Comparator.naturalOrder()).collect(Collectors.toList());
 
         String reportDateShow = null;
         if(!reportDates.isEmpty() && !reportDates.contains(reportDate)){
@@ -170,15 +170,21 @@ public class ReportService {
     private List<Map> getStocksByType(List<StkReportHeaderEntity> headers, String type, String finalRptDate, EnumMarket market){
         List<StkReportHeaderEntity> allstocksHeaderByToday = headers.stream().filter(stkReportHeaderEntity -> type.equals(stkReportHeaderEntity.getType()) && finalRptDate.equals(stkReportHeaderEntity.getReportDate())).collect(Collectors.toList());
         List<StkReportDetailEntity> allstocksDetailByToday = allstocksHeaderByToday.stream().flatMap(stkReportHeaderEntity -> stkReportHeaderEntity.getStkReportDetailEntities().stream()).collect(Collectors.toList());
+
+        Map<String, List<StkReportDetailEntity>> allstocksDetailGroupByCode = allstocksDetailByToday.stream().collect(Collectors.groupingBy(StkReportDetailEntity::getCode));
+        List<String> allstocksCodesDistinct = allstocksDetailByToday.stream().map(StkReportDetailEntity::getCode).distinct().collect(Collectors.toList());
+
         List<Map> allstocksList = new ArrayList<>();
-        for(StkReportDetailEntity detail : allstocksDetailByToday){
-            Stock stock = stockService.getStock(detail.getCode());
+        for(String code : allstocksCodesDistinct){
+            Stock stock = stockService.getStock(code);
             if(!stock.isMarket(market)) continue;
+            List<StkReportDetailEntity> details = allstocksDetailGroupByCode.get(code);
+            StkReportDetailEntity detail = details.get(0);
             Map map = new HashMap();
             map.put("strategyDate", detail.getStrategyDate());
-            map.put("strategyCode", detail.getStrategyCode());
-            map.put("strategyName", Strategies.getStrategy(detail.getStrategyCode()).getName());
-            map.put("strategyOutput", detail.getStrategyOutput());
+            map.put("strategyCode", details.stream().map(StkReportDetailEntity::getStrategyCode).collect(Collectors.toList()));
+            map.put("strategyName", details.stream().map(d -> Strategies.getStrategy(d.getStrategyCode()).getName()).collect(Collectors.toList()));
+            map.put("strategyOutput", details.stream().flatMap(d -> Arrays.asList(d.getStrategyOutput().split("<br/>")).stream()).distinct().collect(Collectors.joining("<br/>")));
             //map.put("strategy", detail.getStrategyDate() + "<br/>" + Strategies.getStrategy(detail.getStrategyCode()).getName() + "<br/>-----<br/>" + detail.getStrategyOutput());
             //map.put("text", detail.getText());
             map.put("code", stock.getCode());

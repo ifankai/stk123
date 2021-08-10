@@ -3093,4 +3093,7 @@ select report_date from (select report_date, rownum rn from
 select d.* from stk_report_header h, stk_report_detail d where h.id=d.header_id and h.report_date in ('')
                                                            and h.type='bks' and d.strategy_code like 'strategy_08%';
 
-select * from stk where code='BK0619'
+select * from stk where code='BK0619';
+
+select * from stk_kline where kline_date>'20210801';
+select * from stk_kline where code='000001' order by kline_date desc;

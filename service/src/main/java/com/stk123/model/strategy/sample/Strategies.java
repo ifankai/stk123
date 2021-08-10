@@ -41,7 +41,8 @@ public class Strategies {
                 try {
                     //log.info("all strategy:"+method.getName());
                     Strategy strategy = (Strategy<?>) method.invoke(null, null);
-                    CODE_STRATEGY.put(strategy.getCode(), strategy);
+                    if(strategy != null)
+                        CODE_STRATEGY.put(strategy.getCode(), strategy);
                 } catch (Exception e) {
                     log.error("strategy error:"+method.getName(), e);
                 }
@@ -74,6 +75,10 @@ public class Strategies {
             result.add(strategy);
         }
         return result;
+    }
+
+    public static Strategy strategy_0(){
+        return new Strategy<>("0","", Stock.class);
     }
 
     /**** 阳线放量 阴线缩量 *****/
@@ -193,8 +198,9 @@ public class Strategies {
 
     /**** 均线缠绕 ****/
     //002538 20200703 100天内，放量涨缩量跌，之后均线缠绕突破买入
+    //策略002538司尔特20200703，底部均线缠绕，一阳吃多阴(03a)
     public static Strategy strategy_03a() {
-        Strategy<Stock> strategy = new Strategy<>("strategy_03a","策略002538司尔特20200703，底部均线缠绕，一阳吃多阴(03a)", Stock.class);
+        Strategy<Stock> strategy = new Strategy<>("strategy_03a","底部均线缠绕，一阳吃多阴(03a)", Stock.class);
         strategy.addFilter("股票", Filters.filter_mustStockCate(EnumCate.STOCK));
         strategy.addFilter("一阳吃4阴或阳", Stock::getBarSeries, Filters.filter_004(4));
         strategy.addFilter("一阳穿过5, 10, 20, 30, 60日均线中的任何2根", Stock::getBar, Filters.filter_005b(2, 5, 10, 20, 30, 60));
@@ -202,8 +208,9 @@ public class Strategies {
         strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
         return strategy;
     }
+    //策略002538司尔特20200703，底部均线缠绕，一阳吃多阴(03b)
     public static Strategy strategy_03b() {
-        Strategy<Stock> strategy = new Strategy<>("strategy_03b","策略002538司尔特20200703，底部均线缠绕，一阳吃多阴(03b)", Stock.class);
+        Strategy<Stock> strategy = new Strategy<>("strategy_03b","底部均线缠绕，一阳吃多阴(03b)", Stock.class);
         strategy.addFilter("行业", Filters.filter_mustStockCate(EnumCate.INDEX_eastmoney_gn));
         strategy.addFilter("一阳吃3阴或阳", Stock::getBarSeries, Filters.filter_004(3));
         strategy.addFilter("一阳穿过5, 10, 20, 30, 60日均线中的任何2根", Stock::getBar, Filters.filter_005b(2, 5, 10, 20, 30, 60));
@@ -636,7 +643,7 @@ public class Strategies {
     }
 
     public static Strategy rps_12() {
-        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_DAY_120_VOLUME, "120天放量", Stock.class);
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_DAY_120_VOLUME, "6个月放量", Stock.class);
         //strategy.setAsc(false);
         strategy.addFilter("120天放量", (strgy, stock) -> {
             if(stock.getBarSeries().size() < 240){
