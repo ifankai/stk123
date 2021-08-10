@@ -478,19 +478,7 @@
 
                 console.log('mounted', _this.$data)
             });
-            _this.currentHotBks = {data: data.currentHotBks};
-            _this.currentAllStocks = {data: data.currentAllStocks};
-            _this.currentAllStocks.data = convertStocks(_this.currentAllStocks.data);
-            _this.currentMyStocksA = {data: data.currentMyStocksA};
-            _this.currentMyStocksA.data = convertStocks(_this.currentMyStocksA.data);
-            _this.currentMyStocksH = {data: data.currentMyStocksH};
-            _this.currentMyStocksH.data = convertStocks(_this.currentMyStocksH.data);
-            _this.currentMyStocksU = {data: data.currentMyStocksU};
-            _this.currentMyStocksU.data = convertStocks(_this.currentMyStocksU.data);
-
-            console.log('mounted', _this.$data)
-        });
-    }
+        }
     });
 
     app.component('datatable', _datatable);
