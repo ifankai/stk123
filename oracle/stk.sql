@@ -3075,8 +3075,8 @@ update stk_dictionary set text ='资产置换|转让' where type=2000 and key = 
 select code,kline_date ,open,close,high,low,volumn as volume,amount,last_close,percentage as change,hsl,pe_ttm,pb_ttm from (select t.*, rank() over(partition by t.code order by t.kline_date desc) as rn
 from stk_kline t where t.code in ('002346','600600','600601','601958','600531','000758','000060','600497','000807','000751','600395','600456','002340','002237','000612','600459','000960','600251')) where rn <= 1
 
-select * from stk_report_header;
-select * from stk_report_detail;
+select * from stk_report_header where report_date='20210806' for update;
+select * from stk_report_detail where header_id in (select id from stk_report_header where report_date='20210806' and type='bks');
 
 
 delete from stk_report_detail;
@@ -3093,7 +3093,9 @@ select report_date from (select report_date, rownum rn from
 select d.* from stk_report_header h, stk_report_detail d where h.id=d.header_id and h.report_date in ('')
                                                            and h.type='bks' and d.strategy_code like 'strategy_08%';
 
+
 select * from stk where code='BK0619';
 
 select * from stk_kline where kline_date>'20210801';
 select * from stk_kline where code='000001' order by kline_date desc;
+

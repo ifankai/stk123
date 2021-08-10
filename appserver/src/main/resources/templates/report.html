@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
     <link rel="stylesheet" href="/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
     <link rel="stylesheet" href="/adminlte/plugins/pace-progress/themes/black/pace-theme-minimal.css">
-<!--    <link rel="stylesheet" href="/css/public.css">-->
+    <!--    <link rel="stylesheet" href="/css/public.css">-->
     <style>
         @media (min-width: 1200px) {
             .img-width img {
@@ -55,7 +55,7 @@
             color: unset;
         }
         .callout a:hover{
-             color: unset;
+            color: unset;
         }
         .report-date{
             background-color: #e9eaea;
@@ -183,6 +183,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-12">
+
                         <div class="card">
                             <div class="card-header">
                                 <h3 class="card-title">板块统计信息</h3>
@@ -204,11 +205,11 @@
                                     <div class="tab-pane fade show active" id="hotbk-calendar" role="tabpanel" aria-labelledby="hotbk-calendar-tab">
                                         <table class="table table-bordered table-hotbk">
                                             <thead>
-                                                <tr>
-                                                    <th v-for="bk in hotBks" class="text-center text-nowrap" :class="bk.reportDate==reportDate?'report-date':''">
-                                                        <a v-text="dateFormat(bk.reportDate)" @click.prevent="gotoReport(bk.reportDate)" href="#" style="color: unset"></a>
-                                                    </th>
-                                                </tr>
+                                            <tr>
+                                                <th v-for="bk in hotBks" class="text-center text-nowrap" :class="bk.reportDate==reportDate?'report-date':''">
+                                                    <a v-text="dateFormat(bk.reportDate)" @click.prevent="gotoReport(bk.reportDate)" href="#" style="color: unset"></a>
+                                                </th>
+                                            </tr>
                                             </thead>
                                             <tbody>
                                                 <tr>
@@ -242,11 +243,13 @@
                                                                             </div>
                                                                         </div>
                                                                     </div>
+
                                                                 </template>
                                                             </section>
                                                         </div>
                                                     </td>
                                                 </tr>
+
                                             </tbody>
                                         </table>
 
@@ -282,19 +285,18 @@
                                         <datatable :="{...common.currentHotBks, ...currentHotBks}"></datatable>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
 
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 v-text="reportDate && '股票统计信息 ['+dateFormat(reportDate)+']'" class="card-title"></h3>
-                                <div class="card-tools">
-                                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="收起">
-                                        <i class="fas fa-minus"></i>
-                                    </button>
-                                </div>
-                            </div>
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h3 v-text="reportDate && '股票统计信息 ['+dateFormat(reportDate)+']'" class="card-title"></h3>
+                                            <div class="card-tools">
+                                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="收起">
+                                                    <i class="fas fa-minus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
 
                             <div class="card-body">
                                 <nav>
@@ -318,40 +320,36 @@
                                         <span class="btn-tab">
                                             <button :disabled="currentTabSize==0" @click="gotoStocks()" type="button" class="btn btn-outline-primary btn-xs" style="margin-bottom: -11px;"><i class="fas fa-th"></i> <span v-text="'查看全部'+currentTabSize+'只个股'"></span></button>
                                         </span>
-                                    </div>
+                                                </div>
 
-                                </nav>
+                                            </nav>
 
-                                <div class="tab-content p-1" id="report-tabContent">
-                                    <div class="tab-pane fade show active" id="report-allstocks" role="tabpanel" aria-labelledby="report-allstocks-tab">
-                                        <datatable :="{...common.allStocks, ...currentAllStocks}"></datatable>
-                                    </div>
-                                    <div class="tab-pane fade" id="report-mystocks-a" role="tabpanel" aria-labelledby="report-mystocks-a-tab">
-                                        <datatable :="{...common.allStocks, ...currentMyStocksA}"></datatable>
-                                    </div>
-                                    <div class="tab-pane fade" id="report-mystocks-h" role="tabpanel" aria-labelledby="report-mystocks-h-tab">
-                                        <datatable :="{...common.allStocks, ...currentMyStocksH}"></datatable>
-                                    </div>
-                                    <div class="tab-pane fade" id="report-mystocks-u" role="tabpanel" aria-labelledby="report-mystocks-u-tab">
-                                        <datatable :="{...common.allStocks, ...currentMyStocksU}"></datatable>
+                                            <div class="tab-content p-1" id="report-tabContent">
+                                                <div class="tab-pane fade show active" id="report-allstocks" role="tabpanel" aria-labelledby="report-allstocks-tab">
+                                                    <datatable :="{...common.allStocks, ...currentAllStocks}"></datatable>
+                                                </div>
+                                                <div class="tab-pane fade" id="report-mystocks-a" role="tabpanel" aria-labelledby="report-mystocks-a-tab">
+                                                    <datatable :="{...common.allStocks, ...currentMyStocksA}"></datatable>
+                                                </div>
+                                                <div class="tab-pane fade" id="report-mystocks-h" role="tabpanel" aria-labelledby="report-mystocks-h-tab">
+                                                    <datatable :="{...common.allStocks, ...currentMyStocksH}"></datatable>
+                                                </div>
+                                                <div class="tab-pane fade" id="report-mystocks-u" role="tabpanel" aria-labelledby="report-mystocks-u-tab">
+                                                    <datatable :="{...common.allStocks, ...currentMyStocksU}"></datatable>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
                                     </div>
                                 </div>
-
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row mt-4">
-
                 </div>
             </div>
         </section>
 
-        <a id="back-to-top" href="#" class="btn btn-outline-primary back-to-top" style="display: none" role="button" aria-label="Scroll to top">
-            <i class="fas fa-chevron-up"></i>
-        </a>
+            <a id="back-to-top" href="#" class="btn btn-outline-primary back-to-top" style="display: none" role="button" aria-label="Scroll to top">
+                <i class="fas fa-chevron-up"></i>
+            </a>
     </div>
 
     <div th:replace="common/footer"></div>
@@ -418,6 +416,9 @@
                 },
                 hotBks:[],
                 hotBksNew:[],
+                currentHotBks:{
+                    data:[]
+                },
                 currentHotBks:{data:[]},currentAllStocks:{data:[]},
                 currentMyStocksA:{data:[]},currentMyStocksH:{data:[]},currentMyStocksU:{data:[]},
             }
@@ -477,7 +478,19 @@
 
                 console.log('mounted', _this.$data)
             });
-        }
+            _this.currentHotBks = {data: data.currentHotBks};
+            _this.currentAllStocks = {data: data.currentAllStocks};
+            _this.currentAllStocks.data = convertStocks(_this.currentAllStocks.data);
+            _this.currentMyStocksA = {data: data.currentMyStocksA};
+            _this.currentMyStocksA.data = convertStocks(_this.currentMyStocksA.data);
+            _this.currentMyStocksH = {data: data.currentMyStocksH};
+            _this.currentMyStocksH.data = convertStocks(_this.currentMyStocksH.data);
+            _this.currentMyStocksU = {data: data.currentMyStocksU};
+            _this.currentMyStocksU.data = convertStocks(_this.currentMyStocksU.data);
+
+            console.log('mounted', _this.$data)
+        });
+    }
     });
 
     app.component('datatable', _datatable);
