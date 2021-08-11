@@ -58,6 +58,7 @@ public class BarTask extends AbstractTask {
     private String market;
     private String strategy;
     private String report;
+    private String ampm;
 
     private String today = TaskUtils.getToday();//"20160923";
     private final Date now = new Date();
@@ -397,6 +398,7 @@ public class BarTask extends AbstractTask {
 
 
     public void analyseMyStocks(){
+        log.info("start analyseMyStocks");
         try {
             StkReportHeaderEntity stkReportHeaderEntity = null;
             Set<StockWrapper> allList = new LinkedHashSet<>();
@@ -501,14 +503,13 @@ public class BarTask extends AbstractTask {
                 Set<String> codeU = new LinkedHashSet<>();
 
                 if(StringUtils.isNotEmpty(report)){
-                    StrategyResult strategyResult = results.get(0);
                     String type = "mystocks";
                     String name = "自选股策略";
                     if(realtime!=null){
-                        type = type+"_"+report;
-                        name = name+"[盘中"+report.toUpperCase()+"]";
+                        type = type+"_"+ampm;
+                        name = name+"[盘中"+ampm.toUpperCase()+"]";
                     }
-                    stkReportHeaderEntity = reportService.createReportHeaderEntity(strategyResult.getDate(), type, realtime!=null?1:0, name);
+                    stkReportHeaderEntity = reportService.createReportHeaderEntity(report, type, realtime!=null?1:0, name);
                 }
 
                 String rowCode = null;
@@ -593,10 +594,12 @@ public class BarTask extends AbstractTask {
             EmailUtils.send("报错[analyseMyStocks]", ExceptionUtils.getExceptionAsString(e));
             log.error("analyseMyStocks", e);
         }
+        log.info("end analyseMyStocks");
     }
 
 
     public void analyseAllStocks(){
+        log.info("start analyseAllStocks");
         try {
             StkReportHeaderEntity stkReportHeaderEntity = null;
             List<Stock> stocks = Stocks.getStocksWithBks();
@@ -619,14 +622,13 @@ public class BarTask extends AbstractTask {
                 Set<String> codeA = new LinkedHashSet<>();
 
                 if(StringUtils.isNotEmpty(report)){
-                    StrategyResult strategyResult1 = results.get(0);
                     String type = "allstocks";
                     String name = "全市场策略";
                     if(realtime!=null){
-                        type = type+"_"+report;
-                        name = name+"[盘中"+report.toUpperCase()+"]";
+                        type = type+"_"+ampm;
+                        name = name+"[盘中"+ampm.toUpperCase()+"]";
                     }
-                    stkReportHeaderEntity = reportService.createReportHeaderEntity(strategyResult1.getDate(), type, realtime!=null?1:0, name);
+                    stkReportHeaderEntity = reportService.createReportHeaderEntity(report, type, realtime!=null?1:0, name);
                 }
 
                 String rowCode = null;
@@ -684,6 +686,7 @@ public class BarTask extends AbstractTask {
 
                     for(Strategy rpsStrategy : rpsList){
                         //List<StrategyResult> srs = stockService.calcRps(stocks, rpsStrategy.getCode());
+                        if(rpsStrategy.isEmptyStrategy())continue;
                         List<Stock> rpsStocks = stockService.calcRps(stocks, rpsStrategy.getCode()).stream().map(StrategyResult::getStock).collect(Collectors.toList());
                         rpsStocks = rpsStocks.subList(0, Math.min(150, rpsStocks.size()));
                         rps.append(rpsStrategy.getNameWithCode() + ": " + CommonUtils.k("查看", rpsStrategy.getNameWithCode(), rpsStocks.stream().map(Stock::getCode).collect(Collectors.toList())));
@@ -708,10 +711,12 @@ public class BarTask extends AbstractTask {
             EmailUtils.send("报错[analyseAllStocks]", ExceptionUtils.getExceptionAsString(e));
             log.error("analyseAllStocks", e);
         }
+        log.info("end analyseAllStocks");
     }
 
 
     public void analyseBks(){
+        log.info("start analyseBks");
         try{
             StkReportHeaderEntity stkReportHeaderEntity = null;
             List<Stock> bks = Stocks.getBksWithStocks();
@@ -733,8 +738,7 @@ public class BarTask extends AbstractTask {
                 List<List<String>> datasBk2 = new ArrayList<>();
 
                 if(StringUtils.isNotEmpty(report)){
-                    StrategyResult strategyResult = results.get(0);
-                    stkReportHeaderEntity = reportService.createReportHeaderEntity(strategyResult.getDate(), "bks", realtime!=null?1:0, "板块策略");
+                    stkReportHeaderEntity = reportService.createReportHeaderEntity(report, "bks", realtime!=null?1:0, "板块策略");
                 }
 
                 String rowCode = null;
@@ -792,6 +796,7 @@ public class BarTask extends AbstractTask {
             EmailUtils.send("报错[analyseBks]", ExceptionUtils.getExceptionAsString(e));
             log.error("analyseBks", e);
         }
+        log.info("end analyseBks");
     }
 
 

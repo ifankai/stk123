@@ -690,7 +690,7 @@ public class Filters {
             Bar k = today.getBarExcludeToday(days, bar -> bar.before()!=null && bar.getVolume()/bar.before().getVolume() >= n);
             if(k != null && today.getClose() >= k.getClose() && today.before().getClose() <= k.getClose()){
                 if(k.getBarCountExcludeToday(days*4, bar -> bar.getVolume() < k.getVolume()) >= days*4) {
-                    return FilterResult.TRUE("倍数："+k.getVolume() / k.before().getVolume());
+                    return FilterResult.TRUE(); //"倍数："+k.getVolume() / k.before().getVolume()
                 }
             }
             return FilterResult.FALSE();

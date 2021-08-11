@@ -64,6 +64,10 @@ public class Strategy<X> {
         this.name = name;
         this.xClass = xClass;
     }
+
+    public boolean isEmptyStrategy(){
+        return "0".equals(this.code);
+    }
     /*public Strategy(String code, String name, Class<X> xClass, Filter<X> expectFilter) {
         this(code, name, xClass);
         this.expectFilterExecutor = new FilterExecutor(null,null, x->x, expectFilter);

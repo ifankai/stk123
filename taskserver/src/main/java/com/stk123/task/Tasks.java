@@ -1,5 +1,6 @@
 package com.stk123.task;
 
+import com.stk123.common.CommonUtils;
 import com.stk123.common.util.WeatherUtils;
 import com.stk123.model.core.Stocks;
 import com.stk123.service.task.TaskBuilder;
@@ -16,6 +17,8 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import java.util.Date;
 
 @Component
 @CommonsLog
@@ -95,31 +98,34 @@ public class Tasks {
 
     @Scheduled(cron = "0 10 16 ? * MON-FRI")
     public void initialKLine() {
+        String reportDate = CommonUtils.formatDate(new Date(), CommonUtils.sf_ymd2);
         taskContainer.start(
                 TaskBuilder.of(BarTask.class, "clearAll"),
                 TaskBuilder.of(BarTask.class, "CN"),
                 TaskBuilder.of(BarTask.class, "HK"),
-                TaskBuilder.of(BarTask.class, "MyStocks", "report=1"),
-                TaskBuilder.of(BarTask.class, "AllStocks", "report=1"),
-                TaskBuilder.of(BarTask.class, "Bks", "report=1"),
+                TaskBuilder.of(BarTask.class, "MyStocks", "report="+reportDate),
+                TaskBuilder.of(BarTask.class, "AllStocks", "report="+reportDate),
+                TaskBuilder.of(BarTask.class, "Bks", "report="+reportDate),
                 //TaskBuilder.of(SyncTask.class, "table=stk_task_log"),
-                TaskBuilder.of(BarTask.class, "Mass", "report=1"),
+                TaskBuilder.of(BarTask.class, "Mass", "report="+reportDate),
                 TaskBuilder.of(BarTask.class, "clearAll")
         );
     }
 
     @Scheduled(cron = "0 0 11 ? * MON-FRI")
     public void klineRealtime_am() {
-        taskContainer.start(BarTask.class, "MyStocks", "realtime=1", "market=cn,hk", "report=am");
+        String reportDate = CommonUtils.formatDate(new Date(), CommonUtils.sf_ymd2);
+        taskContainer.start(BarTask.class, "MyStocks", "realtime=1", "market=cn,hk", "report="+reportDate, "ampm=am");
         Stocks.StocksAllCN = null;
-        taskContainer.start(BarTask.class, "AllStocks", "realtime=1", "report=1");
+        taskContainer.start(BarTask.class, "AllStocks", "realtime=1", "report="+reportDate, "ampm=am");
     }
 
     @Scheduled(cron = "0 30 14 ? * MON-FRI")
     public void klineRealtime_pm() {
-        taskContainer.start(BarTask.class, "MyStocks", "realtime=1", "market=cn,hk", "report=pm");
+        String reportDate = CommonUtils.formatDate(new Date(), CommonUtils.sf_ymd2);
+        taskContainer.start(BarTask.class, "MyStocks", "realtime=1", "market=cn,hk", "report="+reportDate, "ampm=am");
         Stocks.StocksAllCN = null;
-        taskContainer.start(BarTask.class, "AllStocks", "realtime=1", "report=1");
+        taskContainer.start(BarTask.class, "AllStocks", "realtime=1", "report="+reportDate, "ampm=am");
     }
 
     @Scheduled(cron = "0 30 5 ? * TUE-SAT")

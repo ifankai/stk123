@@ -78,7 +78,7 @@ public class Strategies {
     }
 
     public static Strategy strategy_0(){
-        return new Strategy<>("0","", Stock.class);
+        return new Strategy<>("0","Empty Strategy", Stock.class);
     }
 
     /**** 阳线放量 阴线缩量 *****/
