@@ -674,10 +674,12 @@
             },
             filterByStrategy:function (strategyCode, strategyName){
                 Pace.start();
-                this.seletedStrategyName = strategyName+'['+strategyCode+']';
+                this.seletedStrategyName = strategyName;
                 let _this = this;
+                let _stocks = _this._stocks;
                 axios.get("/strategy/"+strategyCode+"/"+codeType+"/"+code).then(function (res) {
                     parseStocks(_this, res);
+                    _this._stocks = _stocks;
                 });
                 Pace.stop();
             },

@@ -724,7 +724,7 @@ public class Filters {
                 Bar k3 = k.before().getLowestBar(15, Bar.EnumValue.V, 5, Bar.EnumCalculationMethod.MA);
                 double m = k.getMA(5, Bar.EnumValue.V) / k3.getMA(5, Bar.EnumValue.V);
                 if(m >= n) {
-                    return FilterResult.TRUE(m);
+                    return FilterResult.TRUE();
                 }
                 return FilterResult.FALSE(k3.getDate()+","+m);
             }
@@ -758,7 +758,7 @@ public class Filters {
                 Bar k3 = k.before().getLowestBar(15, Bar.EnumValue.V, 5, Bar.EnumCalculationMethod.MA);
                 double m = k.getMA(5, Bar.EnumValue.V) / k3.getMA(5, Bar.EnumValue.V);
                 if(m >= n) {
-                    return FilterResult.TRUE(m);
+                    return FilterResult.TRUE();
                 }
                 return FilterResult.FALSE(k3.getDate()+","+m);
             }
@@ -771,7 +771,7 @@ public class Filters {
             Bar today = stock.getBar();
             double distance = today.similarMass(0, bar, length);
             if(distance < 5) {
-                return FilterResult.TRUE(distance);
+                return FilterResult.TRUE(); //distance
             }else{
                 return FilterResult.FALSE(distance);
             }
