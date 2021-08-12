@@ -54,6 +54,24 @@ public class Strategies {
         return CODE_STRATEGY.get(code);
     }
 
+    public static List<Strategy> getAllStrategiesDisplayOnWeb(){
+        return ListUtils.createList(
+                Strategies.strategy_01c(), Strategies.strategy_01b(),
+                Strategies.strategy_0(),
+                Strategies.strategy_06a(), Strategies.strategy_06b(), Strategies.strategy_01a(),
+                Strategies.strategy_0(),
+                Strategies.strategy_04a(), Strategies.strategy_04b(), Strategies.strategy_04c(), Strategies.strategy_06c(),
+                Strategies.strategy_0(),
+                Strategies.strategy_03a(), Strategies.strategy_03b(),
+                Strategies.strategy_0(),
+                Strategies.strategy_05a(), Strategies.strategy_05b(),
+                Strategies.strategy_0(),
+                Strategies.strategy_02b(),
+                Strategies.strategy_0(),
+                Strategies.strategy_10a() //V型缩量反转(10a)
+        );
+    }
+
     @SneakyThrows
     public static List<Strategy> getStrategies(){
         List<String> strategies = new ArrayList<>();

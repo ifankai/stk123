@@ -74,7 +74,7 @@ public class StrategyController {
 
     @RequestMapping(value = {"/list"})
     public RequestResult listStrategy(){
-        List<Strategy> strategies = Strategies.getStrategies();
+        List<Strategy> strategies = Strategies.getAllStrategiesDisplayOnWeb(); //getStrategies();
         List<Map<String,String>> result = new ArrayList<>(strategies.size());
         for(Strategy strategy : strategies){
             Map<String,String> map = new HashMap<>();

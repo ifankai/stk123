@@ -13,6 +13,11 @@
     <link rel="stylesheet" href="/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
     <link rel="stylesheet" href="/adminlte/plugins/pace-progress/themes/black/pace-theme-loading-bar.css">
     <link rel="stylesheet" href="/css/public.css">
+    <style>
+/*        .dropdown-menu{
+            margin: 6rem 0 0;
+        }*/
+    </style>
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed text-sm pace-primary pace-done">
 <div class="pace pace-inactive">
@@ -49,7 +54,10 @@
                                             <span v-text="seletedStrategyName"></span>
                                         </button>
                                         <div class="dropdown-menu left-10" role="menu">
-                                            <a v-for="strategy in common.strategies" @click="filterByStrategy(strategy.code, strategy.name)" v-text="strategy.name" class="dropdown-item"></a>
+                                            <template v-for="strategy in common.strategies">
+                                                <div v-if="strategy.code==0" class="dropdown-divider"></div>
+                                                <a v-else @click="filterByStrategy(strategy.code, strategy.name)" v-text="strategy.name" class="dropdown-item"></a>
+                                            </template>
                                         </div>
                                     </div>
                                     <div class="btn-group ml-1">
@@ -577,6 +585,11 @@
         let stocks = data.stocks;
         let i = 1;
         _this.common.niusans.forEach(ns => ns.count=0);
+
+        if (localStorage.stockLookPool) {
+            _this.stockLookPool = getDataFromLocalStorage('stockLookPool');
+        }
+
         stocks.forEach(stk => {
             stk.stock.order = i++;
             stk.stock.news.forEach(n => {
@@ -592,6 +605,9 @@
             /*_this.common.niusans.forEach(ns => {
                 if(ns.count > 0) _this.niusanSelected.push(ns.key);
             });*/
+            if(_this.stockLookPool.find(s => s.stock.code==stk.stock.code)){
+                stk.isAddedToLookPool = true;
+            }
         });
         _this.common.niusans = _this.common.niusans.filter(ns => ns.count > 0);
         _this.common.niusans.sort((a,b) => b.count - a.count);
@@ -728,8 +744,9 @@
                         left: position.left
                     }, 500, "linear", function () {
                         image.remove();
-                        _this.stockLookPool.push(stk);
                         stk.isAddedToLookPool = true;
+                        _this.stockLookPool.push(stk);
+                        saveDataToLocalStorage('stockLookPool', _this.stockLookPool);
                     });
 
                 }
@@ -737,6 +754,7 @@
             removeStockFromLookPool:function(stk){
                 stk.isAddedToLookPool = false;
                 this.stockLookPool = this.stockLookPool.filter(s => s.stock.code !== stk.stock.code);
+                saveDataToLocalStorage('stockLookPool', this.stockLookPool);
             }
         },
         computed: {
@@ -768,7 +786,7 @@
                     }
                     this.niusanSelected = selected;
                 }
-            }
+            },
         },
         mounted() {
             let _this = this;
@@ -791,7 +809,6 @@
                 _this.total = _this.stocks.length;
                 console.log('mounted')
             });
-
         },
         created () {
         },

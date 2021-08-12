@@ -17,6 +17,13 @@ function isVisible(elment) {
     return y <= (vpH + st);
 }
 
+function saveDataToLocalStorage(key, data) {
+    localStorage.setItem(key, JSON.stringify(data));
+}
+function getDataFromLocalStorage(key) {
+    return JSON.parse(localStorage.getItem(key));
+}
+
 $(window).scroll(function() {
     if($(this).scrollTop() <= 300) {
         $('#back-to-top').fadeOut();
