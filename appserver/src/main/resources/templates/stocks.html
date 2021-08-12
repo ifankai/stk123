@@ -129,8 +129,8 @@
                                         <span v-html="stk.stock.nameAndCodeWithLink"></span> 评分:<span v-text="stk.stock.rating.total"></span>
                                     </h3>
                                     <div class="card-tools">
-                                        <button @click="addToLookPool($event, stk)" title="加入观察池" type="button" class="btn btn-tool">
-                                            <i class="fas fa-eye" :class="stk.isAddedToLookPool?'fa-eye-slash':''"></i>
+                                        <button @click="updateLookPool($event, stk)" :title="isInLookPool(stk.stock.code)?'删除观察':'加入观察'" type="button" class="btn btn-tool">
+                                            <i class="fas fa-eye" :class="isInLookPool(stk.stock.code)?'fa-eye-slash':''"></i>
                                         </button>
                                         <button title="加入自选池" type="button" class="btn btn-tool">
                                             <i class="fas fa-plus"></i>
@@ -605,9 +605,6 @@
             /*_this.common.niusans.forEach(ns => {
                 if(ns.count > 0) _this.niusanSelected.push(ns.key);
             });*/
-            if(_this.stockLookPool.find(s => s.stock.code==stk.stock.code)){
-                stk.isAddedToLookPool = true;
-            }
         });
         _this.common.niusans = _this.common.niusans.filter(ns => ns.count > 0);
         _this.common.niusans.sort((a,b) => b.count - a.count);
@@ -729,9 +726,12 @@
                 });
                 Pace.stop();
             },
-            addToLookPool:function (e, stk) {
+            isInLookPool: function (code) {
+                return this.stockLookPool.find(s => s.stock.code==code);
+            },
+            updateLookPool:function (e, stk) {
                 let _this = this;
-                if(!stk.isAddedToLookPool) {
+                if(!this.isInLookPool(stk.stock.code)) {
                     var btn = $(e.target);
                     var image = $('<img width="30px" height="30px" src="' + btn.data("image") + '"/>').css({
                         "position": "fixed",
@@ -744,17 +744,23 @@
                         left: position.left
                     }, 500, "linear", function () {
                         image.remove();
-                        stk.isAddedToLookPool = true;
                         _this.stockLookPool.push(stk);
                         saveDataToLocalStorage('stockLookPool', _this.stockLookPool);
                     });
-
+                }else{
+                    this.removeStockFromLookPool(stk);
                 }
             },
             removeStockFromLookPool:function(stk){
-                stk.isAddedToLookPool = false;
                 this.stockLookPool = this.stockLookPool.filter(s => s.stock.code !== stk.stock.code);
                 saveDataToLocalStorage('stockLookPool', this.stockLookPool);
+            },
+            showAllStocksInLookPool:function (){
+                window.open('/S/'+this.stockLookPool.map(d => d.stock.code).join(','));
+            },
+            clearAllStocksInLookPool:function (){
+                this.stockLookPool = [];
+                saveDataToLocalStorage('stockLookPool', []);
             }
         },
         computed: {
