@@ -138,8 +138,8 @@
                         <div class="dropdown-divider"></div>
                     </template>
                     <div class="btn-group w-100">
-                        <button :disabled="stockLookPool.length==0" @click="showAllStocksInLookPool" type="button" class="btn">查看全部</button>
-                        <button :disabled="stockLookPool.length==0" @click="clearAllStocksInLookPool" type="button" class="btn">清空</button>
+                        <button :disabled="stockLookPool && stockLookPool.length==0" @click="showAllStocksInLookPool" type="button" class="btn">查看全部</button>
+                        <button :disabled="stockLookPool && stockLookPool.length==0" @click="clearAllStocksInLookPool" type="button" class="btn">清空</button>
                     </div>
                 </div>
             </li>
