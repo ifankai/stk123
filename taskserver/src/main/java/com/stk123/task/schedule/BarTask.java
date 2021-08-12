@@ -105,7 +105,9 @@ public class BarTask extends AbstractTask {
     }
 
     public void register(){
-        this.runByName("initCN", () -> initCN());
+        this.runByName("initCN_Index", () -> initCN_Index());
+        this.runByName("initCN_Index_eastmoney_gn", this::initCN_Index_eastmoney_gn);
+        this.runByName("initCN_Stock", this::initCN_Stock);
         this.runByName("initHK", this::initHK);
         this.runByName("initUS", this::initUS);
         this.runByName("analyseCN", this::analyseCN);
@@ -124,29 +126,32 @@ public class BarTask extends AbstractTask {
         System.gc();
     }
 
-    public void initCN() {
+    public void initCN_Index() {
         stkKlineRepository.deleteAllByKlineDateAfterToday();
 
         log.info("初始化CN的大盘指数");
         StockBasicProjection scn = null;
-        try{
+        try {
             List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(EnumMarket.CN, EnumCate.INDEX);
             for (StockBasicProjection codeName : list) {
                 log.info(codeName.getCode());
                 scn = codeName;
                 Stock stock = Stock.build(codeName);
-                if(isWorkingDay){
-                    barService.initKLines(stock,5);
-                }else{
-                    barService.initKLines(stock,30);
+                if (isWorkingDay) {
+                    barService.initKLines(stock, 5);
+                } else {
+                    barService.initKLines(stock, 30);
                 }
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             log.error("error", e);
-            EmailUtils.send("[BarTask出错]大盘指数K线下载出错 stk="+ (scn != null ? scn.getCode() : null), e);
+            EmailUtils.send("[BarTask出错]大盘指数K线下载出错 stk=" + (scn != null ? scn.getCode() : null), e);
         }
+    }
 
-        try{
+    public void initCN_Index_eastmoney_gn() {
+        StockBasicProjection scn = null;
+        try {
             List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn);
             for (StockBasicProjection codeName : list) {
                 log.info(codeName.getCode());
@@ -163,11 +168,14 @@ public class BarTask extends AbstractTask {
                 }
             });*/
 
-        }catch(Exception e){
+        } catch (Exception e) {
             log.error("error", e);
-            EmailUtils.send("[BarTask出错]同花顺概念指数K线下载出错 code="+ (scn != null ? scn.getCode() : null), e);
+            EmailUtils.send("[BarTask出错]同花顺概念指数K线下载出错 code=" + (scn != null ? scn.getCode() : null), e);
         }
+    }
 
+    public void initCN_Stock() {
+        StockBasicProjection scn = null;
         try {
             List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(EnumMarket.CN, EnumCate.STOCK);
             log.info("CN initKLines..........start");
@@ -177,6 +185,7 @@ public class BarTask extends AbstractTask {
             list = stkRepository.findStockNotExsitingTodayKline();
             for (StockBasicProjection stockBasicProjection : list) {
                 try {
+                    scn = stockBasicProjection;
                     Stock stk = Stock.build(stockBasicProjection);
                     barService.initKLine(stk);
                 } catch (Exception e) {

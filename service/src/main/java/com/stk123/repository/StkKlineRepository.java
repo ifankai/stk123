@@ -38,7 +38,7 @@ public interface StkKlineRepository extends JpaRepository<StkKlineEntity, StkKli
     default StkKlineEntity saveIfNotExisting(StkKlineEntity stkKlineEntity){
         Optional<StkKlineEntity> entity = this.findById(new StkKlineEntity.CompositeKey(stkKlineEntity.getCode(),stkKlineEntity.getKlineDate()));
         if(!entity.isPresent()){
-            return save(stkKlineEntity);
+            return saveAndFlush(stkKlineEntity);
         }
         return entity.get();
     }
@@ -48,9 +48,9 @@ public interface StkKlineRepository extends JpaRepository<StkKlineEntity, StkKli
         Optional<StkKlineEntity> entity = this.findById(new StkKlineEntity.CompositeKey(stkKlineEntity.getCode(),stkKlineEntity.getKlineDate()));
         if(entity.isPresent()){
             BeanUtils.mapIgnoreNull(stkKlineEntity, entity.get());
-            return save(entity.get());
+            return saveAndFlush(entity.get());
         }else {
-            return save(stkKlineEntity);
+            return saveAndFlush(stkKlineEntity);
         }
     }
 
