@@ -50,6 +50,8 @@ public class Rps{
 
     public static List<Strategy> getAllRpsStrategyOnStock(){
         return ListUtils.createList(
+                Strategies.rps_03(),
+                Strategies.strategy_0(),
                 Strategies.rps_05(),Strategies.rps_04(),Strategies.rps_12(),
                 Strategies.strategy_0(),
                 Strategies.rps_06a(), Strategies.rps_07(), Strategies.rps_08(),
