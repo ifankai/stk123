@@ -36,6 +36,8 @@ function getDataTableOpt (_this){
         //dom:'lfrtip',
         //data: this.data,
         //columns: this.columns
+        //paging:   false,
+
         ..._this.$props
     }
     if(_this._dom != null){
@@ -51,7 +53,11 @@ const _datatable = {
         _dom: {}, //如果直接用 dom='lfrtip' 和 不设置 dom 表格的样式不一样，只能判断一下了
         columns: {},
         data: {},
-        ordering:{},
+        ordering: {type: Boolean, default: false},
+        paging: {type: Boolean, default: true},
+        info: {type: Boolean, default: true},
+        pageLength: {type: Number, default: 10},
+        searching: {type: Boolean, default: true},
         columnDefs:{},
         tableClass:{},
     },

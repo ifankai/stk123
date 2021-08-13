@@ -116,6 +116,7 @@ public class BarTask extends AbstractTask {
         this.runByName("analyseMyStocks", this::analyseMyStocks);
         this.runByName("analyseMass", this::analyseMass);
         this.runByName("analyseAllStocks", this::analyseAllStocks);
+        this.runByName("analyseAllRps", this::analyseAllRps);
         this.runByName("analyseBks", this::analyseBks);
         this.runByName("clearAll", this::clearAll);
         this.runByName("test", this::updateCNCapitalFlow);
@@ -688,24 +689,7 @@ public class BarTask extends AbstractTask {
                     reportService.save(stkReportHeaderEntity);
                 }
 
-                // rps start
-                StringBuffer rps = new StringBuffer();
-                if(realtime == null) {
-                    List<Strategy> rpsList = Rps.getAllRpsStrategyOnStock();
-
-                    for(Strategy rpsStrategy : rpsList){
-                        //List<StrategyResult> srs = stockService.calcRps(stocks, rpsStrategy.getCode());
-                        if(rpsStrategy.isEmptyStrategy())continue;
-                        List<Stock> rpsStocks = stockService.calcRps(stocks, rpsStrategy.getCode()).stream().map(StrategyResult::getStock).collect(Collectors.toList());
-                        rpsStocks = rpsStocks.subList(0, Math.min(150, rpsStocks.size()));
-                        rps.append(rpsStrategy.getNameWithCode() + ": " + CommonUtils.k("查看", rpsStrategy.getNameWithCode(), rpsStocks.stream().map(Stock::getCode).collect(Collectors.toList())));
-                        rps.append("<br/>");
-                    }
-                }
-                // rps end
-
                 StringBuffer sb = new StringBuffer();
-                sb.append(rps).append("<br/>");
                 sb.append("A: ").append(CommonUtils.k("查看", "全市场A", codeA)).append("<br/><br/>");
 
                 sb.append("A股");
@@ -723,6 +707,47 @@ public class BarTask extends AbstractTask {
         log.info("end analyseAllStocks");
     }
 
+    public void analyseAllRps(){
+        log.info("start analyseAllRps");
+        try {
+            StkReportHeaderEntity stkReportHeaderEntity = null;
+            List<Stock> stocks = Stocks.getStocksWithBks();
+
+            if(StringUtils.isNotEmpty(report)){
+                String type = "allstocks_rps";
+                String name = "全市场RPS";
+                stkReportHeaderEntity = reportService.createReportHeaderEntity(report, type, 0, name);
+            }
+
+            // rps start
+            StringBuffer rps = new StringBuffer();
+            List<Strategy> rpsList = Rps.getAllRpsStrategyOnStock();
+
+            for(Strategy rpsStrategy : rpsList){
+                //List<StrategyResult> srs = stockService.calcRps(stocks, rpsStrategy.getCode());
+                if(rpsStrategy.isEmptyStrategy())continue;
+                List<Stock> rpsStocks = stockService.calcRps(stocks, rpsStrategy.getCode()).stream().map(StrategyResult::getStock).collect(Collectors.toList());
+                rpsStocks = rpsStocks.subList(0, Math.min(150, rpsStocks.size()));
+                rps.append(rpsStrategy.getNameWithCode() + ": " + CommonUtils.k("查看", rpsStrategy.getNameWithCode(), rpsStocks.stream().map(Stock::getCode).collect(Collectors.toList())));
+                rps.append("<br/>");
+
+                if(stkReportHeaderEntity != null){
+                    StkReportDetailEntity stkReportDetailEntity = reportService.createReportDetailEntity(null, rpsStrategy.getCode(), report,
+                            null, null, null, null,
+                            rpsStocks.stream().map(Stock::getCode).collect(Collectors.joining(",")), null
+                    );
+                    stkReportHeaderEntity.addDetail(stkReportDetailEntity);
+                }
+            }
+            EmailUtils.send("全市场RPS A股", rps.toString());
+
+            // rps end
+        } catch (Exception e) {
+            EmailUtils.send("报错[analyseAllStocksRps]", ExceptionUtils.getExceptionAsString(e));
+            log.error("analyseAllStocksRps", e);
+        }
+        log.info("end analyseAllRps");
+    }
 
     public void analyseBks(){
         log.info("start analyseBks");

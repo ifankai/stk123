@@ -1,4 +1,4 @@
-﻿SELECT * FROM DBA_TABLESPACES;
+SELECT * FROM DBA_TABLESPACES;
 SELECT * FROM DBA_DATA_FILES;
 SELECT * FROM DBA_TEMP_FILES;
 select name from v$tablespace;
@@ -1004,7 +1004,7 @@ alter table stk_report_header add constraint pk_report_header_id primary key (id
 create index idx_report_header_date_type on stk_report_header (report_date,type);
 create sequence s_report_header_id INCREMENT BY 1 START WITH 10000 NOMAXVALUE NOCYCLE CACHE 10;
 
-drop table stk_report_detail;
+
 create table stk_report_detail(
     id number(6),
     header_id number(8),
@@ -1023,6 +1023,8 @@ alter table stk_report_detail
     add constraint fk_report_detail__header_id foreign key (header_id)
         references stk_report_header (id);
 create sequence s_report_detail_id INCREMENT BY 1 START WITH 100000 NOMAXVALUE NOCYCLE CACHE 10;
+
+alter table stk_report_detail modify rps_stock_code varchar2(2000);
 
 
 select * from tab where tname like 'STK_%';
@@ -3075,8 +3077,8 @@ update stk_dictionary set text ='资产置换|转让' where type=2000 and key = 
 select code,kline_date ,open,close,high,low,volumn as volume,amount,last_close,percentage as change,hsl,pe_ttm,pb_ttm from (select t.*, rank() over(partition by t.code order by t.kline_date desc) as rn
 from stk_kline t where t.code in ('002346','600600','600601','601958','600531','000758','000060','600497','000807','000751','600395','600456','002340','002237','000612','600459','000960','600251')) where rn <= 1
 
-select * from stk_report_header where report_date='20210806' for update;
-select * from stk_report_detail where header_id in (select id from stk_report_header where report_date='20210806' and type='bks');
+select * from stk_report_header where report_date='20210809' for update;
+select * from stk_report_detail where header_id in (10031) for update;
 
 
 delete from stk_report_detail;

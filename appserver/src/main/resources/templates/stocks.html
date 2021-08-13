@@ -132,7 +132,7 @@
                                         <button @click="updateLookPool($event, stk)" :title="isInLookPool(stk.stock.code)?'删除观察':'加入观察'" type="button" class="btn btn-tool">
                                             <i class="fas fa-eye" :class="isInLookPool(stk.stock.code)?'fa-eye-slash':''"></i>
                                         </button>
-                                        <button title="加入自选池" type="button" class="btn btn-tool">
+                                        <button title="加入自选" type="button" class="btn btn-tool">
                                             <i class="fas fa-plus"></i>
                                         </button>
                                         <button type="button" class="btn btn-tool" data-card-widget="remove">
@@ -561,6 +561,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue@3.1.1/dist/vue.global.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vuex@4.0.2/dist/vuex.global.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios@0.21.1/dist/axios.min.js"></script>
 
 <script src="/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
@@ -587,7 +588,7 @@
         _this.common.niusans.forEach(ns => ns.count=0);
 
         if (localStorage.stockLookPool) {
-            _this.stockLookPool = getDataFromLocalStorage('stockLookPool');
+            _this.$store.commit('setStockLookPool', getDataFromLocalStorage('stockLookPool'));
         }
 
         stocks.forEach(stk => {
@@ -617,7 +618,7 @@
         console.log(_this.$data);
     }
 
-    const app = Vue.createApp({
+    let config = {
         data() {
             return {
                 title: title,
@@ -628,12 +629,10 @@
                 seletedStrategyName: '模型策略过滤',
                 bkSelected: [],
                 niusanSelected: [],
-                stockLookPool:[],
                 common:{
                     news:{
                         columns: [{data:"type"},{data:"title"},{data:"infoCreateTime"}],
                         _dom: "ipft",
-                        ordering: false,
                         //columns: [{title:"a"},{title:"b"}],
                         columnDefs: [
                             { className: "text-nowrap", "targets": [ 0,2 ] }
@@ -726,42 +725,7 @@
                 });
                 Pace.stop();
             },
-            isInLookPool: function (code) {
-                return this.stockLookPool.find(s => s.stock.code==code);
-            },
-            updateLookPool:function (e, stk) {
-                let _this = this;
-                if(!this.isInLookPool(stk.stock.code)) {
-                    var btn = $(e.target);
-                    var image = $('<img width="30px" height="30px" src="' + btn.data("image") + '"/>').css({
-                        "position": "fixed",
-                        "z-index": "99999"
-                    });
-                    btn.prepend(image);
-                    var position = $('#stock-look-pool').position();
-                    image.animate({
-                        top: position.top,
-                        left: position.left
-                    }, 500, "linear", function () {
-                        image.remove();
-                        _this.stockLookPool.push(stk);
-                        saveDataToLocalStorage('stockLookPool', _this.stockLookPool);
-                    });
-                }else{
-                    this.removeStockFromLookPool(stk);
-                }
-            },
-            removeStockFromLookPool:function(stk){
-                this.stockLookPool = this.stockLookPool.filter(s => s.stock.code !== stk.stock.code);
-                saveDataToLocalStorage('stockLookPool', this.stockLookPool);
-            },
-            showAllStocksInLookPool:function (){
-                window.open('/S/'+this.stockLookPool.map(d => d.stock.code).join(','));
-            },
-            clearAllStocksInLookPool:function (){
-                this.stockLookPool = [];
-                saveDataToLocalStorage('stockLookPool', []);
-            }
+
         },
         computed: {
             bksTopN: function () {
@@ -793,6 +757,9 @@
                     this.niusanSelected = selected;
                 }
             },
+            stockLookPool(){
+                return store.state.stockLookPool
+            }
         },
         mounted() {
             let _this = this;
@@ -826,7 +793,12 @@
             //console.log('niusanSelected', this.niusanSelected)
             //console.log('bkSelected', this.bkSelected)
         }
-    });
+    }
+
+    config.methods = Object.assign(config.methods, _stockLookPoolInVuex);
+
+    const app = Vue.createApp(config);
+    app.use(store)
 
     app.component('datatable', _datatable);
     app.mount('#app');

@@ -43,15 +43,12 @@ public class BkController {
         List<Stock> bk = stockService.buildStocks(bkCode);
         List<Stock> stocks = bk.get(0).getStocks();
         stocks = stockService.getStocksWithBks(stocks, Stocks.getBks(), false);
-
-        if(StringUtils.isNotEmpty(rpsCode)){
-            List<StrategyResult> strategyResults = stockService.calcRps(stocks, rpsCode);
-            Map result = stockService.getStrategyResultAsMap(strategyResults);
-            return RequestResult.success(result);
-        }else{
-            Map result = stockService.getStocksAsMap(stocks);
-            return RequestResult.success(result);
+        if(StringUtils.isEmpty(rpsCode)){
+            rpsCode = Rps.CODE_STOCK_SCORE_20;
         }
+        List<StrategyResult> strategyResults = stockService.calcRps(stocks, rpsCode);
+        Map result = stockService.getStrategyResultAsMap(strategyResults);
+        return RequestResult.success(result);
     }
 
     @RequestMapping(value = "/score/{code}")

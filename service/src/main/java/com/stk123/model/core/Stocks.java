@@ -54,6 +54,10 @@ public class Stocks {
         if(Stocks.BKsEasymoneyGn == null) initBks();
         return Stocks.BKsEasymoneyGn_Rps.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().get(bkCode)));
     }
+    public static Stock getBk(String bkCode){
+        if(Stocks.BKsEasymoneyGn == null) initBks();
+        return Stocks.BKsEasymoneyGn_Map.get(bkCode);
+    }
 
     public static List<Stock> getBksOrNull(List<String> codes){
         if(Stocks.BKsEasymoneyGn_Map.isEmpty()) return null;

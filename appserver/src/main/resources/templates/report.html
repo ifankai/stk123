@@ -204,6 +204,7 @@
                                     <div class="nav nav-tabs" id="hobk-tab" role="tablist">
                                         <a class="nav-item nav-link active" id="hotbk-calendar-tab" data-toggle="tab" href="#hotbk-calendar" role="tab" aria-controls="hotbk-calendar" aria-selected="true">热点板块日历</a>
                                         <a v-text="reportDate && '板块详情 ['+dateFormat(reportDate)+']'" class="nav-item nav-link" id="hotbk-detail-tab" data-toggle="tab" href="#hotbk-detail" role="tab" aria-controls="hotbk-detail" aria-selected="false"></a>
+                                        <a v-text="reportDate && '板块策略 ['+dateFormat(reportDate)+']'" class="nav-item nav-link" id="allbks-strategy-tab" data-toggle="tab" href="#allbks-strategy" role="tab" aria-controls="allbks-strategy" aria-selected="false"></a>
                                     </div>
                                 </nav>
                                 <div class="tab-content p-1" id="hotbk-tabContent">
@@ -288,19 +289,22 @@
                                     <div class="tab-pane fade" id="hotbk-detail" role="tabpanel" aria-labelledby="hotbk-detail-tab">
                                         <datatable :="{...common.currentHotBks, ...currentHotBks}"></datatable>
                                     </div>
+                                    <div class="tab-pane fade" id="allbks-strategy" role="tabpanel" aria-labelledby="allbks-strategy-tab">
+                                        <datatable :="{...common.currentHotBks, ...currentBksStrategy}"></datatable>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h3 v-text="reportDate && '股票统计信息 ['+dateFormat(reportDate)+']'" class="card-title"></h3>
-                                            <div class="card-tools">
-                                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="收起">
-                                                    <i class="fas fa-minus"></i>
-                                                </button>
-                                            </div>
-                                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 v-text="reportDate && '股票统计信息 ['+dateFormat(reportDate)+']'" class="card-title"></h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="收起">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                </div>
+                            </div>
 
                             <div class="card-body">
                                 <nav>
@@ -330,6 +334,8 @@
 
                                             <div class="tab-content p-1" id="report-tabContent">
                                                 <div class="tab-pane fade show active" id="report-allstocks" role="tabpanel" aria-labelledby="report-allstocks-tab">
+                                                    <datatable :="{...common.allStocksRps, ...currentAllStocksRps}"></datatable>
+                                                    <hr>
                                                     <datatable :="{...common.allStocks, ...currentAllStocks}"></datatable>
                                                 </div>
                                                 <div class="tab-pane fade" id="report-mystocks-a" role="tabpanel" aria-labelledby="report-mystocks-a-tab">
@@ -365,6 +371,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue@3.1.1/dist/vue.global.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vuex@3.6.2/dist/vuex.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios@0.21.1/dist/axios.min.js"></script>
 
 <script src="/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
@@ -398,7 +405,6 @@
                             {title:"精选个股", data:"bkStocks"},
                             {title:"操作", data:"action"}
                         ],
-                        ordering: false,
                         columnDefs: [
                             { className: "text-nowrap text-center", "targets": [ 0,3,4 ] },
                             { className: "img-width text-center", "targets": [ 1,2 ] }
@@ -411,10 +417,23 @@
                             {title:"日线", data:"dayBarImage"},
                             {title:"周线", data:"weekBarImage"}
                         ],
-                        ordering: false,
                         columnDefs: [
                             { className: "text-center", "targets": [ 0 ] }, //text-nowrap
                             { className: "img-width", "targets": [ 2,3 ] }
+                        ],
+                        pageLength: 50
+                    },
+                    allStocksRps:{
+                        columns: [
+                            {title:"策略", data:"strategyName"},
+                            {title:"日期", data:"strategyDate"},
+                            {title:"操作", data:"action"}
+                        ],
+                        paging:   false,
+                        info: false,
+                        searching : false,
+                        columnDefs: [
+                            { className: "text-center", "targets": [ 0,1,2 ] }
                         ]
                     }
                 },
@@ -423,8 +442,9 @@
                 currentHotBks:{
                     data:[]
                 },
-                currentHotBks:{data:[]},currentAllStocks:{data:[]},
+                currentHotBks:{data:[]},currentAllStocks:{data:[]},currentBksStrategy:{data:[]},
                 currentMyStocksA:{data:[]},currentMyStocksH:{data:[]},currentMyStocksU:{data:[]},
+                currentAllStocksRps:{data:[]}
             }
         },
         methods:{
@@ -468,6 +488,15 @@
                     item.action = item.details[0].action;
                 });
                 _this.currentHotBks = {data: data.currentHotBks};
+
+                data.currentBksStrategy.forEach((item, index) => {
+                    Object.assign(item, item.bk)
+                    item.bkDateStrategy = item.nameAndCodeWithLink + '<br/>' + dateFormat(item.strategyDate) + '<br/>' +item.details.map(detail => detail.strategyName).join('<br/>');
+                    item.bkStocks = item.details[0].stocks.map(detail => detail.nameWithLink).join('<br/>');
+                    item.action = item.details[0].action;
+                });
+                _this.currentBksStrategy = {data: data.currentBksStrategy};
+
                 _this.currentAllStocks = {data: data.currentAllStocks};
                 _this.currentAllStocks.data = convertStocks(_this.currentAllStocks.data);
                 _this.currentTabSize = _this.currentAllStocks.data.length;
@@ -479,6 +508,12 @@
                 _this.currentMyStocksH.data = convertStocks(_this.currentMyStocksH.data);
                 _this.currentMyStocksU = {data: data.currentMyStocksU};
                 _this.currentMyStocksU.data = convertStocks(_this.currentMyStocksU.data);
+
+                _this.currentAllStocksRps = {data: data.currentAllStocksRps};
+                _this.currentAllStocksRps.data.forEach(item => {
+                    item.strategyDate = dateFormat(item.strategyDate);
+                    item.action = elem('a', {href:'/S/'+item.rpsStockCode, _target:'blank'}, '查看全部').outerHTML;
+                })
 
                 console.log('mounted', _this.$data)
             });

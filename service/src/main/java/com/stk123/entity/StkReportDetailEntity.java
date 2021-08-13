@@ -29,6 +29,10 @@ public class StkReportDetailEntity {
     @JsonView(View.All.class)
     private String strategyCode;
 
+    @Transient
+    @JsonView(View.All.class)
+    private String strategyName;
+
     @Basic
     @Column(name = "STRATEGY_DATE", length = 10)
     @JsonView(View.All.class)

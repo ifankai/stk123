@@ -7,6 +7,7 @@ import com.stk123.entity.StkReportDetailEntity;
 import com.stk123.entity.StkReportHeaderEntity;
 import com.stk123.model.core.Rps;
 import com.stk123.model.core.Stock;
+import com.stk123.model.core.Stocks;
 import com.stk123.model.enumeration.EnumMarket;
 import com.stk123.model.strategy.sample.Strategies;
 import com.stk123.repository.BaseRepository;
@@ -96,8 +97,6 @@ public class ReportService {
         List<String> strategy08s = bks.stream().flatMap(stkReportHeaderEntity -> stkReportHeaderEntity.getStkReportDetailEntities().stream())
                 .map(StkReportDetailEntity::getStrategyCode).filter(s -> StringUtils.startsWith(s, "strategy_08")).distinct().collect(Collectors.toList());
 
-        Map<String, Stock> bksMap = new HashMap<>();
-
         List<Map> hotBks = new ArrayList<>();
         for(String rptDate : reportDates){
             Map map = new HashMap();
@@ -111,7 +110,6 @@ public class ReportService {
                         headersByBkAndReportDate.stream().flatMap(stkReportHeaderEntity -> stkReportHeaderEntity.getStkReportDetailEntities().stream())
                                 .filter(stkReportDetailEntity -> StringUtils.startsWith(stkReportDetailEntity.getStrategyCode(), strategy08)).collect(Collectors.toList());
                 List<Stock> bks08 = stockService.getStocks(detailByStrategyAndReportDate.stream().map(StkReportDetailEntity::getCode).distinct().collect(Collectors.toList()));
-                bksMap.putAll(bks08.stream().collect(Collectors.toMap(Stock::getCode, Function.identity())));
                 hotBkDetailList.addAll(detailByStrategyAndReportDate);
             }
 
@@ -120,7 +118,7 @@ public class ReportService {
 
             List<Map> hotBkList = hotBkStrategyMapSort.keySet().stream().map(s -> {
                 return new HashMap(){{
-                    put("stock", bksMap.get(s));
+                    put("stock", Stocks.getBk(s));
                     put("strategies", hotBkStrategyMap.get(s));
                 }};
             }).collect(Collectors.toList());
@@ -137,39 +135,59 @@ public class ReportService {
         Stream<String> bkCodeByToday = bksByToday.stream().flatMap(stkReportHeaderEntity -> stkReportHeaderEntity.getStkReportDetailEntities().stream()).map(StkReportDetailEntity::getCode);
         List<String> bkCodeByNotToday = bksByNotToday.stream().flatMap(stkReportHeaderEntity -> stkReportHeaderEntity.getStkReportDetailEntities().stream()).map(StkReportDetailEntity::getCode).collect(Collectors.toList());
         List<String> bkCodeNew = bkCodeByToday.filter(s -> !bkCodeByNotToday.contains(s)).collect(Collectors.toList());
-        result.put("hotBksNew", bkCodeNew);
+        result.put("hotBksNew", bkCodeNew); //新出现的板块
 
-        Map<String, List<StkReportDetailEntity>> groupbyCodeMap = bksByToday.stream().flatMap(stkReportHeaderEntity -> stkReportHeaderEntity.getStkReportDetailEntities().stream()).
+        Map<String, List<StkReportDetailEntity>> groupbyCodeByStrategy08 = bksByToday.stream().flatMap(stkReportHeaderEntity -> stkReportHeaderEntity.getStkReportDetailEntities().stream()).
                 filter(s -> StringUtils.startsWith(s.getStrategyCode(), "strategy_08")).collect(Collectors.groupingBy(StkReportDetailEntity::getCode));
-        List<Map> groupbyCodeList = groupbyCodeMap.entrySet().stream().sorted(Comparator.comparing(e -> e.getValue().size(), Comparator.reverseOrder())).map(e -> {
-            Map map = new HashMap();
-            Stock bk = bksMap.get(e.getKey());
-            map.put("code", e.getKey());
-            map.put("strategyDate", finalRptDate);
+        List<Map> bksGroupbyCodeByStrategy08 = getBksAsMap(groupbyCodeByStrategy08, finalRptDate);
+        result.put("currentHotBks", bksGroupbyCodeByStrategy08);
 
-            map.put("details", e.getValue().stream().distinct().map(detail -> new HashMap<String, Object>() {{
-                    put("strategyCode", detail.getStrategyCode());
-                    put("stocks", stockService.getStocksAsMap(Arrays.asList(StringUtils.split(detail.getRpsStockCode(), ",")), "code", "nameWithLink"));
-                    String a = "<a title='查看板块精选个股' target='_blank' href='/S/"+detail.getRpsStockCode()+"'><i class='fas fa-th'></i></a>";
-                    put("action", a);
-                }}
-            ));
-            map.put("bk", bk);
-            return map;
-        }).collect(Collectors.toList());
-        result.put("currentHotBks", groupbyCodeList);
+        Map<String, List<StkReportDetailEntity>> groupbyCodeByNotStrategy08 = bksByToday.stream().flatMap(stkReportHeaderEntity -> stkReportHeaderEntity.getStkReportDetailEntities().stream()).
+                filter(s -> !StringUtils.startsWith(s.getStrategyCode(), "strategy_08")).collect(Collectors.groupingBy(StkReportDetailEntity::getCode));
+        List<Map> bksGroupbyCodeByNotStrategy08 = getBksAsMap(groupbyCodeByNotStrategy08, finalRptDate);
+        result.put("currentBksStrategy", bksGroupbyCodeByNotStrategy08);
 
         result.put("currentAllStocks", getStocksByType(headers, "allstocks", finalRptDate, EnumMarket.CN));
         result.put("currentMyStocksA", getStocksByType(headers, "mystocks", finalRptDate, EnumMarket.CN));
         result.put("currentMyStocksH", getStocksByType(headers, "mystocks", finalRptDate, EnumMarket.HK));
         result.put("currentMyStocksU", getStocksByType(headers, "mystocks", finalRptDate, EnumMarket.US));
 
+        List<StkReportDetailEntity> allStocksRps = getDetailsByTypeAndDate(headers, "allstocks_rps", finalRptDate);
+        allStocksRps.forEach(rps -> {
+            rps.setStrategyName(Rps.getRpsStrategy(rps.getStrategyCode()).getNameWithCode());
+        });
+        result.put("currentAllStocksRps", allStocksRps);
+
         return result;
     }
 
+    private List<Map> getBksAsMap(Map<String, List<StkReportDetailEntity>> groupbyCodeMap, String finalRptDate){
+        return groupbyCodeMap.entrySet().stream().sorted(Comparator.comparing(e -> e.getValue().size(), Comparator.reverseOrder())).map(e -> {
+            Map map = new HashMap();
+            Stock bk = Stocks.getBk(e.getKey());
+            map.put("code", e.getKey());
+            map.put("strategyDate", finalRptDate);
+
+            map.put("details", e.getValue().stream().distinct().map(detail -> new HashMap<String, Object>() {{
+                        put("strategyCode", detail.getStrategyCode());
+                        put("strategyName", Strategies.getStrategy(detail.getStrategyCode()).getName());
+                        put("stocks", stockService.getStocksAsMap(Arrays.asList(StringUtils.split(detail.getRpsStockCode(), ",")), "code", "nameWithLink"));
+                        String a = "<a title='查看板块精选个股' target='_blank' href='/S/"+detail.getRpsStockCode()+"'><i class='fas fa-th'></i></a>";
+                        put("action", a);
+                    }}
+            ));
+            map.put("bk", bk);
+            return map;
+        }).collect(Collectors.toList());
+    }
+
+    private List<StkReportDetailEntity> getDetailsByTypeAndDate(List<StkReportHeaderEntity> headers, String type, String date){
+        List<StkReportHeaderEntity> headerByDate = headers.stream().filter(stkReportHeaderEntity -> type.equals(stkReportHeaderEntity.getType()) && date.equals(stkReportHeaderEntity.getReportDate())).collect(Collectors.toList());
+        return headerByDate.stream().flatMap(stkReportHeaderEntity -> stkReportHeaderEntity.getStkReportDetailEntities().stream()).collect(Collectors.toList());
+    }
+
     private List<Map> getStocksByType(List<StkReportHeaderEntity> headers, String type, String finalRptDate, EnumMarket market){
-        List<StkReportHeaderEntity> allstocksHeaderByToday = headers.stream().filter(stkReportHeaderEntity -> type.equals(stkReportHeaderEntity.getType()) && finalRptDate.equals(stkReportHeaderEntity.getReportDate())).collect(Collectors.toList());
-        List<StkReportDetailEntity> allstocksDetailByToday = allstocksHeaderByToday.stream().flatMap(stkReportHeaderEntity -> stkReportHeaderEntity.getStkReportDetailEntities().stream()).collect(Collectors.toList());
+        List<StkReportDetailEntity> allstocksDetailByToday = getDetailsByTypeAndDate(headers, type, finalRptDate);
 
         Map<String, List<StkReportDetailEntity>> allstocksDetailGroupByCode = allstocksDetailByToday.stream().collect(Collectors.groupingBy(StkReportDetailEntity::getCode));
         List<String> allstocksCodesDistinct = allstocksDetailByToday.stream().map(StkReportDetailEntity::getCode).distinct().collect(Collectors.toList());
