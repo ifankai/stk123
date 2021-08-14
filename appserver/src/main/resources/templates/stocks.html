@@ -129,9 +129,7 @@
                                         <span v-html="stk.stock.nameAndCodeWithLink"></span> 评分:<span v-text="stk.stock.rating.total"></span>
                                     </h3>
                                     <div class="card-tools">
-                                        <button @click="updateLookPool($event, stk)" :title="isInLookPool(stk.stock.code)?'删除观察':'加入观察'" type="button" class="btn btn-tool">
-                                            <i class="fas fa-eye" :class="isInLookPool(stk.stock.code)?'fa-eye-slash':''"></i>
-                                        </button>
+                                        <eye :stock="stk.stock"></eye>
                                         <button title="加入自选" type="button" class="btn btn-tool">
                                             <i class="fas fa-plus"></i>
                                         </button>
@@ -587,10 +585,6 @@
         let i = 1;
         _this.common.niusans.forEach(ns => ns.count=0);
 
-        if (localStorage.stockLookPool) {
-            _this.$store.commit('setStockLookPool', getDataFromLocalStorage('stockLookPool'));
-        }
-
         stocks.forEach(stk => {
             stk.stock.order = i++;
             stk.stock.news.forEach(n => {
@@ -782,6 +776,10 @@
                 _this.total = _this.stocks.length;
                 console.log('mounted')
             });
+
+            if (localStorage.stockLookPool) {
+                store.commit('setStockLookPool', getDataFromLocalStorage('stockLookPool'));
+            }
         },
         created () {
         },
@@ -801,6 +799,7 @@
     app.use(store)
 
     app.component('datatable', _datatable);
+    app.component('eye', _eye);
     app.mount('#app');
 
     function clickTab(e){

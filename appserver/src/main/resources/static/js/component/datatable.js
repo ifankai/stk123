@@ -26,7 +26,55 @@ var _datatableLang =
 
 var _datatableTemplate = `
 <div class="dataTables_wrapper dt-bootstrap4">
-    <table :id="'_datatable_'+datatableId"  class="table table-valign-middle" :class="tableClass" style="width:100%"></table>
+    <table :id="'_datatable_'+datatableId"  class="table table-valign-middle" :class="tableClass" style="width:100%">
+        <thead>
+            <tr>
+                <th v-for="column in columns" v-html="column.title"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="row in data">
+                <template v-for="column in columns">
+                    <td v-if="column.data == 'stockAndBk'">
+                        <table style="margin: auto;font-size: 1rem">
+                            <tr><td><span v-html="row.nameAndCodeWithLink"></span><eye :stock="row"></eye></td></tr>
+                            <tr><td v-html="dateFormat(row.strategyDate)"></td></tr>
+                            <tr><td>
+                                <span v-if="row.strategyName.length <= 1" v-html="'策略：'+row.strategyName"></span>
+                                <table v-else>
+                                    <tr><td :rowspan="row.strategyName.length">策略</td><td v-html="row.strategyName[0]"></td></tr>
+                                    <tr v-for="item in row.strategyName.slice(1)"><td v-text="item"></td></tr>
+                                </table>
+                            </td></tr>
+                            <tr><td>&nbsp;</td></tr>
+                            <tr v-if="row.bks"><td>
+                                <table class="subtable text-nowrap">
+                                    <tr><td>板块</td>
+                                        <td v-for="bk in row.bks" v-html="bk.bk.nameWithLink" class="text-center"></td>
+                                    </tr>
+                                    <tr><td>策略</td>
+                                        <td v-for="bk in row.bks" v-html="bk.bkRpsName" class="text-center"></td>
+                                    </tr>
+                                    <tr><td>百分位</td>
+                                        <td v-for="bk in row.bks" v-html="bk.bkRpsPercentile" class="text-center"></td>
+                                    </tr>
+                                    <tr><td>查看</td>
+                                        <td v-for="bk in row.bks" class="text-center">
+                                            <a title="查看板块精选个股" target="_blank" :href="'/S/'+bk.bkRpsStockCode"><i class="fas fa-th"></i></a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td></tr>
+                        </table>
+                    </td>
+                    <td v-else-if="column.data == 'stockAndEye'">
+                        <span v-html="row.nameAndCodeWithLink"></span><eye :stock="row"></eye>
+                    </td>
+                    <td v-else v-html="row[column.data]"></td>
+                </template>
+            </tr>
+        </tbody>
+    </table>
 </div>
 `;
 let _datatable_id = 0;
@@ -40,6 +88,8 @@ function getDataTableOpt (_this){
 
         ..._this.$props
     }
+    delete opt.columns;
+    delete opt.data;
     if(_this._dom != null){
         opt.dom = _this._dom;
     }
@@ -68,7 +118,9 @@ const _datatable = {
         }
     },
     methods: {
-
+        dateFormat:function (date){
+            return dateFormat(date);
+        }
     },
     created() {
         //一定要在created里写，如果在mounted里写，则datatable不能加载
@@ -86,14 +138,21 @@ const _datatable = {
             $('#_datatable_' + this.datatableId).DataTable(opt);
             //$("div.toolbar").html('<span>Custom tool bar! Text/images etc.</span>');
         });*/
-        let opt = getDataTableOpt(this);
-        $('#_datatable_' + this.datatableId).DataTable(opt);
+        /*let opt = getDataTableOpt(this);
+        console.log('opt', this.data)
+        $('#_datatable_' + this.datatableId).DataTable(opt);*/
     },
     watch: {
         data: function (newVal, oldVal){
-            let opt = getDataTableOpt(this);
+            /*let opt = getDataTableOpt(this);
             $('#_datatable_' + this.datatableId).DataTable().clear().destroy();
-            $('#_datatable_' + this.datatableId).DataTable(opt);
+            $('#_datatable_' + this.datatableId).DataTable(opt);*/
+
+            this.$nextTick(function() {
+                let opt = getDataTableOpt(this);
+                $('#_datatable_' + this.datatableId).DataTable(opt);
+                //$("div.toolbar").html('<span>Custom tool bar! Text/images etc.</span>');
+            });
         }
     }
 };

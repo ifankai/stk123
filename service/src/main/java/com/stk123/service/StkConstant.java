@@ -52,4 +52,22 @@ public class StkConstant {
     public final static int IMPORT_INFO_TYPE_21 = 21; //募集资金使用大于80%
 
 
+    /** stk_text.type **/
+    public final static int TEXT_TYPE_XUEQIU = 3;  //--0:收藏文章; 短文:1; 长文:2; 雪球评论:3
+
+    /** stk_text.code_type **/
+    public final static int TEXT_CODE_TYPE_STOCK = 1; // 1:stock, 2:industry,
+
+    /** stk_text.sub_type **/
+    public final static int TEXT_SUB_TYPE_EARNING_FORECAST = 10;
+    public final static int TEXT_SUB_TYPE_ORG_BUY_WITHIN_60 = 20;
+    public final static int TEXT_SUB_TYPE_NIU_FUND_ONE_YEAR = 30;
+    public final static int TEXT_SUB_TYPE_NIU_FUND_ALL_TIME = 31;
+    public final static int TEXT_SUB_TYPE_FIND_REVERSION = 40;
+    public final static int TEXT_SUB_TYPE_FIND_GROWTH = 45;
+    public final static int TEXT_SUB_TYPE_STK_HOLDER_REDUCE = 50;
+    public final static int TEXT_SUB_TYPE_COMPANY_RESEARCH = 100; //公司调研
+    public final static int TEXT_SUB_TYPE_INDUSTRY_RESEARCH = 110; //行业分析
+    public final static int TEXT_SUB_TYPE_STK_REPORT = 200; //年报季报
+    public final static int TEXT_SUB_TYPE_XUEQIU_NOTICE = 300; //雪球公告
 }

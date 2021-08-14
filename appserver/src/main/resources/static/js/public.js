@@ -53,7 +53,7 @@ const store = Vuex.createStore({
             state.stockLookPool.push(payload)
         },
         removeStockFromLookPool(state, payload){
-            state.stockLookPool = state.stockLookPool.filter(s => s.stock.code !== payload.stock.code);
+            state.stockLookPool = state.stockLookPool.filter(s => s.code !== payload.code);
         },
         removeAllStocksFromLookPool(state){
             state.stockLookPool = [];
@@ -78,7 +78,7 @@ const store = Vuex.createStore({
             return state.count;
         },
         isInStockLookPool: (state) => (code) => {
-            return state.stockLookPool.find(s => s.stock.code==code)
+            return state.stockLookPool.find(s => s.code==code)
         }
     },
 
@@ -86,20 +86,32 @@ const store = Vuex.createStore({
 
 let _stockLookPoolInVuex = {
     updateLookPool: function (e, stk) {
+        console.log('updateLookPool', stk)
         let _this = this;
-        if (!_this.$store.getters.isInStockLookPool(stk.stock.code)) {
+        if (!_this.$store.getters.isInStockLookPool(stk.code)) {
             var btn = $(e.target);
-            var image = $('<img width="30px" height="30px" src="' + btn.data("image") + '"/>').css({
+
+            var offset = btn.offset();
+            var posY = offset.top - $(window).scrollTop();
+            var posX = offset.left - $(window).scrollLeft();
+
+            //var image = $('<img width="30px" height="30px" src=""/>').css({
+            var image = $('<i class="fas fa-eye" ></i>').css({
                 "position": "fixed",
-                "z-index": "99999"
+                "z-index": "99999",
+                "top": posY,
+                "left" : posX
             });
             btn.prepend(image);
+            console.log(btn.offset())
+
             var position = $('#stock-look-pool').position();
             image.animate({
                 top: position.top,
-                left: position.left
+                left: position.left+30
             }, 500, "linear", function () {
                 image.remove();
+                _this.$store.commit('setStockLookPool', getDataFromLocalStorage('stockLookPool'))
                 _this.$store.commit('pushStockToLookPool', stk);
                 saveDataToLocalStorage('stockLookPool', _this.$store.state.stockLookPool);
             });
@@ -115,7 +127,7 @@ let _stockLookPoolInVuex = {
         saveDataToLocalStorage('stockLookPool', this.$store.state.stockLookPool);
     },
     showAllStocksInLookPool:function (){
-        window.open('/S/'+this.$store.state.stockLookPool.map(d => d.stock.code).join(','));
+        window.open('/S/'+this.$store.state.stockLookPool.map(d => d.code).join(','));
     },
     clearAllStocksInLookPool:function (){
         this.$store.commit('removeAllStocksFromLookPool');
@@ -123,6 +135,34 @@ let _stockLookPoolInVuex = {
     }
 }
 
+const _eye = {
+    props: ['stock'],
+    template: `
+          <button @click.prevent="updateLookPool($event, stock)" :title="isInLookPool(stock.code)?'删除观察':'加入观察'"  type="button" class="btn btn-tool">
+              <i class="fas fa-eye" :class="isInLookPool(stock.code)?'fa-eye-slash':''"></i>
+          </button>
+        `,
+    methods:{
+        ..._stockLookPoolInVuex
+    }
+};
+
+//:title="isInLookPool(stk.code)?'删除观察':'加入观察'"
+
+function createEye(stock, id){
+    const vm = Vue.createApp(Object.assign(_eye, {
+        data(){
+            return {
+                stock: stock
+            }
+        }
+    }));
+    vm.use(store)
+    const wrapper = document.createElement("div")
+    console.log(id)
+    vm.mount('#'+id)
+    return wrapper.innerHTML;
+}
 
 if (typeof elem == "undefined") {
 

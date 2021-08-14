@@ -92,4 +92,6 @@ public interface StkTextRepository extends JpaRepository<StkTextEntity, Long> {
 //    <T> Collection<T> findAllByCodeAndTypeOrderByInsertTimeDesc(@Param("code")String code, @Param("type")Integer type, Class<T> clazz);
 
     List<StkTextEntity> findAllByCreatedAtGreaterThanAndTextLikeOrderByCreatedAtDesc(Date date, String text, Pageable pageable);
+
+    List<StkTextEntity> findAllByTypeAndCodeTypeAndSubTypeAndReplyPositiveAndInsertTimeGreaterThanOrderByInsertTimeDesc(Integer type, Integer codeType, Integer subType, Integer replyPositive, Date createdAt);
 }

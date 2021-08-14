@@ -1,15 +1,20 @@
 package com.stk123.controller;
 
+import cn.hutool.core.bean.BeanUtil;
+import com.stk123.common.CommonUtils;
 import com.stk123.common.util.BeanUtils;
 import com.stk123.entity.StkTextEntity;
 import com.stk123.model.RequestResult;
+import com.stk123.model.core.Stock;
 import com.stk123.model.dto.PageRoot;
 import com.stk123.model.dto.TextDto;
 import com.stk123.model.elasticsearch.EsDocument;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.repository.StkRepository;
 import com.stk123.repository.StkTextRepository;
+import com.stk123.service.StkConstant;
 import com.stk123.service.core.EsService;
+import com.stk123.service.core.StockService;
 import com.stk123.service.core.TextService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.StringUtils;
@@ -19,9 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RestController
@@ -37,6 +41,8 @@ public class TextController {
     private EsService esService;
     @Autowired
     private StkRepository stkRepository;
+    @Autowired
+    private StockService stockService;
 
     @RequestMapping(value = {"","/{type}"}, method = RequestMethod.GET)
     @ResponseBody
@@ -152,6 +158,36 @@ public class TextController {
 //        List<StkTextEntity> result = stkTextRepository.findAllTextByDto(code, type);
         List<TextDto> result = stkTextRepository.findAllByCodeAndTypeOrderByInsertTimeDesc2Dto(code, type);
         return RequestResult.success(result);
+    }
+
+    @RequestMapping({"/notice", "/notice/{createdAtAfter}"})
+    public RequestResult hotNotice(@PathVariable(value = "createdAtAfter", required = false)Long createdAtAfter){
+        if(createdAtAfter == null) {
+            createdAtAfter = DateUtils.addMonths(new Date(), -6).getTime();
+        }
+        Date dateAfter = new Date(createdAtAfter);
+        List<StkTextEntity> result = stkTextRepository.findAllByTypeAndCodeTypeAndSubTypeAndReplyPositiveAndInsertTimeGreaterThanOrderByInsertTimeDesc(
+                StkConstant.TEXT_TYPE_XUEQIU, StkConstant.TEXT_CODE_TYPE_STOCK, StkConstant.TEXT_SUB_TYPE_XUEQIU_NOTICE, 1, dateAfter);
+        return RequestResult.success(getNoticeAsMap(result));
+    }
+    
+    private List<Map> getNoticeAsMap(List<StkTextEntity> result){
+        Map<String, Stock> stocksMap = stockService.buildStocks(result.stream().map(StkTextEntity::getCode).collect(Collectors.toList())).stream().distinct().collect(Collectors.toMap(Stock::getCode, Function.identity()));
+        return result.stream().map(text -> {
+            Map map = BeanUtil.beanToMap(text);
+            Stock stock = stocksMap.get(text.getCode());
+            if(stock == null) {
+                log.info("stock code not in database:"+text.getCode());
+                map.put("nameAndCodeWithLink", text.getCode());
+                map.put("reply", text.getReplyCount());
+            }else{
+                map.put("nameAndCodeWithLink", stock.getNameAndCodeWithLink());
+                map.put("reply", CommonUtils.wrapLink(text.getReplyCount()+"", "https://xueqiu.com/S/"+stock.getCodeWithPlace()+"/"+text.getPostId()));
+            }
+            map.put("createdAt", CommonUtils.formatDate(text.getCreatedAt(), CommonUtils.sf_ymd9));
+
+            return map;
+        }).collect(Collectors.toList());
     }
 
 }
