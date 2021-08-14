@@ -27,7 +27,7 @@ var _datatableLang =
 var _datatableTemplate = `
 <div class="dataTables_wrapper dt-bootstrap4">
     <table :id="'_datatable_'+datatableId"  class="table table-valign-middle" :class="tableClass" style="width:100%">
-        <thead>
+        <thead v-if="columns[0].title">
             <tr>
                 <th v-for="column in columns" v-html="column.title"></th>
             </tr>
@@ -98,6 +98,7 @@ function getDataTableOpt (_this){
 const _datatable = {
     template: _datatableTemplate,
     props: {
+        type: {type: Number, default: 0},
         id: undefined,
         title: {},
         _dom: {}, //如果直接用 dom='lfrtip' 和 不设置 dom 表格的样式不一样，只能判断一下了
@@ -138,9 +139,10 @@ const _datatable = {
             $('#_datatable_' + this.datatableId).DataTable(opt);
             //$("div.toolbar").html('<span>Custom tool bar! Text/images etc.</span>');
         });*/
-        /*let opt = getDataTableOpt(this);
-        console.log('opt', this.data)
-        $('#_datatable_' + this.datatableId).DataTable(opt);*/
+        if(this.type == 1) {
+            let opt = getDataTableOpt(this);
+            $('#_datatable_' + this.datatableId).DataTable(opt);
+        }
     },
     watch: {
         data: function (newVal, oldVal){
@@ -148,11 +150,15 @@ const _datatable = {
             $('#_datatable_' + this.datatableId).DataTable().clear().destroy();
             $('#_datatable_' + this.datatableId).DataTable(opt);*/
 
-            this.$nextTick(function() {
-                let opt = getDataTableOpt(this);
-                $('#_datatable_' + this.datatableId).DataTable(opt);
-                //$("div.toolbar").html('<span>Custom tool bar! Text/images etc.</span>');
-            });
+            if(this.type == 0) {
+                this.$nextTick(function () {
+                    console.log('data change....')
+                    let opt = getDataTableOpt(this);
+                    //$('#_datatable_' + this.datatableId).DataTable().clear().destroy();
+                    $('#_datatable_' + this.datatableId).DataTable(opt);
+                    //$("div.toolbar").html('<span>Custom tool bar! Text/images etc.</span>');
+                });
+            }
         }
     }
 };
