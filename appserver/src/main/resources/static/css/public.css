@@ -1,5 +1,5 @@
-table.dataTable tbody th, table.dataTable tbody td, table.dataTable thead th, table.dataTable thead td {
-    padding: 1px 2px;
+.table td, .table th {
+    padding: unset;
 }
 div.dataTables_wrapper div.dataTables_info {
     padding-top: .1em;
