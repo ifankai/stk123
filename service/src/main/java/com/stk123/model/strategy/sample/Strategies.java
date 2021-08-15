@@ -365,7 +365,7 @@ public class Strategies {
     }
     private static Strategy strategy_08(String code, String name, String turningPoint) {
         Strategy<Stock> strategy = new Strategy<>(code, name, Stock.class);
-        strategy.setSortable(10).setCanTestHistory(false);
+        strategy.setSortable(20).setCanTestHistory(false);
 
         strategy.addFilter("行业", Filters.filter_mustStockCate(EnumCate.INDEX_eastmoney_gn));
         Filter<Stock> filter = (strg, stock) -> {

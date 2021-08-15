@@ -42,7 +42,7 @@ var _datatableTemplate = `
                             <tr><td>
                                 <span v-if="row.strategyName.length <= 1" v-html="'策略：'+row.strategyName"></span>
                                 <table v-else>
-                                    <tr><td :rowspan="row.strategyName.length">策略</td><td v-html="row.strategyName[0]"></td></tr>
+                                    <tr><td :rowspan="row.strategyName.length" style="vertical-align: middle;">策略</td><td v-html="row.strategyName[0]"></td></tr>
                                     <tr v-for="item in row.strategyName.slice(1)"><td v-text="item"></td></tr>
                                 </table>
                             </td></tr>
@@ -105,6 +105,7 @@ const _datatable = {
         columns: {},
         data: {},
         ordering: {type: Boolean, default: false},
+        order:{},
         paging: {type: Boolean, default: true},
         info: {type: Boolean, default: true},
         pageLength: {type: Number, default: 10},
