@@ -30,6 +30,8 @@ public class Strategies {
 
     public static String STRATEGIES_BK = "01a,01b,02b,03a,04a,04b,04c,05a,05b,06a,06b,06c,08a,08b,08c,10a"; //03b,
 
+    public static String STRATEGIES_ON_RPS = "04a,04b,04c";
+
 
     private static Map<String, Strategy> CODE_STRATEGY = new HashMap<>();
 

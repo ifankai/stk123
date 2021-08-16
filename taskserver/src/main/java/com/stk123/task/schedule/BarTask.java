@@ -97,6 +97,8 @@ public class BarTask extends AbstractTask {
     private StkCapitalFlowRepository stkCapitalFlowRepository;
     @Autowired
     private ReportService reportService;
+    @Autowired
+    private StkReportHeaderRepository stkReportHeaderRepository;
 
     public static void main(String[] args) throws Exception {
         BarTask task = new BarTask();
@@ -117,6 +119,7 @@ public class BarTask extends AbstractTask {
         this.runByName("analyseMass", this::analyseMass);
         this.runByName("analyseAllStocks", this::analyseAllStocks);
         this.runByName("analyseAllRps", this::analyseAllRps);
+        this.runByName("analyseRpsStocksByStrategies", this::analyseRpsStocksByStrategies);
         this.runByName("analyseBks", this::analyseBks);
         this.runByName("clearAll", this::clearAll);
         this.runByName("test", this::updateCNCapitalFlow);
@@ -747,6 +750,102 @@ public class BarTask extends AbstractTask {
             log.error("analyseAllStocksRps", e);
         }
         log.info("end analyseAllRps");
+    }
+
+    public void analyseRpsStocksByStrategies(){
+        log.info("start analyseRpsStocksByStrategies");
+        try{
+            StkReportHeaderEntity stkReportHeaderEntity = null;
+            Date reportDateStart = CommonUtils.addDay(new Date(), -50);
+            Date reportDateEnd = CommonUtils.addDay(new Date(), -20);
+            List<StkReportHeaderEntity> headers = stkReportHeaderRepository.findAllByTypeAndReportDateIsBetweenOrderByInsertTimeDesc(reportDateStart, reportDateEnd);
+            List<String> codes = headers.stream().flatMap(header -> header.getStkReportDetailEntities().stream()).flatMap(detail -> Arrays.stream(detail.getRpsStockCode().split(","))).distinct().collect(Collectors.toList());
+            List<Stock> stocks = stockService.getStocks(codes);
+
+            String strategies = Strategies.STRATEGIES_ON_RPS;
+            if(StringUtils.isNotEmpty(strategy)){
+                strategies = strategy;
+            }
+
+            StrategyBacktesting strategyBacktesting = new StrategyBacktesting();
+            backtestingService.backtestingOnStock(strategyBacktesting, stocks, Arrays.asList(StringUtils.split(strategies, ",")),
+                    startDate, endDate, realtime!=null);
+
+            List<StrategyResult> results = strategyBacktesting.getPassedStrategyResult();
+            if(results.size() > 0) {
+                List<List<String>> datasA = new ArrayList<>();
+                Set<String> codeA = new LinkedHashSet<>();
+                
+                if(StringUtils.isNotEmpty(report)){
+                    String type = "rpsstocks_strategies";
+                    String name = "RPS股票策略";
+                    stkReportHeaderEntity = reportService.createReportHeaderEntity(report, type, realtime!=null?1:0, name);
+                }
+
+                String rowCode = null;
+                for (StrategyResult strategyResult : results) {
+                    Stock stock = strategyResult.getStock();
+
+                    boolean displayCode = true;
+                    if(stock.getCode().equals(rowCode)){
+                        displayCode = false;
+                    }else{
+                        rowCode = stock.getCode();
+                    }
+
+                    Stock.BkInfoList bkInfoList = stock.getBkInfos(15, Rps.CODE_BK_60, Rps.CODE_BK_STOCKS_SCORE_30);
+                    List<String> data = ListUtils.createList(
+                            displayCode ? stock.getNameAndCodeWithLinkAndBold() + bkInfoList.toHtml() : "",
+                            strategyResult.getDate()+"<br/>"
+                                    + strategyResult.getStrategy().getName().replaceAll("，", "<br/>")
+                                    + "<br/>-----------<br/>" + StringUtils.join(strategyResult.getResults(),"<br/>"),
+                            displayCode?stock.getDayBarImage():"",displayCode?stock.getWeekBarImage():"",
+                            //backtesting.getStrategies().get(0).getPassRateString().replaceAll("]", "]<br/>") +
+                            //        (StringUtils.isNotEmpty(backtesting.getStrategies().get(0).getPassedFilterResultLog()) ? "<br/>"+backtesting.getStrategies().get(0).getPassedFilterResultLog() : "")
+                            ""
+                    );
+
+                    if(stock.isMarketCN()) {
+                        datasA.add(data);
+                        codeA.add(stock.getCode());
+                    }
+
+                    if(stkReportHeaderEntity != null){
+                        StkReportDetailEntity stkReportDetailEntity = reportService.createReportDetailEntity(stock.getCode(),strategyResult.getStrategy().getCode(), strategyResult.getDate(),
+                                StringUtils.join(strategyResult.getResults(),"<br/>"),
+                                StringUtils.join(bkInfoList.getBkInfos().stream().map(bkInfo -> bkInfo.getBkSr().getStrategy().getCode()).collect(Collectors.toList()), ";"),
+                                StringUtils.join(bkInfoList.getBkInfos().stream().map(bkInfo -> CommonUtils.numberFormat2Digits(bkInfo.getBkSr().getPercentile())).collect(Collectors.toList()), ";"),
+                                StringUtils.join(bkInfoList.getBkInfos().stream().map(bkInfo -> bkInfo.getBkSr().getStock().getCode()).collect(Collectors.toList()), ";"),
+                                StringUtils.join(bkInfoList.getBkInfos().stream().map(bkInfo -> bkInfo.getStockInfoList().getCodes()).collect(Collectors.toList()), ";"),
+                                ""
+                        );
+                        stkReportHeaderEntity.addDetail(stkReportDetailEntity);
+                    }
+
+                }
+
+                // report save
+                if(stkReportHeaderEntity != null){
+                    reportService.save(stkReportHeaderEntity);
+                }
+
+                StringBuffer sb = new StringBuffer();
+                sb.append("A: ").append(CommonUtils.k("查看", "RPS股票策略", codeA)).append("<br/><br/>");
+
+                sb.append("A股");
+                List<String> titles = ListUtils.createList("标的", "日期/策略", "日K线", "周K线", "");
+                sb.append(CommonUtils.createHtmlTable(titles, datasA));sb.append("<br/>");
+
+                EmailUtils.send((realtime!=null?"[实时]":"")+"RPS股票策略发现 A股" + (datasA.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count()) + "个", sb.toString());
+            }else{
+                EmailUtils.send((realtime!=null?"[实时]":"")+"RPS股票策略发现0个标的", "");
+            }
+            
+        } catch (Exception e) {
+            EmailUtils.send("报错[analyseRpsStocksByStrategies]", ExceptionUtils.getExceptionAsString(e));
+            log.error("analyseRpsStocksByStrategies", e);
+        }
+        log.info("end analyseRpsStocksByStrategies");
     }
 
     public void analyseBks(){
