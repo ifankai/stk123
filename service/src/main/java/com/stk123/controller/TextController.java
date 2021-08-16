@@ -172,8 +172,8 @@ public class TextController {
     }
     
     private List<Map> getNoticeAsMap(List<StkTextEntity> result){
-        Map<String, Stock> stocksMap = stockService.buildStocks(result.stream().map(StkTextEntity::getCode).collect(Collectors.toList())).stream().distinct().collect(Collectors.toMap(Stock::getCode, Function.identity()));
-        return result.stream().map(text -> {
+        Map<String, Stock> stocksMap = stockService.getStocks(result.stream().map(StkTextEntity::getCode).collect(Collectors.toList())).stream().distinct().collect(Collectors.toMap(Stock::getCode, Function.identity()));
+        return result.parallelStream().map(text -> {
             Map map = BeanUtil.beanToMap(text);
             Stock stock = stocksMap.get(text.getCode());
             if(stock == null) {

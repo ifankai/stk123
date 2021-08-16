@@ -773,9 +773,7 @@
                 console.log('mounted')
             });
 
-            if (localStorage.stockLookPool) {
-                store.commit('setStockLookPool', getDataFromLocalStorage('stockLookPool'));
-            }
+            store.commit('setStockLookPool', getDataFromLocalStorage('stockLookPool') || []);
         },
         created () {
         },

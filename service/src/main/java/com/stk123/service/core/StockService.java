@@ -367,7 +367,7 @@ public class StockService {
     }
     public List<Stock> getStocks(List<String> codes){
         List<Stock> stocks = Stocks.getStocksOrNull(codes);
-        if(stocks != null && stocks.size() == codes.size()) return stocks;
+        if(!stocks.isEmpty()) return stocks;
         stocks = buildStocks(codes);
         stocks = getStocksWithBks(stocks, Stocks.getBks(), 60, false);
         Stocks.putStocks(stocks);

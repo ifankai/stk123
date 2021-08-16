@@ -61,7 +61,7 @@ public class Stocks {
 
     public static List<Stock> getBksOrNull(List<String> codes){
         if(Stocks.BKsEasymoneyGn_Map.isEmpty()) return null;
-        return codes.stream().map(Stocks.BKsEasymoneyGn_Map::get).filter(Objects::nonNull).collect(Collectors.toList());
+        return codes.parallelStream().map(Stocks.BKsEasymoneyGn_Map::get).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     public synchronized static void initStocks(){
@@ -88,7 +88,7 @@ public class Stocks {
     }
     public static List<Stock> getStocksOrNull(List<String> codes){
         if(Stocks.StocksAllCN_Map.isEmpty()) return null;
-        return codes.stream().map(Stocks.StocksAllCN_Map::get).filter(Objects::nonNull).collect(Collectors.toList());
+        return codes.parallelStream().map(Stocks.StocksAllCN_Map::get).filter(Objects::nonNull).collect(Collectors.toList());
     }
     public static void putStocks(List<Stock> stocks){
         stocks.forEach(stock -> Stocks.StocksAllCN_Map.put(stock.getCode(), stock));

@@ -86,7 +86,6 @@ const store = Vuex.createStore({
 
 let _stockLookPoolInVuex = {
     updateLookPool: function (e, stk) {
-        console.log('updateLookPool', stk)
         let _this = this;
         if (!_this.$store.getters.isInStockLookPool(stk.code)) {
             var btn = $(e.target);
@@ -103,7 +102,6 @@ let _stockLookPoolInVuex = {
                 "left" : posX
             });
             btn.prepend(image);
-            console.log(btn.offset())
 
             var position = $('#stock-look-pool').position();
             image.animate({
@@ -111,7 +109,7 @@ let _stockLookPoolInVuex = {
                 left: position.left+30
             }, 500, "linear", function () {
                 image.remove();
-                _this.$store.commit('setStockLookPool', getDataFromLocalStorage('stockLookPool'))
+                _this.$store.commit('setStockLookPool', getDataFromLocalStorage('stockLookPool') || [])
                 _this.$store.commit('pushStockToLookPool', stk);
                 saveDataToLocalStorage('stockLookPool', _this.$store.state.stockLookPool);
             });

@@ -198,9 +198,7 @@
                 console.log('mounted', _this.$data)
             });
 
-            if (localStorage.stockLookPool) {
-                store.commit('setStockLookPool', getDataFromLocalStorage('stockLookPool'));
-            }
+            store.commit('setStockLookPool', getDataFromLocalStorage('stockLookPool') || []);
         }
     };
     config.methods = Object.assign(config.methods, _stockLookPoolInVuex);
