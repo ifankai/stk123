@@ -640,7 +640,7 @@
             niusanSelected:function (newVal, oldVal) {
                 if(newVal.length > 0){
                     let nsName = this.common.niusans.map(ns => ns.text);
-                    this.stocks = this.stocks.filter(stock =>  stock.owners.find(owner => nsName.includes(owner.orgName)) );
+                    this.stocks = this.stocks.filter(stk => stk.stock.owners.find(owner => nsName.includes(owner.orgName)) );
                 }else{
                 }
             }
@@ -773,9 +773,7 @@
                 console.log('mounted')
             });
 
-            if (localStorage.stockLookPool) {
-                store.commit('setStockLookPool', getDataFromLocalStorage('stockLookPool'));
-            }
+            store.commit('setStockLookPool', getDataFromLocalStorage('stockLookPool') || []);
         },
         created () {
         },

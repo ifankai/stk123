@@ -162,14 +162,17 @@
                     notice:{
                         columns: [
                             {title:"股票", data:"stockAndEye"},
+                            {title:"公告时间", data:"createdAt"},
                             {title:"公告", data:"text"},
                             {title:"评论", data:"reply"},
-                            {title:"日期", data:"createdAt"},
+                            {title:"抓取时间", data:"insertTime"}
                         ],
                         columnDefs: [
-                            { className: "text-nowrap text-center", "targets": [ 2,3 ] },
+                            { className: "text-nowrap text-center", "targets": [ 1,3,4 ] },
                             { className: "text-nowrap", "targets": [ 0 ] }
-                        ]
+                        ],
+                        ordering: true,
+                        order: [ [ 4, "desc" ] ]
                     }
                 },
                 notice:{
@@ -195,9 +198,7 @@
                 console.log('mounted', _this.$data)
             });
 
-            if (localStorage.stockLookPool) {
-                store.commit('setStockLookPool', getDataFromLocalStorage('stockLookPool'));
-            }
+            store.commit('setStockLookPool', getDataFromLocalStorage('stockLookPool') || []);
         }
     };
     config.methods = Object.assign(config.methods, _stockLookPoolInVuex);

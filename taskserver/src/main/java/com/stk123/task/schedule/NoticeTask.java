@@ -300,6 +300,7 @@ public class NoticeTask extends AbstractTask {
                                     }
                                     if(stkTextEntity.getReplyPositive() == null){
                                         stkTextEntity.setReplyPositive(1);
+                                        stkTextEntity.setUpdateTime(new Date());
                                         stkTextRepository.save(stkTextEntity);
                                         sendEmail = true;
                                     }
