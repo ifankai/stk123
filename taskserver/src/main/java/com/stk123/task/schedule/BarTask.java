@@ -742,6 +742,12 @@ public class BarTask extends AbstractTask {
                     stkReportHeaderEntity.addDetail(stkReportDetailEntity);
                 }
             }
+
+            // report save
+            if(stkReportHeaderEntity != null){
+                reportService.save(stkReportHeaderEntity);
+            }
+
             EmailUtils.send("全市场RPS A股", rps.toString());
 
             // rps end
