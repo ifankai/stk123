@@ -19,6 +19,7 @@ import com.stk123.model.strategy.StrategyResult;
 import com.stk123.model.strategy.sample.Strategies;
 import com.stk123.model.xueqiu.Portfolio;
 import com.stk123.repository.*;
+import com.stk123.service.StkConstant;
 import com.stk123.service.XueqiuService;
 import com.stk123.service.core.BacktestingService;
 import com.stk123.service.core.BarService;
@@ -516,7 +517,7 @@ public class BarTask extends AbstractTask {
                 Set<String> codeU = new LinkedHashSet<>();
 
                 if(StringUtils.isNotEmpty(report)){
-                    String type = "mystocks";
+                    String type = StkConstant.REPORT_HEADER_TYPE_MYSTOCKS; //"mystocks";
                     String name = "自选股策略";
                     if(realtime!=null){
                         type = type+"_"+ampm;
@@ -635,7 +636,7 @@ public class BarTask extends AbstractTask {
                 Set<String> codeA = new LinkedHashSet<>();
 
                 if(StringUtils.isNotEmpty(report)){
-                    String type = "allstocks";
+                    String type = StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS; //"allstocks";
                     String name = "全市场策略";
                     if(realtime!=null){
                         type = type+"_"+ampm;
@@ -717,7 +718,7 @@ public class BarTask extends AbstractTask {
             List<Stock> stocks = Stocks.getStocksWithBks();
 
             if(StringUtils.isNotEmpty(report)){
-                String type = "allstocks_rps";
+                String type = StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS;
                 String name = "全市场RPS";
                 stkReportHeaderEntity = reportService.createReportHeaderEntity(report, type, 0, name);
             }
@@ -764,7 +765,7 @@ public class BarTask extends AbstractTask {
             StkReportHeaderEntity stkReportHeaderEntity = null;
             Date reportDateStart = CommonUtils.addDay(new Date(), -50);
             Date reportDateEnd = CommonUtils.addDay(new Date(), -20);
-            List<StkReportHeaderEntity> headers = stkReportHeaderRepository.findAllByTypeAndReportDateIsBetweenOrderByInsertTimeDesc(reportDateStart, reportDateEnd);
+            List<StkReportHeaderEntity> headers = stkReportHeaderRepository.findAllByTypeAndReportDateIsBetweenOrderByInsertTimeDesc(StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS, reportDateStart, reportDateEnd);
             List<String> codes = headers.stream().flatMap(header -> header.getStkReportDetailEntities().stream()).flatMap(detail -> Arrays.stream(detail.getRpsStockCode().split(","))).distinct().collect(Collectors.toList());
             List<Stock> stocks = stockService.getStocks(codes);
 
@@ -783,7 +784,7 @@ public class BarTask extends AbstractTask {
                 Set<String> codeA = new LinkedHashSet<>();
                 
                 if(StringUtils.isNotEmpty(report)){
-                    String type = "rpsstocks_strategies";
+                    String type = StkConstant.REPORT_HEADER_TYPE_RPSSTOCKS_STRATEGIES; //"rpsstocks_strategies";
                     String name = "RPS股票策略";
                     stkReportHeaderEntity = reportService.createReportHeaderEntity(report, type, realtime!=null?1:0, name);
                 }
@@ -877,7 +878,7 @@ public class BarTask extends AbstractTask {
                 List<List<String>> datasBk2 = new ArrayList<>();
 
                 if(StringUtils.isNotEmpty(report)){
-                    stkReportHeaderEntity = reportService.createReportHeaderEntity(report, "bks", realtime!=null?1:0, "板块策略");
+                    stkReportHeaderEntity = reportService.createReportHeaderEntity(report, StkConstant.REPORT_HEADER_TYPE_BKS, realtime!=null?1:0, "板块策略");
                 }
 
                 String rowCode = null;

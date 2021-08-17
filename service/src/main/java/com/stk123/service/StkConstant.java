@@ -70,4 +70,12 @@ public class StkConstant {
     public final static int TEXT_SUB_TYPE_INDUSTRY_RESEARCH = 110; //行业分析
     public final static int TEXT_SUB_TYPE_STK_REPORT = 200; //年报季报
     public final static int TEXT_SUB_TYPE_XUEQIU_NOTICE = 300; //雪球公告
+
+
+    /** stk_report_header.type **/
+    public final static String REPORT_HEADER_TYPE_ALLSTOCKS = "allstocks";
+    public final static String REPORT_HEADER_TYPE_MYSTOCKS = "mystocks";
+    public final static String REPORT_HEADER_TYPE_BKS = "bks";
+    public final static String REPORT_HEADER_TYPE_RPSSTOCKS_STRATEGIES = "rpsstocks_strategies";
+    public final static String REPORT_HEADER_TYPE_ALLSTOCKS_RPS = "allstocks_rps";
 }

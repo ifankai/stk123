@@ -12,10 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 @CommonsLog
 public class StockWebController {
 
-    @RequestMapping("/{code}")
-    public String stk(@PathVariable(value = "code", required = true)String code,
-                        @RequestParam(value="title", required = false) String title,
-                        Model model){
+    @RequestMapping("/stk")
+    public String stk(){
         return "stk";
     }
 
