@@ -1,6 +1,7 @@
 package com.stk123.model.strategy;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.stk123.model.core.Stock;
 import com.stk123.model.json.View;
 import com.stk123.model.strategy.result.FilterResult;
 import lombok.Getter;
@@ -66,6 +67,9 @@ public class FilterExecutor<X, B> {
             B x = function.apply(b); //这里是吧 X 转为 B 类型，B一般是Bar，BarSeries，也可以是Stock本身
             result = filter.filter(strategy, x);
         }catch (Exception e){
+            if(b instanceof Stock){
+                log.error("FilterExecutor Error:"+ ((Stock)b).getCode());
+            }
             log.error("FilterExecutor Error:"+this.name, e);
             result = FilterResult.FALSE(e.getMessage());
         }

@@ -3079,10 +3079,13 @@ from stk_kline t where t.code in ('002346','600600','600601','601958','600531','
 
 select * from stk_report_header where report_date='20210809' for update;
 select * from stk_report_detail where header_id in (10031) for update;
+select distinct type from stk_report_header;
+
+select * from stk_report_header order by report_date desc, insert_time desc ;
 
 
-delete from stk_report_detail;
-delete from stk_report_header;
+delete from stk_report_detail where header_id=10112;
+delete from stk_report_header where id=10112;
 
 
 select report_date from (select report_date, rownum rn from  (select report_date from stk_report_header where report_date <= '20210805'

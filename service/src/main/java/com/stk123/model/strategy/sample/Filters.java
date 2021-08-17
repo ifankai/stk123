@@ -313,9 +313,11 @@ public class Filters {
         return (strategy, bs) -> {
             if(bs == null) return FilterResult.FALSE();
             Bar bar = bs.getFirst();
+            if(bar == null) return FilterResult.FALSE();
             double p = bar.getChange();
             if(p > 0){
                 double close = bar.getClose();
+                if(bar.before() == null)return FilterResult.FALSE();
                 if(bar.getVolume() < bar.before().getVolume()){
                     return FilterResult.FALSE("今天量能小于昨天");
                 }
@@ -640,6 +642,7 @@ public class Filters {
         return (strategy, bs) -> {
             if(bs == null) return FilterResult.FALSE();
             Bar today = bs.getFirst();
+            if(today == null) return FilterResult.FALSE();
             if(today.isBreakTrendLine(m, n, d)){
                 double lowest = today.getLowest(n*2, Bar.EnumValue.L);
                 if((today.getClose()-lowest)/lowest <= percentLowest2Today){
@@ -687,6 +690,7 @@ public class Filters {
     public static Filter<BarSeries> filter_010(int days, int n){
         return (strategy, bs) -> {
             Bar today = bs.getFirst();
+            if(today.before() == null)return FilterResult.FALSE();
             Bar k = today.getBarExcludeToday(days, bar -> bar.before()!=null && bar.getVolume()/bar.before().getVolume() >= n);
             if(k != null && today.getClose() >= k.getClose() && today.before().getClose() <= k.getClose()){
                 if(k.getBarCountExcludeToday(days*4, bar -> bar.getVolume() < k.getVolume()) >= days*4) {
