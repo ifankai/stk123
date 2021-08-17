@@ -1,599 +1,211 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
-    <title th:text="${title}"></title>
-    <div th:replace="common/header"></div>
-    <div th:replace="common/datatables"></div>
-</head>
-<body id="app">
-<div th:replace="common/navbar"></div>
-
-<div class="container" role="main">
-    <!-- 基本信息 start -->
-    <div class="content">
-        <div class="page-header">
-            <h3 style="color: red" v-text="name">&nbsp;</h3>
-        </div>
-        <div class="page-container">
-            <div class="row">
-                <article class="span10">
-                    <blockquote>
-                        <table>
-                            <tr>
-                                <td width="42px"><span>收盘：</span></td>
-                                <td></td>
-                                <td width="60px"><span>总股本：</span></td>
-                                <td></td>
-                                <td width="60px"><span>总市值：</span></td>
-                                <td></td>
-                                <td width="80px"><span>PE<sup>TTM</sup>/PE：</span></td>
-                                <td></td>
-                                <td width="42px"><span>PB<sup>TTM</sup>：</span></td>
-                                <td></td>
-                                <td width="42px"><span>PS<sup>TTM</sup>：</span></td>
-                                <td></td>
-                                <td width="40px"><span>PR：</span></td>
-                                <td></td>
-                                <td width="42px"><span>地域：</span></td>
-                                <td></td>
-                            </tr>
-                        </table>
-                    </blockquote>
-                    <blockquote>
-                        <table>
-                            <tr>
-                                <td width="40px"><span>简介：</span></td>
-                                <td></td>
-                            </tr>
-                        </table>
-                    </blockquote>
-                </article>
-            </div>
-            <div class="row stkbaseinfo">
-                <article class="span5">
-                    <blockquote>
-                        <table>
-                            <tr>
-                                <td width="70px"><span>所属行业：</span></td>
-                                <td>
-                                    <br><a target='_blank'
-                                           href='http://stockhtm.finance.qq.com/sstock/quotpage/q/<%=index.getCode() %>.htm#6'>[QQ概念]</a>
-                                </td>
-                            </tr>
-                        </table>
-                </article>
-                <article class="span5">
-                    <blockquote>
-                        <table>
-                            <tr>
-                                <td width="70px"><span>主营业务：</span></td>
-                                <td>
-                                    <br><a target="_blank"
-                                           href="http://www.iwencai.com/stockpick/search?tid=stockpick&qs=stockpick_diag&ts=1&w=<%=index.getCode()%>">[主营图谱]</a>
-                                </td>
-                            </tr>
-                        </table>
-
-                    </blockquote>
-                </article>
-            </div>
-            <div class="row stkbaseinfo">
-                <article class="span10">
-                    <blockquote>
-                        <table>
-                            <tr>
-                                <td width="70px"><span>业绩预告：</span></td>
-                            </tr>
-                            <tr>
-                                <td><span>盈利预期：</span></td>
-                                <td colspan="2"></td>
-                            </tr>
-                        </table>
-                    </blockquote>
-                    <blockquote>
-                        <table>
-                            <tr>
-                                <td width="75px"><span>相关股票1：</span></td>
-                                <td id="relatedstk"><span class="loading-btn"></span></td>
-                            </tr>
-                            <tr>
-                                <td><span>相关股票2：</span></td>
-                                <td id="relatedstk2"><span class="loading-btn"></span></td>
-                            </tr>
-                        </table>
-                    </blockquote>
-                    <blockquote>
-                        <table>
-                            <tr>
-                                <td width="70px"><span>关键字：</span></td>
-                                <td id="showkeyword"><span class="loading-btn"></span></td>
-                                <input id="kwcode" type="hidden"/>
-                                <input id="kwtype" type="hidden" value="1"/>
-                                <script type="text/javascript">$("#kwcode").val($('#scode').val());</script>
-                                <td width="110px"><input class="input-small" id="keyword"
-                                                         type="text"/></td>
-                                <td>
-                                    <button class="btn" type="submit" onclick="addKeyword()">加关键字
-                                    </button>
-                                </td>
-                                <td><a target="_blank" href="http://www.100ppi.com/cindex/"><span>生意社</span></a>：
-                                </td>
-                                <td>
-                                </td>
-                            </tr>
-                        </table>
-                    </blockquote>
-                </article>
-            </div>
-        </div>
-    </div>
-    <script>
-        $(function () {
-            if ($("#kwcode").length > 0) {
-                listRelatedStk('/stk.do?method=listRelatedStk&code=' + $('#scode').val());
-                listKeyword('/keyword.do?kwcode=' + $("#kwcode").val() + '&kwtype=' + $("#kwtype").val());
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>小智慧 - 公告</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css">
+    <!-- DataTables -->
+    <link rel="stylesheet" href="/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <link rel="stylesheet" href="/adminlte/plugins/pace-progress/themes/black/pace-theme-minimal.css">
+    <!--    <link rel="stylesheet" href="/css/public.css">-->
+    <style>
+        @media (min-width: 1200px) {
+            .img-width img {
+                width: 410px;
+                padding: 2px;
+                text-align: center;
             }
-        });
-    </script>
-    <!-- 基本信息 end -->
+            .container{
+                max-width: 1350px;
+            }
+        }
+        @media (max-width: 650px) {
+            .container{
+                min-width: 615px;
+            }
 
+        }
 
-    <div class="content">
-        <div class="page-header">
-            <h3><span class="icon-globe"></span> 个股导航</h3>
-        </div>
-        <div class="page-container">
-            <div class="row stkdaohang">
-                <article class="span10">
-                    <blockquote>
-                        <p>
-                            <a target="_blank" href="http://www.windin.com/home/stock/html/.shtml">Windin</a>
-                            <a target="_blank"
-                               href="http://www.windin.com/Tools/NewsDetail.aspx?windcode=" style="font-size:14">Windin公司新闻</a>
-                            <a target="_blank"
-                               href="http://www.windin.com/Tools/IntelligenceDetail.aspx?windcode=" style="font-size:14">Windin公司情报</a>
-                            <a target="_blank"
-                               href="http://moer.jiemian.com/stockcode.htm?code=cn_">摩尔经融</a>
-                            <a target="_blank"
-                               href="http://114.80.159.18/CorpEventsWeb/NewsEventAlert.aspx?windcode=&t=1">大事提醒</a>
-                            <a target="_blank"
-                               href="http://search.sina.com.cn/?q=&range=title&c=news&sort=time">新浪新闻</a>
-                            <a target="_blank"
-                               href="http://news.baidu.com/ns?ct=0&rn=20&ie=utf-8&bs=&rsv_bp=1&sr=0&cl=2&f=8&prevct=0&word=&tn=newstitle&inputT=0">百度新闻</a>
-                            <a target="_blank"
-                               href="http://www.xueqiu.com/S//GSJJ">公司网页</a>
-                            <a target="_blank"
-                               href="http://f9.eastmoney.com/soft/gp30.php?code=" style="font-size:16">核心题材</a>
+        table.dataTable tbody th, table.dataTable tbody td, table.dataTable thead th, table.dataTable thead td {
+            padding: 1px 2px;
+        }
+        div.dataTables_wrapper div.dataTables_info {
+            padding-top: .1em;
+            float: left;
+        }
+        div.dataTables_wrapper div.dataTables_filter{
+            padding-top: .1em;
+            float: right;
+            margin-right: .2rem;
+        }
+        div.dataTables_wrapper div.dataTables_paginate{
+            float: right;
+        }
+        div.dataTables_wrapper div.dataTables_paginate ul.pagination{
+            margin: 0;
+        }
+        .table thead th {
+            border-bottom: 1px solid #dee2e6;
+            padding: 0 .75rem;
+            color: #9ba2a8;
+            text-align: center;
+            white-space: nowrap;
+        }
+        table.dataTable>thead .sorting:before,
+        table.dataTable>thead .sorting:after,
+        table.dataTable>thead .sorting_asc:before,
+        table.dataTable>thead .sorting_asc:after,
+        table.dataTable>thead .sorting_desc:before,
+        table.dataTable>thead .sorting_desc:after,
+        table.dataTable>thead .sorting_asc_disabled:before,
+        table.dataTable>thead .sorting_asc_disabled:after,
+        table.dataTable>thead .sorting_desc_disabled:before,
+        table.dataTable>thead .sorting_desc_disabled:after{
+            bottom: 0;
+        }
+        .pagination-sm {
+            margin: .1rem 0;
+        }
+        .custom-select-sm, .form-control-sm {
+            height: calc(1.5rem);
+            padding-top: .15rem;
+            padding-bottom: .25rem;
+            padding-left: .5rem;
+            font-size: 50%;
+        }
+        .page-link {
+            padding: .2rem .5rem;
+            font-size: .8rem;
+            line-height: 1.5;
+        }
 
-                            <a target="_blank"
-                               href="http://data.eastmoney.com/rzrq/detail/.html">融资融券</a>
-                        </p>
-                        <p>
-                            <a target="_blank"
-                               href="http://www.xueqiu.com/S/">雪球</a>
-                            <a target="_blank"
-                               href="http://guba.eastmoney.com/list,.html">股吧</a>
-                            <a target="_blank"
-                               href="http://www.taoguba.com.cn/guba_">淘股吧</a>
-                            <a target="_blank"
-                               href="http://s.weibo.com/wb/&xsort=time&Refer=wb_realtime">微博搜索</a>
-                            <a target="_blank"
-                               href="http://www.baidu.com/s?wd=%20site%3A(blog.sina.com.cn)&ie=utf-8&cl=3&t=12">新浪Blog</a>
-                            <a target="_blank"
-                               href="http://www.baidu.com/s?wd=%20site%3A(blog.eastmoney.com)&ie=utf-8&cl=3&t=12">东财Blog</a>
-                            <a target="_blank"
-                               href="http://www.baidu.com/s?wd=%20site%3A(xueqiu.com)&ie=utf-8&cl=3&t=12">雪球搜索</a>
-                            <a target="_blank"
-                               href="http://weixin.sogou.com/weixin?type=2&query=&ie=utf8&s_from=input&_sug_=y&_sug_type_=">微信搜索</a>
-                            <a target="_blank"
-                               href="https://www.qichacha.com/search?key=">企查查</a>
-                        </p>
-                    </blockquote>
-                </article>
-            </div>
-            <div class="row stkdaohang">
-                <article class="span5">
-                    <blockquote>
-                        <p>
-                            <!--<%=BaiduSearch.getBaiduNewsSearch("baidu_1","baidu_2001",stkName+" site:(cnstock.com)","上海证券报",false) %>-->
-                            <!--<%=BaiduSearch.getBaiduNewsSearch("baidu_1","baidu_2002",stkName+" site:(cs.com.cn)","中国证券报",false) %>-->
-                            <!--<%=BaiduSearch.getBaiduNewsSearch("baidu_1","baidu_2003",stkName+" site:(ccstock.cn)","证券日报",false) %>-->
-                            <!--<%=BaiduSearch.getBaiduNewsSearch("baidu_1","baidu_2004",stkName+" site:(cb.com.cn)","中国经营报",false) %>-->
-                            <!--<%=BaiduSearch.getBaiduNewsSearch("baidu_1","baidu_2005",stkName+" site:(21cbh.com)","21世纪报",false) %>-->
-                            <!--<%=BaiduSearch.getBaiduNewsSearch("baidu_1","baidu_2006",stkName+" site:(eeo.com.cn)","经济观察报",false) %>-->
-                        </p>
-                    </blockquote>
-                </article>
-                <article class="span5">
-                    <blockquote>
-                        <p>
-                            <!--<%=BaiduSearch.getBaiduNewsSearch("baidu_1","baidu_1001",stkName+" 超预期 | "+stkName+" 爆发","超预期/爆发",true) %>-->
-                            <!--<%=BaiduSearch.getBaiduNewsSearch("baidu_1","baidu_1010",stkName+" 高增长 | "+stkName+" 高成长","高增长/高成长",true) %>-->
-                            <!--<%=BaiduSearch.getBaiduNewsSearch("baidu_1","baidu_1020",stkName+" 提价 | "+stkName+" 强烈推荐","提价/强烈推荐",true) %>-->
-                            <!--<%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_170",stkName+" 利好","利好预期",true) %>-->
-                            <!--<%if(isAdmin){%><script type="text/javascript">baiduSearch("baidu_1");</script><%} %>-->
-                        </p>
-                    </blockquote>
-                </article>
-            </div>
-            <div class="row stkdaohang">
-                <article class="span5">
-                    <blockquote>
-                        <p>
-                            <!--<%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_100",stkName+" 行业 | "+stkName+" 产业","行业/产业",true) %>-->
-                            <!--<%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_101",stkName+" 景气","景气度",true) %>-->
-                            <!--<%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_102",stkName+" 竞争对手","竞争对手",false) %>-->
-                            <!--<%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_116",stkName+" 上游 | "+stkName+" 下游","上下游",true) %>-->
-                            <!--<%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_110",stkName+" 龙头","龙头",true) %>-->
-                            <!--<%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_112",stkName+" 新产品","新产品",true) %>-->
-                            <!--<%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_114",stkName+" 产能","产能",false) %>-->
-                            <!--<%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_200",stkName+" 转型","转型",true) %>-->
-                            <!--<%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_210",stkName+" 管理层","管理层",false) %>-->
-                            <!--<%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_117",stkName+" 出货量 | "+stkName+" 开工率","出货量/开工率",false, 16) %>-->
-                            <!--<%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_120",stkName+" 订单 | "+stkName+" 中标 | "+stkName+" 合同","订单/中标/合同",true,16) %>-->
-                            <!--<%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_190",stkName+" 市场占有率","市场占有率",false) %>-->
-                            <!--<%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_180",stkName+" 核心技术","核心技术",true) %>-->
-                        </p>
-                    </blockquote>
-                </article>
-                <article class="span5">
-                    <blockquote>
-                        <p>
-                            <!--<%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_130",stkName+" 重组 | "+stkName+" 并购 | "+stkName+" 收购","重组/并购/收购",true) %>-->
-                            <!--<%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_160",stkName+" 股权激励","股权激励",true,20) %>-->
-                            <!--<%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_140",stkName+" 回购 | "+stkName+" 增持","回购/增持",true) %>-->
-                            <!--<%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_150",stkName+" 增发","增发",true,16) %>-->
-                            <!--<%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_155",stkName+" 非公开发行","非公开发行",false,16) %>-->
-                            <!--<%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_220",stkName+" 举牌","举牌",true,16) %>-->
-                            <!--<%=BaiduSearch.getBaiduNewsSearch("baidu_2","baidu_230",stkName+" 央企改革","央企改革",true) %>-->
-                            <!--<%if(isAdmin){%><script type="text/javascript">baiduSearch("baidu_2");</script><%} %>-->
-                        </p>
-                    </blockquote>
-                </article>
-            </div>
-            <div class="row stkdaohang">
-                <article class="span5">
-                    <blockquote>
-                        <p>
-                            <a target="_blank"
-                               href="http://www.baidu.com/s?wd= 招股说明书 site:()&ie=utf-8&cl=3&t=12&fr=news">招股说明书</a>
-                            <a target="_blank"
-                               href="http://rs.p5w.net/c/.shtml">投资者互动平台</a>
-                            <a target="_blank"
-                               href="http://www.cninfo.com.cn/information/companyinfo.html?fulltext?">巨潮公告</a>
-                            <a target="_blank"
-                               href="http://www.cninfo.com.cn/information/companyinfo.html?periodicalreport?">定期报告</a>
-                            <a target="_blank"
-                               href="http://stockdata.stock.hexun.com/2008/ggqw.aspx?page=1&stockid=">公告全文</a>
-                            <a target="_blank"
-                               href="http://data.eastmoney.com/report/hy,_1.html">行业研报</a>
-                            <a target="_blank"
-                               href="http://vip.stock.finance.sina.com.cn/q/go.php/vReport_List/kind/search/index.phtml?symbol=&orgname=&industry=&title=&t1=all">新浪研报</a>
-                            <a target="_blank"
-                               href="http://search.10jqka.com.cn/search?w=&tid=info&tr=2&ft=1&st=0&tr=1&qs=pf">同花顺研报</a>
-                            <a target="_blank"
-                               href="http://data.eastmoney.com/report/.html">东方财富研报</a>
-                            <a target="_blank"
-                               href="http://www.baidu.com/s?wd= site:(microbell.com)&ie=utf-8&cl=3&t=12&fr=news"
-                               style="font-size: 16">迈博汇金研报</a>
-                        </p>
-                    </blockquote>
-                </article>
-                <article class="span5">
-                    <blockquote>
-                        <p>
-                            <a target="_blank" href="http://f9.eastmoney.com/.html#jggd">盈利预测</a>
-                            <a target="_blank"
-                               href="http://vip.stock.finance.sina.com.cn/q/go.php/vFinanceAnalyze/kind/performance/index.phtml?symbol=">业绩预告</a>
-                            <a target="_blank"
-                               href="http://f10.eastmoney.com/f10_v2/CompanyManagement.aspx?code=#cgbd-0">高管持股</a>
-                            <a target="_blank"
-                               href="http://data.eastmoney.com/Stock/lhb/.html">龙虎榜</a>
-                            <a target="_blank"
-                               href="http://data.eastmoney.com/zjlx/.html">资金流入</a>
-                            <a target="_blank"
-                               href="http://vip.stock.finance.sina.com.cn/q/go.php/vInvestConsult/kind/xsjj/index.phtml?symbol=">限售解禁</a>
-                            <a target="_blank"
-                               href="http://stockpage.10jqka.com.cn//holder/">十大股东</a>
-                        </p>
-                        <p>
-                            <a target="_blank"
-                               href="http://stockpage.10jqka.com.cn//holder/#holdernum">股东人数</a>
-                            <a target="_blank"
-                               href="http://f10.eastmoney.com/f10_v2/ShareholderResearch.aspx?code=">股东人数2</a>
-                            <a target="_blank"
-                               href="http://data.eastmoney.com/hsgtcg/StockHdStatistics.aspx?stock=">沪深港通持股</a>
-                        </p>
-                    </blockquote>
-                </article>
-            </div>
-            <div class="row stkdaohang">
-                <article class="span10">
-                    <blockquote>
-                        <a target="_blank"
-                           href="http://www.xueqiu.com/S/">雪球</a>
-                        <a target="_blank" href="http://gu.qq.com/us">QQ财经</a>
-                        <a target="_blank"
-                           href="http://www.finviz.com/quote.ashx?t=&ty=c&ta=1&p=d&b=1">Finviz</a>
-                    </blockquote>
-                </article>
-            </div>
-        </div>
+    </style>
+</head>
+<body class="hold-transition layout-top-nav layout-navbar-fixed text-sm pace-primary pace-done">
+<div class="pace pace-inactive">
+    <div class="pace-progress" data-progress-text="100%" data-progress="99" style="transform: translate3d(100%, 0px, 0px);">
+        <div class="pace-progress-inner"></div>
     </div>
-    <pre>
-        1.股东人数是否减少。
-        2.核心题材。
-    </pre>
-
-
-    <!-- 财务数据 start -->
-    <div class="content" style="min-width:1240px;margin-left:-140px">
-        <div class="page-header" style="position: relative;">
-            <h3><span class="icon-list"></span>
-                <a target="_blank"
-                   href="http://money.finance.sina.com.cn/corp/go.php/vFD_FinancialGuideLine/stockid//displaytype/4.phtml">
-                    财务数据
-                </a></h3>
-            <div style="position:absolute;left:150px;top:9px;">
-                <!-- Nav tabs -->
-                <ul class="nav nav-tabs" role="tablist">
-                    <li class="active"><a href="#finance-base" role="tab" data-toggle="tab">系列1</a>
-                    </li>
-                    <li><a href="#finance-other" role="tab" data-toggle="tab">系列2</a></li>
-                </ul>
-            </div>
-            <div style="position: relative;left: 300px; top:-20px;"><a target="_blank" href="http://f10.eastmoney.com/f10_v2/FinanceAnalysis.aspx?code=">东方财富</a>
-            </div>
-
-        </div>
-        <div class="page-container">
-            <div class="tab-content">
-                <div class="tab-pane active" id="finance-base">
-                    <table class="datatable table table-stk">
-                        <thead>
-                        <tr>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-
-                        </tbody>
-                    </table>
-                </div>
-                <div class="tab-pane" id="finance-other">
-                    <table class="datatable table table-stk">
-                        <thead>
-                        <tr>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-    <pre>
-    <strong>财务数据 分析要点：</strong>
-      1.毛利率是否在同行业里较高（大于30%~60%），毛利率是否同比增长。
-      2.主营收入是否先于净利率增长：
-      3.查看每股公积金是否>=3元(风生水起)。
-      4.盈利预测：
-      5.业绩拐点先行指标：经营活动现金流量净额 同比增长：
-        (参考案例：安洁科技[002635]-2016Q1经营活动现金流量净额开始大幅增长。也有除外的，如订单类公司：神雾环保 [300156]，利亚德 [300296]，他们之所以牛是因为订单多，营收暴增。)
-      6.销售净利率是否>5%(零售行业除外)，最好在15%以上；ROE是否>8% (来自 - 《投资的本源》 P31)；经营性净现金流与净利润比>70% (P69)
-      7.杜邦分析：净资产收益率(ROE) = 销售净利润率    *    资产周转率    *   权益乘数
-                               = (净利润/主营收入) * (主营收入/总资产) * (总资产/净资产)  (来自 - 《投资的本源》 P73)
-        参考文档：<a target="_blank"
-                href="https://note.youdao.com/web/#/file/recent/note/73F3E3712CE7492BBAE3539E12D62666/">浅析“杜邦分析法”</a>
-      8.商誉是否太大。并购重组会产生商誉，具体参见：<a target="_blank"
-                                 href="https://note.youdao.com/web/#/file/recent/note/3D9A0D55DC1A470BB5D8F4A879C477C5/">警惕商誉的恶之花</a>
-      9.案例分析：<a target="_blank"
-                href="https://note.youdao.com/web/#/file/recent/note/e36b07f35fd55c2864a8cdb175cc3637/">三安光电</a>
-      10.大股东质押比例不能太高，<a target="_blank" href="http://data.eastmoney.com/gpzy/pledgeRatio.aspx">查询质押比例</a>。
-    </pre>
-    <!-- 财务数据 end -->
-
-
-    <!-- 十大流通股东 start -->
-    <div class="content">
-        <div class="page-header" style="position: relative;">
-            <h3 style="line-height: 59px;"><span class="icon-tasks"></span>
-                <a target="_blank"
-                   href="http://stockpage.10jqka.com.cn//holder/">十大流通股东</a>
-            </h3>
-            <a target="_blank"
-               href="https://di.hkex.com.hk/di/NSSrchCorpList.aspx?sa1=cl&scsd=&sced=&sc=&src=MAIN&lang=ZH">港股股权持仓</a>
-            (打开后点击：大股東完整名單)
-            <div style="position: absolute;left:175px;top:9px;">
-                <ul class="nav nav-tabs" role="tablist">
-
-                </ul>
-            </div>
-        </div>
-        <div class="page-container">
-            <div class="tab-content">
-
-                <div class="tab-pane" ></div>
-                <div id="owner-list-" style="height:100%;overflow:auto;text-align:left;">
-                    <table id="owner-table-" class="datatable table table-stk">
-                        <thead>
-                        <tr>
-                            <th>机构或基金名称</th>
-                            <th>持有数量(股)</th>
-                            <th>占流通股比例</th>
-                            <th>持股变化(股)</th>
-                            <th>变动比例</th>
-                        </tr>
-                        </thead>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script type="text/javascript">
-        $(function () {
-            listOnwer('');
-            $("a[id^='onwer-tab-']").one('click', function () {
-                listOnwer($(this).attr('data'));
-            });
-        });
-    </script>
-    <!-- 十大流通股东 end -->
-
-
-    <!-- 新闻 start -->
-    <div class="content">
-        <div class="page-header" style="position: relative;">
-            <h3 style="line-height: 59px;"><span class="icon-tasks"></span>
-                <a target="_blank" href="http://www.windin.com/Tools/NewsDetail.aspx?windcode=">新闻</a>
-            </h3>
-            <div style="position: absolute;left:100px;top:9px;" >
-                <ul class="nav nav-tabs" role="tablist">
-                    <li class="active"><a href="#news-all" role="tab" data-toggle="tab">全部</a></li>
-                    <li><a href="#news-" id="news-tab-" data="" role="tab" data-toggle="tab"></a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="page-container">
-            <div class="tab-content" >
-                <div class="tab-pane active" id="news-all">
-                    <div id="news-list-all">
-                        <p style="text-align:center;"><span class="loading red" data-original-title="加载中，请等待…">加载…</span></p>
-                    </div>
-                    <div class="pagination pagination-right" id="pager-news-all"></div>
-                </div>
-                <div class="tab-pane" id="news-" >
-                    <div id="news-list-" style="height:100%;overflow:auto;text-align:left;">
-                        <p style="text-align:center;"><span class="loading red" data-original-title="加载中，请等待…">加载…</span></p>
-                    </div>
-                    <div class="pagination pagination-right" id="pager-news-"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script type="text/javascript">
-        $(function() {
-            listNews('all',1);
-            $("a[id^='news-tab-']").one('click', function(){listNews($(this).attr('data'),1);});
-
-            rightMenu('关注','right-menu-care','care');
-            $("#care-btn").bind("click",care);
-        });
-    </script>
-    <pre>
-      1.是否有股权激励：<a target="_blank" href='http://www.iwencai.com/search?typed=0&preParams=&ts=1&f=1&qs=result_channel&selfsectsn=&querytype=&searchfilter=&tid=info&w=%20股权激励'>问财搜索</a>
-      2.高管是否增持，公司是否有回购:
-      3.员工持股计划：
-      4.非公开发行：
-      5.订单金额占主营收入：
-      6.募集资金：
-      7.牛散：
-      8.资金流：
-      9.互动易：<a target="_blank" href="http://ircs.p5w.net/ircs/interaction/queryQuestionByGszz.do?condition.stockcode=&condition.status=3&condition.dateFrom=&condition.dateTo=">投资者互动平台</a>
-    </pre>
-    <!-- 新闻 end -->
-
-
-    <!-- 公告 start -->
-    <div class="content">
-        <div class="page-header">
-            <h3><span class="icon-tasks"></span> 公告</h3>
-        </div>
-        <div class="page-container">
-            <div class="tab-content" >
-                <div class="tab-pane active">
-                    <div id="notice-list">
-                        <p style="text-align:center;"><span class="loading red" data-original-title="加载中，请等待…">加载…</span></p>
-                    </div>
-                    <div class="pagination pagination-right" id="pager-notice"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script type="text/javascript">
-        $(function() {
-            listNotice('',1);
-        });
-    </script>
-    <!-- 公告 end -->
-
-
-    <!-- 帖子 start -->
-    <div class="content" style="min-width:1240px;margin-left:-140px">
-        <div class="page-header">
-            <div style="float: left;">
-                <h3><span class="icon-tasks"></span> 帖子</h3>
-            </div>
-            <div class="controls" style="float:right;">
-                <div class="input-append">
-                    <button class="btn" onclick="listXueqiuArticle();">查询</button>
-                </div>
-            </div>
-        </div>
-        <div class="page-container">
-            <div class="tab-content" >
-                <div class="tab-pane active">
-                    <table class="table table-striped table-bordered" id="posts">
-                        <thead><tr>
-                            <th>个股</th>
-                            <th>1</th>
-                            <th>1</th>
-                            <th>1</th>
-                        </tr></thead>
-
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script type="text/javascript">
-        function listXueqiuArticle() {
-            $('.xueqiuTable').DataTable().destroy();
-            $('.xueqiuTable').dataTable( {
-                "language": datatable_lang,
-                "order": [],
-                "ajax":"/stk?method=getXueqiuArticle&code="+$("#scode").val()
-            });
-        };
-        $(function() {
-            listXueqiuArticle();
-        });
-    </script>
-    <!-- 帖子 end -->
-
-
-    <div class="content">
-        <div class="page-header">
-            <h3><span class="icon-tasks"></span> 投资者关系</h3>
-        </div>
-        <div class="page-container">
-            <div class="tab-content" >
-                <div class="tab-pane active">
-                    <div id="invest-list">
-                        <p style="text-align:center;"><span class="loading red" data-original-title="加载中，请等待…">加载…</span></p>
-                    </div>
-                    <div class="pagination pagination-right" id="pager-invest"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script type="text/javascript">
-        $(function() {
-            listInvest('stk',1);
-        });
-    </script>
-    <pre>
-    <strong>投资者关系 观察要点：</strong>
-      1.查看公司现有股东情况，如果当前没有几家基金或机构，那不排除基金随后就开始建仓的可能。
-    </pre>
-
-
+    <div class="pace-activity"></div>
 </div>
+<!-- Site wrapper -->
+<div id="app" class="wrapper">
+    <div th:replace="common/navbar"></div>
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header"></section>
 
-<div th:replace="common/footer"></div>
+        <section class="content">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+
+                        <div id="notice" class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">热点公告</h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="收起">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="card-body">
+                                <datatable :="{...common.notice, ...notice}"></datatable>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <a id="back-to-top" href="#" class="btn btn-outline-primary back-to-top" style="display: none" role="button" aria-label="Scroll to top">
+            <i class="fas fa-chevron-up"></i>
+        </a>
+    </div>
+
+    <div th:replace="common/footer"></div>
+</div>
+<!-- ./wrapper -->
 </body>
 </html>
-<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@3.1.1/dist/vue.global.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vuex@4.0.2/dist/vuex.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios@0.21.1/dist/axios.min.js"></script>
+
+<script src="/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="/adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="/adminlte/plugins/pace-progress/pace.min.js"></script>
+
+<script src="/js/public.js"></script>
+<script src="/js/component/datatable.js"></script>
+
+<script th:inline="javascript">
+
+    const config = {
+        data() {
+            return {
+                loading: true,
+                common:{
+                    notice:{
+                        columns: [
+                            {title:"股票", data:"stockAndEye"},
+                            {title:"公告", data:"text"},
+                            {title:"评论", data:"reply"},
+                            {title:"日期", data:"createdAt"},
+                        ],
+                        columnDefs: [
+                            { className: "text-nowrap text-center", "targets": [ 2,3 ] },
+                            { className: "text-nowrap", "targets": [ 0 ] }
+                        ]
+                    }
+                },
+                notice:{
+                    data:[]
+                }
+            }
+        },
+        methods:{
+            dateFormat:function (date){
+                return dateFormat(date);
+            },
+        },
+        computed: {
+            stockLookPool(){
+                return store.state.stockLookPool
+            }
+        },
+        mounted() {
+            let _this = this;
+            axios.get("/text/notice").then(function (res) {
+                let data = res.data.data;
+                _this.notice = {data: data};
+                console.log('mounted', _this.$data)
+            });
+
+            if (localStorage.stockLookPool) {
+                store.commit('setStockLookPool', getDataFromLocalStorage('stockLookPool'));
+            }
+        }
+    };
+    config.methods = Object.assign(config.methods, _stockLookPoolInVuex);
+    const app = Vue.createApp(config);
+    app.use(store)
+
+    app.component('datatable', _datatable);
+    app.component('eye', _eye);
+    app.mount('#app');
+
+</script>
