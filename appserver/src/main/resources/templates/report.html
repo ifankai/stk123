@@ -434,7 +434,8 @@
                         searching : false,
                         columnDefs: [
                             { className: "text-center", "targets": [ 0,1,2 ] }
-                        ]
+                        ],
+                        tableClass:{'table-hover':true}
                     }
                 },
                 hotBks:[],
@@ -512,7 +513,7 @@
                 _this.currentAllStocksRps = {data: data.currentAllStocksRps};
                 _this.currentAllStocksRps.data.forEach(item => {
                     item.strategyDate = dateFormat(item.strategyDate);
-                    item.action = elem('a', {href:'/S/'+item.rpsStockCode, _target:'blank'}, '查看全部').outerHTML;
+                    item.action = elem('a', {href:'/S/'+item.rpsStockCode, target:'_blank'}, '查看全部').outerHTML;
                 })
                 console.log('mounted', _this.$data)
             });
