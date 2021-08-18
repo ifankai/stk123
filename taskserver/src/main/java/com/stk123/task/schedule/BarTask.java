@@ -763,9 +763,9 @@ public class BarTask extends AbstractTask {
         log.info("start analyseRpsStocksByStrategies");
         try{
             StkReportHeaderEntity stkReportHeaderEntity = null;
-            Date reportDateStart = CommonUtils.addDay(new Date(), -70);
-            Date reportDateEnd = CommonUtils.addDay(new Date(), -20);
-            List<StkReportHeaderEntity> headers = stkReportHeaderRepository.findAllByTypeAndReportDateIsBetweenOrderByInsertTimeDesc(StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS, reportDateStart, reportDateEnd);
+            String reportDateStart = CommonUtils.addDay2String(new Date(), -70);
+            String reportDateEnd = CommonUtils.addDay2String(new Date(), -20);
+            List<StkReportHeaderEntity> headers = stkReportHeaderRepository.findAllByTypeAndReportDateBetweenOrderByInsertTimeDesc(StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS, reportDateStart, reportDateEnd);
             List<String> codes = headers.stream().flatMap(header -> header.getStkReportDetailEntities().stream()).flatMap(detail -> Arrays.stream(detail.getRpsStockCode().split(","))).distinct().collect(Collectors.toList());
             List<Stock> stocks = stockService.getStocks(codes);
 

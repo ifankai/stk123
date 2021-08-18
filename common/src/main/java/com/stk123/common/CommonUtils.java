@@ -1,5 +1,7 @@
 package com.stk123.common;
 
+import cn.hutool.core.date.DatePattern;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.net.URLDecoder;
 import com.stk123.common.db.util.CloseUtil;
 import com.stk123.common.db.util.DBUtil;
@@ -626,11 +628,13 @@ public class CommonUtils {
     }
 
     public static String formatDate(Date d){
-        return CommonUtils.sf_ymd.format(d);
+        return DateUtil.format(d, DatePattern.NORM_DATE_FORMAT);
+        //return CommonUtils.sf_ymd.format(d);
     }
 
-    public static String formatDate(Date d,DateFormat df){
-        return df.format(d);
+    public static String formatDate(Date d, DateFormat df){
+        return DateUtil.format(d, df);
+        //return df.format(d);
     }
     public static String formatDate(String d,DateFormat src,DateFormat des) throws ParseException{
         if(d == null) return null;
@@ -660,6 +664,10 @@ public class CommonUtils {
     @SneakyThrows
     public static String addDay2String(String yyyyMMdd, int i) {
         return CommonUtils.formatDate(addDay(CommonUtils.sf_ymd2.parse(yyyyMMdd),i), CommonUtils.sf_ymd2);
+    }
+
+    public static String addDay2String(Date date, int i) {
+        return CommonUtils.formatDate(addDay(date,i), CommonUtils.sf_ymd2);
     }
 
     public static Date addDay(Date date, int i){

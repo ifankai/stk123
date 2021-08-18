@@ -163,7 +163,7 @@ public class TextController {
     @RequestMapping({"/notice", "/notice/{createdAtAfter}"})
     public RequestResult hotNotice(@PathVariable(value = "createdAtAfter", required = false)Long createdAtAfter){
         if(createdAtAfter == null) {
-            createdAtAfter = DateUtils.addMonths(new Date(), -6).getTime();
+            createdAtAfter = DateUtils.addMonths(new Date(), -1).getTime();
         }
         Date dateAfter = new Date(createdAtAfter);
         List<StkTextEntity> result = stkTextRepository.findAllByTypeAndCodeTypeAndSubTypeAndReplyPositiveAndInsertTimeGreaterThanOrderByInsertTimeDesc(
@@ -173,7 +173,7 @@ public class TextController {
     
     private List<Map> getNoticeAsMap(List<StkTextEntity> result){
         Map<String, Stock> stocksMap = stockService.getStocks(result.stream().map(StkTextEntity::getCode).collect(Collectors.toList())).stream().distinct().collect(Collectors.toMap(Stock::getCode, Function.identity()));
-        return result.parallelStream().map(text -> {
+        return result.stream().map(text -> {
             Map map = BeanUtil.beanToMap(text);
             Stock stock = stocksMap.get(text.getCode());
             if(stock == null) {

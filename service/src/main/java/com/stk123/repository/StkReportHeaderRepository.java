@@ -12,5 +12,5 @@ public interface StkReportHeaderRepository extends JpaRepository<StkReportHeader
 
     List<StkReportHeaderEntity> findAllByReportDateInOrderByReportDateDescInsertTimeDesc(List<String> reportDates);
 
-    List<StkReportHeaderEntity> findAllByTypeAndReportDateIsBetweenOrderByInsertTimeDesc(String type, Date reportDateStart, Date reportDateEnd);
+    List<StkReportHeaderEntity> findAllByTypeAndReportDateBetweenOrderByInsertTimeDesc(String type, String reportDateStart, String reportDateEnd);
 }

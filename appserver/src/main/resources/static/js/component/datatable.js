@@ -153,7 +153,6 @@ const _datatable = {
 
             if(this.type == 0) {
                 this.$nextTick(function () {
-                    console.log('data change....')
                     let opt = getDataTableOpt(this);
                     //$('#_datatable_' + this.datatableId).DataTable().clear().destroy();
                     $('#_datatable_' + this.datatableId).DataTable(opt);

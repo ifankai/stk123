@@ -476,15 +476,15 @@ public class Strategies {
     public static Strategy rps_04() {
         //StrategyGroup<Stock> strategyGroup = new StrategyGroup<>(Rps.CODE_STOCK_MONTH_3_VOLUME, "3个月放量", Stock.class);
 
-        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_MONTH_3_VOLUME, "3个月放量", Stock.class);
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_MONTH_3_VOLUME, "3个月(60天)放量", Stock.class);
         //strategy.setAsc(false);
         strategy.addFilter("3个月放量", (strgy, stock) -> {
             if(stock.getBarSeries().size() < 60){
                 return FilterResult.FALSE();
             }
-            Bar bar = stock.getBarSeriesMonth().getBar();
-            double sum = bar.getSUM(3, Bar.EnumValue.V);
-            double minSum = bar.getLowest(15, bar1 -> bar1.getSUM(3, Bar.EnumValue.V));
+            Bar bar = stock.getBar();
+            double sum = bar.getSUM(60, Bar.EnumValue.V);
+            double minSum = bar.getLowest(400, bar1 -> bar1.getSUM(20, Bar.EnumValue.V));
             double rpsValue = sum/minSum;
             return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
         }, false);
@@ -500,15 +500,15 @@ public class Strategies {
     }
 
     public static Strategy rps_05() {
-        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_MONTH_1_VOLUME,"1个月放量", Stock.class);
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_MONTH_1_VOLUME,"1个月(20天)放量", Stock.class);
         //strategy.setAsc(false);
         strategy.addFilter("1个月放量", (strgy, stock) -> {
             if(stock.getBarSeries().size() < 60){
                 return FilterResult.FALSE();
             }
-            Bar bar = stock.getBarSeriesMonth().getBar();
-            double sum = bar.getVolume();
-            double minSum = bar.before().getVolume();
+            Bar bar = stock.getBar();
+            double sum = bar.getSUM(20, Bar.EnumValue.V);
+            double minSum = bar.before(20).getSUM(20, Bar.EnumValue.V);
             double rpsValue = sum/minSum;
             return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
         }, false);
@@ -516,15 +516,15 @@ public class Strategies {
     }
 
     public static Strategy rps_06a() {
-        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_WEEK_1_VOLUME_A,"1周放量", Stock.class);
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_WEEK_1_VOLUME_A,"1周(5天)放量", Stock.class);
         //strategy.setAsc(false);
         strategy.addFilter("1周放量", (strgy, stock) -> {
             if(stock.getBarSeries().size() < 60){
                 return FilterResult.FALSE();
             }
-            Bar bar = stock.getBarSeriesWeek().getBar();
-            double sum = bar.getVolume();
-            double minSum = bar.before().getVolume();
+            Bar bar = stock.getBar();
+            double sum = bar.getSUM(5, Bar.EnumValue.V);
+            double minSum = bar.before(5).getSUM(5, Bar.EnumValue.V);
             double rpsValue = sum/minSum;
             return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
         }, false);
@@ -537,9 +537,9 @@ public class Strategies {
             if(stock.getBarSeries().size() < 60){
                 return FilterResult.FALSE();
             }
-            Bar bar = stock.getBarSeriesWeek().getBar();
-            double sum = bar.getVolume();
-            double minSum = bar.before().getVolume();
+            Bar bar = stock.getBar();
+            double sum = bar.getSUM(5, Bar.EnumValue.V);
+            double minSum = bar.before(5).getSUM(5, Bar.EnumValue.V);
             double rpsValue = sum/minSum;
             return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
         }, false);
@@ -547,20 +547,22 @@ public class Strategies {
 //        strategy2.setAsc(false);
 //        strategy2.setWeight(0.3);
         strategy.addFilter("1周资金流", (strgy, stock) -> {
-            Bar bar = stock.getBarSeriesWeek().getBar();
-            double rpsValue = bar.getCapitalFlowAmount()/bar.getAmount();
+            Bar bar = stock.getBar();
+            double sum = bar.getSUM(5, Bar.EnumValue.MONEY);
+            double minSum = bar.before(5).getSUM(5, Bar.EnumValue.MONEY);
+            double rpsValue = sum/minSum;
             return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
         }, false, 0.3);
         return strategy;
     }
 
     public static Strategy rps_07() {
-        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_WEEK_2_VOLUME,"2周放量", Stock.class);
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_WEEK_2_VOLUME,"2周(10天)放量", Stock.class);
         //strategy.setAsc(false);
         strategy.addFilter("2周放量", (strgy, stock) -> {
-            Bar bar = stock.getBarSeriesWeek().getBar();
-            double sum = bar.getVolume()+bar.before().getVolume();
-            double minSum = bar.before(2).getVolume() + bar.before(3).getVolume();
+            Bar bar = stock.getBar();
+            double sum = bar.getSUM(10, Bar.EnumValue.V);
+            double minSum = bar.before(10).getSUM(10, Bar.EnumValue.V);
             double rpsValue = sum/minSum;
             return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
         }, false);
@@ -568,15 +570,15 @@ public class Strategies {
     }
 
     public static Strategy rps_08() {
-        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_WEEK_3_VOLUME,"3周放量", Stock.class);
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_WEEK_3_VOLUME,"3周(15天)放量", Stock.class);
         //strategy.setAsc(false);
         strategy.addFilter("3周放量", (strgy, stock) -> {
             if(stock.getBarSeries().size() < 60){
                 return FilterResult.FALSE();
             }
-            Bar bar = stock.getBarSeriesWeek().getBar();
-            double sum = bar.getVolume()+bar.before().getVolume()+bar.before(2).getVolume();
-            double minSum = bar.before(3).getVolume() + bar.before(4).getVolume() + bar.before(5).getVolume();
+            Bar bar = stock.getBar();
+            double sum = bar.getSUM(15, Bar.EnumValue.V);;
+            double minSum = bar.before(15).getSUM(15, Bar.EnumValue.V);
             double rpsValue = sum/minSum;
             return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
         }, false);

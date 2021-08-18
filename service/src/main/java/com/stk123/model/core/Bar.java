@@ -34,7 +34,8 @@ public class Bar implements Serializable, Cloneable {
 		LOW,L,
 		VOLUME,V,
 		AMOUNT,A,
-		HSL
+		HSL,
+        MONEY
 	}
 
 	public enum EnumCalculationMethod {
@@ -167,6 +168,8 @@ public class Bar implements Serializable, Cloneable {
 				return this.getAmount();
 			case HSL:
 				return this.getHsl();
+            case MONEY:
+                return this.getCapitalFlowAmount();
 			default:
 				throw new RuntimeException("type not support!");
 		}
