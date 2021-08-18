@@ -844,7 +844,7 @@ public class Bar implements Serializable, Cloneable {
 				} else {//今天阴线
 
 					if(yesterday.isYin()){//昨天阴线
-						List<Bar> bars = today.getBarsMeet(Bar::isYang);
+						List<Bar> bars = today.getBarsTogether(Bar::isYang);
 						for(Bar bar : bars){
 							//if(bar.getDaysBetween(bar.getDate(), bar1.getDate()) >=3) break;
 							if(bar.getVolume() < today.getVolume()){//今天阴线量能 > 前几天阳线量能
@@ -886,12 +886,27 @@ public class Bar implements Serializable, Cloneable {
         return score;
 	}
 
+	//得到所有满足条件的Bar
+	public List<Bar> getBars(int days, Predicate<Bar> condition){
+		List<Bar> bars = new ArrayList<>();
+		Bar k = this;
+		while(k != null){
+			if(condition.test(k)){
+				bars.add(k);
+			}
+			if(--days < 1){
+				break;
+			}
+			k = k.before();
+		}
+		return bars;
+	}
 
 	/**
 	 * 得到连续满足条件的所有bar
 	 * 比如：得到前面所有连续的阳线 today.getBarsMeet(bar -> bar.getOpen() < bar.getClose());
 	 */
-	public List<Bar> getBarsMeet(Predicate<Bar> condition){
+	public List<Bar> getBarsTogether(Predicate<Bar> condition){
 		List<Bar> bars = new ArrayList<>();
 		Bar k = this;
 		boolean stop = false;

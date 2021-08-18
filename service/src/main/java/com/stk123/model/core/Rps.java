@@ -31,6 +31,7 @@ public class Rps{
     public final static String CODE_STOCK_DAY_2_VOLUME = "rps_10";
     public final static String CODE_STOCK_DAY_3_VOLUME = "rps_11";
     public final static String CODE_STOCK_DAY_120_VOLUME = "rps_12";
+    public final static String CODE_STOCK_GENTLE_CHANGE_VOLUME = "rps_13";
 
     private static Map<String, Strategy> CODE_STRATEGY = new HashMap<>();
 
@@ -58,7 +59,9 @@ public class Rps{
                 Strategies.strategy_0(),
                 Strategies.rps_09(), Strategies.rps_10(), Strategies.rps_11(),
                 Strategies.strategy_0(),
-                Strategies.rps_06b()
+                Strategies.rps_06b(),
+                Strategies.strategy_0(),
+                Strategies.rps_13()
         );
     }
 

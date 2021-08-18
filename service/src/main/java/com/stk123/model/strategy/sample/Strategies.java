@@ -531,7 +531,7 @@ public class Strategies {
         return strategy;
     }
     public static Strategy rps_06b() {
-        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_WEEK_1_VOLUME_B, "1周放量+资金流", Stock.class);
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_WEEK_1_VOLUME_B, "1周资金流+1周放量", Stock.class);
         //strategy.setAsc(false);
         strategy.addFilter("1周放量", (strgy, stock) -> {
             if(stock.getBarSeries().size() < 60){
@@ -682,6 +682,40 @@ public class Strategies {
 
         //strategy3.setWeight(0.3);
         strategy.addFilter("最低点涨幅", Filters.filter_rps_02( 250), 0.3);
+
+        return strategy;
+    }
+
+    //温和放量
+    public static Strategy rps_13() {
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_GENTLE_CHANGE_VOLUME, "温和涨幅+10天放量", Stock.class);
+
+        strategy.addFilter("温和涨幅", (strgy, stock) -> {
+            if(stock.getBarSeries().size() < 120){
+                return FilterResult.FALSE();
+            }
+            Bar bar = stock.getBar();
+            Bar lowestBar = bar.getLowestBar(120, Bar.EnumValue.C);
+            Bar highestBar = bar.getHighestBar(bar.getDaysBetween(lowestBar.getDate(), bar.getDate()), Bar.EnumValue.C);
+            if(highestBar == null) return FilterResult.FALSE();
+            double change = highestBar.getHigh()/lowestBar.getLow();
+            double value = Math.abs(change - 1.25);
+            return FilterResult.Sortable(CommonUtils.numberFormat(value, 2));
+        });
+
+        strategy.addFilter("10天放量", (strgy, stock) -> {
+            if(stock.getBarSeries().size() < 60){
+                return FilterResult.FALSE();
+            }
+            Bar bar = stock.getBar();
+            List<Bar> barsYang = bar.getBars(10, Bar::isYang);
+            List<Bar> barsYin = bar.getBars(10, Bar::isYin);
+            double sumYang = barsYang.stream().mapToDouble(Bar::getVolume).sum();
+            double sumYin = barsYin.stream().mapToDouble(Bar::getVolume).sum();
+            double value = sumYang/sumYin;
+            if(value < 2)return FilterResult.FALSE();
+            return FilterResult.Sortable(CommonUtils.numberFormat(value, 2));
+        }, false);
 
         return strategy;
     }
