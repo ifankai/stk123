@@ -298,7 +298,7 @@ public class Strategies {
     public static Strategy strategy_06b() {
         Strategy<BarSeries> strategy = new Strategy<>("strategy_06b","站上底部一堆放量(06b)", BarSeries.class);
         strategy.addFilter("过去3天到80天的跌幅", BarSeries::getFirst, Filters.filter_001b(3,60,-50,-20));
-        strategy.addFilter("站上底部一堆放量", Filters.filter_011(120,4));
+        strategy.addFilter("站上底部一堆放量", Filter.or(Filters.filter_011(120, 5,3), Filters.filter_011(120, 10,2)));
         strategy.setExpectFilter("60日内涨幅>20%", Filters.expectFilter(60, 20));
         return strategy;
     }

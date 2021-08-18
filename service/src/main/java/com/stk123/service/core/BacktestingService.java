@@ -46,15 +46,9 @@ public class BacktestingService {
     }
 
     @SneakyThrows
-    public StrategyBacktesting backtestingAllHistory(List<String> codes, List<String> strategies, boolean isIncludeRealtimeBar) {
-        StrategyBacktesting strategyBacktesting = new StrategyBacktesting();
-        /*Set<Method> methods = ReflectionUtils.getAllMethods(Sample.class,
-                method -> StringUtils.equalsIgnoreCase(method.getName(), "strategy_"+strategy) || StringUtils.equalsIgnoreCase(method.getName(), strategy));
-*/
+    public StrategyBacktesting backtestingAllHistory(StrategyBacktesting strategyBacktesting, List<String> codes, List<String> strategies, boolean isIncludeRealtimeBar) {
         Set<Method> methods = ReflectionUtils.getAllMethods(Strategies.class,
                 method -> strategies.stream().anyMatch(name -> StringUtils.equalsIgnoreCase(method.getName(), "strategy_"+name) || StringUtils.equalsIgnoreCase(method.getName(), name)));
-
-
         for (Method method : methods) {
             Strategy strategy = (Strategy<?>) method.invoke(null, null);
             if(strategy == null) continue;
@@ -71,6 +65,12 @@ public class BacktestingService {
         strategyBacktesting.printDetail();
         strategyBacktesting.print();
         return strategyBacktesting;
+    }
+
+    @SneakyThrows
+    public StrategyBacktesting backtestingAllHistory(List<String> codes, List<String> strategies, boolean isIncludeRealtimeBar) {
+        StrategyBacktesting strategyBacktesting = new StrategyBacktesting();
+        return backtestingAllHistory(strategyBacktesting, codes, strategies, isIncludeRealtimeBar);
     }
 
     public StrategyBacktesting backtesting(List<String> codes, List<String> strategies, String startDate, String endDate, boolean isIncludeRealtimeBar) {

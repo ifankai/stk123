@@ -7,13 +7,14 @@ import com.stk123.model.strategy.result.FilterResult;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.apachecommons.CommonsLog;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
-@CommonsLog
+@Slf4j
 public class StrategyBacktesting {
 
     @Setter

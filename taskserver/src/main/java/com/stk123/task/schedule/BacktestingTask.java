@@ -33,6 +33,7 @@ public class BacktestingTask extends AbstractTask {
     private String endDate = null;
     private String realtime = null;
     private String history = null;
+    private String print = null;
 
     @Autowired
     private BacktestingService backtestingService;
@@ -60,9 +61,9 @@ public class BacktestingTask extends AbstractTask {
             }else{
                 codes = Arrays.asList(StringUtils.split(code, ","));
             }
-            StrategyBacktesting strategyBacktesting = null;
+            StrategyBacktesting strategyBacktesting = new StrategyBacktesting(print!=null);
             if(StringUtils.isNotEmpty(history)){
-                strategyBacktesting = backtestingService.backtestingAllHistory(codes,
+                strategyBacktesting = backtestingService.backtestingAllHistory(strategyBacktesting, codes,
                         Arrays.asList(StringUtils.split(strategy, ",")), realtime != null);
             }else {
                 strategyBacktesting = backtestingService.backtesting(codes,

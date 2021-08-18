@@ -702,7 +702,7 @@ public class Filters {
     }
 
     //站上底部一堆放量
-    public static Filter<BarSeries> filter_011(int days, double n){
+    public static Filter<BarSeries> filter_011(int days, int ma, double n){
         return (strategy, bs) -> {
             Bar today = bs.getFirst();
             if(today.getMACD().dif < today.getMACD().dea){
@@ -716,23 +716,29 @@ public class Filters {
             int days2 = today.getDaysBetween(today.getDate(), lowest.getDate());
 
             //days天内最大5日均量
-            Bar k = today.before().getHighestBar(days2, Bar.EnumValue.V, 5, Bar.EnumCalculationMethod.MA);
+            Bar k = today.before().getHighestBar(days2, Bar.EnumValue.V, ma, Bar.EnumCalculationMethod.MA);
             //Bar k2 = k.getHighestBar(5, Bar.EnumValue.V);
-            if(k != null && today.getClose() >= Math.max(k.getClose(), k.getOpen()) && today.before().getClose() <= Math.max(k.getClose(), k.getOpen())){
-                Bar k4 = k.getHighestBar(5, Bar.EnumValue.V);
-                int cnt = k4.getBarCount(100, bar -> k4.getVolume()<bar.getVolume());
-                if(cnt >= 3){
-                    return FilterResult.FALSE("推量附近没有单日大量");
+            if(k != null){
+                double kMax = Math.max(k.getClose(), k.getOpen());
+                if( today.getClose() >= kMax
+                        && (today.getClose()/kMax <= 1.08 || today.before().getClose() <= kMax)
+                ) {
+                    Bar k4 = k.getHighestBar(5, Bar.EnumValue.V);
+                    int cnt = k4.getBarCount(100, bar -> k4.getVolume() < bar.getVolume());
+                    if (cnt >= 3) {
+                        return FilterResult.FALSE("推量附近没有单日大量");
+                    }
+                    //days天内最小5日均量
+                    Bar k3 = k.before().getLowestBar(20, Bar.EnumValue.V, ma, Bar.EnumCalculationMethod.MA);
+                    double m = k.getMA(ma, Bar.EnumValue.V) / k3.getMA(ma, Bar.EnumValue.V);
+                    if (m >= n) {
+                        //return FilterResult.TRUE(String.format("maxk=%s", k.getDate()));
+                        return FilterResult.TRUE();
+                    }
+                    return FilterResult.FALSE(String.format("m=%s, n=%s", m, n));
                 }
-                //days天内最小5日均量
-                Bar k3 = k.before().getLowestBar(15, Bar.EnumValue.V, 5, Bar.EnumCalculationMethod.MA);
-                double m = k.getMA(5, Bar.EnumValue.V) / k3.getMA(5, Bar.EnumValue.V);
-                if(m >= n) {
-                    return FilterResult.TRUE();
-                }
-                return FilterResult.FALSE(k3.getDate()+","+m);
             }
-            return FilterResult.FALSE(k!=null?k.getDate():lowest.getDate());
+            return FilterResult.FALSE(String.format("k=%s", k.getDate()));
         };
     }
 
