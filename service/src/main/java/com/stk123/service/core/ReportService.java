@@ -2,6 +2,8 @@ package com.stk123.service.core;
 
 import cn.hutool.core.lang.Pair;
 import cn.hutool.core.map.MapUtil;
+import com.alicp.jetcache.anno.CacheType;
+import com.alicp.jetcache.anno.Cached;
 import com.stk123.common.CommonUtils;
 import com.stk123.entity.StkReportDetailEntity;
 import com.stk123.entity.StkReportHeaderEntity;
@@ -78,7 +80,9 @@ public class ReportService {
         return BaseRepository.getInstance().list(findAllHotBksByReportDate, StkReportDetailEntity.class, reportDates);
     }
 
+    @Cached(name = "report-", key="#reportDate", expire = 600, cacheType = CacheType.LOCAL)
     public Map findReportAsMap(String reportDate){
+        log.info("reportDate="+reportDate);
         Map result = new HashMap();
         List<Map> reportDatesMap = findTopReportDate(CommonUtils.addDay2String(reportDate, 1), 5);
         List<String> reportDates = reportDatesMap.stream().map(map -> (String)map.get("REPORT_DATE")).sorted(Comparator.naturalOrder()).collect(Collectors.toList());
@@ -175,7 +179,7 @@ public class ReportService {
                         String a = "<a title='查看板块精选个股' target='_blank' href='/S/"+detail.getRpsStockCode()+"'><i class='fas fa-th'></i></a>";
                         put("action", a);
                     }}
-            ));
+            ).collect(Collectors.toList()));
             map.put("bk", bk);
             return map;
         }).collect(Collectors.toList());

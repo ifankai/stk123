@@ -30,7 +30,7 @@ public class Rating {
 
     @Data
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    class Node{
+    public class Node{
         @JsonView(View.All.class)
         String type;
         @JsonIgnore
@@ -57,7 +57,7 @@ public class Rating {
             return path;
         }
 
-        Node find(String type){
+        public Node find(String type){
             if(type.equals(this.type)){
                 return this;
             }

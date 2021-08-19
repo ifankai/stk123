@@ -1,6 +1,8 @@
 package com.stk123.controller;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.alicp.jetcache.anno.CacheType;
+import com.alicp.jetcache.anno.Cached;
 import com.stk123.common.CommonUtils;
 import com.stk123.common.util.BeanUtils;
 import com.stk123.entity.StkTextEntity;
@@ -161,7 +163,9 @@ public class TextController {
     }
 
     @RequestMapping({"/notice", "/notice/{createdAtAfter}"})
+    @Cached(name = "hot-notice", expire = 600, cacheType = CacheType.LOCAL)
     public RequestResult hotNotice(@PathVariable(value = "createdAtAfter", required = false)Long createdAtAfter){
+        log.info("hot notice.......................");
         if(createdAtAfter == null) {
             createdAtAfter = DateUtils.addMonths(new Date(), -1).getTime();
         }

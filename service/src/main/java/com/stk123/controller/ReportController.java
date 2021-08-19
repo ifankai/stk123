@@ -1,5 +1,7 @@
 package com.stk123.controller;
 
+import com.alicp.jetcache.anno.CacheType;
+import com.alicp.jetcache.anno.Cached;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.common.CommonUtils;
 import com.stk123.model.RequestResult;

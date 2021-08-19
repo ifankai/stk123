@@ -3044,7 +3044,7 @@ select s.code, s.name, t.fn_date, t.holder, t.holding_amount, t.holder_change
  where t.code=s.code and t.num = 1 and t.code='600600';
  
 select * from stk_text where code='000100' order by insert_time desc; 
-select * from stk_text where code='600519' order by insert_time desc; 
+select * from stk_text where code='605009' order by insert_time desc;
 select * from stk_text where reply_positive is not null;
 
 select * from stk_error_log order by insert_time desc;

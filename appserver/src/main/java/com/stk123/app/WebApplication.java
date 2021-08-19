@@ -1,5 +1,7 @@
 package com.stk123.app;
 
+import com.alicp.jetcache.anno.config.EnableCreateCacheAnnotation;
+import com.alicp.jetcache.anno.config.EnableMethodCache;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import com.esotericsoftware.kryonet.Server;
@@ -56,6 +58,8 @@ import java.nio.file.Paths;
 @Configuration
 @EnableScheduling
 @EnableAsync
+@EnableMethodCache(basePackages = "com.stk123")
+@EnableCreateCacheAnnotation
 public class WebApplication {
 
     @Value("${http.port}")

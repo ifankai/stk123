@@ -2,10 +2,7 @@ package com.stk123.model.strategy.sample;
 
 import com.stk123.common.CommonUtils;
 import com.stk123.common.util.ListUtils;
-import com.stk123.model.core.Bar;
-import com.stk123.model.core.BarSeries;
-import com.stk123.model.core.Rps;
-import com.stk123.model.core.Stock;
+import com.stk123.model.core.*;
 import com.stk123.model.enumeration.EnumCate;
 import com.stk123.model.strategy.Filter;
 import com.stk123.model.strategy.Strategy;
@@ -453,8 +450,7 @@ public class Strategies {
         return strategy;
     }
 
-    public static Strategy rps_03() {
-        //StrategyGroup<Stock> strategyGroup = new StrategyGroup<>(Rps.CODE_STOCK_SCORE_20, "个股score", Stock.class);
+    public static Strategy rps_03a() {
         Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_SCORE_20, "个股评级+相对底部", Stock.class);
         strategy.addFilter(strategy.getName(), (strgy, stock) -> {
             double rpsValue = stock.getScore();
@@ -470,6 +466,38 @@ public class Strategies {
             if(rpsValue < 0) rpsValue = 0;
             return FilterResult.Sortable(rpsValue);
         }, false, 0.3);
+        return strategy;
+    }
+
+    public static Strategy rps_03b() {
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_SCORE_20, "个股技术面评级", Stock.class);
+        strategy.addFilter(strategy.getName(), (strgy, stock) -> {
+            Rating rating = stock.getRating();
+            double jsm = rating.getRoot().find("jsm").getScore();
+            return FilterResult.Sortable(jsm);
+        }, false);
+        return strategy;
+    }
+
+    public static Strategy rps_03c() {
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_SCORE_20, "个股技术面评级+低位", Stock.class);
+        strategy.addFilter(strategy.getName(), (strgy, stock) -> {
+            Rating rating = stock.getRating();
+            double jsm = rating.getRoot().find("jsm").getScore();
+            return FilterResult.Sortable(jsm);
+        }, false);
+
+        strategy.addFilter(strategy.getName(), (strgy, stock) -> {
+            Bar bar = stock.getBar();
+            Bar lowestBar = bar.getLowestBar(120, Bar.EnumValue.C);
+            Bar highestBar = bar.getHighestBar(bar.getDaysBetween(lowestBar.getDate(), bar.getDate()), Bar.EnumValue.C);
+            if(highestBar == null) return FilterResult.FALSE();
+            double change = highestBar.getHigh()/lowestBar.getLow();
+            if(change > 1.35){
+                return FilterResult.FALSE(change);
+            }
+            return FilterResult.TRUE();
+        });
         return strategy;
     }
 

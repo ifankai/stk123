@@ -645,6 +645,8 @@ public class BarTask extends AbstractTask {
                     stkReportHeaderEntity = reportService.createReportHeaderEntity(report, type, realtime!=null?1:0, name);
                 }
 
+                results = results.stream().sorted(Comparator.comparing(sr -> sr.getStock().getCode())).collect(Collectors.toList());
+
                 String rowCode = null;
                 for (StrategyResult strategyResult : results) {
                     Stock stock = strategyResult.getStock(); //stocks.stream().filter(stk -> stk.getCode().equals(strategyResult.getCode())).findFirst().orElse(null);
