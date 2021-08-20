@@ -3054,7 +3054,7 @@ select * from stk_news order by id desc;--404410
 select * from stk_news where code='00004' order by id desc;
 
 select * from stk_import_info_type;
-select * from stk_dictionary where type=2000 for update;
+select * from stk_dictionary where type=1006;
 select s_news_id.nextval from dual;
 
 

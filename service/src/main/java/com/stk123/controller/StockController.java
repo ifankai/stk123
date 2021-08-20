@@ -1,6 +1,9 @@
 package com.stk123.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.stk123.common.CommonUtils;
+import com.stk123.entity.StkDictionaryEntity;
+import com.stk123.entity.StkNewsEntity;
 import com.stk123.model.RequestResult;
 import com.stk123.model.core.Rating;
 import com.stk123.model.core.Rps;
@@ -10,8 +13,11 @@ import com.stk123.model.enumeration.EnumMarket;
 import com.stk123.model.json.View;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.model.strategy.StrategyResult;
+import com.stk123.repository.StkNewsRepository;
 import com.stk123.repository.StkRepository;
 import com.stk123.repository.StkTextRepository;
+import com.stk123.service.StkConstant;
+import com.stk123.service.core.DictService;
 import com.stk123.service.core.BarService;
 import com.stk123.service.core.StockService;
 import lombok.extern.apachecommons.CommonsLog;
@@ -39,6 +45,10 @@ public class StockController {
     private BarService barService;
     @Autowired
     private StkTextRepository stkTextRepository;
+    @Autowired
+    private StkNewsRepository stkNewsRepository;
+    @Autowired
+    private DictService dictService;
 
 
     @RequestMapping(value = {"/list/{market:1|2|3|cn|us|hk}/{cate}"})
@@ -129,5 +139,29 @@ public class StockController {
             result = stockService.getStocksAsMap(stocks);
         }
         return RequestResult.success(result);
+    }
+
+    @RequestMapping(value = "/news/{code}")
+    @ResponseBody
+    public RequestResult news(@PathVariable(value = "code")String code,
+                              @RequestParam(value = "start", required = false)String start,
+                              @RequestParam(value = "end", required = false)String end){
+        Date dateStart = start == null ? CommonUtils.addDay(new Date(), -365) : CommonUtils.parseDate(start);
+        Date dateEnd = end == null ? new Date() : CommonUtils.parseDate(end);
+        List<StkNewsEntity> news = stkNewsRepository.findAllByCodeAndInfoCreateTimeBetweenOrderByInsertTimeDesc(code, dateStart, dateEnd);
+        return RequestResult.success(getNewsAsMap(news));
+    }
+
+    private List<Map> getNewsAsMap(List<StkNewsEntity> news){
+        List<Map> list = new ArrayList<>();
+        Map<String, StkDictionaryEntity> dicts = dictService.getDictionaryAsMap(StkConstant.DICT_NEWS);
+        for(StkNewsEntity entity : news){
+            Map<String, String> map = new HashMap<>();
+            map.put("type", "["+dicts.get(entity.getType().toString()).getText()+"]");
+            map.put("title", entity.getTitle());
+            map.put("createdAt", CommonUtils.formatDate(entity.getInfoCreateTime()));
+            list.add(map);
+        }
+        return list;
     }
 }

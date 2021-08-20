@@ -46,7 +46,7 @@ public class TextController {
     @Autowired
     private StockService stockService;
 
-    @RequestMapping(value = {"","/{type}"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"","/phone/{type}"}, method = RequestMethod.GET)
     @ResponseBody
     public RequestResult<PageRoot<EsDocument>>
                 queryByType(@PathVariable(value = "type", required = false)String type,
@@ -159,6 +159,16 @@ public class TextController {
     public RequestResult query(@PathVariable String code, @PathVariable Integer type){
 //        List<StkTextEntity> result = stkTextRepository.findAllTextByDto(code, type);
         List<TextDto> result = stkTextRepository.findAllByCodeAndTypeOrderByInsertTimeDesc2Dto(code, type);
+        return RequestResult.success(result);
+    }
+
+    @RequestMapping("/{code}")
+    public RequestResult query(@PathVariable String code,
+                               @RequestParam(value = "start", required = false)String start,
+                               @RequestParam(value = "end", required = false)String end){
+        Date dateStart = start == null ? CommonUtils.addDay(new Date(), -365) : CommonUtils.parseDate(start);
+        Date dateEnd = end == null ? new Date() : CommonUtils.parseDate(end);
+        List<StkTextEntity> result = stkTextRepository.findAllByCodeAndInsertTimeBetweenOrderByInsertTimeDesc(code, dateStart, dateEnd);
         return RequestResult.success(result);
     }
 

@@ -18,7 +18,7 @@ import java.util.Date;
 @Setter
 @Getter
 @ToString
-@JsonInclude(JsonInclude.Include.NON_NULL)
+//@JsonInclude(JsonInclude.Include.NON_NULL)
 public class StkTextEntity implements Serializable {
 
 /*    @JsonInclude()
@@ -80,7 +80,7 @@ public class StkTextEntity implements Serializable {
     @JsonView(View.All.class)
     private Integer followersCount;
 
-    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
+    //@JsonFormat(shape = JsonFormat.Shape.NUMBER)
     @Column(name = "created_at")
     @JsonView(View.All.class)
     private Date createdAt;

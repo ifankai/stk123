@@ -15,6 +15,8 @@ public interface StkNewsRepository extends JpaRepository<StkNewsEntity, Integer>
 
     List<StkNewsEntity> findAllByCodeAndTypeAndInfoCreateTimeBetweenOrderByInsertTimeDesc(String code, Integer type, Date infoCreateTimeStart, Date infoCreateTimeEnd);
 
+    List<StkNewsEntity> findAllByCodeAndInfoCreateTimeBetweenOrderByInsertTimeDesc(String code, Date infoCreateTimeStart, Date infoCreateTimeEnd);
+
     default Map<String, List<StkNewsEntity>> getAllByCodeInAndInfoCreateTimeAfterOrderByInsertTime(List<String> codes, Date infoCreateTime){
         List<StkNewsEntity> news = findAllByCodeInAndInfoCreateTimeAfterOrderByInsertTimeDesc(codes, infoCreateTime);
         Map<String, List<StkNewsEntity>> result = new LinkedHashMap<>(codes.size());

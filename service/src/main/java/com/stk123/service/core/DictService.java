@@ -8,6 +8,7 @@ import org.springframework.util.comparator.Comparators;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,6 +36,10 @@ public class DictService {
 
     public Collection<StkDictionaryEntity> getDictionary(Integer type){
         return dict.get(type).values();
+    }
+
+    public Map<String, StkDictionaryEntity> getDictionaryAsMap(Integer type){
+        return dict.get(type).values().stream().collect(Collectors.toMap(StkDictionaryEntity::getKey, Function.identity()));
     }
 
     public Collection<StkDictionaryEntity> getDictionaryByTypes(Integer... types){

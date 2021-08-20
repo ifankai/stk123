@@ -10,6 +10,26 @@ function dateFormat(value, pattern) {
         return _dateFormat(value, pattern);
     }
 }
+Date.prototype.format = function (fmt) { //调用：var time1 = new Date().Format("yyyy-MM-dd HH:mm:ss");
+    var o = {
+        "M+": this.getMonth() + 1, //月份
+        "d+": this.getDate(), //日
+        "h+": this.getHours(), //小时
+        "m+": this.getMinutes(), //分
+        "s+": this.getSeconds(), //秒
+        "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+        "S": this.getMilliseconds() //毫秒
+    };
+    if (/(y+)/.test(fmt))
+        fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+    for (var k in o){
+        if (new RegExp("(" + k + ")").test(fmt)) {
+            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        }
+    }
+    return fmt;
+}
+
 function isVisible(elment) {
     var vpH = $(window).height(), // Viewport Height
         st = $(window).scrollTop(), // Scroll Top
@@ -160,6 +180,37 @@ function createEye(stock, id){
     console.log(id)
     vm.mount('#'+id)
     return wrapper.innerHTML;
+}
+
+const _modal = {
+    props: {
+        id:Number,
+        title:String,
+        content:String
+    },
+    template: `
+        <div class="modal" :id="id">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Large Modal</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p v-html="content"></p>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+              <!-- /.modal-content -->
+            </div>
+        <!-- /.modal-dialog -->
+      </div>
+    `,
 }
 
 if (typeof elem == "undefined") {
