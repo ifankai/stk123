@@ -176,7 +176,6 @@ public class StockController {
     public RequestResult xueqiuNotice(@PathVariable(value = "code")String code){
         Stock stock = stockService.getStock(code);
         List<Map> notice = getNoticeFromXueqiu(stock);
-        System.out.println(notice);
         return RequestResult.success(notice);
     }
 
