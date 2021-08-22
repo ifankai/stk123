@@ -36,6 +36,8 @@ public class SyncTask extends AbstractTask {
 
     @Setter
     private String table;
+    @Setter
+    private String whereClause;
 
     private static Map<String, String> SYNC_TABLES = new LinkedHashMap<>();
     static {
@@ -55,7 +57,7 @@ public class SyncTask extends AbstractTask {
             for (Map.Entry<String, String> e : SYNC_TABLES.entrySet()) {
                 String tableName = e.getKey();
                 if (StringUtils.containsIgnoreCase(tableName, table)) {
-                    String whereClause = e.getValue();
+                    String whereClause = this.whereClause == null ? e.getValue() : this.whereClause;
                     syncTable(tableName, whereClause);
                 }
             }
