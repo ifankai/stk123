@@ -41,6 +41,8 @@ public class SyncTask extends AbstractTask {
     static {
         SYNC_TABLES.put("stk_text", "where insert_time>sysdate-1");
         SYNC_TABLES.put("stk_task_log", "where insert_time>sysdate-1");
+        SYNC_TABLES.put("stk_report_header", "where insert_time>sysdate-1");
+        SYNC_TABLES.put("stk_report_detail", "where header_id in (select id from stk_report_header where insert_time>sysdate-1)");
     }
 
     @Override
