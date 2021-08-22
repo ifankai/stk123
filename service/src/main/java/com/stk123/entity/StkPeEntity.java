@@ -21,23 +21,23 @@ public class StkPeEntity {
     @Column(name = "AVERAGE_PE", nullable = true, precision = 2)
     private Double averagePe;
     @Column(name = "ENE_UPPER_CNT", nullable = true, precision = 0)
-    private Long eneUpperCnt;
+    private Double eneUpperCnt;
     @Column(name = "ENE_LOWER_CNT", nullable = true, precision = 0)
-    private Long eneLowerCnt;
+    private Double eneLowerCnt;
     @Column(name = "UPPER_1", nullable = true, precision = 0)
-    private Long upper1;
+    private Double upper1;
     @Column(name = "LOWER_1", nullable = true, precision = 0)
-    private Long lower1;
+    private Double lower1;
     @Column(name = "BIAS", nullable = true, precision = 2)
-    private Long bias;
+    private Double bias;
     @Column(name = "ENE_UPPER", nullable = true, precision = 2)
-    private Long eneUpper;
+    private Double eneUpper;
     @Column(name = "ENE_LOWER", nullable = true, precision = 2)
-    private Long eneLower;
+    private Double eneLower;
     @Column(name = "RESULT_1", nullable = true, precision = 2)
-    private Long result1;
+    private Double result1;
     @Column(name = "RESULT_2", nullable = true, precision = 2)
-    private Long result2;
+    private Double result2;
     @Column(name = "AVG_PB", nullable = true, precision = 2)
     private Double avgPb;
     @Column(name = "TOTAL_PE", nullable = true, precision = 2)
@@ -68,6 +68,8 @@ public class StkPeEntity {
     private Double result11;
     @Column(name = "RESULT_12", nullable = true, precision = 2)
     private Double result12;
+    @Column(name = "STOCK_COUNT")
+    private Integer stockCount;
 
 
     @Override
@@ -75,38 +77,11 @@ public class StkPeEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         StkPeEntity that = (StkPeEntity) o;
-        return Objects.equals(reportDate, that.reportDate) &&
-                Objects.equals(reportText, that.reportText) &&
-                Objects.equals(averagePe, that.averagePe) &&
-                Objects.equals(eneUpperCnt, that.eneUpperCnt) &&
-                Objects.equals(eneLowerCnt, that.eneLowerCnt) &&
-                Objects.equals(upper1, that.upper1) &&
-                Objects.equals(lower1, that.lower1) &&
-                Objects.equals(bias, that.bias) &&
-                Objects.equals(eneUpper, that.eneUpper) &&
-                Objects.equals(eneLower, that.eneLower) &&
-                Objects.equals(result1, that.result1) &&
-                Objects.equals(result2, that.result2) &&
-                Objects.equals(avgPb, that.avgPb) &&
-                Objects.equals(totalPe, that.totalPe) &&
-                Objects.equals(totalPb, that.totalPb) &&
-                Objects.equals(midPb, that.midPb) &&
-                Objects.equals(midPe, that.midPe) &&
-                Objects.equals(result3, that.result3) &&
-                Objects.equals(result4, that.result4) &&
-                Objects.equals(result5, that.result5) &&
-                Objects.equals(result6, that.result6) &&
-                Objects.equals(result7, that.result7) &&
-                Objects.equals(result8, that.result8) &&
-                Objects.equals(result9, that.result9) &&
-                Objects.equals(result10, that.result10) &&
-                Objects.equals(result11, that.result11) &&
-                Objects.equals(result12, that.result12);
+        return Objects.equals(reportDate, that.reportDate);
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(reportDate, reportText, averagePe, eneUpperCnt, eneLowerCnt, upper1, lower1, bias, eneUpper, eneLower, result1, result2, avgPb, totalPe, totalPb, midPb, midPe, result3, result4, result5, result6, result7, result8, result9, result10, result11, result12);
+        return Objects.hash(reportDate);
     }
 }

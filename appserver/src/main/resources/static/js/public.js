@@ -184,7 +184,7 @@ function createEye(stock, id){
 
 const _modal = {
     props: {
-        id:Number,
+        id:String,
         title:String,
         content:String
     },
@@ -192,8 +192,8 @@ const _modal = {
         <div class="modal" :id="id">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Large Modal</h4>
+                    <div v-if="title" class="modal-header">
+                        <h4 v-html="title" class="modal-title"></h4>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -202,7 +202,7 @@ const _modal = {
                         <p v-html="content"></p>
                     </div>
                     <div class="modal-footer justify-content-between">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
                         <button type="button" class="btn btn-primary">Save changes</button>
                     </div>
                 </div>

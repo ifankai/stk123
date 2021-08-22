@@ -14,4 +14,6 @@ public interface StkPeRepository extends JpaRepository<StkPeEntity, String> {
         }
         return stkPeEntity;
     }
+
+    StkPeEntity findFirstByReportDate(String reportDate);
 }

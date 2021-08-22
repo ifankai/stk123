@@ -2,6 +2,7 @@ package com.stk123.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.common.CommonUtils;
+import com.stk123.common.util.JsonUtils;
 import com.stk123.entity.StkDictionaryEntity;
 import com.stk123.entity.StkNewsEntity;
 import com.stk123.model.RequestResult;
@@ -17,9 +18,13 @@ import com.stk123.repository.StkNewsRepository;
 import com.stk123.repository.StkRepository;
 import com.stk123.repository.StkTextRepository;
 import com.stk123.service.StkConstant;
-import com.stk123.service.core.DictService;
+import com.stk123.service.XueqiuService;
 import com.stk123.service.core.BarService;
+import com.stk123.service.core.DictService;
 import com.stk123.service.core.StockService;
+import com.stk123.util.HttpUtils;
+import com.stk123.util.ServiceUtils;
+import lombok.SneakyThrows;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,7 +138,7 @@ public class StockController {
 
         Map result = null;
         if(StringUtils.isNotEmpty(rpsCode)) {
-            List<StrategyResult> srs = stockService.calcRps(stocks, Rps.CODE_STOCK_SCORE_20);
+            List<StrategyResult> srs = stockService.calcRps(stocks, Rps.CODE_STOCK_SCORE);
             result = stockService.getStrategyResultAsMap(srs);
         }else{
             result = stockService.getStocksAsMap(stocks);
@@ -160,8 +165,65 @@ public class StockController {
             map.put("type", "["+dicts.get(entity.getType().toString()).getText()+"]");
             map.put("title", entity.getTitle());
             map.put("createdAt", CommonUtils.formatDate(entity.getInfoCreateTime()));
+            map.put("urlTarget", entity.getUrlTarget());
             list.add(map);
         }
         return list;
+    }
+
+    @RequestMapping(value = "/notice/{code}")
+    @ResponseBody
+    public RequestResult xueqiuNotice(@PathVariable(value = "code")String code){
+        Stock stock = stockService.getStock(code);
+        List<Map> notice = getNoticeFromXueqiu(stock);
+        System.out.println(notice);
+        return RequestResult.success(notice);
+    }
+
+    @SneakyThrows
+    private List<Map> getNoticeFromXueqiu(Stock stock) {
+        String scode = stock.getCodeWithPlace();
+        Map<String, String> headerRequests = XueqiuService.getCookies();
+        List<Map> notices = new ArrayList<Map>();
+        Date now = new Date();
+        int pageNum = 1;
+        boolean clearCookie = false;
+        do{
+            String page = HttpUtils.get("https://xueqiu.com/statuses/stock_timeline.json?symbol_id="+scode+"&count=50&source=%E5%85%AC%E5%91%8A&page="+pageNum,null,headerRequests, "GBK");
+            if("400".equals(page) || "404".equals(page)){
+                if(!clearCookie){
+                    XueqiuService.clearCookie();
+                    clearCookie = true;
+                    continue;
+                }
+                break;
+            }
+            Map m = JsonUtils.testJson(page);
+            List<Map> list = (List)m.get("list");
+            boolean flag = false;
+            for(Map n : list){
+                int retweet = Integer.parseInt(String.valueOf(n.get("retweet_count")));
+                int reply = Integer.parseInt(String.valueOf(n.get("reply_count")));
+                if(retweet > 0 || reply > 0){
+                    String createdAt = String.valueOf(n.get("created_at"));
+                    Date date = new Date(Long.parseLong(createdAt));
+                    //System.out.println(StkUtils.formatDate(date));
+                    if(date.before(ServiceUtils.addDay(now, -500))){
+                        flag = true;
+                        break;
+                    }
+                    Map map = new HashMap();
+                    map.put("reply", CommonUtils.wrapLink(String.valueOf(retweet+reply), "https://xueqiu.com"+n.get("target")));
+                    map.put("createdAt", ServiceUtils.formatDate(date));
+                    map.put("title", n.get("description"));
+                    notices.add(map);
+                }
+            }
+            if(flag){
+                break;
+            }
+            if(pageNum++ >= 100)break;
+        }while(true);
+        return notices;
     }
 }

@@ -25,6 +25,7 @@ import java.awt.datatransfer.Transferable;
 import java.io.*;
 import java.math.BigDecimal;
 import java.net.InetAddress;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.Time;
@@ -960,12 +961,13 @@ public class CommonUtils {
     public static String k(String title, List<String> codes){
         return k(title, title, codes);
     }
-    public static String k(String name, String title, List<String> codes){
-        return CommonUtils.wrapLink(name,"https://81.68.255.181:8443/S/"+StringUtils.join(codes, ",")+"?title="+ URLDecoder.decode(title, Charset.forName("UTF-8")));
+    @SneakyThrows
+    public static String k(String name, String title, List<String> codes) {
+        return CommonUtils.wrapLink(name, "http://www.xzhvalue.com/S/" + StringUtils.join(codes, ",") + "?title=" + URLEncoder.encode(title, "UTF-8"));
     }
-
+    @SneakyThrows
     public static String a2stocks(String name, String title, List<String> codes){
-        return CommonUtils.wrapLink(name,"/S/"+StringUtils.join(codes, ",")+"?title="+ URLDecoder.decode(title, Charset.forName("UTF-8")));
+        return CommonUtils.wrapLink(name,"/S/"+StringUtils.join(codes, ",")+"?title="+ URLEncoder.encode(title, "UTF-8"));
     }
 
     //计算复合增长率

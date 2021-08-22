@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>小智慧 - 股票</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fontawesome5pro@5.14.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css">
     <!-- DataTables -->
     <link rel="stylesheet" href="/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
@@ -83,6 +83,11 @@
             line-height: 1.5;
         }
 
+        .fa-file, .fa-external-link{
+            margin-left: 10px;
+            cursor: pointer;
+            font-family: "Font Awesome 5 Pro";
+        }
     </style>
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed text-sm pace-primary pace-done">
@@ -101,10 +106,32 @@
 
         <section class="content">
             <div class="container">
+
                 <div class="row">
                     <div class="col-12">
 
-                        <div id="notice" class="card">
+                        <div id="report" class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">研报</h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="收起">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="card-body">
+                                <datatable :="{...common.report, ...stock.report}"></datatable>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+
+                        <div id="post" class="card">
                             <div class="card-header">
                                 <h3 class="card-title">热点评论</h3>
                                 <div class="card-tools">
@@ -142,6 +169,30 @@
 
                     </div>
                 </div>
+
+                <div class="row">
+                    <div class="col-12">
+
+                        <div id="notice" class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">公告</h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="收起">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="card-body">
+                                <datatable :="{...common.notice, ...stock.notice}"></datatable>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+
             </div>
         </section>
 
@@ -149,8 +200,6 @@
             <i class="fas fa-chevron-up"></i>
         </a>
     </div>
-
-    <modal v-for="post in stock.posts.data" :id="'post-'+post.postId" :content="post.content"></modal>
 
     <div th:replace="common/footer"></div>
 </div>
@@ -191,14 +240,15 @@
                         columns: [
                             {title:"发帖人", data:"user"},
                             {title:"粉丝数", data:"followersCount"},
-                            {title:"内容", data:"title"},
+                            {title:"内容", data:"titleAndDetail"},
                             {title:"回复", data:"reply"},
                             {title:"日期", data:"createdAt"},
                         ],
                         columnDefs: [
                             { className: "text-nowrap text-center", "targets": [ 3,4 ] },
                             { className: "text-nowrap", "targets": [ 0 ] }
-                        ]
+                        ],
+                        tableClass:{'table-hover':true}
                     },
                     news:{
                         columns: [
@@ -209,7 +259,32 @@
                         columnDefs: [
                             { className: "text-nowrap text-center", "targets": [ 2 ] },
                             { className: "text-nowrap", "targets": [ 0 ] }
-                        ]
+                        ],
+                        tableClass:{'table-hover':true}
+                    },
+                    notice:{
+                        columns: [
+                            {data:"title"},
+                            {data:"reply"},
+                            {data:"createdAt"}
+                        ],
+                        columnDefs: [
+                            { className: "text-nowrap text-center", "targets": [ 2 ] },
+                            { className: "text-nowrap", "targets": [ 0 ] }
+                        ],
+                        tableClass:{'table-hover':true},
+                        pageLength: 25
+                    },
+                    report:{
+                        columns: [
+                            {data:"titleAndDetail"},
+                            {data:"createdAt"}
+                        ],
+                        columnDefs: [
+                            { className: "text-nowrap text-center", "targets": [ 1 ] },
+                            { className: "text-nowrap", "targets": [ 0 ] }
+                        ],
+                        tableClass:{'table-hover':true}
                     }
                 },
                 stock:{
@@ -229,10 +304,10 @@
         },
         mounted() {
             let _this = this;
-            axios.get("/text/"+code).then(function (res) {
+            axios.get("/text/post/"+code).then(function (res) {
                 let data = res.data.data;
                 data.forEach(post => {
-                    post.title = post.title == null ? post.desc : post.title + '<button type="button" class="btn btn-default" data-toggle="modal" data-target="#post-'+post.postId+'"><i class="fas fa-arrow-circle-right"></i></button>';
+                    //post.title = post.title == null ? post.desc : post.title;
                     if(post.userId == -1){
                         post.followersCount = null;
                         post.user = '<a href="https://xueqiu.com/S/' + codeWithPlace + '" target="_blank">' + post.userName + '</a>';
@@ -244,13 +319,27 @@
                     post.createdAt = new Date(post.createdAt).format("yyyy-MM-dd hh:mm:ss");
                 });
                 _this.stock.posts = {data: data};
-                console.log('mounted', _this.$data)
             });
 
             axios.get("/stock/news/"+code).then(function (res) {
                 let data = res.data.data;
+                data.forEach(row => {
+                    row.title = row.title + '<i class="fal fa-external-link" onclick="window.open(\''+row.urlTarget+'\')"></i>'
+                })
                 _this.stock.news = {data: data};
-                console.log('mounted', _this.$data)
+            });
+
+            axios.get("/stock/notice/"+code).then(function (res) {
+                let data = res.data.data;
+                _this.stock.notice = {data: data};
+            });
+
+            axios.get("/text/report/"+code).then(function (res) {
+                let data = res.data.data;
+                data.forEach(row => {
+                    row.createdAt = new Date(row.createdAt).format("yyyy-MM-dd hh:mm:ss");
+                })
+                _this.stock.report = {data: data};
             });
 
             if (localStorage.stockLookPool) {

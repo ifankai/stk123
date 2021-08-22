@@ -410,6 +410,7 @@ create table STK_PE
   RESULT_12     NUMBER(8,2)
 );
 alter table stk_pe add constraint pk_pe primary key (report_date);
+alter table stk_pe add stock_count number(8);
 
 
 create table stk_earnings_forecast(
@@ -2966,7 +2967,7 @@ from (select t.*, rank() over(partition by t.code order by t.kline_date desc) as
 select * from stk_text stktextent0_ where stktextent0_.type=3 and (stktextent0_.read_date is null) and stktextent0_.created_at>sysdate-2
 
 select * from stk_text where type=3 order by insert_time desc;
-select * from stk _pe order by report_date desc for update;
+select * from stk_pe order by report_date desc for update;
 select avg(pe_ttm) as avg_pe_ttm,median(pe_ttm) as mid_pe_ttm from stk_kline_hk where kline_date=? and pe_ttm is not null and pe_ttm>3 and pe_ttm<200
 
 select avg(pe_ttm) as avg_pe_ttm,median(pe_ttm) as mid_pe_ttm from stk_kline where kline_date='20201224' and pe_ttm is not null and pe_ttm>3 and pe_ttm<200
@@ -3043,7 +3044,7 @@ select s.code, s.name, t.fn_date, t.holder, t.holding_amount, t.holder_change
   from (select code, fn_date, holder, holding_amount,holder_change, ROW_NUMBER() over(PARTITION by code order by fn_date desc) as num from stk_holder) t, stk s
  where t.code=s.code and t.num = 1 and t.code='600600';
  
-select * from stk_text where code='000100' order by insert_time desc; 
+select * from stk_text where code='000761' order by insert_time desc; 
 select * from stk_text where code='605009' order by insert_time desc;
 select * from stk_text where reply_positive is not null;
 
@@ -3078,7 +3079,7 @@ select code,kline_date ,open,close,high,low,volumn as volume,amount,last_close,p
 from stk_kline t where t.code in ('002346','600600','600601','601958','600531','000758','000060','600497','000807','000751','600395','600456','002340','002237','000612','600459','000960','600251')) where rn <= 1
 
 select * from stk_report_header where report_date='20210809' for update;
-select * from stk_report_detail where header_id in (10031) for update;
+select * from stk_report_detail where header_id in (10144) for update;
 select distinct type from stk_report_header;
 
 select * from stk_report_header order by report_date desc, insert_time desc ;

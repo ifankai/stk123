@@ -17,7 +17,7 @@ import java.util.List;
 @Repository
 public interface StkRepository extends JpaRepository<StkEntity, String> {
 
-    @Query(value = "select code as code,name as name,market as market,cate as cate,place as place,hot as hot from StkEntity where market in (:markets) and cate=:cate and hot>=:hot")
+    @Query(value = "select code as code,name as name,market as market,cate as cate,place as place,totalCapital as totalCapital,hot as hot from StkEntity where market in (:markets) and cate=:cate and hot>=:hot")
     List<StockProjection> findAllByMarketAndCateAndHotGreaterThan(@Param("markets") List<Integer> markets, @Param("cate")Integer cate, @Param("hot")Integer hot);
 
     @Query(value = "select t from StkEntity t where code=:code")
@@ -33,15 +33,15 @@ public interface StkRepository extends JpaRepository<StkEntity, String> {
         return this.findAllByMarketAndCateOrderByCode(market.getMarket(), cate.getCate());
     }
 
-    @Query(value = "select code,name,market,cate,place from stk_cn where code not in (select code from stk_kline where kline_date=to_char(sysdate,'yyyymmdd'))", nativeQuery = true)
+    @Query(value = "select code,name,market,cate,place,totalCapital as totalCapital from stk_cn where code not in (select code from stk_kline where kline_date=to_char(sysdate,'yyyymmdd'))", nativeQuery = true)
     List<StockBasicProjection> findStockNotExsitingTodayKline();
 
-    @Query(value = "select code as code,name as name,market as market,cate as cate,place as place from StkEntity where code in (:codes)")
+    @Query(value = "select code as code,name as name,market as market,cate as cate,place as place,totalCapital as totalCapital from StkEntity where code in (:codes)")
     List<StockBasicProjection> findAllByCodes(@Param("codes") List<String> codes);
 
     @Query(value = "select code as code,name as name from stk_cn union all select code as code,name as name from stk_hk where hot > 500 union all select code as code,name as name from stk_us where hot > 500", nativeQuery = true)
     List<StockCodeNameProjection> findAllByOrderByCode();
 
-    @Query(value = "select code as code,name as name,market as market,cate as cate,place as place from StkEntity where code=:code and market=:market and place=:place")
+    @Query(value = "select code as code,name as name,market as market,cate as cate,place as place,totalCapital as totalCapital from StkEntity where code=:code and market=:market and place=:place")
     StockBasicProjection findByCodeAndMarketAndPlace(@Param("code") String code, @Param("market") Integer market, @Param("place") Integer place);
 }

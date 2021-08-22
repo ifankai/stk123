@@ -14,7 +14,6 @@ import com.stk123.model.enumeration.EnumMarket;
 import com.stk123.model.enumeration.EnumPeriod;
 import com.stk123.model.enumeration.EnumPlace;
 import com.stk123.model.json.View;
-import com.stk123.model.projection.IndustryProjection;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.model.projection.StockProjection;
 import com.stk123.model.strategy.Sortable;
@@ -94,10 +93,13 @@ public class Stock {
     @JsonView(View.Default.class)
     private EnumCate cate;
 
+    private double priceLimit = 0.0; //5%, 10%, 20%
+
     //存放临时数据
     private Map data = new HashMap();
 
     private Double totalCapital; //总股本
+    @JsonView(View.Default.class)
     private Double marketCap; //总市值
 
     private StockProjection stock;
@@ -237,7 +239,7 @@ public class Stock {
         if(this.isMarketCN() && this.isCateIndexEastmoneyGn()){
             return CommonUtils.wrapLink(this.getName(), "/B/"+this.getCode());
         }
-        return CommonUtils.wrapLink(this.getName(), "http://81.68.255.181:8088/stk?s="+this.getCode());
+        return CommonUtils.wrapLink(this.getName(), "/S/"+this.getCode());
     }
     @JsonView(View.All.class)
     public String getNameAndCodeWithLink(){
@@ -251,10 +253,10 @@ public class Stock {
         loadIfNull(this.name);
         if(this.isMarketCN() && this.isCateIndexEastmoneyGn()){
             return CommonUtils.wrapLink(this.getName(), "https://quote.eastmoney.com/bk/90."+this.getCode()+".html")
-                    + (br?"<br/>":"")+"["+ CommonUtils.wrapLink(this.getCode(), "http://81.68.255.181:8089/B/"+this.getCode()) +"]";
+                    + (br?"<br/>":"")+"["+ CommonUtils.wrapLink(this.getCode(), "/B/"+this.getCode()) +"]";
         }
         return CommonUtils.wrapLink((this.name==null?this.code:this.name), "https://xueqiu.com/S/"+this.getCodeWithPlace())
-                + (br?"<br/>":"")+"["+ CommonUtils.wrapLink(this.getCodeWithPlace(), "http://81.68.255.181:8088/stk?s="+this.getCode()) +"]";
+                + (br?"<br/>":"")+"["+ CommonUtils.wrapLink(this.getCodeWithPlace(), "/S/"+this.getCode()) +"]";
     }
     public String getNameAndCodeWithLinkAndBold(){
         return "<b>"+this.getNameAndCodeWithLink()+"</b>";
@@ -332,6 +334,32 @@ public class Stock {
         }else{
             return SZ;
         }
+    }
+
+    public boolean isPriceLimitUp(){
+        double pl = this.getPriceLimit();
+        Bar bar = this.getBar();
+        if(bar == null) return false;
+        return CommonUtils.numberFormat(bar.getLastClose() * (1 + pl), 2) == bar.getClose();
+    }
+
+    public boolean isPriceLimitDown(){
+        double pl = this.getPriceLimit();
+        Bar bar = this.getBar();
+        if(bar == null) return false;
+        return CommonUtils.numberFormat(bar.getLastClose() * (1 - pl), 2) == bar.getClose();
+    }
+
+    public double getPriceLimit(){
+        if(this.priceLimit != 0.0) return this.priceLimit;
+        if(StringUtils.containsIgnoreCase(this.getName(), "ST")){
+            this.priceLimit = 0.05;
+        }else if(StringUtils.startsWith(this.getCode(), "30") || StringUtils.startsWith(this.getCode(), "688")){ // 30: 创业板   688: 科创板
+            this.priceLimit = 0.20;
+        }else{
+            this.priceLimit = 0.10;
+        }
+        return this.priceLimit;
     }
 
     public Bar getBar(){
@@ -736,7 +764,7 @@ public class Stock {
             for(String rpsCode : rpsCodes) {
                 StrategyResult bkSr = this.getMaxBkRpsInBks(rpsCode);
                 if(bkSr != null) {
-                    StockInfoList stockInfoList = bkSr.getStock().getStocksInfos(topN, Rps.CODE_STOCK_SCORE_20);
+                    StockInfoList stockInfoList = bkSr.getStock().getStocksInfos(topN, Rps.CODE_STOCK_SCORE);
                     BkInfo bkInfo = new BkInfo(bkSr, stockInfoList);
                     list.add(bkInfo);
                 }
@@ -755,9 +783,9 @@ public class Stock {
             StrategyResult sr2 = this.getMaxBkRpsInBks(Rps.CODE_BK_STOCKS_SCORE_30);
             Stock bk2 = sr2.getStock();
 
-            return "<br/>"+bk.getNameAndCodeWithLink()+bk.getStocksInfo(15,false, Rps.CODE_STOCK_SCORE_20)+
+            return "<br/>"+bk.getNameAndCodeWithLink()+bk.getStocksInfo(15,false, Rps.CODE_STOCK_SCORE)+
                    "<br/>"+sr.getStrategy().getName()+":"+CommonUtils.numberFormat2Digits(sr.getPercentile())+
-                   "<br/>"+bk2.getNameAndCodeWithLink()+bk2.getStocksInfo(15,false, Rps.CODE_STOCK_SCORE_20)+
+                   "<br/>"+bk2.getNameAndCodeWithLink()+bk2.getStocksInfo(15,false, Rps.CODE_STOCK_SCORE)+
                    "<br/>"+sr2.getStrategy().getName()+":"+CommonUtils.numberFormat2Digits(sr2.getPercentile());
         }
         return "";

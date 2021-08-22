@@ -31,8 +31,8 @@ public class ResearchReportJob implements Job {
 	}
 
 	public static void main(String[] args) throws Exception {
-		//getReportByType("1",100);
-		getReportByType("2",110);
+		getReportByType("1",100);
+		//getReportByType("2",110);
 	}
 	
 	/**
@@ -50,12 +50,12 @@ public class ResearchReportJob implements Job {
 				boolean flag = false;
 				String page = HttpUtils.get("http://www.hibor.com.cn/elitelist_"+pageNum+"_"+type+".html", null, "gb2312");
 				//System.out.println(page);
-				List<Node> divNodes = HtmlUtils.getNodeListByTagNameAndAttribute(page, null, "div", "class", "classbaogao_sousuo_list");
+				List<Node> divNodes = HtmlUtils.getNodeListByTagNameAndAttribute(page, null, "tr", "class", "trContent");
 				for(Node div : divNodes){
 					//System.out.println(span.toHtml());
 					Node titleNode = HtmlUtils.getNodeByTagName(div, "a");
 					String titleLink = HtmlUtils.getAttribute(titleNode, "href");
-					String s = HttpUtils.get("http://www.hibor.com.cn/"+titleLink, null, "gb2312");
+					String s = HttpUtils.get("http://www.hibor.com.cn"+titleLink, null, "gb2312");
 					Node contentNode = HtmlUtils.getNodeByAttribute(s, null, "class", "p_main");
 					String content = contentNode==null?null:contentNode.toHtml();
 					//System.out.println(content);
@@ -66,14 +66,15 @@ public class ResearchReportJob implements Job {
 						code = StringUtils.split(titleNode.toPlainTextString(), "-")[2];
 					}
 					
-					Node timeNode = HtmlUtils.getNodeByAttribute(div, null, "width", "17%");
+                    List<Node> tds = HtmlUtils.getNodeListByTagName(div, "td");
+                    Node timeNode = tds.get(tds.size()-1);
 					
 					//System.out.println(pageNum+","+code+","+title+","+timeNode.toPlainTextString());
 					long cnt = 0;
 					if(code == null){
 						cnt = Text.insert(conn, 2, title, content, subType, timeNode.toPlainTextString());
 					}else{
-						cnt = Text.insert(conn, 2,code, title, content, subType, timeNode.toPlainTextString());
+						cnt = Text.insert(conn, 2, code, title, content, subType, timeNode.toPlainTextString());
 					}
 					if(cnt == 0){
 						flag = true;

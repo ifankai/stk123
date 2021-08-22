@@ -29,6 +29,7 @@ public class StkTextEntity implements Serializable {
     @Column(name="ID")
     @GeneratedValue(strategy =GenerationType.SEQUENCE, generator="s_text_id")
     @SequenceGenerator(name="s_text_id", sequenceName="s_text_id", allocationSize = 1)
+    @JsonView(View.All.class)
     private Long id;
 
     @Column(name="TYPE")

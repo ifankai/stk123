@@ -27,7 +27,7 @@ var _datatableLang =
 var _datatableTemplate = `
 <div class="dataTables_wrapper dt-bootstrap4">
     <table :id="'_datatable_'+datatableId"  class="table table-valign-middle" :class="tableClass" style="width:100%">
-        <thead v-if="columns[0].title">
+        <thead v-show="columns[0].title">
             <tr>
                 <th v-for="column in columns" v-html="column.title"></th>
             </tr>
@@ -70,11 +70,19 @@ var _datatableTemplate = `
                     <td v-else-if="column.data == 'stockAndEye'">
                         <span v-html="row.nameAndCodeWithLink"></span><eye :stock="row"></eye>
                     </td>
+                    <td v-else-if="column.data == 'titleAndDetail'">
+                        <b v-if="row.title"><span v-html="row.title"></span></b>
+                        <template v-if="row.desc">
+                            <br v-if="row.title"><span v-html="row.desc"></span>
+                        </template>
+                        <i @click="openModalDetail(row)" class="fal fa-file" title="查看详情" data-toggle="modal" :data-target="'#modal-'+row.id"></i>
+                    </td>
                     <td v-else v-html="row[column.data]"></td>
                 </template>
             </tr>
         </tbody>
     </table>
+    <modal :id="modalId" :title="modalTitle" :content="modalContent"></modal>
 </div>
 `;
 let _datatable_id = 0;
@@ -116,12 +124,20 @@ const _datatable = {
     //emits: ['click'],
     data: function () {
         return {
-            datatableId: 0
+            datatableId: 0,
+            modalId:'',
+            modalTitle:'',
+            modalContent:''
         }
     },
     methods: {
         dateFormat:function (date){
             return dateFormat(date);
+        },
+        openModalDetail:function (row) {
+            this.modalId = 'modal-'+row.id;
+            this.modalTitle = row.title;
+            this.modalContent = row.content;
         }
     },
     created() {

@@ -162,13 +162,24 @@ public class TextController {
         return RequestResult.success(result);
     }
 
-    @RequestMapping("/{code}")
-    public RequestResult query(@PathVariable String code,
+    @RequestMapping("/post/{code}")
+    public RequestResult post(@PathVariable String code,
                                @RequestParam(value = "start", required = false)String start,
                                @RequestParam(value = "end", required = false)String end){
         Date dateStart = start == null ? CommonUtils.addDay(new Date(), -365) : CommonUtils.parseDate(start);
         Date dateEnd = end == null ? new Date() : CommonUtils.parseDate(end);
-        List<StkTextEntity> result = stkTextRepository.findAllByCodeAndInsertTimeBetweenOrderByInsertTimeDesc(code, dateStart, dateEnd);
+        List<StkTextEntity> result = stkTextRepository.findAllByCodeAndTypeAndInsertTimeBetweenOrderByInsertTimeDesc(code, StkConstant.TEXT_TYPE_XUEQIU, dateStart, dateEnd);
+        return RequestResult.success(result);
+    }
+
+    @RequestMapping("/report/{code}")
+    public RequestResult researchReport(@PathVariable String code,
+                              @RequestParam(value = "start", required = false)String start,
+                              @RequestParam(value = "end", required = false)String end){
+        Date dateStart = start == null ? CommonUtils.addDay(new Date(), -365) : CommonUtils.parseDate(start);
+        Date dateEnd = end == null ? new Date() : CommonUtils.parseDate(end);
+        List<StkTextEntity> result = stkTextRepository.findAllByCodeAndTypeAndSubTypeAndInsertTimeBetweenOrderByInsertTimeDesc(code, StkConstant.TEXT_TYPE_LONG_TEXT,
+                StkConstant.TEXT_SUB_TYPE_COMPANY_RESEARCH, dateStart, dateEnd);
         return RequestResult.success(result);
     }
 

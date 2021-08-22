@@ -229,6 +229,10 @@ public class Filters {
         };
     }
 
+    public static Filter<Stock> filter_mustMarketCapBetween(int min, int max) {
+        return (strategy, stock) -> stock.getMarketCap() >= min && stock.getMarketCap() <= max ? FilterResult.TRUE() : FilterResult.FALSE();
+    }
+
     /////////////////////////////////////////////////////////////////////////////////////////////
     /**
      * 过去numberBeforeFirst天到numberBeforeParam1天的跌幅

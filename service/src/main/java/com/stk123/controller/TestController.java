@@ -75,12 +75,8 @@ public class TestController {
 //        stock.getBarSeries();
 //        System.out.println(stock.getBar().before(10).getChange(-7, Bar.EnumValue.C));
 
-        Stock stock = Stock.build("300581");
-        List<StkIndustryEntity> stkIndustryEntities = stock.getIndustries();
-        stkIndustryEntities.forEach(stkIndustryEntity -> {
-            System.out.println(stkIndustryEntity);
-        });
-        return RequestResult.success();
+        Stock stock = Stock.build("000526");
+        return RequestResult.success(stock.isPriceLimitDown());
     }
 
 

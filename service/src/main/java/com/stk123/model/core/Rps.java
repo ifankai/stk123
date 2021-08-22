@@ -20,7 +20,9 @@ public class Rps{
 
     public final static String CODE_BK_60 = "rps_01";
     public final static String CODE_BK_STOCKS_SCORE_30 = "rps_02";
-    public final static String CODE_STOCK_SCORE_20 = "rps_03a";
+    public final static String CODE_STOCK_SCORE = "rps_03a";
+    public final static String CODE_STOCK_SCORE_JSM = "rps_03b";
+    public final static String CODE_STOCK_SCORE_JSM_LOW = "rps_03c";
     public final static String CODE_STOCK_MONTH_3_VOLUME = "rps_04";
     public final static String CODE_STOCK_MONTH_1_VOLUME = "rps_05";
     public final static String CODE_STOCK_WEEK_1_VOLUME_A = "rps_06a";
@@ -51,7 +53,7 @@ public class Rps{
 
     public static List<Strategy> getAllRpsStrategyOnStock(){
         return ListUtils.createList(
-                Strategies.rps_03a(), Strategies.rps_03b(),
+                Strategies.rps_03a(), Strategies.rps_03b(), Strategies.rps_03c(),
                 Strategies.strategy_0(),
                 Strategies.rps_05(),Strategies.rps_04(),Strategies.rps_12(),
                 Strategies.strategy_0(),

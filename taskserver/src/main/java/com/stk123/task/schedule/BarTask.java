@@ -122,6 +122,7 @@ public class BarTask extends AbstractTask {
         this.runByName("analyseAllRps", this::analyseAllRps);
         this.runByName("analyseRpsStocksByStrategies", this::analyseRpsStocksByStrategies);
         this.runByName("analyseBks", this::analyseBks);
+        this.runByName("stat", this::statAllStocks);
         this.runByName("clearAll", this::clearAll);
         this.runByName("test", this::updateCNCapitalFlow);
     }
@@ -618,6 +619,7 @@ public class BarTask extends AbstractTask {
             StkReportHeaderEntity stkReportHeaderEntity = null;
             List<Stock> stocks = Stocks.getStocksWithBks();
             //stockService.buildHolder(StocksAllCN);
+            stocks = stockService.filterByMarketCap(stocks, 40);
 
             String strategies = Strategies.STRATEGIES_ALL_STOCKS;
             if(StringUtils.isNotEmpty(strategy)){
@@ -719,6 +721,8 @@ public class BarTask extends AbstractTask {
             StkReportHeaderEntity stkReportHeaderEntity = null;
             List<Stock> stocks = Stocks.getStocksWithBks();
 
+            stocks = stockService.filterByMarketCap(stocks, 50);
+
             if(StringUtils.isNotEmpty(report)){
                 String type = StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS;
                 String name = "全市场RPS";
@@ -734,13 +738,37 @@ public class BarTask extends AbstractTask {
                 if(rpsStrategy.isEmptyStrategy())continue;
                 List<Stock> rpsStocks = stockService.calcRps(stocks, rpsStrategy.getCode()).stream().map(StrategyResult::getStock).collect(Collectors.toList());
                 rpsStocks = rpsStocks.subList(0, Math.min(150, rpsStocks.size()));
-                rps.append(rpsStrategy.getNameWithCode() + ": " + CommonUtils.k("查看", rpsStrategy.getNameWithCode(), rpsStocks.stream().map(Stock::getCode).collect(Collectors.toList())));
+
+                List<Stock> results = new ArrayList<>();
+                int cap1 = 50;
+                int cap2 = 30;
+                for(Stock stock : rpsStocks){
+                    if(stock.getMarketCap() >= 50 && stock.getMarketCap() < 100){
+                        if(cap2-- > 0){
+                            results.add(stock);
+                        }
+                    }else if(stock.getMarketCap() >= 100 && stock.getMarketCap() < 200){
+                        if(cap1-- > 0){
+                            results.add(stock);
+                        }
+                    }else if(stock.getMarketCap() >= 200 && stock.getMarketCap() < 500){
+                        if(cap1-- > 0){
+                            results.add(stock);
+                        }
+                    }else if(stock.getMarketCap() >= 500){
+                        if(cap2-- > 0){
+                            results.add(stock);
+                        }
+                    }
+                }
+
+                rps.append(rpsStrategy.getNameWithCode() + ": " + CommonUtils.k("查看", rpsStrategy.getNameWithCode(), results.stream().map(Stock::getCode).collect(Collectors.toList())));
                 rps.append("<br/>");
 
                 if(stkReportHeaderEntity != null){
                     StkReportDetailEntity stkReportDetailEntity = reportService.createReportDetailEntity(null, rpsStrategy.getCode(), report,
                             null, null, null, null,
-                            rpsStocks.stream().map(Stock::getCode).collect(Collectors.joining(",")), null
+                            results.stream().map(Stock::getCode).collect(Collectors.joining(",")), null
                     );
                     stkReportHeaderEntity.addDetail(stkReportDetailEntity);
                 }
@@ -767,8 +795,11 @@ public class BarTask extends AbstractTask {
             StkReportHeaderEntity stkReportHeaderEntity = null;
             String reportDateStart = CommonUtils.addDay2String(new Date(), -70);
             String reportDateEnd = CommonUtils.addDay2String(new Date(), -20);
+
             List<StkReportHeaderEntity> headers = stkReportHeaderRepository.findAllByTypeAndReportDateBetweenOrderByInsertTimeDesc(StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS, reportDateStart, reportDateEnd);
-            List<String> codes = headers.stream().flatMap(header -> header.getStkReportDetailEntities().stream()).flatMap(detail -> Arrays.stream(detail.getRpsStockCode().split(","))).distinct().collect(Collectors.toList());
+            //排除 rps_09,rps_10,rps_11
+            List<StkReportDetailEntity> details = headers.stream().flatMap(header -> header.getStkReportDetailEntities().stream().filter(detail -> !StringUtils.contains("rps_09,rps_10,rps_11", detail.getStrategyCode()) )).collect(Collectors.toList());
+            List<String> codes = details.stream().flatMap(detail -> Arrays.stream(detail.getRpsStockCode().split(","))).distinct().collect(Collectors.toList());
             List<Stock> stocks = stockService.getStocks(codes);
 
             String strategies = Strategies.STRATEGIES_ON_RPS;
@@ -895,7 +926,7 @@ public class BarTask extends AbstractTask {
                         rowCode = bk.getCode();
                     }
 
-                    Stock.StockInfoList stockInfoList = bk.getStocksInfos(15, Rps.CODE_STOCK_SCORE_20);
+                    Stock.StockInfoList stockInfoList = bk.getStocksInfos(15, Rps.CODE_STOCK_SCORE);
                     List<String> data = ListUtils.createList(
                             displayCode ? bk.getNameAndCodeWithLinkAndBold() : "",
                             strategyResult.getDate()+
@@ -915,7 +946,7 @@ public class BarTask extends AbstractTask {
                         StkReportDetailEntity stkReportDetailEntity = reportService.createReportDetailEntity(bk.getCode(), strategyResult.getStrategy().getCode(),
                                 strategyResult.getDate(),
                                 StringUtils.join(strategyResult.getResults(),"<br/>"),
-                                Rps.CODE_STOCK_SCORE_20, null,
+                                Rps.CODE_STOCK_SCORE, null,
                                 stockInfoList.getBk().getCode(),
                                 stockInfoList.getCodes(),null );
                         stkReportHeaderEntity.addDetail(stkReportDetailEntity);
@@ -926,7 +957,7 @@ public class BarTask extends AbstractTask {
                     reportService.save(stkReportHeaderEntity);
                 }
 
-                List<String> titles = ListUtils.createList("标的", "日期/策略/来源", "K线", "Rps["+Rps.CODE_STOCK_SCORE_20+"]");
+                List<String> titles = ListUtils.createList("标的", "日期/策略/来源", "K线", "Rps["+Rps.CODE_STOCK_SCORE +"]");
                 StringBuffer sb = new StringBuffer();
                 sb.append("板块");       sb.append(CommonUtils.createHtmlTable(titles, datasBk1));sb.append("<br/>");
                 sb.append("板块阶段强势");sb.append(CommonUtils.createHtmlTable(titles, datasBk2));
@@ -1007,6 +1038,39 @@ public class BarTask extends AbstractTask {
         
         EmailUtils.send("相似策略发现"+count+"个标的", table);
 
+    }
+
+    public void statAllStocks(){
+        log.info("start statAllStocks");
+        try{
+            String reportDate = this.report;
+            if(reportDate == null){
+                reportDate = CommonUtils.formatDate(new Date(), CommonUtils.sf_ymd2);
+            }
+            List<Stock> stocks = Stocks.getStocksWithBks();
+            int priceLimitUp = 0;
+            int priceLimitDown = 0;
+            for(Stock stock : stocks){
+                if(stock.isPriceLimitUp()){
+                    priceLimitUp ++;
+                }
+                if(stock.isPriceLimitDown()){
+                    priceLimitDown ++;
+                }
+            }
+            StkPeEntity entity = stkPeRepository.findFirstByReportDate(reportDate);
+            if(entity != null){
+                entity.setStockCount(stocks.size());
+                entity.setResult1((double)priceLimitUp);
+                entity.setResult2((double)priceLimitDown);
+
+                stkPeRepository.save(entity);
+            }
+        } catch (Exception e) {
+            EmailUtils.send("报错[statAllStocks]", ExceptionUtils.getExceptionAsString(e));
+            log.error("statAllStocks", e);
+        }
+        log.info("end statAllStocks");
     }
 
     public List<Stock> filterByHolder(List<Stock> stocks) {

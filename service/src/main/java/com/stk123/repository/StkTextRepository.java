@@ -39,7 +39,9 @@ public interface StkTextRepository extends JpaRepository<StkTextEntity, Long> {
 
     List<StkTextEntity> findAllByCodeAndInsertTimeGreaterThanOrderByInsertTimeDesc(String code, Date date);
 
-    List<StkTextEntity> findAllByCodeAndInsertTimeBetweenOrderByInsertTimeDesc(String code, Date dateStart, Date dateEnd);
+    List<StkTextEntity> findAllByCodeAndTypeAndInsertTimeBetweenOrderByInsertTimeDesc(String code, Integer type, Date dateStart, Date dateEnd);
+
+    List<StkTextEntity> findAllByCodeAndTypeAndSubTypeAndInsertTimeBetweenOrderByInsertTimeDesc(String code, Integer type, Integer subType, Date dateStart, Date dateEnd);
 
     List<StkTextEntity> findAllByCodeAndInsertTimeLessThanOrderByInsertTimeDesc(String code, Date date, Pageable pageable);
 
@@ -96,4 +98,6 @@ public interface StkTextRepository extends JpaRepository<StkTextEntity, Long> {
     List<StkTextEntity> findAllByCreatedAtGreaterThanAndTextLikeOrderByCreatedAtDesc(Date date, String text, Pageable pageable);
 
     List<StkTextEntity> findAllByTypeAndCodeTypeAndSubTypeAndReplyPositiveAndInsertTimeGreaterThanOrderByInsertTimeDesc(Integer type, Integer codeType, Integer subType, Integer replyPositive, Date createdAt);
+
+    StkTextEntity findFirstBySubTypeAndTitle(Integer subType, String title);
 }

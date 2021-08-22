@@ -67,7 +67,9 @@ public class Strategies {
                 Strategies.strategy_0(),
                 Strategies.strategy_02b(),
                 Strategies.strategy_0(),
-                Strategies.strategy_10a() //V型缩量反转(10a)
+                Strategies.strategy_10a(), //V型缩量反转(10a)
+                Strategies.strategy_0(),
+                Strategies.strategy_12a(),Strategies.strategy_12b(),Strategies.strategy_12c(),Strategies.strategy_12d()
         );
     }
 
@@ -424,6 +426,27 @@ public class Strategies {
         return strategy;
     }
 
+    //总市值
+    public static Strategy strategy_12a() {
+        Strategy<Stock> strategy = new Strategy<>("strategy_12a", "总市值50到100亿(12a)", Stock.class);
+        strategy.addFilter("总市值50到100亿", Filters.filter_mustMarketCapBetween(50, 100));
+        return strategy;
+    }
+    public static Strategy strategy_12b() {
+        Strategy<Stock> strategy = new Strategy<>("strategy_12b", "总市值100到200亿(12b)", Stock.class);
+        strategy.addFilter("总市值100到200亿", Filters.filter_mustMarketCapBetween(100, 200));
+        return strategy;
+    }
+    public static Strategy strategy_12c() {
+        Strategy<Stock> strategy = new Strategy<>("strategy_12c", "总市值200到500亿(12c)", Stock.class);
+        strategy.addFilter("总市值200到500亿", Filters.filter_mustMarketCapBetween(200, 500));
+        return strategy;
+    }
+    public static Strategy strategy_12d() {
+        Strategy<Stock> strategy = new Strategy<>("strategy_12d", "总市值500亿以上(12d)", Stock.class);
+        strategy.addFilter("总市值500亿以上", Filters.filter_mustMarketCapBetween(500, Integer.MAX_VALUE));
+        return strategy;
+    }
 
 
     /**************** Rps *********************/
@@ -451,7 +474,7 @@ public class Strategies {
     }
 
     public static Strategy rps_03a() {
-        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_SCORE_20, "个股评级+相对底部", Stock.class);
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_SCORE, "个股评级+相对底部", Stock.class);
         strategy.addFilter(strategy.getName(), (strgy, stock) -> {
             double rpsValue = stock.getScore();
             return FilterResult.Sortable(rpsValue);
@@ -470,7 +493,7 @@ public class Strategies {
     }
 
     public static Strategy rps_03b() {
-        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_SCORE_20, "个股技术面评级", Stock.class);
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_SCORE_JSM, "个股技术面评级", Stock.class);
         strategy.addFilter(strategy.getName(), (strgy, stock) -> {
             Rating rating = stock.getRating();
             double jsm = rating.getRoot().find("jsm").getScore();
@@ -480,7 +503,7 @@ public class Strategies {
     }
 
     public static Strategy rps_03c() {
-        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_SCORE_20, "个股技术面评级+低位", Stock.class);
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_SCORE_JSM_LOW, "个股技术面评级+低位", Stock.class);
         strategy.addFilter(strategy.getName(), (strgy, stock) -> {
             Rating rating = stock.getRating();
             double jsm = rating.getRoot().find("jsm").getScore();

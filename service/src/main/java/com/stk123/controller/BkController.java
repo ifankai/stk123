@@ -6,8 +6,6 @@ import com.stk123.model.RequestResult;
 import com.stk123.model.core.Rps;
 import com.stk123.model.core.Stock;
 import com.stk123.model.core.Stocks;
-import com.stk123.model.enumeration.EnumCate;
-import com.stk123.model.enumeration.EnumMarket;
 import com.stk123.model.json.View;
 import com.stk123.model.strategy.StrategyResult;
 import com.stk123.service.core.StockService;
@@ -21,8 +19,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -44,7 +40,7 @@ public class BkController {
         List<Stock> stocks = bk.get(0).getStocks();
         stocks = stockService.getStocksWithBks(stocks, Stocks.getBks(), false);
         if(StringUtils.isEmpty(rpsCode)){
-            rpsCode = Rps.CODE_STOCK_SCORE_20;
+            rpsCode = Rps.CODE_STOCK_SCORE;
         }
         List<StrategyResult> strategyResults = stockService.calcRps(stocks, rpsCode);
         Map result = stockService.getStrategyResultAsMap(strategyResults);
@@ -55,7 +51,7 @@ public class BkController {
     public void score(@PathVariable(value="code")String code, HttpServletResponse response) throws IOException {
         List<Stock> bks = stockService.buildStocks(code);
         Stock bk = bks.get(0);
-        List<Stock> stocks = bk.getGreatestStocksInBkByRps(100, Rps.CODE_STOCK_SCORE_20);
+        List<Stock> stocks = bk.getGreatestStocksInBkByRps(100, Rps.CODE_STOCK_SCORE);
         List<String> codes = stocks.stream().map(Stock::getCode).collect(Collectors.toList());
         String url = CommonUtils.wrapLink(bk.getNameAndCode(), "http://81.68.255.181:8089/S/"+StringUtils.join(codes,","));
         response.setCharacterEncoding("utf-8");

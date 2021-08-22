@@ -528,7 +528,7 @@ public class StockService {
         List<Stock> stocks = buildStocksWithProjection(list);
 
         //排除总市值小于40亿的
-        stocks = filterByMarketCap(stocks, 30);
+        //stocks = filterByMarketCap(stocks, 30);
         //排除退市的
         stocks = stocks.stream().filter(stock -> !StringUtils.contains(stock.getName(), "退")).collect(Collectors.toList());
 
