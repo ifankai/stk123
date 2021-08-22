@@ -1,7 +1,9 @@
 package com.stk123.app.web;
 
+import com.stk123.entity.StkPeEntity;
 import com.stk123.model.core.Stock;
 import com.stk123.model.projection.StockProjection;
+import com.stk123.repository.StkPeRepository;
 import com.stk123.repository.StkRepository;
 import com.stk123.service.core.StockService;
 import lombok.extern.apachecommons.CommonsLog;
@@ -22,6 +24,8 @@ public class StockWebController {
     private StkRepository stkRepository;
     @Autowired
     private StockService stockService;
+    @Autowired
+    private StkPeRepository stkPeRepository;
 
     @RequestMapping("/stk")
     public String stk(){
@@ -45,5 +49,16 @@ public class StockWebController {
         Stock stock = Stock.build(stockProjection);
         model.addAttribute("codeWithPlace", stock.getCodeWithPlace());
         return "stock";
+    }
+
+    @RequestMapping("/mystocks")
+    public String mystocks(Model model){
+        StkPeEntity stkPeEntity = stkPeRepository.findTopByOrderByReportDateDesc();
+        System.out.println(stkPeEntity);
+        String code = stkPeEntity.getReportText();
+        model.addAttribute("title", "自选股");
+        model.addAttribute("code", code);
+        model.addAttribute("codeType", "stock");
+        return "stocks";
     }
 }

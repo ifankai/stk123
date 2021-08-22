@@ -2,6 +2,7 @@ package com.stk123.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -10,6 +11,7 @@ import java.util.Objects;
 @Table(name = "STK_PE")
 @Setter
 @Getter
+@ToString
 public class StkPeEntity {
 
     @Id

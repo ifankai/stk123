@@ -478,6 +478,14 @@ public class BarTask extends AbstractTask {
                 addStocks(allList, tmpStocks.stream().map(Stock::getCode).collect(Collectors.toSet()), "反转股");*/
 
                 allList = allList.stream().filter(stockWrapper -> !excludeList.contains(stockWrapper.getCode())).collect(Collectors.toSet());
+
+                if(!allList.isEmpty()){
+                    StkPeEntity stkPeEntity = stkPeRepository.findFirstByReportDate(report);
+                    if(stkPeEntity != null){
+                        stkPeEntity.setReportText(allList.stream().map(StockWrapper::getCode).collect(Collectors.joining(",")));
+                        stkPeRepository.save(stkPeEntity);
+                    }
+                }
             }
 
             log.info("allList.size="+allList.size());
