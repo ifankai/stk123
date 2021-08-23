@@ -33,7 +33,7 @@ public interface StkRepository extends JpaRepository<StkEntity, String> {
         return this.findAllByMarketAndCateOrderByCode(market.getMarket(), cate.getCate());
     }
 
-    @Query(value = "select code,name,market,cate,place,totalCapital as totalCapital from stk_cn where code not in (select code from stk_kline where kline_date=to_char(sysdate,'yyyymmdd'))", nativeQuery = true)
+    @Query(value = "select code,name,market,cate,place,total_capital as totalCapital from stk_cn where code not in (select code from stk_kline where kline_date=to_char(sysdate,'yyyymmdd'))", nativeQuery = true)
     List<StockBasicProjection> findStockNotExsitingTodayKline();
 
     @Query(value = "select code as code,name as name,market as market,cate as cate,place as place,totalCapital as totalCapital from StkEntity where code in (:codes)")

@@ -88,6 +88,18 @@
             cursor: pointer;
             font-family: "Font Awesome 5 Pro";
         }
+
+        blockquote{
+            margin: 0 0 .5em 0;
+            padding: .2em .7rem;
+            border-left-width: 5px;
+        }
+        blockquote > p{
+            margin-bottom: 0;
+        }
+        blockquote a{
+            margin-right: .5rem;
+        }
     </style>
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed text-sm pace-primary pace-done">
@@ -106,6 +118,87 @@
 
         <section class="content">
             <div class="container">
+
+                <div class="row">
+                    <div class="col-12">
+                        <div id="navigator" class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">导航</h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="收起">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <blockquote class="quote-secondary">
+                                            <p>
+                                                <a target="_blank" th:href="@{'http://www.xueqiu.com/S/'+${codeWithPlace} }">雪球</a>
+                                                <a target="_blank" th:href="@{'http://guba.eastmoney.com/list,'+${code}+'.html'}">股吧</a>
+                                                <a target="_blank" th:href="@{'http://www.taoguba.com.cn/guba_'+${#strings.toLowerCase(codeWithPlace)} }">淘股吧</a>
+                                                <a target="_blank" th:href="@{'http://s.weibo.com/wb/'+${name}+'&xsort=time&Refer=wb_realtime'}">微博搜索</a>
+                                                <a target="_blank" th:href="@{'http://www.baidu.com/s?wd='+${name}+'%20site%3A(blog.sina.com.cn)&ie=utf-8&cl=3&t=12'}">新浪Blog</a>
+                                                <a target="_blank" th:href="@{'http://www.baidu.com/s?wd='+${name}+'%20site%3A(blog.eastmoney.com)&ie=utf-8&cl=3&t=12'}">东财Blog</a>
+                                                <a target="_blank" th:href="@{'https://www.qichacha.com/search?key='+${name}}">企查查</a>
+                                            </p>
+                                        </blockquote>
+                                        <blockquote class="quote-secondary">
+                                            <p>
+                                                <a target="_blank" href="http://moer.jiemian.com/stockcode.htm?code=cn_">摩尔经融</a>
+                                                <a target="_blank" href="http://114.80.159.18/CorpEventsWeb/NewsEventAlert.aspx?windcode=&t=1">大事提醒</a>
+                                                <a target="_blank" th:href="@{'https://weixin.sogou.com/weixin?type=2&query='+${name}}">微信搜索</a>
+                                                <a target="_blank" th:href="@{'http://news.baidu.com/ns?ct=0&rn=20&ie=utf-8&bs='+${name}+'&rsv_bp=1&sr=0&cl=2&f=8&prevct=0&word='+${name}+'&tn=newstitle&inputT=0'}">百度新闻</a>
+                                                <a target="_blank" th:href="@{'http://www.xueqiu.com/S/'+${codeWithPlace}+'/GSJJ'}">公司网页</a>
+                                                <a target="_blank" th:href="@{'http://f9.eastmoney.com/soft/gp30.php?code='+${code}+ ${placeCode==1?'01':'02'} }">核心题材</a>
+                                                <a target="_blank" th:href="@{'http://data.eastmoney.com/rzrq/detail/'+${code}+'.html'}">融资融券</a>
+                                            </p>
+                                        </blockquote>
+                                        <blockquote class="quote-secondary">
+                                            <p>
+                                                <a target="_blank" th:href="@{'http://www.baidu.com/s?wd='+${name}+' 招股说明书 site:('+${placeCode==1?'sse.com.cn':'szse.cn'}+')&ie=utf-8&cl=3&t=12&fr=news'}">招股说明书</a>
+                                                <a target="_blank" th:href="@{'http://rs.p5w.net/c/'+${code}+'.shtml'}">投资者互动平台</a>
+                                                <a target="_blank" th:href="@{'http://www.cninfo.com.cn/information/companyinfo.html?fulltext?'+${code} }">巨潮公告</a>
+                                                <a target="_blank" th:href="@{'http://www.cninfo.com.cn/information/companyinfo.html?periodicalreport?'+${code} }">定期报告</a>
+                                                <a target="_blank" th:href="@{'http://stockdata.stock.hexun.com/2008/ggqw.aspx?page=1&stockid='+${code} }">公告全文</a>
+                                                <a target="_blank" th:href="@{'http://data.eastmoney.com/report/hy,'+${code}+'_1.html'}">行业研报</a>
+                                                <a target="_blank" th:href="@{'http://vip.stock.finance.sina.com.cn/q/go.php/vReport_List/kind/search/index.phtml?symbol='+${code}+'&orgname=&industry=&title=&t1=all'}">新浪研报</a>
+                                                <a target="_blank" th:href="@{'http://search.10jqka.com.cn/search?w='+${name}+'&tid=info&tr=2&ft=1&st=0&tr=1&qs=pf'}">同花顺研报</a>
+                                                <a target="_blank" th:href="@{'http://data.eastmoney.com/report/'+${code}+'.html'}">东方财富研报</a>
+                                                <a target="_blank" th:href="@{'http://www.baidu.com/s?wd='+${name}+' site:(microbell.com)&ie=utf-8&cl=3&t=12&fr=news'}">迈博汇金研报</a>
+                                            </p>
+                                        </blockquote>
+                                        <blockquote class="quote-secondary">
+                                            <p>
+                                                <a target="_blank" th:href="@{'http://f9.eastmoney.com/'+${#strings.toLowerCase(codeWithPlace)}+'.html#jggd'}">盈利预测</a>
+                                                <a target="_blank" th:href="@{'http://vip.stock.finance.sina.com.cn/q/go.php/vFinanceAnalyze/kind/performance/index.phtml?symbol='+${code} }">业绩预告</a>
+                                                <a target="_blank" th:href="@{'http://f10.eastmoney.com/f10_v2/CompanyManagement.aspx?code='+${#strings.toLowerCase(codeWithPlace)}+'#cgbd-0'}">高管持股</a>
+                                                <a target="_blank" th:href="@{'http://data.eastmoney.com/Stock/lhb/'+${code}+'.html'}">龙虎榜</a>
+                                                <a target="_blank" th:href="@{'http://data.eastmoney.com/zjlx/'+${code}+'.html'}">资金流入</a>
+                                                <a target="_blank" th:href="@{'http://vip.stock.finance.sina.com.cn/q/go.php/vInvestConsult/kind/xsjj/index.phtml?symbol='+${#strings.toLowerCase(codeWithPlace)} }">限售解禁</a>
+                                                <a target="_blank" th:href="@{'http://stockpage.10jqka.com.cn/'+${code}+'/holder/'}">十大股东</a>
+                                            </p>
+                                            <p>
+                                                <a target="_blank" th:href="@{'http://stockpage.10jqka.com.cn/'+${code}+'/holder/#holdernum'}">股东人数</a>
+                                                <a target="_blank" th:href="@{'http://f10.eastmoney.com/f10_v2/ShareholderResearch.aspx?code='+${#strings.toLowerCase(codeWithPlace)} }">股东人数2</a>
+                                                <a target="_blank" th:href="@{'http://data.eastmoney.com/hsgtcg/StockHdStatistics.aspx?stock='+${code} }">沪深港通持股</a>
+                                            </p>
+                                        </blockquote>
+                                    </div>
+                                    <div class="col-6">
+                                        <blockquote class="quote-secondary">
+                                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
+                                            <small>Someone famous in <cite title="Source Title">Source Title</cite></small>
+                                        </blockquote>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
 
                 <div class="row">
                     <div class="col-12">

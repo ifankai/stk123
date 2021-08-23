@@ -39,7 +39,7 @@ public class XueqiuService {
 					cookies = null;
 				}
 				try {
-					Thread.sleep(1000 * 60 * 30);
+					Thread.sleep(1000 * 60 * 10);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

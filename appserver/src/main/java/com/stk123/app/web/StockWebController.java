@@ -47,6 +47,9 @@ public class StockWebController {
             throw new RuntimeException("Stock 404");
         }
         Stock stock = Stock.build(stockProjection);
+        model.addAttribute("name", stock.getName());
+        model.addAttribute("placeCode", stock.getPlace().getPlace());
+        model.addAttribute("placeName", stock.getPlace().name());
         model.addAttribute("codeWithPlace", stock.getCodeWithPlace());
         return "stock";
     }
