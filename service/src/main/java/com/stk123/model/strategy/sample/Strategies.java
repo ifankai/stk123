@@ -428,8 +428,8 @@ public class Strategies {
 
     //总市值
     public static Strategy strategy_12a() {
-        Strategy<Stock> strategy = new Strategy<>("strategy_12a", "总市值50到100亿(12a)", Stock.class);
-        strategy.addFilter("总市值50到100亿", Filters.filter_mustMarketCapBetween(50, 100));
+        Strategy<Stock> strategy = new Strategy<>("strategy_12a", "总市值30到100亿(12a)", Stock.class);
+        strategy.addFilter("总市值30到100亿", Filters.filter_mustMarketCapBetween(30, 100));
         return strategy;
     }
     public static Strategy strategy_12b() {

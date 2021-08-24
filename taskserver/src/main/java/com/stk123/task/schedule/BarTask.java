@@ -627,7 +627,7 @@ public class BarTask extends AbstractTask {
             StkReportHeaderEntity stkReportHeaderEntity = null;
             List<Stock> stocks = Stocks.getStocksWithBks();
             //stockService.buildHolder(StocksAllCN);
-            stocks = stockService.filterByMarketCap(stocks, 40);
+            stocks = stockService.filterByMarketCap(stocks, 30);
 
             String strategies = Strategies.STRATEGIES_ALL_STOCKS;
             if(StringUtils.isNotEmpty(strategy)){
@@ -745,14 +745,14 @@ public class BarTask extends AbstractTask {
                 //List<StrategyResult> srs = stockService.calcRps(stocks, rpsStrategy.getCode());
                 if(rpsStrategy.isEmptyStrategy())continue;
                 List<Stock> rpsStocks = stockService.calcRps(stocks, rpsStrategy.getCode()).stream().map(StrategyResult::getStock).collect(Collectors.toList());
-                rpsStocks = rpsStocks.subList(0, Math.min(150, rpsStocks.size()));
+                //rpsStocks = rpsStocks.subList(0, Math.min(150, rpsStocks.size()));
 
                 List<Stock> results = new ArrayList<>();
                 int cap1 = 50;
                 int cap2 = 30;
                 for(Stock stock : rpsStocks){
-                    if(stock.getMarketCap() >= 50 && stock.getMarketCap() < 100){
-                        if(cap2-- > 0){
+                    if(stock.getMarketCap() >= 30 && stock.getMarketCap() < 100){
+                        if(cap1-- > 0){
                             results.add(stock);
                         }
                     }else if(stock.getMarketCap() >= 100 && stock.getMarketCap() < 200){
@@ -802,7 +802,7 @@ public class BarTask extends AbstractTask {
         try{
             StkReportHeaderEntity stkReportHeaderEntity = null;
             String reportDateStart = CommonUtils.addDay2String(new Date(), -70);
-            String reportDateEnd = CommonUtils.addDay2String(new Date(), -20);
+            String reportDateEnd = CommonUtils.addDay2String(new Date(), -10);
 
             List<StkReportHeaderEntity> headers = stkReportHeaderRepository.findAllByTypeAndReportDateBetweenOrderByInsertTimeDesc(StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS, reportDateStart, reportDateEnd);
             //排除 rps_09,rps_10,rps_11

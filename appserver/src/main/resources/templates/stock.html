@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>小智慧 - 股票</title>
+    <title th:text="'小智慧 - '+${title}">小智慧 - 股票</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fontawesome5pro@5.14.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css">
     <!-- DataTables -->
@@ -99,6 +99,9 @@
         }
         blockquote a{
             margin-right: .5rem;
+        }
+        img.ke_img{
+            width: 100%;
         }
     </style>
 </head>
