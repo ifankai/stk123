@@ -3105,3 +3105,5 @@ select * from stk where code='BK0619';
 select * from stk_kline where kline_date>'20210809' and code='600754';
 select * from stk_kline where code='603939' order by kline_date desc;
 
+select * from stk_fn_data;
+select * from stk_fn_type;

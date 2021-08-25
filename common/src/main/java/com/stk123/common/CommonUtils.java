@@ -82,7 +82,7 @@ public class CommonUtils {
     public static void main(String[] args) throws Exception {
         System.out.println(now);
         System.out.println(numberFormat(2.342,2));
-        System.out.println(StringUtils.substring("20130201",4));
+        System.out.println(StringUtils.substring("20130201",4, 6));
         System.out.println(sf_ymd6.parse("Sep 28, 2013"));
         Date date = CommonUtils.addDay(CommonUtils.now, -30);
         System.out.println(CommonUtils.get(now, Calendar.MONTH));

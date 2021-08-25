@@ -23,6 +23,7 @@ import com.stk123.repository.*;
 import com.stk123.service.StkConstant;
 import com.stk123.service.core.BarService;
 import com.stk123.service.core.DictService;
+import com.stk123.service.core.FnService;
 import com.stk123.service.core.StockService;
 import com.stk123.service.support.SpringApplicationContext;
 import com.stk123.util.HttpUtils;
@@ -76,6 +77,10 @@ public class Stock {
     private StkImportInfoRepository stkImportInfoRepository;
     @Autowired
     private StkCapitalFlowRepository stkCapitalFlowRepository;
+    @Autowired
+    private FnService fnService;
+    @Autowired
+    private StkFnTypeRepository stkFnTypeRepository;
 
 
     @JsonView({View.Default.class, View.Score.class})
@@ -115,6 +120,7 @@ public class Stock {
     @JsonView(View.All.class)
     private List<StkNewsEntity> news;
     private List<StkImportInfoEntity> infos; //系统生成的信息
+    private Fn fn;
 
 
     private BarSeries barSeries;
@@ -1022,6 +1028,14 @@ public class Stock {
     public List<StkImportInfoEntity> getInfos(){
         return this.getInfos(-180);
     }
+
+    public Fn getFn(){
+        if(this.fn != null)return this.fn;
+        List<StkFnTypeEntity> types = stkFnTypeRepository.findAllByMarketAndStatusOrderByDispOrder(this.getMarket().getMarket(), 1);
+        this.fn = fnService.getFn(this, types, "20150101");
+        return this.fn;
+    }
+
 
     @Override
     public int hashCode(){
