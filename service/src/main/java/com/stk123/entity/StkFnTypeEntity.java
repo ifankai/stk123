@@ -1,5 +1,7 @@
 package com.stk123.entity;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.stk123.model.json.View;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,10 +17,12 @@ public class StkFnTypeEntity {
 
     @Id
     @Column(name = "TYPE", nullable = false, precision = 0)
+    @JsonView(View.All.class)
     private Integer type;
 
     @Basic
     @Column(name = "NAME", nullable = true, length = 100)
+    @JsonView(View.All.class)
     private String name;
 
     @Basic
@@ -47,6 +51,7 @@ public class StkFnTypeEntity {
 
     @Basic
     @Column(name = "DISP_NAME", nullable = true, length = 200)
+    @JsonView(View.All.class)
     private String dispName;
 
     @Basic
@@ -67,6 +72,7 @@ public class StkFnTypeEntity {
 
     @Basic
     @Column(name = "COLSPAN", nullable = true, precision = 0)
+    @JsonView(View.All.class)
     private Integer colspan;
 
     @Basic

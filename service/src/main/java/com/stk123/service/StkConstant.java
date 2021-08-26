@@ -21,6 +21,9 @@ public class StkConstant {
 
     public final static Integer DICT_NEWS = 2000;           //stk_news.type
 
+    public final static Integer DICT_FN_TYPE_110 = 110; //主营业务收入增长率(%)
+    public final static Integer DICT_FN_TYPE_111 = 111; //净利润增长率(%)
+
 
     /** stk_news.type **/
     public final static Integer NEWS_TYPE_100 = 100;  //	举牌

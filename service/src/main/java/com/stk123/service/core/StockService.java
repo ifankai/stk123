@@ -80,6 +80,9 @@ public class StockService {
     private StkCapitalFlowRepository stkCapitalFlowRepository;
     @Autowired
     private StockAsyncService stockAsyncService;
+    @Autowired
+    private FnService fnService;
+
 
     public List<Stock> buildStocks(EnumMarket market, EnumCate cate){
         List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(market, cate);
@@ -331,6 +334,21 @@ public class StockService {
                 });
     }
 
+    public List<Stock> buildFn(List<Stock> stocks, String dateAfter){
+        List<StkFnTypeEntity> typeEntities = (List<StkFnTypeEntity>) fnService.getTypesAsMap(EnumMarket.CN, 1).values();
+        return BaseRepository.findAll1000(stocks,
+                subStocks -> {
+                    List<String> codes = subStocks.stream().map(Stock::getCode).collect(Collectors.toList());
+                    Map<String, List<StkFnDataEntity>> map = fnService.findAllByCodeInAndFnDateAfterOrderByCodeAscFnDateDescTypeAsc(codes, dateAfter);
+                    subStocks.forEach(stock -> {
+                        List<StkFnDataEntity> infos = map.get(stock.getCode());
+                        if(infos == null) infos = Collections.EMPTY_LIST;
+                        stock.setFn(fnService.getFn(stock, typeEntities, infos));
+                    });
+                    return subStocks;
+                });
+    }
+
     public List<StrategyResult> calcRps(List<Stock> stocks, String rpsCode){
         //这里一定要new一个strategy，否则当运行同个strategy的多个调用calcRps方法时，strategy实例会混乱，并且报错：
         //java.util.ConcurrentModificationException at java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1390)
@@ -436,6 +454,23 @@ public class StockService {
         }).collect(Collectors.toList());
     }
 
+    public static List<Stock> filterByFn(List<Stock> stocks){
+        return stocks.stream().filter(stock -> {
+            if(stock.isMarketCN()){
+                Fn fn = stock.getFn();
+                Double a = fn.getValueByType(StkConstant.DICT_FN_TYPE_110);
+                if(a == null) return false;
+                Double b = fn.getValueByType(StkConstant.DICT_FN_TYPE_111);
+                if(b == null) return false;
+                if(a > -10 || b > -10){
+                    return true;
+                }
+                return false;
+            }
+            return true;
+        }).collect(Collectors.toList());
+    }
+
     public void buildBkAndCalcBkRps(List<Stock> stocks, EnumMarket market, EnumCate bkCate){
         //建立板块关系，计算rps
         List<Stock> bks = getBks(market, bkCate);
@@ -474,9 +509,10 @@ public class StockService {
         Future<List<Stock>> futureOwner = stockAsyncService.buildOwners(stocks);
         Future<List<Stock>> futureNews = stockAsyncService.buildNews(stocks, CommonUtils.addDay(new Date(), -180));
         Future<List<Stock>> futureInfo = stockAsyncService.buildImportInfos(stocks, CommonUtils.addDay(new Date(), -180));
+        Future<List<Stock>> futureFn = stockAsyncService.buildFn(stocks, CommonUtils.addDay2String(new Date(), -360 * 5));
         while (true) {
             if (futureBs.isDone() && futureIndustries.isDone() && futureHolder.isDone() && futureOwner.isDone()
-                && futureNews.isDone() && futureInfo.isDone()) {
+                && futureNews.isDone() && futureInfo.isDone() && futureFn.isDone()) {
                 break;
             }
             Thread.sleep(20);

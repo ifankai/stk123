@@ -26,12 +26,11 @@ public class FnController {
     @RequestMapping({"/{code}", "/{code}/{date}"})
     @JsonView(View.All.class)
     public RequestResult report(@PathVariable(value = "code")String code,
-                                @PathVariable(value = "date")String date){
+                                @PathVariable(value = "date", required = false)String date){
         if(date == null){
             date = "20150101";
         }
         Stock stock = stockService.getStock(code);
-
-        return RequestResult.success();
+        return RequestResult.success(stock.getFn().getAsMap());
     }
 }

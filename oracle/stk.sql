@@ -1,4 +1,4 @@
-﻿SELECT * FROM DBA_TABLESPACES;
+SELECT * FROM DBA_TABLESPACES;
 SELECT * FROM DBA_DATA_FILES;
 SELECT * FROM DBA_TEMP_FILES;
 select name from v$tablespace;
@@ -1125,8 +1125,10 @@ select * from stk_fn_data where code='600706' order by fn_date desc;
 select * from stk_import_info where code='600643';
 select * from stk_import_info where id not in (
 select * from stk_import_info where info like '%净利润%增%');
-select * from stk_fn_data where code='002230' and type in (111,303) order by type desc,fn_date desc;
-select * from stk_fn_type where market=1;
+select * from stk_fn_data where code='002230' and type in (300) order by type desc,fn_date desc;
+select * from stk_fn_type where market=1 and status=1 order by disp_order;
+
+
 
 select * from stk_fn_data where fn_date in ('20121231') and fn_value is not null order by code asc,fn_date desc;
 select * from stk_fn_data where fn_date like '%20111231' and fn_value>=5;--

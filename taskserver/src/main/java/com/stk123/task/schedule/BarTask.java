@@ -628,6 +628,7 @@ public class BarTask extends AbstractTask {
             List<Stock> stocks = Stocks.getStocksWithBks();
             //stockService.buildHolder(StocksAllCN);
             stocks = stockService.filterByMarketCap(stocks, 30);
+            stocks = stockService.filterByFn(stocks);
 
             String strategies = Strategies.STRATEGIES_ALL_STOCKS;
             if(StringUtils.isNotEmpty(strategy)){
@@ -730,6 +731,7 @@ public class BarTask extends AbstractTask {
             List<Stock> stocks = Stocks.getStocksWithBks();
 
             stocks = stockService.filterByMarketCap(stocks, 50);
+            stocks = stockService.filterByFn(stocks);
 
             if(StringUtils.isNotEmpty(report)){
                 String type = StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS;
@@ -770,7 +772,7 @@ public class BarTask extends AbstractTask {
                     }
                 }
 
-                rps.append(rpsStrategy.getNameWithCode() + ": " + CommonUtils.k("查看", rpsStrategy.getNameWithCode(), results.stream().map(Stock::getCode).collect(Collectors.toList())));
+                rps.append(rpsStrategy.getNameWithCode() + ": " + CommonUtils.k("查看", rpsStrategy.getNameWithCode(), results.stream().map(Stock::getCode).collect(Collectors.toList())) + " ====>" + results.stream().map(Stock::getCode).collect(Collectors.joining(",")));
                 rps.append("<br/>");
 
                 if(stkReportHeaderEntity != null){

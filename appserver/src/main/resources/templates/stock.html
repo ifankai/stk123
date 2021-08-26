@@ -50,10 +50,15 @@
         }
         .table thead th {
             border-bottom: 1px solid #dee2e6;
-            padding: 0 .75rem;
+            padding: 0;
             color: #9ba2a8;
             text-align: center;
-            white-space: nowrap;
+            font-size: smaller;
+        }
+        .table-fn tbody td {
+            padding: .1rem;
+            text-align: right;
+            font-size: .8rem;
         }
         table.dataTable>thead .sorting:before,
         table.dataTable>thead .sorting:after,
@@ -102,6 +107,9 @@
         }
         img.ke_img{
             width: 100%;
+        }
+        .td-year{
+            font-weight: 500;
         }
     </style>
 </head>
@@ -197,6 +205,39 @@
                                         </blockquote>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+
+                        <div id="fn" class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">财务指标</h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="收起">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="card-body">
+                                <table  class="table table-hover table-bordered table-fn">
+                                    <thead>
+                                        <tr>
+                                            <th v-for="item in stock.fn.types" :key="item.type" v-text="fnTypeDisplayName(item)" class="text-center"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(item,index) in stock.fn.table">
+                                            <td v-for="type in stock.fn.types" v-text="item[type.type].dispValue" :class="item[type.type].quarterNumber==4?'td-year':''"></td>
+                                        </tr>
+                                    </tbody>
+
+                                </table>
                             </div>
                         </div>
 
@@ -384,7 +425,8 @@
                     }
                 },
                 stock:{
-                    posts:{data:[]}
+                    posts:{data:[]},
+                    fn:{type:[], table:[]}
                 }
             }
         },
@@ -396,6 +438,11 @@
         computed: {
             stockLookPool(){
                 return store.state.stockLookPool
+            },
+            fnTypeDisplayName: function(){
+                return (item) => {
+                    return item.dispName == null ? item.name : item.dispName
+                }
             }
         },
         mounted() {
@@ -436,6 +483,11 @@
                     row.createdAt = new Date(row.createdAt).format("yyyy-MM-dd hh:mm:ss");
                 })
                 _this.stock.report = {data: data};
+            });
+
+            axios.get("/fn/"+code).then(function (res) {
+                let data = res.data.data;
+                _this.stock.fn = data;
             });
 
             if (localStorage.stockLookPool) {

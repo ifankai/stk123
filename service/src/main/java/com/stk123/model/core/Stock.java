@@ -2,6 +2,7 @@ package com.stk123.model.core;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.common.CommonConstant;
 import com.stk123.common.CommonUtils;
@@ -121,6 +122,8 @@ public class Stock {
     private List<StkNewsEntity> news;
     private List<StkImportInfoEntity> infos; //系统生成的信息
     private Fn fn;
+    @JsonView(View.All.class)
+    private List<Map> fnAsMap;
 
 
     private BarSeries barSeries;
@@ -1034,6 +1037,21 @@ public class Stock {
         List<StkFnTypeEntity> types = stkFnTypeRepository.findAllByMarketAndStatusOrderByDispOrder(this.getMarket().getMarket(), 1);
         this.fn = fnService.getFn(this, types, "20150101");
         return this.fn;
+    }
+
+    public Fn getFn(String fnDate, List<Integer> types){
+        if(this.fn != null)return this.fn;
+        List<StkFnTypeEntity> typeEntities = stkFnTypeRepository.findAllByMarketAndStatusAndTypeInOrderByDispOrder(this.getMarket().getMarket(), 1, types);
+        return fnService.getFn(this, typeEntities, fnDate);
+    }
+
+    public List<Map> getFnAsMap(){
+        if(this.isCateStock()) {
+            if (this.fnAsMap != null) return this.fnAsMap;
+            this.fnAsMap = (List<Map>) this.getFn().getAsMap().get("table");
+            return this.fnAsMap;
+        }
+        return null;
     }
 
 

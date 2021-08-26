@@ -44,4 +44,7 @@ public class StockAsyncService {
         return new AsyncResult<>(stockService.buildImportInfos(stocks, dateAfter));
     }
 
+    public Future<List<Stock>> buildFn(List<Stock> stocks, String dateAfter){
+        return new AsyncResult<>(stockService.buildFn(stocks, dateAfter));
+    }
 }

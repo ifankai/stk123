@@ -14,4 +14,5 @@ public interface StkFnTypeRepository extends JpaRepository<StkFnTypeEntity, Inte
 
     List<StkFnTypeEntity> findAllByMarketAndStatusOrderByDispOrder(Integer market, Integer status);
 
+    List<StkFnTypeEntity> findAllByMarketAndStatusAndTypeInOrderByDispOrder(Integer market, Integer status, List<Integer> types);
 }
