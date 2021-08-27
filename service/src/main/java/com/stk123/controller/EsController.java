@@ -49,12 +49,11 @@ public class EsController {
     @ResponseBody
     public RequestResult search(@PathVariable("keyword")String keyword,
                                 @PathVariable(value = "page", required = false)Integer page){
-        int p = 1;
-        if(page != null){
-            p = page;
+        if(page == null){
+            page = 1;
         }
         try {
-            SearchResult esResult = esService.search(keyword, p);
+            SearchResult esResult = esService.search(keyword, page);
             return RequestResult.success(esResult.getResults());
         } catch (IOException e) {
             return RequestResult.failure(e.getMessage());

@@ -160,13 +160,21 @@ public class EsService {
             //id
             properties.put(FIELD_ID, Collections.singletonMap("type", "keyword"));
 
-            //title (name)
+            //title
             Map<String, Object> title = new HashMap<>();
             title.put("type", "text");
             title.put("boost", 5);
             title.put("analyzer", "ik_smart");
             title.put("fields", Collections.singletonMap("keyword", keyword));
             properties.put(FIELD_TITLE, title);
+
+            //name -> pingyin
+            Map<String, Object> name = new HashMap<>();
+            name.put("type", "text");
+            name.put("boost", 5);
+            name.put("analyzer", "ik_smart");
+            name.put("fields", Collections.singletonMap("keyword", keyword));
+            properties.put(FIELD_TITLE, name);
 
             //desc
             Map<String, Object> desc = new HashMap<>();
@@ -273,6 +281,10 @@ public class EsService {
         return search(INDEX_STK, page, 10, keyword, otherKeywords, DEFAULT_SEARCH_FIELDS, DEFAULT_HIGHLIGHT_FIELDS, orderByTime);
     }
 
+    public SearchResult search(String keyword, Map<String,String> otherKeywords, int page, int pageSize, boolean orderByTime) throws IOException {
+        return search(INDEX_STK, page, pageSize, keyword, otherKeywords, DEFAULT_SEARCH_FIELDS, DEFAULT_HIGHLIGHT_FIELDS, orderByTime);
+    }
+
     //https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-high-search.html
     public SearchResult search(String index, int page, int pageSize,
                                String keyword, Map<String,String> otherKeywords,
@@ -336,7 +348,7 @@ public class EsService {
             list.add(BeanUtil.toBean(map, EsDocument.class));
         });
 
-        return SearchResult.success(list);
+        return SearchResult.success(list, totalHits);
     }
 
     public SearchResult search(String index) throws IOException {
@@ -421,7 +433,8 @@ public class EsService {
         if(stock.getName() != null && ChineseUtils.isContainChinese(stock.getName())){
             pinyin = "["+String.join("", Arrays.asList(PinYin4jUtils.getHeadByString(StringUtils.replace(stock.getName(), " ", ""))))+"]";
         }
-        esDocument.setTitle(stock.getNameAndCodeWithLink() + pinyin);
+        esDocument.setName(pinyin);
+        esDocument.setTitle(stock.getNameAndCodeWithLink());
         esDocument.setDesc(StringUtils.join(stock.getIndustries().stream().map(ind -> ind.getStkIndustryTypeEntity().getName()).collect(Collectors.toList()), ", "));
         esDocument.setContent((stock.getStock().getF9()==null?"":stock.getStock().getF9()) + "<br/>" + "TODO 十大流通股东");
         esDocument.setId(stock.getCodeWithPlace());

@@ -15,7 +15,7 @@ public class PageRoot<T> implements Serializable {
     private static final long serialVersionUID = -5967179816929602484L;
 
     private String about;
-    private Integer count;
+    private Long total;
     private String key;
     private List<T> list;
     private Integer pageSize; //每页数量
@@ -28,18 +28,18 @@ public class PageRoot<T> implements Serializable {
         this.list = list;
     }
 
-    public static <T> PageRoot<T> unPageable(List<T> list, Integer count) {
+    public static <T> PageRoot<T> unPageable(List<T> list, Long total) {
         PageRoot<T> root = new PageRoot<T>(list);
         root.setPage(-1);
-        root.setCount(count);
+        root.setTotal(total);
         return root;
     }
 
-    public static <T> PageRoot<T> pageable(List<T> list, Integer page, Integer pageSize, Integer count) {
+    public static <T> PageRoot<T> pageable(List<T> list, Integer page, Integer pageSize, Long total) {
         PageRoot root = new PageRoot(list);
         root.setPage(page);
         root.setPageSize(pageSize);
-        root.setCount(count);
+        root.setTotal(total);
         return root;
     }
 

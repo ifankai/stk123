@@ -175,7 +175,7 @@ grant read,write on directory DPUMP_DIR to public;
 expdp stk/stkpwd@XE directory=DPUMP_DIR dumpfile=db_stk.dp REUSE_DUMPFILES=Y SCHEMAS=stk QUERY=STK_ERROR_LOG:\"WHERE 1<>1\",STK_KLINE_US:\"WHERE kline_date>=\'20210101\'\",STK_KLINE:\"WHERE kline_date>=\'20210101\'\",STK_DATA_EASTMONEY_GUBA:\"WHERE 1<>1\",STK_FN_DATA_BAK:\"WHERE 1<>1\",STK_DATA_PPI:\"WHERE 1<>1\",STK_CAPITAL_FLOW:\"WHERE 1<>1\"
 impdp stk/stkpwd@localhost:1539/xepdb1 directory=DPUMP_DIR dumpfile=DB_STK.DP SCHEMAS=stk logfile=DB_STK.DP.log table_exists_action=replace
 
---elasticsearch:
+--elasticsearch-7.10.2:
 # please execute the following statements to configure elasticsearch service to start automatically using systemd
  sudo systemctl daemon-reload
  sudo systemctl enable elasticsearch.service

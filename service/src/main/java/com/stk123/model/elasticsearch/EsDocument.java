@@ -15,6 +15,7 @@ public class EsDocument {
     private String subType;
     private String id;
     private String title;
+    private String name;
     private String desc;
     private String content;
     private String code;

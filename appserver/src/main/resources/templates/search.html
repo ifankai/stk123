@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>小智慧 - 搜索结果</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css">
+    <!-- DataTables -->
+    <link rel="stylesheet" href="/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <link rel="stylesheet" href="/adminlte/plugins/pace-progress/themes/black/pace-theme-minimal.css">
+    <!--    <link rel="stylesheet" href="/css/public.css">-->
+    <style>
+        /*@media (min-width: 1200px) {
+            .img-width img {
+                width: 410px;
+                padding: 2px;
+                text-align: center;
+            }
+            .container{
+                max-width: 1350px;
+            }
+        }
+        @media (max-width: 650px) {
+            .container{
+                min-width: 615px;
+            }
+
+        }*/
+
+        table.dataTable tbody th, table.dataTable tbody td, table.dataTable thead th, table.dataTable thead td {
+            padding: 1px 2px;
+        }
+        div.dataTables_wrapper div.dataTables_info {
+            padding-top: .1em;
+            float: left;
+        }
+        div.dataTables_wrapper div.dataTables_filter{
+            padding-top: .1em;
+            float: right;
+            margin-right: .2rem;
+        }
+        div.dataTables_wrapper div.dataTables_paginate{
+            float: right;
+        }
+        div.dataTables_wrapper div.dataTables_paginate ul.pagination{
+            margin: 0;
+        }
+        .table thead th {
+            border-bottom: 1px solid #dee2e6;
+            padding: 0 .75rem;
+            color: #9ba2a8;
+            text-align: center;
+            white-space: nowrap;
+        }
+        table.dataTable>thead .sorting:before,
+        table.dataTable>thead .sorting:after,
+        table.dataTable>thead .sorting_asc:before,
+        table.dataTable>thead .sorting_asc:after,
+        table.dataTable>thead .sorting_desc:before,
+        table.dataTable>thead .sorting_desc:after,
+        table.dataTable>thead .sorting_asc_disabled:before,
+        table.dataTable>thead .sorting_asc_disabled:after,
+        table.dataTable>thead .sorting_desc_disabled:before,
+        table.dataTable>thead .sorting_desc_disabled:after{
+            bottom: 0;
+        }
+        .pagination-sm {
+            margin: .1rem 0;
+        }
+        .custom-select-sm, .form-control-sm {
+            height: calc(1.5rem);
+            padding-top: .15rem;
+            padding-bottom: .25rem;
+            padding-left: .5rem;
+            font-size: 50%;
+        }
+        .page-link {
+            padding: .2rem .5rem;
+            font-size: .8rem;
+            line-height: 1.5;
+        }
+
+
+        .sticky-top{
+            top: 50px;
+        }
+
+</style>
+</head>
+<body class="hold-transition layout-top-nav layout-navbar-fixed text-sm pace-primary pace-done">
+<div class="pace pace-inactive">
+    <div class="pace-progress" data-progress-text="100%" data-progress="99" style="transform: translate3d(100%, 0px, 0px);">
+        <div class="pace-progress-inner"></div>
+    </div>
+    <div class="pace-activity"></div>
+</div>
+<!-- Site wrapper -->
+<div id="app" class="wrapper">
+    <div th:replace="common/navbar"></div>
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header"></section>
+
+        <section class="content">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-9">
+
+                        <div id="search-result" class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">热点公告</h3>
+                            </div>
+
+                            <div class="card-body">
+                                <div class="post clearfix">
+                                    <ol style="list-style: none;">
+                                        <li>
+                                            <a target="_blank" href="https://rashidjorvee.blogspot.com/2020/10/elasticsearch-timeout-on-connection.html">test</a>
+                                            <div class="b_caption">
+                                                <div class="b_attribution" u="1|5061|4619271923370298|Wv_X4uK32nQ0ml8dclvj9_TwiKN3zQ1e">
+                                                    <cite>https://rashidjorvee.blogspot.com/2020/10/...</cite>
+                                                    <p>While using the Bulk API inElasticsearchwe encounter the Timeout error java.net.SocketTimeoutException: 30,000 milliseconds timeout on connection http-outgoing-0 [ACTIVE]due to a huge file with thousands of records.</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="b_algo" data-bm="7"><h2><a target="_blank" href="https://rashidjorvee.blogspot.com/2020/10/elasticsearch-timeout-on-connection.html" h="ID=SERP,5144.1"><i>30 000 <i class="01">milliseconds</i> <i class="01">timeout</i> <i>on</i> <i>connection</i> <i>http-outgoing-0</i> ...</i></a></h2><div class="b_caption"><div class="b_attribution" u="1|5061|4619271923370298|Wv_X4uK32nQ0ml8dclvj9_TwiKN3zQ1e"><cite>https://rashidjorvee.blogspot.com/2020/10/...</cite><a href="#" class="trgr_icon" aria-label="Actions for this site" aria-haspopup="true" aria-expanded="false" role="button"><span class="c_tlbxTrg"><span class="c_tlbxTrgIcn sw_ddgn"></span><span class="c_tlbxH" h="BASE:CACHEDPAGEDEFAULT" k="SERP,5145.1"></span></span></a></div><p><span class="news_dt"><i><i>Oct</i> 06, 2020</i></span><i>&nbsp;· <i>While</i> <i>using</i> <i>the</i> <i>Bulk</i> <i>API</i> <i>in</i></i><strong><i> <i>Elasticsearch</i></i></strong><i> <i>we</i> <i>encounter</i> <i>the</i> <i>Timeout</i> <i>error</i> <i>java</i>.<i>net</i>.<i>SocketTimeoutException</i>:</i><strong><i> 30,000 <i>milliseconds</i> <i>timeout</i> <i>on</i> <i>connection</i> <i>http-outgoing-0</i> [<i>ACTIVE</i>]</i></strong><i> <i>due</i> <i>to</i> <i>a</i> <i>huge</i> <i>file</i> <i>with</i> <i>thousands</i> <i>of</i> <i>records</i>.</i></p><div class="b_factrow b_twofr"><div class="b_vlist2col"><ul><li><div><a target="_blank" href="/search?q=Rashid+Jorvee" h="ID=SERP,5141.1"><strong><i><i>Author</i>:</i></strong><i> <i>Rashid</i> <i>Jorvee</i></i></a></div></li></ul><ul></ul></div></div></div><div class="qbrs_data" data-appns="SERP" data-k="5396"></div></li>
+
+                                        <li style="padding: 26px 0 26px 0;">
+                                            <ul class="pagination pagination-sm">
+                                                <li class="page-item"><a href="#" class="page-link">«</a></li>
+                                                <li class="page-item"><a href="#" class="page-link">1</a></li>
+                                                <li class="page-item"><a href="#" class="page-link">2</a></li>
+                                                <li class="page-item"><a href="#" class="page-link">3</a></li>
+                                                <li class="page-item"><a href="#" class="page-link">»</a></li>
+                                            </ul>
+                                        </li>
+                                    </ol>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-3">
+
+                        <!-- Profile Image -->
+                        <div class="card sticky-top">
+                            <div class="card-body box-profile">
+                                <div class="text-center">
+                                    <img class="profile-user-img img-fluid img-circle" src="../../dist/img/user4-128x128.jpg" alt="User profile picture">
+                                </div>
+
+                                <h3 class="profile-username text-center">Nina Mcintire</h3>
+
+                                <p class="text-muted text-center">Software Engineer</p>
+
+                                <ul class="list-group list-group-unbordered mb-3">
+                                    <li class="list-group-item">
+                                        <b>Followers</b> <a class="float-right">1,322</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <b>Following</b> <a class="float-right">543</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <b>Friends</b> <a class="float-right">13,287</a>
+                                    </li>
+                                </ul>
+
+                                <a href="#" class="btn btn-primary btn-block"><b>Follow</b></a>
+                            </div>
+                            <!-- /.card-body -->
+                        </div>
+                        <!-- /.card -->
+
+                    </div>
+
+
+                </div>
+            </div>
+        </section>
+
+        <a id="back-to-top" href="#" class="btn btn-outline-primary back-to-top" style="display: none" role="button" aria-label="Scroll to top">
+            <i class="fas fa-chevron-up"></i>
+        </a>
+    </div>
+
+    <div th:replace="common/footer"></div>
+</div>
+<!-- ./wrapper -->
+</body>
+</html>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@3.1.1/dist/vue.global.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vuex@4.0.2/dist/vuex.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios@0.21.1/dist/axios.min.js"></script>
+
+<script src="/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="/adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="/adminlte/plugins/pace-progress/pace.min.js"></script>
+
+<script src="/js/public.js"></script>
+<script src="/js/component/datatable.js"></script>
+
+<script th:inline="javascript">
+    const keyword = [[${keyword}]];
+    const config = {
+        data() {
+            return {
+                loading: true,
+                common:{
+
+                },
+                results:{}
+            }
+        },
+        methods:{
+            dateFormat:function (date){
+                return dateFormat(date);
+            },
+        },
+        computed: {
+            stockLookPool(){
+                return store.state.stockLookPool
+            }
+        },
+        mounted() {
+            let _this = this;
+            axios.get("/search/"+keyword).then(function (res) {
+                _this.results = res.data.data;
+                console.log('mounted', _this.$data)
+            });
+
+            store.commit('setStockLookPool', getDataFromLocalStorage('stockLookPool') || []);
+        }
+    };
+    config.methods = Object.assign(config.methods, _stockLookPoolInVuex);
+    const app = Vue.createApp(config);
+    app.use(store)
+
+    app.component('datatable', _datatable);
+    app.component('eye', _eye);
+    app.mount('#app');
+
+</script>

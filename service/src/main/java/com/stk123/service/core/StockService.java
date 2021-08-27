@@ -515,7 +515,7 @@ public class StockService {
                 && futureNews.isDone() && futureInfo.isDone() && futureFn.isDone()) {
                 break;
             }
-            Thread.sleep(20);
+            //Thread.sleep(20);
         }
         long end = System.currentTimeMillis();
         log.info("getStocksWithAllBuildsAsync cost time:"+(end-start)/1000 + "s, build stock size:"+stocks.size());

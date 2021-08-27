@@ -2,6 +2,9 @@ package com.stk123.app;
 
 import com.alicp.jetcache.anno.config.EnableCreateCacheAnnotation;
 import com.alicp.jetcache.anno.config.EnableMethodCache;
+import com.stk123.service.core.EsService;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import com.esotericsoftware.kryonet.Server;
@@ -40,6 +43,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Date;
 
 /**
  * database: H2
@@ -60,6 +64,7 @@ import java.nio.file.Paths;
 @EnableAsync
 @EnableMethodCache(basePackages = "com.stk123")
 @EnableCreateCacheAnnotation
+@Slf4j
 public class WebApplication {
 
     @Value("${http.port}")
@@ -73,6 +78,8 @@ public class WebApplication {
 
     @Autowired
     private DataSource dataSource;
+    @Autowired
+    private EsService esService;
 
 	public static void main(String[] args) {
 		SpringApplication.run(WebApplication.class, args);
@@ -132,6 +139,13 @@ public class WebApplication {
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
+
+        log.info("init elasticsearch start..........");
+        String errorMsg = esService.initIndexByBulk(EsService.INDEX_STK, true, DateUtils.addMonths(new Date(), -2));
+        if(errorMsg != null){
+            log.error("init elasticsearch error: {}", errorMsg);
+        }
+        log.info("init elasticsearch end..........");
     }
 
 }

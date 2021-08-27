@@ -60,7 +60,7 @@ public class TextController {
     ) throws Exception {
         log.info("query....." + type);
         List<StkTextEntity> list = null;
-        Integer count = null;
+        Long total = null;
 
         if(createdAtAfter == null) {
             createdAtAfter = DateUtils.addYears(new Date(), -1).getTime();
@@ -132,7 +132,7 @@ public class TextController {
             results.add(esDocument);
         }
 
-        return RequestResult.success(PageRoot.unPageable(results, count));
+        return RequestResult.success(PageRoot.unPageable(results, total));
     }
 
     @RequestMapping("/favorite/{id}/{isFavorite}")
