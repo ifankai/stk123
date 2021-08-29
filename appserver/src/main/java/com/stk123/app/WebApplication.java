@@ -2,8 +2,13 @@ package com.stk123.app;
 
 import com.alicp.jetcache.anno.config.EnableCreateCacheAnnotation;
 import com.alicp.jetcache.anno.config.EnableMethodCache;
+import com.stk123.common.db.connection.Pool;
+import com.stk123.common.util.JdbcUtils;
+import com.stk123.model.bo.Stk;
 import com.stk123.service.core.EsService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -37,13 +42,20 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.util.ResourceUtils;
+import org.wltea.analyzer.cfg.DefaultConfig;
+import org.wltea.analyzer.dic.Dictionary;
 
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * database: H2
@@ -128,7 +140,7 @@ public class WebApplication {
 
 
     @EventListener(ApplicationReadyEvent.class)
-    public void doSomethingAfterStartup() {
+    public void doSomethingAfterStartup() throws Exception {
         System.out.println("do something after WebApplication startup..........");
         System.out.println(webProperties.getEnvironment());
 

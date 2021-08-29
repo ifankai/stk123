@@ -13,6 +13,17 @@
     <link rel="stylesheet" href="/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
     <link rel="stylesheet" href="/adminlte/plugins/pace-progress/themes/black/pace-theme-loading-bar.css">
     <link rel="stylesheet" href="/css/public.css">
+    <style>
+        a.dropdown-item, div.dropdown-item a{
+            cursor: pointer;
+        }
+        div.dropdown-item a{
+            margin-right: 10px;
+        }
+        .dropdown-divider{
+            margin: unset;
+        }
+    </style>
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed text-sm pace-primary pace-done">
 <div class="pace pace-inactive">
@@ -62,6 +73,15 @@
                                         <div class="dropdown-menu" role="menu">
                                             <a @click="sortByRating" class="dropdown-item">按个股评分排序(00)</a>
                                             <a @click="sortByRps01" class="dropdown-item">按板块60日涨幅排序(01)</a>
+                                            <div class="dropdown-divider"></div>
+                                            <div class="dropdown-item">
+                                                <a @click="sortByFnRps($event, '110')">收入增长率(%)</a>
+                                                <a @click="sortByFnRps($event, '111')">净利润增长率(%)</a>
+                                            </div>
+                                            <div class="dropdown-item">
+                                                <a @click="sortByFnRps($event, '106')">销售毛利率(%)</a>
+                                                <a @click="sortByFnRps($event, '123')">经营现金净流量与净利润的比率(%)</a>
+                                            </div>
                                             <div class="dropdown-divider"></div>
                                             <template v-for="rps in common.rpss">
                                                 <div v-if="rps.code==0" class="dropdown-divider"></div>
@@ -706,6 +726,14 @@
                 })
                 Pace.stop();
             },
+            sortByFnRps:function (e, type) {
+                Pace.start();
+                this.seletedRpsName = e.target.innerText;
+                this.stocks = this._stocks.sort((a, b) => {
+                    return b.stock.fnAsMap.find(fn => fn[type] != undefined)[type].value - a.stock.fnAsMap.find(fn => fn[type] != undefined)[type].value;
+                })
+                Pace.stop();
+            },
             sortByRps:function (rps){
                 Pace.start();
                 this.seletedRpsName = rps.name+'('+rps.codeNo+')';
@@ -786,15 +814,7 @@
             //console.log('bkSelected', this.bkSelected)
         }
     }
-
-    config.methods = Object.assign(config.methods, _stockLookPoolInVuex);
-
-    const app = Vue.createApp(config);
-    app.use(store)
-
-    app.component('datatable', _datatable);
-    app.component('eye', _eye);
-    app.mount('#app');
+    createApp(config);
 
     function clickTab(e){
         e.preventDefault();

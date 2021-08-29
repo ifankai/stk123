@@ -23,18 +23,31 @@ import java.util.stream.Collectors;
 @Service
 public class FnService extends BaseRepository {
 
-    private static Map<Integer, StkFnTypeEntity> TYPES = null;
+    private static List<StkFnTypeEntity> TYPES_LIST = null;
+    private static Map<Integer, StkFnTypeEntity> TYPES_MAP = null;
 
     @Autowired
     private StkFnTypeRepository stkFnTypeRepository;
     @Autowired
     private StkFnDataRepository stkFnDataRepository;
 
+    public List<StkFnTypeEntity> getTypes(EnumMarket market, Integer status){
+        if(TYPES_LIST != null) return TYPES_LIST;
+        TYPES_LIST = stkFnTypeRepository.findAllByMarketAndStatusOrderByDispOrder(market.getMarket(), status);
+        TYPES_LIST.forEach(stkFnTypeEntity -> {
+            stkFnTypeEntity.setDispName(stkFnTypeEntity.getDispName()==null?stkFnTypeEntity.getName():stkFnTypeEntity.getDispName());
+            if(stkFnTypeEntity.getIsPercent()){
+                stkFnTypeEntity.setDispName(stkFnTypeEntity.getDispName()+"(%)");
+            }
+        });
+        TYPES_MAP = TYPES_LIST.stream().collect(Collectors.toMap(StkFnTypeEntity::getType, Function.identity()));
+        return TYPES_LIST;
+    }
+
     public Map<Integer, StkFnTypeEntity> getTypesAsMap(EnumMarket market, Integer status){
-        if(TYPES != null) return TYPES;
-        TYPES = stkFnTypeRepository.findAllByMarketAndStatusOrderByDispOrder(market.getMarket(), status)
-                .stream().collect(Collectors.toMap(StkFnTypeEntity::getType, Function.identity()));
-        return TYPES;
+        if(TYPES_MAP != null) return TYPES_MAP;
+        getTypes(market, status);
+        return TYPES_MAP;
     }
 
     public List<StkFnDataEntity> findAllByCodeAndFnDateAfterOrderByFnDateDescTypeAsc(EnumMarket market, String code, String fnDate){

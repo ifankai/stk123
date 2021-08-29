@@ -56,7 +56,7 @@ public class StkReportHeaderEntity {
     @JsonView(View.All.class)
     private Date insertTime;
 
-    @OneToMany(cascade=CascadeType.ALL)
+    @OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "HEADER_ID")
     @JsonProperty("details")
     @JsonView(View.All.class)

@@ -152,6 +152,7 @@ public class ReportService {
         result.put("currentBksStrategy", bksGroupbyCodeByNotStrategy08);
 
         result.put("currentAllStocks", getStocksByType(headers, "allstocks", finalRptDate, EnumMarket.CN));
+        result.put("currentAllStocksRpsStrategy", getStocksByType(headers, "rpsstocks_strategies", finalRptDate, EnumMarket.CN));
         result.put("currentMyStocksA", getStocksByType(headers, "mystocks", finalRptDate, EnumMarket.CN));
         result.put("currentMyStocksH", getStocksByType(headers, "mystocks", finalRptDate, EnumMarket.HK));
         result.put("currentMyStocksU", getStocksByType(headers, "mystocks", finalRptDate, EnumMarket.US));

@@ -185,6 +185,16 @@ impdp stk/stkpwd@localhost:1539/xepdb1 directory=DPUMP_DIR dumpfile=DB_STK.DP SC
 --log
 /var/log/elasticsearch
 
+--测试elasticsearch是否正常：
+http://localhost:9200
+
+D:\apps\elasticsearch-7.10.1\bin\elasticsearch-service.bat 后面还可以执行这些命令
+install: 安装Elasticsearch服务
+remove: 删除已安装的Elasticsearch服务（如果启动则停止服务）
+start: 启动Elasticsearch服务（如果已安装）
+stop: 停止服务（如果启动）
+manager:启动GUI来管理已安装的服务
+
 grep "Out of memory" /var/log/messages
 
 --查看liunx内存

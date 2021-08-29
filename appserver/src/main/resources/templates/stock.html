@@ -58,7 +58,7 @@
         .table-fn tbody td {
             padding: .1rem;
             text-align: right;
-            font-size: .8rem;
+            font-size: .9rem;
         }
         table.dataTable>thead .sorting:before,
         table.dataTable>thead .sorting:after,
@@ -110,6 +110,7 @@
         }
         .td-year{
             font-weight: 500;
+            font-size: medium !important;
         }
     </style>
 </head>
@@ -358,8 +359,8 @@
 <script src="/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
 <script src="/adminlte/plugins/pace-progress/pace.min.js"></script>
 
-<script src="https://unpkg.com/@popperjs/core@2"></script>
-<script src="https://unpkg.com/tippy.js@6"></script>
+<!--<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>-->
 
 <script src="/js/public.js"></script>
 <script src="/js/component/datatable.js"></script>
@@ -497,13 +498,14 @@
         updated() {
         }
     };
-    config.methods = Object.assign(config.methods, _stockLookPoolInVuex);
+    /*config.methods = Object.assign(config.methods, _stockLookPoolInVuex);
     const app = Vue.createApp(config);
     app.use(store)
 
     app.component('datatable', _datatable);
     app.component('eye', _eye);
     app.component('modal', _modal);
-    app.mount('#app');
+    app.mount('#app');*/
+    createApp(config);
 
 </script>

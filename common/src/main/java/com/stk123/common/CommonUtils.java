@@ -1257,10 +1257,10 @@ public class CommonUtils {
                     br = new BufferedReader(isr);
                     String line = null;
                     while ((line = br.readLine()) != null) {
-                        if (type.equals("Error"))
+                        /*if (type.equals("Error"))
                             log.info(line);
                         else
-                            log.info(line);
+                            log.info(line);*/
                     }
                 }
 

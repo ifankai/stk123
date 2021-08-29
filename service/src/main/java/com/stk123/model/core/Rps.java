@@ -34,6 +34,7 @@ public class Rps{
     public final static String CODE_STOCK_DAY_3_VOLUME = "rps_11";
     public final static String CODE_STOCK_DAY_120_VOLUME = "rps_12";
     public final static String CODE_STOCK_GENTLE_CHANGE_VOLUME = "rps_13";
+    public final static String CODE_STOCK_FN = "rps_14";
 
     private static Map<String, Strategy> CODE_STRATEGY = new HashMap<>();
 
@@ -66,17 +67,21 @@ public class Rps{
                 Strategies.rps_13()
         );
     }
-
     @SneakyThrows
-    public static Strategy newRpsStrategies(String rpsCode){
+    public static Strategy newRpsStrategies(String rpsCode, String... args) {
         Set<Method> methods = ReflectionUtils.getAllMethods(Strategies.class,
                 method -> StringUtils.equalsIgnoreCase(method.getName(), rpsCode));
         if(methods.size() >= 1) {
             for(Method method : methods) {
-                return (Strategy<?>) method.invoke(null, null);
+                return (Strategy<?>) method.invoke(null, args);
             }
         }
         throw new RuntimeException("Can not find matched method name in Strategies.class:" + rpsCode);
+    }
+
+    @SneakyThrows
+    public static Strategy newRpsStrategies(String rpsCode){
+        return newRpsStrategies(rpsCode, null);
     }
 
     public static Strategy getRpsStrategy(String code){

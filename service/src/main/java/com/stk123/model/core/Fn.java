@@ -38,7 +38,9 @@ public class Fn {
     @JsonView(View.All.class)
     private Table<String, Integer, FnData> table;
 
-
+    /**
+     * 所有计算都在构造函数里完成！
+     */
     public Fn(Stock stock, List<StkFnTypeEntity> types, Table<String, Integer, FnData> table){
         this.stock = stock;
         this.types = types;
@@ -51,11 +53,12 @@ public class Fn {
             StkFnTypeEntity type = fnData.getType();
             if(type == null)continue;
             if(type.getCurrencyUnitAdjust() != 1 && fnData.getValue() != null) {
-                fnData.setDispValue(CommonUtils.numberFormat2Digits(fnData.getValue() * type.getCurrencyUnitAdjust()));
+                fnData.setValue(fnData.getValue() * type.getCurrencyUnitAdjust());
+                fnData.setDispValue(CommonUtils.numberFormat2Digits(fnData.getValue()));
             }
-            if(type.getIsPercent()){
+            /*if(type.getIsPercent()){
                 fnData.setDispValue(CommonUtils.numberFormat2Digits(fnData.getValue())+"%");
-            }
+            }*/
             if(fnData.getDispValue() == null){
                 fnData.setDispValue(fnData.getValue() == null ? "-" : CommonUtils.numberFormat2Digits(fnData.getValue()));
             }
@@ -63,9 +66,9 @@ public class Fn {
     }
 
     public Double getValueByType(Integer type){
-        FnData fnData = this.table.column(type).values().stream().findFirst().get();
+        FnData fnData = this.table.column(type).values().stream().findFirst().orElse(null);
         if(fnData == null || fnData.getValue() == null) return null;
-        return fnData.getValue() * fnData.getType().getCurrencyUnitAdjust();
+        return fnData.getValue();
     }
 
     public Map getAsMap(){

@@ -310,3 +310,14 @@ if (typeof elem == "undefined") {
         console.warn("The name \"elem\" is already in use by some other script.");
     }
 }
+
+function createApp(config){
+    config.methods = Object.assign(config.methods, _stockLookPoolInVuex);
+    const app = Vue.createApp(config);
+    app.use(store)
+
+    app.component('datatable', _datatable);
+    app.component('eye', _eye);
+    app.component('modal', _modal);
+    app.mount('#app');
+}

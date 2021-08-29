@@ -29,3 +29,4 @@ service/src/main/resources/password.properties
 cookie.txt
 oracle/DB_STK.DP
 oracle/DB_STK_FULL.DP
+*.log

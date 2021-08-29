@@ -63,6 +63,9 @@ import java.util.stream.Collectors;
  * matchQuery：会将搜索词分词，再与目标查询字段进行匹配，若分词中的任意一个词与目标字段匹配上，则可查询到。
  * termQuery：不会对搜索词进行分词处理，而是作为一个整体与目标字段进行匹配，若完全匹配，则可查询到。
  *
+ * ik_max_word，会对文本做最细粒度的拆分，尽可能拆分出多的词。一个字段的值需要被全文检索式，可以在创建索引时设置字段的分词模式指定为ik_max_word，这样字段内容会被最大化的分词进而生成对应的索引，这样对应的文档能更准确的被检索到。
+ * ik_smart，会对文本做最粗粒度的拆分，拆分出的词相对会少些。一般检索时可以设置关键字的分词模式为ik_smart，这样能更准确的检索到预期的结果。
+ *
  */
 @Service
 @CommonsLog
@@ -76,6 +79,7 @@ public class EsService {
     public final static String FIELD_TITLE = "title";
     public final static String FIELD_DESC = "desc";
     public final static String FIELD_CODE = "code";
+    public final static String FIELD_NAME = "name";
     public final static String FIELD_CONTENT = "content";
     public final static String FIELD_INSERT_TIME = "insertTime";
     public final static String FIELD_UPDATE_TIME = "updateTime";
@@ -89,7 +93,7 @@ public class EsService {
     private StockService stockService;
 
 
-    private final static String[] DEFAULT_SEARCH_FIELDS = new String[] {FIELD_TYPE, FIELD_TITLE, FIELD_DESC, FIELD_CONTENT, FIELD_CODE};
+    private final static String[] DEFAULT_SEARCH_FIELDS = new String[] {FIELD_TYPE, FIELD_TITLE, FIELD_DESC, FIELD_CONTENT, FIELD_CODE, FIELD_NAME};
     private final static String[] DEFAULT_HIGHLIGHT_FIELDS = new String[] {FIELD_TITLE, FIELD_DESC, FIELD_CONTENT};
 
     @Resource
@@ -431,10 +435,10 @@ public class EsService {
         //System.out.println(stock.getCode()+","+stock.getName());
         String pinyin = "";
         if(stock.getName() != null && ChineseUtils.isContainChinese(stock.getName())){
-            pinyin = "["+String.join("", Arrays.asList(PinYin4jUtils.getHeadByString(StringUtils.replace(stock.getName(), " ", ""))))+"]";
+            pinyin = String.join("", Arrays.asList(PinYin4jUtils.getHeadByString(StringUtils.replace(stock.getName(), " ", ""))));
         }
         esDocument.setName(pinyin);
-        esDocument.setTitle(stock.getNameAndCodeWithLink());
+        esDocument.setTitle(stock.getName());
         esDocument.setDesc(StringUtils.join(stock.getIndustries().stream().map(ind -> ind.getStkIndustryTypeEntity().getName()).collect(Collectors.toList()), ", "));
         esDocument.setContent((stock.getStock().getF9()==null?"":stock.getStock().getF9()) + "<br/>" + "TODO 十大流通股东");
         esDocument.setId(stock.getCodeWithPlace());

@@ -350,9 +350,12 @@ public class StockService {
     }
 
     public List<StrategyResult> calcRps(List<Stock> stocks, String rpsCode){
+        return calcRps(stocks, rpsCode, null);
+    }
+    public List<StrategyResult> calcRps(List<Stock> stocks, String rpsCode, String... args){
         //这里一定要new一个strategy，否则当运行同个strategy的多个调用calcRps方法时，strategy实例会混乱，并且报错：
         //java.util.ConcurrentModificationException at java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1390)
-        Strategy strategy = Rps.newRpsStrategies(rpsCode);
+        Strategy strategy = Rps.newRpsStrategies(rpsCode, args);
         StrategyBacktesting strategyBacktesting = backtestingService.backtesting(stocks, Collections.singletonList(strategy));
         return strategyBacktesting.getPassedStrategyResult();
     }
@@ -454,15 +457,18 @@ public class StockService {
         }).collect(Collectors.toList());
     }
 
+    /**
+     * 最基本的财务要求过滤
+     */
     public static List<Stock> filterByFn(List<Stock> stocks){
         return stocks.stream().filter(stock -> {
             if(stock.isMarketCN()){
                 Fn fn = stock.getFn();
-                Double a = fn.getValueByType(StkConstant.DICT_FN_TYPE_110);
+                Double a = fn.getValueByType(StkConstant.FN_TYPE_110);
                 if(a == null) return false;
-                Double b = fn.getValueByType(StkConstant.DICT_FN_TYPE_111);
+                Double b = fn.getValueByType(StkConstant.FN_TYPE_111);
                 if(b == null) return false;
-                if(a > -10 || b > -10){
+                if(a > -15 || b > -15){
                     return true;
                 }
                 return false;

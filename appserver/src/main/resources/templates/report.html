@@ -313,6 +313,13 @@
                                             全市场策略
                                             <span v-text="currentAllStocks.data.length" class="badge badge-outline"></span>
                                         </a>
+                                        <a @click="clickTab([])" class="nav-item nav-link" id="report-allstocksrps-tab" data-toggle="tab" href="#report-allstocksrps" role="tab" aria-controls="report-allstocksrps" aria-selected="false">
+                                            全市场策略RPS
+                                        </a>
+                                        <a @click="clickTab(currentAllStocksRpsStrategy.data)" class="nav-item nav-link" id="report-allstocksrpsstrategy-tab" data-toggle="tab" href="#report-allstocksrpsstrategy" role="tab" aria-controls="report-allstocksrpsstrategy" aria-selected="false">
+                                            全市场策略RPS+策略
+                                            <span v-text="currentAllStocksRpsStrategy.data.length" class="badge badge-outline"></span>
+                                        </a>
                                         <a @click="clickTab(currentMyStocksA.data)" class="nav-item nav-link" id="report-mystocks-a-tab" data-toggle="tab" href="#report-mystocks-a" role="tab" aria-controls="report-mystocks-a" aria-selected="false">
                                             自选股策略(A股)
                                             <span v-text="currentMyStocksA.data.length" class="badge badge-outline"></span>
@@ -326,7 +333,7 @@
                                             <span v-text="currentMyStocksU.data.length" class="badge badge-outline"></span>
                                         </a>
                                         <span class="btn-tab">
-                                            <button :disabled="currentTabSize==0" @click="gotoStocks()" type="button" class="btn btn-outline-primary btn-xs" style="margin-bottom: -11px;"><i class="fas fa-th"></i> <span v-text="'查看全部'+currentTabSize+'只个股'"></span></button>
+                                            <button v-show="currentTabSize!=0" @click="gotoStocks()" type="button" class="btn btn-outline-primary btn-xs" style="margin-bottom: -11px;"><i class="fas fa-th"></i> <span v-text="'查看全部'+currentTabSize+'只个股'"></span></button>
                                         </span>
                                     </div>
 
@@ -334,9 +341,13 @@
 
                                 <div class="tab-content p-1" id="report-tabContent">
                                     <div class="tab-pane fade show active" id="report-allstocks" role="tabpanel" aria-labelledby="report-allstocks-tab">
-                                        <datatable :="{...common.allStocksRps, ...currentAllStocksRps}"></datatable>
-                                        <hr>
                                         <datatable :="{...common.allStocks, ...currentAllStocks}"></datatable>
+                                    </div>
+                                    <div class="tab-pane fade" id="report-allstocksrps" role="tabpanel" aria-labelledby="report-allstocksrps-tab">
+                                        <datatable :="{...common.allStocksRps, ...currentAllStocksRps}"></datatable>
+                                    </div>
+                                    <div class="tab-pane fade" id="report-allstocksrpsstrategy" role="tabpanel" aria-labelledby="report-allstocksrpsstrategy-tab">
+                                        <datatable :="{...common.allStocks, ...currentAllStocksRpsStrategy}"></datatable>
                                     </div>
                                     <div class="tab-pane fade" id="report-mystocks-a" role="tabpanel" aria-labelledby="report-mystocks-a-tab">
                                         <datatable :="{...common.allStocks, ...currentMyStocksA}"></datatable>
@@ -445,7 +456,7 @@
                 },
                 currentHotBks:{data:[]},currentAllStocks:{data:[]},currentBksStrategy:{data:[]},
                 currentMyStocksA:{data:[]},currentMyStocksH:{data:[]},currentMyStocksU:{data:[]},
-                currentAllStocksRps:{data:[]}
+                currentAllStocksRps:{data:[]},currentAllStocksRpsStrategy:{data:[]}
             }
         },
         methods:{
@@ -506,6 +517,7 @@
                 _this.currentTabSize = _this.currentAllStocks.data.length;
                 _this.currentTabStocks = _this.currentAllStocks.data.map(d => d.code).join(',');
 
+                _this.currentAllStocksRpsStrategy = {data: data.currentAllStocksRpsStrategy};
                 _this.currentMyStocksA = {data: data.currentMyStocksA};
                 _this.currentMyStocksH = {data: data.currentMyStocksH};
                 _this.currentMyStocksU = {data: data.currentMyStocksU};
@@ -521,13 +533,7 @@
             store.commit('setStockLookPool', getDataFromLocalStorage('stockLookPool') || []);
         }
     };
-    config.methods = Object.assign(config.methods, _stockLookPoolInVuex);
-    const app = Vue.createApp(config);
-    app.use(store)
-
-    app.component('datatable', _datatable);
-    app.component('eye', _eye);
-    app.mount('#app');
+    createApp(config);
 
     function convertStocks(data){
         data.forEach(stock =>{

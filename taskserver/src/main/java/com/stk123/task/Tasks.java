@@ -108,6 +108,7 @@ public class Tasks {
                 TaskBuilder.of(BarTask.class, "Bks", "report="+reportDate),
                 TaskBuilder.of(BarTask.class, "RpsStocks", "report="+reportDate),
                 TaskBuilder.of(BarTask.class, "Mass", "report="+reportDate),
+                TaskBuilder.of(BarTask.class, "stat", "report="+reportDate),
                 TaskBuilder.of(BarTask.class, "clearAll"),
                 TaskBuilder.of(SyncTask.class, "table=stk_report_header"),
                 TaskBuilder.of(SyncTask.class, "table=stk_report_detail")

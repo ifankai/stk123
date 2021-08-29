@@ -878,6 +878,7 @@ public class Stock {
         rating.addScore("jbm","owners", this::getScoreByOwners);
         rating.addScore("jbm","news", this::getScoreByNews);
         rating.addScore("jbm","infos", this::getScoreByInfos);
+        rating.addScore("jbm","fn", this::getScoreByFn);
         rating.addScore("zjm"); //资金面
         rating.addScore("zjm","flows", this::getScoreByFlows);
         rating.calculate();
@@ -997,6 +998,33 @@ public class Stock {
         return score;
     }
 
+    public int getScoreByFn() {
+        int score = 0;
+        Fn fn = this.getFn();
+        Double a = fn.getValueByType(StkConstant.FN_TYPE_110);
+        if(a != null){
+            if(a >= 30) score += 3;
+            else if(a >= 50) score += 5;
+            else if(a >= 100) score += 10;
+        }
+        a = fn.getValueByType(StkConstant.FN_TYPE_111);
+        if(a != null){
+            if(a >= 30) score += 3;
+            else if(a >= 50) score += 5;
+            else if(a >= 100) score += 10;
+        }
+        a = fn.getValueByType(StkConstant.FN_TYPE_106);
+        if(a != null){
+            if(a >= 30) score += 3;
+            else if(a >= 50) score += 5;
+        }
+        a = fn.getValueByType(StkConstant.FN_TYPE_123);
+        if(a != null){
+            if(a >= 100) score += 5;
+        }
+        return score;
+    }
+
 
     public List<StkOwnershipEntity> getOwners(){
         if(owners == null){
@@ -1034,15 +1062,9 @@ public class Stock {
 
     public Fn getFn(){
         if(this.fn != null)return this.fn;
-        List<StkFnTypeEntity> types = stkFnTypeRepository.findAllByMarketAndStatusOrderByDispOrder(this.getMarket().getMarket(), 1);
+        List<StkFnTypeEntity> types = fnService.getTypes(this.getMarket(), 1);
         this.fn = fnService.getFn(this, types, "20150101");
         return this.fn;
-    }
-
-    public Fn getFn(String fnDate, List<Integer> types){
-        if(this.fn != null)return this.fn;
-        List<StkFnTypeEntity> typeEntities = stkFnTypeRepository.findAllByMarketAndStatusAndTypeInOrderByDispOrder(this.getMarket().getMarket(), 1, types);
-        return fnService.getFn(this, typeEntities, fnDate);
     }
 
     public List<Map> getFnAsMap(){

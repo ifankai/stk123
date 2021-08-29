@@ -244,12 +244,6 @@
             store.commit('setStockLookPool', getDataFromLocalStorage('stockLookPool') || []);
         }
     };
-    config.methods = Object.assign(config.methods, _stockLookPoolInVuex);
-    const app = Vue.createApp(config);
-    app.use(store)
-
-    app.component('datatable', _datatable);
-    app.component('eye', _eye);
-    app.mount('#app');
+    createApp(config);
 
 </script>

@@ -15,10 +15,7 @@ import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
@@ -35,7 +32,8 @@ public class RpsController {
     @JsonView(View.All.class)
     public RequestResult rps(@PathVariable(value = "rpsCode")String rpsCode,
                              @PathVariable(value = "type", required = false)String type,
-                             @PathVariable(value = "codes", required = false)String codes){
+                             @PathVariable(value = "codes", required = false)String codes,
+                             @RequestParam(value = "args", required = false)String args){
         List<Stock> stocks;
         if(StringUtils.isNotEmpty(type) && StringUtils.isNotEmpty(codes)){
             if("stock".equals(type)) {
@@ -51,7 +49,7 @@ public class RpsController {
         }else {
             stocks = Stocks.getStocksWithBks();
         }
-        List<StrategyResult> strategyResults = stockService.calcRps(stocks, rpsCode);
+        List<StrategyResult> strategyResults = stockService.calcRps(stocks, rpsCode, args == null? null : StringUtils.split(args, ","));
         strategyResults = strategyResults.subList(0, Math.min(200, strategyResults.size()));
 
         Map result = stockService.getStrategyResultAsMap(strategyResults);

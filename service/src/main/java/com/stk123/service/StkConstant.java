@@ -21,8 +21,12 @@ public class StkConstant {
 
     public final static Integer DICT_NEWS = 2000;           //stk_news.type
 
-    public final static Integer DICT_FN_TYPE_110 = 110; //主营业务收入增长率(%)
-    public final static Integer DICT_FN_TYPE_111 = 111; //净利润增长率(%)
+
+    /** stk_fn_type.type **/
+    public final static Integer FN_TYPE_110 = 110; //主营业务收入增长率(%)
+    public final static Integer FN_TYPE_111 = 111; //净利润增长率(%)
+    public final static Integer FN_TYPE_106 = 106; //销售毛利率(%)
+    public final static Integer FN_TYPE_123 = 123; //经营现金净流量与净利润的比率(%)
 
 
     /** stk_news.type **/

@@ -773,6 +773,15 @@ public class Strategies {
         return strategy;
     }
 
+    public static Strategy rps_14(String type) {
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_FN, "财务指标", Stock.class);
+        strategy.addFilter("财务指标", (strgy, stock) -> {
+            Fn fn = stock.getFn();
+            return FilterResult.Sortable(CommonUtils.numberFormat(fn.getValueByType(Integer.parseInt(type)), 2));
+        }, false);
+        return strategy;
+    }
+
 
     //大跌后，有减持，问询函？
     /*public static Strategy strategy_0() {
