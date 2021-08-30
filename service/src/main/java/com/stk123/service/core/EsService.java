@@ -13,6 +13,7 @@ import com.stk123.model.projection.IndustryProjection;
 import com.stk123.model.projection.StockProjection;
 import com.stk123.repository.StkRepository;
 import com.stk123.repository.StkTextRepository;
+import com.stk123.service.StkConstant;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -479,6 +480,14 @@ public class EsService {
         esDocument.setContent(e.getText());
         esDocument.setId(e.getId().toString());
         esDocument.setCode(e.getCode());
+        if(e.getType() == StkConstant.TEXT_TYPE_XUEQIU) {
+            if(e.getUserId() == -1) {
+                String codeWithPlace = Stock.getCodeWithPlace(e.getCode());
+                esDocument.setSource("https://xueqiu.com/S/"+codeWithPlace+'/'+e.getPostId());
+            }else{
+                esDocument.setSource("https://xueqiu.com/"+e.getUserId()+'/'+e.getPostId());
+            }
+        }
         esDocument.setInsertTime(e.getInsertTime() == null ? null : e.getInsertTime().getTime());
         esDocument.setUpdateTime(e.getUpdateTime() == null ? null : e.getUpdateTime().getTime());
         return esDocument;

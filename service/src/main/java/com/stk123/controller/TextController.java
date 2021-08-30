@@ -128,7 +128,7 @@ public class TextController {
             });
             esDocument.setType("post");
             esDocument.setPost(stkTextEntity);
-            esDocument.setStock(stocks.stream().filter(e -> e.getCode().equals(esDocument.getCode())).findFirst().orElse(null));
+            //esDocument.setStock(stocks.stream().filter(e -> e.getCode().equals(esDocument.getCode())).findFirst().orElse(null));
             results.add(esDocument);
         }
 

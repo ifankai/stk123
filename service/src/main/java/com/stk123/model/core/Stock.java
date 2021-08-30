@@ -105,7 +105,7 @@ public class Stock {
     private Map data = new HashMap();
 
     private Double totalCapital; //总股本
-    @JsonView(View.Default.class)
+    @JsonView(View.All.class)
     private Double marketCap; //总市值
 
     private StockProjection stock;
@@ -238,6 +238,20 @@ public class Stock {
         return this.place == null ? this.code : (this.place.name() + this.code);
     }
 
+    public static String getCodeWithPlace(String code){
+        boolean isAllNumber = StringUtils.isNumeric(code);
+        if(code.length() == 5 && isAllNumber){
+            return code;
+        }else{
+            boolean isAllAlpha = StringUtils.isAlpha(code);
+            if(isAllAlpha){
+                return code;
+            }else{
+                return getCity(code).name()+code;
+            }
+        }
+    }
+
     public String getNameAndCode(){
         loadIfNull(this.name);
         return (this.name==null?this.code:this.name) + "["+ this.getCodeWithPlace() +"]";
@@ -250,7 +264,7 @@ public class Stock {
         }
         return CommonUtils.wrapLink(this.getName(), "/S/"+this.getCode());
     }
-    @JsonView(View.All.class)
+    @JsonView(View.Default.class)
     public String getNameAndCodeWithLink(){
         return getNameAndCodeWithLinkBreak(false);
     }

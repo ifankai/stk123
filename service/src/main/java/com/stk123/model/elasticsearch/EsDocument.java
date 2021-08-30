@@ -1,14 +1,18 @@
 package com.stk123.model.elasticsearch;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.common.util.BeanUtils;
 import com.stk123.entity.StkTextEntity;
+import com.stk123.model.core.Stock;
 import com.stk123.model.dto.StockDto;
+import com.stk123.model.json.View;
 import com.stk123.model.projection.StockBasicProjection;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@JsonView(View.Default.class)
 public class EsDocument {
 
     private String type;
@@ -19,17 +23,10 @@ public class EsDocument {
     private String desc;
     private String content;
     private String code;
+    private String source;
     private Long insertTime;
     private Long updateTime;
 
     private StkTextEntity post;
-    private StockDto stock;
-
-
-    public void setStock(StockBasicProjection stockBasicProjection){
-        this.stock = BeanUtils.map(stockBasicProjection, StockDto.class);
-    }
-    public void setStock(StockDto stockDto){
-        this.stock = stockDto;
-    }
+    private Stock stock;
 }

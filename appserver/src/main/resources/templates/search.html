@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>小智慧 - 搜索结果</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css">
+    <title th:text="${keyword}+' - 小智慧'"></title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fontawesome5pro@5.14.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css">
     <!-- DataTables -->
     <link rel="stylesheet" href="/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
@@ -13,22 +13,11 @@
     <link rel="stylesheet" href="/adminlte/plugins/pace-progress/themes/black/pace-theme-minimal.css">
     <!--    <link rel="stylesheet" href="/css/public.css">-->
     <style>
-        /*@media (min-width: 1200px) {
-            .img-width img {
-                width: 410px;
-                padding: 2px;
-                text-align: center;
-            }
-            .container{
-                max-width: 1350px;
-            }
+        .fa-file, .fa-external-link{
+            margin-left: 10px;
+            cursor: pointer;
+            font-family: "Font Awesome 5 Pro";
         }
-        @media (max-width: 650px) {
-            .container{
-                min-width: 615px;
-            }
-
-        }*/
 
         table.dataTable tbody th, table.dataTable tbody td, table.dataTable thead th, table.dataTable thead td {
             padding: 1px 2px;
@@ -87,6 +76,20 @@
         .sticky-top{
             top: 50px;
         }
+        .search-title{
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        .search-type{
+            font-size: .5rem;
+        }
+        #search-result ol li{
+            margin-bottom: 20px;
+        }
+        .pagination-sm .page-link {
+            padding: .8rem 1rem;
+        }
 
 </style>
 </head>
@@ -117,24 +120,60 @@
                             <div class="card-body">
                                 <div class="post clearfix">
                                     <ol style="list-style: none;">
-                                        <li>
-                                            <a target="_blank" href="https://rashidjorvee.blogspot.com/2020/10/elasticsearch-timeout-on-connection.html">test</a>
-                                            <div class="b_caption">
-                                                <div class="b_attribution" u="1|5061|4619271923370298|Wv_X4uK32nQ0ml8dclvj9_TwiKN3zQ1e">
-                                                    <cite>https://rashidjorvee.blogspot.com/2020/10/...</cite>
-                                                    <p>While using the Bulk API inElasticsearchwe encounter the Timeout error java.net.SocketTimeoutException: 30,000 milliseconds timeout on connection http-outgoing-0 [ACTIVE]due to a huge file with thousands of records.</p>
+                                        <li v-for="result in results.list">
+                                            <template v-if="result.type == 'stock'">
+                                                <div class="search-title">
+                                                    <span class="search-type">[股票] </span><span v-html="result.stock.nameAndCodeWithLink"></span>
                                                 </div>
-                                            </div>
+                                                <div>
+                                                    <p v-html="result.desc"></p>
+                                                </div>
+                                            </template>
+                                            <template v-else-if="result.type == 'post' && result.subType == '0'">
+                                                <div class="search-title">
+                                                    <div v-if="result.title != null">
+                                                        <span class="search-type">[帖子] </span><a v-html="result.title" :href="result.source" target="_blank"></a>
+                                                        - <span v-html="result.stock.nameAndCodeWithLink"></span>
+                                                    </div>
+                                                    <div v-else-if="result.title == null">
+                                                        <span class="search-type">[帖子] </span>
+                                                        <span v-html="result.stock.nameAndCodeWithLink" class="search-title"></span>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <p>
+                                                        <span v-html="result.desc"></span>
+                                                        <i v-if="result.content != null && result.content.length > result.desc.length" @click="openModalDetail(result)" class="fal fa-file" title="查看详情" data-toggle="modal" :data-target="'#modal-'+result.id"></i>
+                                                    </p>
+                                                </div>
+                                            </template>
+                                            <template v-else-if="result.type == 'post' && result.subType == '300'">
+                                                <div class="search-title">
+                                                    <div v-if="result.title != null">
+                                                        <span class="search-type">[新闻] </span><a v-html="result.title" :href="result.source" target="_blank"></a>
+                                                        - <span v-html="result.stock.nameAndCodeWithLink"></span>
+                                                    </div>
+                                                    <div v-else-if="result.title == null">
+                                                        <span class="search-type">[新闻] </span>
+                                                        <span v-html="result.stock.nameAndCodeWithLink" class="search-title"></span>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <p>
+                                                        <span v-html="result.desc"></span>
+                                                        <i v-if="result.content != null && result.content.length > result.desc.length" @click="openModalDetail(result)" class="fal fa-file" title="查看详情" data-toggle="modal" :data-target="'#modal-'+result.id"></i>
+                                                    </p>
+                                                </div>
+                                            </template>
                                         </li>
-                                        <li class="b_algo" data-bm="7"><h2><a target="_blank" href="https://rashidjorvee.blogspot.com/2020/10/elasticsearch-timeout-on-connection.html" h="ID=SERP,5144.1"><i>30 000 <i class="01">milliseconds</i> <i class="01">timeout</i> <i>on</i> <i>connection</i> <i>http-outgoing-0</i> ...</i></a></h2><div class="b_caption"><div class="b_attribution" u="1|5061|4619271923370298|Wv_X4uK32nQ0ml8dclvj9_TwiKN3zQ1e"><cite>https://rashidjorvee.blogspot.com/2020/10/...</cite><a href="#" class="trgr_icon" aria-label="Actions for this site" aria-haspopup="true" aria-expanded="false" role="button"><span class="c_tlbxTrg"><span class="c_tlbxTrgIcn sw_ddgn"></span><span class="c_tlbxH" h="BASE:CACHEDPAGEDEFAULT" k="SERP,5145.1"></span></span></a></div><p><span class="news_dt"><i><i>Oct</i> 06, 2020</i></span><i>&nbsp;· <i>While</i> <i>using</i> <i>the</i> <i>Bulk</i> <i>API</i> <i>in</i></i><strong><i> <i>Elasticsearch</i></i></strong><i> <i>we</i> <i>encounter</i> <i>the</i> <i>Timeout</i> <i>error</i> <i>java</i>.<i>net</i>.<i>SocketTimeoutException</i>:</i><strong><i> 30,000 <i>milliseconds</i> <i>timeout</i> <i>on</i> <i>connection</i> <i>http-outgoing-0</i> [<i>ACTIVE</i>]</i></strong><i> <i>due</i> <i>to</i> <i>a</i> <i>huge</i> <i>file</i> <i>with</i> <i>thousands</i> <i>of</i> <i>records</i>.</i></p><div class="b_factrow b_twofr"><div class="b_vlist2col"><ul><li><div><a target="_blank" href="/search?q=Rashid+Jorvee" h="ID=SERP,5141.1"><strong><i><i>Author</i>:</i></strong><i> <i>Rashid</i> <i>Jorvee</i></i></a></div></li></ul><ul></ul></div></div></div><div class="qbrs_data" data-appns="SERP" data-k="5396"></div></li>
 
-                                        <li style="padding: 26px 0 26px 0;">
+                                        <li v-if="results.list" style="padding: 26px 0 26px 0;">
                                             <ul class="pagination pagination-sm">
-                                                <li class="page-item"><a href="#" class="page-link">«</a></li>
-                                                <li class="page-item"><a href="#" class="page-link">1</a></li>
-                                                <li class="page-item"><a href="#" class="page-link">2</a></li>
-                                                <li class="page-item"><a href="#" class="page-link">3</a></li>
-                                                <li class="page-item"><a href="#" class="page-link">»</a></li>
+                                                <li class="page-item" :class="results.page==1?' disabled':''"><a href="#" class="page-link"><</a></li>
+                                                <li v-for="page in getPageList(results.page)" :class="page.page==results.page?' active':''" class="page-item">
+                                                    <a v-if="results.total >= page.page*results.pageSize" v-text="page.display==null?page.page:page.display" @click="clickPage(page)" href="#" class="page-link"></a>
+                                                </li>
+                                                <li class="page-item"><a href="#" class="page-link">></a></li>
                                             </ul>
                                         </li>
                                     </ol>
@@ -184,6 +223,8 @@
             </div>
         </section>
 
+        <modal :id="modalId" :title="modalTitle" :content="modalContent"></modal>
+
         <a id="back-to-top" href="#" class="btn btn-outline-primary back-to-top" style="display: none" role="button" aria-label="Scroll to top">
             <i class="fas fa-chevron-up"></i>
         </a>
@@ -218,9 +259,10 @@
         data() {
             return {
                 loading: true,
-                common:{
-
-                },
+                modalId:'',
+                modalTitle:'',
+                modalContent:'',
+                common:{},
                 results:{}
             }
         },
@@ -228,6 +270,38 @@
             dateFormat:function (date){
                 return dateFormat(date);
             },
+            openModalDetail:function (result) {
+                this.modalId = 'modal-'+result.id;
+                this.modalTitle = result.title;
+                this.modalContent = result.content;
+            },
+            getPageList:function (page) {
+                let pages = [];
+                pages.push({page:1, display:null});
+                let start = page-3 >= 2 ? page-3 : 2;
+                for(let i=start; i<=page+3; i++){
+                    if(i !== 1) {
+                        pages.push({page: i, display: null});
+                    }
+                }
+                if(pages[1].page != 2){
+                    pages.splice(1,0,{page: parseInt(pages[1].page/2), display:'...'});
+                }
+                if(page === 1){
+                    pages.push({page: 5, display: null});
+                }else if(page === 2){
+                    pages.push({page: 5, display: null});
+                    pages.push({page: 6, display: null});
+                }
+                return pages;
+            },
+            clickPage:function (page) {
+                let _this = this;
+                axios.get("/search/"+page.page+'/'+keyword).then(function (res) {
+                    _this.results = res.data.data;
+                    console.log('mounted', _this.$data)
+                });
+            }
         },
         computed: {
             stockLookPool(){

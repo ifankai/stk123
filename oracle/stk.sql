@@ -3049,6 +3049,7 @@ select s.code, s.name, t.fn_date, t.holder, t.holding_amount, t.holder_change
 select * from stk_text where code='000761' order by insert_time desc; 
 select * from stk_text where code='605009' order by insert_time desc;
 select * from stk_text where reply_positive is not null;
+select * from stk_text where sub_type=300 order by insert_time desc;
 
 select * from stk_error_log order by insert_time desc;
 select * from stk_import_info order by insert_time desc;

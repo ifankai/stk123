@@ -1,6 +1,8 @@
 package com.stk123.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.stk123.model.json.View;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonView(View.Default.class)
 public class PageRoot<T> implements Serializable {
 
     private static final long serialVersionUID = -5967179816929602484L;
