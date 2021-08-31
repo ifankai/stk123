@@ -488,8 +488,8 @@ public class EsService {
                 esDocument.setSource("https://xueqiu.com/"+e.getUserId()+'/'+e.getPostId());
             }
         }
-        esDocument.setInsertTime(e.getInsertTime() == null ? null : e.getInsertTime().getTime());
-        esDocument.setUpdateTime(e.getUpdateTime() == null ? null : e.getUpdateTime().getTime());
+        esDocument.setInsertTime(e.getUpdateTime() == null ? e.getInsertTime().getTime() : e.getUpdateTime().getTime());
+        esDocument.setUpdateTime(e.getCreatedAt() == null ? null : e.getCreatedAt().getTime());
         return esDocument;
     }
 }

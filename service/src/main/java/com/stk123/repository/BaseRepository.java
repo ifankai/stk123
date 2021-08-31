@@ -1,6 +1,7 @@
 package com.stk123.repository;
 
 import com.stk123.service.support.CustomJpaResultTransformer;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
@@ -22,11 +23,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service("baseRepository")
+@Slf4j
 public class BaseRepository implements ApplicationContextAware {
-
-    protected static final Log log = LogFactory.getLog(BaseRepository.class.getClass());
 
     private static ApplicationContext appContext;
 
@@ -127,6 +128,11 @@ public class BaseRepository implements ApplicationContextAware {
 
         List<Map> list = q.list();
         return list;
+    }
+
+    public List<String> list2String(String sql, Object... params) {
+        List<Map> list = list2Map(sql, params);
+        return list.stream().map(l -> (String)l.values().iterator().next()).collect(Collectors.toList());
     }
 
     private void setParameter(NativeQuery q, int i, Object param){

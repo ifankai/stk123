@@ -773,8 +773,9 @@ public class Strategies {
         return strategy;
     }
 
-    public static Strategy rps_14(String type) {
+    public static Strategy _rps_14(String type) {
         Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_FN, "财务指标", Stock.class);
+        if(type == null) return strategy;
         strategy.addFilter("财务指标", (strgy, stock) -> {
             Fn fn = stock.getFn();
             return FilterResult.Sortable(CommonUtils.numberFormat(fn.getValueByType(Integer.parseInt(type)), 2));

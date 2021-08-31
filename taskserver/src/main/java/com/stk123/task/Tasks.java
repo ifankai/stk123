@@ -99,36 +99,42 @@ public class Tasks {
     public void initialKLine() {
         String reportDate = CommonUtils.formatDate(new Date(), CommonUtils.sf_ymd2);
         taskContainer.start(
-                TaskBuilder.of(BarTask.class, "clearAll"),
-                TaskBuilder.of(BarTask.class, "CN"),
-                TaskBuilder.of(BarTask.class, "HK"),
-                TaskBuilder.of(BarTask.class, "MyStocks", "report="+reportDate),
-                TaskBuilder.of(BarTask.class, "AllStocks", "report="+reportDate),
-                TaskBuilder.of(BarTask.class, "AllRps", "report="+reportDate),
-                TaskBuilder.of(BarTask.class, "Bks", "report="+reportDate),
-                TaskBuilder.of(BarTask.class, "RpsStocks", "report="+reportDate),
-                TaskBuilder.of(BarTask.class, "Mass", "report="+reportDate),
-                TaskBuilder.of(BarTask.class, "stat", "report="+reportDate),
-                TaskBuilder.of(BarTask.class, "clearAll"),
-                TaskBuilder.of(SyncTask.class, "table=stk_report_header"),
-                TaskBuilder.of(SyncTask.class, "table=stk_report_detail")
+            TaskBuilder.of(BarTask.class, "clearAll"),
+            TaskBuilder.of(BarTask.class, "CN"),
+            TaskBuilder.of(BarTask.class, "HK"),
+            TaskBuilder.of(BarTask.class, "MyStocks", "report="+reportDate),
+            TaskBuilder.of(BarTask.class, "AllStocks", "report="+reportDate),
+            TaskBuilder.of(BarTask.class, "AllRps", "report="+reportDate),
+            TaskBuilder.of(BarTask.class, "Bks", "report="+reportDate),
+            TaskBuilder.of(BarTask.class, "RpsStocks", "report="+reportDate),
+            TaskBuilder.of(BarTask.class, "Mass", "report="+reportDate),
+            TaskBuilder.of(BarTask.class, "stat", "report="+reportDate),
+            TaskBuilder.of(BarTask.class, "clearAll"),
+            TaskBuilder.of(SyncTask.class, "table=stk_report_header"),
+            TaskBuilder.of(SyncTask.class, "table=stk_report_detail")
         );
     }
 
     @Scheduled(cron = "0 0 11 ? * MON-FRI")
     public void klineRealtime_am() {
         String reportDate = CommonUtils.formatDate(new Date(), CommonUtils.sf_ymd2);
-        taskContainer.start(BarTask.class, "MyStocks", "realtime=1", "market=cn,hk", "report="+reportDate, "ampm=am");
-        Stocks.StocksAllCN = null;
-        taskContainer.start(BarTask.class, "AllStocks", "realtime=1", "report="+reportDate, "ampm=am");
+        taskContainer.start(
+            TaskBuilder.of(BarTask.class, "clearAll"),
+            TaskBuilder.of(BarTask.class, "MyStocks", "realtime=1", "market=cn,hk", "report="+reportDate, "ampm=am"),
+            TaskBuilder.of(BarTask.class, "AllStocks", "realtime=1", "report="+reportDate, "ampm=am"),
+            TaskBuilder.of(BarTask.class, "clearAll")
+        );
     }
 
     @Scheduled(cron = "0 30 14 ? * MON-FRI")
     public void klineRealtime_pm() {
         String reportDate = CommonUtils.formatDate(new Date(), CommonUtils.sf_ymd2);
-        taskContainer.start(BarTask.class, "MyStocks", "realtime=1", "market=cn,hk", "report="+reportDate, "ampm=am");
-        Stocks.StocksAllCN = null;
-        taskContainer.start(BarTask.class, "AllStocks", "realtime=1", "report="+reportDate, "ampm=am");
+        taskContainer.start(
+            TaskBuilder.of(BarTask.class, "clearAll"),
+            TaskBuilder.of(BarTask.class, "MyStocks", "realtime=1", "market=cn,hk", "report="+reportDate, "ampm=pm"),
+            TaskBuilder.of(BarTask.class, "AllStocks", "realtime=1", "report="+reportDate, "ampm=pm"),
+            TaskBuilder.of(BarTask.class, "clearAll")
+        );
     }
 
     @Scheduled(cron = "0 30 5 ? * TUE-SAT")

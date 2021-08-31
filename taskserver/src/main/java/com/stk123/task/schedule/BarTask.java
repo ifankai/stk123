@@ -606,12 +606,12 @@ public class BarTask extends AbstractTask {
                 sb.append("H股");        sb.append(CommonUtils.createHtmlTable(titles, datasH));sb.append("<br/>");
                 sb.append("美股");       sb.append(CommonUtils.createHtmlTable(titles, datasU));sb.append("<br/>");
 
-                EmailUtils.send((realtime!=null?"[实时]":"")+"自选股策略发现 A股" + (datasA.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count()) + "个, " +
+                EmailUtils.send((realtime!=null?"[**实时**]":"")+"自选股策略发现 A股" + (datasA.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count()) + "个, " +
                                 "H股" + (datasH.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count()) + "个, " +
                                 "美股"+ (datasU.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count()) + "个"
                         , sb.toString());
             }else{
-                EmailUtils.send((realtime!=null?"[实时]":"")+"自选股策略发现0个标的", "");
+                EmailUtils.send((realtime!=null?"[**实时**]":"")+"自选股策略发现0个标的", "");
             }
         } catch (Exception e) {
             EmailUtils.send("报错[analyseMyStocks]", ExceptionUtils.getExceptionAsString(e));
@@ -713,9 +713,9 @@ public class BarTask extends AbstractTask {
                 List<String> titles = ListUtils.createList("标的", "日期/策略", "日K线", "周K线", "历史策略回测通过率");
                 sb.append(CommonUtils.createHtmlTable(titles, datasA));sb.append("<br/>");
 
-                EmailUtils.send((realtime!=null?"[实时]":"")+"全市场策略发现 A股" + (datasA.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count()) + "个", sb.toString());
+                EmailUtils.send((realtime!=null?"[**实时**]":"")+"全市场策略发现 A股" + (datasA.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count()) + "个", sb.toString());
             }else{
-                EmailUtils.send((realtime!=null?"[实时]":"")+"全市场策略发现0个标的", "");
+                EmailUtils.send((realtime!=null?"[**实时**]":"")+"全市场策略发现0个标的", "");
             }
         } catch (Exception e) {
             EmailUtils.send("报错[analyseAllStocks]", ExceptionUtils.getExceptionAsString(e));
@@ -886,9 +886,9 @@ public class BarTask extends AbstractTask {
                 List<String> titles = ListUtils.createList("标的", "日期/策略", "日K线", "周K线", "");
                 sb.append(CommonUtils.createHtmlTable(titles, datasA));sb.append("<br/>");
 
-                EmailUtils.send((realtime!=null?"[实时]":"")+"RPS股票策略发现 A股" + (datasA.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count()) + "个", sb.toString());
+                EmailUtils.send((realtime!=null?"[**实时**]":"")+"RPS股票策略发现 A股" + (datasA.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count()) + "个", sb.toString());
             }else{
-                EmailUtils.send((realtime!=null?"[实时]":"")+"RPS股票策略发现0个标的", "");
+                EmailUtils.send((realtime!=null?"[**实时**]":"")+"RPS股票策略发现0个标的", "");
             }
             
         } catch (Exception e) {

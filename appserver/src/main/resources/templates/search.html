@@ -87,6 +87,12 @@
         #search-result ol li{
             margin-bottom: 20px;
         }
+        .search-count{
+            font-size: 12px;
+        }
+        .search-time{
+            color: #9195A3;
+        }
         .pagination-sm .page-link {
             padding: .8rem 1rem;
         }
@@ -103,7 +109,7 @@
 <!-- Site wrapper -->
 <div id="app" class="wrapper">
     <div th:replace="common/navbar"></div>
-    <div class="content-wrapper">
+    <div class="content-wrapper" style="background-color: white;">
         <!-- Content Header (Page header) -->
         <section class="content-header"></section>
 
@@ -112,73 +118,99 @@
                 <div class="row">
                     <div class="col-md-9">
 
-                        <div id="search-result" class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">热点公告</h3>
+                        <div id="search-result">
+                            <div class="card-header p-0 border-bottom-0">
+                                <ul class="nav nav-tabs" style="padding-left: 2rem" id="search-tabs" role="tablist">
+                                    <li class="nav-item">
+                                        <a @click="searchByType(null)" class="nav-link active" id="search-all-tab" data-toggle="pill" href="#search-all" role="tab" aria-controls="search-all" aria-selected="true">综合</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a @click="searchByType('stock')" class="nav-link" id="search-stock-tab" data-toggle="pill" href="#search-stock" role="tab" aria-controls="search-stock" aria-selected="false">股票</a>
+                                    </li>
+                                </ul>
                             </div>
 
                             <div class="card-body">
-                                <div class="post clearfix">
-                                    <ol style="list-style: none;">
-                                        <li v-for="result in results.list">
-                                            <template v-if="result.type == 'stock'">
-                                                <div class="search-title">
-                                                    <span class="search-type">[股票] </span><span v-html="result.stock.nameAndCodeWithLink"></span>
+                                <div class="tab-content" id="search-tabs-tabContent">
+                                    <div class="post clearfix">
+                                        <ol style="list-style: none;padding-left: 1rem;">
+                                            <li v-if="results.total > 0">
+                                                <div class="search-count">
+                                                    <template v-if="results.page === 1">
+                                                        {{results.total}} 条结果
+                                                    </template>
+                                                    <template v-else>
+                                                        {{(results.page-1)*results.pageSize}} - {{results.page*results.pageSize-1}} 条结果 (共 {{results.total}} 条)
+                                                    </template>
                                                 </div>
-                                                <div>
-                                                    <p v-html="result.desc"></p>
-                                                </div>
-                                            </template>
-                                            <template v-else-if="result.type == 'post' && result.subType == '0'">
-                                                <div class="search-title">
-                                                    <div v-if="result.title != null">
-                                                        <span class="search-type">[帖子] </span><a v-html="result.title" :href="result.source" target="_blank"></a>
-                                                        - <span v-html="result.stock.nameAndCodeWithLink"></span>
+                                            </li>
+                                            <li v-for="result in results.list">
+                                                <template v-if="result.type == 'stock'">
+                                                    <div class="search-title">
+                                                        <span class="search-type">[股票] </span><span v-html="result.stock.nameAndCodeWithLink"></span>
                                                     </div>
-                                                    <div v-else-if="result.title == null">
-                                                        <span class="search-type">[帖子] </span>
-                                                        <span v-html="result.stock.nameAndCodeWithLink" class="search-title"></span>
+                                                    <div>
+                                                        <p v-html="result.desc"></p>
                                                     </div>
-                                                </div>
-                                                <div>
-                                                    <p>
-                                                        <span v-html="result.desc"></span>
-                                                        <i v-if="result.content != null && result.content.length > result.desc.length" @click="openModalDetail(result)" class="fal fa-file" title="查看详情" data-toggle="modal" :data-target="'#modal-'+result.id"></i>
-                                                    </p>
-                                                </div>
-                                            </template>
-                                            <template v-else-if="result.type == 'post' && result.subType == '300'">
-                                                <div class="search-title">
-                                                    <div v-if="result.title != null">
-                                                        <span class="search-type">[新闻] </span><a v-html="result.title" :href="result.source" target="_blank"></a>
-                                                        - <span v-html="result.stock.nameAndCodeWithLink"></span>
+                                                </template>
+                                                <template v-else-if="result.type == 'post' && result.subType == '0'">
+                                                    <div class="search-title">
+                                                        <div v-if="result.title != null">
+                                                            <span class="search-type">[帖子] </span><a v-html="result.title" :href="result.source" target="_blank"></a>
+                                                            - <span v-html="result.stock.nameAndCodeWithLink"></span>
+                                                        </div>
+                                                        <div v-else-if="result.title == null">
+                                                            <span class="search-type">[帖子] </span>
+                                                            <span v-html="result.stock.nameAndCodeWithLink" class="search-title"></span>
+                                                        </div>
                                                     </div>
-                                                    <div v-else-if="result.title == null">
-                                                        <span class="search-type">[新闻] </span>
-                                                        <span v-html="result.stock.nameAndCodeWithLink" class="search-title"></span>
+                                                    <div>
+                                                        <p>
+                                                            <span v-text="tsFormat(result.insertTime)" class="search-time"></span>&nbsp;
+                                                            <span v-html="result.desc"></span>
+                                                            <i v-if="result.content != null && result.content.length > result.desc.length" @click="openModalDetail(result)" class="fal fa-file" title="查看详情" data-toggle="modal" :data-target="'#modal-'+result.id"></i>
+                                                        </p>
                                                     </div>
-                                                </div>
-                                                <div>
-                                                    <p>
-                                                        <span v-html="result.desc"></span>
-                                                        <i v-if="result.content != null && result.content.length > result.desc.length" @click="openModalDetail(result)" class="fal fa-file" title="查看详情" data-toggle="modal" :data-target="'#modal-'+result.id"></i>
-                                                    </p>
-                                                </div>
-                                            </template>
-                                        </li>
+                                                </template>
+                                                <template v-else-if="result.type == 'post' && result.subType == '300'">
+                                                    <div class="search-title">
+                                                        <div v-if="result.title != null">
+                                                            <span class="search-type">[新闻] </span><a v-html="result.title" :href="result.source" target="_blank"></a>
+                                                            - <span v-html="result.stock.nameAndCodeWithLink"></span>
+                                                        </div>
+                                                        <div v-else-if="result.title == null">
+                                                            <span class="search-type">[新闻] </span>
+                                                            <span v-html="result.stock.nameAndCodeWithLink" class="search-title"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <p>
+                                                            <span v-text="tsFormat(result.insertTime)" class="search-time"></span>&nbsp;
+                                                            <span v-html="result.desc"></span>
+                                                            <i v-if="result.content != null && result.content.length > result.desc.length" @click="openModalDetail(result)" class="fal fa-file" title="查看详情" data-toggle="modal" :data-target="'#modal-'+result.id"></i>
+                                                        </p>
+                                                    </div>
+                                                </template>
+                                            </li>
 
-                                        <li v-if="results.list" style="padding: 26px 0 26px 0;">
-                                            <ul class="pagination pagination-sm">
-                                                <li class="page-item" :class="results.page==1?' disabled':''"><a href="#" class="page-link"><</a></li>
-                                                <li v-for="page in getPageList(results.page)" :class="page.page==results.page?' active':''" class="page-item">
-                                                    <a v-if="results.total >= page.page*results.pageSize" v-text="page.display==null?page.page:page.display" @click="clickPage(page)" href="#" class="page-link"></a>
-                                                </li>
-                                                <li class="page-item"><a href="#" class="page-link">></a></li>
-                                            </ul>
-                                        </li>
-                                    </ol>
+                                            <li style="padding: 26px 0 26px 0;">
+                                                <ul v-if="results.total > 0" class="pagination pagination-sm">
+                                                    <li class="page-item" :class="results.page==1?' disabled':''">
+                                                        <a @click="clickPage(results.page-1)" href="#" class="page-link"><</a>
+                                                    </li>
+                                                    <li v-for="p in getPageList(results.page)" :class="p.page==results.page?' active':''" class="page-item">
+                                                        <a v-if="results.total >= p.page*results.pageSize" v-text="p.display==null?p.page:p.display" @click="clickPage(p.page)" href="#" class="page-link"></a>
+                                                    </li>
+                                                    <li class="page-item">
+                                                        <a @click="clickPage(results.page-1)" href="#" class="page-link">></a>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                        </ol>
 
+                                    </div>
                                 </div>
+
                             </div>
                         </div>
 
@@ -263,13 +295,11 @@
                 modalTitle:'',
                 modalContent:'',
                 common:{},
-                results:{}
+                type:null,
+                results:{total:0}
             }
         },
         methods:{
-            dateFormat:function (date){
-                return dateFormat(date);
-            },
             openModalDetail:function (result) {
                 this.modalId = 'modal-'+result.id;
                 this.modalTitle = result.title;
@@ -297,10 +327,15 @@
             },
             clickPage:function (page) {
                 let _this = this;
-                axios.get("/search/"+page.page+'/'+keyword).then(function (res) {
+                let url = "/search/"+page+'/'+keyword + (this.type?'?type='+this.type:'');
+                axios.get(url).then(function (res) {
                     _this.results = res.data.data;
                     console.log('mounted', _this.$data)
                 });
+            },
+            searchByType:function (type) {
+                this.type = type;
+                this.clickPage(1);
             }
         },
         computed: {

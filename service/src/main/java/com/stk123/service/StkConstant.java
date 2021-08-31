@@ -87,4 +87,11 @@ public class StkConstant {
     public final static String REPORT_HEADER_TYPE_BKS = "bks";
     public final static String REPORT_HEADER_TYPE_RPSSTOCKS_STRATEGIES = "rpsstocks_strategies";
     public final static String REPORT_HEADER_TYPE_ALLSTOCKS_RPS = "allstocks_rps";
+
+    /** stk_keyword_link.link_type **/
+    public final static int KEYWORD_LINK_TYPE_0 = 0; //default(manually add):0
+    public final static int KEYWORD_LINK_TYPE_1 = 1;  //主营业务:1
+
+    public final static int KEYWORD_STATUS__1 = 1;  //-1:deleted
+
 }

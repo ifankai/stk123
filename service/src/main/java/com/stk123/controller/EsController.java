@@ -5,7 +5,11 @@ import com.stk123.common.util.JdbcUtils;
 import com.stk123.model.RequestResult;
 import com.stk123.model.bo.Stk;
 import com.stk123.model.elasticsearch.SearchResult;
+import com.stk123.model.projection.StockCodeNameProjection;
+import com.stk123.repository.StkRepository;
+import com.stk123.service.StkConstant;
 import com.stk123.service.core.EsService;
+import com.stk123.service.core.KeywordService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -38,6 +42,10 @@ public class EsController {
 
     @Autowired
     private EsService esService;
+    @Autowired
+    private KeywordService keywordService;
+    @Autowired
+    private StkRepository stkRepository;
     
     @RequestMapping(value = "/index/{index}", method = RequestMethod.PUT)
     @ResponseBody
@@ -115,7 +123,7 @@ public class EsController {
     @RequestMapping(value = {"/dict/stop"})
     public void dictStop(HttpServletResponse response) throws Exception {
         response.setCharacterEncoding("utf-8");
-        response.setDateHeader("Last-Modified", dictExtModified.getTime());
+        response.setDateHeader("Last-Modified", dictStopModified.getTime());
         response.setHeader("ETag", dictStop.hashCode()+"-"+dictStop.size());
         response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
         response.getWriter().println(StringUtils.join(getStopDict(), "\n"));
@@ -125,58 +133,41 @@ public class EsController {
     public Set<String> getStopDict() throws Exception {
         if(!dictStop.isEmpty()) return dictStop;
         log.info("getStopDict start..........");
-        Connection conn = null;
-        try{
-            conn = Pool.getPool().getConnection();
 
-            URL url = ResourceUtils.getURL("classpath:keyword_stop.txt");
-            dictStop.addAll(IOUtils.readLines(url.openStream()));
+        URL url = ResourceUtils.getURL("classpath:keyword_stop.txt");
+        dictStop.addAll(IOUtils.readLines(url.openStream()));
 
-            //加关键字
-            //删除的关键字
-            List<String> keyword = JdbcUtils.list(conn, "select name from stk_keyword where status=-1", String.class);
-            dictStop.addAll(keyword);
+        //删除的关键字
+        List<String> keyword = keywordService.getKeywordByStatus(StkConstant.KEYWORD_STATUS__1);
+        dictStop.addAll(keyword);
 
-            log.info("getStopDict end..........");
-            return dictStop;
-        }finally{
-            Pool.getPool().free(conn);
-        }
+        log.info("getStopDict end..........");
+        return dictStop;
     }
 
-    public Set<String> getExtDict() throws SQLException {
+    public Set<String> getExtDict() {
         if(!dictExt.isEmpty()) return dictExt;
-        /*if(true){
-            dictExt.add("李子园");
-            return dictExt;
-        }*/
         log.info("getExtDict start..........");
-        Connection conn = null;
-        try{
-            conn = Pool.getPool().getConnection();
 
-            //主营业务关键字
-            List<String> mainBusinessWords = JdbcUtils.list(conn, "select distinct b.name name from stk_keyword_link a, stk_keyword b where b.status=0 and a.link_type=1 and a.keyword_id=b.id and a.code_type=1", String.class);
-            dictExt.addAll(mainBusinessWords);
-            //手动加的关键字
-            List<String> words = JdbcUtils.list(conn, "select distinct sk.name from stk_keyword sk,stk_keyword_link skl where sk.status=0 and sk.id=skl.keyword_id and skl.link_type=0", String.class);
-            dictExt.addAll(words);
-            //加股票名称
-            List<Stk> stks = JdbcUtils.list(conn, "select code,name from stk order by code", Stk.class);
-            for(Stk stk : stks){
-                dictExt.add(stk.getCode());
-                String name = stk.getName();
-                if(name == null) continue;
-                if(name.indexOf(" ") > 0){
-                    dictExt.add(StringUtils.replace(name, " ", ""));
-                }
-                dictExt.add(name);
+        //主营业务关键字
+        List<String> mainBusinessWords = keywordService.getKeywordByLinkType(StkConstant.KEYWORD_LINK_TYPE_1);
+        dictExt.addAll(mainBusinessWords);
+        //手动加的关键字
+        List<String> words = keywordService.getKeywordByLinkType(StkConstant.KEYWORD_LINK_TYPE_0);
+        dictExt.addAll(words);
+        //加股票名称
+        List<StockCodeNameProjection> stks = stkRepository.findAllByOrderByCode();
+        for(StockCodeNameProjection stk : stks){
+            dictExt.add(stk.getCode());
+            String name = stk.getName();
+            if(name == null) continue;
+            if(name.indexOf(" ") > 0){
+                dictExt.add(StringUtils.replace(name, " ", ""));
             }
-            log.info("getExtDict end..........");
-            return dictExt;
-        }finally{
-            Pool.getPool().free(conn);
+            dictExt.add(name);
         }
+        log.info("getExtDict end..........");
+        return dictExt;
 
     }
 }

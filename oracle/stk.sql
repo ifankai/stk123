@@ -1354,7 +1354,7 @@ select * from stk  order by code;
 select * from stk_earnings_forecast;
 
 select * from stk_keyword for update;
-select * from stk_keyword_link;
+select * from stk_keyword_link where code_type=2;
 
 select * from stk_text order by id desc;
 select id,type,code,code_type,title,text,nvl(update_time,insert_time) update_time from stk_text;
@@ -3110,3 +3110,4 @@ select * from stk_kline where code='603939' order by kline_date desc;
 
 select * from stk_fn_data;
 select * from stk_fn_type;
+select name from stk_keyword where status=-1

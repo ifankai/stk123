@@ -17,6 +17,7 @@ import com.stk123.service.StkService;
 import com.stk123.service.core.EsService;
 import com.stk123.service.core.StockService;
 import lombok.extern.apachecommons.CommonsLog;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -69,10 +70,10 @@ public class SearchController {
         if(page == null) page = 1;
         if(pageSize == null) pageSize = 20;
         Map<String, String> otherKeywords = new HashMap<>();
-        if(type != null){
+        if(StringUtils.isNotEmpty(type)){
             otherKeywords.put(EsService.FIELD_TYPE, type);
         }
-        if(subType != null){
+        if(StringUtils.isNotEmpty(subType)){
             otherKeywords.put(EsService.FIELD_SUB_TYPE, subType);
         }
         com.stk123.model.elasticsearch.SearchResult result = esService.search(keyword, otherKeywords, page, pageSize, "time".equals(sort));
