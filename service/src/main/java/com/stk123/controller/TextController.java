@@ -20,6 +20,7 @@ import com.stk123.service.core.StockService;
 import com.stk123.service.core.TextService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -169,6 +170,17 @@ public class TextController {
         Date dateStart = start == null ? CommonUtils.addDay(new Date(), -365) : CommonUtils.parseDate(start);
         Date dateEnd = end == null ? new Date() : CommonUtils.parseDate(end);
         List<StkTextEntity> result = stkTextRepository.findAllByCodeAndTypeAndInsertTimeBetweenOrderByInsertTimeDesc(code, StkConstant.TEXT_TYPE_XUEQIU, dateStart, dateEnd);
+        result.forEach(stkTextEntity -> {
+            if(stkTextEntity.getType() == StkConstant.TEXT_TYPE_XUEQIU && stkTextEntity.getUserName() == null){ //处理老的text
+                stkTextEntity.setPostId(stkTextEntity.getTitle() != null ? Long.parseLong(stkTextEntity.getTitle()) : null);
+                stkTextEntity.setTitle(null);
+                String text = stkTextEntity.getText();
+                stkTextEntity.setUserName(StringUtils.substring(text, 0, StringUtils.indexOf(text, "]") + 1));
+                stkTextEntity.setText(StringUtils.substring(text, StringUtils.lastIndexOf(text, "[") - 1, text.length())); //reply
+                stkTextEntity.setTextDesc(StringUtils.substring(text, StringUtils.indexOf(text, "]") + 2, StringUtils.lastIndexOf(text, "[") ));
+                stkTextEntity.setCreatedAt(stkTextEntity.getInsertTime());
+            }
+        });
         return RequestResult.success(result);
     }
 

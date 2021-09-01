@@ -9,7 +9,9 @@ import com.stk123.service.core.EsService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import com.esotericsoftware.kryonet.Server;
@@ -86,8 +88,9 @@ public class WebApplication {
     private Integer httpsPort;
 
     @Autowired
+    private Environment environment;
+    @Autowired
     private WebProperties webProperties;
-
     @Autowired
     private DataSource dataSource;
     @Autowired
@@ -141,6 +144,10 @@ public class WebApplication {
 
     @EventListener(ApplicationReadyEvent.class)
     public void doSomethingAfterStartup() throws Exception {
+        if(ArrayUtils.contains(environment.getActiveProfiles(), "prod")) {
+            System.out.println("This is prod...");
+            return;
+        }
         System.out.println("do something after WebApplication startup..........");
         System.out.println(webProperties.getEnvironment());
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title th:text="'小智慧 - '+${title}">小智慧 - 股票</title>
+    <title th:text="${title}+' - 小智慧'">小智慧 - 股票</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fontawesome5pro@5.14.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css">
     <!-- DataTables -->
@@ -362,8 +362,8 @@
 <!--<script src="https://unpkg.com/@popperjs/core@2"></script>
 <script src="https://unpkg.com/tippy.js@6"></script>-->
 
-<script src="/js/public.js"></script>
-<script src="/js/component/datatable.js"></script>
+<script th:src="'/js/public.js?'+${_version}"></script>
+<script th:src="'/js/component/datatable.js?'+${_version}"></script>
 
 <script th:inline="javascript">
     const code = [[${code}]];
@@ -452,10 +452,14 @@
                 let data = res.data.data;
                 data.forEach(post => {
                     //post.title = post.title == null ? post.desc : post.title;
-                    if(post.userId == -1){
+                    if(post.userId == -1) {
                         post.followersCount = null;
                         post.user = '<a href="https://xueqiu.com/S/' + codeWithPlace + '" target="_blank">' + post.userName + '</a>';
-                        post.reply = '<a href="https://xueqiu.com/S/'+codeWithPlace+'/'+post.postId+'" target="_blank">'+post.replyCount+'</a>';
+                        post.reply = '<a href="https://xueqiu.com/S/' + codeWithPlace + '/' + post.postId + '" target="_blank">' + post.replyCount + '</a>';
+                    }else if(post.userId === 1){
+                        post.user = post.userName;
+                        post.reply = post.content;
+                        post.content = null;
                     }else {
                         post.user = '<a href="https://xueqiu.com/u/' + post.userId + '" target="_blank">' + post.userName + '</a>';
                         post.reply = '<a href="https://xueqiu.com/'+post.userId+'/'+post.postId+'" target="_blank">'+post.replyCount+'</a>';
@@ -498,14 +502,6 @@
         updated() {
         }
     };
-    /*config.methods = Object.assign(config.methods, _stockLookPoolInVuex);
-    const app = Vue.createApp(config);
-    app.use(store)
-
-    app.component('datatable', _datatable);
-    app.component('eye', _eye);
-    app.component('modal', _modal);
-    app.mount('#app');*/
     createApp(config);
 
 </script>

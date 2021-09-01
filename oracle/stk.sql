@@ -1482,7 +1482,7 @@ insert into stk_dictionary select 5,1538598451,'万法归宗',null,null,null,nul
 
 select * from stk_text order by insert_time desc for update;
 select * from stk_text where text like '%***+2%';
-select * from stk_text where code='000997';
+select * from stk_text where code='300338' order by insert_time desc;
 select * from stk where replace(name,' ','')='新和成';
 insert into stk_text select s_text_id.nextval,1,'',1,null,'',sysdate,null;
 

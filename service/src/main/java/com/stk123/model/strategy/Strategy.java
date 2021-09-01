@@ -7,6 +7,7 @@ import com.stk123.model.strategy.result.Table;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
+import org.bouncycastle.util.Arrays;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,6 +37,8 @@ public class Strategy<X> {
     private boolean expectFilterExecutorRunOrNot = true;
     @Getter@Setter
     private Consumer<Strategy> postExecutor;
+    @Getter@Setter
+    private Object[] args;
 
     @Getter
     private int countOfAllStrategyResult; //Strategy总共执行次数，即StrategyResult的个数
@@ -254,6 +257,14 @@ public class Strategy<X> {
 
     public FilterExecutor getFilterExecutor(String code){
         return this.filterExecutors.stream().filter(fe -> fe.getCode().equals(code)).findFirst().orElse(null);
+    }
+
+    public Integer getFirstArgAsInteger(){
+        if(!Arrays.isNullOrEmpty(args)){
+            Object obj = args[0];
+            return obj == null ? null : Integer.valueOf(obj.toString());
+        }
+        return null;
     }
 
     @Override

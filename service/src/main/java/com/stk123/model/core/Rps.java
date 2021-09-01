@@ -73,7 +73,9 @@ public class Rps{
                 method -> StringUtils.equalsIgnoreCase(method.getName(), rpsCode));
         if(methods.size() >= 1) {
             for(Method method : methods) {
-                return (Strategy<?>) method.invoke(null, args);
+                Strategy strategy = (Strategy<?>) method.invoke(null);
+                if(args != null) strategy.setArgs(args);
+                return strategy;
             }
         }
         throw new RuntimeException("Can not find matched method name in Strategies.class:" + rpsCode);
