@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
     <link rel="stylesheet" href="/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
     <link rel="stylesheet" href="/adminlte/plugins/pace-progress/themes/black/pace-theme-minimal.css">
-    <!--    <link rel="stylesheet" href="/css/public.css">-->
+    <link rel="stylesheet" th:href="'/css/public.css'+${_version}">
     <style>
         .fa-file, .fa-external-link{
             margin-left: 10px;
@@ -84,6 +84,9 @@
         .search-type{
             font-size: .5rem;
         }
+        .result-stocks{
+            font-size: .8rem;
+        }
         #search-result ol li{
             margin-bottom: 20px;
         }
@@ -133,8 +136,8 @@
                             <div class="card-body">
                                 <div class="tab-content" id="search-tabs-tabContent">
                                     <div class="post clearfix">
-                                        <ol style="list-style: none;padding-left: 1rem;">
-                                            <li v-if="results.total > 0">
+                                        <ol v-if="showSearchResults" style="list-style: none;padding-left: 1rem;">
+                                            <li>
                                                 <div class="search-count">
                                                     <template v-if="results.page === 1">
                                                         {{results.total}} 条结果
@@ -145,7 +148,7 @@
                                                 </div>
                                             </li>
                                             <li v-for="result in results.list">
-                                                <template v-if="result.type == 'stock'">
+                                                <template v-if="result.type === 'stock'">
                                                     <div class="search-title">
                                                         <span class="search-type">[股票] </span><span v-html="result.stock.nameAndCodeWithLink"></span>
                                                     </div>
@@ -153,15 +156,15 @@
                                                         <p v-html="result.desc"></p>
                                                     </div>
                                                 </template>
-                                                <template v-else-if="result.type == 'post' && result.subType == '0'">
+                                                <template v-else-if="result.type === 'post' && result.subType === '0'">
                                                     <div class="search-title">
                                                         <div v-if="result.title != null">
                                                             <span class="search-type">[帖子] </span><a v-html="result.title" :href="result.source" target="_blank"></a>
-                                                            - <span v-html="result.stock.nameAndCodeWithLink"></span>
+                                                            <br/><span class="result-stocks" v-html="getRelatedStocks(result)"></span>
                                                         </div>
                                                         <div v-else-if="result.title == null">
                                                             <span class="search-type">[帖子] </span>
-                                                            <span v-html="result.stock.nameAndCodeWithLink" class="search-title"></span>
+                                                            <span v-html="getRelatedStocks(result)" class="search-title"></span>
                                                         </div>
                                                     </div>
                                                     <div>
@@ -172,15 +175,15 @@
                                                         </p>
                                                     </div>
                                                 </template>
-                                                <template v-else-if="result.type == 'post' && result.subType == '300'">
+                                                <template v-else-if="result.type === 'post' && result.subType === '300'">
                                                     <div class="search-title">
                                                         <div v-if="result.title != null">
                                                             <span class="search-type">[新闻] </span><a v-html="result.title" :href="result.source" target="_blank"></a>
-                                                            - <span v-html="result.stock.nameAndCodeWithLink"></span>
+                                                            <br/><span class="result-stocks" v-html="getRelatedStocks(result)"></span>
                                                         </div>
                                                         <div v-else-if="result.title == null">
                                                             <span class="search-type">[新闻] </span>
-                                                            <span v-html="result.stock.nameAndCodeWithLink" class="search-title"></span>
+                                                            <span v-html="getRelatedStocks(result)" class="search-title"></span>
                                                         </div>
                                                     </div>
                                                     <div>
@@ -194,15 +197,15 @@
                                             </li>
 
                                             <li style="padding: 26px 0 26px 0;">
-                                                <ul v-if="results.total > 0" class="pagination pagination-sm">
-                                                    <li class="page-item" :class="results.page==1?' disabled':''">
-                                                        <a @click="clickPage(results.page-1)" href="#" class="page-link"><</a>
+                                                <ul class="pagination pagination-sm">
+                                                    <li class="page-item" :class="results.page===1?' disabled':''">
+                                                        <a @click="search(results.page-1)" href="#" class="page-link"><</a>
                                                     </li>
-                                                    <li v-for="p in getPageList(results.page)" :class="p.page==results.page?' active':''" class="page-item">
-                                                        <a v-if="results.total >= p.page*results.pageSize" v-text="p.display==null?p.page:p.display" @click="clickPage(p.page)" href="#" class="page-link"></a>
+                                                    <li v-for="p in getPageList(results.page)" :class="p.page===results.page?' active':''" class="page-item">
+                                                        <a v-if="results.total >= p.page*results.pageSize" v-text="p.display==null?p.page:p.display" @click="search(p.page)" href="#" class="page-link"></a>
                                                     </li>
                                                     <li class="page-item">
-                                                        <a @click="clickPage(results.page-1)" href="#" class="page-link">></a>
+                                                        <a @click="search(results.page-1)" href="#" class="page-link">></a>
                                                     </li>
                                                 </ul>
                                             </li>
@@ -282,8 +285,8 @@
 <script src="/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
 <script src="/adminlte/plugins/pace-progress/pace.min.js"></script>
 
-<script src="/js/public.js"></script>
-<script src="/js/component/datatable.js"></script>
+<script th:src="'/js/public.js'+${_version}"></script>
+<script th:src="'/js/component/datatable.js'+${_version}"></script>
 
 <script th:inline="javascript">
     const keyword = [[${keyword}]];
@@ -325,31 +328,24 @@
                 }
                 return pages;
             },
-            clickPage:function (page) {
-                let _this = this;
-                let url = "/search/"+page+'/'+keyword + (this.type?'?type='+this.type:'');
-                axios.get(url).then(function (res) {
-                    _this.results = res.data.data;
-                    console.log('mounted', _this.$data)
-                });
+            search:async function (page) {
+                this.results = await _search(keyword, page, this.type)
             },
             searchByType:function (type) {
                 this.type = type;
-                this.clickPage(1);
+                this.search(1);
+            },
+            getRelatedStocks:function (result){
+                return result.stocks !== undefined ? result.stocks.map(stock => stock.nameAndCodeWithLink).join(' · ') : result.stock.nameAndCodeWithLink;
             }
         },
         computed: {
-            stockLookPool(){
-                return store.state.stockLookPool
+            showSearchResults(){
+                return this.results.total > 0;
             }
         },
         mounted() {
-            let _this = this;
-            axios.get("/search/"+keyword).then(function (res) {
-                _this.results = res.data.data;
-                console.log('mounted', _this.$data)
-            });
-
+            this.search(1);
             store.commit('setStockLookPool', getDataFromLocalStorage('stockLookPool') || []);
         }
     };

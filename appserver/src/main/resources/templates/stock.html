@@ -362,8 +362,8 @@
 <!--<script src="https://unpkg.com/@popperjs/core@2"></script>
 <script src="https://unpkg.com/tippy.js@6"></script>-->
 
-<script th:src="'/js/public.js?'+${_version}"></script>
-<script th:src="'/js/component/datatable.js?'+${_version}"></script>
+<script th:src="'/js/public.js'+${_version}"></script>
+<script th:src="'/js/component/datatable.js'+${_version}"></script>
 
 <script th:inline="javascript">
     const code = [[${code}]];
@@ -437,9 +437,6 @@
             },
         },
         computed: {
-            stockLookPool(){
-                return store.state.stockLookPool
-            },
             fnTypeDisplayName: function(){
                 return (item) => {
                     return item.dispName == null ? item.name : item.dispName

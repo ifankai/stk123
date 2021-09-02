@@ -184,7 +184,7 @@ public class Tasks {
     @Scheduled(cron = "0 0 18 ? * MON-FRI")
     @Scheduled(cron = "0 0 0 ? * *")
     public void gitPull(){
-        TaskUtils.cmd("D:\\share\\workspace\\stk123\\git_pull.bat");
+        //TaskUtils.cmd("D:\\share\\workspace\\stk123\\git_pull.bat");
     }
 
     @Scheduled(cron = "0 0/5 * ? * *") //每5分钟1次

@@ -82,12 +82,44 @@ $(window).scroll(function() {
     }
 });
 
+async function _search(searchText, page, type) {
+    let url = "/search/" + page + '/' + searchText + (type ? '?type=' + type : '');
+    return await axios.get(url).then(function (res) {
+        let results = res.data.data;
+        let prev = null;
+        let list = [];
+        for (let index in results.list) {
+            let result = results.list[index];
+            if (prev == null) {
+                prev = result;
+                list.push(prev)
+            } else {
+                if ((result.desc != null && result.desc === prev.desc)
+                    || (result.content != null && result.content === prev.content)) { //聚合，把重复记录合并为一条
+                    if (prev.stocks === undefined) {
+                        prev.stocks = [prev.stock, result.stock];
+                    } else {
+                        prev.stocks.push(result.stock);
+                    }
+                } else {
+                    prev = result;
+                    list.push(prev)
+                }
+            }
+        }
+        results.list = list;
+        return results;
+    });
+}
 
 const store = Vuex.createStore({
     state: {
         msg: 'Hello World',
         count: 0,
-        stockLookPool: []
+        stockLookPool: [],
+        searchText:'',
+        searchResults:{},
+        searchResultsShow:false
     },
     //同步执行
     //mutations相当于其它语言的set,即赋值
@@ -106,6 +138,15 @@ const store = Vuex.createStore({
         },
         removeAllStocksFromLookPool(state){
             state.stockLookPool = [];
+        },
+        setSearchText(state, payload){
+            state.searchText = payload;
+        },
+        setSearchResults(state, payload){
+            state.searchResults = payload;
+        },
+        setSearchResultsShow(state, payload){
+            state.searchResultsShow = payload;
         }
     },
     //异步执行，异步：访问服务器后等待响应。
@@ -116,6 +157,11 @@ const store = Vuex.createStore({
             setTimeout(() => {
                 context.commit('increment',payload);//调用mutations中的increment()方法
             }, 2000);
+        },
+        async search({commit, state}, payload) {
+            let results = await _search(state.searchText, 1, 'stock');
+            commit('setSearchResults', results);
+            console.log('results', state.searchResults)
         }
     },
     //get属性，所有组件通过get获取值可以得到表现一致的内容
@@ -179,6 +225,17 @@ let _stockLookPoolInVuex = {
     clearAllStocksInLookPool:function (){
         this.$store.commit('removeAllStocksFromLookPool');
         saveDataToLocalStorage('stockLookPool', []);
+    }
+}
+
+let _searchInVuex = {
+    searchSimple: function (e) {
+        var input = $(e.target);
+        this.$store.commit('setSearchText', input.val());
+        this.$store.dispatch('search');
+    },
+    searchResultShow: function (show){
+        this.$store.commit('setSearchResultsShow', show);
     }
 }
 
@@ -341,7 +398,7 @@ if (typeof elem == "undefined") {
 }
 
 function createApp(config){
-    config.methods = Object.assign(config.methods, _stockLookPoolInVuex);
+    config.methods = Object.assign(config.methods, _stockLookPoolInVuex, _searchInVuex);
     const app = Vue.createApp(config);
     app.use(store)
 

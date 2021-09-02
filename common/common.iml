@@ -34,6 +34,7 @@
     <orderEntry type="library" name="Maven: commons-beanutils:commons-beanutils:1.9.3" level="project" />
     <orderEntry type="library" name="Maven: commons-collections:commons-collections:3.2.2" level="project" />
     <orderEntry type="library" name="Maven: com.alibaba:druid:1.1.20" level="project" />
+    <orderEntry type="library" name="Maven: com.alibaba:fastjson:1.2.72" level="project" />
     <orderEntry type="library" name="Maven: org.apache.pdfbox:pdfbox:1.8.6" level="project" />
     <orderEntry type="library" name="Maven: org.apache.pdfbox:fontbox:1.8.6" level="project" />
     <orderEntry type="library" name="Maven: org.apache.pdfbox:jempbox:1.8.6" level="project" />

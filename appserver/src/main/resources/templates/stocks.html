@@ -14,6 +14,97 @@
     <link rel="stylesheet" href="/adminlte/plugins/pace-progress/themes/black/pace-theme-loading-bar.css">
     <link rel="stylesheet" href="/css/public.css">
     <style>
+        .table td, .table th {
+            padding: unset;
+        }
+        div.dataTables_wrapper div.dataTables_info {
+            padding-top: .1em;
+            float: left;
+        }
+        div.dataTables_wrapper div.dataTables_filter{
+            padding-top: .1em;
+            float: right;
+            margin-right: .2rem;
+        }
+        div.dataTables_wrapper div.dataTables_paginate{
+            float: right;
+        }
+        div.dataTables_wrapper div.dataTables_paginate ul.pagination{
+            margin: 0;
+        }
+        .table thead th {
+            border-bottom: 1px solid #dee2e6;
+        }
+        table.dataTable>thead .sorting:before,
+        table.dataTable>thead .sorting:after,
+        table.dataTable>thead .sorting_asc:before,
+        table.dataTable>thead .sorting_asc:after,
+        table.dataTable>thead .sorting_desc:before,
+        table.dataTable>thead .sorting_desc:after,
+        table.dataTable>thead .sorting_asc_disabled:before,
+        table.dataTable>thead .sorting_asc_disabled:after,
+        table.dataTable>thead .sorting_desc_disabled:before,
+        table.dataTable>thead .sorting_desc_disabled:after{
+            bottom: 0;
+        }
+        .pagination-sm {
+            margin: .1rem 0;
+        }
+        .custom-select-sm, .form-control-sm {
+            height: calc(1.5rem);
+            padding-top: .15rem;
+            padding-bottom: .25rem;
+            padding-left: .5rem;
+            font-size: 50%;
+        }
+        .page-link {
+            padding: .2rem .5rem;
+            font-size: .8rem;
+            line-height: 1.5;
+        }
+
+        label {
+            margin-bottom: 0;
+        }
+        label:not(.form-check-label):not(.custom-file-label) {
+            font-weight: 500;
+        }
+        .custom-control-label{
+            line-height: 1.45rem;
+        }
+        .card-header {
+            padding: .4rem .4rem .2rem .4rem;
+        }
+        .card-body {
+            padding: .2rem .4rem;
+        }
+        .card-footer {
+            padding: 0.05rem 1rem;
+        }
+        .card-header>.card-tools {
+            float: right;
+            margin-right: -.25rem;
+        }
+        .card-title{
+            margin: .2rem 0 0 0.2rem;
+        }
+        .btn-group-sm>.btn, .btn-sm {
+            padding: .05rem .8rem;
+        }
+        .text-sm .nav-link {
+            font-size: .9rem;
+            padding: .4rem .2rem .4rem 4px;
+        }
+        .form-group {
+            margin-bottom: 0;
+        }
+        .callout{
+            margin: 0.2rem 0;
+            padding: .2rem;
+        }
+        .left-10{
+            left: -12rem;
+        }
         a.dropdown-item, div.dropdown-item a{
             cursor: pointer;
         }
@@ -774,9 +865,6 @@
                     }
                     this.niusanSelected = selected;
                 }
-            },
-            stockLookPool(){
-                return store.state.stockLookPool
             }
         },
         mounted() {

@@ -147,7 +147,13 @@ public class EsService {
         try {
             CreateIndexRequest request = new CreateIndexRequest(index);
             // Settings for this index
-            request.settings(Settings.builder().put("index.number_of_shards", esProperties.getIndex().getNumberOfShards()).put("index.number_of_replicas", esProperties.getIndex().getNumberOfReplicas()));
+            request.settings(
+                Settings.builder()
+                    .put("index.number_of_shards", esProperties.getIndex().getNumberOfShards())
+                    .put("index.number_of_replicas", esProperties.getIndex().getNumberOfReplicas())
+                    .put("analysis.analyzer.htmlStripAnalyzer.tokenizer", "ik_max_word")
+                    .putList("analysis.analyzer.htmlStripAnalyzer.char_filter", "html_strip")
+            );
             Alias alias = new Alias(esProperties.getIndex().getAlias());
             request.alias(alias);
 
@@ -190,7 +196,7 @@ public class EsService {
             //content
             Map<String, Object> content = new HashMap<>();
             content.put("type", "text");
-            content.put("analyzer", "ik_max_word");
+            content.put("analyzer", "htmlStripAnalyzer");
             properties.put(FIELD_CONTENT, content);
 
             //code

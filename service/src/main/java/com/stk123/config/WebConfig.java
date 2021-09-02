@@ -80,7 +80,7 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public FilterRegistrationBean testFilterRegistration() {
+    public FilterRegistrationBean filterRegistration() {
         FilterRegistrationBean registration = new FilterRegistrationBean();
         registration.setFilter(new CssJsVersionFilter());
         registration.addUrlPatterns("/*");
@@ -90,24 +90,6 @@ public class WebConfig implements WebMvcConfigurer {
         return registration;
     }
 
-    public class MyFilter implements Filter {
-		@Override
-		public void destroy() {
-			// TODO Auto-generated method stub
-		}
-
-		@Override
-		public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
-				throws IOException, ServletException {
-			//System.out.println("this is MyFilter,url :"+request.getRequestURI());
-			filterChain.doFilter(request, response);
-		}
-
-		@Override
-		public void init(FilterConfig arg0) throws ServletException {
-			// TODO Auto-generated method stub
-		}
-    }
 }
 
 
