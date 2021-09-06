@@ -9,11 +9,11 @@ import java.util.Date;
 import java.util.regex.Pattern;
 
 @Slf4j
-public class CssJsVersionFilter implements Filter {
+public class ApplicationFilter implements Filter {
 
-    private final static String VERSION = '?'+String.valueOf(new Date().getTime());
+    private final static String CSS_JS_VERSION = '?'+String.valueOf(new Date().getTime());
 
-    private static final Pattern STATIC_RESOURCES = Pattern.compile("(^/js/.*)|(^/css/.*)|(^/img/.*)|(^/fonts/.*)|(/favicon.ico)|(^/dist/.*)");
+    private static final Pattern STATIC_RESOURCES = Pattern.compile("(^/js/.*)|(^/css/.*)|(^/img/.*)|(^/fonts/.*)|(^/adminlte/.*)|(^/dist/.*)");
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
@@ -23,7 +23,7 @@ public class CssJsVersionFilter implements Filter {
             filterChain.doFilter(request, response);
             return;
         }
-        request.setAttribute("_version", VERSION);
+        request.setAttribute("_version", CSS_JS_VERSION);
         log.info("==> uri: {}", uri);
         filterChain.doFilter(request, response);
     }

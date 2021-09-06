@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
     <link rel="stylesheet" href="/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
     <link rel="stylesheet" href="/adminlte/plugins/pace-progress/themes/black/pace-theme-minimal.css">
-    <!--    <link rel="stylesheet" href="/css/public.css">-->
+    <link rel="stylesheet" href="/css/public.css">
     <style>
         @media (min-width: 1200px) {
             .img-width img {
@@ -104,9 +104,6 @@
         }
         blockquote a{
             margin-right: .5rem;
-        }
-        img.ke_img{
-            width: 100%;
         }
         .td-year{
             font-weight: 500;
@@ -344,26 +341,9 @@
 <!-- ./wrapper -->
 </body>
 </html>
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/vue@3.1.1/dist/vue.global.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/vuex@4.0.2/dist/vuex.global.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/axios@0.21.1/dist/axios.min.js"></script>
-
-<script src="/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
-<script src="/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
-<script src="/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
-<script src="/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
-<script src="/adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
-<script src="/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
-<script src="/adminlte/plugins/pace-progress/pace.min.js"></script>
-
-<!--<script src="https://unpkg.com/@popperjs/core@2"></script>
-<script src="https://unpkg.com/tippy.js@6"></script>-->
-
-<script th:src="'/js/public.js'+${_version}"></script>
-<script th:src="'/js/component/datatable.js'+${_version}"></script>
+<div th:replace="common/js_public"></div>
+<div th:replace="common/js_datatable"></div>
+<div th:replace="common/js_custom"></div>
 
 <script th:inline="javascript">
     const code = [[${code}]];

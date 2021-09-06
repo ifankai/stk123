@@ -94,8 +94,8 @@ public class EsService {
     private StockService stockService;
 
 
-    private final static String[] DEFAULT_SEARCH_FIELDS = new String[] {FIELD_TYPE, FIELD_TITLE, FIELD_DESC, FIELD_CONTENT, FIELD_CODE, FIELD_NAME};
-    private final static String[] DEFAULT_HIGHLIGHT_FIELDS = new String[] {FIELD_TITLE, FIELD_DESC, FIELD_CONTENT};
+    public final static String[] DEFAULT_SEARCH_FIELDS = new String[] {FIELD_TITLE, FIELD_DESC, FIELD_CONTENT, FIELD_NAME, FIELD_CODE};
+    public final static String[] DEFAULT_HIGHLIGHT_FIELDS = new String[] {FIELD_TITLE, FIELD_DESC, FIELD_CONTENT};
 
     @Resource
     protected RestHighLevelClient client;
@@ -185,7 +185,7 @@ public class EsService {
             name.put("boost", 5);
             name.put("analyzer", "ik_smart");
             name.put("fields", Collections.singletonMap("keyword", keyword));
-            properties.put(FIELD_TITLE, name);
+            properties.put(FIELD_NAME, name);
 
             //desc
             Map<String, Object> desc = new HashMap<>();
@@ -296,18 +296,30 @@ public class EsService {
         return search(INDEX_STK, page, pageSize, keyword, otherKeywords, DEFAULT_SEARCH_FIELDS, DEFAULT_HIGHLIGHT_FIELDS, orderByTime);
     }
 
+    public SearchResult search(String keyword, Map<String,String> otherKeywords, int page, int pageSize, String[] searchFields, boolean orderByTime) throws IOException {
+        return search(INDEX_STK, page, pageSize, keyword, otherKeywords, searchFields, DEFAULT_HIGHLIGHT_FIELDS, orderByTime);
+    }
+
     //https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-high-search.html
     public SearchResult search(String index, int page, int pageSize,
                                String keyword, Map<String,String> otherKeywords,
                                String[] fieldNames, String[] highlightFields, boolean orderByTime) throws IOException {
         SearchRequest searchRequest = new SearchRequest(index);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        //fieldNames = Arrays.stream(fieldNames).filter(field -> !StringUtils.endsWithIgnoreCase(field, "code")).toArray(String[]::new);
         MultiMatchQueryBuilder multiMatchQueryBuilder = QueryBuilders.multiMatchQuery(keyword, fieldNames);
         // must 相当于 与 & =
         // must not 相当于 非 ~ ！=
         // should 相当于 或 | or
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
-        boolQueryBuilder.must(multiMatchQueryBuilder);
+
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+        queryBuilder.should(multiMatchQueryBuilder);
+        queryBuilder.should(QueryBuilders.wildcardQuery("code", "*"+keyword+"*").boost(5));
+        queryBuilder.should(QueryBuilders.wildcardQuery("name", "*"+keyword+"*").boost(5));
+        queryBuilder.should(QueryBuilders.wildcardQuery("title", "*"+keyword+"*").boost(10));
+        boolQueryBuilder.must(queryBuilder);
+
         if(otherKeywords != null){
             otherKeywords.entrySet().stream().forEach(e -> {
                 TermsQueryBuilder termsQueryBuilder = QueryBuilders.termsQuery(e.getKey(), e.getValue());
@@ -349,7 +361,7 @@ public class EsService {
         // the total number of hits, must be interpreted in the context of totalHits.relation
         long totalHits = hits.getTotalHits().value;
         float maxScore = hits.getMaxScore();
-        log.info("totalHits:"+totalHits+",maxScore:"+maxScore);
+        log.info("totalHits:"+totalHits+",maxScore:"+maxScore + ", hits:"+hits.getHits().length);
 
         List<EsDocument> list = new ArrayList<>();
         hits.forEach(item -> {
@@ -447,7 +459,7 @@ public class EsService {
         esDocument.setName(pinyin);
         esDocument.setTitle(stock.getName());
         esDocument.setDesc(StringUtils.join(stock.getIndustries().stream().map(ind -> ind.getStkIndustryTypeEntity().getName()).collect(Collectors.toList()), ", "));
-        esDocument.setContent((stock.getStock().getF9()==null?"":stock.getStock().getF9()) + "<br/>" + "TODO 十大流通股东");
+        esDocument.setContent((stock.getStock().getF9()==null?"":stock.getStock().getF9()) + "<br/>" + "TODO 十大流通股东,"+stock.getCodeWithPlace());
         esDocument.setId(stock.getCodeWithPlace());
         esDocument.setCode(stock.getCode());
 //        esDocument.setInsertTime(e.getInsertTime() == null ? null : e.getInsertTime().getTime());

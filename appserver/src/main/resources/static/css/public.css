@@ -2,3 +2,14 @@
     border-color: hsl(206,90%,69.5%);
     box-shadow: 0 0 0 4px hsla(206, 100%, 40%, .15);;
 }
+.top-search-divider{
+    margin: 0;
+}
+.top-search-header{
+    text-align: left;
+    padding: .3rem 1rem;
+    background-color: #f9f9f9;
+}
+img.ke_img{
+    width: 100%;
+}

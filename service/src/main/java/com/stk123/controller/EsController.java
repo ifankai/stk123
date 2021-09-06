@@ -158,7 +158,7 @@ public class EsController {
         //加股票名称
         List<StockCodeNameProjection> stks = stkRepository.findAllByOrderByCode();
         for(StockCodeNameProjection stk : stks){
-            dictExt.add(stk.getCode());
+            //dictExt.add(stk.getCode());
             String name = stk.getName();
             if(name == null) continue;
             if(name.indexOf(" ") > 0){

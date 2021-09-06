@@ -82,8 +82,8 @@ $(window).scroll(function() {
     }
 });
 
-async function _search(searchText, page, type) {
-    let url = "/search/" + page + '/' + searchText + (type ? '?type=' + type : '');
+async function _search(searchText, page, type, searchFields) {
+    let url = "/search/" + page + '/' + searchText + '?1=1' + (type ? '&type=' + type : '') + (searchFields? '&fields='+searchFields : '');
     return await axios.get(url).then(function (res) {
         let results = res.data.data;
         let prev = null;
@@ -118,7 +118,7 @@ const store = Vuex.createStore({
         count: 0,
         stockLookPool: [],
         searchText:'',
-        searchResults:{},
+        searchResults:{list:[]},
         searchResultsShow:false
     },
     //同步执行
@@ -159,7 +159,7 @@ const store = Vuex.createStore({
             }, 2000);
         },
         async search({commit, state}, payload) {
-            let results = await _search(state.searchText, 1, 'stock');
+            let results = await _search(state.searchText, 1, 'stock', 'code,title,name');
             commit('setSearchResults', results);
             console.log('results', state.searchResults)
         }
@@ -229,13 +229,16 @@ let _stockLookPoolInVuex = {
 }
 
 let _searchInVuex = {
-    searchSimple: function (e) {
+    searchSimple: _.debounce(function (e) {
         var input = $(e.target);
         this.$store.commit('setSearchText', input.val());
         this.$store.dispatch('search');
-    },
-    searchResultShow: function (show){
+    }, 500),
+    searchResultShow: _.debounce(function (show){
         this.$store.commit('setSearchResultsShow', show);
+    }, 100),
+    gotoSearch: function (){
+        window.open('/q/'+this.$store.state.searchText);
     }
 }
 

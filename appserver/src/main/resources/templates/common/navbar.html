@@ -37,7 +37,7 @@
                 <!-- SEARCH FORM -->
                 <form class="form-inline ml-0 s-form">
                     <div class="input-group input-group-sm s-input">
-                        <input @keyup="searchSimple($event)" @focus="searchResultShow(true)" @blur="searchResultShow(false)" class="form-control form-control-navbar nav-link" type="search" placeholder="Search" aria-label="Search">
+                        <input @keyup="searchSimple($event)" @focus="searchResultShow(true)" @blur="searchResultShow(false)" class="form-control form-control-navbar nav-link" type="search" placeholder="搜索" aria-label="搜索">
                         <div class="input-group-append">
                             <button class="btn btn-navbar" type="submit">
                                 <i class="fas fa-search"></i>
@@ -45,40 +45,16 @@
                         </div>
                     </div>
                 </form>
-                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-left" :class="$store.state.searchResultsShow && $store.state.searchResults.total?'show':''">
-                    <a href="#" class="dropdown-item">
-                        <!-- Message Start -->
-                        <div class="media">
-                            <img src="../../dist/img/user1-128x128.jpg" alt="User Avatar" class="img-size-50 mr-3 img-circle">
-                            <div class="media-body">
-                                <h3 class="dropdown-item-title">
-                                    Brad Diesel
-                                    <span class="float-right text-sm text-danger"><i class="fas fa-star"></i></span>
-                                </h3>
-                                <p class="text-sm">Call me whenever you can...</p>
-                                <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
-                            </div>
-                        </div>
-                        <!-- Message End -->
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item">
-                        <!-- Message Start -->
-                        <div class="media">
-                            <img src="../../dist/img/user8-128x128.jpg" alt="User Avatar" class="img-size-50 img-circle mr-3">
-                            <div class="media-body">
-                                <h3 class="dropdown-item-title">
-                                    John Pierce
-                                    <span class="float-right text-sm text-muted"><i class="fas fa-star"></i></span>
-                                </h3>
-                                <p class="text-sm">I got your message bro</p>
-                                <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
-                            </div>
-                        </div>
-                        <!-- Message End -->
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item dropdown-footer">See All Messages</a>
+                <div class="dropdown-menu dropdown-menu-sm dropdown-menu-left" :class="$store.state.searchResultsShow && $store.state.searchResults.total?'show':''" style="min-width: 250px">
+                    <span class="dropdown-item dropdown-header top-search-header">股票</span>
+                    <div class="dropdown-divider top-search-divider"></div>
+                    <template v-for="stk in $store.state.searchResults.list.slice(0,5)">
+                        <a class="dropdown-item">
+                            <i class="fal fa-search mr-2"></i> <span v-html="stk.stock.nameAndCodeWithLink"></span>
+                        </a>
+                        <div class="dropdown-divider top-search-divider"></div>
+                    </template>
+                    <a @click="gotoSearch" class="dropdown-item dropdown-footer">查看 <span>{{$store.state.searchText}}</span> 的所有搜索结果</a>
                 </div>
             </li>
             <li class="nav-item" style="display: none">
@@ -164,12 +140,12 @@
             <li id="stock-look-pool" class="nav-item dropdown">
                 <a class="nav-link" data-toggle="dropdown" href="#">
                     <i class="fas fa-eye"></i>
-                    <span v-if="stockLookPool && $store.state.stockLookPool.length > 0" v-text="stockLookPool?stockLookPool.length:'0'" class="badge badge-warning navbar-badge"></span>
+                    <span v-if="$store.state.stockLookPool && $store.state.stockLookPool.length > 0" v-text="$store.state.stockLookPool?$store.state.stockLookPool.length:'0'" class="badge badge-warning navbar-badge"></span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" onclick="event.stopPropagation()">
                     <span class="dropdown-item dropdown-header">观察池(仅保存在本地)</span>
                     <div class="dropdown-divider"></div>
-                    <template v-for="stk in stockLookPool">
+                    <template v-for="stk in $store.state.stockLookPool">
                         <div class="dropdown-item">
                             <i class="fas fa-eye mr-2"></i> <span v-html="stk.nameAndCodeWithLink"></span>
                             <button @click.prevent="removeStockFromLookPool(stk)" type="button" class="btn btn-tool float-right" data-card-widget="remove">
@@ -179,8 +155,8 @@
                         <div class="dropdown-divider"></div>
                     </template>
                     <div class="btn-group w-100">
-                        <button :disabled="stockLookPool && stockLookPool.length==0" @click="showAllStocksInLookPool" type="button" class="btn">查看全部</button>
-                        <button :disabled="stockLookPool && stockLookPool.length==0" @click="clearAllStocksInLookPool" type="button" class="btn">清空</button>
+                        <button :disabled="$store.state.stockLookPool && $store.state.stockLookPool.length==0" @click="showAllStocksInLookPool" type="button" class="btn">查看全部</button>
+                        <button :disabled="$store.state.stockLookPool && $store.state.stockLookPool.length==0" @click="clearAllStocksInLookPool" type="button" class="btn">清空</button>
                     </div>
                 </div>
             </li>

@@ -661,23 +661,9 @@
 <!-- ./wrapper -->
 </body>
 </html>
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/vue@3.1.1/dist/vue.global.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/vuex@4.0.2/dist/vuex.global.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/axios@0.21.1/dist/axios.min.js"></script>
-
-<script src="/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
-<script src="/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
-<script src="/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
-<script src="/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
-<script src="/adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
-<script src="/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
-<script src="/adminlte/plugins/pace-progress/pace.min.js"></script>
-
-<script src="/js/public.js"></script>
-<script src="/js/component/datatable.js"></script>
+<div th:replace="common/js_public"></div>
+<div th:replace="common/js_datatable"></div>
+<div th:replace="common/js_custom"></div>
 
 <script th:inline="javascript">
     const title = [[${title}]];

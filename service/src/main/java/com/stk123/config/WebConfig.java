@@ -1,6 +1,6 @@
 package com.stk123.config;
 
-import com.stk123.filter.CssJsVersionFilter;
+import com.stk123.filter.ApplicationFilter;
 import org.apache.catalina.filters.RemoteIpFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -13,8 +13,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import javax.servlet.*;
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +80,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public FilterRegistrationBean filterRegistration() {
         FilterRegistrationBean registration = new FilterRegistrationBean();
-        registration.setFilter(new CssJsVersionFilter());
+        registration.setFilter(new ApplicationFilter());
         registration.addUrlPatterns("/*");
         //registration.addInitParameter("paramName", "paramValue");
         registration.setName("CssJsVersionFilter");

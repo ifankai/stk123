@@ -65,7 +65,8 @@ public class SearchController {
                                                       @RequestParam(value = "pageSize", required = false)Integer pageSize,
                                                       @RequestParam(value = EsService.FIELD_TYPE, required = false)String type,
                                                       @RequestParam(value = EsService.FIELD_SUB_TYPE, required = false)String subType,
-                                                      @RequestParam(value = "sort", required = false)String sort
+                                                      @RequestParam(value = "sort", required = false)String sort,
+                                                      @RequestParam(value = "fields", required = false)String searchFields
     ) throws IOException {
         if(page == null) page = 1;
         if(pageSize == null) pageSize = 20;
@@ -76,7 +77,11 @@ public class SearchController {
         if(StringUtils.isNotEmpty(subType)){
             otherKeywords.put(EsService.FIELD_SUB_TYPE, subType);
         }
-        com.stk123.model.elasticsearch.SearchResult result = esService.search(keyword, otherKeywords, page, pageSize, "time".equals(sort));
+        String[] searchFieldsArray = EsService.DEFAULT_SEARCH_FIELDS;
+        if(StringUtils.isNotEmpty(searchFields)){
+            searchFieldsArray = StringUtils.split(searchFields, ",");
+        }
+        com.stk123.model.elasticsearch.SearchResult result = esService.search(keyword, otherKeywords, page, pageSize, searchFieldsArray, "time".equals(sort));
         
         List<EsDocument> postList = result.getResults();
         if(!postList.isEmpty()){
