@@ -5,10 +5,16 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.stk123.common.CommonUtils;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import org.apache.commons.lang.StringUtils;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSString;
@@ -146,14 +152,63 @@ public class PDFUtils {
 			toHtmlFile("D:/1200682312.PDF",
 					"D:/solution.html");*/
 			
-			String spdf = PDFUtils.getText("D:/share/投资/研报/1200987692.PDF");
+			/*String spdf = PDFUtils.getText("D:/share/投资/研报/1200987692.PDF");
 			Set<String> sets = CommonUtils.getMatchStrings(spdf, "(为公司带来)( ?)[0-9]*(,)?[0-9]*( ?)(万元的净利润)");
-			System.out.print(sets);
+			System.out.print(sets);*/
+
+			String pdfContent = PDFUtils.getText("D:\\其他\\量子生物：2019年半年度报告.PDF");
+			String[] lines = StringUtils.split(pdfContent, "\n");
+			int l = 1;
+			for(String line : lines){
+				System.out.println("["+(l++)+"]"+line);
+			}
+			List<String> pdf = Arrays.stream(lines).map(row -> StringUtils.trim(row)).collect(Collectors.toList());
+			System.out.println(sublines(pdf, new Line("公司业务概要", "第(.)节", null, "第三节公司业务概要".length()), "第四节 经营情况讨论与分析"));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
+	}
+
+	@Data
+	@AllArgsConstructor
+	static class Line{
+		private String mustContain;
+		private String mustRegex;
+		private String notContain;
+		private int lengthExcludeEmpty;
+
+		public boolean equals(String line){
+			if(mustContain != null && !StringUtils.contains(line, mustContain)) {
+				return false;
+			}
+			if(mustRegex != null && CommonUtils.getMatchString(line, mustRegex) == null){
+				return false;
+			}
+			if(notContain != null && StringUtils.contains(line, notContain)){
+				return false;
+			}
+			if(lengthExcludeEmpty != 0 && StringUtils.replace(line, " ", "").length() != lengthExcludeEmpty){
+				return false;
+			}
+			return true;
+		}
+	}
+
+	public static List<String> sublines(List<String> lines, Line startLine, String endLineExclude){
+		List<String> results = null;
+		for(String line : lines){
+			if(results == null && startLine.equals(line)){
+				results = new ArrayList<>();
+			}
+			if(StringUtils.equals(line, endLineExclude)){
+				break;
+			}else if(results != null){
+				results.add(line);
+			}
+		}
+		return results;
 	}
 
 	public void editPDF() {

@@ -13,3 +13,6 @@
 img.ke_img{
     width: 100%;
 }
+.card-header {
+    padding: .5rem 1.25rem;
+}

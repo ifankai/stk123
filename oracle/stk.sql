@@ -2380,7 +2380,7 @@ select * from stk_dictionary where type=400 for update;
 
 insert into stk_text(id,type,code,code_type,title,text,insert_time,update_time,sub_type)
 values (s_text_id.nextval,2,'000826',1,'启迪桑德研究报告：海通证券-启迪桑德-000826-公司研究报告：环境综合服务龙头，进军环卫更上层楼-170308',null,sysdate,null,100)
-select * from stk_text where id=10614540 for update;
+select * from stk_text where code='000688' and type!=3 order by insert_time desc;
 
 select * from stk_text where sub_type=110 order by insert_time desc;
 
