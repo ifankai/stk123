@@ -139,7 +139,7 @@ public class NoticeTask extends AbstractTask {
                 ObjectMapper mapper = new ObjectMapper();
                 Cninfo.NoticeRoot root = mapper.readValue(page, Cninfo.NoticeRoot.class);
 
-                Date DateBefore = ServiceUtils.addDay(new Date(), -100);
+                Date DateBefore = ServiceUtils.addDay(new Date(), -1);
 
                 for (Cninfo.Announcement item : root.getAnnouncements()) {
                     Date createDate = new Date(item.getAnnouncementTime());
