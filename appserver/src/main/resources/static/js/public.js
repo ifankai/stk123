@@ -413,4 +413,5 @@ function createApp(config){
     app.config.globalProperties.dateFormat = dateFormat;
 
     app.mount('#app');
+    return app;
 }
