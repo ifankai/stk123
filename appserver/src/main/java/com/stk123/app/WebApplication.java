@@ -6,6 +6,8 @@ import com.stk123.common.db.connection.Pool;
 import com.stk123.common.util.JdbcUtils;
 import com.stk123.model.bo.Stk;
 import com.stk123.service.core.EsService;
+import com.stk123.service.task.TaskContainer;
+import com.stk123.task.schedule.NoticeTask;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -95,6 +97,8 @@ public class WebApplication {
     private DataSource dataSource;
     @Autowired
     private EsService esService;
+    @Autowired
+    private TaskContainer taskContainer;
 
 	public static void main(String[] args) {
 		SpringApplication.run(WebApplication.class, args);
@@ -147,6 +151,8 @@ public class WebApplication {
         if(ArrayUtils.contains(environment.getActiveProfiles(), "prod")) {
             System.out.println("This is prod...");
             return;
+        }else{
+            System.out.println("This is NOT prod...");
         }
         System.out.println("do something after WebApplication startup..........");
         System.out.println(webProperties.getEnvironment());

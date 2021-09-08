@@ -156,11 +156,19 @@ public class TextController {
         return RequestResult.success("create new entity id:"+entity.getId());
     }
 
-    @RequestMapping("/{code}/{type}")
-    public RequestResult query(@PathVariable String code, @PathVariable Integer type){
-//        List<StkTextEntity> result = stkTextRepository.findAllTextByDto(code, type);
-        List<TextDto> result = stkTextRepository.findAllByCodeAndTypeOrderByInsertTimeDesc2Dto(code, type);
-        return RequestResult.success(result);
+    @RequestMapping(value={"/{type}/{subType}/{code}"})
+    public RequestResult query(@PathVariable String code, @PathVariable Integer type,
+                               @PathVariable(value = "subType", required = false) Integer subType,
+                               @RequestParam(value = "start", required = false)String start,
+                               @RequestParam(value = "end", required = false)String end){
+        if(subType == null){
+            return RequestResult.success(stkTextRepository.findAllByCodeAndTypeOrderByInsertTimeDesc(code, type));
+        }else{
+            Date dateStart = start == null ? CommonUtils.addDay(new Date(), -500) : CommonUtils.parseDate(start);
+            Date dateEnd = end == null ? new Date() : CommonUtils.parseDate(end);
+            List<StkTextEntity> result = stkTextRepository.findAllByCodeAndTypeAndSubTypeAndInsertTimeBetweenOrderByInsertTimeDesc(code, type, subType, dateStart, dateEnd);
+            return RequestResult.success(result);
+        }
     }
 
     @RequestMapping("/post/{code}")

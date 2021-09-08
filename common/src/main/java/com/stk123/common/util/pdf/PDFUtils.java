@@ -156,14 +156,15 @@ public class PDFUtils {
 			Set<String> sets = CommonUtils.getMatchStrings(spdf, "(为公司带来)( ?)[0-9]*(,)?[0-9]*( ?)(万元的净利润)");
 			System.out.print(sets);*/
 
-			String pdfContent = PDFUtils.getText("D:\\其他\\量子生物：2019年半年度报告.PDF");
+			String pdfContent = PDFUtils.getText("D:\\stk123\\stock\\600600\\notice\\1210859937.PDF");
 			String[] lines = StringUtils.split(pdfContent, "\n");
 			int l = 1;
 			for(String line : lines){
 				System.out.println("["+(l++)+"]"+line);
 			}
 			List<String> pdf = Arrays.stream(lines).map(row -> StringUtils.trim(row)).collect(Collectors.toList());
-			System.out.println(sublines(pdf, new Line("公司业务概要", "第(.)节", null, "第三节公司业务概要".length()), "第四节 经营情况讨论与分析"));
+			System.out.println(sublines(pdf, new PDFUtils.Line("管理层讨论与分析", "第(.)节", null, "第三节管理层讨论与分析".length()),
+					new PDFUtils.Line("公司治理", "第(.)节", null, "第四节公司治理".length())));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -173,7 +174,7 @@ public class PDFUtils {
 
 	@Data
 	@AllArgsConstructor
-	static class Line{
+	public static class Line{
 		private String mustContain;
 		private String mustRegex;
 		private String notContain;
@@ -196,13 +197,13 @@ public class PDFUtils {
 		}
 	}
 
-	public static List<String> sublines(List<String> lines, Line startLine, String endLineExclude){
+	public static List<String> sublines(List<String> lines, Line startLine, Line endLineExclude){
 		List<String> results = null;
 		for(String line : lines){
 			if(results == null && startLine.equals(line)){
 				results = new ArrayList<>();
 			}
-			if(StringUtils.equals(line, endLineExclude)){
+			if(endLineExclude.equals(line)){
 				break;
 			}else if(results != null){
 				results.add(line);

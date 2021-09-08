@@ -305,7 +305,7 @@ public class NoticeRobot {
             else if(title.contains("年度报告") || title.contains("季度报告全文")){
                 String fileName = StringUtils.substringAfterLast(filePath, "/");
                 String downloadFilePath = download(filePath,index);
-                Text.insert(conn, 2, index.getCode(), title, "<a target='_blank' href='/stock/"+index.getCode()+"/notice/"+fileName+"'>报告链接</a>", Text.SUB_TYPE_STK_REPORT, new Date());
+                //Text.insert(conn, 2, index.getCode(), title, "<a target='_blank' href='/stock/"+index.getCode()+"/notice/"+fileName+"'>报告链接</a>", Text.SUB_TYPE_STK_REPORT, new Date());
                 String fileType = getFileType(downloadFilePath, sourceType);
                 if("pdf".equalsIgnoreCase(fileType)){
                     //String spdf = PDFUtils.getText(downloadFilePath);

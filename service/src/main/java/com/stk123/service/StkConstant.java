@@ -63,6 +63,7 @@ public class StkConstant {
     public final static int TEXT_TYPE_SHORT_TEXT = 1;
     public final static int TEXT_TYPE_LONG_TEXT = 2;
     public final static int TEXT_TYPE_XUEQIU = 3;  //--0:收藏文章; 短文:1; 长文:2; 雪球评论:3
+    public final static int TEXT_TYPE_NOTICE = 4; //公告
 
     /** stk_text.code_type **/
     public final static int TEXT_CODE_TYPE_STOCK = 1; // 1:stock, 2:industry,

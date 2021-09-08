@@ -171,7 +171,7 @@ public class StockController {
         return list;
     }
 
-    @RequestMapping(value = "/notice/{code}")
+    @RequestMapping(value = "/xqnotice/{code}")
     @ResponseBody
     public RequestResult xueqiuNotice(@PathVariable(value = "code")String code){
         Stock stock = stockService.getStock(code);

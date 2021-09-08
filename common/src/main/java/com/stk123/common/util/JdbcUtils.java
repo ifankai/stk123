@@ -286,8 +286,8 @@ public final class JdbcUtils {
 	}
 	
 	public static long getSequence(Connection conn,String sequence) {
-		return SequenceUtils.getSequenceNextValue(sequence);
-		//return load(conn,JdbcUtils.SELECT + sequence+".nextval from dual",long.class);
+		//return SequenceUtils.getSequenceNextValue(sequence);
+		return load(conn,JdbcUtils.SELECT + sequence+".nextval from dual",long.class);
 	}
 	
 	public static long getSequence(String sequence) {

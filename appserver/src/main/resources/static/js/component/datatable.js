@@ -75,7 +75,7 @@ var _datatableTemplate = `
                         <template v-if="row.desc">
                             <br v-if="row.title"><span v-html="row.desc"></span>
                         </template>
-                        <i v-if="row.content != null && row.content.length > row.desc.length" @click="openModalDetail(row)" class="fal fa-file" title="查看详情" data-toggle="modal" :data-target="'#modal-'+row.id"></i>
+                        <i v-if="row.content != null && row.desc != null && row.content.length > row.desc.length" @click="openModalDetail(row)" class="fal fa-file" title="查看详情" data-toggle="modal" :data-target="'#modal-'+row.id"></i>
                     </td>
                     <td v-else v-html="row[column.data]"></td>
                 </template>

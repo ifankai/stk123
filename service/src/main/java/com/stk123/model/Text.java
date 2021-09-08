@@ -52,7 +52,7 @@ public class Text {
 	
 	public static long insert(Connection conn,int type, String code,String title, String content, int subType, Date insertTime) throws Exception{
 		List params = new ArrayList();
-		long id = SequenceUtils.getSequenceNextValue(SequenceUtils.SEQ_TEXT_ID);
+		long id = JdbcUtils.getSequence(conn, SequenceUtils.SEQ_TEXT_ID);
 		params.add(id);
 		params.add(type);
 		params.add(code);

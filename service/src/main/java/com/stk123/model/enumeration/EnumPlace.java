@@ -22,6 +22,10 @@ public enum EnumPlace {
         return null;
     }
 
+    public boolean isSH(){
+        return Objects.equals(SH.place, place);
+    }
+
     public static boolean isSH(Integer place){
         return Objects.equals(SH.place, place);
     }

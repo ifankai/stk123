@@ -312,7 +312,7 @@
                 <div class="row">
                     <div class="col-12">
 
-                        <div id="notice" class="card">
+                        <div id="xqnotice" class="card">
                             <div class="card-header">
                                 <h3 class="card-title">雪球公告</h3>
                                 <div class="card-tools">
@@ -323,7 +323,7 @@
                             </div>
 
                             <div class="card-body">
-                                <datatable :="{...common.notice, ...stock.notice}"></datatable>
+                                <datatable :="{...common.xqnotice, ...stock.xqnotice}"></datatable>
                             </div>
                         </div>
 
@@ -339,23 +339,23 @@
                                 <div class="card-tools">
                                     <div class="btn-group">
                                         <button type="button" class="btn btn-default btn-sm dropdown-toggle" style="padding: 0 .5rem;" data-toggle="dropdown" data-offset="-52" aria-expanded="false">
-                                            2021年年度报告
+                                            {{stock.notice_left ? stock.notice_left.title : '请选择'}}
                                         </button>
                                         <div class="dropdown-menu" role="menu" style="">
-                                            <a href="#" class="dropdown-item">Add new event</a>
-                                            <a href="#" class="dropdown-item">Clear events</a>
-                                            <a href="#" class="dropdown-item">View calendar</a>
+                                            <template v-for="notice in stock.notices">
+                                                <a v-if="notice.content != null" @click="parseNotice('left', notice)" class="dropdown-item">{{notice.title + ' ('+tsFormat(notice.createdAt)+')'}}</a>
+                                            </template>
                                         </div>
                                     </div>
                                     &nbsp;vs&nbsp;
                                     <div class="btn-group">
                                         <button type="button" class="btn btn-default btn-sm dropdown-toggle" style="padding: 0 .5rem;" data-toggle="dropdown" data-offset="-52" aria-expanded="false">
-                                            2020年年度报告
+                                            {{stock.notice_right ? stock.notice_right.title : '请选择'}}
                                         </button>
                                         <div class="dropdown-menu" role="menu" style="">
-                                            <a href="#" class="dropdown-item">Add new event</a>
-                                            <a href="#" class="dropdown-item">Clear events</a>
-                                            <a href="#" class="dropdown-item">View calendar</a>
+                                            <template v-for="notice in stock.notices">
+                                                <a v-if="notice.content != null" @click="parseNotice('right', notice)" class="dropdown-item">{{notice.title + ' ('+tsFormat(notice.createdAt)+')'}}</a>
+                                            </template>
                                         </div>
                                     </div>
                                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="收起">
@@ -366,56 +366,30 @@
 
                             <div class="card-body">
                                 <div id="accordion">
-                                    <div class="card">
+                                    <div v-for="(nbjb,index) in common.nbjb" class="card">
                                         <div class="card-header" style="padding: 0.3rem 1.25rem;">
                                             <h4 class="card-title w-100">
-                                                <a class="d-block w-100" data-toggle="collapse" href="#collapse1">
-                                                    公司业务概要
+                                                <a class="d-block w-100" data-toggle="collapse" :href="'#collapse'+index">
+                                                    {{nbjb.name}} (<span style="font-size: .8rem;" v-text="stock.notice_left.content[nbjb.code] != null?stock.notice_left.title:'-'"></span> vs <span style="font-size: .8rem;" v-text="stock.notice_right.content[nbjb.code] != null?stock.notice_right.title:'-'"></span>)
                                                 </a>
                                             </h4>
                                         </div>
-                                        <div id="collapse1" class="collapse show" data-parent="#accordion" style="">
+                                        <div :id="'collapse'+index" class="collapse" data-parent="#accordion" style="">
                                             <div class="card-body" style="padding: .25rem;">
-                                                <table width="100%"><tr>
-                                                    <td width="50%">
-                                                        <textarea class="cmp-text" id="text1" style="width: 100%" rows=10>I am the very model of a modern Major-General,
-I've information vegetable, animal, and mineral,
-I know the kings of England, and I quote the fights historical,
-From Marathon to Waterloo, in order categorical.</textarea></td>
-                                                    <td width="50%">
-                                                        <textarea class="cmp-text" id="text2" style="width: 100%" rows=10>I am the very model of a cartoon individual,
-My animation's comical, unusual, and whimsical,
-I'm quite adept at funny gags, comedic theory I have read,
-From wicked puns and stupid jokes to anvils that drop on your head.</textarea></td>
-                                                </tr></table>
+                                                <table width="100%">
+                                                    <tr>
+                                                        <td width="50%"><textarea v-model="stock.notice_left.content[nbjb.code]" @keyup="parseNotice('left', stock.notice_left)" class="cmp-text sync-text" style="width: 100%" rows=10>{{}}</textarea></td>
+                                                        <td width="50%"><textarea v-model="stock.notice_right.content[nbjb.code]" @keyup="parseNotice('right', stock.notice_right)" class="cmp-text sync-text" style="width: 100%" rows=10>{{}}</textarea></td>
+                                                    </tr>
+                                                    <tr><td colspan="2">
+                                                        <div v-html="stock['notice_diff_'+nbjb.code]" class="sync-text" style="height: 200px;overflow: scroll;"></div>
+                                                    </td></tr>
+                                                </table>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div class="card">
-                                        <div class="card-header" style="padding: 0.3rem 1.25rem;">
-                                            <h4 class="card-title w-100">
-                                                <a class="d-block w-100" data-toggle="collapse" href="#collapse2">
-                                                    经营情况讨论与分析
-                                                </a>
-                                            </h4>
-                                        </div>
-                                        <div id="collapse2" class="collapse" data-parent="#accordion" style="">
-                                            <div class="card-body">
-                                                Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid.
-                                                3
-                                                wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt
-                                                laborum
-                                                eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee
-                                                nulla
-                                                assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred
-                                                nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft
-                                                beer
-                                                farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus
-                                                labore sustainable VHS.
-                                            </div>
-                                        </div>
-                                    </div>
+
                                 </div>
                             </div>
                         </div>
@@ -438,11 +412,25 @@ From wicked puns and stupid jokes to anvils that drop on your head.</textarea></
 </html>
 <div th:replace="common/js_public"></div>
 <div th:replace="common/js_datatable"></div>
+<script src="/js/diff_match_patch.js"></script>
+<script src="/js/jquery.scrollsync.js"></script>
 <div th:replace="common/js_custom"></div>
 
 <script th:inline="javascript">
     const code = [[${code}]];
     const codeWithPlace = [[${codeWithPlace}]];
+
+    var ignoreScrollEvents = false
+    function syncScroll(element1, element2) {
+        element1.scroll(function (e) {
+            var ignore = ignoreScrollEvents
+            ignoreScrollEvents = false
+            if (ignore) return
+
+            ignoreScrollEvents = true
+            element2.scrollTop(element1.scrollTop())
+        })
+    }
 
     const config = {
         data() {
@@ -475,7 +463,7 @@ From wicked puns and stupid jokes to anvils that drop on your head.</textarea></
                         ],
                         tableClass:{'table-hover':true}
                     },
-                    notice:{
+                    xqnotice:{
                         columns: [
                             {data:"title"},
                             {data:"reply"},
@@ -498,18 +486,40 @@ From wicked puns and stupid jokes to anvils that drop on your head.</textarea></
                             { className: "text-nowrap", "targets": [ 0 ] }
                         ],
                         tableClass:{'table-hover':true}
-                    }
+                    },
+                    nbjb:[
+                        {code:100, name:'公司业务概要'},
+                        {code:200, name:'经营情况讨论与分析'},
+                        {code:300, name:'管理层讨论与分析'},
+                    ]
                 },
                 stock:{
                     posts:{data:[]},
-                    fn:{type:[], table:[]}
-                }
+                    fn:{type:[], table:[]},
+                    notice_left:{content:{}},
+                    notice_right:{content:{}}
+                },
             }
         },
         methods:{
             dateFormat:function (date){
                 return dateFormat(date);
             },
+            parseNotice:function (pos, notice) {
+                this.stock['notice_'+pos] = notice;
+                let _this = this;
+                // Object.keys(notice.content).forEach(e => {
+                //     _this.stock['notice_'+pos+'_'+e] = json[e];
+                // });
+                for(i in this.common.nbjb){
+                    let nbjb = this.common.nbjb[i];
+                    if(this.stock.notice_left && this.stock.notice_left.content[nbjb.code] != null
+                        && this.stock.notice_right && this.stock.notice_right.content[nbjb.code] != null){
+                        let d = dmp.diff_main(this.stock.notice_left.content[nbjb.code], this.stock.notice_right.content[nbjb.code]);
+                        this.stock['notice_diff_'+nbjb.code] = dmp.diff_prettyHtml(d);
+                    }
+                }
+            }
         },
         computed: {
             fnTypeDisplayName: function(){
@@ -549,9 +559,21 @@ From wicked puns and stupid jokes to anvils that drop on your head.</textarea></
                 _this.stock.news = {data: data};
             });
 
-            axios.get("/stock/notice/"+code).then(function (res) {
+            axios.get("/stock/xqnotice/"+code).then(function (res) {
                 let data = res.data.data;
-                _this.stock.notice = {data: data};
+                _this.stock.xqnotice = {data: data};
+            });
+
+            axios.get("/text/4/200/"+code).then(function (res) {
+                _this.stock.notices = res.data.data;
+                _this.stock.notices.forEach(notice => {
+                    let json = JSON.parse(notice.content);
+                    notice.content = json;
+                })
+                if(_this.stock.notices.length > 1){
+                    _this.parseNotice('left', _this.stock.notices[0]);
+                    _this.parseNotice('right', _this.stock.notices[1]);
+                }
             });
 
             axios.get("/text/report/"+code).then(function (res) {
@@ -574,6 +596,9 @@ From wicked puns and stupid jokes to anvils that drop on your head.</textarea></
         updated() {
         }
     };
-    createApp(config);
+    let app = createApp(config);
+    var dmp = new diff_match_patch();
+    app.config.globalProperties.dmp = dmp;
 
+    $('.sync-text').scrollsync();
 </script>

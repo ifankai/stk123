@@ -1,4 +1,4 @@
-﻿SELECT * FROM DBA_TABLESPACES;
+SELECT * FROM DBA_TABLESPACES;
 SELECT * FROM DBA_DATA_FILES;
 SELECT * FROM DBA_TEMP_FILES;
 select name from v$tablespace;
@@ -3111,3 +3111,6 @@ select * from stk_kline where code='603939' order by kline_date desc;
 select * from stk_fn_data;
 select * from stk_fn_type;
 select name from stk_keyword where status=-1
+select * from stk_text where title like '%年报%' order by insert_time desc;
+select * from stk_text where code='600600' order by insert_time desc for update;
+delete from stk_text where code='600600' and type =4;

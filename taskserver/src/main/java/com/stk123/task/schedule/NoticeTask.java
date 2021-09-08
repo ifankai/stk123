@@ -1,13 +1,13 @@
 package com.stk123.task.schedule;
 
+import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.houbb.opencc4j.util.ZhConverterUtil;
 import com.stk123.common.CommonUtils;
-import com.stk123.common.util.CacheUtils;
-import com.stk123.common.util.EmailUtils;
-import com.stk123.common.util.HtmlUtils;
-import com.stk123.common.util.JsonUtils;
+import com.stk123.common.util.*;
+import com.stk123.common.util.pdf.PDFUtils;
 import com.stk123.entity.StkTextEntity;
+import com.stk123.model.Index;
 import com.stk123.model.Text;
 import com.stk123.model.constant.TextConstant;
 import com.stk123.model.core.Stock;
@@ -15,6 +15,7 @@ import com.stk123.model.dto.Cninfo;
 import com.stk123.model.xueqiu.XueqiuPost;
 import com.stk123.model.xueqiu.XueqiuPostRoot;
 import com.stk123.repository.StkTextRepository;
+import com.stk123.service.StkConstant;
 import com.stk123.service.XueqiuService;
 import com.stk123.util.ExceptionUtils;
 import com.stk123.util.HttpUtils;
@@ -22,19 +23,23 @@ import com.stk123.util.ServiceUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.apachecommons.CommonsLog;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.Arrays;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.stream.Collectors;
 
 /**
  * 实时查询巨潮资讯公告信息（http://www.cninfo.com.cn/new/commonUrl/pageOfSearch?url=disclosure/list/search&keywords=%E5%AD%A3%E5%BA%A6%E6%8A%A5%E5%91%8A#szse）
@@ -99,12 +104,12 @@ public class NoticeTask extends AbstractTask {
 
     //5分钟跑一次
     public void fetchNotice(){
-        fetchNotice("szse");
-        fetchNotice("hke");
+        fetchNotice("szse", null);
+        fetchNotice("hke", null);
     }
 
-
-    public void fetchNotice(String column) {
+    //http://www.cninfo.com.cn/new/commonUrl/pageOfSearch?url=disclosure/list/search&lastPage=index
+    public void fetchNotice(String column, String code) {
         try {
             Path path = Paths.get("./temp/notice_cninfo_code_"+column+".txt");
             if(!Files.exists(path)){
@@ -119,7 +124,11 @@ public class NoticeTask extends AbstractTask {
             String category = "hke".equals(column)?"":"category_gddh_szsh;category_qyfpxzcs_szsh;category_yjdbg_szsh;category_bndbg_szsh;category_yjygjxz_szsh;category_ndbg_szsh;category_sjdbg_szsh;category_gqjl_szsh;category_zf_szsh;category_jj_szsh;category_pg_szsh;category_gqbd_szsh;category_kzzq_szsh";
 
             while(true) {
-                String body = "pageNum="+pageNum+"&pageSize=30&column="+column+"&tabName=fulltext&plate=&stock=&searchkey=&secid=&category="+category+"&trade=&seDate=&sortName=time&sortType=desc&isHLtitle=true";
+                String body = "pageNum="+pageNum+"&pageSize=30&column="+column+"&tabName=fulltext&plate=&searchkey=&secid=&category="+category+"&trade=&seDate=&sortName=time&sortType=desc&isHLtitle=true";
+                if(code != null){
+                    String ss = Stock.getCity(code).isSH() ? "%2Cgssh0" : "%2Cgssz0";
+                    body += "&stock="+code+ss+code;
+                }
                 String url = "http://www.cninfo.com.cn/new/hisAnnouncement/query";
                 String page = HttpUtils.post(url, body, "UTF-8");
                 //log.info(page);
@@ -130,7 +139,7 @@ public class NoticeTask extends AbstractTask {
                 ObjectMapper mapper = new ObjectMapper();
                 Cninfo.NoticeRoot root = mapper.readValue(page, Cninfo.NoticeRoot.class);
 
-                Date DateBefore = ServiceUtils.addDay(new Date(), -1);
+                Date DateBefore = ServiceUtils.addDay(new Date(), -100);
 
                 for (Cninfo.Announcement item : root.getAnnouncements()) {
                     Date createDate = new Date(item.getAnnouncementTime());
@@ -166,6 +175,9 @@ public class NoticeTask extends AbstractTask {
                         notice.setFetchDate(new Date());
                         NOTICES.add(notice);
                         CacheUtils.put(CacheUtils.KEY_ONE_DAY, CACHE_KEY+item.getSecCode(), item.getSecCode());
+
+                        //处理记录 重要公告，比如年报季报
+                        parseAnnouncement(item);
                     }
 
                     i++;
@@ -384,6 +396,61 @@ public class NoticeTask extends AbstractTask {
         log.info("analyzeNotice.size="+NOTICES.size());
     }
 
+    public void parseAnnouncement(Cninfo.Announcement item) throws Exception {
+        StkTextEntity stkTextEntity = stkTextRepository.findByCodeAndPostId(item.getSecCode(), Long.parseLong(item.getAnnouncementId()));
+        if(stkTextEntity != null) return;
+
+        String title = item.getAnnouncementTitle();
+        String filePath = item.getAdjunctUrl();
+        String sourceType = item.getAdjunctType();
+        if(StringUtils.containsAny(title, "年度报告", "半年报", "季度报告")){
+            String fileName = org.apache.commons.lang.StringUtils.substringAfterLast(filePath, "/");
+            String downloadFilePath = download(filePath, item.getSecCode());
+            if("pdf".equalsIgnoreCase(sourceType)){
+                String pdfContent = PDFUtils.getText(downloadFilePath);
+                String[] linesArray = StringUtils.split(pdfContent, "\n");
+                List<String> lines = Arrays.stream(linesArray).map(StringUtils::trim).collect(Collectors.toList());
+                Map map = new HashMap();
+                List<String> s100 = PDFUtils.sublines(lines,
+                        new PDFUtils.Line("公司业务概要", "第(.)节", null, "第三节公司业务概要".length()),
+                        new PDFUtils.Line("经营情况讨论与分析", "第(.)节", null, "第四节经营情况讨论与分析".length()));
+                if(s100 != null && !s100.isEmpty()) {
+                    map.put("100", String.join("\n", s100));
+                }
+                List<String> s200 = PDFUtils.sublines(lines,
+                        new PDFUtils.Line("经营情况讨论与分析", "第(.)节", null, "第四节经营情况讨论与分析".length()),
+                        new PDFUtils.Line("重要事项", "第(.)节", null, "第五节重要事项".length()));
+                if(s200 != null && !s200.isEmpty()) {
+                    map.put("200", String.join("\n", s200));
+                }
+                List<String> s300 = PDFUtils.sublines(lines,
+                        new PDFUtils.Line("管理层讨论与分析", "第(.)节", null, "第三节管理层讨论与分析".length()),
+                        new PDFUtils.Line("公司治理", "第(.)节", null, "第四节公司治理".length()));
+                if(s300 != null && !s300.isEmpty()) {
+                    map.put("300", String.join("\n", s300));
+                }
+                String text = map.isEmpty()?null:JSON.toJSONString(map);
+                stkTextEntity = createNoticeEntity(item, StkConstant.TEXT_SUB_TYPE_STK_REPORT, text);
+                stkTextRepository.save(stkTextEntity);
+            }
+        }
+    }
+
+    private StkTextEntity createNoticeEntity(Cninfo.Announcement item, Integer subType, String text){
+        StkTextEntity stkTextEntity = new StkTextEntity();
+        stkTextEntity.setCode(item.getSecCode());
+        stkTextEntity.setCreatedAt(new Date(item.getAnnouncementTime()));
+        stkTextEntity.setPostId(Long.parseLong(item.getAnnouncementId()));
+        stkTextEntity.setTitle(item.getAnnouncementTitle());
+        stkTextEntity.setText(text);
+        stkTextEntity.setTextDesc(item.getAdjunctUrl());
+        stkTextEntity.setType(StkConstant.TEXT_TYPE_NOTICE);
+        stkTextEntity.setSubType(subType);
+        stkTextEntity.setInsertTime(new Date());
+        stkTextEntity.setCodeType(TextConstant.CODE_TYPE_STK);
+        return stkTextEntity;
+    }
+
     private StkTextEntity createPostEntity(XueqiuPost post, Stock stock){
         StkTextEntity stkTextEntity = new StkTextEntity();
         stkTextEntity.setUserId(post.getUser_id());
@@ -405,6 +472,19 @@ public class NoticeTask extends AbstractTask {
             stkTextEntity.setSubType(Text.SUB_TYPE_XUEQIU_NOTICE);
         }
         return stkTextEntity;
+    }
+
+    public static String download(String filePath, String code) throws Exception {
+        String downloadUrl = "http://static.cninfo.com.cn/"+filePath;
+        String fileName = StringUtils.substringAfterLast(filePath, "/");
+        String downloadFilePath = ConfigUtils.getProp("stk_report")+code+"\\notice\\";
+        //downloadFilePath = downloadFilePath.replace("G", "d");
+        File path = new File(downloadFilePath);
+        if(!path.exists()){
+            FileUtils.forceMkdir(path);
+        }
+        HttpUtils.download(downloadUrl,null, downloadFilePath, fileName);
+        return downloadFilePath+fileName;
     }
 
     @Getter
@@ -441,9 +521,9 @@ public class NoticeTask extends AbstractTask {
         List<String> matches = CommonUtils.getMatchStrings(s, POSITIVE_WORDS.stream().toArray(String[]::new));
         System.out.println(matches.size());
 
-        //new NoticeTask().fetchNotice();
-
-        System.out.println("了".equals("上"));
+        new NoticeTask().fetchNotice("szse", "600600");
     }
+
+
 }
 

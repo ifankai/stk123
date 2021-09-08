@@ -1,8 +1,10 @@
 package com.stk123.model.constant;
 
+@Deprecated
 public class TextConstant {
 
     public final static int TYPE_XUEQIU = 3;
+    public final static int TYPE_NOTICE = 4;
 
     //1: stock  2: industry
     public final static int CODE_TYPE_STK = 1;
