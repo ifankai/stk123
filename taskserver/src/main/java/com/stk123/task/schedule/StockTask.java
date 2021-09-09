@@ -1,5 +1,6 @@
 package com.stk123.task.schedule;
 
+import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stk123.common.CommonUtils;
 import com.stk123.common.util.HtmlUtils;
@@ -11,13 +12,14 @@ import com.stk123.model.enumeration.EnumMarket;
 import com.stk123.model.enumeration.EnumPlace;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.repository.*;
-import com.stk123.service.core.ErrorService;
-import com.stk123.service.core.FnService;
-import com.stk123.service.core.HttpService;
-import com.stk123.service.core.StockService;
+import com.stk123.service.StkConstant;
+import com.stk123.service.core.*;
 import com.stk123.util.HttpUtils;
 import com.stk123.util.ServiceUtils;
+import lombok.Setter;
 import lombok.extern.apachecommons.CommonsLog;
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.htmlparser.Node;
 import org.htmlparser.tags.TableTag;
@@ -56,8 +58,12 @@ public class StockTask extends AbstractTask {
     private StkOwnershipRepository stkOwnershipRepository;
     @Autowired
     private StkFnTypeRepository stkFnTypeRepository;
+    @Autowired
+    private KeywordService keywordService;
 
     private List<Stock> stocksCN = null;
+    @Setter
+    private String code;
 
     @Override
     public void register() {
@@ -65,6 +71,12 @@ public class StockTask extends AbstractTask {
         this.runByName("initCNIndustryEasymoney", this::initCNIndustryEasymoney);
         this.runByName("initCNHolder", this::initCNHolder);
         this.runByName("initCNFinance", this::initCNFinance);
+        this.runByName("initCNMainProduct", this::initCNMainProduct);
+        this.runByName("clear", this::clear);
+    }
+
+    public void clear(){
+        stocksCN = null;
     }
 
     public void initCNHolder() {
@@ -139,8 +151,12 @@ public class StockTask extends AbstractTask {
 
     public void initCNStocks(){
         if(stocksCN == null) {
-            List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(EnumMarket.CN, EnumCate.STOCK);
-            //List<StockBasicProjection> list = stkRepository.findAllByCodes(ListUtils.createList("603667"));
+            List<StockBasicProjection> list = null;
+            if(code == null) {
+                list =stkRepository.findAllByMarketAndCateOrderByCode(EnumMarket.CN, EnumCate.STOCK);
+            }else {
+                list = stkRepository.findAllByCodes(ListUtils.createList(code));
+            }
             stocksCN = stockService.buildStocksWithProjection(list);
         }
     }
@@ -381,6 +397,42 @@ public class StockTask extends AbstractTask {
 
             }catch(Exception e){
                 log.error("initCNFinance error:"+stock.getCode(), e);
+            }
+        }
+    }
+
+    public void initCNMainProduct(){
+        initCNStocks();
+        for(Stock stock : stocksCN) {
+            log.info("initCNMainProduct:" + stock.getCode());
+            try {
+                String url = "http://www.iwencai.com/unifiedwap/unified-wap/v2/result/get-robot-data";
+                String body = "question="+stock.getCode()+"&perpage=50&page=1&secondary_intent=&log_info=%7B%22input_type%22%3A%22click%22%7D&source=Ths_iwencai_Xuangu&version=2.0&query_area=&block_list=&add_info=%7B%22urp%22%3A%7B%22scene%22%3A1%2C%22company%22%3A1%2C%22business%22%3A1%7D%2C%22contentType%22%3A%22json%22%2C%22searchInfo%22%3Atrue%7D";
+                Map headers = new HashMap();
+                //headers.put("Cookie","chat_bot_session_id=b7297f50053c6d56b3717f72fb4ec438; other_uid=Ths_iwencai_Xuangu_zvz37zsvetq8wk44fhyhbxrrdk6w6rwn; cid=e9dec1382a4934d1f30b71e4ca3e171e1618804855; cid=e9dec1382a4934d1f30b71e4ca3e171e1618804855; ComputerID=e9dec1382a4934d1f30b71e4ca3e171e1618804855; ta_random_userid=y0oykc8vll; WafStatus=1; PHPSESSID=54bcd01da52259f7a9b337d523599864; v=A5Qhmc69iX40Lx2yQbCdZlRQZdkU7bjX-hFMGy51IJ-iGTrNVv2IZ0ohHK19");
+                headers.put("Cookie","other_uid=Ths_iwencai_Xuangu_zvz37zsvetq8wk44fhyhbxrrdk6w6rwn; cid=e9dec1382a4934d1f30b71e4ca3e171e1618804855; cid=e9dec1382a4934d1f30b71e4ca3e171e1618804855; ComputerID=e9dec1382a4934d1f30b71e4ca3e171e1618804855; ta_random_userid=y0oykc8vll; WafStatus=1; v=A_5L3wjPE5A5HUe0GqbX2GriTx9SP8OCVAF2n6gPa1E8CpCLEM8SySSTxqF7");
+                //Map map = httpService.postMap(url, body, );
+                String page = HttpUtils.post(url, null, body, headers,"utf-8", null);
+                ObjectMapper mapper = new ObjectMapper();
+                Map map = mapper.readValue(page, Map.class);
+                String products = null;
+                try{
+                    products = BeanUtils.getProperty(map, "data.answer.[0].txt.[0].content.components.[0].data.[0].主营产品名称");
+                }catch (Exception e){
+                    log.error("Parse 'data.answer.[0].txt.[0].content.components.[0].data.[0].主营产品名称' error", e);
+                }
+                //崂山啤酒||啤酒||汉斯啤酒||山水啤酒||啤麦||中高档啤酒||高档酒||糖酒
+                if(StringUtils.isEmpty(products)){
+                    continue;
+                }
+                for(String product : StringUtils.split(products, "||")){
+                    String prdt = StringUtils.trim(product);
+                    if(StringUtils.isNotEmpty(prdt)) {
+                        keywordService.addKeywordAndLink(prdt, stock.getCode(), StkConstant.KEYWORD_CODE_TYPE_STOCK, StkConstant.KEYWORD_LINK_TYPE_MAIN_PRODUCT);
+                    }
+                }
+            }catch(Exception e){
+                log.error("initCNMainProduct error:"+stock.getCode(), e);
             }
         }
     }

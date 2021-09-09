@@ -2786,6 +2786,7 @@ public class Index {
         }
         for(TableColumn column : columns){
         	String kw = column.toPlainTextString();
+        	if(StringUtils.isEmpty(kw))continue;
         	Keyword keyword = new Keyword(this.getConnection(), kw); 
 			keyword.addLink(code, 1, 1);
         }

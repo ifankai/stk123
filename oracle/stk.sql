@@ -572,7 +572,7 @@ create table stk_keyword_link(
   keyword_id number(12)  not null,
   boost number(8) default 1
 );
-alter table stk_keyword_link add link_type number(6) default 0;  -- default(manually add):0, 主营业务:1
+alter table stk_keyword_link add link_type number(6) default 0;  -- default(manually add):0, 主营业务:1  主营产品:2
 alter table stk_keyword_link add insert_time date;
 alter table stk_keyword_link add constraint pk_keyword_link_id primary key (id);
 alter table stk_keyword_link add constraint fk_keyword_link__key_id foreign key (keyword_id) references stk_keyword (id);
@@ -3110,7 +3110,9 @@ select * from stk_kline where code='603939' order by kline_date desc;
 
 select * from stk_fn_data;
 select * from stk_fn_type;
-select name from stk_keyword where status=-1
+select * from stk_keyword where id=101336;
+select * from stk_keyword order by insert_time desc;
+select * from stk_keyword_link order by insert_time desc;
 select * from stk_text where title like '%年报%' order by insert_time desc;
 select * from stk_text where code='600600' order by insert_time desc for update;
 delete from stk_text where code='600600' and type =4;

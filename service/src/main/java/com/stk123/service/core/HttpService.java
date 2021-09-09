@@ -66,11 +66,24 @@ public class HttpService {
         HttpResult<Map> httpResult = this.get(url,null, headers, Map.class,3);
         return httpResult.getBody();
     }
-
     public HttpResult get(String url, String charset, Map<String, String> headers,Class responseType, int tryTimes) {
+        return exchange(HttpMethod.GET, url, charset, headers, null, responseType, tryTimes);
+    }
+    public String postString(String url, String body){
+        HttpResult<String> httpResult = post(url, null, null, body, String.class, 3);
+        return httpResult.getBody();
+    }
+    public Map postMap(String url, String body,  Map<String, String> headers){
+        HttpResult<Map> httpResult = post(url, null, headers, body, Map.class, 3);
+        return httpResult.getBody();
+    }
+    public HttpResult post(String url, String charset, Map<String, String> headers, String body, Class responseType, int tryTimes) {
+        return exchange(HttpMethod.POST, url, charset, headers, body, responseType, tryTimes);
+    }
+    public HttpResult exchange(HttpMethod method, String url, String charset, Map<String, String> headers,String body, Class responseType, int tryTimes) {
         //Exception exception = null;
         HttpResult httpResult = new HttpResult();
-        while(tryTimes > 0){
+        while(tryTimes-- > 0){
             try {
                 HttpHeaders httpHeaders = new HttpHeaders();
                 if(charset != null){
@@ -79,12 +92,12 @@ public class HttpService {
                     restTemplate.getMessageConverters().set(1, new StringHttpMessageConverter(Charsets.UTF_8));
                 }
                 if (headers != null){
-                    headers.entrySet().stream().forEach(h -> httpHeaders.add(h.getKey(), h.getValue()));
+                    headers.forEach(httpHeaders::add);
                 }
-                HttpEntity<String> entity = new HttpEntity<String>("parameters", httpHeaders);
+                HttpEntity<String> entity = new HttpEntity<>(body, httpHeaders);
 
                 //Accept=[text/plain, application/json, application/*+json, */*]
-                ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, responseType);
+                ResponseEntity<String> responseEntity = restTemplate.exchange(url, method, entity, responseType);
                 HttpStatus status = responseEntity.getStatusCode();
                 httpResult.setStatus(status);
                 httpResult.setBody(responseEntity.getBody());
@@ -94,7 +107,6 @@ public class HttpService {
                 return httpResult;
             }catch(Exception e){
                 log.error("http get error", e);
-                if(--tryTimes > 0)continue;
                 //exception = e;
             }
         }

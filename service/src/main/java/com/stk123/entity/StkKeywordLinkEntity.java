@@ -1,109 +1,63 @@
 package com.stk123.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.sql.Time;
+import java.util.Date;
 import java.util.Objects;
 
-//@Entity
+@Entity
 @Table(name = "STK_KEYWORD_LINK")
+@Getter
+@Setter
 public class StkKeywordLinkEntity {
-    private long id;
-    private String code;
-    private Long codeType;
-    private Long keywordId;
-    private Long boost;
-    private Long linkType;
-    private Time insertTime;
-    private StkKeywordEntity stkKeywordByKeywordId;
-
     @Id
     @Column(name = "ID", nullable = false, precision = 0)
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
+    @GeneratedValue(strategy =GenerationType.SEQUENCE, generator="s_keyword_link_id")
+    @SequenceGenerator(name="s_keyword_link_id", sequenceName="s_keyword_link_id", allocationSize = 1)
+    private Long id;
 
     @Basic
     @Column(name = "CODE", nullable = true, length = 20)
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
+    private String code;
 
     @Basic
     @Column(name = "CODE_TYPE", nullable = true, precision = 0)
-    public Long getCodeType() {
-        return codeType;
-    }
-
-    public void setCodeType(Long codeType) {
-        this.codeType = codeType;
-    }
+    private Integer codeType;
 
     @Basic
     @Column(name = "KEYWORD_ID", nullable = true, precision = 0)
-    public Long getKeywordId() {
-        return keywordId;
-    }
-
-    public void setKeywordId(Long keywordId) {
-        this.keywordId = keywordId;
-    }
+    private Long keywordId;
 
     @Basic
     @Column(name = "BOOST", nullable = true, precision = 0)
-    public Long getBoost() {
-        return boost;
-    }
-
-    public void setBoost(Long boost) {
-        this.boost = boost;
-    }
+    private Integer boost;
 
     @Basic
     @Column(name = "LINK_TYPE", nullable = true, precision = 0)
-    public Long getLinkType() {
-        return linkType;
-    }
-
-    public void setLinkType(Long linkType) {
-        this.linkType = linkType;
-    }
+    private Integer linkType;
 
     @Basic
     @Column(name = "INSERT_TIME", nullable = true)
-    public Time getInsertTime() {
-        return insertTime;
-    }
+    private Date insertTime;
 
-    public void setInsertTime(Time insertTime) {
-        this.insertTime = insertTime;
-    }
+    @OneToOne
+    @JoinColumn(name = "KEYWORD_ID", insertable = false, updatable = false)
+    private StkKeywordEntity stkKeywordEntity;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         StkKeywordLinkEntity that = (StkKeywordLinkEntity) o;
-        return id == that.id &&
-                Objects.equals(code, that.code) &&
-                Objects.equals(codeType, that.codeType) &&
-                Objects.equals(keywordId, that.keywordId) &&
-                Objects.equals(boost, that.boost) &&
-                Objects.equals(linkType, that.linkType) &&
-                Objects.equals(insertTime, that.insertTime);
+        return id.equals(that.id);
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(id, code, codeType, keywordId, boost, linkType, insertTime);
+        return Objects.hash(id);
     }
 
 //    @ManyToOne

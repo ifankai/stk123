@@ -90,9 +90,16 @@ public class StkConstant {
     public final static String REPORT_HEADER_TYPE_ALLSTOCKS_RPS = "allstocks_rps";
 
     /** stk_keyword_link.link_type **/
-    public final static int KEYWORD_LINK_TYPE_0 = 0; //default(manually add):0
-    public final static int KEYWORD_LINK_TYPE_1 = 1;  //主营业务:1
+    public final static int KEYWORD_LINK_TYPE_DEFAULT = 0; //default(manually add):0
+    public final static int KEYWORD_LINK_TYPE_MAIN_BUSINESS = 1;  //主营业务:1
+    public final static int KEYWORD_LINK_TYPE_MAIN_PRODUCT = 2;  //主营产品:2
+    /** stk_keyword_link.code_type **/
+    public final static int KEYWORD_CODE_TYPE_STOCK = 1; //stock
+    public final static int KEYWORD_CODE_TYPE_INDUSTRY = 2; //industry
 
-    public final static int KEYWORD_STATUS__1 = 1;  //-1:deleted
+    /** stk_keyword.status **/
+    public final static int KEYWORD_STATUS__1 = -1;  //-1:deleted
+    public final static int KEYWORD_STATUS_0 = 0;  // 0:normal(manual-add)
+    public final static int KEYWORD_STATUS_1 = 1;  // 1:normal(auto-add)
 
 }

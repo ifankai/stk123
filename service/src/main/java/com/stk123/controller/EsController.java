@@ -150,10 +150,13 @@ public class EsController {
         log.info("getExtDict start..........");
 
         //主营业务关键字
-        List<String> mainBusinessWords = keywordService.getKeywordByLinkType(StkConstant.KEYWORD_LINK_TYPE_1);
+        List<String> mainBusinessWords = keywordService.getKeywordByLinkType(StkConstant.KEYWORD_LINK_TYPE_MAIN_BUSINESS);
         dictExt.addAll(mainBusinessWords);
+        //主营产品关键字
+        List<String> mainProductsWords = keywordService.getKeywordByLinkType(StkConstant.KEYWORD_LINK_TYPE_MAIN_PRODUCT);
+        dictExt.addAll(mainProductsWords);
         //手动加的关键字
-        List<String> words = keywordService.getKeywordByLinkType(StkConstant.KEYWORD_LINK_TYPE_0);
+        List<String> words = keywordService.getKeywordByLinkType(StkConstant.KEYWORD_LINK_TYPE_DEFAULT);
         dictExt.addAll(words);
         //加股票名称
         List<StockCodeNameProjection> stks = stkRepository.findAllByOrderByCode();

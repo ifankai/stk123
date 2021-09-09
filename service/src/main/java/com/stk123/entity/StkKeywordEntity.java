@@ -1,86 +1,53 @@
 package com.stk123.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.sql.Time;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Objects;
 
-//@Entity
+@Entity
 @Table(name = "STK_KEYWORD")
+@Getter
+@Setter
 public class StkKeywordEntity {
-    private long id;
-    private String name;
-    private Long boost;
-    private Time insertTime;
-    private Boolean status;
-    private Collection<StkKeywordLinkEntity> stkKeywordLinksById;
 
     @Id
     @Column(name = "ID", nullable = false, precision = 0)
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
+    @GeneratedValue(strategy =GenerationType.SEQUENCE, generator="s_keyword_id")
+    @SequenceGenerator(name="s_keyword_id", sequenceName="s_keyword_id", allocationSize = 1)
+    private Long id;
 
     @Basic
     @Column(name = "NAME", nullable = true, length = 200)
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    private String name;
 
     @Basic
     @Column(name = "BOOST", nullable = true, precision = 0)
-    public Long getBoost() {
-        return boost;
-    }
-
-    public void setBoost(Long boost) {
-        this.boost = boost;
-    }
+    private Integer boost;
 
     @Basic
     @Column(name = "INSERT_TIME", nullable = true)
-    public Time getInsertTime() {
-        return insertTime;
-    }
-
-    public void setInsertTime(Time insertTime) {
-        this.insertTime = insertTime;
-    }
+    private Date insertTime;
 
     @Basic
     @Column(name = "STATUS", nullable = true, precision = 0)
-    public Boolean getStatus() {
-        return status;
-    }
-
-    public void setStatus(Boolean status) {
-        this.status = status;
-    }
+    private Integer status;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         StkKeywordEntity that = (StkKeywordEntity) o;
-        return id == that.id &&
-                Objects.equals(name, that.name) &&
-                Objects.equals(boost, that.boost) &&
-                Objects.equals(insertTime, that.insertTime) &&
-                Objects.equals(status, that.status);
+        return id.equals(that.id);
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(id, name, boost, insertTime, status);
+        return Objects.hash(id);
     }
 
 //    @OneToMany(mappedBy = "stkKeywordByKeywordId")

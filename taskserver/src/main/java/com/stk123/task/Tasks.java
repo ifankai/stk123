@@ -145,7 +145,11 @@ public class Tasks {
     @Scheduled(cron = "0 0 2 ? * MON,FRI")
     public void initialDataCN() {
         initialData.run(1);
-        taskContainer.start(StockTask.class, "CN");
+        taskContainer.start(
+            TaskBuilder.of(StockTask.class, "clear"),
+            TaskBuilder.of(StockTask.class, "CN"),
+            TaskBuilder.of(StockTask.class, "clear")
+        );
     }
     @Scheduled(cron = "0 0 8 ? * TUE,SAT")
     public void initialDataUS() {
