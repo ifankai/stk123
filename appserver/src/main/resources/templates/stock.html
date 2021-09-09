@@ -113,6 +113,13 @@
             border-radius: .25rem;
             border-color: rgba(0,0,0,.2);
         }
+        .card-footer{
+            border-top: 1px solid rgba(0,0,0,.125);
+        }
+        pre{
+            padding: 0;
+            font-size: 95%;
+        }
     </style>
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed text-sm pace-primary pace-done">
@@ -241,6 +248,25 @@
 
                                 </table>
                             </div>
+
+                            <div class="card-footer">
+<pre>
+<strong>财务数据 分析要点：</strong>
+  1.毛利率是否在同行业里较高（大于30%~60%），毛利率是否同比增长。
+  2.主营收入是否先于净利率增长：
+  3.查看每股公积金是否>=3元(风生水起)。
+  4.盈利预测：
+  5.业绩拐点先行指标：经营活动现金流量净额 同比增长：
+    (参考案例：安洁科技[002635]-2016Q1经营活动现金流量净额开始大幅增长。也有除外的，如订单类公司：神雾环保 [300156]，利亚德 [300296]，他们之所以牛是因为订单多，营收暴增。)
+  6.销售净利率是否>5%(零售行业除外)，最好在15%以上；ROE是否>8% (来自 - 《投资的本源》 P31)；经营性净现金流与净利润比>70% (P69)
+  7.杜邦分析：净资产收益率(ROE) = 销售净利润率    *    资产周转率    *   权益乘数
+                         = (净利润/主营收入) * (主营收入/总资产) * (总资产/净资产)  (来自 - 《投资的本源》 P73)
+    参考文档：<a target="_blank" href="https://note.youdao.com/web/#/file/recent/note/73F3E3712CE7492BBAE3539E12D62666/">浅析“杜邦分析法”</a>
+  8.商誉是否太大。并购重组会产生商誉，具体参见：<a target="_blank" href="https://note.youdao.com/web/#/file/recent/note/3D9A0D55DC1A470BB5D8F4A879C477C5/">警惕商誉的恶之花</a>
+  9.案例分析：<a target="_blank" href="https://note.youdao.com/web/#/file/recent/note/e36b07f35fd55c2864a8cdb175cc3637/">三安光电</a>
+  10.大股东质押比例不能太高，<a target="_blank" href="http://data.eastmoney.com/gpzy/pledgeRatio.aspx">查询质押比例</a>。
+</pre>
+                            </div>
                         </div>
 
                     </div>
@@ -304,10 +330,24 @@
                             <div class="card-body">
                                 <datatable :="{...common.news, ...stock.news}"></datatable>
                             </div>
+
+                            <div class="card-footer">
+<pre>
+  1.是否有股权激励： - <a target="_blank" href='http://www.iwencai.com/search?typed=0&preParams=&ts=1&f=1&qs=result_channel&selfsectsn=&querytype=&searchfilter=&tid=info&w=<%=index.getName()%>%20股权激励'>问财搜索</a>
+  2.高管是否增持，公司是否有回购:
+  3.员工持股计划：
+  4.非公开发行：
+  5.订单金额占主营收入：
+  6.募集资金：
+  7.牛散：
+  8.资金流：
+  9.互动易：<a target="_blank" href="http://ircs.p5w.net/ircs/interaction/queryQuestionByGszz.do?condition.stockcode=&condition.status=3&condition.dateFrom=&condition.dateTo=">投资者互动平台</a>
+</pre>
+                            </div>
                         </div>
 
                     </div>
-                </div>
+                </div><!-- 新闻  -->
 
                 <div class="row">
                     <div class="col-12">
