@@ -1,5 +1,7 @@
 package com.stk123.controller;
 
+import com.alicp.jetcache.anno.CacheType;
+import com.alicp.jetcache.anno.Cached;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.common.CommonUtils;
 import com.stk123.common.util.JsonUtils;
@@ -173,6 +175,7 @@ public class StockController {
 
     @RequestMapping(value = "/xqnotice/{code}")
     @ResponseBody
+    @Cached(name = "xueqiu-notice", expire = 600, cacheType = CacheType.LOCAL)
     public RequestResult xueqiuNotice(@PathVariable(value = "code")String code){
         Stock stock = stockService.getStock(code);
         List<Map> notice = getNoticeFromXueqiu(stock);

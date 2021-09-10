@@ -27,8 +27,12 @@ public class ApplicationFilter implements Filter {
             return;
         }
         request.setAttribute("_version", CSS_JS_VERSION);
-        log.info("==> uri: {}, {}", uri, getParametersAsMap(httpServletRequest));
-        filterChain.doFilter(request, response);
+        long start = System.currentTimeMillis();
+        try {
+            filterChain.doFilter(request, response);
+        }finally {
+            log.info("==> uri: {}, {}, cost: {}ms", uri, getParametersAsMap(httpServletRequest), System.currentTimeMillis() - start);
+        }
     }
 
     private Map getParametersAsMap(HttpServletRequest request){

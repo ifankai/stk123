@@ -145,16 +145,6 @@ public class TextController {
         return RequestResult.SUCCESS;
     }
 
-    @RequestMapping("/save")
-    public RequestResult save(){
-        StkTextEntity stkTextEntity = new StkTextEntity();
-        stkTextEntity.setCode("100000");
-        stkTextEntity.setType(3);
-        stkTextEntity.setTitle("title1");
-        stkTextEntity.setInsertTime(new Date());
-        StkTextEntity entity = stkTextRepository.save(stkTextEntity);
-        return RequestResult.success("create new entity id:"+entity.getId());
-    }
 
     @RequestMapping(value={"/{type}/{subType}/{code}"})
     public RequestResult query(@PathVariable String code, @PathVariable Integer type,

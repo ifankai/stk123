@@ -352,12 +352,13 @@ public class EsService {
 
         searchSourceBuilder.size(pageSize);
         searchSourceBuilder.from((page - 1) * pageSize);
-        searchSourceBuilder.timeout(new TimeValue(60, TimeUnit.SECONDS));
+        searchSourceBuilder.timeout(new TimeValue(10, TimeUnit.SECONDS));
 
-        if(!orderByTime) {
+        if(orderByTime) {
+            searchSourceBuilder.sort(new FieldSortBuilder(FIELD_INSERT_TIME).order(SortOrder.DESC));
+        }else{
             searchSourceBuilder.sort(SortBuilders.scoreSort().order(SortOrder.DESC));
         }
-        searchSourceBuilder.sort(new FieldSortBuilder(FIELD_INSERT_TIME).order(SortOrder.DESC));
 
         searchRequest.source(searchSourceBuilder);
         SearchResponse searchResponse = client.search(searchRequest, COMMON_OPTIONS);
@@ -424,7 +425,7 @@ public class EsService {
         //stk, type=stock
         initStk(index);
 
-        //stk_text, type=post
+        //stk_text
         BulkResponse bulkResponse = initStkText(index, dateAfter);
         if(bulkResponse.hasFailures()){
             return bulkResponse.buildFailureMessage();
@@ -458,7 +459,7 @@ public class EsService {
 
     private EsDocument convertStockToEsDocument(Stock stock){
         EsDocument esDocument = new EsDocument();
-        esDocument.setType("stock");
+        esDocument.setType(StkConstant.ES_TYPE_STOCK);
         esDocument.setSubType(stock.getMarket().name());
         //System.out.println(stock.getCode()+","+stock.getName());
         String pinyin = "";
