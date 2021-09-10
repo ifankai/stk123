@@ -321,9 +321,18 @@ public class EsService {
         boolQueryBuilder.must(queryBuilder);
 
         if(otherKeywords != null){
-            otherKeywords.entrySet().stream().forEach(e -> {
-                TermsQueryBuilder termsQueryBuilder = QueryBuilders.termsQuery(e.getKey(), e.getValue());
-                boolQueryBuilder.must(termsQueryBuilder);
+            otherKeywords.forEach((key, value) -> {
+                String[] array = StringUtils.split(value, ","); //sub_type=300,310
+                if (array.length > 1) {
+                    BoolQueryBuilder qb = QueryBuilders.boolQuery();
+                    for (String s : array) {
+                        qb.should(QueryBuilders.termsQuery(key, s));
+                    }
+                    boolQueryBuilder.must(qb);
+                } else {
+                    TermsQueryBuilder termsQueryBuilder = QueryBuilders.termsQuery(key, value);
+                    boolQueryBuilder.must(termsQueryBuilder);
+                }
             });
         }
 
@@ -491,7 +500,13 @@ public class EsService {
 
     private EsDocument convertStkTextEntityToEsDocument(StkTextEntity e) {
         EsDocument esDocument = new EsDocument();
-        esDocument.setType("post");
+        if(e.getType() == StkConstant.TEXT_TYPE_XUEQIU) {
+            esDocument.setType(StkConstant.ES_TYPE_POST);
+        }else if(e.getType() == StkConstant.TEXT_TYPE_NOTICE){
+            esDocument.setType(StkConstant.ES_TYPE_NOTICE);
+        }else if(e.getType() == StkConstant.TEXT_TYPE_REPORT){
+            esDocument.setType(StkConstant.ES_TYPE_REPORT);
+        }
         esDocument.setSubType(e.getSubType().toString());
         esDocument.setTitle(e.getTitle());
         esDocument.setDesc(e.getTextDesc());

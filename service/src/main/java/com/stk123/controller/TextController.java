@@ -198,7 +198,7 @@ public class TextController {
                               @RequestParam(value = "end", required = false)String end){
         Date dateStart = start == null ? CommonUtils.addDay(new Date(), -365) : CommonUtils.parseDate(start);
         Date dateEnd = end == null ? new Date() : CommonUtils.parseDate(end);
-        List<StkTextEntity> result = stkTextRepository.findAllByCodeAndTypeAndSubTypeAndInsertTimeBetweenOrderByInsertTimeDesc(code, StkConstant.TEXT_TYPE_LONG_TEXT,
+        List<StkTextEntity> result = stkTextRepository.findAllByCodeAndTypeAndSubTypeAndInsertTimeBetweenOrderByInsertTimeDesc(code, StkConstant.TEXT_TYPE_REPORT,
                 StkConstant.TEXT_SUB_TYPE_COMPANY_RESEARCH, dateStart, dateEnd);
         return RequestResult.success(result);
     }

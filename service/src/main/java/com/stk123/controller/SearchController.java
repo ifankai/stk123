@@ -1,29 +1,27 @@
 package com.stk123.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.stk123.entity.StkTextEntity;
 import com.stk123.model.RequestResult;
 import com.stk123.model.core.Stock;
 import com.stk123.model.dto.PageRoot;
-import com.stk123.model.dto.SearchResult;
 import com.stk123.model.elasticsearch.EsDocument;
+import com.stk123.model.elasticsearch.SearchResult;
 import com.stk123.model.json.View;
-import com.stk123.model.projection.StockBasicProjection;
-import com.stk123.model.projection.StockProjection;
-import com.stk123.repository.StkKlineRepository;
 import com.stk123.repository.StkRepository;
 import com.stk123.repository.StkTextRepository;
-import com.stk123.service.StkService;
+import com.stk123.service.StkConstant;
 import com.stk123.service.core.EsService;
 import com.stk123.service.core.StockService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,12 +48,6 @@ public class SearchController {
         return RequestResult.success(results);
     }*/
 
-    @RequestMapping(value = "", method = RequestMethod.DELETE)
-    @ResponseBody
-    public RequestResult<Collection<SearchResult>> delete(){
-        stockService.delete();
-        return RequestResult.success();
-    }
 
     @RequestMapping({"/{page}/{keyword}", "/{keyword}"})
     @ResponseBody
@@ -81,12 +73,13 @@ public class SearchController {
         if(StringUtils.isNotEmpty(searchFields)){
             searchFieldsArray = StringUtils.split(searchFields, ",");
         }
-        com.stk123.model.elasticsearch.SearchResult result = esService.search(keyword, otherKeywords, page, pageSize, searchFieldsArray, "time".equals(sort));
+        SearchResult result = esService.search(keyword, otherKeywords, page, pageSize, searchFieldsArray, "time".equals(sort));
         
-        List<EsDocument> postList = result.getResults();
-        if(!postList.isEmpty()){
-            List<Stock> stocks = stockService.buildStocks(postList.stream().map(e -> e.getCode()).collect(Collectors.toList()));
-            postList.forEach(esDocument -> {
+        List<EsDocument> list = result.getResults();
+        if(!list.isEmpty()){
+            List<Stock> stocks = stockService.buildStocks(list.stream().map(EsDocument::getCode).collect(Collectors.toList()));
+            list.forEach(esDocument -> {
+                esDocument.setSubTypeName(StkConstant.TEXT_SUB_TYPE_MAP.get(esDocument.getSubType()));
                 esDocument.setStock(stocks.stream().filter(e -> e.getCode().equals(esDocument.getCode())).findFirst().orElse(null));
             });
         }

@@ -38,8 +38,8 @@ public class ResearchReportTask extends AbstractTask {
     public void execute(){
         try{
             log.info("ResearchReportTask start...");
-            getReportByType("1", Text.SUB_TYPE_COMPANY_RESEARCH);
-            getReportByType("2", Text.SUB_TYPE_INDUSTRY_RESEARCH);
+            getReportByType("1", StkConstant.TEXT_SUB_TYPE_COMPANY_RESEARCH);
+            getReportByType("2", StkConstant.TEXT_SUB_TYPE_INDUSTRY_RESEARCH);
             log.info("ResearchReportTask end...");
         } catch (Exception e) {
             EmailUtils.send("ResearchReportTask Error", ExceptionUtils.getExceptionAsString(e));
@@ -80,7 +80,7 @@ public class ResearchReportTask extends AbstractTask {
                 StkTextEntity stkTextEntity = stkTextRepository.findFirstBySubTypeAndTitle(subType, title);
                 if(stkTextEntity == null) {
                     stkTextEntity = new StkTextEntity();
-                    stkTextEntity.setType(StkConstant.TEXT_TYPE_LONG_TEXT);
+                    stkTextEntity.setType(StkConstant.TEXT_TYPE_REPORT);
                     stkTextEntity.setSubType(subType);
                     stkTextEntity.setCodeType(StkConstant.TEXT_CODE_TYPE_STOCK);
                     stkTextEntity.setTitle(title);

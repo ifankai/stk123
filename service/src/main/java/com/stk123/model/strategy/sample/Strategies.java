@@ -27,7 +27,7 @@ public class Strategies {
 
     public static String STRATEGIES_BK = "01a,01b,02b,03a,04a,04b,04c,05a,05b,06a,06b,06c,08a,08b,08c,10a"; //03b,
 
-    public static String STRATEGIES_ON_RPS = "04a,04b,04c";
+    public static String STRATEGIES_ON_RPS = "01e,04d,04e,04f";
 
 
     private static Map<String, Strategy> CODE_STRATEGY = new HashMap<>();
@@ -147,6 +147,9 @@ public class Strategies {
     public static Strategy strategy_01d() {
         return strategy_01("01d", 8, 50);
     }
+    public static Strategy strategy_01e() {
+        return strategy_01("01e", 15, 50);
+    }
 
 
     /**** 一阳吃多阴 ****/
@@ -258,6 +261,28 @@ public class Strategies {
     public static Strategy strategy_04c() {
         Strategy<Stock> strategy = new Strategy<>("strategy_04c","突破短期趋势线(04c)", Stock.class);
         strategy.addFilter("突破短期趋势线", Filters.filter_008c(100, 6, 20, 0.13));
+        strategy.setExpectFilter("250日内涨幅>25%",Stock::getBarSeries, Filters.expectFilter(250, 25));
+        return strategy;
+    }
+
+    //突破长期趋势线
+    public static Strategy strategy_04d() {
+        Strategy<BarSeries> strategy = new Strategy<>("strategy_04d","突破长期趋势线(04d)", BarSeries.class);
+        strategy.addFilter("突破长期趋势线", Filters.filter_008b(300, 15, 0, 0.30)); //和 04a 的差异在于 参数不一样
+        strategy.setExpectFilter("250日内涨幅>25%", Filters.expectFilter(250, 25));
+        return strategy;
+    }
+    //突破中期趋势线
+    public static Strategy strategy_04e() {
+        Strategy<BarSeries> strategy = new Strategy<>("strategy_04e","突破中期趋势线(04e)", BarSeries.class);
+        strategy.addFilter("突破中期趋势线", Filters.filter_008b(100, 7, 0, 0.20)); //和 04b 的差异在于 参数不一样
+        strategy.setExpectFilter("250日内涨幅>25%", Filters.expectFilter(250, 25));
+        return strategy;
+    }
+    //突破短期趋势线
+    public static Strategy strategy_04f() {
+        Strategy<Stock> strategy = new Strategy<>("strategy_04f","突破短期趋势线(04f)", Stock.class);
+        strategy.addFilter("突破短期趋势线", Filters.filter_008c(100, 6, 20, 0.2)); //和 04c 的差异在于 参数不一样
         strategy.setExpectFilter("250日内涨幅>25%",Stock::getBarSeries, Filters.expectFilter(250, 25));
         return strategy;
     }

@@ -17,6 +17,7 @@ public class EsDocument {
 
     private String type;
     private String subType;
+    private String subTypeName;
     private String id;
     private String title;
     private String name;

@@ -120,6 +120,11 @@
             padding: 0;
             font-size: 95%;
         }
+        .tab-tools{
+            float: right;
+            margin-top: -30px;
+            margin-right: 10px !important;
+        }
     </style>
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed text-sm pace-primary pace-done">
@@ -218,7 +223,7 @@
                         </div>
 
                     </div>
-                </div>
+                </div><!-- 导航  -->
 
                 <div class="row">
                     <div class="col-12">
@@ -270,15 +275,22 @@
                         </div>
 
                     </div>
-                </div>
+                </div><!-- 财务指标  -->
 
                 <div class="row">
                     <div class="col-12">
 
                         <div id="report" class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">研报</h3>
-                                <div class="card-tools">
+                            <div class="card-header p-0 border-bottom-0">
+                                <ul class="nav nav-tabs pl-3" id="custom-tabs-four-tab" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" id="report-tabs-1-tab" data-toggle="pill" href="#report-tabs-1" role="tab">个股研报</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="report-tabs-2-tab" data-toggle="pill" href="#report-tabs-2" role="tab">相关研报 (<span v-text="stock.reportSearch.data.length"></span>)</a>
+                                    </li>
+                                </ul>
+                                <div class="card-tools tab-tools">
                                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="收起">
                                         <i class="fas fa-minus"></i>
                                     </button>
@@ -286,12 +298,19 @@
                             </div>
 
                             <div class="card-body">
-                                <datatable :="{...common.report, ...stock.report}"></datatable>
+                                <div class="tab-content" id="report-tabContent">
+                                    <div class="tab-pane fade show active" id="report-tabs-1" role="tabpanel">
+                                        <datatable :="{...common.report, ...stock.report}"></datatable>
+                                    </div>
+                                    <div class="tab-pane fade" id="report-tabs-2" role="tabpanel">
+                                        <datatable :="{...common.reportSearch, ...stock.reportSearch}"></datatable>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
                     </div>
-                </div>
+                </div><!-- 研报  -->
 
                 <div class="row">
                     <div class="col-12">
@@ -312,7 +331,7 @@
                         </div>
 
                     </div>
-                </div>
+                </div><!-- 热点评论  -->
 
                 <div class="row">
                     <div class="col-12">
@@ -368,7 +387,7 @@
                         </div>
 
                     </div>
-                </div>
+                </div><!-- 雪球公告  -->
 
                 <div class="row">
                     <div class="col-12">
@@ -435,7 +454,7 @@
                         </div>
 
                     </div>
-                </div>
+                </div><!-- 年报季报  -->
 
             </div>
         </section>
@@ -459,18 +478,7 @@
 <script th:inline="javascript">
     const code = [[${code}]];
     const codeWithPlace = [[${codeWithPlace}]];
-
-    var ignoreScrollEvents = false
-    function syncScroll(element1, element2) {
-        element1.scroll(function (e) {
-            var ignore = ignoreScrollEvents
-            ignoreScrollEvents = false
-            if (ignore) return
-
-            ignoreScrollEvents = true
-            element2.scrollTop(element1.scrollTop())
-        })
-    }
+    const name = [[${name}]];
 
     const config = {
         data() {
@@ -518,7 +526,20 @@
                     },
                     report:{
                         columns: [
-                            {data:"titleAndDetail"},
+                            {data:"title"},
+                            {data:"createdAt"}
+                        ],
+                        columnDefs: [
+                            { className: "text-nowrap text-center", "targets": [ 1 ] },
+                            { className: "text-nowrap", "targets": [ 0 ] }
+                        ],
+                        tableClass:{'table-hover':true}
+                    },
+                    reportSearch:{
+                        columns: [
+                            {data:"subTypeName"},
+                            {data:"relatedStock"},
+                            {data:"title"},
                             {data:"createdAt"}
                         ],
                         columnDefs: [
@@ -537,7 +558,8 @@
                     posts:{data:[]},
                     fn:{type:[], table:[]},
                     notice_left:{content:{}},
-                    notice_right:{content:{}}
+                    notice_right:{content:{}},
+                    reportSearch:{data:[]}
                 },
             }
         },
@@ -619,9 +641,18 @@
             axios.get("/text/report/"+code).then(function (res) {
                 let data = res.data.data;
                 data.forEach(row => {
-                    row.createdAt = new Date(row.createdAt).format("yyyy-MM-dd hh:mm:ss");
+                    row.createdAt = new Date(row.createdAt==null?row.insertTime:row.createdAt).format("yyyy-MM-dd hh:mm:ss");
                 })
                 _this.stock.report = {data: data};
+            });
+
+            axios.get("/search/1/"+name+"?type=report").then(function (res) {
+                let data = res.data.data;
+                data.list.forEach(row => {
+                    row.relatedStock = row.stock?row.stock.nameAndCodeWithLink:'-'
+                    row.createdAt = new Date(row.updateTime==null?row.insertTime:row.updateTime).format("yyyy-MM-dd hh:mm:ss");
+                })
+                _this.stock.reportSearch = {data: data.list};
             });
 
             axios.get("/fn/"+code).then(function (res) {

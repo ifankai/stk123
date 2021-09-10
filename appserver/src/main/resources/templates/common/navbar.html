@@ -37,7 +37,7 @@
                 <!-- SEARCH FORM -->
                 <form class="form-inline ml-0 s-form">
                     <div class="input-group input-group-sm s-input">
-                        <input @keyup="searchSimple($event)" @focus="searchResultShow(true)" @blur="searchResultShow(false)" class="form-control form-control-navbar nav-link" type="search" placeholder="搜索" aria-label="搜索">
+                        <input v-model="$store.state.searchText" @input="searchSimple()" @focus="searchResultShow(true)" @blur="searchResultShow(false)" class="form-control form-control-navbar nav-link" type="search" placeholder="搜索" aria-label="搜索">
                         <div class="input-group-append">
                             <button class="btn btn-navbar" type="submit">
                                 <i class="fas fa-search"></i>
@@ -45,7 +45,7 @@
                         </div>
                     </div>
                 </form>
-                <div class="dropdown-menu dropdown-menu-sm dropdown-menu-left" :class="$store.state.searchResultsShow && $store.state.searchResults.total?'show':''" style="min-width: 250px">
+                <div class="dropdown-menu dropdown-menu-sm dropdown-menu-left" :class="$store.state.searchResultsShow && $store.state.searchResults?'show':''" style="min-width: 250px">
                     <span class="dropdown-item dropdown-header top-search-header">股票</span>
                     <div class="dropdown-divider top-search-divider"></div>
                     <template v-for="stk in $store.state.searchResults.list.slice(0,5)">

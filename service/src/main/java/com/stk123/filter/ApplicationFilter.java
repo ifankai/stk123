@@ -6,6 +6,9 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 @Slf4j
@@ -24,8 +27,18 @@ public class ApplicationFilter implements Filter {
             return;
         }
         request.setAttribute("_version", CSS_JS_VERSION);
-        log.info("==> uri: {}", uri);
+        log.info("==> uri: {}, {}", uri, getParametersAsMap(httpServletRequest));
         filterChain.doFilter(request, response);
+    }
+
+    private Map getParametersAsMap(HttpServletRequest request){
+        Enumeration<String> enumeration = request.getParameterNames();
+        Map<String, Object> modelMap = new HashMap<>();
+        while(enumeration.hasMoreElements()){
+            String parameterName = enumeration.nextElement();
+            modelMap.put(parameterName, request.getParameter(parameterName));
+        }
+        return modelMap;
     }
 
 }

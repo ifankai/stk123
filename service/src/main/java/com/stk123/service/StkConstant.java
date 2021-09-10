@@ -1,5 +1,8 @@
 package com.stk123.service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class StkConstant {
 
     /** dict **/
@@ -60,10 +63,19 @@ public class StkConstant {
 
 
     /** stk_text.type **/
-    public final static int TEXT_TYPE_SHORT_TEXT = 1;
-    public final static int TEXT_TYPE_LONG_TEXT = 2;
-    public final static int TEXT_TYPE_XUEQIU = 3;  //--0:收藏文章; 短文:1; 长文:2; 雪球评论:3
+    public final static int TEXT_TYPE_ADD_BY_MYSELF = 0; //收藏文章:0;
+    public final static int TEXT_TYPE_SHORT_TEXT = 1;//短文:1;
+    public final static int TEXT_TYPE_LONG_TEXT = 2;//长文:2;
+    public final static int TEXT_TYPE_XUEQIU = 3;  //雪球评论:3
     public final static int TEXT_TYPE_NOTICE = 4; //公告
+    public final static int TEXT_TYPE_REPORT = 5; //研报
+
+    /** es type 和上面  stk_text.type 基本对应, 再加上其他一些type，比如：stock，industry等 **/
+    public final static String ES_TYPE_MY = "my"; //我添加的文档
+    public final static String ES_TYPE_STOCK = "stock";
+    public final static String ES_TYPE_POST = "post";
+    public final static String ES_TYPE_NOTICE = "notice";
+    public final static String ES_TYPE_REPORT = "report";
 
     /** stk_text.code_type **/
     public final static int TEXT_CODE_TYPE_STOCK = 1; // 1:stock, 2:industry,
@@ -80,6 +92,13 @@ public class StkConstant {
     public final static int TEXT_SUB_TYPE_INDUSTRY_RESEARCH = 110; //行业分析
     public final static int TEXT_SUB_TYPE_STK_REPORT = 200; //年报季报
     public final static int TEXT_SUB_TYPE_XUEQIU_NOTICE = 300; //雪球公告
+
+    public final static Map<String, String> TEXT_SUB_TYPE_MAP = new HashMap(){{
+        put(String.valueOf(TEXT_SUB_TYPE_COMPANY_RESEARCH), "公司研报");
+        put(String.valueOf(TEXT_SUB_TYPE_INDUSTRY_RESEARCH), "行业分析");
+        put(String.valueOf(TEXT_SUB_TYPE_STK_REPORT), "年报季报");
+        put(String.valueOf(TEXT_SUB_TYPE_XUEQIU_NOTICE), "雪球公告");
+    }};
 
 
     /** stk_report_header.type **/
@@ -101,5 +120,6 @@ public class StkConstant {
     public final static int KEYWORD_STATUS__1 = -1;  //-1:deleted
     public final static int KEYWORD_STATUS_0 = 0;  // 0:normal(manual-add)
     public final static int KEYWORD_STATUS_1 = 1;  // 1:normal(auto-add)
+
 
 }
