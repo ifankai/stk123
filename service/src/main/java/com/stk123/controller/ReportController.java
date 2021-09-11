@@ -29,6 +29,7 @@ public class ReportController {
 
     @RequestMapping({"","/","/{reportDate}"})
     @JsonView(View.All.class)
+    @Cached(name = "report-", key="#reportDate", expire = 600, cacheType = CacheType.LOCAL)
     public RequestResult report(@PathVariable(value = "reportDate", required = false)String reportDate){
         Date rptDate = new Date();
         if(StringUtils.isNotEmpty(reportDate)){

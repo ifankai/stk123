@@ -122,6 +122,8 @@ public class Stocks {
 
     public static void clear(){
         Stocks.StocksAllCN = null;
+        Stocks.StocksAllHK = null;
+        Stocks.StocksAllUS = null;
         Stocks.StocksAll_Map = Collections.synchronizedMap(new HashMap<>());
         Stocks.BKsEasymoneyGn = null;
         Stocks.BKsEasymoneyGn_Map = null;

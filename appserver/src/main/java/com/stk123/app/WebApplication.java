@@ -2,6 +2,7 @@ package com.stk123.app;
 
 import com.alicp.jetcache.anno.config.EnableCreateCacheAnnotation;
 import com.alicp.jetcache.anno.config.EnableMethodCache;
+import com.stk123.common.CommonUtils;
 import com.stk123.common.db.connection.Pool;
 import com.stk123.common.util.JdbcUtils;
 import com.stk123.model.bo.Stk;
@@ -166,7 +167,11 @@ public class WebApplication {
         }
 
         log.info("init elasticsearch start..........");
-        String errorMsg = esService.initIndexByBulk(EsService.INDEX_STK, true, DateUtils.addMonths(new Date(), -2));
+        Date esDate = DateUtils.addMonths(new Date(), -2);
+        if(CommonUtils.isDevelopment()){
+            esDate = DateUtils.addMonths(new Date(), -12);
+        }
+        String errorMsg = esService.initIndexByBulk(EsService.INDEX_STK, true, esDate);
         if(errorMsg != null){
             log.error("init elasticsearch error: {}", errorMsg);
         }

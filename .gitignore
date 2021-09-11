@@ -30,3 +30,4 @@ cookie.txt
 oracle/DB_STK.DP
 oracle/DB_STK_FULL.DP
 *.log
+appserver/appserver.jar

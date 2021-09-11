@@ -4,14 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title th:text="${title}+' - 小智慧'">小智慧 - 股票</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fontawesome5pro@5.14.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css">
-    <!-- DataTables -->
-    <link rel="stylesheet" href="/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
-    <link rel="stylesheet" href="/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
-    <link rel="stylesheet" href="/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
-    <link rel="stylesheet" href="/adminlte/plugins/pace-progress/themes/black/pace-theme-minimal.css">
-    <link rel="stylesheet" href="/css/public.css">
+    <div th:replace="common/css_public"></div>
+    <div th:replace="common/css_datatable"></div>
+    <link rel="stylesheet" th:href="'/css/public.css'+${_version}">
     <style>
         @media (min-width: 1200px) {
             .img-width img {
