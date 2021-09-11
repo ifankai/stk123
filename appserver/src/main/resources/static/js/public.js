@@ -120,7 +120,9 @@ const store = Vuex.createStore({
         stockLookPool: [],
         searchText:'',
         searchResults:{list:[]},
-        searchResultsShow:false
+        searchResultsShow:false,
+        inited:false,
+        initing:false,
     },
     //同步执行
     //mutations相当于其它语言的set,即赋值
@@ -148,7 +150,13 @@ const store = Vuex.createStore({
         },
         setSearchResultsShow(state, payload){
             state.searchResultsShow = payload;
-        }
+        },
+        setInited(state, payload){
+            state.inited = payload;
+        },
+        setIniting(state, payload){
+            state.initing = payload;
+        },
     },
     //异步执行，异步：访问服务器后等待响应。
     //actions,相当于其它语言的set，即赋值
@@ -247,6 +255,34 @@ let _searchInVuex = {
     }, 200),
     gotoSearch: function (){
         window.open('/q/'+this.$store.state.searchText);
+    }
+}
+
+
+const _init = {
+    template: `
+        <a @click="init()" class="nav-link" :class="$store.state.inited?'disabled':''" role="button">
+            <i class="fad fa-spinner-third" :class="$store.state.initing?'fa-spin':''"></i>
+        </a>
+    `,
+    methods: {
+        init: function () {
+            if(this.$store.state.inited) return;
+            this.$store.commit('setIniting', true);
+            let _this = this;
+            axios.get('/stock/init').then(function (res) {
+                let results = res.data.data;
+                _this.$store.commit('setInited', true);
+                _this.$store.commit('setIniting', false);
+            });
+        }
+    },
+    mounted() {
+        let _this = this;
+        axios.get('/stock/inited').then(function (res) {
+            let inited = res.data.data;
+            _this.$store.commit('setInited', inited);
+        });
     }
 }
 
@@ -406,6 +442,7 @@ function createApp(config){
     app.component('datatable', _datatable);
     app.component('eye', _eye);
     app.component('modal', _modal);
+    app.component('init', _init);
 
     app.config.globalProperties.tsFormat = _tsFormat;
     app.config.globalProperties.dateFormat = dateFormat;

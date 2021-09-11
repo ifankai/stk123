@@ -15,7 +15,10 @@ import java.util.stream.Collectors;
 public class Stocks {
 
     public static List<Stock> StocksAllCN = null;
-    public static Map<String, Stock> StocksAllCN_Map = Collections.synchronizedMap(new HashMap<>());
+    private static Map<String, Stock> StocksAll_Map = Collections.synchronizedMap(new HashMap<>());
+
+    public static List<Stock> StocksAllHK = null;
+    public static List<Stock> StocksAllUS = null;
 
     public static List<Stock> BKsEasymoneyGn = null;
     public static Map<String, Stock> BKsEasymoneyGn_Map = null;
@@ -24,11 +27,22 @@ public class Stocks {
     public static List<Stock> StocksMass = null;
     public static List<Stock> StocksH = null;
 
+    public static boolean inited = false;
+
     private static StockService stockService;
 
     @Autowired
     public Stocks(StockService stockService){
         Stocks.stockService = stockService;
+    }
+
+    public synchronized static void initAll(){
+        inited = false;
+        initBks();
+        initStocks();
+        initHKStocks();
+        initUSStocks();
+        inited = true;
     }
 
     public synchronized static void initBks(){
@@ -67,11 +81,23 @@ public class Stocks {
     public synchronized static void initStocks(){
         if(Stocks.StocksAllCN != null) return;
         Stocks.StocksAllCN = stockService.getStocks(EnumMarket.CN, false);
-        Stocks.StocksAllCN_Map = Stocks.StocksAllCN.stream().collect(Collectors.toMap(Stock::getCode, Function.identity()));
+        Stocks.StocksAll_Map.putAll(Stocks.StocksAllCN.stream().collect(Collectors.toMap(Stock::getCode, Function.identity())));
         List<Stock> bks = getBks();
         stockService.buildBk(Stocks.StocksAllCN, bks);
         List<StrategyResult> strategyResults = stockService.calcRps(bks, Rps.CODE_BK_STOCKS_SCORE_30);
         Stocks.BKsEasymoneyGn_Rps.put(Rps.CODE_BK_STOCKS_SCORE_30, strategyResults.stream().collect(Collectors.toMap(sr -> sr.getStock().getCode(), Function.identity())));
+    }
+
+    public synchronized static void initHKStocks() {
+        if (Stocks.StocksAllHK != null) return;
+        Stocks.StocksAllHK = stockService.getStocks(EnumMarket.HK, false);
+        Stocks.StocksAll_Map.putAll(Stocks.StocksAllHK.stream().collect(Collectors.toMap(Stock::getCode, Function.identity())));
+    }
+
+    public synchronized static void initUSStocks() {
+        if (Stocks.StocksAllUS != null) return;
+        Stocks.StocksAllUS = stockService.getStocks(EnumMarket.US, false);
+        Stocks.StocksAll_Map.putAll(Stocks.StocksAllUS.stream().collect(Collectors.toMap(Stock::getCode, Function.identity())));
     }
 
     public static List<Stock> getStocksWithBks(){
@@ -84,19 +110,19 @@ public class Stocks {
     }
     public static Stock getStockOrNull(String code){
         if(Stocks.StocksAllCN == null) return null;
-        return Stocks.StocksAllCN_Map.get(code);
+        return Stocks.StocksAll_Map.get(code);
     }
     public static List<Stock> getStocksOrNull(List<String> codes){
-        if(Stocks.StocksAllCN_Map.isEmpty()) return null;
-        return codes.parallelStream().map(Stocks.StocksAllCN_Map::get).filter(Objects::nonNull).collect(Collectors.toList());
+        if(Stocks.StocksAll_Map.isEmpty()) return null;
+        return codes.parallelStream().map(Stocks.StocksAll_Map::get).filter(Objects::nonNull).collect(Collectors.toList());
     }
     public static void putStocks(List<Stock> stocks){
-        stocks.forEach(stock -> Stocks.StocksAllCN_Map.put(stock.getCode(), stock));
+        stocks.forEach(stock -> Stocks.StocksAll_Map.put(stock.getCode(), stock));
     }
 
     public static void clear(){
         Stocks.StocksAllCN = null;
-        Stocks.StocksAllCN_Map = Collections.synchronizedMap(new HashMap<>());
+        Stocks.StocksAll_Map = Collections.synchronizedMap(new HashMap<>());
         Stocks.BKsEasymoneyGn = null;
         Stocks.BKsEasymoneyGn_Map = null;
         Stocks.BKsEasymoneyGn_Rps = new HashMap<>();

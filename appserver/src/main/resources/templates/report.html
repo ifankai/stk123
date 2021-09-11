@@ -310,27 +310,22 @@
                                 <nav>
                                     <div class="nav nav-tabs" id="report-tab" role="tablist">
                                         <a @click="clickTab(currentAllStocks.data)" class="nav-item nav-link active" id="report-allstocks-tab" data-toggle="tab" href="#report-allstocks" role="tab" aria-controls="report-allstocks" aria-selected="true">
-                                            全市场策略
-                                            <span v-text="currentAllStocks.data.length" class="badge badge-outline"></span>
+                                            全市场策略 (<span v-text="currentAllStocks.data.length"></span>)
                                         </a>
                                         <a @click="clickTab([])" class="nav-item nav-link" id="report-allstocksrps-tab" data-toggle="tab" href="#report-allstocksrps" role="tab" aria-controls="report-allstocksrps" aria-selected="false">
                                             全市场策略RPS
                                         </a>
                                         <a @click="clickTab(currentAllStocksRpsStrategy.data)" class="nav-item nav-link" id="report-allstocksrpsstrategy-tab" data-toggle="tab" href="#report-allstocksrpsstrategy" role="tab" aria-controls="report-allstocksrpsstrategy" aria-selected="false">
-                                            全市场策略RPS+策略
-                                            <span v-text="currentAllStocksRpsStrategy.data.length" class="badge badge-outline"></span>
+                                            全市场策略RPS+策略 (<span v-text="currentAllStocksRpsStrategy.data.length"></span>)
                                         </a>
                                         <a @click="clickTab(currentMyStocksA.data)" class="nav-item nav-link" id="report-mystocks-a-tab" data-toggle="tab" href="#report-mystocks-a" role="tab" aria-controls="report-mystocks-a" aria-selected="false">
-                                            自选股策略(A股)
-                                            <span v-text="currentMyStocksA.data.length" class="badge badge-outline"></span>
+                                            自选股策略[A股] (<span v-text="currentMyStocksA.data.length"></span>)
                                         </a>
                                         <a @click="clickTab(currentMyStocksH.data)" class="nav-item nav-link" id="report-mystocks-h-tab" data-toggle="tab" href="#report-mystocks-h" role="tab" aria-controls="report-mystocks-h" aria-selected="false">
-                                            自选股策略(H股)
-                                            <span v-text="currentMyStocksH.data.length" class="badge badge-outline"></span>
+                                            自选股策略[H股] (<span v-text="currentMyStocksH.data.length"></span>)
                                         </a>
                                         <a @click="clickTab(currentMyStocksU.data)" class="nav-item nav-link" id="report-mystocks-u-tab" data-toggle="tab" href="#report-mystocks-u" role="tab" aria-controls="report-mystocks-u" aria-selected="false">
-                                            自选股策略(美股)
-                                            <span v-text="currentMyStocksU.data.length" class="badge badge-outline"></span>
+                                            自选股策略[美股] (<span v-text="currentMyStocksU.data.length"></span>)
                                         </a>
                                         <span class="btn-tab">
                                             <button v-show="currentTabSize!=0" @click="gotoStocks()" type="button" class="btn btn-outline-primary btn-xs" style="margin-bottom: -11px;"><i class="fas fa-th"></i> <span v-text="'查看全部'+currentTabSize+'只个股'"></span></button>

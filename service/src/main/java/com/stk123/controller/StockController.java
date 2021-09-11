@@ -57,6 +57,17 @@ public class StockController {
     @Autowired
     private DictService dictService;
 
+    @RequestMapping(value = {"/init"})
+    @ResponseBody
+    public RequestResult initStockAndBk(){
+        Stocks.initAll();
+        return RequestResult.success(true);
+    }
+    @RequestMapping(value = {"/inited"})
+    @ResponseBody
+    public RequestResult inited(){
+        return RequestResult.success(Stocks.inited);
+    }
 
     @RequestMapping(value = {"/list/{market:1|2|3|cn|us|hk}/{cate}"})
     @ResponseBody

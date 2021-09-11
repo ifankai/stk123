@@ -6,6 +6,7 @@ import com.stk123.model.core.Stocks;
 import com.stk123.service.task.TaskBuilder;
 import com.stk123.service.task.TaskContainer;
 import com.stk123.task.config.TaskCondition;
+import com.stk123.task.quartz.job.PPIIndexNewHighJob;
 import com.stk123.task.quartz.job.ResearchReportJob;
 import com.stk123.task.quartz.job.XueqiuUserJob;
 import com.stk123.task.schedule.*;
@@ -113,6 +114,9 @@ public class Tasks {
             TaskBuilder.of(SyncTask.class, "table=stk_report_header"),
             TaskBuilder.of(SyncTask.class, "table=stk_report_detail")
         );
+
+        TaskPpi.run(); //生意社
+        PPIIndexNewHighJob.run();
     }
 
     @Scheduled(cron = "0 0 11 ? * MON-FRI")

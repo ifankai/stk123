@@ -200,6 +200,10 @@ public class ReportService {
         List<Map> allstocksList = new ArrayList<>();
         for(String code : allstocksCodesDistinct){
             Stock stock = stockService.getStock(code);
+            if(stock == null){
+                log.error("code is not in Stocks cache:"+ code);
+                continue;
+            }
             if(!stock.isMarket(market)) continue;
             List<StkReportDetailEntity> details = allstocksDetailGroupByCode.get(code);
             StkReportDetailEntity detail = details.get(0);

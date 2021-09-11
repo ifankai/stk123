@@ -91,7 +91,8 @@ public class StockService {
 
     @Transactional
     public List<Stock> buildStocks(List<String> codes) {
-        List<StockBasicProjection> list = BaseRepository.findAll1000(codes,
+        List<String> distinctCodes = codes.stream().distinct().collect(Collectors.toList());
+        List<StockBasicProjection> list = BaseRepository.findAll1000(distinctCodes,
                 subCodes -> stkRepository.findAllByCodes(subCodes));
         Map<String, StockBasicProjection> map = list.stream().collect(Collectors.toMap(StockBasicProjection::getCode, Function.identity()));
         List<Stock> stocks = codes.stream().filter(code -> map.get(code) != null).map(code -> Stock.build(map.get(code))).collect(Collectors.toList());
@@ -388,6 +389,7 @@ public class StockService {
     }
     public List<Stock> getStocks(List<String> codes){
         List<Stock> stocks = Stocks.getStocksOrNull(codes);
+        if(Stocks.inited) return stocks;
         if(stocks != null && stocks.size() == codes.size()) return stocks;
         stocks = buildStocks(codes);
         stocks = getStocksWithBks(stocks, Stocks.getBks(), 60, false);
