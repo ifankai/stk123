@@ -21,6 +21,7 @@ import com.stk123.util.ExceptionUtils;
 import com.stk123.util.HttpUtils;
 import com.stk123.util.ServiceUtils;
 import lombok.extern.apachecommons.CommonsLog;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -42,7 +43,7 @@ import java.util.*;
  * http://wwtnews.windin.com/WUDS/web/F9/Stock/WEST/EPS/EarningsForecast.aspx?WindCode=002275.sz
  */
 @Component
-@CommonsLog
+@Slf4j
 public class InitialData {
 
     @Autowired
@@ -1567,12 +1568,13 @@ public class InitialData {
 		}
 	}
 
-	public  void initFnDataTTM(Connection conn,Date now,Index index,List<StkFnType> fnTypes) throws Exception {
+	public static void initFnDataTTM(Connection conn,Date now,Index index,List<StkFnType> fnTypes) throws Exception {
+	    log.info("initFnDataTTM, code: {}", index.getCode());
 		initFnDataTTM(conn, now, index, fnTypes, "quarter");
 	}
 
 	//update最近4个季度fn data
-	public  void initFnDataTTM(Connection conn,Date now,Index index,List<StkFnType> fnTypes, String type) throws Exception {
+	public static void initFnDataTTM(Connection conn,Date now,Index index,List<StkFnType> fnTypes, String type) throws Exception {
 		List params = new ArrayList();
 		String code = index.getCode();
 		if(index.getMarket() == 1){//A Stock

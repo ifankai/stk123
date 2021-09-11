@@ -42,12 +42,12 @@ alter table stk modify earning_expect varchar2(4000 char);
 alter table stk add earning_expect_date date;
 alter table stk add company_profile clob;
 alter table stk add sale_limit clob;
-alter table stk add market number(1); --1：A股 2：美股 3:港股 5：外汇
+alter table stk add market number(1); --1：A�?2：美�?3:港股 5：外�?
 alter table stk modify name varchar2(100);
 alter table stk add year_end varchar2(4);
 alter table stk add next_earning number(10,2);
 alter table stk modify next_quarter_earning varchar2(4000 char);
-alter table stk add cate number(1) default 1;--1:个股 2:指数  3:基金  4:同花顺板块指数
+alter table stk add cate number(1) default 1;--1:个股 2:指数  3:基金  4:同花顺板块指�?
 alter table stk add f9 clob;
 alter table stk add hot number(8) default 0; -- xueqiu follows
 alter table stk add fn_currency varchar2(4); --财务币种
@@ -392,7 +392,7 @@ create table STK_PE
   ENE_UPPER     NUMBER(6,2),
   ENE_LOWER     NUMBER(6,2),
   RESULT_1      NUMBER(8,2), -- 二品抄底-买入时机
-  RESULT_2      NUMBER(8,2), -- 一品抄底-大势已去
+  RESULT_2      NUMBER(8,2), -- 一品抄�?大势已去
   AVG_PB        NUMBER(8,2), -- 平均pb
   TOTAL_PE      NUMBER(8,2), --整体pe
   TOTAL_PB      NUMBER(8,2), --整体pb
@@ -610,17 +610,17 @@ create sequence s_text_id INCREMENT BY 1 START WITH 100000 NOMAXVALUE NOCYCLE CA
 alter table stk_text modify user_id number(12);
 comment on column stk_text.user_id is '发帖人id';
 alter table stk_text add user_name varchar2(50);
-comment on column stk_text.user_name is '发帖人名字';
+comment on column stk_text.user_name is '发帖人名�?;
 alter table stk_text add user_avatar varchar2(200);
 comment on column stk_text.user_avatar is '发帖人头像url';
 alter table stk_text add post_id number(12);
 comment on column stk_text.post_id is '帖子id';
 alter table stk_text add followers_count number(8);
-comment on column stk_text.followers_count is '粉丝数';
+comment on column stk_text.followers_count is '粉丝�?;
 alter table stk_text add created_at date;
 comment on column stk_text.created_at is '发帖时间';
 alter table stk_text add reply_count number(6);
-comment on column stk_text.reply_count is '评论数';
+comment on column stk_text.reply_count is '评论�?;
 alter table stk_text add favorite_date date;
 comment on column stk_text.favorite_date is '收藏时间';
 alter table stk_text add read_date date;
@@ -633,14 +633,14 @@ comment on column stk_text.reply_positive is '评论是否正面';
 create table stk_data_industry_pe(
   industry_id number(6),
   pe_date varchar2(8),
-  type number(1),   -- 1：中小板，2：创业板，3：沪深
+  type number(1),   -- 1：中小板�?：创业板�?：沪�?
   pe  number(10,2),
   pe_ttm number(10,2),
   insert_time date
 );
 alter table stk_data_industry_pe add pb number(10,2);
 alter table stk_data_industry_pe add adr number(10,2);
-comment on column stk_data_industry_pe.adr is '股息率';
+comment on column stk_data_industry_pe.adr is '股息�?;
 create index idx_data_ind_pe_id_date_type on stk_data_industry_pe (industry_id,pe_date,type);
 
 
@@ -869,7 +869,7 @@ create table stk_care(
 
 create table stk_word(
  id number(10),
- type number(1) not null, -- 1:基本面词库, 2:情绪面类词库, 3:概念类词库
+ type number(1) not null, -- 1:基本面词�? 2:情绪面类词库, 3:概念类词�?
  sub_type number(2), -- 1:正面, 2:负面
  name varchar2(40) not null,
  weight number(4) default 1,
@@ -900,8 +900,8 @@ create table stk_earnings_notice (
   er_high number(8,2),
   er_type varchar2(10),
   last_amount number(12,2),
-  notice_date varchar2(10), --业绩预告公告日
-  real_date varchar2(10) --季报实际公告日
+  notice_date varchar2(10), --业绩预告公告�?
+  real_date varchar2(10) --季报实际公告�?
 );
 alter table stk_earnings_notice add insert_time date;
 alter table stk_earnings_notice
@@ -1050,20 +1050,20 @@ alter table STK_PE                   disable constraint FK_PE__CODE             
 
 
 /*
-10	净资产收益率	financialratios59	12.00
-20	净利润增长率	financialratios44	20.00
+10	净资产收益�?financialratios59	12.00
+20	净利润增长�?financialratios44	20.00
 30	销售毛利率	financialratios36	30.00
 35	销售净利率	financialratios32	20.00
-40	主营收入增长率	financialratios43	20.00
-50	应收账款周转率	financialratios3	5.00
+40	主营收入增长�?financialratios43	20.00
+50	应收账款周转�?financialratios3	5.00
 60	现金流量比率	financialratios51	50.00
-70	经现流净资产比	financialratios48	0.10
+70	经现流净资产�?financialratios48	0.10
 80	资产负债率	financialratios56		40.00
 90	流动比率	financialratios1	2.00
 100	净利润
 200	预收账款
 210	应收账款
-300	经营现金流
+300	经营现金�?
 */
 
 
@@ -1124,7 +1124,7 @@ select * from stk_fn_data order by code,fn_date desc;
 select * from stk_fn_data where code='600706' order by fn_date desc;
 select * from stk_import_info where code='600643';
 select * from stk_import_info where id not in (
-select * from stk_import_info where info like '%净利润%增%');
+select * from stk_import_info where info like '%净利润%�?');
 select * from stk_fn_data where code='002230' and type in (300) order by type desc,fn_date desc;
 select * from stk_fn_type where market=1 and status=1 order by disp_order;
 
@@ -1228,9 +1228,9 @@ select * from stk where code='002555';
 select * from stk_fn_data where code='600587' and type=100 order by fn_date desc;
 select * from stk_fn_type for update;
 /*
-毛利 = 总收入 - 成本总计
+毛利 = 总收�?- 成本总计
 */
-insert into stk_fn_type select 3004,'现金净增减额',null,null,null,12,1,2 from dual;
+insert into stk_fn_type select 3004,'现金净增减�?,null,null,null,12,1,2 from dual;
 select * from stk_industry where code='5173' for update;
 select * from stk_industry_type order by id desc;
 select * from stk_error_log order by insert_time desc;
@@ -1280,7 +1280,7 @@ insert into stk_internet_search
 select 10,'',null,null,1,'' from dual;
 
 select * from stk where market=2 and code='WBAI' order by code asc;
-select * from stk where company_profile like '%多晶硅%';
+select * from stk where company_profile like '%多晶�?';
 select * from stk where code = '.DJI';
 select * from stk where code like '.%';
 select * from stk_industry_type where source='xueqiu_meigu';
@@ -1378,7 +1378,7 @@ select * from stk_error_log order by insert_time desc;
 select count(1) from stk_error_log;
 
 select * from stk_internet_search where search_source=1 for update;
-select * from stk_text where title like '%伙伴资本看公司%';
+select * from stk_text where title like '%伙伴资本看公�?';
 
 select * from stk_kline_rank_industry where rank_date='20131101' and rank_days=2 order by change_percent desc;
 select * from stk_kline_rank_industry where rank_date='20131101' and rank <= 5 order by rank_days asc,rank asc;
@@ -1424,22 +1424,22 @@ select * from stk_data_ppi_type where name like '%氨纶%';
 select distinct b.name,a.code,a.fn_date,a.stk_num,a.rate from stk_ownership a, stk b where a.code=b.code
 and a.org_id in (56763,218922) order by fn_date desc,rate desc;
 select * from stk_organization_type;
-select * from stk_organization where name like '%李嘉鑫%';
+select * from stk_organization where name like '%李嘉�?';
 select * from stk_organization where name like '%泽熙%';--55541,55542,55547,64558,45511,45522,47311,47318,79473,79522
-select * from stk_organization where name like '%赵建平%';--56763,218922
+select * from stk_organization where name like '%赵建�?';--56763,218922
 select * from stk_organization where name like '%许磊%';--51575
-select * from stk_organization where name like '%宋聿倩%';--45671
+select * from stk_organization where name like '%宋聿�?';--45671
 select * from stk_organization where name like '%濮文%';
-select * from stk_organization where name like '%沈昌宇%';
-select * from stk_organization where name like '%张利明%';
-select * from stk_organization where name like '%黄木顺%';--43029
-select * from stk_organization where name like '%吴鸣霄%';--62505
-select * from stk_organization where name like '%刘世强%';--57768
+select * from stk_organization where name like '%沈昌�?';
+select * from stk_organization where name like '%张利�?';
+select * from stk_organization where name like '%黄木�?';--43029
+select * from stk_organization where name like '%吴鸣�?';--62505
+select * from stk_organization where name like '%刘世�?';--57768
 select * from stk_organization where name like '%叶光%';--61694
 select * from stk_organization where name like '%吴旗%';--46970
-select * from stk_organization where name like '%韩常乐%';--47676
+select * from stk_organization where name like '%韩常�?';--47676
 select * from stk_organization where name like '%景华%';
-select * from stk_organization where name like '%何雪萍%';--62325
+select * from stk_organization where name like '%何雪�?';--62325
 
 select * from stk_dictionary where type=20 for update;
 select * from stk_ownership;
@@ -1461,11 +1461,11 @@ select * from stk_capital_flow where flow_date='20131118' and main_percent>=15 a
 select * from stk_monitor for update;
 select * from stk_dictionary where type=300 for update;
 insert into stk_dictionary select 5,5964068708,'小小辛巴',null from dual;
-insert into stk_dictionary select 5,3875738003,'可燃冰',null from dual;
-insert into stk_dictionary select 5,8510627167,'利弗莫尔一平',null from dual;
+insert into stk_dictionary select 5,3875738003,'可燃�?,null from dual;
+insert into stk_dictionary select 5,8510627167,'利弗莫尔一�?,null from dual;
 insert into stk_dictionary select 5,6011012030,'重力加速度(风生水起)',null from dual;
 insert into stk_dictionary select 5,7401664031,'辨却先生',null,null,null,null from dual;
-insert into stk_dictionary select 5,3004708315,'路过十八次',null,null,null,null from dual;
+insert into stk_dictionary select 5,3004708315,'路过十八�?,null,null,null,null from dual;
 insert into stk_dictionary select 5,1552517314,'闲人老钟',null,null,null,null from dual;
 insert into stk_dictionary select 5,8425332309,'海进',null,null,null,null from dual;
 insert into stk_dictionary select 5,6911202198,'山的沉稳水的灵动',null,null,null,null from dual;
@@ -1476,14 +1476,14 @@ insert into stk_dictionary select 5,8255849716,'跟我走吧14',null,null,null,n
 insert into stk_dictionary select 5,4051442683,'乐视首席',null,null,null,null,null,null from dual;
 insert into stk_dictionary select 5,9887656769,'梁宏',null,null,null,null,null,null from dual;
 insert into stk_dictionary select 5,2821861040,'炒的是心',null,null,null,null,null,null from dual;
-insert into stk_dictionary select 5,9640778912,'英科睿资鹰',null,null,null,null,null,null from dual;
+insert into stk_dictionary select 5,9640778912,'英科睿资�?,null,null,null,null,null,null from dual;
 insert into stk_dictionary select 5,1965949492,'婷夢',null,null,null,null,null,null from dual;
 insert into stk_dictionary select 5,1538598451,'万法归宗',null,null,null,null,null,null from dual;
 
 select * from stk_text order by insert_time desc for update;
 select * from stk_text where text like '%***+2%';
 select * from stk_text where code='300338' order by insert_time desc;
-select * from stk where replace(name,' ','')='新和成';
+select * from stk where replace(name,' ','')='新和�?;
 insert into stk_text select s_text_id.nextval,1,'',1,null,'',sysdate,null;
 
 select * from (select * from stk_text where type=2 and code=? and title=? order by insert_time desc) where rownum<=1;
@@ -1523,7 +1523,7 @@ select value from v$parameter where name = 'processes';
 alter system set processes = 300 scope = spfile;
 shutdown immediate;
 
- --查看当前有哪些用户正在使用数据
+ --查看当前有哪些用户正在使用数�?
     SELECT osuser, a.username,cpu_time/executions/1000000||'s', sql_fulltext,machine
     from v$session a, v$sqlarea b
     where a.sql_address =b.address order by cpu_time/executions desc;
@@ -1688,7 +1688,7 @@ select * from stk_sync_table;
 select * from stk_sync_task;
 select * from stk_sync order by id desc;
 
-select * from stk_cn where next_quarter_earning like '%2015年1-6月%';
+select * from stk_cn where next_quarter_earning like '%2015�?-6�?';
 select * from stk_cn a where (select count(1) from stk_kline b where b.code=a.code)=0;
 select * from stk_kline where kline_date>=to_char(sysdate,'yyyyMMdd');
 select * from stk_error_log order by insert_time desc;
@@ -1728,7 +1728,7 @@ select * from stk_index_node for update;
 select * from stk_data_industry_pe
 
 select * from stk where code='002572';
-select * from stk_organization where name like '景顺长城精选蓝筹%';
+select * from stk_organization where name like '景顺长城精选蓝�?';
 select * from stk_pe order by report_date desc for update;
 
 select * from stk_industry_type where id=1767;
@@ -1813,7 +1813,7 @@ select s_import_info_id.nextval from dual;
 
 select * from stk_sequence;
 insert into stk_import_info(id,code,type,insert_time,info,title,url_source,url_target) values
-(s_import_info_id.nextval,'000001',140,sysdate,null,'平安银行首秀三季报 重组、逾期贷款集中江浙地区','http://www.windin.com/Tools/NewsDetail.aspx?windcode=000001.SZstart=end=pid=21ajax=','http://snap.windin.com/ns/findsnap.php?ad=0')
+(s_import_info_id.nextval,'000001',140,sysdate,null,'平安银行首秀三季�?重组、逾期贷款集中江浙地区','http://www.windin.com/Tools/NewsDetail.aspx?windcode=000001.SZstart=end=pid=21ajax=','http://snap.windin.com/ns/findsnap.php?ad=0')
 
 select count(1) from stk_cn;
 
@@ -1856,8 +1856,8 @@ select * from stk_kline where code='603386' order by kline_date desc;
 select * from stk_kline_us where code='NOAH' order by kline_date desc;
 select count(1) from stk_kline_us where kline_date='20150424';
 select * from stk_industry;
-select * from stk_industry_type where source='sina_meigu' and name like '%中%';
-select * from stk_industry_type where name like '%中%';
+select * from stk_industry_type where source='sina_meigu' and name like '%�?';
+select * from stk_industry_type where name like '%�?';
 
 select * from stk_industry_type where source='qq_conception';
 select * from stk_industry i,stk_industry_type t where i.industry=t.id and t.source='qq_conception' and i.code='603126';
@@ -1982,7 +1982,7 @@ order by trans_date desc;
 select * from stk_industry_type where source='qq_conception';
 select * from stk_industry where industry in (select id from stk_industry_type where source='qq_conception');
 
---资金流入股，可以用来分析板块，抓到启动最强板块 -- step 1: 资金流入股
+--资金流入股，可以用来分析板块，抓到启动最强板�?-- step 1: 资金流入�?
 select s.code,s.name,f.flow_date,f.main_amount,f.main_percent+f.super_large_percent
 from stk_capital_flow f, stk_cn s, stk_kline k
 where f.code=s.code and f.code=k.code and f.flow_date=k.kline_date
@@ -1991,7 +1991,7 @@ and f.main_percent+f.super_large_percent>=20
 and f.flow_date='20150916'
 order by f.flow_date,f.main_percent+f.super_large_percent desc;
 
---资金流入股，可以用来分析板块，抓到启动最强板块 -- step 2: 可以用来分析板块
+--资金流入股，可以用来分析板块，抓到启动最强板�?-- step 2: 可以用来分析板块
 select z.ind_name,count(z.ind_name) from (
 select s.code,s.name,f.flow_date,f.main_amount,f.main_percent+f.super_large_percent, t.name ind_name, t.source
 from stk_capital_flow f, stk_cn s, stk_kline k, stk_industry i, stk_industry_type t
@@ -2000,22 +2000,22 @@ and k.open!=k.close and k.open!=k.high and s.CODE = i.code and i.industry=t.id
 and f.main_percent+f.super_large_percent>=25
 and f.flow_date>='20151210' and f.flow_date<='20151214'
 order by f.flow_date,f.main_percent+f.super_large_percent desc) z
-where z.ind_name not in ('融资融券','转融券','再融资','深成500','沪股通','沪深300','中证500','大盘','上证180',
-'参股金融','股权激励','定向增发','资本货物','高价','基金增仓','重组概念','重组并购','券商重仓','社保重仓','新股改革')
+where z.ind_name not in ('融资融券','转融�?,'再融�?,'深成500','沪股�?,'沪深300','中证500','大盘','上证180',
+'参股金融','股权激�?,'定向增发','资本货物','高价','基金增仓','重组概念','重组并购','券商重仓','社保重仓','新股改革')
 and z.source in ('qq_conception','hexun_conception')
 group by z.ind_name having count(z.ind_name)>=5 order by count(z.ind_name) desc;
 
---资金流入股，可以用来分析板块，抓到启动最强板块及个股 -- step 3: 抓到启动最强板块 -> 电气部件与设备 -> 充电桩
+--资金流入股，可以用来分析板块，抓到启动最强板块及个股 -- step 3: 抓到启动最强板�?-> 电气部件与设�?-> 充电�?
 select distinct s.code,s.name,f.flow_date,f.main_amount,f.main_percent+f.super_large_percent, t.name ind_name, s.HOT
 from stk_capital_flow f, stk_cn s, stk_kline k, stk_industry i, stk_industry_type t
 where f.code=s.code and f.code=k.code and f.flow_date=k.kline_date
 and k.open!=k.close and k.open!=k.high and s.CODE = i.code and i.industry=t.id
 and f.main_percent+f.super_large_percent>=25 and s.TOTAL_CAPITAL <= 50000
 and f.flow_date>='20151210' and f.flow_date<='20151214'
-and t.name in ('股权投资','原材料','云计算','机械、设备、仪表','金属、非金属')
+and t.name in ('股权投资','原材�?,'云计�?,'机械、设备、仪�?,'金属、非金属')
 order by f.main_percent+f.super_large_percent desc;
 
---step 4: 再从选出的个股里查看最强概念板块
+--step 4: 再从选出的个股里查看最强概念板�?
 select t.name,count(t.name) from stk_industry i, stk_industry_type t
 where i.industry=t.id and i.code in (
 select distinct s.code
@@ -2024,9 +2024,9 @@ where f.code=s.code and f.code=k.code and f.flow_date=k.kline_date
 and k.open!=k.close and k.open!=k.high and s.CODE = i.code and i.industry=t.id
 and f.main_percent+f.super_large_percent>=25 and s.TOTAL_CAPITAL <= 50000
 and f.flow_date>='20150914' and f.flow_date<='20150918'
-and t.name in ('机械、设备、仪表','电子商务','云计算','信息技术业','锂电池'))
-group by t.name having t.name not in ('融资融券','转融券','再融资','深成500','沪股通','沪深300','中证500','大盘','上证180',
-'参股金融','股权激励','定向增发','资本货物','高价','基金增仓','重组概念','重组并购','券商重仓','社保重仓','新股改革')
+and t.name in ('机械、设备、仪�?,'电子商务','云计�?,'信息技术业','锂电�?))
+group by t.name having t.name not in ('融资融券','转融�?,'再融�?,'深成500','沪股�?,'沪深300','中证500','大盘','上证180',
+'参股金融','股权激�?,'定向增发','资本货物','高价','基金增仓','重组概念','重组并购','券商重仓','社保重仓','新股改革')
 order by count(t.name) desc;
 
 
@@ -2050,7 +2050,7 @@ insert into stk_word select s_word_id.nextval,1,1,'增长',1,null,null,null from
 insert into stk_word select s_word_id.nextval,3,null,'物流',1,null,null,null from dual;
 
 
---资金流入股，可以用来分析板块，抓到启动最强板块 -- step 1: 分析板块
+--资金流入股，可以用来分析板块，抓到启动最强板�?-- step 1: 分析板块
 select z.ind_name,count(z.ind_name) from (
 select s.code,s.name,f.flow_date,f.main_amount,f.main_percent+f.super_large_percent, t.name ind_name, t.source
 from stk_capital_flow f, stk_cn s, stk_kline k, stk_industry i, stk_industry_type t
@@ -2059,13 +2059,13 @@ and k.open!=k.close and k.open!=k.high and s.CODE = i.code and i.industry=t.id
 and f.main_percent+f.super_large_percent>=25
 and f.flow_date>='20160105' and f.flow_date<='20160111'
 order by f.flow_date,f.main_percent+f.super_large_percent desc) z
-where z.ind_name not in ('融资融券','转融券','再融资','深成500','沪股通','沪深300','中证500','大盘','上证180',
-'参股金融','股权激励','定向增发','资本货物','高价','基金增仓','重组概念','重组并购','券商重仓','社保重仓','新股改革',
+where z.ind_name not in ('融资融券','转融�?,'再融�?,'深成500','沪股�?,'沪深300','中证500','大盘','上证180',
+'参股金融','股权激�?,'定向增发','资本货物','高价','基金增仓','重组概念','重组并购','券商重仓','社保重仓','新股改革',
 '证金持股','汇金持股','股权投资','广东','北京','浙江','业绩预升','金融参股','上证380','金融改革','预盈预增','小盘')
 and z.source in ('qq_conception','hexun_conception')
 group by z.ind_name having count(z.ind_name)>=5 order by count(z.ind_name) desc;
 
---资金流入股，可以用来分析板块，抓到启动最强板块及个股 step 2: 抓到启动最强板块
+--资金流入股，可以用来分析板块，抓到启动最强板块及个股 step 2: 抓到启动最强板�?
 select t.name,count(t.name) from stk_industry i, stk_industry_type t
 where i.industry=t.id and i.code in (
 select distinct s.code
@@ -2074,13 +2074,13 @@ where f.code=s.code and f.code=k.code and f.flow_date=k.kline_date
 and k.open!=k.close and k.open!=k.high and s.CODE = i.code and i.industry=t.id
 and f.main_percent+f.super_large_percent>=25 and s.TOTAL_CAPITAL <= 50000
 and f.flow_date>='20160105' and f.flow_date<='20160111'
-and t.name in ('成渝特区','电子商务','信息技术业','地方国资整合','机械、设备、仪表'))
-group by t.name having t.name not in ('融资融券','转融券','再融资','深成500','沪股通','沪深300','中证500','大盘','上证180',
-'参股金融','股权激励','定向增发','资本货物','高价','基金增仓','重组概念','重组并购','券商重仓','社保重仓','新股改革',
+and t.name in ('成渝特区','电子商务','信息技术业','地方国资整合','机械、设备、仪�?))
+group by t.name having t.name not in ('融资融券','转融�?,'再融�?,'深成500','沪股�?,'沪深300','中证500','大盘','上证180',
+'参股金融','股权激�?,'定向增发','资本货物','高价','基金增仓','重组概念','重组并购','券商重仓','社保重仓','新股改革',
 '证金持股','汇金持股','股权投资','广东','北京','浙江','业绩预升','金融参股','上证380','金融改革','预盈预增','小盘')
 order by count(t.name) desc;
 
---资金流入股，可以用来分析板块，抓到启动最强板块及个股 -- step 3: 抓到启动最强个股
+--资金流入股，可以用来分析板块，抓到启动最强板块及个股 -- step 3: 抓到启动最强个�?
 select distinct s.code,s.name,f.flow_date,f.main_amount,f.main_percent+f.super_large_percent, t.name ind_name, s.HOT, trunc(s.TOTAL_CAPITAL/10000,2) captial
 from stk_capital_flow f, stk_cn s, stk_kline k, stk_industry i, stk_industry_type t
 where f.code=s.code and f.code=k.code and f.flow_date=k.kline_date
@@ -2088,7 +2088,7 @@ and k.open!=k.close and k.open!=k.high and s.CODE = i.code and i.industry=t.id
 and f.main_percent+f.super_large_percent>=25 and s.TOTAL_CAPITAL <= 50000
 and f.flow_date>='20160105' and f.flow_date<='20160111'
 and t.name in (select name from stk_word where type=3)
---and t.name in ('云计算','4G概念','智慧城市','大数据','锂电池','健康中国')
+--and t.name in ('云计�?,'4G概念','智慧城市','大数�?,'锂电�?,'健康中国')
 --and s.code in ('002295','000683','002455','600614','002474','001696','002079','002576','600685','600326','002276','600435','300161','600378','603021','002552','000561','300346','000547','300337','002542','002527','002329','002363','002309','002581','002397','600316','600282','600017','601886','300221','002253','000599','000893','600829','002522','000961','002686','002113','600062','600303','002007','000068','300267','000411','600711','002073','600255','002444','002171','002050','000919','002118','002448','002498','600436','002395','002242','002669','002665','300248','002031','300029','603111','002258','600483','600706','603123','300086','300427','000585','000409','601677','002417','002130','600079','600339','000937','300136','002475','002611','600398','002123','300390','000985','600678','601699','002451','600008','300229','002048','300376','000554','600425','002421','600986','300400','300378','002035','600486','300340','002195','300026','600322','600642','002740','300166','300462')
 order by f.main_percent+f.super_large_percent desc;
 
@@ -2266,7 +2266,7 @@ and k.pe_ttm is not null and pe_ttm>0 and pe_ttm<30 group by k.kline_date ) orde
 
 
 select * from stk_us where name like '%ETF%';
-select * from stk_us where name like '%柬埔寨%';
+select * from stk_us where name like '%柬埔�?';
 
 select * from stk_monitor;
 select * from stk_import_info_type for update;
@@ -2287,7 +2287,7 @@ select * from stk_daily_report_us order by report_date desc;
 
 select (k.hsl*s.TOTAL_CAPITAL)/100 from stk_kline k, stk_cn s where k.code=s.CODE and kline_date='20170112';
 
---上证换手率
+--上证换手�?
 select k.kline_date,sum(k.hsl*s.TOTAL_CAPITAL)/sum(s.TOTAL_CAPITAL),count(k.kline_date) from stk_kline k, stk_cn s
 where k.code=s.CODE and k.hsl is not null and s.code >=600000 and s.CODE<602000
  group by k.kline_date order by k.kline_date desc;
@@ -2317,7 +2317,7 @@ select a.*,substr(a.listing_date,0,7) m_date,k.close from stk_restricted a, stk_
 select m_date,sum(ban_amount) from (select a.*,substr(a.listing_date,0,7) m_date from stk_restricted a) r
 group by m_date order by m_date desc;
 
---未来解禁总市值 - 判断大盘高低点  https://xueqiu.com/1652627245/80263715
+--未来解禁总市�?- 判断大盘高低�? https://xueqiu.com/1652627245/80263715
 select m_date,round(sum(ban_amount*close),0) from (select a.*,substr(a.listing_date,0,7) m_date,k.close from stk_restricted a, stk_kline k where a.code=k.code and k.kline_date='20170203') r
 group by m_date order by m_date desc;
 
@@ -2379,7 +2379,7 @@ update stk_text set text=replace(text,'[股东人数减少]','') where sub_type=
 select * from stk_dictionary where type=400 for update;
 
 insert into stk_text(id,type,code,code_type,title,text,insert_time,update_time,sub_type)
-values (s_text_id.nextval,2,'000826',1,'启迪桑德研究报告：海通证券-启迪桑德-000826-公司研究报告：环境综合服务龙头，进军环卫更上层楼-170308',null,sysdate,null,100)
+values (s_text_id.nextval,2,'000826',1,'启迪桑德研究报告：海通证�?启迪桑德-000826-公司研究报告：环境综合服务龙头，进军环卫更上层楼-170308',null,sysdate,null,100)
 select * from stk_text where code='000688' and type!=3 order by insert_time desc;
 
 select * from stk_text where sub_type=110 order by insert_time desc;
@@ -2526,16 +2526,16 @@ with todayk as
 select fn.code,fn.fn_date,
 "4004" as "ROE(ttm)",
 "1001" as "营收总额(Q)",
-round((decode(sum("1001") over (order by fn_date desc rows between 4 following and 4 following),0,0,"1001"/sum("1001") over (order by fn_date desc rows between 4 following and 4 following))-1)*100,2)||'%' as "营收增长率(qoq)",
-round(decode("1001",0,0,"1002"/"1001")*100,2)||'%' as "毛利率(Q)",
+round((decode(sum("1001") over (order by fn_date desc rows between 4 following and 4 following),0,0,"1001"/sum("1001") over (order by fn_date desc rows between 4 following and 4 following))-1)*100,2)||'%' as "营收增长�?qoq)",
+round(decode("1001",0,0,"1002"/"1001")*100,2)||'%' as "毛利�?Q)",
 "1008" as "净利润(Q)",
-"1007" as "净利润(不计非经项)",
-round((decode(sum("1008") over (order by fn_date desc rows between 4 following and 4 following),0,0,"1008"/sum("1008") over (order by fn_date desc rows between 4 following and 4 following))-1)*100,2)||'%' as "净利润增长率(qoq)",
-round(decode((sum("1008") over (order by fn_date desc rows between 1 following and 4 following)),0,0,(sum("1008") over (order by fn_date desc rows between 0 preceding and 3 following))/(sum("1008") over (order by fn_date desc rows between 1 following and 4 following))-1)*100,2)||'%' as "净利润增长率(ttm)",
-"2001" as "总资产",
+"1007" as "净利润(不计非经�?",
+round((decode(sum("1008") over (order by fn_date desc rows between 4 following and 4 following),0,0,"1008"/sum("1008") over (order by fn_date desc rows between 4 following and 4 following))-1)*100,2)||'%' as "净利润增长�?qoq)",
+round(decode((sum("1008") over (order by fn_date desc rows between 1 following and 4 following)),0,0,(sum("1008") over (order by fn_date desc rows between 0 preceding and 3 following))/(sum("1008") over (order by fn_date desc rows between 1 following and 4 following))-1)*100,2)||'%' as "净利润增长�?ttm)",
+"2001" as "总资�?,
 round(decode("2001",0,0,"2002"/"2001")*100,2)||'%' as "负债率",
-"1004" as "运营开支",
-round(decode("1001",0,0,"1004"/"1001")*100,2)||'%' as "运营占比营收率",
+"1004" as "运营开�?,
+round(decode("1001",0,0,"1004"/"1001")*100,2)||'%' as "运营占比营收�?,
 "1003" as	"研发费用",
 "2005" as "应收账款",
 "2010" as "应付帐款",
@@ -2546,12 +2546,12 @@ round(decode("1001",0,0,"1004"/"1001")*100,2)||'%' as "运营占比营收率",
 "3001" as	"运营活动所产生现金",
 "3002" as	"投资活动所产生现金",
 "3003" as	"融资活动所产生现金",
-"3004" as	"现金净增减额",
+"3004" as	"现金净增减�?,
 "4014" as "速动比率",
 "4012" as "流动比率(mrq)",
 "4008" as "EPS(ttm)",
 "4005" as "每股收入(ttm)",
-"4013" as "每股价值(mrq)",
+"4013" as "每股价�?mrq)",
 round(decode("4008",0,0,k.close/"4008"),2) as "PE",
 round(decode("4005",0,0,k.close/"4005"),2) as "PS",
 round(decode("4013",0,0,k.close/"4013"),2) as "PB",
@@ -2564,12 +2564,12 @@ for type in (
 1002, --毛利
 1001, --营收总额
 1008,  --净利润
-1007, --归属普通股东收益(不计非经常项目)
+1007, --归属普通股东收�?不计非经常项�?
 2001, --资产总额
 2002, --债务总额
 1004, --运营开支总额
 1003,	--研发费用
-2005, --应收账款总计(净额)
+2005, --应收账款总计(净�?
 2010, --应付帐款
 2006, --库存总额
 2007, --现金及现金等价物
@@ -2578,13 +2578,13 @@ for type in (
 3001,	--运营活动所产生现金
 3002,	--投资活动所产生现金
 3003,	--融资活动所产生现金
-3004,	--现金净增减额
+3004,	--现金净增减�?
 4014, --速动比率
 4012, --流动比率(mrq)
 4008, --EPS(ttm)
 4005, --每股收入(ttm)
 4018, --PEG
-4013 --帐面价值(mrq)
+4013 --帐面价�?mrq)
 ))
 order by fn_date desc) fn, todayk k where fn.code=k.code;
 
@@ -2675,7 +2675,7 @@ select * from stk_search_mview v where 1=1  and code in ('300344') and code not 
 select * from  stk_capital_flow order  by flow_date desc;
 select flow_date,name,hot from(select f.code,k.name,round(avg(f.main_amount),2) hot,max(f.flow_date) flow_date from stk_capital_flow f, stk k where f.code=k.code and k.cate=4 and f.flow_date between to_char(sysdate-30,'yyyymmdd') and to_char(sysdate-0,'yyyymmdd') group by f.code,k.name) order by hot desc;
 
-select * from stk where cate=4 and name like '%网约车%';
+select * from stk where cate=4 and name like '%网约�?';
 select * from stk_industry_type where id=885623;
 select * from stk_industry_type where source='10jqka_gn' for update;
 select * from stk_industry where industry=885623;
@@ -2735,10 +2735,10 @@ select * from stk_user;
 select * from stk_earnings_notice order by notice_date desc;
 select * from stk_earnings_notice where code='000004' order by insert_time desc;
 select * from stk_import_info where code='002798' order by insert_time desc;
-select * from stk_organization where name like '%一一八%';
+select * from stk_organization where name like '%一一�?';
 select * from stk_ownership where org_id=237543 order by fn_date desc;
 
-select * from stk_organization where name like '%赵%'
+select * from stk_organization where name like '%�?'
 select * from stk_cn s,stk_kline k where s.code=k.code and s.code like '00%4' and k.low=6.92 order by k.kline_date desc;
 
 select * from stk_investigation order by insert_date desc;
@@ -2776,7 +2776,7 @@ update stk_text set sub_type=0 where sub_type is null;
 
 
 
-select * from stk_organization where name like '%摩根士丹利%';
+select * from stk_organization where name like '%摩根士丹�?';
 select * from stk_ownership where org_id=239897 order by fn_date desc;
 
 select b.name,a.stk_num,a.rate,a.num_change,a.num_change_rate from stk_ownership a, stk_organization b where a.org_id=b.id and a.code='000002' order by a.fn_date desc,a.stk_num desc;
@@ -2784,7 +2784,7 @@ select fn_date from(select distinct fn_date from stk_ownership where code='00000
 
 
 select * from stk_dictionary where type=21;
-insert into stk_dictionary select 21,'葛卫东','葛卫东',null,11,null,null,null,null from dual;
+insert into stk_dictionary select 21,'葛卫�?,'葛卫�?,null,11,null,null,null,null from dual;
 insert into stk_dictionary select 21,'睿远','睿远',null,12,null,null,null,null from dual;
 
 
@@ -2796,7 +2796,7 @@ select * from stk where code='600928';
 
 select * from stk_cn where listing_date < to_char(add_months(sysdate, -12),'yyyymmdd');
 
-select length('白植平') from dual
+select length('白植�?) from dual
 
 select a.code,a.fn_date,count(a.num_change_rate) cnt,listagg(c.name,', ') within group (order by a.num_change_rate) name from stk_ownership a,stk_cn b, stk_organization c
 where a.code=b.CODE and length(c.name)>3 and a.org_id=c.id and b.listing_date < to_char(add_months(sysdate, -12),'yyyymmdd') and a.fn_date > to_char(add_months(sysdate, -5),'yyyymmdd') and a.num_change_rate>0
@@ -2822,18 +2822,18 @@ select * from stk_holder where code='000883' order by fn_date desc;
 
 select a.code,name,count(*) cnt from (
 select code,fn_date,holder,
-sum(holder) over (order by code,fn_date desc rows between 1 following and 1 following) last_holder /*前面一期人数*/,
-sum(holder) over (order by code,fn_date desc rows between 5 following and 5 following) last5_holder,/*前面第5期人数*/
+sum(holder) over (order by code,fn_date desc rows between 1 following and 1 following) last_holder /*前面一期人�?/,
+sum(holder) over (order by code,fn_date desc rows between 5 following and 5 following) last5_holder,/*前面�?期人�?/
 row_number() over (partition by code order by fn_date desc) rown
 from stk_holder where fn_date >=20190630 order by code,fn_date desc
 ) a,stk_cn s where a.code=s.code and rown <= 5 and holder < last_holder
-and holder/last5_holder<=0.9 /*最近期人数至少比前第5期人数少10%*/
+and holder/last5_holder<=0.9 /*最近期人数至少比前�?期人数少10%*/
 group by a.code,s.name having count(*)=5 order by a.code asc;
 
---增加and条件：股东户数小于3万 or 最近人数至少比前5期人数少10%
+--增加and条件：股东户数小�?�?or 最近人数至少比�?期人数少10%
 
 
---近一年，股东户数小于3万 and 股东人数减少比例排序
+--近一年，股东户数小于3�?and 股东人数减少比例排序
 盐津铺子(SZ:002847)
 江山欧派(SH:603208)
 小熊电器(SZ:002959)
@@ -3039,7 +3039,7 @@ update stk_holder a set a.ten_owner_change = (select u.ten_owner_change from
 
 select count(1) from stk_holder where fn_date='20210331' and holding_amount>100000;
 select * from stk_ownership where org_id=237543 and fn_date='20210331';
-select * from stk_organization where name = '赵建平';
+select * from stk_organization where name = '赵建�?;
 
 
 select s.code, s.name, t.fn_date, t.holder, t.holding_amount, t.holder_change
@@ -3063,7 +3063,7 @@ select s_news_id.nextval from dual;
 
 
 insert into stk_news(id,code,type,insert_time,info,title,url_source,url_target,info_create_time) values
-(s_news_id.nextval,'000045',120,sysdate,null,'深纺织Ａ(000045.SZ)：第一期员工持股计划尚未购买公司股票','https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllNewsStock.php?symbol=sz000045Page=1','https://cj.sina.cn/articles/view/5115326071/130e5ae7702001e0pb',sysdate);
+(s_news_id.nextval,'000045',120,sysdate,null,'深纺织Ａ(000045.SZ)：第一期员工持股计划尚未购买公司股�?,'https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllNewsStock.php?symbol=sz000045Page=1','https://cj.sina.cn/articles/view/5115326071/130e5ae7702001e0pb',sysdate);
 
 select count(1) from stk_text where insert_time>=sysdate-180;
 select * from stk_text  order by insert_time desc;
@@ -3074,7 +3074,7 @@ select * from stk_fn_type for update;
 select * from stk_capital_flow where code='002346' order by flow_date desc;
 select * from stk_capital_flow order by insert_time desc;
 
-update stk_dictionary set param_2 ='中签率;大单流出;大单封跌停' where type=2000 and key = '200';
+update stk_dictionary set param_2 ='中签�?大单流出;大单封跌�? where type=2000 and key = '200';
 update stk_dictionary set text ='资产置换|转让' where type=2000 and key = '180';
 
 
@@ -3116,3 +3116,6 @@ select * from stk_keyword_link order by insert_time desc;
 select * from stk_text where title like '%年报%' order by insert_time desc;
 select * from stk_text where code='600600' order by insert_time desc for update;
 delete from stk_text where code='600600' and type =4;
+select * from stk_text where sub_type=110 and id>=30815064 order by insert_time desc;
+
+select * from stk_fn_data where code='603305' order by fn_date desc;

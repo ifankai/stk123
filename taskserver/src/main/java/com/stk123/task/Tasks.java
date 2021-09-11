@@ -109,7 +109,7 @@ public class Tasks {
             TaskBuilder.of(BarTask.class, "RpsStocks", "report="+reportDate),
             TaskBuilder.of(BarTask.class, "Mass", "report="+reportDate),
             TaskBuilder.of(BarTask.class, "stat", "report="+reportDate),
-            TaskBuilder.of(BarTask.class, "clearAll"),
+            //TaskBuilder.of(BarTask.class, "clearAll"),
             TaskBuilder.of(SyncTask.class, "table=stk_report_header"),
             TaskBuilder.of(SyncTask.class, "table=stk_report_detail")
         );
@@ -142,7 +142,7 @@ public class Tasks {
         taskContainer.start(BarTask.class, "US");
     }
 
-    @Scheduled(cron = "0 0 2 ? * MON,FRI")
+    @Scheduled(cron = "0 0 2 ? * MON,WED,FRI")
     public void initialDataCN() {
         initialData.run(1);
         taskContainer.start(

@@ -65,7 +65,7 @@ public class ResearchReportTask extends AbstractTask {
                 Node contentNode = HtmlUtils.getNodeByAttribute(s, null, "class", "abstruct-info");
                 String content = contentNode==null?null:contentNode.toHtml();
                 //System.out.println(content);
-                String title = ServiceUtils.wrapLink(HtmlUtils.getAttribute(titleNode, "title"), "http://www.hibor.com.cn/"+titleLink) ;
+                String title = ServiceUtils.wrapLink(HtmlUtils.getAttribute(titleNode, "title"), "http://www.hibor.com.cn"+titleLink) ;
 
                 String code = null;
                 if("1".equals(type)){
