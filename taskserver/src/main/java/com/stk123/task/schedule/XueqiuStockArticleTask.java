@@ -156,10 +156,14 @@ public class XueqiuStockArticleTask extends AbstractTask {
 
                     }else{
                         if(replyCount >=5 && replyCount < 10){
-                            Date createAt = CommonUtils.addDay(new Date(), -30); //30天內都沒有评论
-                            int cnt = stkTextRepository.countAllByCodeAndCreatedAtGreaterThanEqual(code, createAt);
-                            if(cnt == 0){
+                            if(post.getLike_count() >= 10){
                                 stkTextEntity = save(code, post);
+                            }else {
+                                Date createAt = CommonUtils.addDay(new Date(), -30); //30天內都沒有评论
+                                int cnt = stkTextRepository.countAllByCodeAndCreatedAtGreaterThanEqual(code, createAt);
+                                if (cnt == 0) {
+                                    stkTextEntity = save(code, post);
+                                }
                             }
                         }
                         else if(replyCount >= 10){
