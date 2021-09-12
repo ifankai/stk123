@@ -83,7 +83,7 @@ public class ReportService {
     public Map findReportAsMap(String reportDate){
         log.info("reportDate="+reportDate);
         Map result = new HashMap();
-        List<Map> reportDatesMap = findTopReportDate(reportDate, 5);
+        List<Map> reportDatesMap = findTopReportDate(reportDate, 9);
         List<String> reportDates = reportDatesMap.stream().map(map -> (String)map.get("REPORT_DATE")).sorted(Comparator.naturalOrder()).collect(Collectors.toList());
 
         String reportDateShow = null;
@@ -216,6 +216,7 @@ public class ReportService {
             map.put("code", stock.getCode());
             map.put("nameAndCodeWithLink", stock.getNameAndCodeWithLink());
             map.put("dayBarImage", stock.getDayBarImage());
+            map.put("dayFlowImage", stock.getDayFlowImage());
             map.put("weekBarImage", stock.getWeekBarImage());
             if(detail.getRpsBkCode() != null) {
                 List<Map> bkList = new ArrayList<>();

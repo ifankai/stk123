@@ -77,6 +77,12 @@ var _datatableTemplate = `
                         </template>
                         <i v-if="row.content != null && row.desc != null && row.content.length > row.desc.length" @click="openModalDetail(row)" class="fal fa-file" title="查看详情" data-toggle="modal" :data-target="'#modal-'+row.id"></i>
                     </td>
+                    <td v-else-if="column.data == 'dayBarImage'">
+                        <span v-html="row.dayBarImage"></span>
+                        <span style="display: flex;margin-right: 6px;">
+                            <img height="70" style="margin-top: -70px;width: 405px;" :src="'data:image/png;base64,'+row.dayFlowImage">
+                        </span>
+                    </td>
                     <td v-else v-html="row[column.data]"></td>
                 </template>
             </tr>

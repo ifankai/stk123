@@ -6,7 +6,7 @@
     <title>小智慧 - 日报</title>
     <div th:replace="common/css_public"></div>
     <div th:replace="common/css_datatable"></div>
-    <!--    <link rel="stylesheet" href="/css/public.css">-->
+    <link rel="stylesheet" th:href="'/css/public.css'+${_version}">
     <style>
         @media (min-width: 1200px) {
             .img-width img {
@@ -38,7 +38,7 @@
             justify-content: unset;
             line-height:unset;
             padding-left: .3rem;
-            font-size: 1vw;
+            //font-size: 1vw;
         }
         .info-box-content:after{
             clear:both;
@@ -52,6 +52,8 @@
             text-decoration: none;
             color: unset;
             font-size: .85rem;
+            white-space: nowrap;
+            width: auto;
         }
         .callout a:hover{
             color: unset;
@@ -76,7 +78,7 @@
         }
         .callout-hotbk .progress{
             margin: 2px 0 !important;
-            height: 5px;
+            height: 4px;
         }
         .callout-hotbk .progress-bar{
             background-color: #f88e8e !important;
@@ -206,19 +208,20 @@
                                     <div class="tab-pane fade show active" id="hotbk-calendar" role="tabpanel" aria-labelledby="hotbk-calendar-tab">
                                         <table class="table table-bordered table-hotbk">
                                             <thead>
-                                            <tr>
-                                                <th v-for="bk in hotBks" class="text-center text-nowrap" :class="bk.reportDate==reportDate?'report-date':''">
-                                                    <a v-text="dateFormat(bk.reportDate)" @click.prevent="gotoReport(bk.reportDate)" href="#" style="color: unset"></a>
-                                                </th>
-                                            </tr>
+                                                <tr>
+                                                    <th v-for="bk in hotBks" class="text-center text-nowrap" :class="bk.reportDate==reportDate?'report-date':''">
+                                                        <a v-text="dateFormat(bk.reportDate)" @click.prevent="gotoReport(bk.reportDate)" href="#" style="color: unset"></a>
+                                                    </th>
+                                                </tr>
                                             </thead>
                                             <tbody>
                                                 <tr>
                                                     <td v-for="bk in hotBks" class="td-hotbk text-center" :class="bk.reportDate==reportDate?'report-date':''">
                                                         <div class="row">
-                                                            <section v-for="idx in [0,1]" class="col-lg-6 connectedSortable" style="padding: 0 3px">
+                                                            <!--<section v-for="idx in [0,1]" class="col-lg-6 connectedSortable" style="padding: 0 3px">-->
                                                                 <template v-for="(item,index) in bk.data">
-                                                                    <div v-if="index % 2 === idx" @mouseover="filterSameBk(item)" @mouseleave="filterSameBk({stock:{code:'-1'}})" class="info-box callout" :class="item.class">
+                                                                    <!--<div v-if="index % 2 === idx" @mouseover="filterSameBk(item)" @mouseleave="filterSameBk({stock:{code:'-1'}})" class="info-box callout" :class="item.class">-->
+                                                                    <div @mouseover="filterSameBk(item)" @mouseleave="filterSameBk({stock:{code:'-1'}})" class="info-box callout" :class="item.class">
                                                                         <div class="callout-hotbk">
                                                                             <div class="progress">
                                                                                 <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" :style="{width: item.strategies.includes('strategy_08c')?100+'%':0}">
@@ -237,7 +240,7 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="info-box-content">
-                                                                            <span v-html="item.stock.nameWithLink" class="info-box-text"></span>
+                                                                            <span v-html="item.stock.nameWithLink"></span>
                                                                             <div v-if="inHotBksNew(item)">
                                                                                 <small class="one" title="新出现的板块">new</small>
                                                                             </div>
@@ -245,7 +248,7 @@
                                                                     </div>
 
                                                                 </template>
-                                                            </section>
+                                                            <!--</section>-->
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -420,7 +423,7 @@
                         info: false,
                         searching : false,
                         columnDefs: [
-                            { className: "text-center", "targets": [ 0,1,2 ] }
+                            { className: "text-center", "targets": [ 1,2 ] }
                         ],
                         tableClass:{'table-hover':true}
                     }
@@ -501,6 +504,20 @@
                     item.action = elem('a', {href:'/S/'+item.rpsStockCode, target:'_blank'}, '查看全部').outerHTML;
                 })
                 console.log('mounted', _this.$data)
+
+                _this.$nextTick(function() {
+                    var threshold = 80;
+                    $('.info-box-content a').each(function () {
+                        var $self = $(this),
+                        fs = parseInt($self.css('font-size'));
+                        while ($self.width() > threshold) {
+                            if(fs <= 10)break;
+                            $self.css({'font-size': fs--});
+                        }
+                        $self.width(threshold);
+                    });
+                });
+
             });
 
             store.commit('setStockLookPool', getDataFromLocalStorage('stockLookPool') || []);
@@ -524,4 +541,5 @@
                 '</table>'
         }
     }
+
 </script>

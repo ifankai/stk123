@@ -6,7 +6,7 @@
     <title>小智慧 - 公告</title>
     <div th:replace="common/css_public"></div>
     <div th:replace="common/css_datatable"></div>
-    <!--    <link rel="stylesheet" href="/css/public.css">-->
+    <link rel="stylesheet" th:href="'/css/public.css'+${_version}">
     <style>
         @media (min-width: 1200px) {
             .img-width img {
