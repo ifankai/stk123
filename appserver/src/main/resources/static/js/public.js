@@ -433,6 +433,20 @@ elem.append = function (parent, children, isHTML) {
     }
 }
 
+function toggleDropdown (e) {
+    const _d = $(e.target).closest('.dropdown'),
+        _m = $('.dropdown-menu', _d);
+    setTimeout(function(){
+        const shouldOpen = e.type !== 'click' && _d.is(':hover');
+        _m.toggleClass('show', shouldOpen);
+        _d.toggleClass('show', shouldOpen);
+        $('[data-toggle="dropdown"]', _d).attr('aria-expanded', shouldOpen);
+    }, e.type === 'mouseleave' ? 300 : 0);
+}
+
+$('body')
+    .on('mouseenter mouseleave','.dropdown',toggleDropdown)
+    .on('click', '.dropdown-menu a', toggleDropdown);
 
 function createApp(config){
     config.methods = Object.assign(config.methods, _stockLookPoolInVuex, _searchInVuex);
@@ -443,6 +457,7 @@ function createApp(config){
     app.component('eye', _eye);
     app.component('modal', _modal);
     app.component('init', _init);
+    app.component('stockbody', _stockBody); //不能写成 stockBody，html元素不区分大小写
 
     app.config.globalProperties.tsFormat = _tsFormat;
     app.config.globalProperties.dateFormat = dateFormat;

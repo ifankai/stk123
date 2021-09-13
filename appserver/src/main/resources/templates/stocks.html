@@ -226,89 +226,29 @@
                     <section v-for="idx in [0,1]" class="col-lg-6 connectedSortable">
                         <!-- Custom tabs (Charts with tabs)-->
                         <template v-for="(stk, index) in stocks">
-                            <div class="card" v-if="index % 2 === idx" :key="stk.stock.code">
-                                <div class="card-header">
-                                    <h3 class="card-title">
-                                        <span v-html="stk.stock.nameAndCodeWithLink"></span> 评分:<span v-text="stk.stock.rating.total"></span>
-                                    </h3>
-                                    <div class="card-tools">
-                                        <eye :stock="stk.stock"></eye>
-                                        <button title="加入自选" type="button" class="btn btn-tool">
-                                            <i class="fas fa-plus"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-tool" data-card-widget="remove">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </div>
-                                </div><!-- /.card-header -->
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-1 col-md-1 pr-0">
-                                            <div class="nav flex-column nav-tabs h-100" role="tablist" aria-orientation="vertical">
-                                                <a class="nav-link" :class="{active:selectedTabIndex===1}" :href="'#tab-1-'+stk.stock.code" data-toggle="tab">日线</a>
-                                                <a class="nav-link" :class="{active:selectedTabIndex===2}" :href="'#tab-2-'+stk.stock.code" data-toggle="tab">周线</a>
-                                                <a class="nav-link" :class="{active:selectedTabIndex===3}" :href="'#tab-3-'+stk.stock.code" data-toggle="tab">月线</a>
-                                                <a class="nav-link" :class="{active:selectedTabIndex===4}" :href="'#tab-4-'+stk.stock.code" data-toggle="tab">新闻</a>
-                                            </div>
+                            <template v-if="index % 2 === idx">
+                                <div class="card" :key="stk.stock.code">
+                                    <div class="card-header">
+                                        <h3 class="card-title">
+                                            <span v-html="stk.stock.nameAndCodeWithLink"></span> 评分:<span v-text="stk.stock.rating.total"></span>
+                                        </h3>
+                                        <div class="card-tools">
+                                            <eye :stock="stk.stock"></eye>
+                                            <button title="加入自选" type="button" class="btn btn-tool">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                                <i class="fas fa-times"></i>
+                                            </button>
                                         </div>
-                                        <div class="col-11 col-sm-11">
-                                            <div class="tab-content p-0">
-                                                <div class="tab-pane" :class="{active:selectedTabIndex===1}" :id="'tab-1-'+stk.stock.code">
-                                                    <span v-html="stk.stock.dayBarImage"></span>
-                                                    <span style="display: flex;margin-right: 6px;">
-                                                        <img height="80" style="margin-top: -80px;width: 100%" :src="'data:image/png;base64,'+stk.stock.dayFlowImage">
-                                                    </span>
-                                                </div>
-                                                <div class="tab-pane" :class="{active:selectedTabIndex===2}" :id="'tab-2-'+stk.stock.code">
-                                                    <span v-html="stk.stock.weekBarImage"></span>
-                                                </div>
-                                                <div class="tab-pane" :class="{active:selectedTabIndex===3}" :id="'tab-3-'+stk.stock.code">
-                                                    <span v-html="stk.stock.monthBarImage"></span>
-                                                </div>
-                                                <div class="tab-pane" :class="{active:selectedTabIndex===4}" :id="'tab-4-'+stk.stock.code">
-                                                    <datatable :="{...common.news, ...stk.stock.news}"></datatable>
-                                                </div>
-
-                                                <div class="tab-pane" :id="'tab-12-'+stk.stock.code" style="display: none">
-                                                    <div class="row">
-                                                        <div class="col-12  col-sm-12">
-                                                            <div class="d-flex justify-content-between align-items-center border-bottom">
-                                                                <p class="text-info">[调研]</p>
-                                                                <p class="d-flex flex-column text-right mb-0">
-                                                                    <span class="font-weight-bold"><i class="ion ion-android-arrow-up text-success"></i> 12% </span>
-                                                                    <span class="text-muted">CONVERSION RATE</span>
-                                                                </p>
-                                                            </div>
-                                                            <div class="d-flex justify-content-between align-items-center border-bottom">
-                                                                <p class="text-success text-xl"><i class="ion ion-ios-refresh-empty"></i></p>
-                                                                <p class="d-flex flex-column text-right mb-0"><span class="font-weight-bold"><i class="ion ion-android-arrow-up text-success"></i> 12% </span><span class="text-muted">CONVERSION RATE</span></p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-12  col-sm-12">
-                                                            <div class="float-right">
-                                                                <ul class="pagination pagination-sm">
-                                                                    <li class="page-item"><a href="#" class="page-link">&laquo;</a></li>
-                                                                    <li class="page-item"><a href="#" class="page-link">1</a></li>
-                                                                    <li class="page-item"><a href="#" class="page-link">2</a></li>
-                                                                    <li class="page-item"><a href="#" class="page-link">3</a></li>
-                                                                    <li class="page-item"><a href="#" class="page-link">&raquo;</a></li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div><!-- /.card-body -->
-
-                                <div class="card-footer"></div>
-
-                            </div>
+                                    </div><!-- /.card-header -->
+                                    <div class="card-body">
+                                        <stockbody :stock="stk.stock"></stockbody>
+                                    </div><!-- /.card-body -->
+                                    <div class="card-footer"></div>
+                                </div>
+                            </template>
                         </template>
-                        <!-- /.card -->
                     </section>
                 </div>
 
@@ -675,12 +615,13 @@
         _this.common.niusans.forEach(ns => ns.count=0);
 
         stocks.forEach(stk => {
+            stk.stock.selectedTabIndex = 1;
             stk.stock.order = i++;
-            stk.stock.news.forEach(n => {
+            /*stk.stock.news.forEach(n => {
                 n.type = '['+n.dict.text+']';
                 n.title = '<a target="_blank" href="'+n.urlTarget+'">'+n.title+'</a>';
             })
-            stk.stock.news = {data: stk.stock.news}
+            stk.stock.news = {data: stk.stock.news}*/
             stk.stock.owners.forEach(owner => {
                 _this.common.niusans.forEach(ns => {
                     if(owner.orgName.indexOf(ns.text) >= 0) ns.count++;
@@ -707,7 +648,7 @@
                 title: title,
                 loading: true,
                 selectedTabName: '日线',
-                selectedTabIndex: 1,
+                //selectedTabIndex: 1,
                 seletedRpsName: 'RPS排序',
                 seletedStrategyName: '模型策略过滤',
                 bkSelected: [],
@@ -746,9 +687,11 @@
             cancelMethods:function (){
                 console.log("cancel")
             },
-            selectTab:function (idx, e) {
-                this.selectedTabIndex = idx;
+            selectTab:function (tab, e) {
                 this.selectedTabName = e.target.innerText;
+                this.stocks.forEach(stk => {
+                    stk.stock.tabShow = tab;
+                });
             },
             clickRps:function () {
                 this.$refs.btnRps.click();
@@ -887,10 +830,10 @@
     }
     createApp(config);
 
-    function clickTab(e){
+    /*function clickTab(e){
         e.preventDefault();
         var flag = $(e.target).attr("id").substring(3,6);
         $("[href^='#tab"+flag+"']").click()
-    }
+    }*/
 </script>
 

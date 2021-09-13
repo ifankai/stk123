@@ -17,12 +17,12 @@
                     <a href="/s/mystocks" target="_blank" class="nav-link">自选股</a>
                 </li>
                 <li class="nav-item dropdown" style="display: none" v-if="selectedTabName!=undefined" :style="{display:selectedTabName!=undefined?'block':'none'}">
-                    <a v-text="selectedTabName" id="stockCardTabs" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"></a>
-                    <ul aria-labelledby="stockCardTabs" class="dropdown-menu border-0 shadow">
-                        <li><a @click.prevent="selectTab(1,$event)" href="#" class="dropdown-item">日线</a></li>
-                        <li><a @click.prevent="selectTab(2,$event)" href="#" class="dropdown-item">周线</a></li>
-                        <li><a @click.prevent="selectTab(3,$event)" href="#" class="dropdown-item">月线</a></li>
-                        <li><a @click.prevent="selectTab(4,$event)" href="#" class="dropdown-item">新闻</a></li>
+                    <a v-text="selectedTabName" id="stockCardTabs" href="#" data-toggle="dropdown" class="nav-link dropdown-toggle"></a>
+                    <ul class="dropdown-menu border-0 shadow">
+                        <li><a @click="selectTab('dayBar',$event)" href="#" class="dropdown-item">日线</a></li>
+                        <li><a @click="selectTab('weekBar',$event)" href="#" class="dropdown-item">周线</a></li>
+                        <li><a @click="selectTab('monthBar',$event)" href="#" class="dropdown-item">月线</a></li>
+                        <li><a @click="selectTab('news',$event)" href="#" class="dropdown-item">新闻</a></li>
                     </ul>
                 </li>
             </ul>

@@ -120,6 +120,9 @@
             margin-top: -30px;
             margin-right: 10px !important;
         }
+        .stock-tabs .nav-link{
+            padding: .4rem .2rem .4rem .4rem;
+        }
     </style>
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed text-sm pace-primary pace-done">
@@ -138,6 +141,51 @@
 
         <section class="content">
             <div class="container">
+
+                <div class="row">
+                    <div class="col-12">
+                        <div id="info" class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <span v-html="stock.nameAndCodeWithLink"></span> 评分:<span v-text="stock.rating.total"></span>
+                                </h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="收起">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-6">
+
+                                        <blockquote class="quote-secondary">
+                                            <p>
+                                                <a target="_blank" th:href="@{'http://f9.eastmoney.com/'+${#strings.toLowerCase(codeWithPlace)}+'.html#jggd'}">盈利预测</a>
+                                                <a target="_blank" th:href="@{'http://vip.stock.finance.sina.com.cn/q/go.php/vFinanceAnalyze/kind/performance/index.phtml?symbol='+${code} }">业绩预告</a>
+                                                <a target="_blank" th:href="@{'http://f10.eastmoney.com/f10_v2/CompanyManagement.aspx?code='+${#strings.toLowerCase(codeWithPlace)}+'#cgbd-0'}">高管持股</a>
+                                                <a target="_blank" th:href="@{'http://data.eastmoney.com/Stock/lhb/'+${code}+'.html'}">龙虎榜</a>
+                                                <a target="_blank" th:href="@{'http://data.eastmoney.com/zjlx/'+${code}+'.html'}">资金流入</a>
+                                                <a target="_blank" th:href="@{'http://vip.stock.finance.sina.com.cn/q/go.php/vInvestConsult/kind/xsjj/index.phtml?symbol='+${#strings.toLowerCase(codeWithPlace)} }">限售解禁</a>
+                                                <a target="_blank" th:href="@{'http://stockpage.10jqka.com.cn/'+${code}+'/holder/'}">十大股东</a>
+                                            </p>
+                                            <p>
+                                                <a target="_blank" th:href="@{'http://stockpage.10jqka.com.cn/'+${code}+'/holder/#holdernum'}">股东人数</a>
+                                                <a target="_blank" th:href="@{'http://f10.eastmoney.com/f10_v2/ShareholderResearch.aspx?code='+${#strings.toLowerCase(codeWithPlace)} }">股东人数2</a>
+                                                <a target="_blank" th:href="@{'http://data.eastmoney.com/hsgtcg/StockHdStatistics.aspx?stock='+${code} }">沪深港通持股</a>
+                                            </p>
+                                        </blockquote>
+                                    </div>
+                                    <div class="col-6">
+                                        <stockbody :stock="stock" :tabs="['dayBar','weekBar','monthBar']" tab-show="news"></stockbody>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div><!-- 导航  -->
 
                 <div class="row">
                     <div class="col-12">
@@ -342,7 +390,7 @@
                             </div>
 
                             <div class="card-body">
-                                <datatable :="{...common.news, ...stock.news}"></datatable>
+                                <datatable :="{...common.news, ...stock.newsList}"></datatable>
                             </div>
 
                             <div class="card-footer">
@@ -550,6 +598,7 @@
                     ]
                 },
                 stock:{
+                    rating:{},
                     posts:{data:[]},
                     fn:{type:[], table:[]},
                     notice_left:{content:{}},
@@ -587,6 +636,12 @@
         },
         mounted() {
             let _this = this;
+            axios.get("/stock/"+code).then(function (res) {
+                let data = res.data.data;
+                Object.assign(_this.stock, data.stocks[0].stock)
+                console.log('stock', _this.$data)
+            });
+
             axios.get("/text/post/"+code).then(function (res) {
                 let data = res.data.data;
                 data.forEach(post => {
@@ -613,7 +668,7 @@
                 data.forEach(row => {
                     row.title = row.title + '<i class="fal fa-external-link" onclick="window.open(\''+row.urlTarget+'\')"></i>'
                 })
-                _this.stock.news = {data: data};
+                _this.stock.newsList = {data: data}; //不能用_this.stock.news= {data:data}, 因为stock.news已经有值而且没有多加data：这一层，所有vue会报错
             });
 
             axios.get("/stock/xqnotice/"+code).then(function (res) {
@@ -654,6 +709,7 @@
                 let data = res.data.data;
                 _this.stock.fn = data;
             });
+
 
             if (localStorage.stockLookPool) {
                 store.commit('setStockLookPool', getDataFromLocalStorage('stockLookPool'));
