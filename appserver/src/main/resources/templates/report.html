@@ -441,9 +441,6 @@
                 },
                 hotBks:[],
                 hotBksNew:[],
-                currentHotBks:{
-                    data:[]
-                },
                 currentHotBks:{data:[]},currentAllStocks:{data:[]},currentBksStrategy:{data:[]},
                 currentMyStocksA:{data:[]},currentMyStocksH:{data:[]},currentMyStocksU:{data:[]},
                 currentAllStocksRpsA:{data:[]},currentAllStocksRpsStrategy:{data:[]},
@@ -537,7 +534,6 @@
 
             });
 
-            store.commit('setStockLookPool', getDataFromLocalStorage('stockLookPool') || []);
         }
     };
     createApp(config);

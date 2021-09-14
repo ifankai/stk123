@@ -461,9 +461,23 @@ $(function (){
     })
 });
 
-
+const mixins = {
+    data(){
+        return {}
+    },
+    methods:{
+        ..._stockLookPoolInVuex,
+        ..._searchInVuex
+    },
+    mounted(){
+        if (localStorage.stockLookPool) {
+            store.commit('setStockLookPool', getDataFromLocalStorage('stockLookPool') || []);
+        }
+    }
+}
 function createApp(config){
-    config.methods = Object.assign(config.methods, _stockLookPoolInVuex, _searchInVuex);
+    //config.methods = Object.assign(config.methods, _stockLookPoolInVuex, _searchInVuex); //和mixins功能类似
+    config.mixins = [mixins];
     const app = Vue.createApp(config);
     app.use(store)
 

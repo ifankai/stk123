@@ -329,7 +329,6 @@
         },
         mounted() {
             this.search(1);
-            store.commit('setStockLookPool', getDataFromLocalStorage('stockLookPool') || []);
         }
     };
     createApp(config);
