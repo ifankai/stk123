@@ -94,6 +94,11 @@ public class Stocks {
         Stocks.StocksAll_Map.putAll(Stocks.StocksAllHK.stream().collect(Collectors.toMap(Stock::getCode, Function.identity())));
     }
 
+    public static List<Stock> getHKStocks(){
+        if(Stocks.StocksAllHK == null) initHKStocks();
+        return Stocks.StocksAllHK;
+    }
+
     public synchronized static void initUSStocks() {
         if (Stocks.StocksAllUS != null) return;
         Stocks.StocksAllUS = stockService.getStocks(EnumMarket.US, false);

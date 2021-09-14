@@ -101,11 +101,14 @@ public class Tasks {
         String reportDate = CommonUtils.formatDate(new Date(), CommonUtils.sf_ymd2);
         taskContainer.start(
             TaskBuilder.of(BarTask.class, "clearAll"),
-            TaskBuilder.of(BarTask.class, "CN"),
-            TaskBuilder.of(BarTask.class, "HK"),
+            TaskBuilder.of(BarTask.class, "initCN"),
+            TaskBuilder.of(BarTask.class, "analyseCN"),
+            TaskBuilder.of(BarTask.class, "initHK"),
+            TaskBuilder.of(BarTask.class, "analyseHK"),
             TaskBuilder.of(BarTask.class, "MyStocks", "report="+reportDate),
             TaskBuilder.of(BarTask.class, "AllStocks", "report="+reportDate),
-            TaskBuilder.of(BarTask.class, "AllRps", "report="+reportDate),
+            TaskBuilder.of(BarTask.class, "AllCNRps", "report="+reportDate),
+            TaskBuilder.of(BarTask.class, "AllHKRps", "report="+reportDate),
             TaskBuilder.of(BarTask.class, "Bks", "report="+reportDate),
             TaskBuilder.of(BarTask.class, "RpsStocks", "report="+reportDate),
             TaskBuilder.of(BarTask.class, "Mass", "report="+reportDate),

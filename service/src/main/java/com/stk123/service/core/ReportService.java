@@ -14,6 +14,7 @@ import com.stk123.model.enumeration.EnumMarket;
 import com.stk123.model.strategy.sample.Strategies;
 import com.stk123.repository.BaseRepository;
 import com.stk123.repository.StkReportHeaderRepository;
+import com.stk123.service.StkConstant;
 import lombok.Data;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.collections.MapUtils;
@@ -150,17 +151,22 @@ public class ReportService {
         List<Map> bksGroupbyCodeByNotStrategy08 = getBksAsMap(groupbyCodeByNotStrategy08, finalRptDate);
         result.put("currentBksStrategy", bksGroupbyCodeByNotStrategy08);
 
-        result.put("currentAllStocks", getStocksByType(headers, "allstocks", finalRptDate, EnumMarket.CN));
-        result.put("currentAllStocksRpsStrategy", getStocksByType(headers, "rpsstocks_strategies", finalRptDate, EnumMarket.CN));
-        result.put("currentMyStocksA", getStocksByType(headers, "mystocks", finalRptDate, EnumMarket.CN));
-        result.put("currentMyStocksH", getStocksByType(headers, "mystocks", finalRptDate, EnumMarket.HK));
-        result.put("currentMyStocksU", getStocksByType(headers, "mystocks", finalRptDate, EnumMarket.US));
+        result.put("currentAllStocks", getStocksByType(headers, StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS, finalRptDate, EnumMarket.CN));
+        result.put("currentAllStocksRpsStrategy", getStocksByType(headers, StkConstant.REPORT_HEADER_TYPE_RPSSTOCKS_STRATEGIES, finalRptDate, EnumMarket.CN));
+        result.put("currentMyStocksA", getStocksByType(headers, StkConstant.REPORT_HEADER_TYPE_MYSTOCKS, finalRptDate, EnumMarket.CN));
+        result.put("currentMyStocksH", getStocksByType(headers, StkConstant.REPORT_HEADER_TYPE_MYSTOCKS, finalRptDate, EnumMarket.HK));
+        result.put("currentMyStocksU", getStocksByType(headers, StkConstant.REPORT_HEADER_TYPE_MYSTOCKS, finalRptDate, EnumMarket.US));
 
-        List<StkReportDetailEntity> allStocksRps = getDetailsByTypeAndDate(headers, "allstocks_rps", finalRptDate);
-        allStocksRps.forEach(rps -> {
+        List<StkReportDetailEntity> allStocksRpsA = getDetailsByTypeAndDate(headers, StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS, finalRptDate);
+        allStocksRpsA.forEach(rps -> {
             rps.setStrategyName(Rps.getRpsStrategy(rps.getStrategyCode()).getNameWithCode());
         });
-        result.put("currentAllStocksRps", allStocksRps);
+        result.put("currentAllStocksRpsA", allStocksRpsA);
+        List<StkReportDetailEntity> allStocksRpsH = getDetailsByTypeAndDate(headers, StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS_HK, finalRptDate);
+        allStocksRpsH.forEach(rps -> {
+            rps.setStrategyName(Rps.getRpsStrategy(rps.getStrategyCode()).getNameWithCode());
+        });
+        result.put("currentAllStocksRpsH", allStocksRpsH);
 
         return result;
     }

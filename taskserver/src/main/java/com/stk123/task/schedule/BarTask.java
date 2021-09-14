@@ -119,7 +119,8 @@ public class BarTask extends AbstractTask {
         this.runByName("analyseMyStocks", this::analyseMyStocks);
         this.runByName("analyseMass", this::analyseMass);
         this.runByName("analyseAllStocks", this::analyseAllStocks);
-        this.runByName("analyseAllRps", this::analyseAllRps);
+        this.runByName("analyseAllCNRps", this::analyseAllCNRps);
+        this.runByName("analyseAllHKRps", this::analyseAllHKRps);
         this.runByName("analyseRpsStocksByStrategies", this::analyseRpsStocksByStrategies);
         this.runByName("analyseBks", this::analyseBks);
         this.runByName("stat", this::statAllStocks);
@@ -724,8 +725,8 @@ public class BarTask extends AbstractTask {
         log.info("end analyseAllStocks");
     }
 
-    public void analyseAllRps(){
-        log.info("start analyseAllRps");
+    public void analyseAllCNRps(){
+        log.info("start analyseAllCNRps");
         try {
             StkReportHeaderEntity stkReportHeaderEntity = null;
             List<Stock> stocks = Stocks.getStocksWithBks();
@@ -793,10 +794,84 @@ public class BarTask extends AbstractTask {
 
             // rps end
         } catch (Exception e) {
-            EmailUtils.send("报错[analyseAllStocksRps]", ExceptionUtils.getExceptionAsString(e));
-            log.error("analyseAllStocksRps", e);
+            EmailUtils.send("报错[analyseAllCNRps]", ExceptionUtils.getExceptionAsString(e));
+            log.error("analyseAllCNRps", e);
         }
-        log.info("end analyseAllRps");
+        log.info("end analyseAllCNRps");
+    }
+
+    public void analyseAllHKRps(){
+        log.info("start analyseAllHKRps");
+        try {
+            StkReportHeaderEntity stkReportHeaderEntity = null;
+            List<Stock> stocks = Stocks.getHKStocks();
+
+//            stocks = stockService.filterByMarketCap(stocks, 50);
+//            stocks = stockService.filterByFn(stocks);
+
+            if(StringUtils.isNotEmpty(report)){
+                String type = StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS_HK;
+                String name = "全市场RPS(HK)";
+                stkReportHeaderEntity = reportService.createReportHeaderEntity(report, type, 0, name);
+            }
+
+            // rps start
+            StringBuffer rps = new StringBuffer();
+            List<Strategy> rpsList = Rps.getAllRpsStrategyOnStock();
+
+            for(Strategy rpsStrategy : rpsList){
+                if(rpsStrategy.isEmptyStrategy())continue;
+                List<Stock> rpsStocks = stockService.calcRps(stocks, rpsStrategy.getCode()).stream().map(StrategyResult::getStock).collect(Collectors.toList());
+                //rpsStocks = rpsStocks.subList(0, Math.min(150, rpsStocks.size()));
+
+                List<Stock> results = new ArrayList<>();
+                int cap1 = 50;
+                int cap2 = 30;
+                for(Stock stock : rpsStocks){
+                    if(stock.getMarketCap() >= 30 && stock.getMarketCap() < 100){
+                        if(cap1-- > 0){
+                            results.add(stock);
+                        }
+                    }else if(stock.getMarketCap() >= 100 && stock.getMarketCap() < 200){
+                        if(cap1-- > 0){
+                            results.add(stock);
+                        }
+                    }else if(stock.getMarketCap() >= 200 && stock.getMarketCap() < 500){
+                        if(cap1-- > 0){
+                            results.add(stock);
+                        }
+                    }else if(stock.getMarketCap() >= 500){
+                        if(cap2-- > 0){
+                            results.add(stock);
+                        }
+                    }
+                }
+
+                rps.append(rpsStrategy.getNameWithCode() + ": " + CommonUtils.k("查看", rpsStrategy.getNameWithCode(), results.stream().map(Stock::getCode).collect(Collectors.toList())) + " ====>" + results.stream().map(Stock::getCode).collect(Collectors.joining(",")));
+                rps.append("<br/>");
+
+                if(stkReportHeaderEntity != null){
+                    StkReportDetailEntity stkReportDetailEntity = reportService.createReportDetailEntity(null, rpsStrategy.getCode(), report,
+                            null, null, null, null,
+                            results.stream().map(Stock::getCode).collect(Collectors.joining(",")), null
+                    );
+                    stkReportHeaderEntity.addDetail(stkReportDetailEntity);
+                }
+            }
+
+            // report save
+            if(stkReportHeaderEntity != null){
+                reportService.save(stkReportHeaderEntity);
+            }
+
+            EmailUtils.send("全市场RPS H股", rps.toString());
+
+            // rps end
+        } catch (Exception e) {
+            EmailUtils.send("报错[analyseAllHKRps]", ExceptionUtils.getExceptionAsString(e));
+            log.error("analyseAllHKRps", e);
+        }
+        log.info("end analyseAllHKRps");
     }
 
     public void analyseRpsStocksByStrategies(){

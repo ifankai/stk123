@@ -445,9 +445,22 @@ function toggleDropdown (e) {
     }, e.type === 'mouseleave' ? 300 : 0);
 }
 
-$('body')
-    .on('mouseenter mouseleave','.dropdown',toggleDropdown)
-    .on('click', '.dropdown-menu a', toggleDropdown);
+$(function (){
+    //处理navbar下拉列表鼠标经过就显示
+    $('body')
+        .on('mouseenter mouseleave','.dropdown',toggleDropdown)
+        .on('click', '.dropdown-menu a', toggleDropdown);
+
+    //处理modal垂直居中
+    $(".modal").on('shown.bs.modal', function (){
+        let $this = $(this);
+        let $modal = $this.find('.modal-dialog');
+        let m_top = ( $(window).height() - $modal.height() ) / 2;
+        if(m_top < 20) m_top = 20;
+        $modal.css({'margin' : m_top + 'px auto'})
+    })
+});
+
 
 function createApp(config){
     config.methods = Object.assign(config.methods, _stockLookPoolInVuex, _searchInVuex);
