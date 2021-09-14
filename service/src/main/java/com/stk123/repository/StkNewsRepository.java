@@ -21,11 +21,7 @@ public interface StkNewsRepository extends JpaRepository<StkNewsEntity, Integer>
         List<StkNewsEntity> news = findAllByCodeInAndInfoCreateTimeAfterOrderByInsertTimeDesc(codes, infoCreateTime);
         Map<String, List<StkNewsEntity>> result = new LinkedHashMap<>(codes.size());
         for(StkNewsEntity n : news){
-            List<StkNewsEntity> list = result.get(n.getCode());
-            if(list == null){
-                list = new ArrayList<>();
-                result.put(n.getCode(), list);
-            }
+            List<StkNewsEntity> list = result.computeIfAbsent(n.getCode(), k -> new ArrayList<>());
             list.add(n);
         }
         return result;

@@ -17,11 +17,13 @@ import java.util.List;
 @Repository
 public interface StkRepository extends JpaRepository<StkEntity, String> {
 
+    StkEntity findByCode(String code);
+
     @Query(value = "select code as code,name as name,market as market,cate as cate,place as place,totalCapital as totalCapital,hot as hot from StkEntity where market in (:markets) and cate=:cate and hot>=:hot")
     List<StockProjection> findAllByMarketAndCateAndHotGreaterThan(@Param("markets") List<Integer> markets, @Param("cate")Integer cate, @Param("hot")Integer hot);
 
     @Query(value = "select t from StkEntity t where code=:code")
-    StockProjection findByCode(@Param("code")String code);
+    StockProjection getByCode(@Param("code")String code);
 
     @Query(value = "select t from StkEntity t where market=1 or ((market=2 or market=3) and hot>500)")
     List<StockProjection> findAllStk();

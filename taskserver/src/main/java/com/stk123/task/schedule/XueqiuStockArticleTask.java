@@ -6,7 +6,6 @@ import com.stk123.common.util.Arrays;
 import com.stk123.common.util.ChineseUtils;
 import com.stk123.common.util.HtmlUtils;
 import com.stk123.entity.StkTextEntity;
-import com.stk123.model.Text;
 import com.stk123.model.constant.TextConstant;
 import com.stk123.model.core.Stock;
 import com.stk123.model.enumeration.EnumCate;
@@ -59,7 +58,7 @@ public class XueqiuStockArticleTask extends AbstractTask {
     public void execute() {
         try {
             if (code != null) {
-                StockProjection stockProjection = stkRepository.findByCode(code);
+                StockProjection stockProjection = stkRepository.getByCode(code);
                 List<StkTextEntity> list = getArticles(stockProjection);
                 return;
             }

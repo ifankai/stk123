@@ -3,6 +3,8 @@ package com.stk123.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.stk123.model.json.View;
 import lombok.*;
 
 import javax.persistence.*;
@@ -14,6 +16,7 @@ import java.util.Objects;
 @Getter
 @ToString
 @MappedSuperclass
+@JsonView(View.Default.class)
 public abstract class StkKline implements Serializable {
     @Id
     @Column(name = "CODE", nullable = true, length = 10)
@@ -67,17 +70,14 @@ public abstract class StkKline implements Serializable {
 
     @Basic
     @Column(name = "HSL", nullable = true, precision = 2)
-    @JsonIgnore
     private Double hsl;
 
     @Basic
     @Column(name = "PE_TTM", nullable = true, precision = 2)
-    @JsonIgnore
     private Double peTtm;
 
     @Basic
     @Column(name = "PE_LYR", nullable = true, precision = 2)
-    @JsonIgnore
     private Double peLyr;
 
     @Basic
@@ -87,12 +87,10 @@ public abstract class StkKline implements Serializable {
 
     @Basic
     @Column(name = "PS_TTM", nullable = true, precision = 2)
-    @JsonIgnore
     private Double psTtm;
 
     @Basic
     @Column(name = "PB_TTM", nullable = true, precision = 2)
-    @JsonIgnore
     private Double pbTtm;
 
 //    @Basic

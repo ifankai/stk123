@@ -42,7 +42,7 @@ public class StockWebController {
         if(StringUtils.contains(code, ",")) {
             return "stocks";
         }
-        StockProjection stockProjection = stkRepository.findByCode(code);
+        StockProjection stockProjection = stkRepository.getByCode(code);
         if(stockProjection == null){
             throw new RuntimeException("Stock 404");
         }

@@ -17,11 +17,7 @@ public interface StkImportInfoRepository extends JpaRepository<StkImportInfoEnti
         List<StkImportInfoEntity> news = findAllByCodeInAndInsertTimeAfterOrderByInsertTimeDesc(codes, insertTime);
         Map<String, List<StkImportInfoEntity>> result = new LinkedHashMap<>(codes.size());
         for(StkImportInfoEntity n : news){
-            List<StkImportInfoEntity> list = result.get(n.getCode());
-            if(list == null){
-                list = new ArrayList<>();
-                result.put(n.getCode(), list);
-            }
+            List<StkImportInfoEntity> list = result.computeIfAbsent(n.getCode(), k -> new ArrayList<>());
             list.add(n);
         }
         return result;

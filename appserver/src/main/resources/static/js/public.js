@@ -59,6 +59,7 @@ Date.prototype.format = function (fmt) { //调用：var time1 = new Date().Forma
     return fmt;
 }
 
+
 function isVisible(elment) {
     var vpH = $(window).height(), // Viewport Height
         st = $(window).scrollTop(), // Scroll Top

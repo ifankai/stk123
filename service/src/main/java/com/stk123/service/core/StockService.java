@@ -82,6 +82,8 @@ public class StockService {
     private StockAsyncService stockAsyncService;
     @Autowired
     private FnService fnService;
+    @Autowired
+    private StkKeywordLinkRepository stkKeywordLinkRepository;
 
 
     public List<Stock> buildStocks(EnumMarket market, EnumCate cate){
@@ -350,6 +352,20 @@ public class StockService {
                 });
     }
 
+    public List<Stock> buildBusinessAndProduct(List<Stock> stocks){
+        return BaseRepository.findAll1000(stocks,
+                subStocks -> {
+                    List<String> codes = subStocks.stream().map(Stock::getCode).collect(Collectors.toList());
+                    Map<String, List<StkKeywordLinkEntity>> map = stkKeywordLinkRepository.getAllByCodeIn(codes);
+                    subStocks.forEach(stock -> {
+                        List<StkKeywordLinkEntity> links = map.computeIfAbsent(stock.getCode(), k -> new ArrayList<>());
+                        stock.setBusinesses(links.stream().filter(link -> link.getLinkType() == StkConstant.KEYWORD_LINK_TYPE_MAIN_BUSINESS).collect(Collectors.toList()));
+                        stock.setProducts(links.stream().filter(link -> link.getLinkType() == StkConstant.KEYWORD_LINK_TYPE_MAIN_PRODUCT).collect(Collectors.toList()));
+                    });
+                    return subStocks;
+                });
+    }
+
     public List<StrategyResult> calcRps(List<Stock> stocks, String rpsCode){
         return calcRps(stocks, rpsCode, null);
     }
@@ -518,9 +534,10 @@ public class StockService {
         Future<List<Stock>> futureNews = stockAsyncService.buildNews(stocks, CommonUtils.addDay(new Date(), -180));
         Future<List<Stock>> futureInfo = stockAsyncService.buildImportInfos(stocks, CommonUtils.addDay(new Date(), -180));
         Future<List<Stock>> futureFn = stockAsyncService.buildFn(stocks, CommonUtils.addDay2String(new Date(), -360 * 5));
+        Future<List<Stock>> futureBusinessAndProduct = stockAsyncService.buildBusinessAndProduct(stocks);
         while (true) {
             if (futureBs.isDone() && futureIndustries.isDone() && futureHolder.isDone() && futureOwner.isDone()
-                && futureNews.isDone() && futureInfo.isDone() && futureFn.isDone()) {
+                && futureNews.isDone() && futureInfo.isDone() && futureFn.isDone() && futureBusinessAndProduct.isDone()) {
                 break;
             }
             //Thread.sleep(20);
@@ -613,7 +630,8 @@ public class StockService {
         List<Map> bksList = new ArrayList<>();
         for (Stock bk : bks) {
             Map map = new HashMap();
-            map.put("name", bk.getNameAndCode());
+            map.put("name", bk.getName());
+            map.put("nameAndCode", bk.getNameAndCode());
             map.put("nameWithLink", bk.getNameAndCodeWithLink());
             map.put("code", bk.getCode());
             List<Stock> finalStocks = stocks;

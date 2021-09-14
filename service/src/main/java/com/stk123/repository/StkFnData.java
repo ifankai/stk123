@@ -17,11 +17,7 @@ public interface StkFnData<E extends com.stk123.entity.StkFnData> {
         List<E> data = findAllByCodeInAndFnDateAfterOrderByCodeAscFnDateDescTypeAsc(codes, fnDate);
         Map<String, List<E>> result = new LinkedHashMap<>();
         for(com.stk123.entity.StkFnData n : data){
-            List<E> list = result.get(n.getCode());
-            if(list == null){
-                list = new ArrayList<>();
-                result.put(n.getCode(), list);
-            }
+            List<E> list = result.computeIfAbsent(n.getCode(), k -> new ArrayList<>());
             list.add((E) n);
         }
         return result;

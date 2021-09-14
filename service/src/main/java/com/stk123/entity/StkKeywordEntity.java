@@ -1,5 +1,7 @@
 package com.stk123.entity;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.stk123.model.json.View;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,6 +25,7 @@ public class StkKeywordEntity {
 
     @Basic
     @Column(name = "NAME", nullable = true, length = 200)
+    @JsonView(View.Default.class)
     private String name;
 
     @Basic
@@ -35,6 +38,7 @@ public class StkKeywordEntity {
 
     @Basic
     @Column(name = "STATUS", nullable = true, precision = 0)
+    @JsonView(View.Default.class)
     private Integer status;
 
     @Override

@@ -1,5 +1,7 @@
 package com.stk123.entity;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.stk123.model.json.View;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,6 +31,7 @@ public class StkKeywordLinkEntity {
 
     @Basic
     @Column(name = "KEYWORD_ID", nullable = true, precision = 0)
+    @JsonView(View.Default.class)
     private Long keywordId;
 
     @Basic
@@ -37,15 +40,17 @@ public class StkKeywordLinkEntity {
 
     @Basic
     @Column(name = "LINK_TYPE", nullable = true, precision = 0)
+    @JsonView(View.Default.class)
     private Integer linkType;
 
     @Basic
     @Column(name = "INSERT_TIME", nullable = true)
     private Date insertTime;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "KEYWORD_ID", insertable = false, updatable = false)
-    private StkKeywordEntity stkKeywordEntity;
+    @JsonView(View.Default.class)
+    private StkKeywordEntity keyword;
 
     @Override
     public boolean equals(Object o) {

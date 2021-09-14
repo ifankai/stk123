@@ -18,4 +18,10 @@ img.ke_img{
 }
 .card-footer{
     background-color: unset;
+    border-top: 1px solid rgba(0,0,0,.125);
+}
+pre{
+    padding: 0;
+    margin: 0;
+    font-size: 95%;
 }

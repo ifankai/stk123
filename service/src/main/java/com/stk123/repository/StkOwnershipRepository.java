@@ -30,11 +30,7 @@ public interface StkOwnershipRepository extends JpaRepository<StkOwnershipEntity
         List<StkOwnershipEntity> owners = findAllByCodeAndFnDateIsMax(codes);
         Map<String, List<StkOwnershipEntity>> result = new LinkedHashMap<>(codes.size());
         for(StkOwnershipEntity n : owners){
-            List<StkOwnershipEntity> list = result.get(n.getCode());
-            if(list == null){
-                list = new ArrayList<>();
-                result.put(n.getCode(), list);
-            }
+            List<StkOwnershipEntity> list = result.computeIfAbsent(n.getCode(), k -> new ArrayList<>());
             list.add(n);
         }
         return result;

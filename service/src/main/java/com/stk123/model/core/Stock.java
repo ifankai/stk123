@@ -2,7 +2,6 @@ package com.stk123.model.core;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.common.CommonConstant;
 import com.stk123.common.CommonUtils;
@@ -82,6 +81,8 @@ public class Stock {
     private FnService fnService;
     @Autowired
     private StkFnTypeRepository stkFnTypeRepository;
+    @Autowired
+    private StkKeywordLinkRepository stkKeywordLinkRepository;
 
 
     @JsonView({View.Default.class, View.Score.class})
@@ -124,6 +125,10 @@ public class Stock {
     private Fn fn;
     @JsonView(View.All.class)
     private List<Map> fnAsMap;
+    @JsonView(View.All.class)
+    private List<StkKeywordLinkEntity> businesses; //主营业务
+    @JsonView(View.All.class)
+    private List<StkKeywordLinkEntity> products; //主营产品
 
 
     private BarSeries barSeries;
@@ -223,7 +228,7 @@ public class Stock {
 
     private boolean loadIfNull(Object o) {
         if(stock == null && ObjectUtil.isEmpty(o)){
-            stock = stkRepository.findByCode(code);
+            stock = stkRepository.getByCode(code);
             set(stock);
         }
         return true;
@@ -1088,6 +1093,16 @@ public class Stock {
             return this.fnAsMap;
         }
         return null;
+    }
+
+    public List<StkKeywordLinkEntity> getBusinesses(){
+        if(this.businesses != null) return this.businesses;
+        return this.businesses = stkKeywordLinkRepository.findAllByCodeAndLinkType(this.code, StkConstant.KEYWORD_LINK_TYPE_MAIN_BUSINESS);
+    }
+
+    public List<StkKeywordLinkEntity> getProducts(){
+        if(this.products != null) return this.products;
+        return this.products = stkKeywordLinkRepository.findAllByCodeAndLinkType(this.code, StkConstant.KEYWORD_LINK_TYPE_MAIN_PRODUCT);
     }
 
 

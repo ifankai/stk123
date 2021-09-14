@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.common.CommonUtils;
 import com.stk123.common.util.JsonUtils;
 import com.stk123.entity.StkDictionaryEntity;
+import com.stk123.entity.StkEntity;
+import com.stk123.entity.StkKlineEntity;
 import com.stk123.entity.StkNewsEntity;
 import com.stk123.model.RequestResult;
 import com.stk123.model.core.Rating;
@@ -16,6 +18,7 @@ import com.stk123.model.enumeration.EnumMarket;
 import com.stk123.model.json.View;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.model.strategy.StrategyResult;
+import com.stk123.repository.StkKlineRepository;
 import com.stk123.repository.StkNewsRepository;
 import com.stk123.repository.StkRepository;
 import com.stk123.repository.StkTextRepository;
@@ -56,6 +59,8 @@ public class StockController {
     private StkNewsRepository stkNewsRepository;
     @Autowired
     private DictService dictService;
+    @Autowired
+    private StkKlineRepository stkKlineRepository;
 
     @RequestMapping(value = {"/init"})
     @ResponseBody
@@ -155,6 +160,13 @@ public class StockController {
             result = stockService.getStrategyResultAsMap(srs);
         }else{
             result = stockService.getStocksAsMap(stocks);
+            if(stocks.size() == 1){
+                String stkCode = stocks.get(0).getCode();
+                StkKlineEntity stkKlineEntity = stkKlineRepository.findTop1ByCodeOrderByKlineDateDesc(stkCode);
+                result.put("k", stkKlineEntity);
+                StkEntity stkEntity = stkRepository.findByCode(stkCode);
+                result.put("stk", stkEntity);
+            }
         }
         return RequestResult.success(result);
     }

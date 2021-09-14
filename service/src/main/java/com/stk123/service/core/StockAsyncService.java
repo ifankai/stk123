@@ -47,4 +47,8 @@ public class StockAsyncService {
     public Future<List<Stock>> buildFn(List<Stock> stocks, String dateAfter){
         return new AsyncResult<>(stockService.buildFn(stocks, dateAfter));
     }
+
+    public Future<List<Stock>> buildBusinessAndProduct(List<Stock> stocks){
+        return new AsyncResult<>(stockService.buildBusinessAndProduct(stocks));
+    }
 }
