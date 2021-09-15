@@ -447,7 +447,7 @@ function toggleDropdown (e) {
 
 $(function (){
     //处理navbar下拉列表鼠标经过就显示
-    $('body')
+    $('#navbarCollapse')
         .on('mouseenter mouseleave','.dropdown',toggleDropdown)
         .on('click', '.dropdown-menu a', toggleDropdown);
 
