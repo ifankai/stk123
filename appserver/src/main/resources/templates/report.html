@@ -6,6 +6,7 @@
     <title>小智慧 - 日报</title>
     <div th:replace="common/css_public"></div>
     <div th:replace="common/css_datatable"></div>
+    <link rel="stylesheet" href="/adminlte/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
     <link rel="stylesheet" th:href="'/css/public.css'+${_version}">
     <style>
         @media (min-width: 1200px) {
@@ -165,6 +166,9 @@
             margin-top: 3px;
             color: #6c757d;
         }
+        #calendar .table thead th{
+            padding: unset;
+        }
 </style>
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed text-sm pace-primary pace-done">
@@ -190,6 +194,14 @@
                             <div class="card-header">
                                 <h3 class="card-title" id="bk-stat">板块统计信息</h3>
                                 <div class="card-tools">
+                                    <div class="btn-group dropleft">
+                                        <button type="button" class="btn btn-sm dropdown-toggle" data-toggle="dropdown" data-offset="-52">
+                                            <i class="fas fa-bars"></i>
+                                        </button>
+                                        <div class="dropdown-menu" role="menu" style="z-index: 10000">
+                                            <div id="calendar" style="width: 100%"></div>
+                                        </div>
+                                    </div>
                                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="收起">
                                         <i class="fas fa-minus"></i>
                                     </button>
@@ -384,10 +396,26 @@
 </html>
 <div th:replace="common/js_public"></div>
 <div th:replace="common/js_datatable"></div>
+<script src="/adminlte/plugins/moment/moment-with-locales.min.js"></script>
+<script src="/adminlte/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
 <div th:replace="common/js_custom"></div>
 
 <script th:inline="javascript">
     const reportDate = [[${reportDate}]];
+
+    $(function () {
+        $('#calendar').datetimepicker({
+            format: 'L',
+            autoclose: true,
+            locale: 'zh-cn',
+            inline: true,
+            maxDate: moment().millisecond(999).second(59).minute(59).hour(23)
+        })
+        $('#calendar').on("change.datetimepicker", function (e) {
+            window.open('/report/'+moment(e.date).format("YYYYMMDD"));
+            //$('.dropdown-menu').removeClass("show");
+        });
+    });
 
     const config = {
         data() {
@@ -428,13 +456,15 @@
                         columns: [
                             {title:"策略", data:"strategyName"},
                             {title:"日期", data:"strategyDate"},
-                            {title:"操作", data:"action"}
+                            {title:"操作", data:"action"},
+                            {title:"操作", data:"action7"},
+                            {title:"操作", data:"action30"}
                         ],
                         paging:   false,
                         info: false,
                         searching : false,
                         columnDefs: [
-                            { className: "text-center", "targets": [ 1,2 ] }
+                            { className: "text-center", "targets": [ 1,2,3,4 ] }
                         ],
                         tableClass:{'table-hover':true}
                     }
@@ -511,6 +541,8 @@
                 _this.currentAllStocksRpsA.data.forEach(item => {
                     item.strategyDate = dateFormat(item.strategyDate);
                     item.action = elem('a', {href:'/s/'+item.rpsStockCode, target:'_blank'}, '查看全部').outerHTML;
+                    item.action7 = elem('a', {href:'/s/'+item.rpsStockCode7, target:'_blank'}, '7天内新增加的股票 ('+(item.rpsStockCode7==null?"0":item.rpsStockCode7.split(',').length)+")").outerHTML;
+                    item.action30 = elem('a', {href:'/s/'+item.rpsStockCode30, target:'_blank'}, '30天内新增加的股票 ('+(item.rpsStockCode30==null?"0":item.rpsStockCode30.split(',').length)+")").outerHTML;
                 })
                 _this.currentAllStocksRpsH = {data: data.currentAllStocksRpsH};
                 _this.currentAllStocksRpsH.data.forEach(item => {

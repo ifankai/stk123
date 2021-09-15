@@ -751,23 +751,30 @@ public class BarTask extends AbstractTask {
                 //rpsStocks = rpsStocks.subList(0, Math.min(150, rpsStocks.size()));
 
                 List<Stock> results = new ArrayList<>();
-                int cap1 = 50;
-                int cap2 = 30;
+                int cap20 = 10;
+                int cap30 = 50;
+                int cap100 = 50;
+                int cap200 = 30;
+                int cap500 = 20;
                 for(Stock stock : rpsStocks){
-                    if(stock.getMarketCap() >= 30 && stock.getMarketCap() < 100){
-                        if(cap1-- > 0){
+                    if(stock.getMarketCap() >= 15 && stock.getMarketCap() < 30){
+                        if(cap20-- > 0){
+                            results.add(stock);
+                        }
+                    }else if(stock.getMarketCap() >= 30 && stock.getMarketCap() < 100){
+                        if(cap30-- > 0){
                             results.add(stock);
                         }
                     }else if(stock.getMarketCap() >= 100 && stock.getMarketCap() < 200){
-                        if(cap1-- > 0){
+                        if(cap100-- > 0){
                             results.add(stock);
                         }
                     }else if(stock.getMarketCap() >= 200 && stock.getMarketCap() < 500){
-                        if(cap1-- > 0){
+                        if(cap200-- > 0){
                             results.add(stock);
                         }
                     }else if(stock.getMarketCap() >= 500){
-                        if(cap2-- > 0){
+                        if(cap500-- > 0){
                             results.add(stock);
                         }
                     }

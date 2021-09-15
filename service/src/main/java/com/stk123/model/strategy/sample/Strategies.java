@@ -29,6 +29,8 @@ public class Strategies {
 
     public static String STRATEGIES_ON_RPS = "01e,04d,04e,04f,06c";
 
+    public static String STRATEGIES_ON_BK_OUTSTANDING_STOCKS = "13a"; //板块精选个股策略
+
 
     private static Map<String, Strategy> CODE_STRATEGY = new HashMap<>();
 
@@ -473,6 +475,27 @@ public class Strategies {
         return strategy;
     }
 
+    public static Strategy strategy_13a() { //600141
+        Strategy<Stock> strategy = new Strategy<>("strategy_13a", "即将创新高(13a)", Stock.class);
+        Filter<Stock> filter = (strg, stock) -> {
+            Bar bar = stock.getBar();
+            Bar barHigh = bar.getHighestBar(20, Bar.EnumValue.H);
+            Bar k60 = bar.getHighestBar(60, Bar.EnumValue.H);
+            Bar k7 = bar.getHighestBar(7, Bar.EnumValue.H);
+            if(!barHigh.getDate().equals(k60.getDate())){
+                return FilterResult.FALSE(String.format("barhigh date:%s, k60 date:%s", barHigh.getDate(), k60.getDate()));
+            }
+            if(barHigh.getHigh() <= k7.getHigh()){
+                return FilterResult.FALSE(String.format("barhigh high:%f, k7 high:%f", barHigh.getHigh(), k7.getHigh()));
+            }
+            if((bar.getClose() * 1.08) < barHigh.getHigh()){
+                return FilterResult.FALSE(String.format("bar close:%f, barHigh high:%f", bar.getClose()*1.08, barHigh.getHigh()));
+            }
+            return FilterResult.TRUE();
+        };
+        strategy.addFilter("即将创新高", filter);
+        return strategy;
+    }
 
     /**************** Rps *********************/
 
@@ -807,6 +830,7 @@ public class Strategies {
         }, false);
         return strategy;
     }
+
 
 
     //大跌后，有减持，问询函？

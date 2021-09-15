@@ -736,6 +736,9 @@
 
         },
         updated() {
+        },
+        setup(){ //vue-composition-api
+            const count = Vue.ref(0);
         }
     };
     let app = createApp(config);
