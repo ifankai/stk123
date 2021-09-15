@@ -413,7 +413,7 @@
         })
         $('#calendar').on("change.datetimepicker", function (e) {
             window.open('/report/'+moment(e.date).format("YYYYMMDD"));
-            //$('.dropdown-menu').removeClass("show");
+            $('.dropdown-menu').removeClass("show");
         });
     });
 
