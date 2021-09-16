@@ -475,6 +475,7 @@ public class Strategies {
         return strategy;
     }
 
+    // @TODO
     public static Strategy strategy_13a() { //600141
         Strategy<Stock> strategy = new Strategy<>("strategy_13a", "即将创新高(13a)", Stock.class);
         Filter<Stock> filter = (strg, stock) -> {
