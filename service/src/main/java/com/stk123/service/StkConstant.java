@@ -5,6 +5,10 @@ import java.util.Map;
 
 public class StkConstant {
 
+    /** cookie code **/
+    public static final String COOKIE_XUEQIU = "xueqiu";
+    public static final String COOKIE_IWENCAI = "iwencai";
+
     /** dict **/
     public final static Integer DICT_MONITOR_K_PARAM1 = 1;
     public final static Integer DICT_MONITOR_K_PARAM2 = 2;
@@ -23,7 +27,7 @@ public class StkConstant {
     public final static Integer DICT_TEXT_SUB_TYPE = 400;       //文档子类型
 
     public final static Integer DICT_NEWS = 2000;           //stk_news.type
-
+    public final static Integer DICT_COOKIE = 500;           //cookies
 
     /** stk_fn_type.type **/
     public final static Integer FN_TYPE_110 = 110; //主营业务收入增长率(%)

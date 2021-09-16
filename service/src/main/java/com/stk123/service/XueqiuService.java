@@ -2,6 +2,7 @@ package com.stk123.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.stk123.common.util.CommonHttpUtils;
 import com.stk123.common.util.ConfigUtils;
 import com.stk123.common.util.HtmlUtils;
 import com.stk123.common.util.JsonUtils;
@@ -53,13 +54,7 @@ public class XueqiuService {
 		Map<String, String> requestHeaders = new HashMap<String, String>();
 		if(cookies == null){
 			//cookies = login();
-			try {
-				String json = HttpUtils.get("http://81.68.255.181:8089/cookie/get", "utf-8");
-				cookies = String.valueOf(JsonUtils.testJson(json).get("data"));
-			} catch (Exception e) {
-				log.error("Get cookie from 'http://81.68.255.181:8089/cookie/get' error", e);
-			}
-			log.info("Get cookie from 81.68.255.181:"+cookies);
+			cookies = CommonHttpUtils.getCookieByType(StkConstant.COOKIE_XUEQIU);
 		}
 		if(cookies == null || cookies.length() == 0){
 			try {

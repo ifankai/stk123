@@ -1,13 +1,143 @@
-<html xmlns:th="http://www.thymeleaf.org">
-<body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>小智慧 - Cookie</title>
+    <div th:replace="common/css_public"></div>
+    <div th:replace="common/css_datatable"></div>
+    <link rel="stylesheet" th:href="'/css/public.css'+${_version}">
+    <style>
+        @media (min-width: 1200px) {
+            .img-width img {
+                width: 410px;
+                padding: 2px;
+                text-align: center;
+            }
+            .container{
+                max-width: 1350px;
+            }
+        }
+        @media (max-width: 650px) {
+            .container{
+                min-width: 615px;
+            }
 
-<div class="container" style="text-align: center">
-    <form action="/cookie/set" method="post" >
-        <textarea name="cookie" style="width: 100%; height: 200px" th:text="${cookie}"></textarea>
-        <button onclick="this">Set Cookie</button>
-        <div>Last Cookie Set Date: <span th:text="${cookie_set_date}"></span></div>
-    </form>
+        }
+
+        textarea{
+            width: 100%;
+            height: 100px;
+        }
+
+    </style>
+</head>
+<body class="hold-transition layout-top-nav layout-navbar-fixed text-sm pace-primary pace-done">
+<div class="pace pace-inactive">
+    <div class="pace-progress" data-progress-text="100%" data-progress="99" style="transform: translate3d(100%, 0px, 0px);">
+        <div class="pace-progress-inner"></div>
+    </div>
+    <div class="pace-activity"></div>
 </div>
+<!-- Site wrapper -->
+<div id="app" class="wrapper">
+    <div th:replace="common/navbar"></div>
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header"></section>
 
+        <section class="content">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+
+                        <div id="notice" class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Cookies</h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="收起">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="card-body">
+                                <table class="table table-bordered table-cookie">
+                                    <thead>
+                                        <tr>
+                                            <th v-for="cookie in common.cookie" class="text-center text-nowrap">
+                                                <span v-text="cookie.title" ></span>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="cookie in cookies" :key="cookie.code">
+                                            <td v-text="cookie.code"></td>
+                                            <td><textarea v-model="cookie.value"></textarea></td>
+                                            <td v-text="tsFormat(cookie.updatedTime)"></td>
+                                            <td><button @click="save(cookie)">保 存</button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <a id="back-to-top" href="#" class="btn btn-outline-primary back-to-top" style="display: none" role="button" aria-label="Scroll to top">
+            <i class="fas fa-chevron-up"></i>
+        </a>
+    </div>
+
+    <div th:replace="common/footer"></div>
+</div>
+<!-- ./wrapper -->
 </body>
 </html>
+<div th:replace="common/js_public"></div>
+<div th:replace="common/js_datatable"></div>
+<div th:replace="common/js_custom"></div>
+
+<script th:inline="javascript">
+
+    const config = {
+        data() {
+            return {
+                loading: true,
+                common:{
+                    cookie:[
+                        {title:"code", data:"code"},
+                        {title:"value", data:"value"},
+                        {title:"updatedTime", data:"updatedTime"},
+                        {title:"action", data:"action"}
+                    ]
+                },
+                cookies:{}
+            }
+        },
+        methods:{
+            save:function (cookie) {
+                axios.post("/cookie/"+cookie.code, {
+                    value: cookie.value
+                }).then(function (res) {
+                    alert("保存成功");
+                });
+            }
+        },
+        computed: {
+        },
+        mounted() {
+            let _this = this;
+            axios.get("/cookie/list").then(function (res) {
+                _this.cookies = res.data.data;
+                console.log('mounted', _this.$data)
+            });
+
+        }
+    };
+    createApp(config);
+
+</script>

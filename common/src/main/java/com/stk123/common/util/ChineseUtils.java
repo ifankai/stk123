@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.github.houbb.opencc4j.util.ZhConverterUtil;
 import com.stk123.common.CommonConstant;
 
 public class ChineseUtils {
@@ -349,5 +350,7 @@ public class ChineseUtils {
         String s = HtmlUtils.removeHTML("<p>这选择不难嘛。。。</p><p><a href=\"http://xueqiu.com/S/SH603156\" target=\"_blank\">$养元饮品(SH603156)$</a> <a href=\"http://xueqiu.com/S/SZ000848\" target=\"_blank\">$承德露露(SZ000848)$</a> <a href=\"http://xueqiu.com/S/SH601933\" target=\"_blank\">$永辉超市(SH601933)$</a> </p><br/><img class=\"ke_img\" src=\"https://xqimg.imedao.com/177572ff12254edb3fd8bdbb.jpg!custom.jpg\" /><br/><img class=\"ke_img\" src=\"https://xqimg.imedao.com/177572ff56d54edc3fd8efd4.jpg!custom.jpg\" /><br/><img class=\"ke_img\" src=\"https://xqimg.imedao.com/177572ffb9354e4a3fe516eb.jpg!custom.jpg\" />");
         System.out.println(s);
         System.out.println(length(s));
+        //繁体 to 简体
+        System.out.println(ZhConverterUtil.convertToSimple("民眾總希望可以住到舒適的環境"));
     }
 }

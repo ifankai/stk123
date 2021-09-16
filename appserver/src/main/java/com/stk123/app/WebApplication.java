@@ -103,13 +103,6 @@ public class WebApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(WebApplication.class, args);
-
-		try {
-			Path path = Paths.get("./cookie.txt");
-            CookieController.COOKIE = new String(Files.readAllBytes(path));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
     @Bean

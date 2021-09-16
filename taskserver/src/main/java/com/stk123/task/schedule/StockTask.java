@@ -3,6 +3,7 @@ package com.stk123.task.schedule;
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stk123.common.CommonUtils;
+import com.stk123.common.util.CommonHttpUtils;
 import com.stk123.common.util.HtmlUtils;
 import com.stk123.common.util.ListUtils;
 import com.stk123.entity.*;
@@ -409,8 +410,7 @@ public class StockTask extends AbstractTask {
                 String url = "http://www.iwencai.com/unifiedwap/unified-wap/v2/result/get-robot-data";
                 String body = "question="+stock.getCode()+"&perpage=50&page=1&secondary_intent=&log_info=%7B%22input_type%22%3A%22click%22%7D&source=Ths_iwencai_Xuangu&version=2.0&query_area=&block_list=&add_info=%7B%22urp%22%3A%7B%22scene%22%3A1%2C%22company%22%3A1%2C%22business%22%3A1%7D%2C%22contentType%22%3A%22json%22%2C%22searchInfo%22%3Atrue%7D";
                 Map headers = new HashMap();
-                //headers.put("Cookie","chat_bot_session_id=b7297f50053c6d56b3717f72fb4ec438; other_uid=Ths_iwencai_Xuangu_zvz37zsvetq8wk44fhyhbxrrdk6w6rwn; cid=e9dec1382a4934d1f30b71e4ca3e171e1618804855; cid=e9dec1382a4934d1f30b71e4ca3e171e1618804855; ComputerID=e9dec1382a4934d1f30b71e4ca3e171e1618804855; ta_random_userid=y0oykc8vll; WafStatus=1; PHPSESSID=54bcd01da52259f7a9b337d523599864; v=A5Qhmc69iX40Lx2yQbCdZlRQZdkU7bjX-hFMGy51IJ-iGTrNVv2IZ0ohHK19");
-                headers.put("Cookie","other_uid=Ths_iwencai_Xuangu_zvz37zsvetq8wk44fhyhbxrrdk6w6rwn; cid=e9dec1382a4934d1f30b71e4ca3e171e1618804855; cid=e9dec1382a4934d1f30b71e4ca3e171e1618804855; ComputerID=e9dec1382a4934d1f30b71e4ca3e171e1618804855; ta_random_userid=y0oykc8vll; WafStatus=1; v=A_5L3wjPE5A5HUe0GqbX2GriTx9SP8OCVAF2n6gPa1E8CpCLEM8SySSTxqF7");
+                headers.put("Cookie", CommonHttpUtils.getCookieByType(StkConstant.COOKIE_IWENCAI));
                 //Map map = httpService.postMap(url, body, );
                 String page = HttpUtils.post(url, null, body, headers,"utf-8", null);
                 ObjectMapper mapper = new ObjectMapper();

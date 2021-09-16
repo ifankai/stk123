@@ -384,6 +384,41 @@ public class CommonHttpUtils {
         return response;
     }
 
+    public static String getCookie(String url, String enc) throws Exception {
+        String response = EMPTY;
+        GetMethod getMethod = null;
+        StringBuffer strtTotalURL = new StringBuffer(url);
+
+        HttpState httpState = new HttpState();
+        client.setState(httpState);
+
+        try {
+            getMethod = new GetMethod(strtTotalURL.toString());
+            client.getParams().setParameter(HttpClientParams.HTTP_CONTENT_CHARSET, enc);
+            getMethod.setRequestHeader(ContentType, ContentTypeValue + enc);
+            getMethod.setRequestHeader(UserAgent, UserAgentValue);
+            getMethod.setRequestHeader(CacheControl, CacheControlValue);
+            client.getParams().setParameter(ProtocolCookiePolicy, CookiePolicy.BROWSER_COMPATIBILITY);
+            //执行getMethod
+            int statusCode = client.executeMethod(getMethod);
+            if(statusCode == HttpStatus.SC_OK) {
+                for(Header header : getMethod.getResponseHeaders()){
+                    System.out.println(header.getName()+"="+header.getValue());
+                }
+            }
+        }catch(Exception e){
+            System.err.println("发生异常:"+url);
+            //e.printStackTrace();
+            throw e;
+        }finally{
+            if(getMethod != null){
+                getMethod.releaseConnection();
+                getMethod = null;
+            }
+        }
+        return response;
+    }
+
     /**
      * 据Map生成URL字符串
      * @param map   Map
@@ -627,19 +662,10 @@ public class CommonHttpUtils {
         //copy /b  E:\downloads\mv\file_name\*.ts  E:\downloads\mv\zzz\file_name.ts
         //C:\Program Files (x86)\MediaCoder ts转码mp4
 
-        downloadMV("https://play.168168bo.com/20181209/tJJUhLUl/700kb/hls/UOqeHuzz6156000.ts", "漂亮小姐姐直播小秀 我就想研究一下她的纹身", 0);
-
-        downloadMV("https://play.520520bo.com/20201015/2hsaU1e9/700kb/hls/zccBs6me5479001.ts", "高颜值妹妹 白色内衣 巨乳肥臀 镜头前秀屁股", 1);
-        downloadMV("https://play.520520bo.com/20200522/zGO357rO/700kb/hls/ib28ovs7002000.ts", "高颜值御姐范 妹子身材 丰满诱人 情趣黑丝大秀 撸点高", 0);
-
-
-
-
-
-
-
-
+        //downloadMV("https://play.168168bo.com/20181209/tJJUhLUl/700kb/hls/UOqeHuzz6156000.ts", "漂亮小姐姐直播小秀 我就想研究一下她的纹身", 0);
         //CommonHttpUtils.download("http://bp.pep.com.cn/jc/yjcz/czsxjc/202001/P020200210126052860555.pdf", "d:\\share\\义务教育教科书\\");
+
+        getCookie("http://www.iwencai.com/unifiedwap/home/index", "utf-8");
     }
 
     public static void downloadMV(String ds, final String toDir, int start) throws Exception{
@@ -738,6 +764,18 @@ public class CommonHttpUtils {
             out.close();
         } finally {
             httpGet.releaseConnection();
+        }
+    }
+
+    public static String getCookieByType(String type){
+        try {
+            String json = CommonHttpUtils.get("http://81.68.255.181:8089/cookie/"+type, "utf-8");
+            String cookie = String.valueOf(JsonUtils.testJson(json).get("data"));
+            log.info("Get cookie from 81.68.255.181: "+cookie);
+            return cookie;
+        } catch (Exception e) {
+            log.error("Get cookie from 'http://81.68.255.181:8089/cookie/"+type+"' error", e);
+            return null;
         }
     }
 }

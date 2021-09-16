@@ -771,6 +771,7 @@ alter table stk_dictionary modify param_2 varchar2(400);
 alter table stk_dictionary modify param_3 varchar2(400);
 alter table stk_dictionary modify param_4 varchar2(400);
 alter table stk_dictionary modify param_5 varchar2(400);
+alter table stk_dictionary modify remark varchar2(4000);
 
 create table stk_label(
   id number(6),
@@ -3057,8 +3058,8 @@ update stk_dictionary set text ='资产置换|转让' where type=2000 and key = 
 select code,kline_date ,open,close,high,low,volumn as volume,amount,last_close,percentage as change,hsl,pe_ttm,pb_ttm from (select t.*, rank() over(partition by t.code order by t.kline_date desc) as rn
 from stk_kline t where t.code in ('002346','600600','600601','601958','600531','000758','000060','600497','000807','000751','600395','600456','002340','002237','000612','600459','000960','600251')) where rn <= 1
 
-select * from stk_report_header where report_date='20210809' for update;
-select * from stk_report_detail where header_id in (10144) for update;
+select * from stk_report_header where type='allstocks_rps' order by insert_time desc;
+select * from stk_report_detail where header_id in (10031) for update;
 select distinct type from stk_report_header;
 
 select * from stk_report_header order by report_date desc, insert_time desc ;
@@ -3095,3 +3096,11 @@ delete from stk_text where code='600600' and type =4;
 select * from stk_text where sub_type=110 and id>=30815064 order by insert_time desc;
 
 select * from stk_fn_data where code='603305' order by fn_date desc;
+
+select k.name,count(l.code) from stk_keyword k, stk_keyword_link l 
+where k.id=l.keyword_id and l.link_type=1 group by k.name order by count(l.code) desc;
+
+select k.name,count(l.code) from stk_keyword k, stk_keyword_link l
+where k.id=l.keyword_id and l.link_type=2 group by k.name order by count(l.code) desc;
+
+select * from stk_dictionary;
