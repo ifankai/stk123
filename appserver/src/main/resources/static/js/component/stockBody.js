@@ -107,7 +107,7 @@ const _stockBody = {
                     n.type = '['+n.dict.text+']';
                     n.title = '<a target="_blank" href="'+n.urlTarget+'">'+n.title+'</a>';
                 })
-                return this.stock.news = {data: this.stock.news};
+                return {data: this.stock.news};
             }
         }
     },

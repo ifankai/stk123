@@ -111,6 +111,9 @@
         .dropdown-divider{
             margin: unset;
         }
+        .img-width{
+            width: 350px !important;
+        }
     </style>
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed text-sm pace-primary pace-done">
@@ -143,8 +146,14 @@
                                     <label for="bk-rb-0" class="custom-control-label">全部股票<span v-text="' ('+total+')'"></span></label>
                                 </div>
                                 <div class="card-tools">
+                                    <button @click="displayType='card'" type="button" class="btn btn-sm" title="卡片呈现">
+                                        <i class="fal fa-grip-vertical"></i>
+                                    </button>
+                                    <button @click="displayType='table'" type="button" class="btn btn-sm" title="表格呈现">
+                                        <i class="fal fa-table"></i>
+                                    </button>
                                     <div class="btn-group ml-1">
-                                        <button type="button" class="btn btn-primary btn-xs dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">
+                                        <button type="button" class="btn btn-xs dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">
                                             <span v-text="seletedStrategyName"></span>
                                         </button>
                                         <div class="dropdown-menu left-10" role="menu">
@@ -155,7 +164,7 @@
                                         </div>
                                     </div>
                                     <div class="btn-group ml-1">
-                                        <button type="button" class="btn btn-primary btn-xs dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">
+                                        <button type="button" class="btn btn-xs dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">
                                             <span v-text="seletedRpsName"></span>
                                         </button>
                                         <div class="dropdown-menu" role="menu">
@@ -223,33 +232,42 @@
                 </div>
 
                 <div class="row">
-                    <section v-for="idx in [0,1]" class="col-lg-6 connectedSortable">
-                        <!-- Custom tabs (Charts with tabs)-->
-                        <template v-for="(stk, index) in stocks">
-                            <template v-if="index % 2 === idx">
-                                <div class="card" :key="stk.stock.code">
-                                    <div class="card-header">
-                                        <h3 class="card-title">
-                                            <span v-html="stk.stock.nameAndCodeWithLink"></span> 评分:<span v-text="stk.stock.rating.total"></span>
-                                        </h3>
-                                        <div class="card-tools">
-                                            <eye :stock="stk.stock"></eye>
-                                            <button title="加入自选" type="button" class="btn btn-tool">
-                                                <i class="fas fa-plus"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-tool" data-card-widget="remove">
-                                                <i class="fas fa-times"></i>
-                                            </button>
-                                        </div>
-                                    </div><!-- /.card-header -->
-                                    <div class="card-body">
-                                        <stockbody :stock="stk.stock"></stockbody>
-                                    </div><!-- /.card-body -->
-                                    <div class="card-footer"></div>
-                                </div>
+                    <template v-if="displayType==='table'">
+                        <div class="card">
+                            <div class="card-body">
+                                <datatable :="{...common.stocks}" :data="stocks.map(stock => stock.stock)"></datatable>
+                            </div>
+                        </div>
+                    </template>
+                    <template v-else-if="displayType==='card'">
+                        <section v-for="idx in [0,1]" class="col-lg-6 connectedSortable">
+                            <!-- Custom tabs (Charts with tabs)-->
+                            <template v-for="(stk, index) in stocks">
+                                <template v-if="index % 2 === idx">
+                                    <div class="card" :key="stk.stock.code">
+                                        <div class="card-header">
+                                            <h3 class="card-title">
+                                                <span v-html="stk.stock.nameAndCodeWithLink"></span> 评分:<span v-text="stk.stock.rating.total"></span>
+                                            </h3>
+                                            <div class="card-tools">
+                                                <eye :stock="stk.stock"></eye>
+                                                <button title="加入自选" type="button" class="btn btn-tool">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                        </div><!-- /.card-header -->
+                                        <div class="card-body">
+                                            <stockbody :stock="stk.stock"></stockbody>
+                                        </div><!-- /.card-body -->
+                                        <div class="card-footer"></div>
+                                    </div>
+                                </template>
                             </template>
-                        </template>
-                    </section>
+                        </section>
+                    </template>
                 </div>
 
                 <div class="row" style="display: none">
@@ -647,6 +665,7 @@
             return {
                 title: title,
                 loading: true,
+                displayType:'card',
                 selectedTabName: '日线',
                 //selectedTabIndex: 1,
                 seletedRpsName: 'RPS排序',
@@ -654,6 +673,18 @@
                 bkSelected: [],
                 niusanSelected: [],
                 common:{
+                    stocks:{
+                        type: 1,
+                        columns: [
+                            {data:"nameAndCodeWithLinkBreak"},
+                            {data:"dayBarImage"},
+                            {data:"weekBarImage"},
+                            {data:"monthBarImage"}],
+                        columnDefs: [
+                            { className: "img-width", "targets": [ 1,2,3 ] }
+                        ],
+                        tableClass:{'table-hover':true}
+                    },
                     news:{
                         type: 1,
                         columns: [{data:"type"},{data:"title"},{data:"infoCreateTime"}],

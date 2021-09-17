@@ -23,7 +23,7 @@ public class Strategies {
     // ignore: 02a 选出来的标的太多，由02b替换
     public static String STRATEGIES_MY_STOCKS = "01a,01b,01d,02b,03a,03b,04a,04b,04c,05a,05b,06a,06b,06c,10a"; //,
 
-    public static String STRATEGIES_ALL_STOCKS = "01a,01b,01c,05b,06c,10a"; //,11a
+    public static String STRATEGIES_ALL_STOCKS = "01a,01b,01c,05b,06c,10a,11a"; //
 
     public static String STRATEGIES_BK = "01a,01b,02b,03a,04a,04b,04c,05a,05b,06a,06b,06c,08a,08b,08c,10a"; //03b,
 
@@ -371,25 +371,25 @@ public class Strategies {
 
     /**** 阶段强势 ****/
     public static Strategy strategy_08a() {
-        String turningPoint20 = Strategies.getTurningPoint(20);
-        return strategy_08("strategy_08a","20日板块阶段强势(08a)，自"+turningPoint20+"以来", turningPoint20);
+        String turningPoint20 = Strategies.getTurningPoint(18);
+        return strategy_08("strategy_08a","18日板块阶段强势(08a)，自"+turningPoint20+"以来", turningPoint20);
     }
     public static Strategy strategy_08b() {
-        String turningPoint20 = Strategies.getTurningPoint(20);
-        String turningPoint60 = Strategies.getTurningPoint(60);
+        String turningPoint20 = Strategies.getTurningPoint(18);
+        String turningPoint60 = Strategies.getTurningPoint(55);
         if(turningPoint20.equals(turningPoint60)){
             return null;
         }
-        return strategy_08("strategy_08b","60日板块阶段强势(08b)，自"+turningPoint60+"以来", turningPoint60);
+        return strategy_08("strategy_08b","55日板块阶段强势(08b)，自"+turningPoint60+"以来", turningPoint60);
     }
     public static Strategy strategy_08c() {
-        String turningPoint20 = Strategies.getTurningPoint(20);
-        String turningPoint60 = Strategies.getTurningPoint(60);
-        String turningPoint120 = Strategies.getTurningPoint(120);
+        String turningPoint20 = Strategies.getTurningPoint(18);
+        String turningPoint60 = Strategies.getTurningPoint(55);
+        String turningPoint120 = Strategies.getTurningPoint(110);
         if(turningPoint20.equals(turningPoint120) || turningPoint60.equals(turningPoint120)){
             return null;
         }
-        return strategy_08("strategy_08c","120日板块阶段强势(08c)，自"+turningPoint120+"以来", turningPoint120);
+        return strategy_08("strategy_08c","110日板块阶段强势(08c)，自"+turningPoint120+"以来", turningPoint120);
     }
     private static Strategy strategy_08(String code, String name, String turningPoint) {
         Strategy<Stock> strategy = new Strategy<>(code, name, Stock.class);
@@ -413,7 +413,7 @@ public class Strategies {
 
 
     /**** 跳空缺口 ****/
-    @Deprecated //TODO 还要优化
+    @Deprecated //@TODO 还要优化
     public static Strategy strategy_09a() {
         Strategy<Stock> strategy = new Strategy<>("strategy_09a","跳空缺口，前期突破趋势(09a)", Stock.class);
         strategy.addFilter("跳空缺口", Filters.filter_mustGapUp(10));
@@ -434,7 +434,7 @@ public class Strategies {
 
     /**** 低位突破趋势线后，连续2根放量阳线 ****/
     //300061 202010416   600735 20210408    600007 20210430    600793 20210107
-    public static Strategy strategy_11a() {
+    public static Strategy strategy_11a() { //@TODO 加入资金流判断
         Strategy<Stock> strategy = new Strategy<>("strategy_11a", "低位突破趋势线后，连续2根放量阳线(11a)", Stock.class);
         strategy.addFilter("Rps", Filters.filter_mustRpsGreatThan(Rps.CODE_BK_60, 80));
         strategy.addFilter("阳线", Filters.filter_mustBarIsYang(0, 0.04));
@@ -449,6 +449,13 @@ public class Strategies {
         //strategy.addFilter("突破中期趋势线",Stock::getBarSeries, Filters.filter_008b(100, 7, 0.02, 0.13));
         strategy.addFilter("", Filters.filter_mustHSLPercentileGreatThan(120, 2, 98));
         strategy.addFilter("", Filters.filter_mustChangeBetweenLowestAndToday(30, 0, 0.5));
+        strategy.addFilter("3天至少2天资金流入", (strgy, stock) -> {
+            Bar bar = stock.getBar();
+            if(bar.getBarCount(3, bar1 -> bar1.getCapitalFlowAmount() > 0) >= 2){
+                return FilterResult.TRUE();
+            }
+            return FilterResult.FALSE();
+        });
         strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(120, 20));
         return strategy;
     }
