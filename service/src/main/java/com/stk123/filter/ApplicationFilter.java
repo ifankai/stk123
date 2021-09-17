@@ -1,10 +1,14 @@
 package com.stk123.filter;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -34,6 +38,7 @@ public class ApplicationFilter implements Filter {
             log.info("==> uri: {}, {}, cost: {}ms", uri, getParametersAsMap(httpServletRequest), System.currentTimeMillis() - start);
         }
     }
+
 
     private Map getParametersAsMap(HttpServletRequest request){
         Enumeration<String> enumeration = request.getParameterNames();

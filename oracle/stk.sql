@@ -2766,7 +2766,7 @@ select b.name,a.stk_num,a.rate,a.num_change,a.num_change_rate from stk_ownership
 select fn_date from(select distinct fn_date from stk_ownership where code='000002' order by fn_date desc) where rownum <= 16
 
 
-select * from stk_dictionary where type=21;
+select * from stk_dictionary where type=500;
 insert into stk_dictionary select 21,'睿远','睿远',null,12,null,null,null,null from dual;
 
 
@@ -3103,4 +3103,4 @@ where k.id=l.keyword_id and l.link_type=1 group by k.name order by count(l.code)
 select k.name,count(l.code) from stk_keyword k, stk_keyword_link l
 where k.id=l.keyword_id and l.link_type=2 group by k.name order by count(l.code) desc;
 
-select * from stk_dictionary;
+select * from stk_dictionary where type=500;
