@@ -146,10 +146,10 @@
                                     <label for="bk-rb-0" class="custom-control-label">全部股票<span v-text="' ('+total+')'"></span></label>
                                 </div>
                                 <div class="card-tools">
-                                    <button @click="displayType='card'" type="button" class="btn btn-sm" title="卡片呈现">
+                                    <button @click="displayType='card'" :disabled="displayType==='card'" type="button" class="btn btn-sm" title="卡片呈现">
                                         <i class="fal fa-grip-vertical"></i>
                                     </button>
-                                    <button @click="displayType='table'" type="button" class="btn btn-sm" title="表格呈现">
+                                    <button @click="displayType='table'" :disabled="displayType==='table'" type="button" class="btn btn-sm" title="表格呈现">
                                         <i class="fal fa-table"></i>
                                     </button>
                                     <div class="btn-group ml-1">
