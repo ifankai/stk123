@@ -193,6 +193,18 @@
                                                         </p>
                                                     </div>
                                                 </template>
+                                                <template v-else>
+                                                    <div class="search-title">
+                                                        <div v-if="result.title != null">
+                                                            <span class="search-type">[TODO] </span><a v-html="result.title" :href="result.source" target="_blank"></a>
+                                                            <br/><span class="result-stocks" v-html="getRelatedStocks(result)"></span>
+                                                        </div>
+                                                        <div v-else-if="result.title == null">
+                                                            <span class="search-type">[TODO] </span>
+                                                            <span v-html="getRelatedStocks(result)" class="search-title"></span>
+                                                        </div>
+                                                    </div>
+                                                </template>
                                             </li>
 
                                             <li style="padding: 26px 0 26px 0;">

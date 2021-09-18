@@ -6,6 +6,7 @@
     <title th:text="${title}+' - 小智慧'">小智慧 - 股票</title>
     <div th:replace="common/css_public"></div>
     <div th:replace="common/css_datatable"></div>
+    <link rel="stylesheet" href="/css/tippy.css"/>
     <link rel="stylesheet" th:href="'/css/public.css'+${_version}">
     <style>
         @media (min-width: 1200px) {
@@ -171,8 +172,8 @@
                                             <table><tr>
                                                 <td class="text-nowrap pr-2">所属行业:</td>
                                                 <td><template v-for="bk in bksByRps01">
-                                                        <a style="float: left" target='_blank' :href="'/bk/'+bk.code"> <!-- float: left 确保行业和下标在一行 -->
-                                                            <span v-text="bk.name"></span>
+                                                        <a  style="float: left" target='_blank' :href="'/bk/'+bk.code"> <!-- float: left 确保行业和下标在一行 -->
+                                                            <span class="tippy" :title="bk.name" v-text="bk.name"></span>
                                                             <sub title="rps值" :class="bk.rps.rps_01.percentile >= 85?'red':''" v-text="'('+(bk.rps.rps_01.percentile).toFixed(0)+')'"></sub>
                                                         </a>
                                                     </template></td>
@@ -182,7 +183,7 @@
                                             <table><tr>
                                                 <td class="text-nowrap pr-2">主营业务:</td>
                                                 <td><template v-for="business in stock.businesses">
-                                                        <a v-text="business.keyword.name" target='_blank' :href="'/q/'+business.keyword.name"></a>
+                                                        <a class="tippy" :title="business.keyword.name" v-text="business.keyword.name" target='_blank' :href="'/q/'+business.keyword.name"></a>
                                                     </template></td>
                                             </tr></table>
                                         </blockquote>
@@ -190,7 +191,7 @@
                                             <table><tr>
                                                 <td class="text-nowrap pr-2">主营产品:</td>
                                                 <td><template v-for="product in stock.products">
-                                                        <a v-text="product.keyword.name" target='_blank' :href="'/q/'+product.keyword.name"></a>
+                                                        <a class="tippy" :title="product.keyword.name" v-text="product.keyword.name" target='_blank' :href="'/q/'+product.keyword.name"></a>
                                                     </template></td>
                                             </tr></table>
                                         </blockquote>
@@ -214,33 +215,45 @@
                                     <div class="col-6">
                                         <blockquote class="quote-secondary">
                                             <p>
+                                                <span class="mr-2">平台: </span>
                                                 <a target="_blank" th:href="@{'http://www.xueqiu.com/S/'+${codeWithPlace} }">雪球</a>
                                                 <a target="_blank" th:href="@{'http://guba.eastmoney.com/list,'+${code}+'.html'}">股吧</a>
                                                 <a target="_blank" th:href="@{'http://www.taoguba.com.cn/guba_'+${#strings.toLowerCase(codeWithPlace)} }">淘股吧</a>
+                                                <a target="_blank" th:href="@{'https://www.qichacha.com/search?key='+${name}}">企查查</a>
+                                                <a target="_blank" href="http://moer.jiemian.com/stockcode.htm?code=cn_">摩尔经融</a>
+                                            </p>
+                                        </blockquote>
+                                        <blockquote class="quote-secondary">
+                                            <p>
+                                                <span class="mr-2">搜索: </span>
+                                                <a target="_blank" th:href="@{'https://ge1.azurewebsites.net/search?q='+${name}}">Google搜索</a>
+                                                <a target="_blank" th:href="@{'https://magi.com/search?q='+${name}}">Magi搜索</a>
+                                                <a target="_blank" th:href="@{'https://www.p5w.net/so/?keyword='+${name}}">全景搜索</a>
+                                                <a target="_blank" th:href="@{'https://weixin.sogou.com/weixin?type=2&query='+${name}+'&ie=utf8'}">微信搜索</a>
                                                 <a target="_blank" th:href="@{'http://s.weibo.com/wb/'+${name}+'&xsort=time&Refer=wb_realtime'}">微博搜索</a>
                                                 <a target="_blank" th:href="@{'http://www.baidu.com/s?wd='+${name}+'%20site%3A(blog.sina.com.cn)&ie=utf-8&cl=3&t=12'}">新浪Blog</a>
                                                 <a target="_blank" th:href="@{'http://www.baidu.com/s?wd='+${name}+'%20site%3A(blog.eastmoney.com)&ie=utf-8&cl=3&t=12'}">东财Blog</a>
-                                                <a target="_blank" th:href="@{'https://www.qichacha.com/search?key='+${name}}">企查查</a>
+                                                <a target="_blank" th:href="@{'http://news.baidu.com/ns?ct=0&rn=20&ie=utf-8&bs='+${name}+'&rsv_bp=1&sr=0&cl=2&f=8&prevct=0&word='+${name}+'&tn=newstitle&inputT=0'}">百度新闻</a>
                                             </p>
                                         </blockquote>
                                         <blockquote class="quote-secondary">
                                             <p>
-                                                <a target="_blank" href="http://moer.jiemian.com/stockcode.htm?code=cn_">摩尔经融</a>
-                                                <a target="_blank" href="http://114.80.159.18/CorpEventsWeb/NewsEventAlert.aspx?windcode=&t=1">大事提醒</a>
-                                                <a target="_blank" th:href="@{'https://weixin.sogou.com/weixin?type=2&query='+${name}}">微信搜索</a>
-                                                <a target="_blank" th:href="@{'http://news.baidu.com/ns?ct=0&rn=20&ie=utf-8&bs='+${name}+'&rsv_bp=1&sr=0&cl=2&f=8&prevct=0&word='+${name}+'&tn=newstitle&inputT=0'}">百度新闻</a>
+                                                <span class="mr-2">公司: </span>
                                                 <a target="_blank" th:href="@{'http://www.xueqiu.com/S/'+${codeWithPlace}+'/GSJJ'}">公司网页</a>
                                                 <a target="_blank" th:href="@{'http://f9.eastmoney.com/soft/gp30.php?code='+${code}+ ${placeCode==1?'01':'02'} }">核心题材</a>
-                                                <a target="_blank" th:href="@{'http://data.eastmoney.com/rzrq/detail/'+${code}+'.html'}">融资融券</a>
                                             </p>
                                         </blockquote>
                                         <blockquote class="quote-secondary">
                                             <p>
+                                                <span class="mr-2">公告: </span>
                                                 <a target="_blank" th:href="@{'http://www.baidu.com/s?wd='+${name}+' 招股说明书 site:('+${placeCode==1?'sse.com.cn':'szse.cn'}+')&ie=utf-8&cl=3&t=12&fr=news'}">招股说明书</a>
                                                 <a target="_blank" th:href="@{'http://rs.p5w.net/c/'+${code}+'.shtml'}">投资者互动平台</a>
                                                 <a target="_blank" th:href="@{'http://www.cninfo.com.cn/information/companyinfo.html?fulltext?'+${code} }">巨潮公告</a>
                                                 <a target="_blank" th:href="@{'http://www.cninfo.com.cn/information/companyinfo.html?periodicalreport?'+${code} }">定期报告</a>
                                                 <a target="_blank" th:href="@{'http://stockdata.stock.hexun.com/2008/ggqw.aspx?page=1&stockid='+${code} }">公告全文</a>
+                                            </p>
+                                            <p>
+                                                <span class="mr-2">研报: </span>
                                                 <a target="_blank" th:href="@{'http://data.eastmoney.com/report/hy,'+${code}+'_1.html'}">行业研报</a>
                                                 <a target="_blank" th:href="@{'http://vip.stock.finance.sina.com.cn/q/go.php/vReport_List/kind/search/index.phtml?symbol='+${code}+'&orgname=&industry=&title=&t1=all'}">新浪研报</a>
                                                 <a target="_blank" th:href="@{'http://search.10jqka.com.cn/search?w='+${name}+'&tid=info&tr=2&ft=1&st=0&tr=1&qs=pf'}">同花顺研报</a>
@@ -250,17 +263,23 @@
                                         </blockquote>
                                         <blockquote class="quote-secondary">
                                             <p>
+                                                <span class="mr-2">业绩: </span>
                                                 <a target="_blank" th:href="@{'http://f9.eastmoney.com/'+${#strings.toLowerCase(codeWithPlace)}+'.html#jggd'}">盈利预测</a>
                                                 <a target="_blank" th:href="@{'http://vip.stock.finance.sina.com.cn/q/go.php/vFinanceAnalyze/kind/performance/index.phtml?symbol='+${code} }">业绩预告</a>
-                                                <a target="_blank" th:href="@{'http://f10.eastmoney.com/f10_v2/CompanyManagement.aspx?code='+${#strings.toLowerCase(codeWithPlace)}+'#cgbd-0'}">高管持股</a>
-                                                <a target="_blank" th:href="@{'http://data.eastmoney.com/Stock/lhb/'+${code}+'.html'}">龙虎榜</a>
-                                                <a target="_blank" th:href="@{'http://data.eastmoney.com/zjlx/'+${code}+'.html'}">资金流入</a>
-                                                <a target="_blank" th:href="@{'http://vip.stock.finance.sina.com.cn/q/go.php/vInvestConsult/kind/xsjj/index.phtml?symbol='+${#strings.toLowerCase(codeWithPlace)} }">限售解禁</a>
-                                                <a target="_blank" th:href="@{'http://stockpage.10jqka.com.cn/'+${code}+'/holder/'}">十大股东</a>
                                             </p>
                                             <p>
+                                                <span class="mr-2">资金: </span>
+                                                <a target="_blank" th:href="@{'http://data.eastmoney.com/Stock/lhb/'+${code}+'.html'}">龙虎榜</a>
+                                                <a target="_blank" th:href="@{'http://data.eastmoney.com/zjlx/'+${code}+'.html'}">资金流入</a>
+                                                <a target="_blank" th:href="@{'http://data.eastmoney.com/rzrq/detail/'+${code}+'.html'}">融资融券</a>
+                                                <a target="_blank" th:href="@{'http://vip.stock.finance.sina.com.cn/q/go.php/vInvestConsult/kind/xsjj/index.phtml?symbol='+${#strings.toLowerCase(codeWithPlace)} }">限售解禁</a>
+                                            </p>
+                                            <p>
+                                                <span class="mr-2">股东: </span>
+                                                <a target="_blank" th:href="@{'http://f10.eastmoney.com/f10_v2/CompanyManagement.aspx?code='+${#strings.toLowerCase(codeWithPlace)}+'#cgbd-0'}">高管持股</a>
                                                 <a target="_blank" th:href="@{'http://stockpage.10jqka.com.cn/'+${code}+'/holder/#holdernum'}">股东人数</a>
                                                 <a target="_blank" th:href="@{'http://f10.eastmoney.com/f10_v2/ShareholderResearch.aspx?code='+${#strings.toLowerCase(codeWithPlace)} }">股东人数2</a>
+                                                <a target="_blank" th:href="@{'http://stockpage.10jqka.com.cn/'+${code}+'/holder/'}">十大股东</a>
                                                 <a target="_blank" th:href="@{'http://data.eastmoney.com/hsgtcg/StockHdStatistics.aspx?stock='+${code} }">沪深港通持股</a>
                                             </p>
                                         </blockquote>
@@ -524,6 +543,7 @@
 </html>
 <div th:replace="common/js_public"></div>
 <div th:replace="common/js_datatable"></div>
+<div th:replace="common/js_tippy"></div>
 <script src="/js/diff_match_patch.js"></script>
 <script src="/js/jquery.scrollsync.js"></script>
 <div th:replace="common/js_custom"></div>
@@ -656,6 +676,25 @@
                 _this.stock.k = data.k;
                 _this.stock.stk = data.stk;
                 console.log('stock', _this.$data)
+
+                _this.$nextTick(function () {
+                    tippy('.tippy', {
+                        arrow: true,
+                        placement: 'bottom',
+                        theme: 'light-border',
+                        interactive: true,
+                        interactiveBorder: 3,
+                        allowHTML: true,
+                        content: (reference) => {
+                            let word = reference.getAttribute("title");
+                            return `<div class="tippy-content">
+                                <span>${word}: </span>
+                                <a target="_blank" href="/q/${word}">本站搜索</a>
+                                <a target="_blank" href="https://ge1.azurewebsites.net/search?q=${word}">Google搜索</a>
+                                <a target="_blank" href="https://magi.com/search?q=${word}">Magi搜索</a></div>`;
+                        }
+                    });
+                });
             });
 
             axios.get("/text/post/"+code).then(function (res) {
@@ -738,4 +777,5 @@
     app.config.globalProperties.dmp = dmp;
 
     $('.sync-text').scrollsync();
+
 </script>
