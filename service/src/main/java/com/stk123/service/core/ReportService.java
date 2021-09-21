@@ -84,7 +84,7 @@ public class ReportService {
     public Map findReportAsMap(String reportDate){
         log.info("reportDate="+reportDate);
         Map result = new HashMap();
-        List<Map> reportDatesMap = findTopReportDate(reportDate, 9);
+        List<Map> reportDatesMap = findTopReportDate(reportDate, 12);
         List<String> reportDates = reportDatesMap.stream().map(map -> (String)map.get("REPORT_DATE")).sorted(Comparator.naturalOrder()).collect(Collectors.toList());
 
         String reportDateShow = null;
@@ -176,9 +176,9 @@ public class ReportService {
         allStocksRpsA.forEach(rps -> {
             rps.setStrategyName(Rps.getRpsStrategy(rps.getStrategyCode()).getNameWithCode());
             List<String> codesIn7 = detailsIn7.stream().filter(detail -> detail.getStrategyCode().equals(rps.getStrategyCode())).flatMap(detail -> Arrays.stream(StringUtils.split(detail.getRpsStockCode(), ","))).distinct().collect(Collectors.toList());
-            rps.setRpsStockCode7(Arrays.stream(StringUtils.split(rps.getRpsStockCode(), ",")).filter(code -> !codesIn7.contains(code)).distinct().collect(Collectors.joining(",")));
+            rps.setRpsStockCode7(Arrays.stream(StringUtils.split(rps.getRpsStockCode()==null?"":rps.getRpsStockCode(), ",")).filter(code -> !codesIn7.contains(code)).distinct().collect(Collectors.joining(",")));
             List<String> codesIn30 = detailsIn30.stream().filter(detail -> detail.getStrategyCode().equals(rps.getStrategyCode())).flatMap(detail -> Arrays.stream(StringUtils.split(detail.getRpsStockCode(), ","))).distinct().collect(Collectors.toList());
-            rps.setRpsStockCode30(Arrays.stream(StringUtils.split(rps.getRpsStockCode(), ",")).filter(code -> !codesIn30.contains(code)).distinct().collect(Collectors.joining(",")));
+            rps.setRpsStockCode30(Arrays.stream(StringUtils.split(rps.getRpsStockCode()==null?"":rps.getRpsStockCode(), ",")).filter(code -> !codesIn30.contains(code)).distinct().collect(Collectors.joining(",")));
         });
         return allStocksRpsA;
     }

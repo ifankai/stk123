@@ -431,6 +431,7 @@ public class StockTask extends AbstractTask {
                         keywordService.addKeywordAndLink(prdt, stock.getCode(), StkConstant.KEYWORD_CODE_TYPE_STOCK, StkConstant.KEYWORD_LINK_TYPE_MAIN_PRODUCT);
                     }
                 }
+                Thread.sleep(20*1000);
             }catch(Exception e){
                 log.error("initCNMainProduct error:"+stock.getCode(), e);
             }

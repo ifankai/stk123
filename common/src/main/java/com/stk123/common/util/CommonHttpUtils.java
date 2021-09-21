@@ -769,12 +769,12 @@ public class CommonHttpUtils {
 
     public static String getCookieByType(String type){
         try {
-            String json = CommonHttpUtils.get("http://81.68.255.181:8089/cookie/"+type, "utf-8");
+            String json = CommonHttpUtils.get("http://localhost:8089/cookie/"+type, "utf-8");
             String cookie = String.valueOf(JsonUtils.testJson(json).get("data"));
-            log.info("Get cookie from 81.68.255.181: "+cookie);
+            log.info("Get cookie from localhost: "+cookie);
             return cookie;
         } catch (Exception e) {
-            log.error("Get cookie from 'http://81.68.255.181:8089/cookie/"+type+"' error", e);
+            log.error("Get cookie from 'http://localhost:8089/cookie/"+type+"' error", e);
             return null;
         }
     }

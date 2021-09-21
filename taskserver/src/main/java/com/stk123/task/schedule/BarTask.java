@@ -829,9 +829,9 @@ public class BarTask extends AbstractTask {
             for(Strategy rpsStrategy : rpsList){
                 if(rpsStrategy.isEmptyStrategy())continue;
                 List<Stock> rpsStocks = stockService.calcRps(stocks, rpsStrategy.getCode()).stream().map(StrategyResult::getStock).collect(Collectors.toList());
-                //rpsStocks = rpsStocks.subList(0, Math.min(150, rpsStocks.size()));
+                List<Stock> results = rpsStocks.subList(0, Math.min(150, rpsStocks.size()));
 
-                List<Stock> results = new ArrayList<>();
+                /*List<Stock> results = new ArrayList<>();
                 int cap1 = 50;
                 int cap2 = 30;
                 for(Stock stock : rpsStocks){
@@ -852,7 +852,7 @@ public class BarTask extends AbstractTask {
                             results.add(stock);
                         }
                     }
-                }
+                }*/
 
                 rps.append(rpsStrategy.getNameWithCode() + ": " + CommonUtils.k("查看", rpsStrategy.getNameWithCode(), results.stream().map(Stock::getCode).collect(Collectors.toList())) + " ====>" + results.stream().map(Stock::getCode).collect(Collectors.joining(",")));
                 rps.append("<br/>");

@@ -169,6 +169,9 @@
         #calendar .table thead th{
             padding: unset;
         }
+        .callout-hotbk .progress {
+            width: 16px;
+        }
 </style>
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed text-sm pace-primary pace-done">
@@ -186,7 +189,7 @@
         <section class="content-header"></section>
 
         <section class="content">
-            <div class="container">
+            <div class="container-fluid">
                 <div class="row">
                     <div class="col-12">
 
@@ -236,8 +239,8 @@
                                                                     <div @mouseover="filterSameBk(item)" @mouseleave="filterSameBk({stock:{code:'-1'}})" class="info-box callout" :class="item.class">
                                                                         <div class="callout-hotbk">
                                                                             <div class="progress">
-                                                                                <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" :style="{width: item.strategies.includes('strategy_08c')?100+'%':0}">
-                                                                                    <span class="sr-only">120日强势板块(08c)</span>
+                                                                                <div class="progress-bar" role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100" :style="{width: item.strategies.includes('strategy_08a')?30+'%':0}">
+                                                                                    <span class="sr-only">20日强势板块(08a)</span>
                                                                                 </div>
                                                                             </div>
                                                                             <div class="progress">
@@ -246,8 +249,8 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div class="progress">
-                                                                                <div class="progress-bar" role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100" :style="{width: item.strategies.includes('strategy_08a')?30+'%':0}">
-                                                                                    <span class="sr-only">20日强势板块(08a)</span>
+                                                                                <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" :style="{width: item.strategies.includes('strategy_08c')?100+'%':0}">
+                                                                                    <span class="sr-only">120日强势板块(08c)</span>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
@@ -271,29 +274,29 @@
                                         <div class="tab-custom-content">
                                             <span class="ps">说明: </span>
                                             <span class="lead mb-0 text-sm">
-                                                <div class="callout-hotbk" style="max-width: 18px;margin-left: 5px; float: left">
-                                                    <div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%"><span class="sr-only">120日强势板块(08c)</span></div></div>
+                                                <div class="callout-hotbk" style="max-width: 18px;margin-left: 15px; float: left">
+                                                    <div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100" style="width: 30%"><span class="sr-only">20日强势板块(08a)</span></div></div>
                                                     <div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 0"><span class="sr-only">60日强势板块(08b)</span></div></div>
-                                                    <div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100" style="width: 0"><span class="sr-only">20日强势板块(08a)</span></div></div>
+                                                    <div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 0"><span class="sr-only">120日强势板块(08c)</span></div></div>
                                                 </div>
                                             </span>
-                                            <span class="ps">120日强势板块(08c)</span>
+                                            <span class="ps">20日强势板块(08a)</span>
                                             <span class="lead mb-0 text-sm">
                                                 <div class="callout-hotbk" style="max-width: 18px;margin-left: 15px; float: left">
-                                                    <div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 0"><span class="sr-only">120日强势板块(08c)</span></div></div>
-                                                    <div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%"><span class="sr-only">60日强势板块(08b)</span></div></div>
                                                     <div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100" style="width: 0"><span class="sr-only">20日强势板块(08a)</span></div></div>
+                                                    <div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%"><span class="sr-only">60日强势板块(08b)</span></div></div>
+                                                    <div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 0"><span class="sr-only">120日强势板块(08c)</span></div></div>
                                                 </div>
                                             </span>
                                             <span class="ps">60日强势板块(08b)</span>
                                             <span class="lead mb-0 text-sm">
-                                                <div class="callout-hotbk" style="max-width: 18px;margin-left: 15px; float: left">
-                                                    <div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 0"><span class="sr-only">120日强势板块(08c)</span></div></div>
+                                                <div class="callout-hotbk" style="max-width: 18px;margin-left: 5px; float: left">
+                                                    <div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100" style="width: 0"><span class="sr-only">20日强势板块(08a)</span></div></div>
                                                     <div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 0"><span class="sr-only">60日强势板块(08b)</span></div></div>
-                                                    <div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100" style="width: 30%"><span class="sr-only">20日强势板块(08a)</span></div></div>
+                                                    <div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%"><span class="sr-only">120日强势板块(08c)</span></div></div>
                                                 </div>
                                             </span>
-                                            <span class="ps">20日强势板块(08a)</span>
+                                            <span class="ps">120日强势板块(08c)</span>
                                         </div>
                                     </div>
                                     <div class="tab-pane fade" id="hotbk-detail" role="tabpanel" aria-labelledby="hotbk-detail-tab">
