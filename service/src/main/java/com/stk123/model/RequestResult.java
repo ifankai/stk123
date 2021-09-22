@@ -32,6 +32,10 @@ public class RequestResult<T> implements Serializable {
         return new RequestResult(false, data);
     }
 
+    public static <T> RequestResult<T> failure() {
+        return new RequestResult(false, null);
+    }
+
     public RequestResult(){}
 
     public RequestResult(boolean success){

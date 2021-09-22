@@ -11,6 +11,7 @@ import com.stk123.task.quartz.job.ResearchReportJob;
 import com.stk123.task.quartz.job.XueqiuUserJob;
 import com.stk123.task.schedule.*;
 import com.stk123.task.tool.TaskUtils;
+import com.stk123.util.ServiceUtils;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -205,6 +206,15 @@ public class Tasks {
     @Scheduled(fixedDelay=5*60*1000) //task跑完后停5分钟再跑
     public void noticeAnalyze() {
         taskContainer.start(NoticeTask.class, false, "analyze");
+    }
+
+    @Scheduled(cron = "0 0 19 ? * *") //每天晚上7点，投资者关系
+    public void investRobot() {
+        try {
+            InvestRobot.run(ServiceUtils.addDay(new Date(), -7));
+        } catch (Exception e) {
+            log.error("investRobot", e);
+        }
     }
 
 }

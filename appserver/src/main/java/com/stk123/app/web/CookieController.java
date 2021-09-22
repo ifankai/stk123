@@ -23,6 +23,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -33,6 +36,8 @@ public class CookieController {
 
     @Autowired
     private StkDictionaryRepository stkDictionaryRepository;
+
+    private BlockingQueue<Cookie> iwencai = new LinkedBlockingQueue<>(100);
 
     public static Map<String, Cookie> COOKIE_MAP = null;
 
@@ -82,11 +87,29 @@ public class CookieController {
         return RequestResult.success();
     }
 
+    @RequestMapping(value = "/iwencai", method = RequestMethod.POST)
+    @ResponseBody
+    public RequestResult setIwencaiCookie(@RequestBody Cookie cookie){
+        log.info("set iwencai cookie:"+cookie.getValue());
+        iwencai.offer(cookie);
+        return RequestResult.success();
+    }
+
     @RequestMapping(value = "/{code}", method = RequestMethod.GET)
     @ResponseBody
     public RequestResult getCookie(@PathVariable("code")String code){
         initCookies();
         Cookie cookie = COOKIE_MAP.get(code);
+        return RequestResult.success(cookie.getValue());
+    }
+
+    @RequestMapping(value = "/iwencai", method = RequestMethod.GET)
+    @ResponseBody
+    public RequestResult getIwencaiCookie() throws InterruptedException {
+        Cookie cookie = iwencai.poll(1, TimeUnit.MINUTES);
+        if(cookie == null){
+            return RequestResult.failure();
+        }
         return RequestResult.success(cookie.getValue());
     }
 

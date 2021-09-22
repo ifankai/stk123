@@ -29,4 +29,6 @@ public interface StkKeywordLinkRepository extends JpaRepository<StkKeywordLinkEn
         return result;
     }
 
+    List<StkKeywordLinkEntity> findAllByKeywordId(Long keywordId);
+
 }

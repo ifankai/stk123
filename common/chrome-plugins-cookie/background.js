@@ -135,7 +135,7 @@ function start (options) {
                             init(tabs[0], options)
                         }, 20000)
                     })
-                }, options.interval * 60 * 1000)
+                }, options.interval * 1000)
                 init(tabs[0], options)
             }
         }

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stk123.common.CommonUtils;
 import com.stk123.common.util.CommonHttpUtils;
+import com.stk123.common.util.EmailUtils;
 import com.stk123.common.util.HtmlUtils;
 import com.stk123.common.util.ListUtils;
 import com.stk123.entity.*;
@@ -410,9 +411,14 @@ public class StockTask extends AbstractTask {
                 String url = "http://www.iwencai.com/unifiedwap/unified-wap/v2/result/get-robot-data";
                 String body = "question="+stock.getCode()+"&perpage=50&page=1&secondary_intent=&log_info=%7B%22input_type%22%3A%22click%22%7D&source=Ths_iwencai_Xuangu&version=2.0&query_area=&block_list=&add_info=%7B%22urp%22%3A%7B%22scene%22%3A1%2C%22company%22%3A1%2C%22business%22%3A1%7D%2C%22contentType%22%3A%22json%22%2C%22searchInfo%22%3Atrue%7D";
                 Map headers = new HashMap();
-                headers.put("Cookie", CommonHttpUtils.getCookieByType(StkConstant.COOKIE_IWENCAI));
+                String cookie = CommonHttpUtils.getCookieByType(StkConstant.COOKIE_IWENCAI);
+                headers.put("Cookie", cookie);
                 //Map map = httpService.postMap(url, body, );
                 String page = HttpUtils.post(url, null, body, headers,"utf-8", null);
+                if(StringUtils.startsWith(page, "<html><body>")){
+                    EmailUtils.send("iwencai cookie error: "+stock.getCode(), page);
+                    break;
+                }
                 ObjectMapper mapper = new ObjectMapper();
                 Map map = mapper.readValue(page, Map.class);
                 String products = null;
@@ -431,7 +437,6 @@ public class StockTask extends AbstractTask {
                         keywordService.addKeywordAndLink(prdt, stock.getCode(), StkConstant.KEYWORD_CODE_TYPE_STOCK, StkConstant.KEYWORD_LINK_TYPE_MAIN_PRODUCT);
                     }
                 }
-                Thread.sleep(20*1000);
             }catch(Exception e){
                 log.error("initCNMainProduct error:"+stock.getCode(), e);
             }

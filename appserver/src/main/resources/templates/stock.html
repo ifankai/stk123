@@ -183,7 +183,7 @@
                                             <table><tr>
                                                 <td class="text-nowrap pr-2">主营业务:</td>
                                                 <td><template v-for="business in stock.businesses">
-                                                        <a style="float: left" class="tippy" :title="business.keyword.name" v-text="business.keyword.name" target='_blank' :href="'/q/'+business.keyword.name"></a>
+                                                        <a style="float: left" class="tippy" :title="business.keyword.name" v-text="business.keyword.name" target='_blank' :href="'/k/'+business.keyword.id"></a>
                                                     </template></td>
                                             </tr></table>
                                         </blockquote>
@@ -191,7 +191,7 @@
                                             <table><tr>
                                                 <td class="text-nowrap pr-2">主营产品:</td>
                                                 <td><template v-for="product in stock.products">
-                                                        <a style="float: left" class="tippy" :title="product.keyword.name" v-text="product.keyword.name" target='_blank' :href="'/q/'+product.keyword.name"></a>
+                                                        <a style="float: left" class="tippy" :title="product.keyword.name" v-text="product.keyword.name" target='_blank' :href="'/k/'+product.keyword.id"></a>
                                                     </template></td>
                                             </tr></table>
                                         </blockquote>
