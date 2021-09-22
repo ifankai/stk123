@@ -36,6 +36,7 @@ public class PPIIndexNewHighJob implements Job {
             conn = DBUtil.getConnection();
             List<List<String>> datas = new ArrayList<List<String>>();
 
+            int newAdd = 0;
             List<StkDataPpiType> types = JdbcUtils.list(conn, "select * from stk_data_ppi_type order by id", StkDataPpiType.class);
             for (StkDataPpiType type : types) {
                 params.clear();
@@ -56,6 +57,7 @@ public class PPIIndexNewHighJob implements Job {
                         max = JdbcUtils.load(conn, "select max(value) from stk_data_ppi where type_id=? and ppi_date between to_char(sysdate-350,'yyyymmdd') and ?", params, Double.class);
                         if (latest2.getValue() < max) {
                             data.add("新加入");
+                            newAdd++;
                         } else {
                             data.add("");
                         }
@@ -69,7 +71,7 @@ public class PPIIndexNewHighJob implements Job {
                 titles.add("大宗商品");
                 titles.add("");
                 titles.add("");
-                EmailUtils.send("大宗商品 new high, 个数：" + datas.size(), ServiceUtils.createHtmlTable(titles, datas));
+                EmailUtils.send("大宗商品 new high, 个数:" + datas.size() + ", 新加入:"+newAdd, ServiceUtils.createHtmlTable(titles, datas));
             }
         }catch (Exception e){
             e.printStackTrace();
