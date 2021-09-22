@@ -67,20 +67,12 @@ public class XueqiuStockArticleTask extends AbstractTask {
                 stocks = getStocks();
             }
 
-            int codeIndex = 0;
-            Path path = Paths.get("./temp/task_xueqiu_article.txt");
-            if(!Files.exists(path)){
-                Files.createFile(path);
-            }else {
-                String idx = new String(Files.readAllBytes(path));
-                codeIndex = Integer.parseInt(idx);
-            }
-
+            int codeIndex = CommonUtils.getIndexFromTempFile("task_xueqiu_article.txt");
             if (codeIndex >= stocks.size()) {
                 stocks = getStocks();
                 codeIndex = 0;
             }
-            Files.write(path, String.valueOf(codeIndex+5).getBytes());
+            CommonUtils.setIndexToTempFile("task_xueqiu_article.txt", codeIndex+5);
 
             for (int i = 0; i < 5 && codeIndex < stocks.size(); i++) {
                 StockProjection stk = stocks.get(codeIndex++);

@@ -3111,3 +3111,4 @@ insert into stk_dictionary select 500,'xueqiu',null,null,null,null,null,null,nul
 insert into stk_dictionary select 500,'iwencai',null,null,null,null,null,null,null from dual;
 
 select * from stk_investigation order by insert_date desc;
+select * from stk_data_ppi_type where name like '%pvdf%';

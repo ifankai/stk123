@@ -405,7 +405,15 @@ public class StockTask extends AbstractTask {
 
     public void initCNMainProduct(){
         initCNStocks();
-        for(Stock stock : stocksCN) {
+
+        int codeIndex = CommonUtils.getIndexFromTempFile("task_stock_main_product.txt");
+        if (codeIndex >= stocksCN.size()) {
+            codeIndex = 0;
+        }
+
+        //for(Stock stock : stocksCN) {
+        for(int i=codeIndex; i < stocksCN.size(); i++){
+            Stock stock = stocksCN.get(i);
             log.info("initCNMainProduct:" + stock.getCode());
             try {
                 String url = "http://www.iwencai.com/unifiedwap/unified-wap/v2/result/get-robot-data";
@@ -437,6 +445,7 @@ public class StockTask extends AbstractTask {
                         keywordService.addKeywordAndLink(prdt, stock.getCode(), StkConstant.KEYWORD_CODE_TYPE_STOCK, StkConstant.KEYWORD_LINK_TYPE_MAIN_PRODUCT);
                     }
                 }
+                CommonUtils.setIndexToTempFile("task_stock_main_product.txt", i+1);
             }catch(Exception e){
                 log.error("initCNMainProduct error:"+stock.getCode(), e);
             }

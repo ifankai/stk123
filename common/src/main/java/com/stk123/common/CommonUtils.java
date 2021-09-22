@@ -27,6 +27,9 @@ import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.Time;
 import java.text.*;
@@ -1295,6 +1298,24 @@ public class CommonUtils {
             return true;
         }
         return false;
+    }
+
+    @SneakyThrows
+    public static int getIndexFromTempFile(String tempFile){
+        Path path = Paths.get("./temp/"+tempFile);
+        if(!Files.exists(path)){
+            Files.createFile(path);
+            return 0;
+        }else {
+            String idx = new String(Files.readAllBytes(path));
+            return Integer.parseInt(idx);
+        }
+    }
+
+    @SneakyThrows
+    public static void setIndexToTempFile(String tempFile, int index){
+        Path path = Paths.get("./temp/"+tempFile);
+        Files.write(path, String.valueOf(index).getBytes());
     }
 }
 
