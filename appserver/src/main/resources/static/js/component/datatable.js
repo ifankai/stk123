@@ -185,13 +185,13 @@ const _datatable = {
     watch: {
         data: function (newVal, oldVal){
             /*let opt = getDataTableOpt(this);
-            $('#_datatable_' + this.datatableId).DataTable().clear().destroy();
+            $('#_datatable_' + this.datatableId).DataTable().destroy();
             $('#_datatable_' + this.datatableId).DataTable(opt);*/
 
             if(this.type == 0) {
                 this.$nextTick(function () {
                     let opt = getDataTableOpt(this);
-                    //$('#_datatable_' + this.datatableId).DataTable().clear().destroy();
+                    //$('#_datatable_' + this.datatableId).DataTable().destroy();
                     $('#_datatable_' + this.datatableId).DataTable(opt);
                     //$("div.toolbar").html('<span>Custom tool bar! Text/images etc.</span>');
                 });

@@ -117,7 +117,12 @@
                                     </template>
                                 </datatable>
                                 <br>
-
+                                <datatable id="dict-detail" :="{...common.dictDetail, ...dictDetails}">
+                                    <template v-slot:edit-and-delete="{row}">
+                                        <button @click.stop="editDetail(row)" type="button" class="btn btn-default btn-xs mr-2">编 辑</button>
+                                        <button @click.stop="deleteDetail(row)" type="button" class="btn btn-default btn-xs">删 除</button>
+                                    </template>
+                                </datatable>
                             </div>
                         </div>
 
@@ -194,11 +199,32 @@
                         //order: [ [ 4, "desc" ] ],
                         tableClass:{'table-hover':true},
                         selected:true
+                    },
+                    dictDetail:{
+                        columns: [
+                            {title:"类型", data:"type"},
+                            {title:"Key", data:"key"},
+                            {title:"Text", data:"text"},
+                            {title:"Remark", data:"remark"},
+                            {title:"Param1", data:"param"},
+                            {title:"Param2", data:"param2"},
+                            {title:"Param3", data:"param3"},
+                            {title:"Param4", data:"param4"},
+                            {title:"Param5", data:"param5"},
+                            {title:"操作", slot:"edit-and-delete"}
+                        ],
+                        columnDefs: [
+                            { className: "text-nowrap text-center", "targets": [ 2,3,4,5 ] }
+                        ],
+                        ordering: true,
+                        //order: [ [ 4, "desc" ] ],
+                        tableClass:{'table-hover':true},
+                        selected:true,
+                        //type:1
                     }
                 },
-                dictHeaders:{
-                    data:[]
-                },
+                dictHeaders:{data:[]},
+                dictDetails:{data:[]},
                 edit:{
                     headerRow:{},
                     detailRow:{}
@@ -233,6 +259,17 @@
                         alert("保存失败：\n"+res.data.data);
                     }
                     $('#dictHeaderModal').modal ('hide');
+                });
+            },
+            selectHeader:function (row) {
+                let _this = this;
+                axios.get("/dict/"+row.type).then(function (res) {
+                    $('#_datatable_dict-detail').DataTable().destroy();
+                    let data = res.data.data;
+                    data.forEach(detail => {
+                    });
+                    _this.dictDetails = {data: data};
+                    console.log('detail', data)
                 });
             }
         },
