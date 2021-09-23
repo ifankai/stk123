@@ -11,7 +11,7 @@ create table stk_dictionary_header(
   update_time date
 );
 alter table stk_dictionary_header add constraint pk_dictionary_header_type primary key (type);
-create sequence s_dict_type INCREMENT BY 1 START WITH 10000 NOMAXVALUE NOCYCLE CACHE 10;
+create sequence s_dict_type INCREMENT BY 1 START WITH 5000 NOMAXVALUE NOCYCLE CACHE 10;
 
 update STK_DICTIONARY set type=5 where type=4 and key='7146274836';
 insert into stk_dictionary_header select 1,'k线价格类型', 0, sysdate, null from dual;
