@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>小智慧 - 字典表</title>
+    <div th:replace="common/css_public"></div>
+    <div th:replace="common/css_datatable"></div>
+    <link rel="stylesheet" th:href="'/css/public.css'+${_version}">
+    <style>
+        @media (min-width: 1200px) {
+            .img-width img {
+                width: 410px;
+                padding: 2px;
+                text-align: center;
+            }
+            .container{
+                max-width: 1350px;
+            }
+        }
+        @media (max-width: 650px) {
+            .container{
+                min-width: 615px;
+            }
+
+        }
+
+        table.dataTable tbody th, table.dataTable tbody td, table.dataTable thead th, table.dataTable thead td {
+            padding: 1px 2px;
+        }
+        div.dataTables_wrapper div.dataTables_info {
+            padding-top: .1em;
+            float: left;
+        }
+        div.dataTables_wrapper div.dataTables_filter{
+            padding-top: .1em;
+            float: right;
+            margin-right: .2rem;
+        }
+        div.dataTables_wrapper div.dataTables_paginate{
+            float: right;
+        }
+        div.dataTables_wrapper div.dataTables_paginate ul.pagination{
+            margin: 0;
+        }
+        .table thead th {
+            border-bottom: 1px solid #dee2e6;
+            padding: 0 .75rem;
+            color: #9ba2a8;
+            text-align: center;
+            white-space: nowrap;
+        }
+        table.dataTable>thead .sorting:before,
+        table.dataTable>thead .sorting:after,
+        table.dataTable>thead .sorting_asc:before,
+        table.dataTable>thead .sorting_asc:after,
+        table.dataTable>thead .sorting_desc:before,
+        table.dataTable>thead .sorting_desc:after,
+        table.dataTable>thead .sorting_asc_disabled:before,
+        table.dataTable>thead .sorting_asc_disabled:after,
+        table.dataTable>thead .sorting_desc_disabled:before,
+        table.dataTable>thead .sorting_desc_disabled:after{
+            bottom: 0;
+        }
+        .pagination-sm {
+            margin: .1rem 0;
+        }
+        .custom-select-sm, .form-control-sm {
+            height: calc(1.5rem);
+            padding-top: .15rem;
+            padding-bottom: .25rem;
+            padding-left: .5rem;
+            font-size: 50%;
+        }
+        .page-link {
+            padding: .2rem .5rem;
+            font-size: .8rem;
+            line-height: 1.5;
+        }
+
+    </style>
+</head>
+<body class="hold-transition layout-top-nav layout-navbar-fixed text-sm pace-primary pace-done">
+<div class="pace pace-inactive">
+    <div class="pace-progress" data-progress-text="100%" data-progress="99" style="transform: translate3d(100%, 0px, 0px);">
+        <div class="pace-progress-inner"></div>
+    </div>
+    <div class="pace-activity"></div>
+</div>
+<!-- Site wrapper -->
+<div id="app" class="wrapper">
+    <div th:replace="common/navbar"></div>
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header"></section>
+
+        <section class="content">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+
+                        <div id="notice" class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">字典表</h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="收起">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="card-body">
+                                <datatable :="{...common.dictHeader, ...dictHeaders}" @select-row="selectHeader">
+                                    <template v-slot:edit-and-delete="{row}">
+                                        <button @click.stop="editHeader(row)" type="button" class="btn btn-default btn-xs mr-2">编 辑</button>
+                                        <button @click.stop="deleteHeader(row)" type="button" class="btn btn-default btn-xs">删 除</button>
+                                    </template>
+                                </datatable>
+                                <br>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="modal hide" id="dictHeaderModal" aria-modal="true" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">编辑</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="headerType">类型</label>
+                                <input v-model="edit.headerRow.type" type="text" class="form-control" id="headerType" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label for="headerName">字典名</label>
+                                <textarea v-model="edit.headerRow.name" class="form-control" rows="3" id="headerName"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+                        <button @click="saveHeader()" type="button" class="btn btn-primary">保 存</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+
+        <a id="back-to-top" href="#" class="btn btn-outline-primary back-to-top" style="display: none" role="button" aria-label="Scroll to top">
+            <i class="fas fa-chevron-up"></i>
+        </a>
+    </div>
+
+    <div th:replace="common/footer"></div>
+</div>
+<!-- ./wrapper -->
+</body>
+</html>
+<div th:replace="common/js_public"></div>
+<div th:replace="common/js_datatable"></div>
+<div th:replace="common/js_custom"></div>
+
+<script th:inline="javascript">
+
+    const config = {
+        data() {
+            return {
+                loading: true,
+                common:{
+                    dictHeader:{
+                        columns: [
+                            {title:"类型", data:"type"},
+                            {title:"字典名", data:"name"},
+                            {title:"状态", data:"status"},
+                            {title:"创建时间", data:"insertTimeShow"},
+                            {title:"更新时间", data:"updateTimeShow"},
+                            {title:"操作", slot:"edit-and-delete"}
+                        ],
+                        columnDefs: [
+                            { className: "text-nowrap text-center", "targets": [ 2,3,4,5 ] }
+                        ],
+                        ordering: true,
+                        //order: [ [ 4, "desc" ] ],
+                        tableClass:{'table-hover':true},
+                        selected:true
+                    }
+                },
+                dictHeaders:{
+                    data:[]
+                },
+                edit:{
+                    headerRow:{},
+                    detailRow:{}
+                }
+            }
+        },
+        methods:{
+            editHeader:function (row) {
+                console.log(row)
+                this.edit.headerRow = row;
+                $('#dictHeaderModal').modal ('show');
+            },
+            deleteHeader:function (row) {
+                if (window.confirm("确定要删除字典类型："+ row.name)) {
+                    axios.delete("/dict/header/"+row.type).then(function (res) {
+                        if(res.data.success){
+                            alert("删除成功");
+                        }else{
+                            alert("删除失败：\n"+res.data.data);
+                        }
+                    });
+                }
+            },
+            saveHeader:function (){
+                let _this = this;
+                axios.post("/dict/header/"+_this.edit.headerRow.type, {
+                    ..._this.edit.headerRow
+                }).then(function (res) {
+                    if(res.data.success){
+                        alert("保存成功");
+                    }else{
+                        alert("保存失败：\n"+res.data.data);
+                    }
+                    $('#dictHeaderModal').modal ('hide');
+                });
+            }
+        },
+        computed: {
+        },
+        mounted() {
+            let _this = this;
+            axios.get("/dict/header").then(function (res) {
+                let data = res.data.data;
+                data.forEach(header => {
+                    header.insertTimeShow = _this.tsFormat(header.insertTime);
+                    header.updateTimeShow = _this.tsFormat(header.updateTime);
+                });
+                _this.dictHeaders = {data: data};
+                console.log('mounted', _this.$data)
+            });
+
+        }
+    };
+    createApp(config);
+
+</script>

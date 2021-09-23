@@ -27,6 +27,7 @@ import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.chart.renderer.xy.CandlestickRenderer;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.Month;
@@ -134,7 +135,19 @@ public class ChartUtils {
         renderer.setItemLabelAnchorOffset(0); //把值设置为0
 	    //显示每个柱的数值，并修改该数值的字体属性
 //	    renderer.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator());
-//	    renderer.setBaseItemLabelsVisible(true);
+
+        //how to display customized values on a bar in bar chart using jfree chart?
+        //https://stackoverflow.com/questions/13625740/how-to-display-customized-values-on-a-bar-in-bar-chart-using-jfree-chart
+        /*renderer.setBaseItemLabelGenerator(
+                new StandardCategoryItemLabelGenerator(){
+                    @Override
+                    public String generateLabel(CategoryDataset dataset, int row, int column) {
+                        return "Your Text" +row+","+column;
+                    }
+                }
+        );
+	    renderer.setBaseItemLabelsVisible(true);*/
+
         renderer.setShadowVisible(false);//不显示阴影
         renderer.setBarPainter(new StandardBarPainter());
 	    plot.setRenderer(renderer);

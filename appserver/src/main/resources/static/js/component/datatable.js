@@ -26,14 +26,14 @@ var _datatableLang =
 
 var _datatableTemplate = `
 <div class="dataTables_wrapper dt-bootstrap4">
-    <table :id="'_datatable_'+datatableId"  class="table table-valign-middle" :class="tableClass" style="width:100%">
+    <table :id="'_datatable_'+datatableId"  class="table table-valign-middle dataTable" :class="tableClass" style="width:100%">
         <thead v-show="columns[0].title">
             <tr>
                 <th v-for="column in columns" v-html="column.title"></th>
             </tr>
         </thead>
         <tbody>
-            <tr v-for="row in data">
+            <tr v-for="(row,index) in data" @click="selectRow(row, index)" :class="{selected:selected && selectRowIndex===index}">
                 <template v-for="column in columns">
                     <td v-if="column.data == 'stockAndBk'">
                         <table style="margin: auto;font-size: 1rem">
@@ -83,6 +83,9 @@ var _datatableTemplate = `
                             <img height="70" style="margin-top: -70px;width: 405px;" :src="'data:image/png;base64,'+row.dayFlowImage">
                         </span>
                     </td>
+                    <td v-else-if="column.slot !== undefined">
+                        <slot :name="column.slot" :row="row"></slot>
+                    </td>
                     <td v-else v-html="row[column.data]"></td>
                 </template>
             </tr>
@@ -126,6 +129,7 @@ const _datatable = {
         searching: {type: Boolean, default: true},
         columnDefs:{},
         tableClass:{},
+        selected: {type: Boolean, default: false},
     },
     //emits: ['click'],
     data: function () {
@@ -133,7 +137,8 @@ const _datatable = {
             datatableId: 0,
             modalId:'',
             modalTitle:'',
-            modalContent:''
+            modalContent:'',
+            selectRowIndex:-1,
         }
     },
     methods: {
@@ -144,6 +149,16 @@ const _datatable = {
             this.modalId = 'modal-'+row.id;
             this.modalTitle = row.title;
             this.modalContent = row.content;
+        },
+        /*editRow:function (row){
+            this.$emit('editRow', row);
+        },
+        deleteRow:function (row){
+            this.$emit('deleteRow', row);
+        },*/
+        selectRow:function (row, index) {
+            this.selectRowIndex = index;
+            this.$emit('selectRow', row);
         }
     },
     created() {
