@@ -33,7 +33,7 @@ var _datatableTemplate = `
             </tr>
         </thead>
         <tbody>
-            <tr v-for="(row,index) in data" @click="selectRow(row, index)" :class="{selected:selected && selectRowIndex===index}">
+            <tr v-for="(row,index) in data" @click="selectRow(row, index)" @dblclick="selectRow(row, index)" :class="{selected:selected && selectRowIndex===index}">
                 <template v-for="column in columns">
                     <td v-if="column.data == 'stockAndBk'">
                         <table style="margin: auto;font-size: 1rem">
@@ -139,6 +139,11 @@ const _datatable = {
             modalTitle:'',
             modalContent:'',
             selectRowIndex:-1,
+            //[start]for click and dblclick on one element
+            delay: 300,
+            clicks: 0,
+            timer: null
+            //[end]for click and dblclick on one element
         }
     },
     methods: {
@@ -158,7 +163,17 @@ const _datatable = {
         },*/
         selectRow:function (row, index) {
             this.selectRowIndex = index;
-            this.$emit('selectRow', row);
+            this.clicks++;
+            if (this.clicks === 1) {
+                this.timer = setTimeout( () => {
+                    this.$emit('selectRow', row);
+                    this.clicks = 0
+                }, this.delay);
+            } else {
+                clearTimeout(this.timer);
+                this.$emit('dblclickRow', row);
+                this.clicks = 0;
+            }
         }
     },
     created() {

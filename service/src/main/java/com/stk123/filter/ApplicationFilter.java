@@ -3,6 +3,7 @@ package com.stk123.filter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.springframework.web.util.ContentCachingRequestWrapper;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -31,11 +32,17 @@ public class ApplicationFilter implements Filter {
             return;
         }
         request.setAttribute("_version", CSS_JS_VERSION);
+        String body = "";
+        if ("POST".equalsIgnoreCase(httpServletRequest.getMethod())) {
+            request = new CustomHttpServletRequestWrapper(httpServletRequest);
+            body = ((CustomHttpServletRequestWrapper) request).getBody();
+        }
         long start = System.currentTimeMillis();
         try {
             filterChain.doFilter(request, response);
         }finally {
-            log.info("==> uri: {}, {}, cost: {}ms", uri, getParametersAsMap(httpServletRequest), System.currentTimeMillis() - start);
+            Map parameters = getParametersAsMap(httpServletRequest);
+            log.info("==> uri: {} {}, {}{}, cost: {}ms", httpServletRequest.getMethod(), uri, parameters.isEmpty()?"":parameters, body, System.currentTimeMillis() - start);
         }
     }
 

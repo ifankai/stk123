@@ -18,6 +18,8 @@ import java.util.Objects;
 public class StkDictionaryHeaderEntity implements Serializable {
     @Id
     @Column(name = "TYPE")
+    @GeneratedValue(strategy =GenerationType.SEQUENCE, generator="s_dict_type")
+    @SequenceGenerator(name="s_dict_type", sequenceName="s_dict_type", allocationSize = 1)
     @JsonView(View.Default.class)
     private Integer type;
 

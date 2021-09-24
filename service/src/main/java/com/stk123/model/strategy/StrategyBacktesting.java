@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class StrategyBacktesting {
 
     @Setter
-    private int multipleThreadSize = 8;
+    private int multipleThreadSize = Runtime.getRuntime().availableProcessors();
 
     private boolean printDetail = false;
 

@@ -6,6 +6,7 @@ import com.stk123.entity.StkDictionaryHeaderEntity;
 import com.stk123.model.RequestResult;
 import com.stk123.model.json.View;
 import com.stk123.repository.StkDictionaryHeaderRepository;
+import com.stk123.repository.StkDictionaryRepository;
 import com.stk123.service.core.DictService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
@@ -27,13 +28,15 @@ public class DictController {
     private DictService dictService;
     @Autowired
     private StkDictionaryHeaderRepository stkDictionaryHeaderRepository;
+    @Autowired
+    private StkDictionaryRepository stkDictionaryRepository;
 
     @GetMapping(value = {"", "/"})
     public String web(){
         return "dict";
     }
 
-    @GetMapping(value = {"/{type}","/{type}/{key}"})
+    @GetMapping(value = {"/detail/{type}","/detail/{type}/{key}"})
     @ResponseBody
     @JsonView(View.Default.class)
     public RequestResult<Collection<StkDictionaryEntity>> getDict(@PathVariable("type")Integer type,
@@ -45,6 +48,23 @@ public class DictController {
             list = dictService.getDictionaryOrderByParam(type);
         }
         return RequestResult.success(list);
+    }
+
+    @PostMapping(value = "/detail/{type}")
+    @ResponseBody
+    public RequestResult saveDetail(@PathVariable("type")String type, @RequestBody StkDictionaryEntity detail){
+        detail.setType(Integer.parseInt(type));
+        stkDictionaryRepository.save(detail);
+        dictService.init();
+        return RequestResult.success();
+    }
+
+    @DeleteMapping(value = "/detail/{type}/{key}")
+    @ResponseBody
+    public RequestResult deleteDetail(@PathVariable("type")Integer type, @PathVariable("key")String key){
+        stkDictionaryRepository.deleteById(new StkDictionaryEntity.CompositeKey(type, key));
+        dictService.init();
+        return RequestResult.success();
     }
 
     @DeleteMapping(value = "")
@@ -69,11 +89,16 @@ public class DictController {
         return RequestResult.success();
     }
 
-    @PostMapping(value = "/header/{type}")
+    @PostMapping(value = {"/header", "/header/{type}"})
     @ResponseBody
-    public RequestResult saveHeader(@PathVariable("type")String type, @RequestBody StkDictionaryHeaderEntity header){
-        header.setType(Integer.parseInt(type));
-        header.setUpdateTime(new Date());
+    public RequestResult saveHeader(@PathVariable(value="type", required = false)String type, @RequestBody StkDictionaryHeaderEntity header){
+        if(StringUtils.isEmpty(type)){
+            header.setStatus(0);
+            header.setInsertTime(new Date());
+        }else {
+            header.setType(Integer.parseInt(type));
+            header.setUpdateTime(new Date());
+        }
         stkDictionaryHeaderRepository.save(header);
         return RequestResult.success();
     }

@@ -103,6 +103,9 @@
                             <div class="card-header">
                                 <h3 class="card-title">字典表</h3>
                                 <div class="card-tools">
+                                    <button @click="editHeader({})" type="button" class="btn btn-tool" title="新增字典类型">
+                                        <i class="fas fa-plus-circle"></i>
+                                    </button>
                                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="收起">
                                         <i class="fas fa-minus"></i>
                                     </button>
@@ -110,14 +113,15 @@
                             </div>
 
                             <div class="card-body">
-                                <datatable :="{...common.dictHeader, ...dictHeaders}" @select-row="selectHeader">
+                                <datatable :="{...common.dictHeader, ...dictHeaders}" @select-row="selectHeader" @dblclick-row="dblclickHeader">
                                     <template v-slot:edit-and-delete="{row}">
                                         <button @click.stop="editHeader(row)" type="button" class="btn btn-default btn-xs mr-2">编 辑</button>
-                                        <button @click.stop="deleteHeader(row)" type="button" class="btn btn-default btn-xs">删 除</button>
+                                        <button @click.stop="deleteHeader(row)" type="button" class="btn btn-default btn-xs mr-2">删 除</button>
+                                        <button @click.stop="addDetail(row)" type="button" class="btn btn-default btn-xs">添加详细</button>
                                     </template>
                                 </datatable>
                                 <br>
-                                <datatable id="dict-detail" :="{...common.dictDetail, ...dictDetails}">
+                                <datatable id="dict-detail" :="{...common.dictDetail, ...dictDetails}" @dblclick-row="dblclickDetail">
                                     <template v-slot:edit-and-delete="{row}">
                                         <button @click.stop="editDetail(row)" type="button" class="btn btn-default btn-xs mr-2">编 辑</button>
                                         <button @click.stop="deleteDetail(row)" type="button" class="btn btn-default btn-xs">删 除</button>
@@ -131,7 +135,7 @@
             </div>
         </section>
 
-        <div class="modal hide" id="dictHeaderModal" aria-modal="true" role="dialog">
+        <div class="modal hide" id="dictHeaderModal" aria-modal="true" role="dialog" tabindex='-1'>
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -142,19 +146,100 @@
                     </div>
                     <div class="modal-body">
                         <form>
-                            <div class="form-group">
-                                <label for="headerType">类型</label>
-                                <input v-model="edit.headerRow.type" type="text" class="form-control" id="headerType" disabled>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label" for="headerType">类型</label>
+                                <div class="col-sm-10">
+                                    <input v-model="edit.headerRow.type" type="text" class="form-control" id="headerType" disabled/>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label for="headerName">字典名</label>
-                                <textarea v-model="edit.headerRow.name" class="form-control" rows="3" id="headerName"></textarea>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label" for="headerName">字典名</label>
+                                <div class="col-sm-10">
+                                    <textarea v-model="edit.headerRow.name" class="form-control" rows="3" id="headerName"></textarea>
+                                </div>
                             </div>
                         </form>
                     </div>
                     <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
                         <button @click="saveHeader()" type="button" class="btn btn-primary">保 存</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+
+        <div class="modal hide" id="dictDetailModal" aria-modal="true" role="dialog" tabindex='-1'>
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">编辑</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label" for="headerType">类型</label>
+                                <div class="col-sm-10">
+                                    <input v-model="edit.detailRow.type" type="text" class="form-control" id="detailType" disabled/>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label" for="detailKey">Key</label>
+                                <div class="col-sm-10">
+                                    <input v-model="edit.detailRow.key" type="text" class="form-control" id="detailKey"/>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label" for="detailText">Text</label>
+                                <div class="col-sm-10">
+                                    <textarea v-model="edit.detailRow.text" row="2" class="form-control" id="detailText"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label" for="detailRemark">Remark</label>
+                                <div class="col-sm-10">
+                                    <textarea v-model="edit.detailRow.remark" row="2" class="form-control" id="detailRemark"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label" for="detailParam1">Param1</label>
+                                <div class="col-sm-10">
+                                    <input v-model="edit.detailRow.param" type="text" class="form-control" id="detailParam1"/>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label" for="detailParam2">Param2</label>
+                                <div class="col-sm-10">
+                                    <input v-model="edit.detailRow.param2" type="text" class="form-control" id="detailParam2"/>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label" for="detailParam3">Param3</label>
+                                <div class="col-sm-10">
+                                    <input v-model="edit.detailRow.param3" type="text" class="form-control" id="detailParam3"/>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label" for="detailParam4">Param4</label>
+                                <div class="col-sm-10">
+                                    <input v-model="edit.detailRow.param4" type="text" class="form-control" id="detailParam4"/>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label" for="detailParam5">Param5</label>
+                                <div class="col-sm-10">
+                                    <input v-model="edit.detailRow.param5" type="text" class="form-control" id="detailParam5"/>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+                        <button @click="saveDetail()" type="button" class="btn btn-primary">保 存</button>
                     </div>
                 </div>
                 <!-- /.modal-content -->
@@ -214,7 +299,8 @@
                             {title:"操作", slot:"edit-and-delete"}
                         ],
                         columnDefs: [
-                            { className: "text-nowrap text-center", "targets": [ 2,3,4,5 ] }
+                            { className: "text-center", "targets": [ 0 ] },
+                            { className: "text-nowrap", "targets": [ 1,2,3,4,5 ] }
                         ],
                         ordering: true,
                         //order: [ [ 4, "desc" ] ],
@@ -233,9 +319,11 @@
         },
         methods:{
             editHeader:function (row) {
-                console.log(row)
                 this.edit.headerRow = row;
                 $('#dictHeaderModal').modal ('show');
+            },
+            dblclickHeader:function (row){
+                this.editHeader(row);
             },
             deleteHeader:function (row) {
                 if (window.confirm("确定要删除字典类型："+ row.name)) {
@@ -250,7 +338,8 @@
             },
             saveHeader:function (){
                 let _this = this;
-                axios.post("/dict/header/"+_this.edit.headerRow.type, {
+                let type = _this.edit.headerRow.type===undefined?'':'/'+_this.edit.headerRow.type;
+                axios.post("/dict/header"+type, {
                     ..._this.edit.headerRow
                 }).then(function (res) {
                     if(res.data.success){
@@ -261,16 +350,55 @@
                     $('#dictHeaderModal').modal ('hide');
                 });
             },
+            addDetail:function (header) {
+                this.edit.detailRow = {type:header.type};
+                $('#dictDetailModal').modal ('show');
+            },
             selectHeader:function (row) {
+                if(row === undefined) return;
+                this.edit.headerRow = row;
                 let _this = this;
-                axios.get("/dict/"+row.type).then(function (res) {
+                axios.get("/dict/detail/"+row.type).then(function (res) {
                     $('#_datatable_dict-detail').DataTable().destroy();
                     let data = res.data.data;
                     data.forEach(detail => {
                     });
                     _this.dictDetails = {data: data};
-                    console.log('detail', data)
                 });
+            },
+            editDetail:function (row) {
+                this.edit.detailRow = row;
+                $('#dictDetailModal').modal ('show');
+            },
+            dblclickDetail:function (row){
+                this.editDetail(row);
+            },
+            saveDetail:function (){
+                let _this = this;
+                axios.post("/dict/detail/"+_this.edit.detailRow.type, {
+                    ..._this.edit.detailRow
+                }).then(function (res) {
+                    if(res.data.success){
+                        alert("保存成功");
+                        _this.selectHeader(_this.edit.headerRow);
+                    }else{
+                        alert("保存失败：\n"+res.data.data);
+                    }
+                    $('#dictDetailModal').modal ('hide');
+                });
+            },
+            deleteDetail:function (row) {
+                if (window.confirm("确定要删除字典类型："+ row.key)) {
+                    let _this = this;
+                    axios.delete("/dict/detail/"+row.type+"/"+row.key).then(function (res) {
+                        if(res.data.success){
+                            alert("删除成功");
+                            _this.selectHeader(_this.edit.headerRow);
+                        }else{
+                            alert("删除失败：\n"+res.data.data);
+                        }
+                    });
+                }
             }
         },
         computed: {
@@ -284,7 +412,6 @@
                     header.updateTimeShow = _this.tsFormat(header.updateTime);
                 });
                 _this.dictHeaders = {data: data};
-                console.log('mounted', _this.$data)
             });
 
         }

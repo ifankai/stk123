@@ -35,7 +35,7 @@ public class DictService {
     }
 
     public Collection<StkDictionaryEntity> getDictionary(Integer type){
-        return dict.get(type).values();
+        return dict.get(type) == null ? Collections.EMPTY_LIST : dict.get(type).values();
     }
 
     public Map<String, StkDictionaryEntity> getDictionaryAsMap(Integer type){

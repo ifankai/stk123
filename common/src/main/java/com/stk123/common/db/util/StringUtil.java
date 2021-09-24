@@ -1,5 +1,7 @@
 package com.stk123.common.db.util;
 
+import org.jsoup.Jsoup;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -35,5 +37,9 @@ public class StringUtil {
 			item = iterator.next();
 
 		return sb.substring(1);
+	}
+
+	public static String html2Text(String html) {
+		return Jsoup.parse(html).text();
 	}
 }
