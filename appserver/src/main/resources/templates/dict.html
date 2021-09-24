@@ -115,16 +115,26 @@
                             <div class="card-body">
                                 <datatable :="{...common.dictHeader, ...dictHeaders}" @select-row="selectHeader" @dblclick-row="dblclickHeader">
                                     <template v-slot:edit-and-delete="{row}">
-                                        <button @click.stop="editHeader(row)" type="button" class="btn btn-default btn-xs mr-2">编 辑</button>
-                                        <button @click.stop="deleteHeader(row)" type="button" class="btn btn-default btn-xs mr-2">删 除</button>
-                                        <button @click.stop="addDetail(row)" type="button" class="btn btn-default btn-xs">添加详细</button>
+                                        <button @click.stop="editHeader(row)" title="编 辑" type="button" class="btn btn-xs mr-2">
+                                            <i class="fal fa-edit"></i>
+                                        </button>
+                                        <button @click.stop="addDetail(row)" title="添加详细" type="button" class="btn btn-xs mr-2">
+                                            <i class="fal fa-plus-circle"></i>
+                                        </button>
+                                        <button @click.stop="deleteHeader(row)" title="删 除" type="button" class="btn btn-xs">
+                                            <i class="fal fa-trash-alt"></i>
+                                        </button>
                                     </template>
                                 </datatable>
                                 <br>
                                 <datatable id="dict-detail" :="{...common.dictDetail, ...dictDetails}" @dblclick-row="dblclickDetail">
                                     <template v-slot:edit-and-delete="{row}">
-                                        <button @click.stop="editDetail(row)" type="button" class="btn btn-default btn-xs mr-2">编 辑</button>
-                                        <button @click.stop="deleteDetail(row)" type="button" class="btn btn-default btn-xs">删 除</button>
+                                        <button @click.stop="editDetail(row)" title="编 辑" type="button" class="btn btn-xs mr-2">
+                                            <i class="fal fa-edit"></i>
+                                        </button>
+                                        <button @click.stop="deleteDetail(row)" title="删 除" type="button" class="btn btn-xs">
+                                            <i class="fal fa-trash-alt"></i>
+                                        </button>
                                     </template>
                                 </datatable>
                             </div>
