@@ -1,9 +1,5 @@
 package com.stk123.service.core;
 
-import cn.hutool.core.lang.Pair;
-import cn.hutool.core.map.MapUtil;
-import com.alicp.jetcache.anno.CacheType;
-import com.alicp.jetcache.anno.Cached;
 import com.stk123.common.CommonUtils;
 import com.stk123.entity.StkReportDetailEntity;
 import com.stk123.entity.StkReportHeaderEntity;
@@ -15,16 +11,13 @@ import com.stk123.model.strategy.sample.Strategies;
 import com.stk123.repository.BaseRepository;
 import com.stk123.repository.StkReportHeaderRepository;
 import com.stk123.service.StkConstant;
-import lombok.Data;
 import lombok.extern.apachecommons.CommonsLog;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 

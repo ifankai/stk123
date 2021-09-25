@@ -424,6 +424,7 @@ public class StockTask extends AbstractTask {
                 //Map map = httpService.postMap(url, body, );
                 String page = HttpUtils.post(url, null, body, headers,"utf-8", null);
                 if(StringUtils.startsWith(page, "<html><body>")){
+                    log.info("iwencai cookie error: "+stock.getCode());
                     EmailUtils.send("iwencai cookie error: "+stock.getCode(), page);
                     break;
                 }
@@ -436,6 +437,7 @@ public class StockTask extends AbstractTask {
                     log.error("Parse 'data.answer.[0].txt.[0].content.components.[0].data.[0].主营产品名称' error", e);
                 }
                 //崂山啤酒||啤酒||汉斯啤酒||山水啤酒||啤麦||中高档啤酒||高档酒||糖酒
+                log.info(stock.getCode()+":"+products);
                 if(StringUtils.isEmpty(products)){
                     continue;
                 }
