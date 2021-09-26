@@ -12,11 +12,12 @@ import java.io.Serializable;
 @JsonView(View.Default.class)
 public class Tag implements Serializable {
 
-    public final static int TYPE_NORMAL = 0;
-    public final static int TYPE_HIGHLIGHT = 1;
+    public final static String TYPE_NORMAL = "normal";
+    public final static String TYPE_HIGHLIGHT = "highlight";
 
     private String name;
-    private int type = TYPE_HIGHLIGHT; //1: highlight
+    @Builder.Default
+    private String type = TYPE_HIGHLIGHT;
     private int displayOrder = 0;
     private Double value;
     private String detail;

@@ -347,6 +347,21 @@ const _modal = {
     `,
 }
 
+const _tag = {
+    props: {
+        stock:{},
+        type:[]
+    },
+    template: `
+        <template v-for="item in type">
+            <template v-for="tag in stock.tags">            
+                <small v-for="tag.type===item" v-text="tag.name" :title="tag.detail" class="badge mr-1" :class="'tag-'+tag.type"></small>
+            </template>
+        </template>
+        `,
+    methods:{
+    }
+};
 
 function elem(tagName, attributes, children, isHTML) {
     let parent;
@@ -486,6 +501,7 @@ function createApp(config){
     app.component('modal', _modal);
     app.component('init', _init);
     app.component('stockbody', _stockBody); //不能写成 stockBody，html元素不区分大小写
+    app.component('tag', _tag);
 
     app.config.globalProperties.tsFormat = _tsFormat;
     app.config.globalProperties.dateFormat = dateFormat;

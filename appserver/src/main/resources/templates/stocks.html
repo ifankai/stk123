@@ -241,9 +241,7 @@
                                             <span v-html="row.nameAndCodeWithLink"></span><eye :stock="row"></eye>
                                         </div>
                                         <div>
-                                            <template v-for="tag in row.tags">
-                                                <small v-for="tag.type===1" v-text="tag.name" :title="tag.detail" class="badge tag-highlight mr-1"></small>
-                                            </template>
+                                            <tag :stock="row" :type="['highlight']"></tag>
                                         </div>
                                     </template>
                                 </datatable>
@@ -276,9 +274,7 @@
                                             <stockbody :stock="stk.stock" tab-show="news"></stockbody>
                                         </div><!-- /.card-body -->
                                         <div class="card-footer">
-                                            <template v-for="tag in stk.stock.tags">
-                                                <small v-for="tag.type===1" v-text="tag.name" :title="tag.detail" class="badge tag-highlight mr-1"></small>
-                                            </template>
+                                            <tag :stock="stk.stock" :type="['highlight']"></tag>
                                         </div>
                                     </div>
                                 </template>
