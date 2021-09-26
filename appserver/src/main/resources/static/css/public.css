@@ -28,3 +28,7 @@ pre{
 table tr.selected{
     background-color: lightgrey;
 }
+.tag-highlight{
+    background-color: #FFEE80;
+    font-weight: 500;
+}

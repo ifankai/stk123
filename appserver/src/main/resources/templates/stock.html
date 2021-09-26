@@ -150,6 +150,13 @@
                                     <span v-html="stock.nameAndCodeWithLink"></span> 评分:<span v-text="stock.rating.total"></span>
                                 </h3>
                                 <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" title="交易">
+                                        <i class="fal fa-exchange-alt"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-tool" title="加入自选">
+                                        <i class="fal fa-heart"></i>
+                                    </button>
+                                    <eye :stock="stock"></eye>
                                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="收起">
                                         <i class="fas fa-minus"></i>
                                     </button>

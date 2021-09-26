@@ -130,7 +130,6 @@ public class Stock {
     @JsonView(View.All.class)
     private List<StkKeywordLinkEntity> products; //主营产品
 
-
     private BarSeries barSeries;
     private BarSeries barSeriesWeek;
     private BarSeries barSeriesMonth;
@@ -147,9 +146,10 @@ public class Stock {
     /*@JsonView({View.Score.class, View.All.class})
     private Map<String, Rps> rps = new HashMap<>();*/
 
-    //评级
     @JsonView(View.All.class)
-    private Rating rating;
+    private Rating rating; //评级
+    @JsonView(View.All.class)
+    private List<Tag> tags; //标签
 
 
     //////////////////////////////////////////////////////////////////////////////////////
@@ -872,7 +872,7 @@ public class Stock {
     }
 
     /**
-     * @TODO 评级
+     * @TODO 评级 and 打标签
      * 1. 十大流通股里有基金、证券投资公司的加一颗星，有社保，港股通资金的加一颗星，有著名基金，私募如高毅等加一颗星
      * 2. 人均持股金额大于50w的加一颗星，散户个数下降一定比例的加一颗星，十大流通股持股比例环比提供5%的加一颗星
      * 3. 所属行业有rps大于90的加三颗星
@@ -886,6 +886,7 @@ public class Stock {
             return this.rating;
         }
         this.rating = new Rating();
+        this.tags = new ArrayList<>();
         int days = 30;
         rating.addScore("jsm"); //技术面
         rating.addScore("jsm","bar1", () -> this.getBar().getScore(days));
@@ -904,14 +905,34 @@ public class Stock {
         return rating;
     }
 
+    public List<Tag> getTags(){
+        if(!this.isCateStock()) return null;
+        if(this.tags == null){
+            getRating();
+            getOtherTags();
+            this.tags = this.tags.stream().sorted(Comparator.comparing(Tag::getDisplayOrder, Comparator.reverseOrder())).collect(Collectors.toList());
+        }
+        return this.tags;
+    }
+
+    private void getOtherTags(){
+
+    }
+
 
     public int getScoreByBk(){
         if(this.bks != null){
             StrategyResult sr = this.getMaxBkRpsInBks(Rps.CODE_BK_60);
             if(sr == null) return 0;
             if(sr.getPercentile() >= 90){ //板块rps强度大于90百分位，则加10分
+                this.tags.add(Tag.builder()
+                        .name("RPS["+sr.getStock().getNameAndCodeWithLink()+"]"+sr.getPercentile()).value(sr.getPercentile())
+                        .detail("RPS["+sr.getStock().getNameAndCode()+"]"+sr.getPercentile()).displayOrder(100).build());
                 return 15;
             }else if(sr.getPercentile() >= 80){
+                this.tags.add(Tag.builder()
+                        .name("RPS["+sr.getStock().getNameAndCodeWithLink()+"]"+sr.getPercentile()).value(sr.getPercentile())
+                        .detail("RPS["+sr.getStock().getNameAndCode()+"]"+sr.getPercentile()).displayOrder(100).build());
                 return 10;
             }
         }
@@ -923,11 +944,15 @@ public class Stock {
         if(this.getHolder() != null){
             StkHolderEntity stkHolderEntity = this.getHolder();
             if(stkHolderEntity.getHoldingAmount() != null){
-                if(stkHolderEntity.getHoldingAmount() >= 500000){ //人均持股金额大于50w，加10
+                double holdingAmount = stkHolderEntity.getHoldingAmount()/10000;
+                if(holdingAmount >= 50){ //人均持股金额大于50w，加10
+                    this.tags.add(Tag.builder()
+                            .name("人均持股"+holdingAmount+"万").value(holdingAmount)
+                            .detail("人均持股金额:"+holdingAmount+"万").build());
                     score += 10;
-                }else if(stkHolderEntity.getHoldingAmount() >= 300000){ //人均持股金额大于30w，加5
+                }else if(holdingAmount >= 30){ //人均持股金额大于30w，加5
                     score += 5;
-                }else if(stkHolderEntity.getHoldingAmount() < 100000){ //人均持股金额小于10w，减5
+                }else if(holdingAmount < 10){ //人均持股金额小于10w，减5
                     score += -5;
                 }
             }
@@ -968,6 +993,7 @@ public class Stock {
                StringUtils.contains(owner.getOrgName(), "社保基金" ) ||
                StringUtils.contains(owner.getOrgName(), "养老保险基金")
                     ){
+                this.tags.add(Tag.builder().name("机构投资").detail(owner.getOrgName()).build());
                 score += 5;
                 break;
             }
@@ -993,6 +1019,8 @@ public class Stock {
                 || type.equals(StkConstant.NEWS_TYPE_210) //	拐点|扭亏
         ).count();
         score += cnt * 5;
+        news.stream().filter(ns -> ns.getType().equals(StkConstant.NEWS_TYPE_240)).findFirst()
+                .ifPresent(lt -> this.tags.add(Tag.builder().name("龙头").detail(lt.getTitle()).build()));
         return score;
     }
 
@@ -1004,6 +1032,8 @@ public class Stock {
             double percent = Double.parseDouble(StringUtils.substringBetween(info.get().getInfo(), "(TTM)的 ", "%"));
             if(percent >= 100){
                 score += 10;
+                this.tags.add(Tag.builder().name("订单"+percent+"%").value(percent)
+                        .detail("[订单|中标|合同] "+info.get().getInfo()).build());
             }
             if(percent >= 200){
                 score += 5;
@@ -1020,24 +1050,35 @@ public class Stock {
     public int getScoreByFn() {
         int score = 0;
         Fn fn = this.getFn();
-        Double a = fn.getValueByType(StkConstant.FN_TYPE_110);
+        Double a = fn.getValueByType(StkConstant.FN_TYPE_110); //主营业务收入增长率(%)
+        if(a != null){
+            if(a >= 30) {
+                score += 3;
+            }else if(a >= 50) {
+                score += 5;
+                this.tags.add(Tag.builder().name("主营增长"+a+"%").value(a).detail("主营业务收入增长率"+a+"%").displayOrder(79).build());
+            }else if(a >= 100) {
+                score += 10;
+            }
+        }
+        a = fn.getValueByType(StkConstant.FN_TYPE_111); //净利润增长率(%)
         if(a != null){
             if(a >= 30) score += 3;
-            else if(a >= 50) score += 5;
+            else if(a >= 50) {
+                score += 5;
+                this.tags.add(Tag.builder().name("净利增长"+a+"%").value(a).detail("净利润增长率"+a+"%").displayOrder(78).build());
+            }
             else if(a >= 100) score += 10;
         }
-        a = fn.getValueByType(StkConstant.FN_TYPE_111);
+        a = fn.getValueByType(StkConstant.FN_TYPE_106); //销售毛利率(%)
         if(a != null){
             if(a >= 30) score += 3;
-            else if(a >= 50) score += 5;
-            else if(a >= 100) score += 10;
+            else if(a >= 50) {
+                score += 5;
+                this.tags.add(Tag.builder().name("毛利率"+a+"%").value(a).detail("毛利率"+a+"%").displayOrder(77).build());
+            }
         }
-        a = fn.getValueByType(StkConstant.FN_TYPE_106);
-        if(a != null){
-            if(a >= 30) score += 3;
-            else if(a >= 50) score += 5;
-        }
-        a = fn.getValueByType(StkConstant.FN_TYPE_123);
+        a = fn.getValueByType(StkConstant.FN_TYPE_123); //经营现金净流量与净利润的比率(%)
         if(a != null){
             if(a >= 100) score += 5;
         }

@@ -291,7 +291,7 @@ const _eye = {
     props: ['stock'],
     template: `
           <button @click.prevent="updateLookPool($event, stock)" :title="isInLookPool(stock.code)?'删除观察':'加入观察'"  type="button" class="btn btn-tool">
-              <i class="fas fa-eye" :class="isInLookPool(stock.code)?'fa-eye-slash':''"></i>
+              <i class="fal fa-eye" :class="isInLookPool(stock.code)?'fa-eye-slash':''"></i>
           </button>
         `,
     methods:{

@@ -84,7 +84,7 @@ var _datatableTemplate = `
                         </span>
                     </td>
                     <td v-else-if="column.slot !== undefined">
-                        <slot :name="column.slot" :row="row"></slot>
+                        <slot :name="column.slot" :="{row:row, rowNumber:index}"></slot>
                     </td>
                     <td v-else v-html="row[column.data]"></td>
                 </template>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -111,7 +111,7 @@
 
                             <div class="card-body">
                                 <datatable :="{...common.dictHeader, ...dictHeaders}" @select-row="selectHeader" @dblclick-row="dblclickHeader">
-                                    <template v-slot:edit-and-delete="{row}">
+                                    <template v-slot:edit-and-delete="{row, rowNumber}">
                                         <button @click.stop="editHeader(row)" title="编 辑" type="button" class="btn btn-xs mr-2">
                                             <i class="fal fa-edit"></i>
                                         </button>
