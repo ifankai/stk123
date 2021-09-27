@@ -1158,6 +1158,10 @@ public class Stock {
         if(this.statuses != null) return this.statuses;
         return this.statuses = stkStatusRepository.findAllByCodeAndDateIsBetweenStartTimeAndEndTime(this.code, new Date());
     }
+    public void reloadStatuses(){
+        setStatuses(null);
+        getStatuses();
+    }
 
     @Override
     public int hashCode(){

@@ -729,10 +729,7 @@ public class StockService {
 
     public void saveOrUpdateStatus(StkStatusEntity status){
         stkStatusRepository.save(status);
-        Stocks.reload(status.getCode(), stock -> {
-            stock.setStatuses(null);
-            stock.getStatuses();
-        });
+        Stocks.reload(status.getCode(), Stock::reloadStatuses);
     }
 
     public static void main(String[] args) throws Exception{
