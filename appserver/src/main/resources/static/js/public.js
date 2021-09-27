@@ -22,7 +22,9 @@ var _tsFormat = function ( timestamp ) {
     const tmDate = new Date( timestamp * 1000 ); // 参数时间戳转换成的日期对象
     const Y = tmDate.getFullYear(), m = tmDate.getMonth() + 1, d = tmDate.getDate();
     const H = tmDate.getHours(), i = tmDate.getMinutes();
-    if ( timestampDiff < 60 ) { // 一分钟以内
+    if(timestampDiff < 0){// 将来时间
+        return Y + '年' + zeroize(m) + '月' + zeroize(d) + '日 ' + zeroize(H) + ':' + zeroize(i);
+    }else if ( timestampDiff < 60 ) { // 一分钟以内
         return "刚刚";
     } else if( timestampDiff < 3600 ) { // 一小时前之内
         return Math.floor( timestampDiff / 60 ) + "分钟前";
@@ -476,13 +478,23 @@ $(function (){
     })
 });
 
+let _stockExcludeMixins = {
+    openExcludeModal:function (stock){
+        this.excludeStock = stock;
+        $('#_excludeModal').modal ('show');
+    }
+}
+
 const mixins = {
     data(){
-        return {}
+        return {
+            excludeStock:{}
+        }
     },
     methods:{
         ..._stockLookPoolInVuex,
-        ..._searchInVuex
+        ..._searchInVuex,
+        ..._stockExcludeMixins
     },
     mounted(){
         if (localStorage.stockLookPool) {
@@ -502,6 +514,7 @@ function createApp(config){
     app.component('init', _init);
     app.component('stockbody', _stockBody); //不能写成 stockBody，html元素不区分大小写
     app.component('tag', _tag);
+    app.component('stockexclude', _stockExclude);
 
     app.config.globalProperties.tsFormat = _tsFormat;
     app.config.globalProperties.dateFormat = dateFormat;

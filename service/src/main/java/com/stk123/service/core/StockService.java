@@ -84,6 +84,8 @@ public class StockService {
     private FnService fnService;
     @Autowired
     private StkKeywordLinkRepository stkKeywordLinkRepository;
+    @Autowired
+    private StkStatusRepository stkStatusRepository;
 
 
     public List<Stock> buildStocks(EnumMarket market, EnumCate cate){
@@ -723,6 +725,14 @@ public class StockService {
     public StockBasicProjection findInfo(String code) {
         Stock stock = Stock.build(code, null);
         return stkRepository.findByCodeAndMarketAndPlace(stock.getCode(), stock.getMarket().getMarket(), stock.getPlace().getPlace());
+    }
+
+    public void saveOrUpdateStatus(StkStatusEntity status){
+        stkStatusRepository.save(status);
+        Stocks.reload(status.getCode(), stock -> {
+            stock.setStatuses(null);
+            stock.getStatuses();
+        });
     }
 
     public static void main(String[] args) throws Exception{

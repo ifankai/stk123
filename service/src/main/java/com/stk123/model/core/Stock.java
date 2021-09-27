@@ -83,6 +83,8 @@ public class Stock {
     private StkFnTypeRepository stkFnTypeRepository;
     @Autowired
     private StkKeywordLinkRepository stkKeywordLinkRepository;
+    @Autowired
+    private StkStatusRepository stkStatusRepository;
 
 
     @JsonView({View.Default.class, View.Score.class})
@@ -110,6 +112,8 @@ public class Stock {
     private Double marketCap; //总市值
 
     private StockProjection stock;
+    @JsonView(View.All.class)
+    private List<StkStatusEntity> statuses;
 
     private List<StkIndustryEntity> industries; //行业
     @JsonView(View.All.class)
@@ -1066,15 +1070,19 @@ public class Stock {
             if(a >= 30) score += 3;
             else if(a >= 50) {
                 score += 5;
-                this.tags.add(Tag.builder().name("净利增长"+a+"%").value(a).detail("净利润增长率"+a+"%").displayOrder(78).build());
             }
             else if(a >= 100) score += 10;
+            if(a >= 35){
+                this.tags.add(Tag.builder().name("净利增长"+a+"%").value(a).detail("净利润增长率"+a+"%").displayOrder(78).build());
+            }
         }
         a = fn.getValueByType(StkConstant.FN_TYPE_106); //销售毛利率(%)
         if(a != null){
             if(a >= 30) score += 3;
             else if(a >= 50) {
                 score += 5;
+            }
+            if(a >= 35){
                 this.tags.add(Tag.builder().name("毛利率"+a+"%").value(a).detail("毛利率"+a+"%").displayOrder(77).build());
             }
         }
@@ -1146,6 +1154,10 @@ public class Stock {
         return this.products = stkKeywordLinkRepository.findAllByCodeAndLinkType(this.code, StkConstant.KEYWORD_LINK_TYPE_MAIN_PRODUCT);
     }
 
+    public List<StkStatusEntity> getStatuses(){
+        if(this.statuses != null) return this.statuses;
+        return this.statuses = stkStatusRepository.findAllByCodeAndDateIsBetweenStartTimeAndEndTime(this.code, new Date());
+    }
 
     @Override
     public int hashCode(){

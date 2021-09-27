@@ -5,10 +5,7 @@ import com.alicp.jetcache.anno.Cached;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.common.CommonUtils;
 import com.stk123.common.util.JsonUtils;
-import com.stk123.entity.StkDictionaryEntity;
-import com.stk123.entity.StkEntity;
-import com.stk123.entity.StkKlineEntity;
-import com.stk123.entity.StkNewsEntity;
+import com.stk123.entity.*;
 import com.stk123.model.RequestResult;
 import com.stk123.model.core.Rating;
 import com.stk123.model.core.Rps;
@@ -18,10 +15,7 @@ import com.stk123.model.enumeration.EnumMarket;
 import com.stk123.model.json.View;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.model.strategy.StrategyResult;
-import com.stk123.repository.StkKlineRepository;
-import com.stk123.repository.StkNewsRepository;
-import com.stk123.repository.StkRepository;
-import com.stk123.repository.StkTextRepository;
+import com.stk123.repository.*;
 import com.stk123.service.StkConstant;
 import com.stk123.service.XueqiuService;
 import com.stk123.service.core.BarService;
@@ -34,10 +28,7 @@ import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -61,6 +52,8 @@ public class StockController {
     private DictService dictService;
     @Autowired
     private StkKlineRepository stkKlineRepository;
+    @Autowired
+    private StkStatusRepository stkStatusRepository;
 
     @RequestMapping(value = {"/init"})
     @ResponseBody
@@ -250,5 +243,15 @@ public class StockController {
             if(pageNum++ >= 100)break;
         }while(true);
         return notices;
+    }
+
+    @PostMapping(value = "/status/exclude")
+    @ResponseBody
+    public RequestResult statusExclude(@RequestBody StkStatusEntity status){
+        status.setType(StkConstant.STATUS_TYPE_1);
+        status.setValid(1);
+        status.setInsertTime(new Date());
+        stockService.saveOrUpdateStatus(status);
+        return RequestResult.success();
     }
 }

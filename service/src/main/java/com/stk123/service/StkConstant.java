@@ -127,4 +127,6 @@ public class StkConstant {
     public final static int KEYWORD_STATUS_1 = 1;  // 1:normal(auto-add)
 
 
+    /** stk_status.type **/
+    public final static Integer STATUS_TYPE_1 = 1;  //	阶段排除股票
 }

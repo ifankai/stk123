@@ -1,4 +1,4 @@
-var _stockBodyTemplate = `
+const _stockBodyTemplate = `
     <div class="row stock-tabs">
         <div class="col-1 col-md-1 pr-0">
             <div class="nav flex-column nav-tabs h-100" role="tablist" aria-orientation="vertical">

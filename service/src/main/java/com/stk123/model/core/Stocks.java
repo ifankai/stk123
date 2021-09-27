@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -114,7 +115,7 @@ public class Stocks {
         return Stocks.BKsEasymoneyGn;
     }
     public static Stock getStockOrNull(String code){
-        if(Stocks.StocksAllCN == null) return null;
+        //if(Stocks.StocksAllCN == null) return null;
         return Stocks.StocksAll_Map.get(code);
     }
     public static List<Stock> getStocksOrNull(List<String> codes){
@@ -123,6 +124,13 @@ public class Stocks {
     }
     public static void putStocks(List<Stock> stocks){
         stocks.forEach(stock -> Stocks.StocksAll_Map.put(stock.getCode(), stock));
+    }
+
+    /**
+     * reload stock上部分可以变动的数据
+     */
+    public static void reload(String code, Consumer<Stock> consumer){
+        Optional.ofNullable(Stocks.getStockOrNull(code)).ifPresent(consumer);
     }
 
     public static void clear(){

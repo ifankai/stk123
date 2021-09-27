@@ -265,8 +265,11 @@
                                                 <button type="button" class="btn btn-tool" title="加关注">
                                                     <i class="fal fa-heart"></i>
                                                 </button>
-                                                <button type="button" class="btn btn-tool" data-card-widget="remove">
-                                                    <i class="fas fa-times"></i>
+                                                <button @click="openExcludeModal(stk.stock)" type="button" class="btn btn-tool"
+                                                        :class="{disabled:stk.stock.statuses.find(s=>s.type===1)}"
+                                                        :disabled="stk.stock.statuses.find(s=>s.type===1)"
+                                                        :title="getExcludeTitle(stk.stock)">
+                                                    <i class="fal fa-times"></i>
                                                 </button>
                                             </div>
                                         </div><!-- /.card-header -->
@@ -286,6 +289,8 @@
             </div>
         </section>
         <!-- /.content -->
+
+        <stockexclude :stock="excludeStock"></stockexclude>
 
         <a id="back-to-top" href="#" class="btn btn-outline-primary back-to-top" style="display: none" role="button" aria-label="Scroll to top">
             <i class="fas fa-chevron-up"></i>
@@ -309,7 +314,7 @@
 
     function parseStocks(_this, res){
         let data = res.data.data;
-        console.log(data);
+        //console.log(data);
         let stocks = data.stocks;
         let i = 1;
         _this.common.niusans.forEach(ns => ns.count=0);
@@ -473,7 +478,13 @@
                 });
                 Pace.stop();
             },
-
+            getExcludeTitle:function(stock){
+                let status = stock.statuses.find(s=>s.type===1);
+                if(status === undefined) return '排除';
+                else{
+                    return '排除到 '+ this.tsFormat(status.endTime);
+                }
+            }
         },
         computed: {
             bksTopN: function () {
@@ -525,17 +536,17 @@
             axios.get("/"+codeType+"/" + code).then(function (res) {
                 parseStocks(_this, res);
                 _this.total = _this.stocks.length;
-                console.log('mounted')
+                //console.log('mounted')
             });
 
         },
         created () {
         },
         beforeCreate(){
-            console.log('beforeCreate')
+            //console.log('beforeCreate')
         },
         updated(){
-            console.log('updated')
+            //console.log('updated')
             //console.log('niusanSelected', this.niusanSelected)
             //console.log('bkSelected', this.bkSelected)
         }

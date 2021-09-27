@@ -32,3 +32,9 @@ table tr.selected{
     background-color: #FFEE80;
     font-weight: 500;
 }
+.btn-tool{
+    color: unset;
+}
+.btn-tool.disabled{
+    color: lightgrey;
+}

@@ -1,4 +1,4 @@
-var _datatableLang =
+const _datatableLang =
     {
         "sProcessing":   "处理中...",
         "sLengthMenu":   "显示 _MENU_ 行",
@@ -24,7 +24,7 @@ var _datatableLang =
         }
     };
 
-var _datatableTemplate = `
+const _datatableTemplate = `
 <div class="dataTables_wrapper dt-bootstrap4">
     <table :id="'_datatable_'+datatableId"  class="table table-valign-middle dataTable" :class="tableClass" style="width:100%">
         <thead v-show="columns[0].title">
