@@ -5,7 +5,7 @@ import com.stk123.common.CommonUtils;
 import com.stk123.model.RequestResult;
 import com.stk123.model.core.Rps;
 import com.stk123.model.core.Stock;
-import com.stk123.model.core.Stocks;
+import com.stk123.model.core.Cache;
 import com.stk123.model.json.View;
 import com.stk123.model.strategy.StrategyResult;
 import com.stk123.service.core.StockService;
@@ -38,7 +38,7 @@ public class BkController {
                              @PathVariable(value = "rpsCode", required = false)String rpsCode){
         List<Stock> bk = stockService.buildStocks(bkCode);
         List<Stock> stocks = bk.get(0).getStocks();
-        stocks = stockService.getStocksWithBks(stocks, Stocks.getBks(), false);
+        stocks = stockService.getStocksWithBks(stocks, Cache.getBks(), false);
         if(StringUtils.isEmpty(rpsCode)){
             rpsCode = Rps.CODE_STOCK_SCORE;
         }

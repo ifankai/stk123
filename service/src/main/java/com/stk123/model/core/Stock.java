@@ -745,7 +745,7 @@ public class Stock {
         if(!this.isCateStock()){
             throw new RuntimeException("Only for stock.");
         }
-        return getBks().stream().map(bk -> Stocks.getBkRps(rpsCode, bk.getCode())).filter(Objects::nonNull).max(Comparator.comparingDouble(StrategyResult::getPercentile)).orElse(null);
+        return getBks().stream().map(bk -> Cache.getBkRps(rpsCode, bk.getCode())).filter(Objects::nonNull).max(Comparator.comparingDouble(StrategyResult::getPercentile)).orElse(null);
     }
 
     @Data

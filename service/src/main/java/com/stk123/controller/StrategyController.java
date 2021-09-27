@@ -3,7 +3,7 @@ package com.stk123.controller;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.model.RequestResult;
 import com.stk123.model.core.Stock;
-import com.stk123.model.core.Stocks;
+import com.stk123.model.core.Cache;
 import com.stk123.model.enumeration.EnumCate;
 import com.stk123.model.enumeration.EnumMarket;
 import com.stk123.model.json.View;
@@ -16,8 +16,6 @@ import com.stk123.service.core.StockService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -53,15 +51,15 @@ public class StrategyController {
             }else{
                 stocks = Collections.EMPTY_LIST;
             }
-            stocks = stockService.getStocksWithBks(stocks, Stocks.BKsEasymoneyGn, false);
+            stocks = stockService.getStocksWithBks(stocks, Cache.BKsEasymoneyGn, false);
         }else {
-            if (Stocks.StocksAllCN == null) {
-                if (Stocks.BKsEasymoneyGn == null) {
-                    Stocks.BKsEasymoneyGn = Collections.synchronizedList(stockService.getBks(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn));
+            if (Cache.StocksAllCN == null) {
+                if (Cache.BKsEasymoneyGn == null) {
+                    Cache.BKsEasymoneyGn = Collections.synchronizedList(stockService.getBks(EnumMarket.CN, EnumCate.INDEX_eastmoney_gn));
                 }
-                Stocks.StocksAllCN = Collections.synchronizedList(stockService.getStocksWithBks(EnumMarket.CN, Stocks.BKsEasymoneyGn, false));
+                Cache.StocksAllCN = Collections.synchronizedList(stockService.getStocksWithBks(EnumMarket.CN, Cache.BKsEasymoneyGn, false));
             }
-            stocks = Stocks.StocksAllCN;
+            stocks = Cache.StocksAllCN;
         }
         StrategyBacktesting strategyBacktesting = backtestingService.backtestingOnStock(stocks, Collections.singletonList(strategyCode));
         List<StrategyResult> results = strategyBacktesting.getPassedStrategyResult();

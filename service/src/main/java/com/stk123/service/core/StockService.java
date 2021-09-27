@@ -1,6 +1,5 @@
 package com.stk123.service.core;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.stk123.common.CommonUtils;
 import com.stk123.common.util.BeanUtils;
 import com.stk123.common.util.ListUtils;
@@ -10,14 +9,12 @@ import com.stk123.model.core.*;
 import com.stk123.model.dto.SearchResult;
 import com.stk123.model.enumeration.EnumCate;
 import com.stk123.model.enumeration.EnumMarket;
-import com.stk123.model.projection.IndustryProjection;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.model.projection.StockCodeNameProjection;
 import com.stk123.model.projection.StockProjection;
 import com.stk123.model.strategy.Strategy;
 import com.stk123.model.strategy.StrategyBacktesting;
 import com.stk123.model.strategy.StrategyResult;
-import com.stk123.model.strategy.result.FilterResult;
 import com.stk123.repository.*;
 import com.stk123.service.StkConstant;
 import com.stk123.util.HttpUtils;
@@ -26,7 +23,6 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.apachecommons.CommonsLog;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -406,12 +402,12 @@ public class StockService {
         return this.getStocks(Arrays.asList(codes));
     }
     public List<Stock> getStocks(List<String> codes){
-        List<Stock> stocks = Stocks.getStocksOrNull(codes);
-        if(Stocks.inited) return stocks;
+        List<Stock> stocks = Cache.getStocksOrNull(codes);
+        if(Cache.inited) return stocks;
         if(stocks != null && stocks.size() == codes.size()) return stocks;
         stocks = buildStocks(codes);
-        stocks = getStocksWithBks(stocks, Stocks.getBks(), 60, false);
-        Stocks.putStocks(stocks);
+        stocks = getStocksWithBks(stocks, Cache.getBks(), 60, false);
+        Cache.putStocks(stocks);
         return stocks;
     }
     public Stock getBk(String code){
@@ -422,10 +418,10 @@ public class StockService {
         return this.getBks(Arrays.asList(codes));
     }
     public List<Stock> getBks(List<String> codes){
-        List<Stock> stocks = Stocks.getBksOrNull(codes);
+        List<Stock> stocks = Cache.getBksOrNull(codes);
         if(stocks != null && stocks.size() == codes.size()) return stocks;
-        Stocks.getBks();
-        return Stocks.getBksOrNull(codes);
+        Cache.getBks();
+        return Cache.getBksOrNull(codes);
     }
     /*** [end] get stock/bk from cache first, then from database ***/
 
@@ -638,7 +634,7 @@ public class StockService {
             map.put("code", bk.getCode());
             List<Stock> finalStocks = stocks;
             map.put("stocks", bk.getStocks().stream().filter(stock -> finalStocks.stream().anyMatch(stock::equals)).map(Stock::getCode).collect(Collectors.toList()));
-            map.put("rps", Stocks.getBkRps(bk.getCode()));
+            map.put("rps", Cache.getBkRps(bk.getCode()));
             bksList.add(map);
         }
         return bksList.stream().sorted(Comparator.comparing(bk -> ((List) bk.get("stocks")).size(), Comparator.reverseOrder())).collect(Collectors.toList());
@@ -729,7 +725,7 @@ public class StockService {
 
     public void saveOrUpdateStatus(StkStatusEntity status){
         stkStatusRepository.save(status);
-        Stocks.reload(status.getCode(), Stock::reloadStatuses);
+        Cache.reload(status.getCode(), Stock::reloadStatuses);
     }
 
     public static void main(String[] args) throws Exception{

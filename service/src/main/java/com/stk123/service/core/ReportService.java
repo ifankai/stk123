@@ -5,7 +5,7 @@ import com.stk123.entity.StkReportDetailEntity;
 import com.stk123.entity.StkReportHeaderEntity;
 import com.stk123.model.core.Rps;
 import com.stk123.model.core.Stock;
-import com.stk123.model.core.Stocks;
+import com.stk123.model.core.Cache;
 import com.stk123.model.enumeration.EnumMarket;
 import com.stk123.model.strategy.sample.Strategies;
 import com.stk123.repository.BaseRepository;
@@ -115,7 +115,7 @@ public class ReportService {
 
             List<Map> hotBkList = hotBkStrategyMapSort.keySet().stream().map(s -> {
                 return new HashMap(){{
-                    put("stock", Stocks.getBk(s));
+                    put("stock", Cache.getBk(s));
                     put("strategies", hotBkStrategyMap.get(s));
                 }};
             }).collect(Collectors.toList());
@@ -179,7 +179,7 @@ public class ReportService {
     private List<Map> getBksAsMap(Map<String, List<StkReportDetailEntity>> groupbyCodeMap, String finalRptDate){
         return groupbyCodeMap.entrySet().stream().sorted(Comparator.comparing(e -> e.getValue().size(), Comparator.reverseOrder())).map(e -> {
             Map map = new HashMap();
-            Stock bk = Stocks.getBk(e.getKey());
+            Stock bk = Cache.getBk(e.getKey());
             map.put("code", e.getKey());
             map.put("strategyDate", finalRptDate);
 

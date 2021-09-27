@@ -10,7 +10,7 @@ import com.stk123.model.RequestResult;
 import com.stk123.model.core.Rating;
 import com.stk123.model.core.Rps;
 import com.stk123.model.core.Stock;
-import com.stk123.model.core.Stocks;
+import com.stk123.model.core.Cache;
 import com.stk123.model.enumeration.EnumMarket;
 import com.stk123.model.json.View;
 import com.stk123.model.projection.StockBasicProjection;
@@ -58,13 +58,13 @@ public class StockController {
     @RequestMapping(value = {"/init"})
     @ResponseBody
     public RequestResult initStockAndBk(){
-        Stocks.initAll();
+        Cache.initAll();
         return RequestResult.success(true);
     }
     @RequestMapping(value = {"/inited"})
     @ResponseBody
     public RequestResult inited(){
-        return RequestResult.success(Stocks.inited);
+        return RequestResult.success(Cache.inited);
     }
 
     @RequestMapping(value = {"/list/{market:1|2|3|cn|us|hk}/{cate}"})
@@ -113,7 +113,7 @@ public class StockController {
     public RequestResult score1(@RequestParam(value = "from", required = false, defaultValue = "0")Double percentileFrom,
                                 @RequestParam(value = "to", required = false, defaultValue = "100")Double percentileTo
     ){
-        List<Stock> stocks = Stocks.getStocksWithBks();
+        List<Stock> stocks = Cache.getStocksWithBks();
         stocks = stocks.stream().sorted(Comparator.comparing(Stock::getScore, Comparator.reverseOrder())).collect(Collectors.toList());
         List<Map> list = new ArrayList<>();
         int size = stocks.size();
@@ -133,7 +133,7 @@ public class StockController {
     @RequestMapping(value = {"/clear"})
     @ResponseBody
     public RequestResult clear(){
-        Stocks.clear();
+        Cache.clear();
         return RequestResult.success();
     }
 

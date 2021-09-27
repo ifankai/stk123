@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.model.RequestResult;
 import com.stk123.model.core.Rps;
 import com.stk123.model.core.Stock;
-import com.stk123.model.core.Stocks;
-import com.stk123.model.enumeration.EnumCate;
-import com.stk123.model.enumeration.EnumMarket;
+import com.stk123.model.core.Cache;
 import com.stk123.model.json.View;
 import com.stk123.model.strategy.Strategy;
 import com.stk123.model.strategy.StrategyResult;
@@ -14,7 +12,6 @@ import com.stk123.service.core.StockService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -45,9 +42,9 @@ public class RpsController {
             }else{
                 stocks = Collections.EMPTY_LIST;
             }
-            stocks = stockService.getStocksWithBks(stocks, Stocks.getBks(), false);
+            stocks = stockService.getStocksWithBks(stocks, Cache.getBks(), false);
         }else {
-            stocks = Stocks.getStocksWithBks();
+            stocks = Cache.getStocksWithBks();
         }
         List<StrategyResult> strategyResults = stockService.calcRps(stocks, rpsCode, args == null? null : StringUtils.split(args, ","));
         strategyResults = strategyResults.subList(0, Math.min(200, strategyResults.size()));

@@ -2,12 +2,10 @@ package com.stk123.task;
 
 import com.stk123.common.CommonUtils;
 import com.stk123.common.util.WeatherUtils;
-import com.stk123.model.core.Stocks;
 import com.stk123.service.task.TaskBuilder;
 import com.stk123.service.task.TaskContainer;
 import com.stk123.task.config.TaskCondition;
 import com.stk123.task.quartz.job.PPIIndexNewHighJob;
-import com.stk123.task.quartz.job.ResearchReportJob;
 import com.stk123.task.quartz.job.XueqiuUserJob;
 import com.stk123.task.schedule.*;
 import com.stk123.task.tool.TaskUtils;

@@ -8,7 +8,7 @@ import com.stk123.entity.*;
 import com.stk123.model.core.Bar;
 import com.stk123.model.core.Rps;
 import com.stk123.model.core.Stock;
-import com.stk123.model.core.Stocks;
+import com.stk123.model.core.Cache;
 import com.stk123.model.enumeration.EnumCate;
 import com.stk123.model.enumeration.EnumMarket;
 import com.stk123.model.mass.*;
@@ -129,7 +129,7 @@ public class BarTask extends AbstractTask {
     }
 
     public void clearAll(){
-        Stocks.clear();
+        Cache.clear();
         System.gc();
     }
 
@@ -626,7 +626,7 @@ public class BarTask extends AbstractTask {
         log.info("start analyseAllStocks");
         try {
             StkReportHeaderEntity stkReportHeaderEntity = null;
-            List<Stock> stocks = Stocks.getStocksWithBks();
+            List<Stock> stocks = Cache.getStocksWithBks();
             //stockService.buildHolder(StocksAllCN);
             stocks = stockService.filterByMarketCap(stocks, 30);
             stocks = stockService.filterByFn(stocks);
@@ -729,7 +729,7 @@ public class BarTask extends AbstractTask {
         log.info("start analyseAllCNRps");
         try {
             StkReportHeaderEntity stkReportHeaderEntity = null;
-            List<Stock> stocks = Stocks.getStocksWithBks();
+            List<Stock> stocks = Cache.getStocksWithBks();
 
             stocks = stockService.filterByMarketCap(stocks, 50);
             stocks = stockService.filterByFn(stocks);
@@ -811,7 +811,7 @@ public class BarTask extends AbstractTask {
         log.info("start analyseAllHKRps");
         try {
             StkReportHeaderEntity stkReportHeaderEntity = null;
-            List<Stock> stocks = Stocks.getHKStocks();
+            List<Stock> stocks = Cache.getHKStocks();
 
 //            stocks = stockService.filterByMarketCap(stocks, 50);
 //            stocks = stockService.filterByFn(stocks);
@@ -984,7 +984,7 @@ public class BarTask extends AbstractTask {
         log.info("start analyseBks");
         try{
             StkReportHeaderEntity stkReportHeaderEntity = null;
-            List<Stock> bks = Stocks.getBksWithStocks();
+            List<Stock> bks = Cache.getBksWithStocks();
 
             String strategies = Strategies.STRATEGIES_BK;
             if(StringUtils.isNotEmpty(strategy)){
@@ -1067,16 +1067,16 @@ public class BarTask extends AbstractTask {
 
     //相似算法
     public void analyseMass(){
-        if(Stocks.StocksMass == null) {
+        if(Cache.StocksMass == null) {
             List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(EnumMarket.CN, EnumCate.STOCK);
             //List<StockBasicProjection> list = stkRepository.findAllByCodes(ListUtils.createList("000630","000650","002038","002740","000651","002070","603876","600373","000002","000920","002801","000726","603588","002791","300474"));
             list = list.stream().filter(stockBasicProjection -> !StringUtils.contains(stockBasicProjection.getName(), "退")).collect(Collectors.toList());
 
-            Stocks.StocksMass = stockService.buildStocksWithProjection(list);
-            Stocks.StocksMass = stockService.buildBarSeries(Stocks.StocksMass, 500, realtime != null);
-            stockService.buildHolder(Stocks.StocksMass);
+            Cache.StocksMass = stockService.buildStocksWithProjection(list);
+            Cache.StocksMass = stockService.buildBarSeries(Cache.StocksMass, 500, realtime != null);
+            stockService.buildHolder(Cache.StocksMass);
 
-            Stocks.StocksMass = Stocks.StocksMass.stream().filter(stock -> {
+            Cache.StocksMass = Cache.StocksMass.stream().filter(stock -> {
                 try {
                     //250日最低点发生在最近50日内
                     Bar bar250 = stock.getBar().getLowestBar(250, Bar.EnumValue.C);
@@ -1106,10 +1106,10 @@ public class BarTask extends AbstractTask {
             }).collect(Collectors.toList());
 
             //排除 人均持股 20万以下的
-            Stocks.StocksMass = filterByHolder(Stocks.StocksMass);
+            Cache.StocksMass = filterByHolder(Cache.StocksMass);
 
             //排除总市值小于50亿的
-            Stocks.StocksMass = StockService.filterByMarketCap(Stocks.StocksMass, 50);
+            Cache.StocksMass = StockService.filterByMarketCap(Cache.StocksMass, 50);
 
         }
 
@@ -1122,7 +1122,7 @@ public class BarTask extends AbstractTask {
         }*/
 
 
-        MassResult massResultA = Mass.execute(Stocks.StocksMass);
+        MassResult massResultA = Mass.execute(Cache.StocksMass);
 
         int count = massResultA.getCount();
         List<String> titles = ListUtils.createList("标的", "日期", "日K线", "周K线");
@@ -1139,7 +1139,7 @@ public class BarTask extends AbstractTask {
             if(reportDate == null){
                 reportDate = CommonUtils.formatDate(new Date(), CommonUtils.sf_ymd2);
             }
-            List<Stock> stocks = Stocks.getStocksWithBks();
+            List<Stock> stocks = Cache.getStocksWithBks();
             int priceLimitUp = 0;
             int priceLimitDown = 0;
             for(Stock stock : stocks){
