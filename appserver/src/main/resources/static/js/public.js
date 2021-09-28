@@ -533,7 +533,7 @@ const jc = {
                 }
             },
             backgroundDismiss: function(){
-                return true; // modal wont close.
+                return true;
             }
         }, opt)
         return $.confirm(config);

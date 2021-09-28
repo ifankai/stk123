@@ -7,13 +7,13 @@
         <!-- Left navbar links -->
         <div class="collapse navbar-collapse order-3" id="navbarCollapse">
             <ul class="navbar-nav">
-                <li class="nav-item">
+                <li class="nav-item" :class="{active:navActive==='notice'}">
                     <a href="/notice" target="_blank" class="nav-link">热点公告</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" :class="{active:navActive==='report'}">
                     <a href="/report" target="_blank" class="nav-link">每日报告</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" :class="{active:navActive==='mystocks'}">
                     <a href="/s/mystocks" target="_blank" class="nav-link">自选股</a>
                 </li>
                 <li class="nav-item dropdown" style="display: none" v-if="selectedTabName!=undefined" :style="{display:selectedTabName!=undefined?'block':'none'}">
@@ -162,7 +162,7 @@
             </li>
 
             <!-- 系统设置 -->
-            <li class="nav-item dropdown">
+            <li class="nav-item dropdown" :class="{active:['dict'].indexOf(navActive)>=0}">
                 <a class="nav-link" data-toggle="dropdown" href="#">
                     <i class="fas fa-cog"></i>
                 </a>

@@ -38,3 +38,7 @@ table tr.selected{
 .btn-tool.disabled{
     color: lightgrey;
 }
+.navbar .active>.nav-link{
+    font-weight: 600;
+    color: var(--primary) !important;
+}
