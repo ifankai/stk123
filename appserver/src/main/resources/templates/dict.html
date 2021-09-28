@@ -333,15 +333,18 @@
                 this.editHeader(row);
             },
             deleteHeader:function (row) {
-                if (window.confirm("确定要删除字典类型："+ row.name)) {
-                    axios.delete("/dict/header/"+row.type).then(function (res) {
-                        if(res.data.success){
-                            alert("删除成功");
-                        }else{
-                            alert("删除失败：\n"+res.data.data);
-                        }
-                    });
-                }
+                jc.confirm({
+                    content: "确定要删除字典类型："+ row.name,
+                    confirmAction: function () {
+                        axios.delete("/dict/header/"+row.type).then(function (res) {
+                            if(res.data.success){
+                                toastify({text: "删除成功"});
+                            }else{
+                                toastify({text: "删除失败：\n"+res.data.data});
+                            }
+                        });
+                    }
+                });
             },
             saveHeader:function (){
                 let _this = this;
@@ -350,9 +353,9 @@
                     ..._this.edit.headerRow
                 }).then(function (res) {
                     if(res.data.success){
-                        alert("保存成功");
+                        toastify({text: "保存成功"});
                     }else{
-                        alert("保存失败：\n"+res.data.data);
+                        toastify({text: "保存失败：\n"+res.data.data});
                     }
                     $('#dictHeaderModal').modal ('hide');
                 });
@@ -386,26 +389,29 @@
                     ..._this.edit.detailRow
                 }).then(function (res) {
                     if(res.data.success){
-                        alert("保存成功");
+                        toastify({text: "保存成功"});
                         _this.selectHeader(_this.edit.headerRow);
                     }else{
-                        alert("保存失败：\n"+res.data.data);
+                        toastify({text: "保存失败：\n"+res.data.data});
                     }
                     $('#dictDetailModal').modal ('hide');
                 });
             },
             deleteDetail:function (row) {
-                if (window.confirm("确定要删除字典类型："+ row.key)) {
-                    let _this = this;
-                    axios.delete("/dict/detail/"+row.type+"/"+row.key).then(function (res) {
-                        if(res.data.success){
-                            alert("删除成功");
-                            _this.selectHeader(_this.edit.headerRow);
-                        }else{
-                            alert("删除失败：\n"+res.data.data);
-                        }
-                    });
-                }
+                let _this = this;
+                jc.confirm({
+                    content: "确定要删除字典类型："+ row.key,
+                    confirmAction: function () {
+                        axios.delete("/dict/detail/"+row.type+"/"+row.key).then(function (res) {
+                            if(res.data.success){
+                                toastify({text: "删除成功"});
+                                _this.selectHeader(_this.edit.headerRow);
+                            }else{
+                                toastify({text:"删除失败：\n"+res.data.data});
+                            }
+                        });
+                    }
+                });
             }
         },
         computed: {

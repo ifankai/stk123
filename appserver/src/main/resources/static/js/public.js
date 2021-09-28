@@ -502,6 +502,44 @@ const mixins = {
         }
     }
 }
+
+//https://github.com/apvarun/toastify-js/blob/master/README.md
+function toastify(opt){
+    Toastify(Object.assign({},
+        {
+            position:"center",
+            duration:2000,
+            offset: {
+                x: 0, // horizontal axis - can be a number or a string indicating unity. eg: '2em'
+                y: window.innerHeight / 4 // vertical axis - can be a number or a string indicating unity. eg: '2em'
+            }
+        }, opt)).showToast();
+}
+
+//https://craftpip.github.io/jquery-confirm/#globaldefaults
+const jc = {
+    confirm:function (opt) {
+        let config = Object.assign({
+            title: '<small><i class="fal fa-exclamation-triangle"></i> 确认</small>',
+            buttons: {
+                confirm: {
+                    text: "确 定",
+                    keys: ['y'],
+                    action: opt.confirmAction
+                },
+                cancel: {
+                    text: "取 消",
+                    keys: ['esc']
+                }
+            },
+            backgroundDismiss: function(){
+                return true; // modal wont close.
+            }
+        }, opt)
+        return $.confirm(config);
+    }
+}
+
 function createApp(config){
     //config.methods = Object.assign(config.methods, _stockLookPoolInVuex, _searchInVuex); //和mixins功能类似
     config.mixins = [mixins];

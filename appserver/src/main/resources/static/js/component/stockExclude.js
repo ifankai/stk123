@@ -51,10 +51,10 @@ const _stockExclude = {
             };
             axios.post("/stock/status/exclude", status).then(function (res) {
                 if(res.data.success){
-                    alert("保存成功");
+                    toastify({text: "保存成功"});
                     _this.stock.statuses.push(status);
                 }else{
-                    alert("保存失败：\n"+res.data.data);
+                    toastify({text: "保存失败：\n"+res.data.data});
                 }
                 $('#_excludeModal').modal ('hide');
             });

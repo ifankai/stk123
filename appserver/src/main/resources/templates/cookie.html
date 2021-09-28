@@ -123,7 +123,7 @@
                 axios.post("/cookie/"+cookie.code, {
                     value: cookie.value
                 }).then(function (res) {
-                    alert("保存成功");
+                    toastify({text: "保存成功"});
                 });
             }
         },

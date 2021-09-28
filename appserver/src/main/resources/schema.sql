@@ -15,3 +15,5 @@ create sequence s_status_id INCREMENT BY 1 START WITH 10000 NOMAXVALUE NOCYCLE C
 alter table stk_status add constraint pk_status_id primary key (id);
 create index idx_status_code on stk_status (code);
 
+alter table stk_report_detail add output_1 varchar2(2000);
+alter table stk_report_detail add output_2 varchar2(2000);

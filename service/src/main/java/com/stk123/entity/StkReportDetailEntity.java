@@ -68,17 +68,20 @@ public class StkReportDetailEntity {
     @JsonView(View.All.class)
     private String rpsStockCode;
 
-    @Transient
-    @JsonView(View.All.class)
-    private String rpsStockCode7;
-    @Transient
-    @JsonView(View.All.class)
-    private String rpsStockCode30;
-
     @Basic
     @Column(name = "TEXT", length = 2000)
     @JsonView(View.All.class)
     private String text;
+
+    @Basic
+    @Column(name = "OUTPUT_1", length = 2000)
+    @JsonView(View.All.class)
+    private String output1;
+
+    @Basic
+    @Column(name = "OUTPUT_2", length = 2000)
+    @JsonView(View.All.class)
+    private String output2;
 
     @Override
     public boolean equals(Object o) {

@@ -543,8 +543,8 @@
                 _this.currentAllStocksRpsA.data.forEach(item => {
                     item.strategyDate = dateFormat(item.strategyDate);
                     item.action = elem('a', {href:'/s/'+item.rpsStockCode, target:'_blank'}, '查看全部').outerHTML;
-                    item.action7 = elem('a', {href:'/s/'+item.rpsStockCode7, target:'_blank'}, '7天内新增加的股票 ('+(item.rpsStockCode7==null?"0":item.rpsStockCode7.split(',').length)+")").outerHTML;
-                    item.action30 = elem('a', {href:'/s/'+item.rpsStockCode30, target:'_blank'}, '30天内新增加的股票 ('+(item.rpsStockCode30==null?"0":item.rpsStockCode30.split(',').length)+")").outerHTML;
+                    item.action7 = elem('a', {href:'/s/'+item.output1, target:'_blank'}, '7天内新增加的股票 ('+(item.output1==null?"0":item.output1.split(',').length)+")").outerHTML;
+                    item.action30 = elem('a', {href:'/s/'+item.output2, target:'_blank'}, '30天内新增加的股票 ('+(item.output2==null?"0":item.output2.split(',').length)+")").outerHTML;
                 })
                 _this.currentAllStocksRpsH = {data: data.currentAllStocksRpsH};
                 _this.currentAllStocksRpsH.data.forEach(item => {

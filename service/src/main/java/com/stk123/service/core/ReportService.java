@@ -41,7 +41,10 @@ public class ReportService {
         return stkReportHeaderEntity;
     }
 
-    public StkReportDetailEntity createReportDetailEntity(String stockCode, String strategyCode, String strategyDate, String strategyOutput, String rpsCode, String rpsPercentile, String rpsBkCode, String rpsStockCode, String text){
+    public StkReportDetailEntity createReportDetailEntity(String stockCode, String strategyCode, String strategyDate,
+                                                          String strategyOutput, String rpsCode, String rpsPercentile,
+                                                          String rpsBkCode, String rpsStockCode, String text,
+                                                          String output1, String output2){
         StkReportDetailEntity stkReportDetailEntity = new StkReportDetailEntity();
         stkReportDetailEntity.setCode(stockCode);
         stkReportDetailEntity.setStrategyCode(strategyCode);
@@ -52,6 +55,8 @@ public class ReportService {
         stkReportDetailEntity.setRpsBkCode(rpsBkCode);
         stkReportDetailEntity.setRpsStockCode(rpsStockCode);
         stkReportDetailEntity.setText(text);
+        stkReportDetailEntity.setOutput1(output1);
+        stkReportDetailEntity.setOutput2(output2);
         return stkReportDetailEntity;
     }
 
@@ -157,21 +162,9 @@ public class ReportService {
     }
 
     private List<StkReportDetailEntity> getAllStocksRpsByType(List<StkReportHeaderEntity> headers, String finalRptDate, String type){
-        String reportDateStart7 = CommonUtils.addDay2String(new Date(), -7);
-        String reportDateStart30 = CommonUtils.addDay2String(new Date(), -30);
-        String reportDateEnd = CommonUtils.addDay2String(new Date(), -1);
-        List<StkReportHeaderEntity> headers7 = stkReportHeaderRepository.findAllByTypeAndReportDateBetweenOrderByInsertTimeDesc(type, reportDateStart7, reportDateEnd);
-        List<StkReportDetailEntity> detailsIn7 = headers7.stream().flatMap(stkReportHeaderEntity -> stkReportHeaderEntity.getStkReportDetailEntities().stream()).collect(Collectors.toList());
-        List<StkReportHeaderEntity> headers30 = stkReportHeaderRepository.findAllByTypeAndReportDateBetweenOrderByInsertTimeDesc(type, reportDateStart30, reportDateEnd);
-        List<StkReportDetailEntity> detailsIn30 = headers30.stream().flatMap(stkReportHeaderEntity -> stkReportHeaderEntity.getStkReportDetailEntities().stream()).collect(Collectors.toList());
-
         List<StkReportDetailEntity> allStocksRpsA = getDetailsByTypeAndDate(headers, type, finalRptDate);
         allStocksRpsA.forEach(rps -> {
             rps.setStrategyName(Rps.getRpsStrategy(rps.getStrategyCode()).getNameWithCode());
-            List<String> codesIn7 = detailsIn7.stream().filter(detail -> detail.getStrategyCode().equals(rps.getStrategyCode())).flatMap(detail -> Arrays.stream(StringUtils.split(detail.getRpsStockCode(), ","))).distinct().collect(Collectors.toList());
-            rps.setRpsStockCode7(Arrays.stream(StringUtils.split(rps.getRpsStockCode()==null?"":rps.getRpsStockCode(), ",")).filter(code -> !codesIn7.contains(code)).distinct().collect(Collectors.joining(",")));
-            List<String> codesIn30 = detailsIn30.stream().filter(detail -> detail.getStrategyCode().equals(rps.getStrategyCode())).flatMap(detail -> Arrays.stream(StringUtils.split(detail.getRpsStockCode(), ","))).distinct().collect(Collectors.toList());
-            rps.setRpsStockCode30(Arrays.stream(StringUtils.split(rps.getRpsStockCode()==null?"":rps.getRpsStockCode(), ",")).filter(code -> !codesIn30.contains(code)).distinct().collect(Collectors.joining(",")));
         });
         return allStocksRpsA;
     }

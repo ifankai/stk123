@@ -3114,4 +3114,5 @@ select * from stk_investigation order by insert_date desc;
 select * from stk_data_ppi_type where name like '%pvdf%';
 
 select * from stk_status order by insert_time desc for update;
-alter table stk_status modify valid number(1) default 1
+
+select * from stk_report_detail;

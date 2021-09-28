@@ -576,7 +576,7 @@ public class BarTask extends AbstractTask {
                                 StringUtils.join(bkInfoList.getBkInfos().stream().map(bkInfo -> CommonUtils.numberFormat2Digits(bkInfo.getBkSr().getPercentile())).collect(Collectors.toList()), ";"),
                                 StringUtils.join(bkInfoList.getBkInfos().stream().map(bkInfo -> bkInfo.getBkSr().getStock().getCode()).collect(Collectors.toList()), ";"),
                                 StringUtils.join(bkInfoList.getBkInfos().stream().map(bkInfo -> bkInfo.getStockInfoList().getCodes()).collect(Collectors.toList()), ";"),
-                                backtestingAllHistory.getStrategies().get(0).getPassRateString()
+                                backtestingAllHistory.getStrategies().get(0).getPassRateString(), null, null
                                 );
                         stkReportHeaderEntity.addDetail(stkReportDetailEntity);
                     }
@@ -696,7 +696,7 @@ public class BarTask extends AbstractTask {
                                 StringUtils.join(bkInfoList.getBkInfos().stream().map(bkInfo -> CommonUtils.numberFormat2Digits(bkInfo.getBkSr().getPercentile())).collect(Collectors.toList()), ";"),
                                 StringUtils.join(bkInfoList.getBkInfos().stream().map(bkInfo -> bkInfo.getBkSr().getStock().getCode()).collect(Collectors.toList()), ";"),
                                 StringUtils.join(bkInfoList.getBkInfos().stream().map(bkInfo -> bkInfo.getStockInfoList().getCodes()).collect(Collectors.toList()), ";"),
-                                backtestingAllHistory.getStrategies().get(0).getPassRateString()
+                                backtestingAllHistory.getStrategies().get(0).getPassRateString(), null, null
                         );
                         stkReportHeaderEntity.addDetail(stkReportDetailEntity);
                     }
@@ -728,6 +728,16 @@ public class BarTask extends AbstractTask {
     public void analyseAllCNRps(){
         log.info("start analyseAllCNRps");
         try {
+            String reportDateStart7 = CommonUtils.addDay2String(new Date(), -7);
+            String reportDateStart30 = CommonUtils.addDay2String(new Date(), -30);
+            String reportDateEnd = CommonUtils.addDay2String(new Date(), -1);
+
+            List<StkReportHeaderEntity> headers7 = stkReportHeaderRepository.findAllByTypeAndReportDateBetweenOrderByInsertTimeDesc(StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS, reportDateStart7, reportDateEnd);
+            List<StkReportDetailEntity> detailsIn7 = headers7.stream().flatMap(header -> header.getStkReportDetailEntities().stream()).collect(Collectors.toList());
+            List<StkReportHeaderEntity> headers30 = stkReportHeaderRepository.findAllByTypeAndReportDateBetweenOrderByInsertTimeDesc(StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS, reportDateStart30, reportDateEnd);
+            List<StkReportDetailEntity> detailsIn30 = headers30.stream().flatMap(header -> header.getStkReportDetailEntities().stream()).collect(Collectors.toList());
+
+
             StkReportHeaderEntity stkReportHeaderEntity = null;
             List<Stock> stocks = Cache.getStocksWithBks();
 
@@ -784,9 +794,15 @@ public class BarTask extends AbstractTask {
                 rps.append("<br/>");
 
                 if(stkReportHeaderEntity != null){
+                    String rpsStockCode = results.stream().map(Stock::getCode).collect(Collectors.joining(","));
+                    List<String> codesIn7 = detailsIn7.stream().filter(detail -> detail.getStrategyCode().equals(rpsStrategy.getCode())).flatMap(detail -> Arrays.stream(StringUtils.split(detail.getRpsStockCode(), ","))).distinct().collect(Collectors.toList());
+                    String output1 = Arrays.stream(StringUtils.split(rpsStockCode, ",")).filter(code -> !codesIn7.contains(code)).distinct().collect(Collectors.joining(","));
+
+                    List<String> codesIn30 = detailsIn30.stream().filter(detail -> detail.getStrategyCode().equals(rpsStrategy.getCode())).flatMap(detail -> Arrays.stream(StringUtils.split(detail.getRpsStockCode(), ","))).distinct().collect(Collectors.toList());
+                    String output2 = Arrays.stream(StringUtils.split(rpsStockCode, ",")).filter(code -> !codesIn30.contains(code)).distinct().collect(Collectors.joining(","));
+
                     StkReportDetailEntity stkReportDetailEntity = reportService.createReportDetailEntity(null, rpsStrategy.getCode(), report,
-                            null, null, null, null,
-                            results.stream().map(Stock::getCode).collect(Collectors.joining(",")), null
+                        null, null, null, null, rpsStockCode, null, output1, output2
                     );
                     stkReportHeaderEntity.addDetail(stkReportDetailEntity);
                 }
@@ -860,7 +876,7 @@ public class BarTask extends AbstractTask {
                 if(stkReportHeaderEntity != null){
                     StkReportDetailEntity stkReportDetailEntity = reportService.createReportDetailEntity(null, rpsStrategy.getCode(), report,
                             null, null, null, null,
-                            results.stream().map(Stock::getCode).collect(Collectors.joining(",")), null
+                            results.stream().map(Stock::getCode).collect(Collectors.joining(",")), null, null, null
                     );
                     stkReportHeaderEntity.addDetail(stkReportDetailEntity);
                 }
@@ -949,7 +965,7 @@ public class BarTask extends AbstractTask {
                                 StringUtils.join(bkInfoList.getBkInfos().stream().map(bkInfo -> CommonUtils.numberFormat2Digits(bkInfo.getBkSr().getPercentile())).collect(Collectors.toList()), ";"),
                                 StringUtils.join(bkInfoList.getBkInfos().stream().map(bkInfo -> bkInfo.getBkSr().getStock().getCode()).collect(Collectors.toList()), ";"),
                                 StringUtils.join(bkInfoList.getBkInfos().stream().map(bkInfo -> bkInfo.getStockInfoList().getCodes()).collect(Collectors.toList()), ";"),
-                                ""
+                                "", null, null
                         );
                         stkReportHeaderEntity.addDetail(stkReportDetailEntity);
                     }
@@ -1040,7 +1056,7 @@ public class BarTask extends AbstractTask {
                                 StringUtils.join(strategyResult.getResults(),"<br/>"),
                                 Rps.CODE_STOCK_SCORE, null,
                                 stockInfoList.getBk().getCode(),
-                                stockInfoList.getCodes(),null );
+                                stockInfoList.getCodes(),null , null, null);
                         stkReportHeaderEntity.addDetail(stkReportDetailEntity);
                     }
                 }
