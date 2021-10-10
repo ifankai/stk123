@@ -1185,7 +1185,7 @@ public class BarTask extends AbstractTask {
                         StkReportDetailEntity stkReportDetailEntity = reportService.createReportDetailEntity(bk.getCode(), strategyResult.getStrategy().getCode(),
                                 strategyResult.getDate(),
                                 StringUtils.join(strategyResult.getResults(),"<br/>"),
-                                Rps.CODE_STOCK_SCORE, null,
+                                Rps.CODE_STOCK_SCORE, String.valueOf(strategyResult.getPercentile()),
                                 stockInfoList.getBk().getCode(),
                                 stockInfoList.getCodes(),null , null, null);
                         stkReportHeaderEntity.addDetail(stkReportDetailEntity);

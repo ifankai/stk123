@@ -226,8 +226,6 @@ public class ReportService {
 
             map.put("details", e.getValue().stream().distinct().map(detail -> new HashMap<String, Object>() {{
                         put("strategyCode", detail.getStrategyCode());
-                        if(Strategies.getStrategy(detail.getStrategyCode()) == null)
-                System.out.println(detail.getStrategyCode()+","+detail.getId());
                         put("strategyName", Strategies.getStrategy(detail.getStrategyCode()).getName());
                         put("stocks", stockService.getStocksAsMap(Arrays.asList(StringUtils.split(detail.getRpsStockCode(), ",")), "code", "nameWithLink"));
                         String a = "<a title='查看板块精选个股' target='_blank' href='/s/"+detail.getRpsStockCode()+"'><i class='fas fa-th'></i></a>";
