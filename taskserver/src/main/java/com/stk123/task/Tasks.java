@@ -76,7 +76,7 @@ public class Tasks {
         taskContainer.start(XueqiuStockArticleTask.class);
         //taskContainer.start(TaskBuilder.of(BarTask.class, "HK"), TaskBuilder.of(SyncTask.class, "table=stk_text"));
     }
-    @Scheduled(cron = "0 0/10 * ? * *") //每10分钟1次
+    //@Scheduled(cron = "0 0/10 * ? * *") //每10分钟1次
     public void syncTask() {
         if(!ArrayUtils.contains(environment.getActiveProfiles(), "company")) {
             taskContainer.start(SyncTask.class, "table=stk_text");
@@ -111,10 +111,10 @@ public class Tasks {
             TaskBuilder.of(BarTask.class, "Bks", "report="+reportDate),
             TaskBuilder.of(BarTask.class, "RpsStocks", "report="+reportDate),
             TaskBuilder.of(BarTask.class, "Mass", "report="+reportDate),
-            TaskBuilder.of(BarTask.class, "stat", "report="+reportDate),
+            TaskBuilder.of(BarTask.class, "stat", "report="+reportDate)
             //TaskBuilder.of(BarTask.class, "clearAll"),
-            TaskBuilder.of(SyncTask.class, "table=stk_report_header"),
-            TaskBuilder.of(SyncTask.class, "table=stk_report_detail")
+            //TaskBuilder.of(SyncTask.class, "table=stk_report_header"),
+            //TaskBuilder.of(SyncTask.class, "table=stk_report_detail")
         );
 
         TaskPpi.run(); //生意社
@@ -145,7 +145,8 @@ public class Tasks {
 
     @Scheduled(cron = "0 30 5 ? * TUE-SAT")
     public void initialKLineUS() {
-        taskContainer.start(BarTask.class, "US");
+        String reportDate = CommonUtils.formatDate(CommonUtils.addDay(new Date(), -1), CommonUtils.sf_ymd2);
+        taskContainer.start(BarTask.class, "US", "report="+reportDate);
     }
 
     @Scheduled(cron = "0 0 2 ? * MON,WED,FRI")
@@ -154,6 +155,7 @@ public class Tasks {
         taskContainer.start(
             TaskBuilder.of(StockTask.class, "clear"),
             TaskBuilder.of(StockTask.class, "CN"),
+            TaskBuilder.of(StockTask.class, "HK"),
             TaskBuilder.of(StockTask.class, "clear")
         );
     }
@@ -183,7 +185,7 @@ public class Tasks {
         TaskUtils.cmd("D:\\share\\workspace\\stk123\\oracle\\export_stk.bat");
     }
 
-    @Scheduled(cron = "0 0 6 ? * *") //每天6点同步database
+    //@Scheduled(cron = "0 0 6 ? * *") //每天6点同步database
     public void syncDatabase() {
         taskContainer.start(SyncTask.class);
     }

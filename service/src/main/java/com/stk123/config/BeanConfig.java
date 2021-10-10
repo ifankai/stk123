@@ -25,7 +25,7 @@ public class BeanConfig {
     }
 
     //json序列化使用fastjson
-    //@Bean
+    @Bean
     public HttpMessageConverters fastJson(){
         FastJsonHttpMessageConverter fastJsonHttpMessageConverter = new FastJsonHttpMessageConverter();
 

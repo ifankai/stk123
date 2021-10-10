@@ -15,6 +15,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -54,6 +55,9 @@ public class FnService extends BaseRepository {
         switch (market){
             case CN:
                 return stkFnDataRepository.findAllByCodeAndFnDateAfterOrderByFnDateDescTypeAsc(code, fnDate);
+            case HK:
+            case US:
+                return Collections.EMPTY_LIST;
         }
         throw new RuntimeException("Market is not existing: "+market);
     }

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
@@ -28,5 +29,6 @@ public interface StkIndustryRepository extends JpaRepository<StkIndustryEntity, 
     @Query(value = "select i.industry as id,i.code as code,t.name as name,t.source as source,t.code as bkCode from stk_industry i, stk_industry_type t where i.industry=t.id and i.code in (:codes) and t.source in (:sources)", nativeQuery = true)
     List<IndustryProjection> findAllByCodeAndSource(@Param("codes") List<String> codes, @Param("sources") List<String> sources);
 
+    @Transactional
     void deleteAllByIndustry(Integer industry);
 }

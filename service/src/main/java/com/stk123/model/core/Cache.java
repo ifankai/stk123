@@ -39,6 +39,7 @@ public class Cache {
 
     public synchronized static void initAll(){
         inited = false;
+        clear();
         initBks();
         initStocks();
         initHKStocks();
@@ -106,6 +107,11 @@ public class Cache {
         Cache.StocksAll_Map.putAll(Cache.StocksAllUS.stream().collect(Collectors.toMap(Stock::getCode, Function.identity())));
     }
 
+    public static List<Stock> getUSStocks(){
+        if(Cache.StocksAllUS == null) initUSStocks();
+        return Cache.StocksAllUS;
+    }
+
     public static List<Stock> getStocksWithBks(){
         if(Cache.StocksAllCN == null) initStocks();
         return Cache.StocksAllCN;
@@ -143,6 +149,11 @@ public class Cache {
         Cache.BKsEasymoneyGn_Rps = new HashMap<>();
         Cache.StocksMass = null;
         Cache.StocksH = null;
+    }
+
+    public static void clearUS(){
+        if(Cache.StocksAllUS != null) Cache.StocksAllUS.clear();
+        Cache.StocksAllUS = null;
     }
 
 }

@@ -42,3 +42,39 @@ table tr.selected{
     font-weight: 600;
     color: var(--primary) !important;
 }
+@media (min-width: 1200px) {
+    img.img-flow {
+        height: 70px;
+        margin-top: -70px;
+        width: 405px !important;
+    }
+
+    img.img-flow-tab {
+        height: 88px;
+        margin-top: -88px;
+        width: 100% !important;
+    }
+}
+img.img-flow:hover, img.img-flow-tab:hover{
+    opacity: 0;
+}
+
+@media only screen and (width:1024px){
+    .img-bar {
+        width: 350px !important;
+        padding: 2px !important;
+        text-align: center !important;
+    }
+    .img-flow{
+        height: 56px !important;
+        margin-top: -56px !important;
+        width: 345px !important;
+    }
+}
+i.has-value{
+    color: red;
+    font-weight: 700;
+}
+.toastify{
+    white-space:nowrap;
+}

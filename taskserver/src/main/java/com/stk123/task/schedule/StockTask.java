@@ -64,6 +64,8 @@ public class StockTask extends AbstractTask {
     private KeywordService keywordService;
 
     private List<Stock> stocksCN = null;
+    private List<Stock> stocksHK = null;
+    private List<Stock> stocksUS = null;
     @Setter
     private String code;
 
@@ -74,11 +76,18 @@ public class StockTask extends AbstractTask {
         this.runByName("initCNHolder", this::initCNHolder);
         this.runByName("initCNFinance", this::initCNFinance);
         this.runByName("initCNMainProduct", this::initCNMainProduct);
+        this.runByName("initHKBaseInfo", this::initHKBaseInfo);
+        this.runByName("initUSBaseInfo", this::initUSBaseInfo);
         this.runByName("clear", this::clear);
     }
 
     public void clear(){
+        if(stocksCN != null)stocksCN.clear();
         stocksCN = null;
+        if(stocksHK != null)stocksHK.clear();
+        stocksHK = null;
+        if(stocksUS != null)stocksUS.clear();
+        stocksUS = null;
     }
 
     public void initCNHolder() {
@@ -163,6 +172,30 @@ public class StockTask extends AbstractTask {
         }
     }
 
+    public void initHKStocks(){
+        if(stocksHK == null) {
+            List<StockBasicProjection> list = null;
+            if(code == null) {
+                list =stkRepository.findAllByMarketAndCateOrderByCode(EnumMarket.HK, EnumCate.STOCK);
+            }else {
+                list = stkRepository.findAllByCodes(ListUtils.createList(code));
+            }
+            stocksHK = stockService.buildStocksWithProjection(list);
+        }
+    }
+
+    public void initUSStocks(){
+        if(stocksUS == null) {
+            List<StockBasicProjection> list = null;
+            if(code == null) {
+                list =stkRepository.findAllByMarketAndCateOrderByCode(EnumMarket.US, EnumCate.STOCK);
+            }else {
+                list = stkRepository.findAllByCodes(ListUtils.createList(code));
+            }
+            stocksUS = stockService.buildStocksWithProjection(list);
+        }
+    }
+
     public void initCNNewStock() {
         String[] ss = getAllStocksCode().split(",");
         List params = new ArrayList();
@@ -201,7 +234,7 @@ public class StockTask extends AbstractTask {
                         stkEntity = stkRepository.save(stkEntity);
 
                         try{
-                            updateCNStockBasicInfo(stkEntity);
+                            updateStockBasicInfo(stkEntity);
                         }catch(Exception e){
                             log.error("", e);
                             errorService.logErrorIfNoSimilarError(code, e);
@@ -222,8 +255,16 @@ public class StockTask extends AbstractTask {
      * f84:  总股本
      * f189: 上市时间
      */
-    public void updateCNStockBasicInfo(StkEntity stkEntity) throws Exception {
-        String scode = (EnumPlace.isSH(stkEntity.getPlace())?"1.":"0.") + stkEntity.getCode();
+    public void updateStockBasicInfo(StkEntity stkEntity) throws Exception {
+        String scode = null;
+        if(stkEntity.getMarket() == 1) {
+            scode = (EnumPlace.isSH(stkEntity.getPlace()) ? "1." : "0.") + stkEntity.getCode();
+        }else if(stkEntity.getMarket() == 3){
+            scode = "116."+stkEntity.getCode();
+        }else if(stkEntity.getMarket() == 2){
+            scode = "105."+stkEntity.getCode();
+        }
+
         String url = "http://push2.eastmoney.com/api/qt/stock/get?ut=&invt=2&fltt=2&fields=f84,f189&secid="+ scode +"&cb=jQuery&_="+new Date().getTime();
         String page = httpService.getString(url);
         //System.out.println("updateCNStockBasicInfo:"+page);
@@ -283,15 +324,22 @@ public class StockTask extends AbstractTask {
         return sb.toString();
     }
 
+    public void initCNIndustryEasymoney(){
+        initCNIndustryEasymoney("59", "3", "70");
+        initCNIndustryEasymoney("65", "2", "60");
+    }
 
     //http://quote.eastmoney.com/center/boardlist.html#concept_board
-    public void initCNIndustryEasymoney() {
+    //http://quote.eastmoney.com/center/boardlist.html#industry_board
+    public void initCNIndustryEasymoney(String type, String type2, String type3) {
         //http://59.push2.eastmoney.com/api/qt/clist/get?cb=jQuery112407845542377068357_1615380136035&pn=1&pz=2000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=m:90+t:3+f:!50&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f26,f22,f33,f11,f62,f128,f136,f115,f152,f124,f107,f104,f105,f140,f141,f207,f208,f209,f222&_=1615380136036
+        //http://65.push2.eastmoney.com/api/qt/clist/get?cb=jQuery112408021918226266793_1633768399338&pn=1&pz=2000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=m:90+t:2+f:!50&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f26,f22,f33,f11,f62,f128,f136,f115,f152,f124,f107,f104,f105,f140,f141,f207,f208,f209,f222&_=1633768399354
         long time = new Date().getTime();
-        String url = "http://59.push2.eastmoney.com/api/qt/clist/get?cb=jQuery112407845542377068357_" + time +
-                "&pn=1&pz=2000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=m:90+t:3+f:!50&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f26,f22,f33,f11,f62,f128,f136,f115,f152,f124,f107,f104,f105,f140,f141,f207,f208,f209,f222" +
+        String url = "http://"+type+".push2.eastmoney.com/api/qt/clist/get?cb=jQuery112407845542377068357_" + time +
+                "&pn=1&pz=2000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=m:90+t:"+type2+"+f:!50&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f26,f22,f33,f11,f62,f128,f136,f115,f152,f124,f107,f104,f105,f140,f141,f207,f208,f209,f222" +
                 "&_="+time;
         try {
+            System.out.println(url);
             String page = httpService.getString(url);
             String json = "{"+StringUtils.substringBetween(page, "({", "})")+"}";
             ObjectMapper mapper = new ObjectMapper();
@@ -323,8 +371,9 @@ public class StockTask extends AbstractTask {
 
                 //update stk_industry_type stk_industry
                 //http://70.push2.eastmoney.com/api/qt/clist/get?cb=jQuery11240011828891552190912_1622866172512&pn=1&pz=1000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=b:BK0896+f:!50&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f22,f11,f62,f128,f136,f115,f152,f45&_=1622866172522
+                //http://60.push2.eastmoney.com/api/qt/clist/get?cb=jQuery1124024751182578362885_16337686791611&pn=1&pz=1000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=b:BK0464+f:!50&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f22,f11,f62,f128,f136,f115,f152,f45&_=1633768679162
                 time = new Date().getTime();
-                url = "http://70.push2.eastmoney.com/api/qt/clist/get?cb=jQuery11240011828891552190912_"+time
+                url = "http://"+type3+".push2.eastmoney.com/api/qt/clist/get?cb=jQuery11240011828891552190912_"+time
                         +"&pn=1&pz=1000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=b:"+code
                         +"+f:!50&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f22,f11,f62,f128,f136,f115,f152,f45&_="+time;
                 page = httpService.getString(url);
@@ -450,6 +499,37 @@ public class StockTask extends AbstractTask {
                 CommonUtils.setIndexToTempFile("task_stock_main_product.txt", i+1);
             }catch(Exception e){
                 log.error("initCNMainProduct error:"+stock.getCode(), e);
+            }
+        }
+    }
+
+    public void initHKBaseInfo(){
+        initHKStocks();
+        for(Stock stock : this.stocksHK){
+            log.info("initHKBaseInfo:" + stock.getCode());
+            try {
+                StkEntity stkEntity = stkRepository.findById(stock.getCode()).orElse(null);
+                if(stkEntity != null) {
+                    this.updateStockBasicInfo(stkEntity);
+                }
+            }catch(Exception e){
+                log.error("initHKBaseInfo error:"+stock.getCode(), e);
+            }
+        }
+    }
+
+    public void initUSBaseInfo(){
+        initUSStocks();
+        for(Stock stock : this.stocksUS){
+            log.info("initUSBaseInfo:" + stock.getCode());
+            try {
+                // 已经实现相同功能： initUStkFromFinviz
+                /*StkEntity stkEntity = stkRepository.findById(stock.getCode()).orElse(null);
+                if(stkEntity != null) {
+                    this.updateStockBasicInfo(stkEntity);
+                }*/
+            }catch(Exception e){
+                log.error("initUSBaseInfo error:"+stock.getCode(), e);
             }
         }
     }

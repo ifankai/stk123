@@ -12,8 +12,8 @@ const _stockBodyTemplate = `
             <div class="tab-content p-0">
                 <div v-if="tabs.includes('dayBar')" :class="{'tab-pane':true, active:isTabShow('dayBar')}" :id="'tab-1-'+stock.code">
                     <span v-html="stock.dayBarImage"></span>
-                    <span style="display: flex;margin-right: 6px;">
-                        <img height="80" style="margin-top: -80px;width: 100%" :src="'data:image/png;base64,'+stock.dayFlowImage">
+                    <span v-if="stock.market==='CN'" style="display: flex;margin-right: 6px;">
+                        <img class="img-flow-tab" :src="'data:image/png;base64,'+stock.dayFlowImage">
                     </span>
                 </div>
                 <div v-if="tabs.includes('weekBar')" class="" :class="{'tab-pane':true, active:isTabShow('weekBar')}" :id="'tab-2-'+stock.code">

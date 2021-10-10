@@ -20,6 +20,10 @@ public enum EnumMarket {
         return klineTable == null ? this.klineTable = this.select("stk_kline", "stk_kline_hk", "stk_kline_us") : klineTable;
     }
 
+    public boolean isCN(){
+        return this.market.equals(CN.market);
+    }
+
     /**
      * @param name 1|2|3|cn|us|hk
      */

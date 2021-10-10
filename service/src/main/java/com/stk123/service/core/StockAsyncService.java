@@ -20,7 +20,7 @@ public class StockAsyncService {
 
     public Future<List<Stock>> buildBarSeriesAndCapitalFlow(List<Stock> stocks, Integer rows, boolean isIncludeRealtimeBar) {
         stocks = stockService.buildBarSeries(stocks, rows, isIncludeRealtimeBar);
-        stocks = stockService.buildCapitalFlow(stocks, CommonUtils.addDay(new Date(), -60));
+        stocks = stockService.buildCapitalFlow(stocks, CommonUtils.addDay(new Date(), -90));
         return new AsyncResult<>(stocks);
     }
 

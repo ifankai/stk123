@@ -742,7 +742,7 @@ public class Filters {
                     return FilterResult.FALSE(String.format("m=%s, n=%s", m, n));
                 }
             }
-            return FilterResult.FALSE(String.format("k=%s", k.getDate()));
+            return FilterResult.FALSE("k is null");
         };
     }
 
@@ -908,6 +908,7 @@ public class Filters {
 
         return (strategy, stock) -> {
             Rating rating = stock.getRating();
+            if(rating == null) return FilterResult.FALSE();
             int sum = rating.getScore();
             if(sum < score){
                 return FilterResult.FALSE("score:"+sum);

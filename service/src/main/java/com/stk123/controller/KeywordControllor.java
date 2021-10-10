@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/k")
+@RequestMapping("/kw")
 @Slf4j
 public class KeywordControllor {
 
@@ -26,7 +26,7 @@ public class KeywordControllor {
     @RequestMapping({"/{id}", })
     public ModelAndView product(@PathVariable(value = "id")String id){
         List<StkKeywordLinkEntity> links = stkKeywordLinkRepository.findAllByKeywordId(Long.parseLong(id));
-        ModelAndView  model = new ModelAndView("/s/"+links.stream().map(StkKeywordLinkEntity::getCode).collect(Collectors.joining(",")));
+        ModelAndView  model = new ModelAndView("forward:/s/"+links.stream().map(StkKeywordLinkEntity::getCode).collect(Collectors.joining(","))+"?title="+links.get(0).getKeyword().getName());
         model.addObject("title", links.get(0).getKeyword().getName());
         return model;
     }

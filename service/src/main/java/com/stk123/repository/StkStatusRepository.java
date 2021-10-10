@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
 
@@ -14,4 +15,10 @@ public interface StkStatusRepository extends JpaRepository<StkStatusEntity, Inte
 
     @Query(value = "select t from StkStatusEntity t where t.code=:code and t.valid=1 and ((:date >= t.startTime and t.endTime is null) or (:date between t.startTime and t.endTime))")
     List<StkStatusEntity> findAllByCodeAndDateIsBetweenStartTimeAndEndTime(@Param("code")String code, @Param("date") Date date);
+
+    @Transactional
+    void deleteAllByCodeAndType(String code, Integer type);
+
+    @Transactional
+    void deleteAllByCodeAndTypeAndSubType(String code, Integer type, String subType);
 }

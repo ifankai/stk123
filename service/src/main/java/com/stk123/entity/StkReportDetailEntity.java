@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.Objects;
 
 @Entity
@@ -18,6 +19,7 @@ public class StkReportDetailEntity {
     @Column(name = "ID", nullable = false, precision = 0)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="s_report_detail_id")
     @SequenceGenerator(name="s_report_detail_id", sequenceName="s_report_detail_id", allocationSize = 1)
+    @JsonView(View.All.class)
     private Integer id;
 
     @Basic
@@ -82,6 +84,10 @@ public class StkReportDetailEntity {
     @Column(name = "OUTPUT_2", length = 2000)
     @JsonView(View.All.class)
     private String output2;
+
+    @Column(name = "CHECKED_TIME")
+    @JsonView(View.All.class)
+    private Date checkedTime;
 
     @Override
     public boolean equals(Object o) {

@@ -131,6 +131,12 @@ public class WebApplication {
         connector.setScheme("http");
         connector.setPort(port);
         connector.setRedirectPort(httpsPort); // 当http重定向到https时的https端口号
+
+        // 解决springboot项目请求request出现非法字符问题
+        // java.lang.IllegalArgumentException:Invalid character found in the request target. The valid characters are defined in RFC 7230 and RFC 3986
+        connector.setProperty("relaxedPathChars", "\"<>[\\]^`{|}");
+        connector.setProperty("relaxedQueryChars", "\"<>[\\]^`{|}");
+
         return connector;
     }
 

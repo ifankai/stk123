@@ -87,7 +87,7 @@ public class XueqiuStockArticleTask extends AbstractTask {
     }
 
     public synchronized List<StockProjection> getStocks(){
-        List<StockProjection> list = stkRepository.findAllByMarketAndCateAndHotGreaterThan(
+        List<StockProjection> list = stkRepository.findAllByMarketInAndCateAndHotGreaterThan(
                 (List<Integer>) Arrays.toCollection(new int[]{EnumMarket.CN.getMarket(), EnumMarket.HK.getMarket()}),
                 EnumCate.STOCK.getCate(), 1000);
         List<StockProjection> stks = list.stream().filter(stk -> {

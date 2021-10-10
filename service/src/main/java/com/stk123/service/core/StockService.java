@@ -493,6 +493,24 @@ public class StockService {
         }).collect(Collectors.toList());
     }
 
+    public static List<Stock> filterByBarDate(List<Stock> stocks, Date date){
+        return stocks.stream().filter(stock -> {
+            if(stock.isMarketHK() && (stock.getBar() == null || date.after(CommonUtils.parseDate(stock.getBar().getDate())))){
+                return false;
+            }
+            return true;
+        }).collect(Collectors.toList());
+    }
+
+    public static List<Stock> filterByHot(List<Stock> stocks, int hot){
+        return stocks.stream().filter(stock -> {
+            if(stock.getHot() < hot && (stock.isMarketHK() || stock.isMarketUS())) {
+                return false;
+            }
+            return true;
+        }).collect(Collectors.toList());
+    }
+
     public void buildBkAndCalcBkRps(List<Stock> stocks, EnumMarket market, EnumCate bkCate){
         //建立板块关系，计算rps
         List<Stock> bks = getBks(market, bkCate);
@@ -547,34 +565,6 @@ public class StockService {
 
     public List<Stock> getStocksWithAllBuilds(List<Stock> stocks, int barSize, boolean isIncludeRealtimeBar){
         return getStocksWithAllBuildsAsync(stocks, barSize, isIncludeRealtimeBar);
-
-        /*long time = System.currentTimeMillis();
-        log.info("getStocksWithAllBuilds:"+time);
-
-        stocks = buildBarSeries(stocks, barSize, isIncludeRealtimeBar);
-        long time2 = System.currentTimeMillis();
-        log.info("buildBarSeries:"+(time2-time)/1000);
-
-        stocks = buildCapitalFlow(stocks, CommonUtils.addDay(new Date(), -60));
-        time2 = System.currentTimeMillis();
-        log.info("buildCapitalFlow:"+(time2-time)/1000);
-
-        stocks = buildIndustries(stocks);
-        time2 = System.currentTimeMillis();
-        log.info("buildIndustries:"+(time2-time)/1000);
-        stocks = buildHolder(stocks);
-        time2 = System.currentTimeMillis();
-        log.info("buildHolder:"+(time2-time)/1000);
-        stocks = buildOwners(stocks);
-        time2 = System.currentTimeMillis();
-        log.info("buildOwners:"+(time2-time)/1000);
-        stocks = buildNews(stocks, CommonUtils.addDay(new Date(), -180));
-        time2 = System.currentTimeMillis();
-        log.info("buildNews:"+(time2-time)/1000);
-        stocks = buildImportInfos(stocks, CommonUtils.addDay(new Date(), -180));
-        time2 = System.currentTimeMillis();
-        log.info("buildImportInfos:"+(time2-time)/1000);
-        return stocks;*/
     }
 
     public List<Stock> getStocksWithAllBuilds(List<Stock> stocks, boolean isIncludeRealtimeBar){
@@ -588,6 +578,9 @@ public class StockService {
 
         //排除总市值小于40亿的
         //stocks = filterByMarketCap(stocks, 30);
+        //排除 hot 小于 1000
+        if(!market.isCN())
+            stocks = filterByHot(stocks, 1000);
         //排除退市的
         stocks = stocks.stream().filter(stock -> !StringUtils.contains(stock.getName(), "退")).collect(Collectors.toList());
 
@@ -638,80 +631,6 @@ public class StockService {
             bksList.add(map);
         }
         return bksList.stream().sorted(Comparator.comparing(bk -> ((List) bk.get("stocks")).size(), Comparator.reverseOrder())).collect(Collectors.toList());
-    }
-
-    @Getter
-    @Setter
-    @ToString
-    private static class StockCodeAndNameAndPinyin {
-        private String code;
-        private String name;
-        private String pinyin;
-        private String text;
-        private int index;
-    }
-
-    private static List<StockCodeAndNameAndPinyin> stockCodeAndNameAndPinyinList = null;
-
-    public void delete(){
-        stockCodeAndNameAndPinyinList = null;
-    }
-
-    public List<SearchResult> search(String query) {
-        if(stockCodeAndNameAndPinyinList == null){
-            stockCodeAndNameAndPinyinList = new ArrayList<>();
-            List<StockCodeNameProjection> stkEntities = stkRepository.findAllByOrderByCode();
-            for(StockCodeNameProjection projection : stkEntities){
-                StockCodeAndNameAndPinyin pinyin = new StockCodeAndNameAndPinyin();
-                pinyin.setCode(projection.getCode());
-                String name = StringUtils.replace(projection.getName(), " ", "");
-                if(name == null) name = projection.getCode();
-                pinyin.setName(name);
-
-                pinyin.setPinyin(String.join("", Arrays.asList(PinYin4jUtils.getHeadByString(name))));
-                pinyin.setText(pinyin.getCode()+pinyin.getName()+pinyin.getPinyin());
-                stockCodeAndNameAndPinyinList.add(pinyin);
-            }
-        }
-
-        List<StockCodeAndNameAndPinyin> list = new ArrayList<>();
-        for(StockCodeAndNameAndPinyin py : stockCodeAndNameAndPinyinList){
-            int index = StringUtils.indexOfIgnoreCase(py.getText(), query);
-            if(index >= 0){
-                StockCodeAndNameAndPinyin spy = new StockCodeAndNameAndPinyin();
-                spy.setCode(py.code);
-                spy.setName(py.name);
-                spy.setText(py.text);
-                spy.setIndex(index);
-                if(addPinyinList(list, spy)){
-                    break;
-                }
-            }
-        }
-        List<SearchResult> result = new ArrayList<>();
-        for(StockCodeAndNameAndPinyin py : list){
-            SearchResult sr = new SearchResult();
-            sr.setType("stock");
-            sr.setText(py.getCode()+" - "+py.getName());
-            result.add(sr);
-        }
-        //System.out.println(result);
-        return result;
-
-    }
-
-    private boolean addPinyinList(List<StockCodeAndNameAndPinyin> list, StockCodeAndNameAndPinyin py){
-        if(list.size() < 10){
-            list.add(py);
-        }else{
-            StockCodeAndNameAndPinyin last = list.get(list.size()-1);
-            if(last.index == 0){
-                return true;
-            }
-            list.set(list.size()-1, py);
-        }
-        list.sort(Comparator.comparingInt(StockCodeAndNameAndPinyin::getIndex));
-        return false;
     }
 
     /**

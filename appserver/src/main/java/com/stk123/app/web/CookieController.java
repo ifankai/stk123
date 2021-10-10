@@ -37,7 +37,7 @@ public class CookieController {
     @Autowired
     private StkDictionaryRepository stkDictionaryRepository;
 
-    private BlockingQueue<Cookie> iwencai = new LinkedBlockingQueue<>(100);
+    private LinkedBlockingQueue<Cookie> iwencai = new LinkedBlockingQueue<>(100);
 
     public static Map<String, Cookie> COOKIE_MAP = null;
 
@@ -57,6 +57,8 @@ public class CookieController {
     @ResponseBody
     public RequestResult<Map<String, Cookie>> cookie(){
         initCookies();
+        if(iwencai.peek() != null)
+            COOKIE_MAP.put("iwencai", iwencai.peek());
         return RequestResult.success(COOKIE_MAP);
     }
 
@@ -90,7 +92,9 @@ public class CookieController {
     @RequestMapping(value = "/iwencai", method = RequestMethod.POST)
     @ResponseBody
     public RequestResult setIwencaiCookie(@RequestBody Cookie cookie){
-        log.info("set iwencai cookie:"+cookie.getValue());
+        //log.info("set iwencai cookie:"+cookie.getValue());
+        cookie.setCode("iwencai");
+        cookie.setUpdatedTime(new Date());
         iwencai.offer(cookie);
         return RequestResult.success();
     }

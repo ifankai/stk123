@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>小智慧 - Cookie</title>
+    <title>Cookie信息 - 小智慧</title>
     <div th:replace="common/css_public"></div>
     <div th:replace="common/css_datatable"></div>
     <link rel="stylesheet" th:href="'/css/public.css'+${_version}">
@@ -106,6 +106,7 @@
     const config = {
         data() {
             return {
+                navActive: 'cookie',
                 loading: true,
                 common:{
                     cookie:[

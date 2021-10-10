@@ -21,6 +21,7 @@ public class StkKeywordEntity {
     @Column(name = "ID", nullable = false, precision = 0)
     @GeneratedValue(strategy =GenerationType.SEQUENCE, generator="s_keyword_id")
     @SequenceGenerator(name="s_keyword_id", sequenceName="s_keyword_id", allocationSize = 1)
+    @JsonView(View.Default.class)
     private Long id;
 
     @Basic

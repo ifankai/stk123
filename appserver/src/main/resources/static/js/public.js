@@ -126,6 +126,7 @@ const store = Vuex.createStore({
         searchResultsShow:false,
         inited:false,
         initing:false,
+        currentStock:{},
     },
     //同步执行
     //mutations相当于其它语言的set,即赋值
@@ -160,6 +161,9 @@ const store = Vuex.createStore({
         setIniting(state, payload){
             state.initing = payload;
         },
+        setCurrentStock(state, payload){
+            state.currentStock = payload;
+        }
     },
     //异步执行，异步：访问服务器后等待响应。
     //actions,相当于其它语言的set，即赋值
@@ -273,7 +277,7 @@ const _init = {
             if(this.$store.state.inited) return;
             this.$store.commit('setIniting', true);
             let _this = this;
-            axios.get('/stock/init').then(function (res) {
+            axios.get('/cache/init').then(function (res) {
                 let results = res.data.data;
                 _this.$store.commit('setInited', true);
                 _this.$store.commit('setIniting', false);
@@ -282,7 +286,7 @@ const _init = {
     },
     mounted() {
         let _this = this;
-        axios.get('/stock/inited').then(function (res) {
+        axios.get('/cache/inited').then(function (res) {
             let inited = res.data.data;
             _this.$store.commit('setInited', inited);
         });
@@ -293,7 +297,7 @@ const _eye = {
     props: ['stock'],
     template: `
           <button @click.prevent="updateLookPool($event, stock)" :title="isInLookPool(stock.code)?'删除观察':'加入观察'"  type="button" class="btn btn-tool">
-              <i class="fal fa-eye" :class="isInLookPool(stock.code)?'fa-eye-slash':''"></i>
+              <i class="fal fa-eye" :class="isInLookPool(stock.code)?'has-value':''"></i>
           </button>
         `,
     methods:{
@@ -337,9 +341,8 @@ const _modal = {
                     <div class="modal-body">
                         <p v-html="content"></p>
                     </div>
-                    <div class="modal-footer justify-content-between">
+                    <div class="modal-footer justify-content-center">
                         <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                        <button type="button" class="btn btn-primary">Save changes</button>
                     </div>
                 </div>
               <!-- /.modal-content -->
@@ -351,13 +354,13 @@ const _modal = {
 
 const _tag = {
     props: {
-        stock:{},
-        type:[]
+        tags:Array,
+        type:Array
     },
     template: `
         <template v-for="item in type">
-            <template v-for="tag in stock.tags">            
-                <small v-for="tag.type===item" v-text="tag.name" :title="tag.detail" class="badge mr-1" :class="'tag-'+tag.type"></small>
+            <template v-for="tag in tags">            
+                <small v-if="tag.type===item" v-html="tag.name" :title="tag.detail" class="badge mr-1" :class="'tag-'+tag.type"></small>
             </template>
         </template>
         `,
@@ -462,6 +465,7 @@ function toggleDropdown (e) {
     }, e.type === 'mouseleave' ? 300 : 0);
 }
 
+
 $(function (){
     //处理navbar下拉列表鼠标经过就显示
     $('#navbarCollapse')
@@ -476,25 +480,49 @@ $(function (){
         if(m_top < 20) m_top = 20;
         $modal.css({'margin' : m_top + 'px auto'})
     })
+
+    var isIpad = ( navigator.userAgent.match(/(iPad)/) /* iOS pre 13 */ || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
+
+    if(true){
+        /*var sc = document.getElementById("sc");
+        if(screen.width <= 1024){ //获取屏幕的的宽度
+            sc.setAttribute("href","/css/ipad.css"); //设置css引入样式表的路径
+        }*/
+    }
+
 });
 
-let _stockExcludeMixins = {
+let _stockExcludeInVuex = {
     openExcludeModal:function (stock){
-        this.excludeStock = stock;
+        this.$store.commit('setCurrentStock', stock);
         $('#_excludeModal').modal ('show');
+    },
+    getExcludeTitle:function(stock){
+        let status = stock.statuses.find(s=>s.type===1);
+        if(status === undefined) return '排除';
+        else{
+            return '排除到 '+ this.tsFormat(status.endTime);
+        }
+    }
+}
+let _stockHeartInVuex = {
+    openHeartModal:function (stock){
+        this.$store.commit('setCurrentStock', stock);
+        $('#_heartModal').modal ('show');
     }
 }
 
 const mixins = {
     data(){
         return {
-            excludeStock:{}
+
         }
     },
     methods:{
         ..._stockLookPoolInVuex,
         ..._searchInVuex,
-        ..._stockExcludeMixins
+        ..._stockExcludeInVuex,
+        ..._stockHeartInVuex,
     },
     mounted(){
         if (localStorage.stockLookPool) {
@@ -553,6 +581,8 @@ function createApp(config){
     app.component('stockbody', _stockBody); //不能写成 stockBody，html元素不区分大小写
     app.component('tag', _tag);
     app.component('stockexclude', _stockExclude);
+    app.component('stockheart', _stockHeart);
+
 
     app.config.globalProperties.tsFormat = _tsFormat;
     app.config.globalProperties.dateFormat = dateFormat;

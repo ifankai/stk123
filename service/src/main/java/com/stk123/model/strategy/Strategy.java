@@ -32,6 +32,8 @@ public class Strategy<X> {
     private String name;
     @Getter
     private Class<X> xClass;
+    @Getter@Setter
+    private boolean ignore = false;
     private List<FilterExecutor<X, ?>> filterExecutors = Collections.synchronizedList(new ArrayList<>());
     private FilterExecutor<X, X> expectFilterExecutor;
     private boolean expectFilterExecutorRunOrNot = true;
@@ -66,6 +68,10 @@ public class Strategy<X> {
         this.code = code;
         this.name = name;
         this.xClass = xClass;
+    }
+    public Strategy(String code, String name, Class<X> xClass, boolean ignore){
+        this(code, name, xClass);
+        this.ignore = ignore;
     }
 
     public boolean isEmptyStrategy(){

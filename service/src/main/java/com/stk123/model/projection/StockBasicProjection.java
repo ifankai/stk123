@@ -5,4 +5,5 @@ public interface StockBasicProjection extends StockCodeNameProjection {
     Integer getCate();
     Integer getPlace();
     Double getTotalCapital();
+    Integer getHot();
 }

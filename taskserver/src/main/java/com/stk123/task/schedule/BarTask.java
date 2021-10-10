@@ -121,7 +121,8 @@ public class BarTask extends AbstractTask {
         this.runByName("analyseAllStocks", this::analyseAllStocks);
         this.runByName("analyseAllCNRps", this::analyseAllCNRps);
         this.runByName("analyseAllHKRps", this::analyseAllHKRps);
-        this.runByName("analyseRpsStocksByStrategies", this::analyseRpsStocksByStrategies);
+        this.runByName("analyseAllUSRps", this::analyseAllUSRps);
+        this.runByName("analyseCNRpsStocksByStrategies", this::analyseCNRpsStocksByStrategies);
         this.runByName("analyseBks", this::analyseBks);
         this.runByName("stat", this::statAllStocks);
         this.runByName("clearAll", this::clearAll);
@@ -495,6 +496,7 @@ public class BarTask extends AbstractTask {
             if(market != null){
                 stocks = stocks.stream().filter(stock -> StringUtils.containsIgnoreCase(market, stock.getMarket().name())).collect(Collectors.toList());
             }
+
             log.info(stocks.stream().map(Stock::getCode).collect(Collectors.toList()));
 
             /*stocks = stockService.buildBarSeries(stocks, 500, realtime != null);
@@ -504,6 +506,8 @@ public class BarTask extends AbstractTask {
             stockService.buildHolder(stocks);*/
 
             stocks = stockService.getStocksWithBks(stocks, EnumMarket.CN, EnumCate.INDEX_eastmoney_gn, realtime!=null);
+
+            stocks = StockService.filterByBarDate(stocks, CommonUtils.addDay(new Date(), -30));
 
             String stratgies = Strategies.STRATEGIES_MY_STOCKS;
             if(StringUtils.isNotEmpty(strategy)){
@@ -795,10 +799,10 @@ public class BarTask extends AbstractTask {
 
                 if(stkReportHeaderEntity != null){
                     String rpsStockCode = results.stream().map(Stock::getCode).collect(Collectors.joining(","));
-                    List<String> codesIn7 = detailsIn7.stream().filter(detail -> detail.getStrategyCode().equals(rpsStrategy.getCode())).flatMap(detail -> Arrays.stream(StringUtils.split(detail.getRpsStockCode(), ","))).distinct().collect(Collectors.toList());
+                    List<String> codesIn7 = detailsIn7.stream().filter(detail -> detail.getStrategyCode().equals(rpsStrategy.getCode())).flatMap(detail -> Arrays.stream(StringUtils.split(detail.getRpsStockCode()==null?"":detail.getRpsStockCode(), ","))).distinct().collect(Collectors.toList());
                     String output1 = Arrays.stream(StringUtils.split(rpsStockCode, ",")).filter(code -> !codesIn7.contains(code)).distinct().collect(Collectors.joining(","));
 
-                    List<String> codesIn30 = detailsIn30.stream().filter(detail -> detail.getStrategyCode().equals(rpsStrategy.getCode())).flatMap(detail -> Arrays.stream(StringUtils.split(detail.getRpsStockCode(), ","))).distinct().collect(Collectors.toList());
+                    List<String> codesIn30 = detailsIn30.stream().filter(detail -> detail.getStrategyCode().equals(rpsStrategy.getCode())).flatMap(detail -> Arrays.stream(StringUtils.split(detail.getRpsStockCode()==null?"":detail.getRpsStockCode(), ","))).distinct().collect(Collectors.toList());
                     String output2 = Arrays.stream(StringUtils.split(rpsStockCode, ",")).filter(code -> !codesIn30.contains(code)).distinct().collect(Collectors.joining(","));
 
                     StkReportDetailEntity stkReportDetailEntity = reportService.createReportDetailEntity(null, rpsStrategy.getCode(), report,
@@ -826,8 +830,20 @@ public class BarTask extends AbstractTask {
     public void analyseAllHKRps(){
         log.info("start analyseAllHKRps");
         try {
+            String reportDateStart7 = CommonUtils.addDay2String(new Date(), -7);
+            String reportDateStart30 = CommonUtils.addDay2String(new Date(), -30);
+            String reportDateEnd = CommonUtils.addDay2String(new Date(), -1);
+
+            List<StkReportHeaderEntity> headers7 = stkReportHeaderRepository.findAllByTypeAndReportDateBetweenOrderByInsertTimeDesc(StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS_HK, reportDateStart7, reportDateEnd);
+            List<StkReportDetailEntity> detailsIn7 = headers7.stream().flatMap(header -> header.getStkReportDetailEntities().stream()).collect(Collectors.toList());
+            List<StkReportHeaderEntity> headers30 = stkReportHeaderRepository.findAllByTypeAndReportDateBetweenOrderByInsertTimeDesc(StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS_HK, reportDateStart30, reportDateEnd);
+            List<StkReportDetailEntity> detailsIn30 = headers30.stream().flatMap(header -> header.getStkReportDetailEntities().stream()).collect(Collectors.toList());
+
+
             StkReportHeaderEntity stkReportHeaderEntity = null;
             List<Stock> stocks = Cache.getHKStocks();
+
+            stocks = StockService.filterByBarDate(stocks, CommonUtils.addDay(new Date(), -30));
 
 //            stocks = stockService.filterByMarketCap(stocks, 50);
 //            stocks = stockService.filterByFn(stocks);
@@ -845,38 +861,52 @@ public class BarTask extends AbstractTask {
             for(Strategy rpsStrategy : rpsList){
                 if(rpsStrategy.isEmptyStrategy())continue;
                 List<Stock> rpsStocks = stockService.calcRps(stocks, rpsStrategy.getCode()).stream().map(StrategyResult::getStock).collect(Collectors.toList());
-                List<Stock> results = rpsStocks.subList(0, Math.min(150, rpsStocks.size()));
+                //List<Stock> results = rpsStocks.subList(0, Math.min(150, rpsStocks.size()));
 
-                /*List<Stock> results = new ArrayList<>();
-                int cap1 = 50;
-                int cap2 = 30;
+                List<Stock> results = new ArrayList<>();
+                int cap20 = 25;
+                int cap30 = 20;
+                int cap100 = 15;
+                int cap200 = 15;
+                int cap500 = 15;
                 for(Stock stock : rpsStocks){
-                    if(stock.getMarketCap() >= 30 && stock.getMarketCap() < 100){
-                        if(cap1-- > 0){
+                    if(stock.getMarketCap() >= 5 && stock.getMarketCap() < 30){
+                        if(cap20-- > 0){
+                            results.add(stock);
+                        }
+                    }else if(stock.getMarketCap() >= 30 && stock.getMarketCap() < 100){
+                        if(cap30-- > 0){
                             results.add(stock);
                         }
                     }else if(stock.getMarketCap() >= 100 && stock.getMarketCap() < 200){
-                        if(cap1-- > 0){
+                        if(cap100-- > 0){
                             results.add(stock);
                         }
                     }else if(stock.getMarketCap() >= 200 && stock.getMarketCap() < 500){
-                        if(cap1-- > 0){
+                        if(cap200-- > 0){
                             results.add(stock);
                         }
                     }else if(stock.getMarketCap() >= 500){
-                        if(cap2-- > 0){
+                        if(cap500-- > 0){
                             results.add(stock);
                         }
                     }
-                }*/
+                }
 
                 rps.append(rpsStrategy.getNameWithCode() + ": " + CommonUtils.k("查看", rpsStrategy.getNameWithCode(), results.stream().map(Stock::getCode).collect(Collectors.toList())) + " ====>" + results.stream().map(Stock::getCode).collect(Collectors.joining(",")));
                 rps.append("<br/>");
 
                 if(stkReportHeaderEntity != null){
+                    String rpsStockCode = results.stream().map(Stock::getCode).collect(Collectors.joining(","));
+                    List<String> codesIn7 = detailsIn7.stream().filter(detail -> detail.getStrategyCode().equals(rpsStrategy.getCode())).flatMap(detail -> Arrays.stream(StringUtils.split(detail.getRpsStockCode()==null?"":detail.getRpsStockCode(), ","))).distinct().collect(Collectors.toList());
+                    String output1 = Arrays.stream(StringUtils.split(rpsStockCode, ",")).filter(code -> !codesIn7.contains(code)).distinct().collect(Collectors.joining(","));
+
+                    List<String> codesIn30 = detailsIn30.stream().filter(detail -> detail.getStrategyCode().equals(rpsStrategy.getCode())).flatMap(detail -> Arrays.stream(StringUtils.split(detail.getRpsStockCode()==null?"":detail.getRpsStockCode(), ","))).distinct().collect(Collectors.toList());
+                    String output2 = Arrays.stream(StringUtils.split(rpsStockCode, ",")).filter(code -> !codesIn30.contains(code)).distinct().collect(Collectors.joining(","));
+
                     StkReportDetailEntity stkReportDetailEntity = reportService.createReportDetailEntity(null, rpsStrategy.getCode(), report,
                             null, null, null, null,
-                            results.stream().map(Stock::getCode).collect(Collectors.joining(",")), null, null, null
+                            results.stream().map(Stock::getCode).collect(Collectors.joining(",")), null, output1, output2
                     );
                     stkReportHeaderEntity.addDetail(stkReportDetailEntity);
                 }
@@ -897,8 +927,109 @@ public class BarTask extends AbstractTask {
         log.info("end analyseAllHKRps");
     }
 
-    public void analyseRpsStocksByStrategies(){
-        log.info("start analyseRpsStocksByStrategies");
+    public void analyseAllUSRps(){
+        log.info("start analyseAllUSRps");
+        try {
+            String reportDateStart7 = CommonUtils.addDay2String(new Date(), -7);
+            String reportDateStart30 = CommonUtils.addDay2String(new Date(), -30);
+            String reportDateEnd = CommonUtils.addDay2String(new Date(), -1);
+
+            List<StkReportHeaderEntity> headers7 = stkReportHeaderRepository.findAllByTypeAndReportDateBetweenOrderByInsertTimeDesc(StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS_US, reportDateStart7, reportDateEnd);
+            List<StkReportDetailEntity> detailsIn7 = headers7.stream().flatMap(header -> header.getStkReportDetailEntities().stream()).collect(Collectors.toList());
+            List<StkReportHeaderEntity> headers30 = stkReportHeaderRepository.findAllByTypeAndReportDateBetweenOrderByInsertTimeDesc(StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS_US, reportDateStart30, reportDateEnd);
+            List<StkReportDetailEntity> detailsIn30 = headers30.stream().flatMap(header -> header.getStkReportDetailEntities().stream()).collect(Collectors.toList());
+
+
+            StkReportHeaderEntity stkReportHeaderEntity = null;
+            Cache.clearUS();
+            List<Stock> stocks = Cache.getUSStocks();
+
+            stocks = StockService.filterByBarDate(stocks, CommonUtils.addDay(new Date(), -30));
+
+//            stocks = stockService.filterByMarketCap(stocks, 50);
+//            stocks = stockService.filterByFn(stocks);
+
+            if(StringUtils.isNotEmpty(report)){
+                String type = StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS_US;
+                String name = "全市场RPS(US)";
+                stkReportHeaderEntity = reportService.createReportHeaderEntity(report, type, 0, name);
+            }
+
+            // rps start
+            StringBuffer rps = new StringBuffer();
+            List<Strategy> rpsList = Rps.getAllRpsStrategyOnStock();
+
+            for(Strategy rpsStrategy : rpsList){
+                if(rpsStrategy.isEmptyStrategy())continue;
+                List<Stock> rpsStocks = stockService.calcRps(stocks, rpsStrategy.getCode()).stream().map(StrategyResult::getStock).collect(Collectors.toList());
+                //List<Stock> results = rpsStocks.subList(0, Math.min(150, rpsStocks.size()));
+
+                List<Stock> results = new ArrayList<>();
+                int cap20 = 20;
+                int cap30 = 50;
+                int cap100 = 50;
+                int cap200 = 30;
+                int cap500 = 20;
+                for(Stock stock : rpsStocks){
+                    if(stock.getMarketCap() >= 10 && stock.getMarketCap() < 30){
+                        if(cap20-- > 0){
+                            results.add(stock);
+                        }
+                    }else if(stock.getMarketCap() >= 30 && stock.getMarketCap() < 100){
+                        if(cap30-- > 0){
+                            results.add(stock);
+                        }
+                    }else if(stock.getMarketCap() >= 100 && stock.getMarketCap() < 200){
+                        if(cap100-- > 0){
+                            results.add(stock);
+                        }
+                    }else if(stock.getMarketCap() >= 200 && stock.getMarketCap() < 500){
+                        if(cap200-- > 0){
+                            results.add(stock);
+                        }
+                    }else if(stock.getMarketCap() >= 500){
+                        if(cap500-- > 0){
+                            results.add(stock);
+                        }
+                    }
+                }
+
+                rps.append(rpsStrategy.getNameWithCode() + ": " + CommonUtils.k("查看", rpsStrategy.getNameWithCode(), results.stream().map(Stock::getCode).collect(Collectors.toList())) + " ====>" + results.stream().map(Stock::getCode).collect(Collectors.joining(",")));
+                rps.append("<br/>");
+
+                if(stkReportHeaderEntity != null){
+                    String rpsStockCode = results.stream().map(Stock::getCode).collect(Collectors.joining(","));
+                    List<String> codesIn7 = detailsIn7.stream().filter(detail -> detail.getStrategyCode().equals(rpsStrategy.getCode())).flatMap(detail -> Arrays.stream(StringUtils.split(detail.getRpsStockCode()==null?"":detail.getRpsStockCode(), ","))).distinct().collect(Collectors.toList());
+                    String output1 = Arrays.stream(StringUtils.split(rpsStockCode, ",")).filter(code -> !codesIn7.contains(code)).distinct().collect(Collectors.joining(","));
+
+                    List<String> codesIn30 = detailsIn30.stream().filter(detail -> detail.getStrategyCode().equals(rpsStrategy.getCode())).flatMap(detail -> Arrays.stream(StringUtils.split(detail.getRpsStockCode()==null?"":detail.getRpsStockCode(), ","))).distinct().collect(Collectors.toList());
+                    String output2 = Arrays.stream(StringUtils.split(rpsStockCode, ",")).filter(code -> !codesIn30.contains(code)).distinct().collect(Collectors.joining(","));
+
+                    StkReportDetailEntity stkReportDetailEntity = reportService.createReportDetailEntity(null, rpsStrategy.getCode(), report,
+                            null, null, null, null,
+                            results.stream().map(Stock::getCode).collect(Collectors.joining(",")), null, output1, output2
+                    );
+                    stkReportHeaderEntity.addDetail(stkReportDetailEntity);
+                }
+            }
+
+            // report save
+            if(stkReportHeaderEntity != null){
+                reportService.save(stkReportHeaderEntity);
+            }
+
+            EmailUtils.send("全市场RPS US股", rps.toString());
+
+            // rps end
+        } catch (Exception e) {
+            EmailUtils.send("报错[analyseAllUSRps]", ExceptionUtils.getExceptionAsString(e));
+            log.error("analyseAllUSRps", e);
+        }
+        log.info("end analyseAllHKRps");
+    }
+
+    public void analyseCNRpsStocksByStrategies(){
+        log.info("start analyseCNRpsStocksByStrategies");
         try{
             StkReportHeaderEntity stkReportHeaderEntity = null;
             String reportDateStart = CommonUtils.addDay2String(new Date(), -70);
@@ -990,10 +1121,10 @@ public class BarTask extends AbstractTask {
             }
             
         } catch (Exception e) {
-            EmailUtils.send("报错[analyseRpsStocksByStrategies]", ExceptionUtils.getExceptionAsString(e));
-            log.error("analyseRpsStocksByStrategies", e);
+            EmailUtils.send("报错[analyseCNRpsStocksByStrategies]", ExceptionUtils.getExceptionAsString(e));
+            log.error("analyseCNRpsStocksByStrategies", e);
         }
-        log.info("end analyseRpsStocksByStrategies");
+        log.info("end analyseCNRpsStocksByStrategies");
     }
 
     public void analyseBks(){

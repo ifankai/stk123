@@ -26,6 +26,19 @@
 
         }
 
+        @media only screen and (width:1024px){
+            .img-bar {
+                width: 410px !important;
+                padding: 2px !important;
+                text-align: center !important;
+            }
+            .img-flow-tab {
+                height: 65px !important;
+                margin-top: -65px !important;
+                width: 405px !important;
+            }
+        }
+
         table.dataTable tbody th, table.dataTable tbody td, table.dataTable thead th, table.dataTable thead td {
             padding: 1px 2px;
         }
@@ -123,6 +136,12 @@
         sub.red{
             color: var(--danger);
         }
+        .card-body{
+            padding: .5rem 1.25rem;
+        }
+        label{
+            margin-bottom: unset;
+        }
     </style>
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed text-sm pace-primary pace-done">
@@ -147,16 +166,20 @@
                         <div id="info" class="card">
                             <div class="card-header">
                                 <h3 class="card-title">
-                                    <span v-html="stock.nameAndCodeWithLink"></span> 评分:<span v-text="stock.rating.total"></span>
+                                    <span v-html="stock.nameAndCode"></span> 评分:<span v-text="stock.rating.total"></span>
                                 </h3>
                                 <div class="card-tools">
                                     <button type="button" class="btn btn-tool" title="交易">
                                         <i class="fal fa-exchange-alt"></i>
                                     </button>
-                                    <button type="button" class="btn btn-tool" title="加入自选">
-                                        <i class="fal fa-heart"></i>
+                                    <button v-if="stock.statuses != undefined" @click="openHeartModal(stock)" type="button" class="btn btn-tool" title="加入自选">
+                                        <i class="fal fa-heart" :class="stock.statuses.find(s=>s.type===2)?'has-value':''"></i>
                                     </button>
                                     <eye :stock="stock"></eye>
+                                    <button v-if="stock.statuses != undefined" @click="openExcludeModal(stock)" type="button" class="btn btn-tool"
+                                            :title="getExcludeTitle(stock)">
+                                        <i class="fal fa-times" :class="stock.statuses.find(s=>s.type===1)?'has-value':''"></i>
+                                    </button>
                                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="收起">
                                         <i class="fas fa-minus"></i>
                                     </button>
@@ -179,9 +202,9 @@
                                             <table><tr>
                                                 <td class="text-nowrap pr-2">所属行业:</td>
                                                 <td><template v-for="bk in bksByRps01">
-                                                        <a style="float: left" target='_blank' :href="'/bk/'+bk.code"> <!-- float: left 确保行业和下标在一行 -->
+                                                        <a style="float: left" target='_blank' :href="'/b/'+bk.code"> <!-- float: left 确保行业和下标在一行 -->
                                                             <span class="tippy" :title="bk.name" v-text="bk.name"></span>
-                                                            <sub title="rps值" :class="bk.rps.rps_01.percentile >= 85?'red':''" v-text="'('+(bk.rps.rps_01.percentile).toFixed(0)+')'"></sub>
+                                                            <sub title="rps值" :class="(bk.rps.rps_01.percentile).toFixed(0) >= 85?'red':''" v-text="'('+(bk.rps.rps_01.percentile).toFixed(0)+')'"></sub>
                                                         </a>
                                                     </template></td>
                                             </tr></table>
@@ -190,7 +213,7 @@
                                             <table><tr>
                                                 <td class="text-nowrap pr-2">主营业务:</td>
                                                 <td><template v-for="business in stock.businesses">
-                                                        <a style="float: left" class="tippy" :title="business.keyword.name" v-text="business.keyword.name" target='_blank' :href="'/k/'+business.keyword.id"></a>
+                                                        <a style="float: left" class="tippy" :title="business.keyword.name" v-text="business.keyword.name" target='_blank' :href="'/kw/'+business.keyword.id"></a>
                                                     </template></td>
                                             </tr></table>
                                         </blockquote>
@@ -198,7 +221,7 @@
                                             <table><tr>
                                                 <td class="text-nowrap pr-2">主营产品:</td>
                                                 <td><template v-for="product in stock.products">
-                                                        <a style="float: left" class="tippy" :title="product.keyword.name" v-text="product.keyword.name" target='_blank' :href="'/k/'+product.keyword.id"></a>
+                                                        <a style="float: left" class="tippy" :title="product.keyword.name" v-text="product.keyword.name" target='_blank' :href="'/kw/'+product.keyword.id"></a>
                                                     </template></td>
                                             </tr></table>
                                         </blockquote>
@@ -268,6 +291,8 @@
                                                 <a target="_blank" th:href="@{'http://www.baidu.com/s?wd='+${name}+' site:(microbell.com)&ie=utf-8&cl=3&t=12&fr=news'}">迈博汇金研报</a>
                                             </p>
                                         </blockquote>
+                                    </div>
+                                    <div class="col-6">
                                         <blockquote class="quote-secondary">
                                             <p>
                                                 <span class="mr-2">业绩: </span>
@@ -290,11 +315,9 @@
                                                 <a target="_blank" th:href="@{'http://data.eastmoney.com/hsgtcg/StockHdStatistics.aspx?stock='+${code} }">沪深港通持股</a>
                                             </p>
                                         </blockquote>
-                                    </div>
-                                    <div class="col-6">
                                         <blockquote class="quote-secondary">
-                                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
-                                            <small>Someone famous in <cite title="Source Title">Source Title</cite></small>
+                                            <span class="mr-2">估值：</span>
+                                            <a target="_blank" th:href="@{'https://legulegu.com/s/'+${code}}">历史估值</a>
                                         </blockquote>
                                     </div>
                                 </div>
@@ -538,6 +561,9 @@
             </div>
         </section>
 
+        <stockexclude :stock="stock"></stockexclude>
+        <stockheart :stock="stock"></stockheart>
+
         <a id="back-to-top" href="#" class="btn btn-outline-primary back-to-top" style="display: none" role="button" aria-label="Scroll to top">
             <i class="fas fa-chevron-up"></i>
         </a>
@@ -563,6 +589,7 @@
     const config = {
         data() {
             return {
+                navActive:'',
                 loading: true,
                 common:{
                     posts:{
@@ -575,9 +602,11 @@
                         ],
                         columnDefs: [
                             { className: "text-nowrap text-center", "targets": [ 3,4 ] },
-                            { className: "text-nowrap", "targets": [ 0 ] }
+                            { className: "text-nowrap", "targets": [ 0,1 ] }
                         ],
-                        tableClass:{'table-hover':true}
+                        tableClass:{'table-hover':true},
+                        ordering: true,
+                        order: [ [ 4, "desc" ] ],
                     },
                     news:{
                         columns: [

@@ -16,15 +16,17 @@
                 <li class="nav-item" :class="{active:navActive==='mystocks'}">
                     <a href="/s/mystocks" target="_blank" class="nav-link">自选股</a>
                 </li>
-                <li class="nav-item dropdown" style="display: none" v-if="selectedTabName!=undefined" :style="{display:selectedTabName!=undefined?'block':'none'}">
-                    <a v-text="selectedTabName" id="stockCardTabs" href="#" data-toggle="dropdown" class="nav-link dropdown-toggle"></a>
-                    <ul class="dropdown-menu border-0 shadow">
-                        <li><a @click="selectTab('dayBar',$event)" href="#" class="dropdown-item">日线</a></li>
-                        <li><a @click="selectTab('weekBar',$event)" href="#" class="dropdown-item">周线</a></li>
-                        <li><a @click="selectTab('monthBar',$event)" href="#" class="dropdown-item">月线</a></li>
-                        <li><a @click="selectTab('news',$event)" href="#" class="dropdown-item">新闻</a></li>
-                    </ul>
-                </li>
+                <template v-if="navActive==='stocks'">
+                    <li class="nav-item dropdown" style="display: none" :style="{display:selectedTabName!=undefined?'block':'none'}" :class="{active:navActive==='stocks'}">
+                        <a v-text="selectedTabName" id="stockCardTabs" href="#" data-toggle="dropdown" class="nav-link dropdown-toggle"></a>
+                        <ul class="dropdown-menu border-0 shadow">
+                            <li><a @click="selectTab('dayBar',$event)" href="#" class="dropdown-item">日线</a></li>
+                            <li><a @click="selectTab('weekBar',$event)" href="#" class="dropdown-item">周线</a></li>
+                            <li><a @click="selectTab('monthBar',$event)" href="#" class="dropdown-item">月线</a></li>
+                            <li><a @click="selectTab('news',$event)" href="#" class="dropdown-item">新闻</a></li>
+                        </ul>
+                    </li>
+                </template>
             </ul>
 
         </div>
@@ -161,8 +163,8 @@
                 </div>
             </li>
 
-            <!-- 系统设置 -->
-            <li class="nav-item dropdown" :class="{active:['dict'].includes(navActive)}">
+            <!-- 系统配置 -->
+            <li class="nav-item dropdown" :class="{active:['dict','cookie'].includes(navActive)}">
                 <a class="nav-link" data-toggle="dropdown" href="#">
                     <i class="fas fa-cog"></i>
                 </a>
@@ -170,7 +172,10 @@
                     <span class="dropdown-item dropdown-header">配置信息</span>
                     <div class="dropdown-divider"></div>
                     <a href="/dict" target="_blank" class="dropdown-item">
-                        <i class="fas fa-envelope mr-2"></i> 字典表
+                        <i class="far fa-book mr-2"></i> 配置字典表
+                    </a>
+                    <a href="/cookie" target="_blank" class="dropdown-item">
+                        <i class="far fa-cookie mr-2"></i> 配置Cookie信息
                     </a>
                 </div>
             </li>

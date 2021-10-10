@@ -37,16 +37,26 @@ const _datatableTemplate = `
                 <template v-for="column in columns">
                     <td v-if="column.data == 'stockAndBk'">
                         <table style="margin: auto;font-size: 1rem">
-                            <tr><td><span v-html="row.nameAndCodeWithLink"></span><eye :stock="row"></eye></td></tr>
-                            <tr><td v-html="dateFormat(row.strategyDate)"></td></tr>
                             <tr><td>
+                                <span v-html="row.nameAndCodeWithLink"></span><br/>
+                                <button v-if="row.statuses != undefined" @click="openHeartModal(row)" type="button" class="btn btn-tool" title="加入自选">
+                                    <i class="fal fa-heart" :class="row.statuses.find(s=>s.type===2)?'has-value':''"></i>
+                                </button>
+                                <eye :stock="row"></eye>
+                                <button v-if="row.statuses != undefined" @click="openExcludeModal(row)" type="button" class="btn btn-tool"
+                                            :title="getExcludeTitle(row)">
+                                    <i class="fal fa-times" :class="row.statuses.find(s=>s.type===1)?'has-value':''"></i>
+                                </button>
+                            </td></tr>
+                            <!--<tr><td v-html="dateFormat(row.strategyDate)"></td></tr>-->
+                            <tr><td style="font-size: 80%">
                                 <span v-if="row.strategyName.length <= 1" v-html="'策略：'+row.strategyName"></span>
                                 <table v-else>
                                     <tr><td :rowspan="row.strategyName.length" style="vertical-align: middle;">策略</td><td v-html="row.strategyName[0]"></td></tr>
                                     <tr v-for="item in row.strategyName.slice(1)"><td v-text="item"></td></tr>
                                 </table>
                             </td></tr>
-                            <tr><td>&nbsp;</td></tr>
+                            <tr><td style="line-height: 10%">&nbsp</td></tr>
                             <tr v-if="row.bks"><td>
                                 <table class="subtable text-nowrap">
                                     <tr><td>板块</td>
@@ -65,10 +75,22 @@ const _datatableTemplate = `
                                     </tr>
                                 </table>
                             </td></tr>
+                            <tr><td style="line-height: 10%">&nbsp;</td></tr>
+                            <tr v-if="row.tags"><td style="max-width: 300px;">
+                                <tag :tags="row.tags" :type="['highlight']"></tag>
+                            </td></tr>
                         </table>
                     </td>
                     <td v-else-if="column.data == 'stockAndEye'">
-                        <span v-html="row.nameAndCodeWithLink"></span><eye :stock="row"></eye>
+                        <span v-html="row.nameAndCodeWithLink"></span>
+                        <button v-if="row.statuses != undefined" @click="openHeartModal(row)" type="button" class="btn btn-tool" title="加入自选">
+                            <i class="fal fa-heart" :class="row.statuses.find(s=>s.type===2)?'has-value':''"></i>
+                        </button>
+                        <eye :stock="row"></eye>
+                        <button v-if="row.statuses != undefined" @click="openExcludeModal(row)" type="button" class="btn btn-tool"
+                                    :title="getExcludeTitle(row)">
+                            <i class="fal fa-times" :class="row.statuses.find(s=>s.type===1)?'has-value':''"></i>
+                        </button>
                     </td>
                     <td v-else-if="column.data == 'titleAndDetail'">
                         <b v-if="row.title"><span v-html="row.title"></span></b>
@@ -79,8 +101,8 @@ const _datatableTemplate = `
                     </td>
                     <td v-else-if="column.data == 'dayBarImage'">
                         <span v-html="row.dayBarImage"></span>
-                        <span style="display: flex;margin-right: 6px;">
-                            <img height="70" style="margin-top: -70px;width: 405px;" :src="'data:image/png;base64,'+row.dayFlowImage">
+                        <span v-if="row.market==='CN'" style="display: flex;margin-right: 6px;">
+                            <img class="img-flow" :src="'data:image/png;base64,'+row.dayFlowImage">
                         </span>
                     </td>
                     <td v-else-if="column.slot !== undefined">
@@ -142,7 +164,7 @@ const _datatable = {
             //[start]for click and dblclick on one element
             delay: 300,
             clicks: 0,
-            timer: null
+            timer: null,
             //[end]for click and dblclick on one element
         }
     },
@@ -174,7 +196,9 @@ const _datatable = {
                 this.$emit('dblclickRow', row);
                 this.clicks = 0;
             }
-        }
+        },
+        ..._stockExcludeInVuex,
+        ..._stockHeartInVuex,
     },
     created() {
         //一定要在created里写，如果在mounted里写，则datatable不能加载

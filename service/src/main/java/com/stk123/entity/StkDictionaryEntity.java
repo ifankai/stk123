@@ -13,21 +13,19 @@ import java.util.Objects;
 @Table(name = "STK_DICTIONARY")
 @IdClass(StkDictionaryEntity.CompositeKey.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonView(View.Default.class)
 @Setter
 @Getter
 public class StkDictionaryEntity implements Serializable {
     @Id
     @Column(name = "TYPE")
-    @JsonView(View.Default.class)
     private Integer type;
 
     @Id
     @Column(name = "KEY", length = 40)
-    @JsonView(View.Default.class)
     private String key;
 
     @Column(name = "TEXT", length = 200)
-    @JsonView(View.Default.class)
     private String text;
 
     @Column(name = "REMARK", length = 400)

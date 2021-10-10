@@ -1,5 +1,7 @@
 package com.stk123.service.core;
 
+import com.alicp.jetcache.anno.CacheType;
+import com.alicp.jetcache.anno.Cached;
 import com.stk123.common.CommonUtils;
 import com.stk123.entity.StkReportDetailEntity;
 import com.stk123.entity.StkReportHeaderEntity;
@@ -79,6 +81,30 @@ public class ReportService {
         return BaseRepository.getInstance().list(findAllHotBksByReportDate, StkReportDetailEntity.class, reportDates);
     }
 
+    public Map findReportCheckedAsMap(String finalReportDate, List<StkReportDetailEntity> detailsA, List<StkReportDetailEntity> detailsH, List<StkReportDetailEntity> detailsU){
+        List<StkReportHeaderEntity> headers = stkReportHeaderRepository.findAllByReportDateOrderByReportDateDescInsertTimeDesc(finalReportDate);
+        Map result = new HashMap();
+        result.put("currentAllStocksChecked", getReportHeaderChecked(headers, StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS, finalReportDate));
+        result.put("currentAllStocksRpsStrategyChecked", getReportHeaderChecked(headers, StkConstant.REPORT_HEADER_TYPE_RPSSTOCKS_STRATEGIES, finalReportDate));
+        result.put("currentMyStocksAChecked", getReportHeaderChecked(headers, StkConstant.REPORT_HEADER_TYPE_MYSTOCKS, finalReportDate));
+        List<StkReportDetailEntity> detailsCN = getReportDetailChecked(headers, StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS, finalReportDate);
+        setCheckedTime(detailsA, detailsCN);
+        List<StkReportDetailEntity> detailsHK = getReportDetailChecked(headers, StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS_HK, finalReportDate);
+        setCheckedTime(detailsH, detailsHK);
+        List<StkReportDetailEntity> detailsUS = getReportDetailChecked(headers, StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS_US, finalReportDate);
+        setCheckedTime(detailsU, detailsUS);
+        return result;
+    }
+
+    private void setCheckedTime(List<StkReportDetailEntity> detailsTarget, List<StkReportDetailEntity> details){
+        detailsTarget.forEach(d -> {
+            StkReportDetailEntity a = details.stream().filter(stkReportDetailEntity -> stkReportDetailEntity.getStrategyCode().equals(d.getStrategyCode())).findFirst().orElse(null);
+            if(a == null) d.setCheckedTime(null);
+            else d.setCheckedTime(a.getCheckedTime());
+        });
+    }
+
+    //@Cached(name = "report", key="#reportDate", expire = 3600, cacheType = CacheType.LOCAL) //1小时
     public Map findReportAsMap(String reportDate){
         log.info("reportDate="+reportDate);
         Map result = new HashMap();
@@ -157,7 +183,29 @@ public class ReportService {
 
         result.put("currentAllStocksRpsA", getAllStocksRpsByType(headers, finalRptDate, StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS));
         result.put("currentAllStocksRpsH", getAllStocksRpsByType(headers, finalRptDate, StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS_HK));
+        result.put("currentAllStocksRpsU", getAllStocksRpsByType(headers, finalRptDate, StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS_US));
 
+        return result;
+    }
+
+    private List<StkReportDetailEntity> getReportDetailChecked(List<StkReportHeaderEntity> headers, String type, String finalRptDate){
+        List<StkReportHeaderEntity> headerByDate = headers.stream().filter(stkReportHeaderEntity -> type.equals(stkReportHeaderEntity.getType()) && finalRptDate.equals(stkReportHeaderEntity.getReportDate())).collect(Collectors.toList());
+        if(!headerByDate.isEmpty()) {
+            StkReportHeaderEntity stkReportHeaderEntity = headerByDate.get(0);
+            return stkReportHeaderEntity.getStkReportDetailEntities().stream().filter(stkReportDetailEntity -> stkReportDetailEntity.getCheckedTime() != null).collect(Collectors.toList());
+        }
+        return null;
+    }
+
+    private Map getReportHeaderChecked(List<StkReportHeaderEntity> headers, String type, String finalRptDate){
+        List<StkReportHeaderEntity> headerByDate = headers.stream().filter(stkReportHeaderEntity -> type.equals(stkReportHeaderEntity.getType()) && finalRptDate.equals(stkReportHeaderEntity.getReportDate())).collect(Collectors.toList());
+        Map result = new HashMap();
+        if(!headerByDate.isEmpty()){
+            StkReportHeaderEntity stkReportHeaderEntity = headerByDate.get(0);
+            result.put("reportDate", stkReportHeaderEntity.getReportDate());
+            result.put("type", stkReportHeaderEntity.getType());
+            result.put("checked", stkReportHeaderEntity.getCheckedTime() == null ? null : stkReportHeaderEntity.getCheckedTime().getTime());
+        }
         return result;
     }
 
@@ -178,9 +226,11 @@ public class ReportService {
 
             map.put("details", e.getValue().stream().distinct().map(detail -> new HashMap<String, Object>() {{
                         put("strategyCode", detail.getStrategyCode());
+                        if(Strategies.getStrategy(detail.getStrategyCode()) == null)
+                System.out.println(detail.getStrategyCode()+","+detail.getId());
                         put("strategyName", Strategies.getStrategy(detail.getStrategyCode()).getName());
                         put("stocks", stockService.getStocksAsMap(Arrays.asList(StringUtils.split(detail.getRpsStockCode(), ",")), "code", "nameWithLink"));
-                        String a = "<a title='查看板块精选个股' target='_blank' href='/S/"+detail.getRpsStockCode()+"'><i class='fas fa-th'></i></a>";
+                        String a = "<a title='查看板块精选个股' target='_blank' href='/s/"+detail.getRpsStockCode()+"'><i class='fas fa-th'></i></a>";
                         put("action", a);
                     }}
             ).collect(Collectors.toList()));
@@ -218,10 +268,14 @@ public class ReportService {
             //map.put("strategy", detail.getStrategyDate() + "<br/>" + Strategies.getStrategy(detail.getStrategyCode()).getName() + "<br/>-----<br/>" + detail.getStrategyOutput());
             //map.put("text", detail.getText());
             map.put("code", stock.getCode());
+            map.put("market", stock.getMarket());
             map.put("nameAndCodeWithLink", stock.getNameAndCodeWithLink());
             map.put("dayBarImage", stock.getDayBarImage());
             map.put("dayFlowImage", stock.getDayFlowImage());
             map.put("weekBarImage", stock.getWeekBarImage());
+            map.put("monthBarImage", stock.getMonthBarImage());
+            map.put("tags", stock.getTags());
+            map.put("statuses", stock.getStatuses());
             if(detail.getRpsBkCode() != null) {
                 List<Map> bkList = new ArrayList<>();
                 String[] bkCodeArray = StringUtils.split(detail.getRpsBkCode(), ";");
@@ -235,7 +289,7 @@ public class ReportService {
                     bkMap.put("bkRpsCode", bkRpsCodeArray[i]);
                     bkMap.put("bkRpsName", Rps.getRpsStrategy(bkRpsCodeArray[i]).getName());
                     bkMap.put("bkRpsPercentile", bkRpsPercentileArray[i]);
-                    bkMap.put("bkRpsStockCode", bkRpsStockCodeArray[i]);
+                    bkMap.put("bkRpsStockCode", bkRpsStockCodeArray==null?"":bkRpsStockCodeArray[i]);
                     bkList.add(bkMap);
                 }
                 map.put("bks", bkList);

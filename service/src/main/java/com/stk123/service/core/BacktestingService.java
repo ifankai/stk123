@@ -51,7 +51,7 @@ public class BacktestingService {
                 method -> strategies.stream().anyMatch(name -> StringUtils.equalsIgnoreCase(method.getName(), "strategy_"+name) || StringUtils.equalsIgnoreCase(method.getName(), name)));
         for (Method method : methods) {
             Strategy strategy = (Strategy<?>) method.invoke(null, null);
-            if(strategy == null) continue;
+            if(strategy.isIgnore()) continue;
             strategy.setStrategyBacktesting(strategyBacktesting);
             strategyBacktesting.addStrategy(strategy);
         }
@@ -104,7 +104,7 @@ public class BacktestingService {
                 method -> strategies.stream().anyMatch(name -> StringUtils.equalsIgnoreCase(method.getName(), "strategy_"+name) || StringUtils.equalsIgnoreCase(method.getName(), name)));
         for (Method method : methods) {
             Strategy strategy = (Strategy<?>) method.invoke(null, null);
-            if(strategy == null) continue;
+            if(strategy.isIgnore()) continue;
             strategyList.add(strategy);
         }
 
@@ -117,7 +117,7 @@ public class BacktestingService {
         }
 
         for(Strategy strategy : strategies){
-            if(strategy == null) continue;
+            if(strategy.isIgnore()) continue;
             strategy.setStrategyBacktesting(strategyBacktesting);
             strategyBacktesting.addStrategy(strategy);
         }

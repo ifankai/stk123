@@ -21,6 +21,7 @@ public class StkStatusEntity implements Serializable {
     @Column(name = "ID")
     @GeneratedValue(strategy =GenerationType.SEQUENCE, generator="s_status_id")
     @SequenceGenerator(name="s_status_id", sequenceName="s_status_id", allocationSize = 1)
+    @JsonView(View.Default.class)
     private Integer id;
 
     @Column(name = "CODE")
@@ -35,11 +36,11 @@ public class StkStatusEntity implements Serializable {
 
     @Column(name = "SUB_TYPE")
     @JsonView(View.Default.class)
-    private Integer subType;
+    private String subType;
 
     @Column(name = "QUANTITY")
     @JsonView(View.Default.class)
-    private Double quantity;
+    private Integer quantity;
 
     @Column(name = "start_time")
     @JsonView(View.Default.class)

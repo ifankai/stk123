@@ -6,7 +6,6 @@ import com.stk123.common.util.CommonHttpUtils;
 import com.stk123.common.util.ConfigUtils;
 import com.stk123.common.util.HtmlUtils;
 import com.stk123.common.util.JsonUtils;
-import com.stk123.model.projection.StockBasic;
 import com.stk123.model.xueqiu.Follower;
 import com.stk123.model.xueqiu.Portfolio;
 import com.stk123.model.xueqiu.Stock;
@@ -40,7 +39,7 @@ public class XueqiuService {
 					cookies = null;
 				}
 				try {
-					Thread.sleep(1000 * 60 * 10);
+					Thread.sleep(1000 * 60 * 3);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

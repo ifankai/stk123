@@ -218,10 +218,10 @@ public class TextController {
             }else{
                 map.put("nameAndCodeWithLink", stock.getNameAndCodeWithLink());
                 map.put("reply", CommonUtils.wrapLink(text.getReplyCount()+"", "https://xueqiu.com/S/"+stock.getCodeWithPlace()+"/"+text.getPostId()));
+                map.put("statuses", stock.getStatuses());
             }
             map.put("createdAt", CommonUtils.formatDate(text.getCreatedAt(), CommonUtils.sf_ymd9));
             map.put("insertTime", CommonUtils.formatDate(text.getUpdateTime() == null ? text.getInsertTime() : text.getUpdateTime(), CommonUtils.sf_ymd9));
-
             return map;
         }).collect(Collectors.toList());
     }

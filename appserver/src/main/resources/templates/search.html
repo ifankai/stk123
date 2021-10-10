@@ -7,6 +7,16 @@
     <div th:replace="common/css_public"></div>
     <link rel="stylesheet" th:href="'/css/public.css'+${_version}">
     <style>
+        @media (min-width: 1200px) {
+            .img-width img {
+                width: 410px;
+                padding: 2px;
+                text-align: center;
+            }
+            .container{
+                min-width: 1200px;
+            }
+        }
         .fa-file, .fa-external-link{
             margin-left: 10px;
             cursor: pointer;
@@ -71,9 +81,12 @@
             top: 50px;
         }
         .search-title{
-            font-size: 1rem;
             font-weight: 500;
+            font-size: 16px;
             margin-bottom: 5px;
+        }
+        .search-title .title a{
+            text-decoration: underline !important;
         }
         .search-type{
             font-size: .5rem;
@@ -82,7 +95,7 @@
             font-size: .8rem;
         }
         #search-result ol li{
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
         .search-count{
             font-size: 12px;
@@ -95,6 +108,10 @@
         }
         a.page-link{
             box-shadow: none !important;
+        }
+        .search-list{
+            color: #222;
+            font-size: 14px;
         }
 </style>
 </head>
@@ -131,7 +148,7 @@
 
                             <div class="card-body">
                                 <div class="tab-content" id="search-tabs-tabContent">
-                                    <div class="post clearfix">
+                                    <div class="search-list clearfix">
                                         <ol v-if="showSearchResults" style="list-style: none;padding-left: 1rem;">
                                             <li>
                                                 <div class="search-count">
@@ -146,8 +163,10 @@
                                             <li v-for="result in results.list">
                                                 <template v-if="result.type === 'stock'">
                                                     <div class="search-title">
-                                                        <span class="search-type">[股票] </span><span v-html="result.stock.nameAndCodeWithLink"></span>
-                                                        <i v-if="result.content != null && result.content.length > result.desc.length" @click="openModalDetail(result)" class="fal fa-file" title="F10" data-toggle="modal" :data-target="'#modal-'+result.id"></i>
+                                                        <div class="title">
+                                                            <span class="search-type">[股票] </span><span v-html="result.stock.nameAndCodeWithLink"></span>
+                                                            <i v-if="result.content != null && result.content.length > result.desc.length" @click="openModalDetail(result)" class="fal fa-file" title="F10" data-toggle="modal" :data-target="'#modal-'+result.id"></i>
+                                                        </div>
                                                     </div>
                                                     <div>
                                                         <p>
@@ -158,8 +177,10 @@
                                                 <template v-else-if="result.type === 'post' && result.subType === '0'">
                                                     <div class="search-title">
                                                         <div v-if="result.title != null">
-                                                            <span class="search-type">[帖子] </span><a v-html="result.title" :href="result.source" target="_blank"></a>
-                                                            <br/><span class="result-stocks" v-html="getRelatedStocks(result)"></span>
+                                                            <div class="title">
+                                                                <span class="search-type">[帖子] </span><a v-html="result.title" :href="result.source" target="_blank"></a>
+                                                            </div>
+                                                            <span class="result-stocks" v-html="getRelatedStocks(result)"></span>
                                                         </div>
                                                         <div v-else-if="result.title == null">
                                                             <span class="search-type">[帖子] </span>
@@ -177,8 +198,10 @@
                                                 <template v-else-if="result.type === 'post' && result.subType === '300'">
                                                     <div class="search-title">
                                                         <div v-if="result.title != null">
-                                                            <span class="search-type">[新闻] </span><a v-html="result.title" :href="result.source" target="_blank"></a>
-                                                            <br/><span class="result-stocks" v-html="getRelatedStocks(result)"></span>
+                                                            <div class="title">
+                                                                <span class="search-type">[新闻] </span><a v-html="result.title" :href="result.source" target="_blank"></a>
+                                                            </div>
+                                                            <span class="result-stocks" v-html="getRelatedStocks(result)"></span>
                                                         </div>
                                                         <div v-else-if="result.title == null">
                                                             <span class="search-type">[新闻] </span>
@@ -196,8 +219,10 @@
                                                 <template v-else>
                                                     <div class="search-title">
                                                         <div v-if="result.title != null">
-                                                            <span class="search-type">[TODO] </span><a v-html="result.title" :href="result.source" target="_blank"></a>
-                                                            <br/><span class="result-stocks" v-html="getRelatedStocks(result)"></span>
+                                                            <div class="title">
+                                                                <span class="search-type">[TODO] </span><a v-html="result.title" :href="result.source" target="_blank"></a>
+                                                            </div>
+                                                            <span class="result-stocks" v-html="getRelatedStocks(result)"></span>
                                                         </div>
                                                         <div v-else-if="result.title == null">
                                                             <span class="search-type">[TODO] </span>

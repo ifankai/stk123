@@ -5,9 +5,12 @@ import com.stk123.model.dto.TaskDto;
 import com.stk123.service.support.SpringApplicationContext;
 import com.stk123.service.task.Task;
 import com.stk123.service.task.TaskContainer;
+import com.stk123.task.Tasks;
 import lombok.SneakyThrows;
 import lombok.extern.apachecommons.CommonsLog;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.reflections.ReflectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,16 +19,19 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
-@CommonsLog
+@Slf4j
 @RequestMapping("/task")
 public class TaskController {
 
     @Autowired
     private TaskContainer taskContainer;
+    @Autowired
+    private Tasks tasks;
 
     @RequestMapping(path={"","/"})
     public RequestResult task() {
@@ -72,6 +78,18 @@ public class TaskController {
             }
         }
         return null;
+    }
+
+    @SneakyThrows
+    @RequestMapping(path={"/{methodName}"})
+    public RequestResult tasks(@PathVariable("methodName") String methodName){
+        Set<Method> methods = ReflectionUtils.getMethods(Tasks.class, method -> method.getName().equalsIgnoreCase(methodName));
+        log.info("method invoke: {} {}", methodName, methods.size());
+        if(!methods.isEmpty()){
+            Method method = methods.iterator().next();
+            method.invoke(tasks, null);
+        }
+        return RequestResult.success();
     }
 
     @SneakyThrows

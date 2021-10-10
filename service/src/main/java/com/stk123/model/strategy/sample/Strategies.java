@@ -377,19 +377,21 @@ public class Strategies {
     public static Strategy strategy_08b() {
         String turningPoint20 = Strategies.getTurningPoint(18);
         String turningPoint60 = Strategies.getTurningPoint(55);
+        Strategy strategy = strategy_08("strategy_08b","55日板块阶段强势(08b)，自"+turningPoint60+"以来", turningPoint60);
         if(turningPoint20.equals(turningPoint60)){
-            return null;
+            strategy.setIgnore(true);
         }
-        return strategy_08("strategy_08b","55日板块阶段强势(08b)，自"+turningPoint60+"以来", turningPoint60);
+        return strategy;
     }
     public static Strategy strategy_08c() {
         String turningPoint20 = Strategies.getTurningPoint(18);
         String turningPoint60 = Strategies.getTurningPoint(55);
         String turningPoint120 = Strategies.getTurningPoint(110);
+        Strategy strategy = strategy_08("strategy_08c","110日板块阶段强势(08c)，自"+turningPoint120+"以来", turningPoint120);
         if(turningPoint20.equals(turningPoint120) || turningPoint60.equals(turningPoint120)){
-            return null;
+            strategy.setIgnore(true);
         }
-        return strategy_08("strategy_08c","110日板块阶段强势(08c)，自"+turningPoint120+"以来", turningPoint120);
+        return strategy;
     }
     private static Strategy strategy_08(String code, String name, String turningPoint) {
         Strategy<Stock> strategy = new Strategy<>(code, name, Stock.class);
@@ -583,7 +585,7 @@ public class Strategies {
     public static Strategy rps_04() {
         //StrategyGroup<Stock> strategyGroup = new StrategyGroup<>(Rps.CODE_STOCK_MONTH_3_VOLUME, "3个月放量", Stock.class);
 
-        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_MONTH_3_VOLUME, "3个月(60天)放量", Stock.class);
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_MONTH_3_VOLUME, "60天(3月)放量", Stock.class);
         //strategy.setAsc(false);
         strategy.addFilter("3个月放量", (strgy, stock) -> {
             if(stock.getBarSeries().size() < 60){
@@ -593,6 +595,9 @@ public class Strategies {
             double sum = bar.getSUM(60, Bar.EnumValue.V);
             double minSum = bar.getLowest(400, bar1 -> bar1.getSUM(20, Bar.EnumValue.V));
             double rpsValue = sum/minSum;
+            if(rpsValue < 1.2){
+                return FilterResult.FALSE();
+            }
             return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
         }, false);
 
@@ -607,7 +612,7 @@ public class Strategies {
     }
 
     public static Strategy rps_05() {
-        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_MONTH_1_VOLUME,"1个月(20天)放量", Stock.class);
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_MONTH_1_VOLUME,"20天(1月)放量", Stock.class);
         //strategy.setAsc(false);
         strategy.addFilter("1个月放量", (strgy, stock) -> {
             if(stock.getBarSeries().size() < 60){
@@ -617,13 +622,16 @@ public class Strategies {
             double sum = bar.getSUM(20, Bar.EnumValue.V);
             double minSum = bar.before(20).getSUM(20, Bar.EnumValue.V);
             double rpsValue = sum/minSum;
+            if(rpsValue < 1.5){
+                return FilterResult.FALSE();
+            }
             return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
         }, false);
         return strategy;
     }
 
     public static Strategy rps_06a() {
-        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_WEEK_1_VOLUME_A,"1周(5天)放量", Stock.class);
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_WEEK_1_VOLUME_A,"5天(1周)放量", Stock.class);
         //strategy.setAsc(false);
         strategy.addFilter("1周放量", (strgy, stock) -> {
             if(stock.getBarSeries().size() < 60){
@@ -633,12 +641,15 @@ public class Strategies {
             double sum = bar.getSUM(5, Bar.EnumValue.V);
             double minSum = bar.before(5).getSUM(5, Bar.EnumValue.V);
             double rpsValue = sum/minSum;
+            if(rpsValue < 1.5){
+                return FilterResult.FALSE();
+            }
             return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
         }, false);
         return strategy;
     }
     public static Strategy rps_06b() {
-        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_WEEK_1_VOLUME_B, "1周资金流+1周放量", Stock.class);
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_WEEK_1_VOLUME_B, "5天(1周)放量+1周资金流+", Stock.class);
         //strategy.setAsc(false);
         strategy.addFilter("1周放量", (strgy, stock) -> {
             if(stock.getBarSeries().size() < 60){
@@ -648,6 +659,9 @@ public class Strategies {
             double sum = bar.getSUM(5, Bar.EnumValue.V);
             double minSum = bar.before(5).getSUM(5, Bar.EnumValue.V);
             double rpsValue = sum/minSum;
+            if(rpsValue < 1.5){
+                return FilterResult.FALSE();
+            }
             return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
         }, false);
 
@@ -664,20 +678,23 @@ public class Strategies {
     }
 
     public static Strategy rps_07() {
-        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_WEEK_2_VOLUME,"2周(10天)放量", Stock.class);
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_WEEK_2_VOLUME,"10天(2周)放量", Stock.class);
         //strategy.setAsc(false);
         strategy.addFilter("2周放量", (strgy, stock) -> {
             Bar bar = stock.getBar();
             double sum = bar.getSUM(10, Bar.EnumValue.V);
             double minSum = bar.before(10).getSUM(10, Bar.EnumValue.V);
             double rpsValue = sum/minSum;
+            if(rpsValue < 1.5){
+                return FilterResult.FALSE();
+            }
             return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
         }, false);
         return strategy;
     }
 
     public static Strategy rps_08() {
-        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_WEEK_3_VOLUME,"3周(15天)放量", Stock.class);
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_WEEK_3_VOLUME,"15天(3周)放量", Stock.class);
         //strategy.setAsc(false);
         strategy.addFilter("3周放量", (strgy, stock) -> {
             if(stock.getBarSeries().size() < 60){
@@ -687,6 +704,9 @@ public class Strategies {
             double sum = bar.getSUM(15, Bar.EnumValue.V);;
             double minSum = bar.before(15).getSUM(15, Bar.EnumValue.V);
             double rpsValue = sum/minSum;
+            if(rpsValue < 1.5){
+                return FilterResult.FALSE();
+            }
             return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
         }, false);
         return strategy;
@@ -703,6 +723,9 @@ public class Strategies {
             double sum = bar.getVolume();
             double minSum = bar.before().getVolume();
             double rpsValue = sum/minSum;
+            if(rpsValue < 1.5){
+                return FilterResult.FALSE();
+            }
             return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
         }, false);
 
@@ -730,6 +753,9 @@ public class Strategies {
             double sum = bar.getVolume()+bar.before().getVolume();
             double minSum = bar.before(2).getVolume() + bar.before(3).getVolume();
             double rpsValue = sum/minSum;
+            if(rpsValue < 1.5){
+                return FilterResult.FALSE();
+            }
             return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
         }, false);
 
@@ -756,6 +782,9 @@ public class Strategies {
             double sum = bar.getVolume()+bar.before().getVolume()+bar.before(2).getVolume();
             double minSum = bar.before(3).getVolume() + bar.before(4).getVolume() + bar.before(5).getVolume();
             double rpsValue = sum/minSum;
+            if(rpsValue < 1.5){
+                return FilterResult.FALSE();
+            }
             return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
         }, false);
 
@@ -782,6 +811,9 @@ public class Strategies {
             double sum = bar.getSUM(120, Bar.EnumValue.V);
             double minSum = bar.before(120).getSUM(120, Bar.EnumValue.V);
             double rpsValue = sum/minSum;
+            if(rpsValue < 1.2){
+                return FilterResult.FALSE();
+            }
             return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
         }, false);
 
@@ -797,7 +829,7 @@ public class Strategies {
 
     //温和放量
     public static Strategy rps_13() {
-        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_GENTLE_CHANGE_VOLUME, "温和涨幅+10天放量", Stock.class);
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_GENTLE_CHANGE_VOLUME, "10天(2周)放量+温和涨幅", Stock.class);
 
         strategy.addFilter("温和涨幅", (strgy, stock) -> {
             if(stock.getBarSeries().size() < 120){

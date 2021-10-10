@@ -3,14 +3,29 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title th:utext="${title} != null?'小智慧 - '+${title}:'小智慧'"></title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fontawesome5pro@5.14.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css">
+    <title th:utext="${title} != null?${title}+' - 小智慧':'小智慧'"></title>
+    <div th:replace="common/css_public"></div>
     <link rel="stylesheet" href="/adminlte/plugins/pace-progress/themes/black/pace-theme-loading-bar.css">
-<!--    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">-->
     <div th:replace="common/css_datatable"></div>
     <link rel="stylesheet" th:href="'/css/public.css'+${_version}">
     <style>
+        @media (min-width: 1200px) {
+            .img-width img {
+                width: 410px;
+                padding: 2px;
+                text-align: center;
+            }
+            .container{
+                max-width: 1350px;
+            }
+        }
+        @media (max-width: 650px) {
+            .container{
+                min-width: 615px;
+            }
+
+        }
+
         .table td, .table th {
             padding: unset;
         }
@@ -31,6 +46,10 @@
         }
         .table thead th {
             border-bottom: 1px solid #dee2e6;
+            padding: 0 .75rem;
+            color: #9ba2a8;
+            text-align: center;
+            white-space: nowrap;
         }
         table.dataTable>thead .sorting:before,
         table.dataTable>thead .sorting:after,
@@ -110,9 +129,6 @@
         }
         .dropdown-divider{
             margin: unset;
-        }
-        .img-width{
-            width: 350px !important;
         }
     </style>
 </head>
@@ -238,10 +254,19 @@
                                 <datatable :="{...common.stocks}" :data="stocks.map(stk => stk.stock)">
                                     <template v-slot:name-and-tags="{row, rowNumber}">
                                         <div>
-                                            <span v-html="row.nameAndCodeWithLink"></span><eye :stock="row"></eye>
+                                            <span v-html="row.nameAndCodeWithLink"></span><br/>
+                                            <button v-if="row.statuses != undefined" @click="openHeartModal(row)" type="button" class="btn btn-tool" title="加入自选">
+                                                <i class="fal fa-heart" :class="row.statuses.find(s=>s.type===2)?'has-value':''"></i>
+                                            </button>
+                                            <eye :stock="row"></eye>
+                                            <button v-if="row.statuses != undefined" @click="openExcludeModal(row)" type="button" class="btn btn-tool"
+                                                    :title="getExcludeTitle(row)">
+                                                <i class="fal fa-times" :class="row.statuses.find(s=>s.type===1)?'has-value':''"></i>
+                                            </button>
+
                                         </div>
                                         <div>
-                                            <tag :stock="row" :type="['highlight']"></tag>
+                                            <tag :tags="row.tags" :type="['highlight']"></tag>
                                         </div>
                                     </template>
                                 </datatable>
@@ -261,15 +286,13 @@
                                                 <span v-html="stk.stock.nameAndCodeWithLink"></span> 评分:<span v-text="stk.stock.rating.total"></span>
                                             </h3>
                                             <div class="card-tools">
-                                                <eye :stock="stk.stock"></eye>
-                                                <button type="button" class="btn btn-tool" title="加关注">
-                                                    <i class="fal fa-heart"></i>
+                                                <button v-if="stk.stock.statuses != undefined" @click="openHeartModal(stk.stock)" type="button" class="btn btn-tool" title="加入自选">
+                                                    <i class="fal fa-heart" :class="stk.stock.statuses.find(s=>s.type===2)?'has-value':''"></i>
                                                 </button>
-                                                <button @click="openExcludeModal(stk.stock)" type="button" class="btn btn-tool"
-                                                        :class="{disabled:stk.stock.statuses.find(s=>s.type===1)}"
-                                                        :disabled="stk.stock.statuses.find(s=>s.type===1)"
+                                                <eye :stock="stk.stock"></eye>
+                                                <button v-if="stk.stock.statuses != undefined" @click="openExcludeModal(stk.stock)" type="button" class="btn btn-tool"
                                                         :title="getExcludeTitle(stk.stock)">
-                                                    <i class="fal fa-times"></i>
+                                                    <i class="fal fa-times" :class="stk.stock.statuses.find(s=>s.type===1)?'has-value':''"></i>
                                                 </button>
                                             </div>
                                         </div><!-- /.card-header -->
@@ -277,7 +300,7 @@
                                             <stockbody :stock="stk.stock" tab-show="news"></stockbody>
                                         </div><!-- /.card-body -->
                                         <div class="card-footer">
-                                            <tag :stock="stk.stock" :type="['highlight']"></tag>
+                                            <tag :tags="stk.stock.tags" :type="['highlight']"></tag>
                                         </div>
                                     </div>
                                 </template>
@@ -291,6 +314,7 @@
         <!-- /.content -->
 
         <stockexclude :stock="excludeStock"></stockexclude>
+        <stockheart :stock="heartStock"></stockheart>
 
         <a id="back-to-top" href="#" class="btn btn-outline-primary back-to-top" style="display: none" role="button" aria-label="Scroll to top">
             <i class="fas fa-chevron-up"></i>
@@ -350,9 +374,10 @@
     let config = {
         data() {
             return {
+                navActive: 'stocks',
                 title: title,
                 loading: true,
-                displayType:'card',
+                displayType:'table',
                 selectedTabName: '日线',
                 //selectedTabIndex: 1,
                 seletedRpsName: 'RPS排序',
@@ -363,14 +388,14 @@
                     stocks:{
                         type: 1,
                         columns: [
-                            {slot:"name-and-tags"},
-                            {data:"dayBarImage"},
-                            {data:"weekBarImage"},
-                            {data:"monthBarImage"}],
+                            {title:"股票", slot:"name-and-tags"},
+                            {title:"日线", data:"dayBarImage"},
+                            {title:"周线", data:"weekBarImage"},
+                            {title:"月线", data:"monthBarImage"}],
                         columnDefs: [
                             { className: "img-width", "targets": [ 1,2,3 ] }
                         ],
-                        tableClass:{'table-hover':true}
+                        pageLength: 100
                     },
                     news:{
                         type: 1,
@@ -478,13 +503,7 @@
                 });
                 Pace.stop();
             },
-            getExcludeTitle:function(stock){
-                let status = stock.statuses.find(s=>s.type===1);
-                if(status === undefined) return '排除';
-                else{
-                    return '排除到 '+ this.tsFormat(status.endTime);
-                }
-            }
+
         },
         computed: {
             bksTopN: function () {
@@ -504,7 +523,7 @@
             },
             selectAllNiusan: {
                 get: function () {
-                    return this.common.niusans ? this.niusanSelected.length == this.common.niusans.length : false;
+                    return this.common.niusans ? this.niusanSelected.length === this.common.niusans.length : false;
                 },
                 set: function (value) {
                     let selected = [];
@@ -538,6 +557,8 @@
                 _this.total = _this.stocks.length;
                 //console.log('mounted')
             });
+
+
 
         },
         created () {

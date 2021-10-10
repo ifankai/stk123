@@ -18,6 +18,8 @@ public interface StkCapitalFlowRepository extends JpaRepository<StkCapitalFlowEn
 
     List<StkCapitalFlowEntity> findAllByCodeAndFlowDateGreaterThanEqualOrderByFlowDateDesc(String code, String afterFlowDate);
 
+    List<StkCapitalFlowEntity> findTop60ByCodeOrderByFlowDateDesc(String code);
+
     List<StkCapitalFlowEntity> findAllByCodeInAndFlowDateGreaterThanEqualOrderByFlowDateDesc(List<String> code, String afterFlowDate);
 
     default Map<String, List<StkCapitalFlowEntity>> getAllByCodeInAndFlowDateGreaterThanEqualOrderByFlowDateDesc(List<String> codes, String afterFlowDate){

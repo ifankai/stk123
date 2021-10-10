@@ -102,6 +102,8 @@ public class Stock {
     @JsonView(View.Default.class)
     private EnumCate cate;
 
+    private Integer hot;
+
     private double priceLimit = 0.0; //5%, 10%, 20%
 
     //存放临时数据
@@ -227,6 +229,7 @@ public class Stock {
             setPlace();
         }
         this.totalCapital = stockBasicProjection.getTotalCapital();
+        this.hot = stockBasicProjection.getHot();
         return this;
     }
 
@@ -260,7 +263,7 @@ public class Stock {
             }
         }
     }
-
+    @JsonView(View.Default.class)
     public String getNameAndCode(){
         loadIfNull(this.name);
         return (this.name==null?this.code:this.name) + "["+ this.getCodeWithPlace() +"]";
@@ -581,7 +584,7 @@ public class Stock {
 
     public void buildCapitalFlow(){
         if(flows == null) {
-            this.flows = stkCapitalFlowRepository.findAllByCodeAndFlowDateGreaterThanEqualOrderByFlowDateDesc(this.getCode(), CommonUtils.formatDate(CommonUtils.addDay(new Date(), -60), CommonUtils.sf_ymd2));
+            this.flows = stkCapitalFlowRepository.findTop60ByCodeOrderByFlowDateDesc(this.getCode());
         }
         if(this.barSeries != null){
             for(StkCapitalFlowEntity flowEntity : this.flows) {
@@ -676,17 +679,17 @@ public class Stock {
         if(this.isMarketCN()) {
             if(this.isCateIndexEastmoneyGn()){
                 xueqiu = "https://xueqiu.com/k?q="+this.getName()+"#/stock";
-                return CommonUtils.wrapLink("<img width='100%' src='http://webquoteklinepic.eastmoney.com/GetPic.aspx?token=&nid=90."+this.getCodeWithPlace()+"&type="+period+"&unitWidth=-6&ef=&formula=MACD&imageType=KXL&_="+new Date().getTime()+"' />", xueqiu);
+                return CommonUtils.wrapLink("<img class='img-bar' width='100%' src='http://webquoteklinepic.eastmoney.com/GetPic.aspx?token=&nid=90."+this.getCodeWithPlace()+"&type="+period+"&unitWidth=-6&ef=&formula=MACD&imageType=KXL&_="+new Date().getTime()+"' />", xueqiu);
             }
             // http://webquoteklinepic.eastmoney.com/GetPic.aspx?nid=0.002020&UnitWidth=-6&imageType=KXL&EF=&Formula=MACD&AT=1&&type=W&token=&_=
-            return CommonUtils.wrapLink("<img width='100%' src='http://webquoteklinepic.eastmoney.com/GetPic.aspx?nid="+(this.isPlaceSH()?"1":"0")+"."+this.getCode()+"&UnitWidth=-6&imageType=KXL&EF=&Formula=MACD&AT=1&&type="+period+"&token=&_="+new Date().getTime()+"' />", xueqiu);
+            return CommonUtils.wrapLink("<img class='img-bar' width='100%' src='http://webquoteklinepic.eastmoney.com/GetPic.aspx?nid="+(this.isPlaceSH()?"1":"0")+"."+this.getCode()+"&UnitWidth=-6&imageType=KXL&EF=&Formula=MACD&AT=1&&type="+period+"&token=&_="+new Date().getTime()+"' />", xueqiu);
             //return CommonUtils.wrapLink("<img src='http://image.sinajs.cn/newchart/"+period+"/n/" + this.getCodeWithPlace().toLowerCase() + ".gif' />", xueqiu);
         }else if(this.isMarketHK()){
             //http://webquoteklinepic.eastmoney.com/GetPic.aspx?nid=116.01812&UnitWidth=-6&imageType=KXL&EF=&Formula=MACD&AT=&&type=D&token=
-            return CommonUtils.wrapLink("<img width='100%' src='http://webquoteklinepic.eastmoney.com/GetPic.aspx?nid=116."+this.getCode()+"&UnitWidth=-6&imageType=KXL&EF=&Formula=MACD&AT=&&type="+period+"&token=' />", xueqiu);
+            return CommonUtils.wrapLink("<img class='img-bar' width='100%' src='http://webquoteklinepic.eastmoney.com/GetPic.aspx?nid=116."+this.getCode()+"&UnitWidth=-6&imageType=KXL&EF=&Formula=MACD&AT=&&type="+period+"&token=' />", xueqiu);
         }else if(this.isMarketUS()){
             //http://webquoteklinepic.eastmoney.com/GetPic.aspx?token=&nid=105.JD&type=&unitWidth=-6&ef=&formula=RSI&imageType=KXL&_=1625985559783
-            return CommonUtils.wrapLink("<img width='100%' src='http://webquoteklinepic.eastmoney.com/GetPic.aspx?token=&nid=105."+this.getCode()+"&type="+period+"&unitWidth=-6&ef=&formula=MACD&imageType=KXL&_="+new Date().getTime()+"' />", xueqiu);
+            return CommonUtils.wrapLink("<img class='img-bar' width='100%' src='http://webquoteklinepic.eastmoney.com/GetPic.aspx?token=&nid=105."+this.getCode()+"&type="+period+"&unitWidth=-6&ef=&formula=MACD&imageType=KXL&_="+new Date().getTime()+"' />", xueqiu);
         }
         return "";
     }
@@ -930,12 +933,12 @@ public class Stock {
             if(sr == null) return 0;
             if(sr.getPercentile() >= 90){ //板块rps强度大于90百分位，则加10分
                 this.tags.add(Tag.builder()
-                        .name("RPS["+sr.getStock().getNameAndCodeWithLink()+"]"+sr.getPercentile()).value(sr.getPercentile())
+                        .name("RPS["+sr.getStock().getNameWithLink()+"]"+CommonUtils.numberFormat2Digits(sr.getPercentile())).value(sr.getPercentile())
                         .detail("RPS["+sr.getStock().getNameAndCode()+"]"+sr.getPercentile()).displayOrder(100).build());
                 return 15;
             }else if(sr.getPercentile() >= 80){
                 this.tags.add(Tag.builder()
-                        .name("RPS["+sr.getStock().getNameAndCodeWithLink()+"]"+sr.getPercentile()).value(sr.getPercentile())
+                        .name("RPS["+sr.getStock().getNameWithLink()+"]"+CommonUtils.numberFormat2Digits(sr.getPercentile())).value(sr.getPercentile())
                         .detail("RPS["+sr.getStock().getNameAndCode()+"]"+sr.getPercentile()).displayOrder(100).build());
                 return 10;
             }
@@ -1060,7 +1063,8 @@ public class Stock {
                 score += 3;
             }else if(a >= 50) {
                 score += 5;
-                this.tags.add(Tag.builder().name("主营增长"+a+"%").value(a).detail("主营业务收入增长率"+a+"%").displayOrder(79).build());
+                this.tags.add(Tag.builder().name("主营增长"+CommonUtils.numberFormat2Digits(a)+"%").value(a)
+                        .detail("主营业务收入增长率"+CommonUtils.numberFormat2Digits(a)+"%").displayOrder(79).build());
             }else if(a >= 100) {
                 score += 10;
             }
@@ -1073,7 +1077,8 @@ public class Stock {
             }
             else if(a >= 100) score += 10;
             if(a >= 35){
-                this.tags.add(Tag.builder().name("净利增长"+a+"%").value(a).detail("净利润增长率"+a+"%").displayOrder(78).build());
+                this.tags.add(Tag.builder().name("净利增长"+CommonUtils.numberFormat2Digits(a)+"%").value(a)
+                        .detail("净利润增长率"+CommonUtils.numberFormat2Digits(a)+"%").displayOrder(78).build());
             }
         }
         a = fn.getValueByType(StkConstant.FN_TYPE_106); //销售毛利率(%)
@@ -1083,7 +1088,8 @@ public class Stock {
                 score += 5;
             }
             if(a >= 35){
-                this.tags.add(Tag.builder().name("毛利率"+a+"%").value(a).detail("毛利率"+a+"%").displayOrder(77).build());
+                this.tags.add(Tag.builder().name("毛利率"+CommonUtils.numberFormat2Digits(a)+"%").value(a)
+                        .detail("毛利率"+CommonUtils.numberFormat2Digits(a)+"%").displayOrder(77).build());
             }
         }
         a = fn.getValueByType(StkConstant.FN_TYPE_123); //经营现金净流量与净利润的比率(%)

@@ -55,17 +55,6 @@ public class StockController {
     @Autowired
     private StkStatusRepository stkStatusRepository;
 
-    @RequestMapping(value = {"/init"})
-    @ResponseBody
-    public RequestResult initStockAndBk(){
-        Cache.initAll();
-        return RequestResult.success(true);
-    }
-    @RequestMapping(value = {"/inited"})
-    @ResponseBody
-    public RequestResult inited(){
-        return RequestResult.success(Cache.inited);
-    }
 
     @RequestMapping(value = {"/list/{market:1|2|3|cn|us|hk}/{cate}"})
     @ResponseBody
@@ -245,13 +234,32 @@ public class StockController {
         return notices;
     }
 
-    @PostMapping(value = "/status/exclude")
+    @PostMapping(value = "/status/{type}")
     @ResponseBody
-    public RequestResult statusExclude(@RequestBody StkStatusEntity status){
-        status.setType(StkConstant.STATUS_TYPE_1);
+    public RequestResult status(@PathVariable(value = "type")Integer type, @RequestBody StkStatusEntity status){
+        status.setType(type);
         status.setValid(1);
-        status.setInsertTime(new Date());
+        if(status.getId() != null){
+            status.setUpdateTime(new Date());
+        }else{
+            status.setInsertTime(new Date());
+        }
         stockService.saveOrUpdateStatus(status);
         return RequestResult.success();
     }
+
+    @DeleteMapping(value = {"/status/{type}/{code}", "/status/{type}/{code}/{subType}"})
+    @ResponseBody
+    public RequestResult statusDelete(@PathVariable(value = "type")Integer type,
+                                      @PathVariable(value = "code")String code,
+                                      @PathVariable(value = "subType", required = false)String subType){
+        if(StringUtils.isEmpty(subType)) {
+            stkStatusRepository.deleteAllByCodeAndType(code, type);
+        }else{
+            stkStatusRepository.deleteAllByCodeAndTypeAndSubType(code, type, subType);
+        }
+        Cache.reload(code, Stock::reloadStatuses);
+        return RequestResult.success();
+    }
+
 }
