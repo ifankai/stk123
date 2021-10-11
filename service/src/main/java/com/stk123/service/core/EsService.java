@@ -501,14 +501,12 @@ public class EsService {
 
     private EsDocument convertStkTextEntityToEsDocument(StkTextEntity e) {
         EsDocument esDocument = new EsDocument();
-        if(e.getType() == StkConstant.TEXT_TYPE_XUEQIU) {
-            esDocument.setType(StkConstant.ES_TYPE_POST);
-        }else if(e.getType() == StkConstant.TEXT_TYPE_NOTICE){
-            esDocument.setType(StkConstant.ES_TYPE_NOTICE);
-        }else if(e.getType() == StkConstant.TEXT_TYPE_REPORT){
-            esDocument.setType(StkConstant.ES_TYPE_REPORT);
+        String esType = StkConstant.TEXT_TYPE_MAP_ES_TYPE.get(e.getType());
+        if(esType == null){
+            throw new RuntimeException("Please setup es type for text type["+e.getType()+"]");
         }
-        esDocument.setSubType(e.getSubType().toString());
+        esDocument.setType(esType);
+        esDocument.setSubType(e.getSubType()==null?null:e.getSubType().toString());
         esDocument.setTitle(e.getTitle());
         esDocument.setDesc(e.getTextDesc());
         esDocument.setContent(e.getText());

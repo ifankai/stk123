@@ -78,3 +78,6 @@ i.has-value{
 .toastify{
     white-space:nowrap;
 }
+.note-popover{
+    z-index: 100000;
+}

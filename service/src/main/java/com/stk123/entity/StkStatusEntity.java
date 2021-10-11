@@ -25,6 +25,7 @@ public class StkStatusEntity implements Serializable {
     private Integer id;
 
     @Column(name = "CODE")
+    @JsonView(View.Default.class)
     private String code;
 
     @Column(name = "VALID")

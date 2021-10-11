@@ -19,6 +19,7 @@ import com.stk123.service.core.EsService;
 import com.stk123.service.core.StockService;
 import com.stk123.service.core.TextService;
 import lombok.extern.apachecommons.CommonsLog;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -146,7 +147,7 @@ public class TextController {
     }
 
 
-    @RequestMapping(value={"/{type}/{subType}/{code}"})
+    @RequestMapping(value={"/{code}/{type}/{subType}", "/{code}/{type}"})
     public RequestResult query(@PathVariable String code, @PathVariable Integer type,
                                @PathVariable(value = "subType", required = false) Integer subType,
                                @RequestParam(value = "start", required = false)String start,
@@ -161,7 +162,22 @@ public class TextController {
         }
     }
 
-    @RequestMapping("/post/{code}")
+    @PostMapping(value={"/{code}"})
+    public RequestResult save(@PathVariable String code, @RequestBody StkTextEntity stkTextEntity){
+        stkTextEntity.setCode(code);
+        if(stkTextEntity.getId() == null){
+            stkTextEntity.setInsertTime(new Date());
+            stkTextRepository.save(stkTextEntity);
+        }else {
+            StkTextEntity text = stkTextRepository.findById(stkTextEntity.getId()).get();
+            BeanUtils.mapIgnoreNull(stkTextEntity, text);
+            text.setUpdateTime(new Date());
+            stkTextRepository.save(text);
+        }
+        return RequestResult.success();
+    }
+
+    @RequestMapping("/{code}/post")
     public RequestResult post(@PathVariable String code,
                                @RequestParam(value = "start", required = false)String start,
                                @RequestParam(value = "end", required = false)String end){
@@ -182,7 +198,7 @@ public class TextController {
         return RequestResult.success(result);
     }
 
-    @RequestMapping("/report/{code}")
+    @RequestMapping("/{code}/report")
     public RequestResult researchReport(@PathVariable String code,
                               @RequestParam(value = "start", required = false)String start,
                               @RequestParam(value = "end", required = false)String end){

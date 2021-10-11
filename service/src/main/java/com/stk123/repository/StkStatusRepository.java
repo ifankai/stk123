@@ -21,4 +21,7 @@ public interface StkStatusRepository extends JpaRepository<StkStatusEntity, Inte
 
     @Transactional
     void deleteAllByCodeAndTypeAndSubType(String code, Integer type, String subType);
+
+    @Query(value = "select t from StkStatusEntity t where t.type=:type and t.valid=1 and t.valid=1 order by coalesce(t.updateTime, t.insertTime) desc")
+    List<StkStatusEntity> findAllByTypeOrderByInsertTime(@Param("type")Integer type);
 }

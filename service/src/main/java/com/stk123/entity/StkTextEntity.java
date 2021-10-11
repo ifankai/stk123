@@ -32,6 +32,7 @@ public class StkTextEntity implements Serializable {
     private Long id;
 
     @Column(name="TYPE")
+    @JsonView(View.All.class)
     private Integer type;
 
     @Column(name="CODE")

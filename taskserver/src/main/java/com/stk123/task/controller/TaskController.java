@@ -30,7 +30,7 @@ public class TaskController {
 
     @Autowired
     private TaskContainer taskContainer;
-    @Autowired
+    @Autowired(required=false)
     private Tasks tasks;
 
     @RequestMapping(path={"","/"})

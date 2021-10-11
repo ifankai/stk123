@@ -13,8 +13,15 @@
                 <li class="nav-item" :class="{active:navActive==='report'}">
                     <a href="/report" target="_blank" class="nav-link">每日报告</a>
                 </li>
+                <li class="nav-item dropdown" :class="{active:['heart','exclude'].includes(navActive)}">
+                    <a href="/heart" data-toggle="dropdown" class="nav-link dropdown-toggle">自选股</a>
+                    <ul class="dropdown-menu border-0 shadow">
+                        <li><a href="/heart" class="dropdown-item">自选股</a></li>
+                        <li><a href="/exclude" class="dropdown-item">排除股</a></li>
+                    </ul>
+                </li>
                 <li class="nav-item" :class="{active:navActive==='mystocks'}">
-                    <a href="/s/mystocks" target="_blank" class="nav-link">自选股</a>
+                    <a href="/s/mystocks" target="_blank" class="nav-link">雪球-我的</a>
                 </li>
                 <template v-if="navActive==='stocks'">
                     <li class="nav-item dropdown" style="display: none" :style="{display:selectedTabName!=undefined?'block':'none'}" :class="{active:navActive==='stocks'}">

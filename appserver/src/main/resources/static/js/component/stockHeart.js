@@ -1,5 +1,5 @@
 const _stockHeartTemplate = `
-    <div class="modal hide" id="_heartModal" aria-modal="true" role="dialog" tabindex='-1'>
+    <div class="modal hide" ref="heartModal" id="_heartModal" aria-modal="true" role="dialog" tabindex='-1'>
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
                 <div class="modal-header">
@@ -16,6 +16,10 @@ const _stockHeartTemplate = `
                                 <label :for="'customCheckbox-'+label.key" class="custom-control-label">{{label.text}}</label>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label>入选理由</label><i @click="openTextModal()" class="fal fa-edit ml-2"></i>
+                            <div class="mt-1" @click="openTextModal()" v-html="$store.state.currentText===undefined?'':$store.state.currentText.content" style="border: 1px solid rgba(0,0,0,.2);"></div>
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer justify-content-center">
@@ -26,6 +30,7 @@ const _stockHeartTemplate = `
         </div>
         <!-- /.modal-dialog -->
     </div>
+    <stocktext title="入选理由" :code="stock.code"></stocktext>
 `;
 
 const _stockHeart = {
@@ -35,7 +40,6 @@ const _stockHeart = {
     },
     data: function () {
         return {
-            selectedLabels:[],
             common: {}
         }
     },
@@ -73,6 +77,15 @@ const _stockHeart = {
         },
         isChecked: function (key) {
             return this.stock.statuses && this.stock.statuses.find(s=>s.type===2 && s.subType === key) !== undefined;
+        },
+        doOnShow: function (){
+            let _this = this;
+            axios.get("/text/"+this.stock.code+"/6").then(function(res){
+                _this.$store.commit('setCurrentText', _.head(res.data.data));
+            });
+        },
+        openTextModal: function (){
+            $('#_textModal').modal ('show');
         }
     },
     computed: {
@@ -80,9 +93,9 @@ const _stockHeart = {
     },
     mounted() {
         let _this = this;
+        $(this.$refs.heartModal).on("show.bs.modal", this.doOnShow)
         axios.get("/dict/detail/5010").then(function(res){
             _this.common.labels = res.data.data;
-            //console.log('labels',_this.common.labels)
         });
     }
 

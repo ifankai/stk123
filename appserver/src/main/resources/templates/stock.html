@@ -733,7 +733,7 @@
                 });
             });
 
-            axios.get("/text/post/"+code).then(function (res) {
+            axios.get("/text/"+code+"/post").then(function (res) {
                 let data = res.data.data;
                 data.forEach(post => {
                     //post.title = post.title == null ? post.desc : post.title;
@@ -767,7 +767,7 @@
                 _this.stock.xqnotice = {data: data};
             });
 
-            axios.get("/text/4/200/"+code).then(function (res) {
+            axios.get("/text/"+code+"/4/200").then(function (res) {
                 _this.stock.notices = res.data.data;
                 _this.stock.notices.forEach(notice => {
                     let json = JSON.parse(notice.content);
@@ -779,7 +779,7 @@
                 }
             });
 
-            axios.get("/text/report/"+code).then(function (res) {
+            axios.get("/text/"+code+"/report").then(function (res) {
                 let data = res.data.data;
                 data.forEach(row => {
                     row.createdAt = new Date(row.createdAt==null?row.insertTime:row.createdAt).format("yyyy-MM-dd hh:mm:ss");

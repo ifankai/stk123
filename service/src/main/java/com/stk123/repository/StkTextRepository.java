@@ -100,4 +100,5 @@ public interface StkTextRepository extends JpaRepository<StkTextEntity, Long> {
     List<StkTextEntity> findAllByTypeAndCodeTypeAndSubTypeAndReplyPositiveAndInsertTimeGreaterThanOrderByInsertTimeDesc(Integer type, Integer codeType, Integer subType, Integer replyPositive, Date createdAt);
 
     StkTextEntity findFirstBySubTypeAndTitle(Integer subType, String title);
+
 }

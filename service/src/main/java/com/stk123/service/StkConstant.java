@@ -73,6 +73,14 @@ public class StkConstant {
     public final static int TEXT_TYPE_XUEQIU = 3;  //雪球评论:3
     public final static int TEXT_TYPE_NOTICE = 4; //公告
     public final static int TEXT_TYPE_REPORT = 5; //研报
+    public final static int TEXT_TYPE_HEART = 6; //加入自选备注
+
+    public final static Map<Integer, String> TEXT_TYPE_MAP_ES_TYPE = new HashMap(){{
+        put(TEXT_TYPE_XUEQIU, ES_TYPE_POST);
+        put(TEXT_TYPE_NOTICE, ES_TYPE_NOTICE);
+        put(TEXT_TYPE_REPORT, ES_TYPE_REPORT);
+        put(TEXT_TYPE_HEART, ES_TYPE_HEART);
+    }};
 
     /** es type 和上面  stk_text.type 基本对应, 再加上其他一些type，比如：stock，industry等 **/
     public final static String ES_TYPE_MY = "my"; //我添加的文档
@@ -80,6 +88,7 @@ public class StkConstant {
     public final static String ES_TYPE_POST = "post";
     public final static String ES_TYPE_NOTICE = "notice";
     public final static String ES_TYPE_REPORT = "report";
+    public final static String ES_TYPE_HEART = "heart";
 
     /** stk_text.code_type **/
     public final static int TEXT_CODE_TYPE_STOCK = 1; // 1:stock, 2:industry,
