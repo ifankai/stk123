@@ -291,8 +291,6 @@
                                                 <a target="_blank" th:href="@{'http://www.baidu.com/s?wd='+${name}+' site:(microbell.com)&ie=utf-8&cl=3&t=12&fr=news'}">迈博汇金研报</a>
                                             </p>
                                         </blockquote>
-                                    </div>
-                                    <div class="col-6">
                                         <blockquote class="quote-secondary">
                                             <p>
                                                 <span class="mr-2">业绩: </span>
@@ -319,6 +317,20 @@
                                             <span class="mr-2">估值：</span>
                                             <a target="_blank" th:href="@{'https://legulegu.com/s/'+${code}}">历史估值</a>
                                         </blockquote>
+                                    </div>
+                                    <div class="col-6">
+                                        <datatable :="{...common.texts, ...stock.texts}">
+                                            <template v-slot:title-and-detail="{row, rowNumber}">
+                                                <b v-if="row.title"><span v-html="row.title"></span></b>
+                                                <template v-if="row.desc">
+                                                    <br v-if="row.title"><span v-html="row.desc"></span>
+                                                </template>
+                                                <template v-else>
+                                                    <br v-if="row.title"><span v-html="row.content"></span>
+                                                </template>
+                                                <i v-if="row.content != null" @click="$store.commit('setCurrentText', row)" class="fal fa-file" title="详情/编辑"></i>
+                                            </template>
+                                        </datatable>
                                     </div>
                                 </div>
                             </div>
@@ -608,6 +620,16 @@
                         ordering: true,
                         order: [ [ 4, "desc" ] ],
                     },
+                    texts:{
+                        columns: [
+                            {slot:"title-and-detail"},
+                            {data:"insertTimeShow"}
+                        ],
+                        columnDefs: [
+                            { className: "text-nowrap text-center", "targets": [ 1 ] }
+                        ],
+                        tableClass:{'table-hover':true}
+                    },
                     news:{
                         columns: [
                             {data:"type"},
@@ -691,7 +713,7 @@
                         this.stock['notice_diff_'+nbjb.code] = dmp.diff_prettyHtml(d);
                     }
                 }
-            }
+            },
         },
         computed: {
             fnTypeDisplayName: function(){
@@ -733,6 +755,21 @@
                 });
             });
 
+            axios.get("/text/"+code+"/texts").then(function (res) {
+                let data = res.data.data;
+                data.forEach(text => {
+                    let html = text.content;
+                    let el = document.createElement('p');
+                    el.innerHTML = html;
+                    let t = el.innerText;
+                    text.desc = t.length > 200 ? t.substring(0, 200) : t;
+                    text.insertTimeShow = new Date(text.insertTime).format("yyyy-MM-dd hh:mm:ss");
+                    text.modalId = '_stockTextModal';
+                    text.modalNotEdit = true;
+                })
+                _this.stock.texts = {data: data};
+            })
+
             axios.get("/text/"+code+"/post").then(function (res) {
                 let data = res.data.data;
                 data.forEach(post => {
@@ -762,10 +799,10 @@
                 _this.stock.newsList = {data: data}; //不能用_this.stock.news= {data:data}, 因为stock.news已经有值而且没有多加data：这一层，所有vue会报错
             });
 
-            axios.get("/stock/xqnotice/"+code).then(function (res) {
+            /*axios.get("/stock/xqnotice/"+code).then(function (res) {
                 let data = res.data.data;
                 _this.stock.xqnotice = {data: data};
-            });
+            });*/
 
             axios.get("/text/"+code+"/4/200").then(function (res) {
                 _this.stock.notices = res.data.data;

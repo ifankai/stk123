@@ -168,6 +168,7 @@ const store = Vuex.createStore({
         },
         setCurrentText(state, payload){
             state.currentText = payload;
+            $('#_textModal').modal('show');
         }
     },
     //异步执行，异步：访问服务器后等待响应。
@@ -183,7 +184,7 @@ const store = Vuex.createStore({
             let results = await _search(state.searchText, 1, 'stock', 'code,title,name');
             commit('setSearchResults', results);
             console.log('results', state.searchResults)
-        }
+        },
     },
     //get属性，所有组件通过get获取值可以得到表现一致的内容
     getters:{
@@ -481,7 +482,7 @@ $(function (){
     $(".modal").on('shown.bs.modal', function (){
         let $this = $(this);
         let $modal = $this.find('.modal-dialog');
-        let m_top = ( $(window).height() - $modal.height() ) / 2;
+        let m_top = ( $(window).height() - $modal.height() ) / 4;
         if(m_top < 20) m_top = 20;
         $modal.css({'margin' : m_top + 'px auto'})
     })

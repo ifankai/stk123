@@ -601,7 +601,6 @@ alter table stk_text add constraint pk_text_id primary key (id);
 alter table stk_text add disp_order number(4) default 0;
 alter table stk_text add user_id number(8) default 1;
 alter table stk_text add sub_type number(4) default 0; -- see Text.java sub type
-create index idx_text__code_type on stk_text (code,code_type);
 create index idx_text__user_id on stk_text (user_id);
 create index idx_text__sub_type on stk_text (sub_type);
 create index idx_text_insert_time on stk_text (insert_time);
@@ -3164,4 +3163,6 @@ select * from stk_report_detail order by strategy_date desc, id desc;
 select * from stk_report_detail where id=114170;
 select * from stk_report_header where id=10720;
 
-select distinct type from stk_text;
+select * from stk_text where code='300750' order by insert_time desc;
+select * from stk_text where type=6  order by insert_time desc for update;
+select * from stk_text where type in (2,4) and code='600600'  order by insert_time desc;

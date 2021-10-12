@@ -68,14 +68,14 @@ public class StkConstant {
 
     /** stk_text.type **/
     public final static int TEXT_TYPE_ADD_BY_MYSELF = 0; //收藏文章:0;
-    public final static int TEXT_TYPE_SHORT_TEXT = 1;//短文:1;
-    public final static int TEXT_TYPE_LONG_TEXT = 2;//长文:2;
+    public final static int TEXT_TYPE_MANUAL = 1;//短文:1; => 手动添加
+    public final static int TEXT_TYPE_AUTO = 2;//长文:2; => 系统自动  update stk_text set type=2 where type=1;  @TODO
     public final static int TEXT_TYPE_XUEQIU = 3;  //雪球评论:3
     public final static int TEXT_TYPE_NOTICE = 4; //公告
     public final static int TEXT_TYPE_REPORT = 5; //研报
     public final static int TEXT_TYPE_HEART = 6; //加入自选备注
 
-    public final static Map<Integer, String> TEXT_TYPE_MAP_ES_TYPE = new HashMap(){{
+    public final static Map<Integer, String> TEXT_TYPE_MAP_ES_TYPE = new HashMap<Integer, String>(){{
         put(TEXT_TYPE_XUEQIU, ES_TYPE_POST);
         put(TEXT_TYPE_NOTICE, ES_TYPE_NOTICE);
         put(TEXT_TYPE_REPORT, ES_TYPE_REPORT);
@@ -106,7 +106,7 @@ public class StkConstant {
     public final static int TEXT_SUB_TYPE_STK_REPORT = 200; //年报季报
     public final static int TEXT_SUB_TYPE_XUEQIU_NOTICE = 300; //雪球公告
 
-    public final static Map<String, String> TEXT_SUB_TYPE_MAP = new HashMap(){{
+    public final static Map<String, String> TEXT_SUB_TYPE_MAP = new HashMap<String, String>(){{
         put(String.valueOf(TEXT_SUB_TYPE_COMPANY_RESEARCH), "公司研报");
         put(String.valueOf(TEXT_SUB_TYPE_INDUSTRY_RESEARCH), "行业分析");
         put(String.valueOf(TEXT_SUB_TYPE_STK_REPORT), "年报季报");

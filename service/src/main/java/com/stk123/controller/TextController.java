@@ -162,6 +162,20 @@ public class TextController {
         }
     }
 
+    @RequestMapping(value={"/{code}/texts"})
+    public RequestResult query2(@PathVariable String code,
+                               @RequestParam(value = "start", required = false)String start,
+                               @RequestParam(value = "end", required = false)String end){
+        List<StkTextEntity> result = new ArrayList<>();
+        List<StkTextEntity> hearts = stkTextRepository.findAllByCodeAndTypeOrderByInsertTimeDesc(code, StkConstant.TEXT_TYPE_HEART);
+        result.addAll(hearts);
+        Date dateStart = start == null ? CommonUtils.addDay(new Date(), -50000) : CommonUtils.parseDate(start);
+        Date dateEnd = end == null ? new Date() : CommonUtils.parseDate(end);
+        List<StkTextEntity> manuals = stkTextRepository.findAllByCodeAndTypeAndInsertTimeBetweenOrderByInsertTimeDesc(code, StkConstant.TEXT_TYPE_MANUAL, dateStart, dateEnd);
+        result.addAll(manuals);
+        return RequestResult.success(result);
+    }
+
     @PostMapping(value={"/{code}"})
     public RequestResult save(@PathVariable String code, @RequestBody StkTextEntity stkTextEntity){
         stkTextEntity.setCode(code);

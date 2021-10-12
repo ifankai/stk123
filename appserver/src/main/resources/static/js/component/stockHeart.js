@@ -17,8 +17,8 @@ const _stockHeartTemplate = `
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>入选理由</label><i @click="openTextModal()" class="fal fa-edit ml-2"></i>
-                            <div class="mt-1" @click="openTextModal()" v-html="$store.state.currentText===undefined?'':$store.state.currentText.content" style="border: 1px solid rgba(0,0,0,.2);"></div>
+                            <label>入选理由</label><i @click="$store.commit('setCurrentText', text)" class="fal fa-edit ml-2"></i>
+                            <div class="mt-1" @click="$store.commit('setCurrentText', text)" v-html="text===undefined?'':text.content" style="border: 1px solid rgba(0,0,0,.2);"></div>
                         </div>
                     </form>
                 </div>
@@ -30,7 +30,7 @@ const _stockHeartTemplate = `
         </div>
         <!-- /.modal-dialog -->
     </div>
-    <stocktext title="入选理由" :code="stock.code"></stocktext>
+    <stocktext></stocktext>
 `;
 
 const _stockHeart = {
@@ -40,7 +40,8 @@ const _stockHeart = {
     },
     data: function () {
         return {
-            common: {}
+            common: {},
+            text:{},
         }
     },
     methods:{
@@ -81,12 +82,13 @@ const _stockHeart = {
         doOnShow: function (){
             let _this = this;
             axios.get("/text/"+this.stock.code+"/6").then(function(res){
-                _this.$store.commit('setCurrentText', _.head(res.data.data));
+                _this.text = _.head(res.data.data);
+                _this.text.modalId = '_stockHeartTextModal';
+                if(_this.text.title === undefined || _this.text.title === null || _this.text.id === null){
+                    _this.text.title = "##加入自选##";
+                }
             });
         },
-        openTextModal: function (){
-            $('#_textModal').modal ('show');
-        }
     },
     computed: {
 
