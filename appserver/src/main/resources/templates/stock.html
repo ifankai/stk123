@@ -339,8 +339,8 @@
                                                 <i v-if="row.content != null" @click="$store.commit('setCurrentText', row)" class="fal fa-file" title="详情/编辑"></i>
                                             </template>
                                             <template v-slot:action="{row, rowNumber}">
-                                                <button @click="deleteText(row)" type="button" class="btn btn-tool" title="删除">
-                                                    <i class="fal fa-trash-alt"></i>
+                                                <button type="button" class="btn btn-tool" title="删除">
+                                                    <i @click="deleteText(row)" class="fal fa-trash-alt"></i>
                                                 </button>
                                             </template>
                                         </datatable>
