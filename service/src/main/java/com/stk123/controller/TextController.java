@@ -212,6 +212,12 @@ public class TextController {
         return RequestResult.success(result);
     }
 
+    @DeleteMapping(value = "/{id}")
+    public RequestResult delete(@PathVariable("id")Long id){
+        stkTextRepository.deleteById(id);
+        return RequestResult.success();
+    }
+
     @RequestMapping("/{code}/report")
     public RequestResult researchReport(@PathVariable String code,
                               @RequestParam(value = "start", required = false)String start,

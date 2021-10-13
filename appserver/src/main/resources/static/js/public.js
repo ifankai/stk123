@@ -498,6 +498,8 @@ $(function (){
         }*/
     }
 
+    $("img.lazyload").lazyload();
+
 });
 
 let _stockExcludeInVuex = {
@@ -536,6 +538,9 @@ const mixins = {
         if (localStorage.stockLookPool) {
             store.commit('setStockLookPool', getDataFromLocalStorage('stockLookPool') || []);
         }
+    },
+    updated(){
+        $("img.lazyload").lazyload();
     }
 }
 
@@ -574,6 +579,12 @@ const jc = {
         }, opt)
         return $.confirm(config);
     }
+}
+
+let timer = null;
+function clearTimer() {
+    timer && clearInterval(timer)
+    timer = null
 }
 
 function createApp(config){

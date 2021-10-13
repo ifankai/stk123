@@ -72,7 +72,7 @@
                         <div role="tabpanel" class="tab-pane fade show active" th:id="'tab-'+${stocks[dataIndex][code]}+'-1'">
                             <span th:utext=="${stocks[dataIndex][daily]}"></span>
                             <span>
-                                <img height="80" width="503" style="margin-top: -100px;" th:src="'data:image/png;base64,'+${stocks[dataIndex][dailyFlowImg]}">
+                                <img class="lazyload" height="80" width="503" style="margin-top: -100px;" th:data-original="'data:image/png;base64,'+${stocks[dataIndex][dailyFlowImg]}">
                             </span>
                         </div>
                         <div role="tabpanel" class="tab-pane fade" th:id="'tab-'+${stocks[dataIndex][code]}+'-2'">

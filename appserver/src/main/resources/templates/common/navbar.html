@@ -20,10 +20,10 @@
                         <li><a href="/exclude" class="dropdown-item">排除股</a></li>
                     </ul>
                 </li>
-                <li class="nav-item" :class="{active:navActive==='mystocks'}">
-                    <a href="/s/mystocks" target="_blank" class="nav-link">雪球-我的</a>
+                <li class="nav-item" :class="{active:navActive==='xq'}">
+                    <a href="/xq/我的" target="_blank" class="nav-link">雪球-我的</a>
                 </li>
-                <template v-if="navActive==='stocks'">
+                <template v-if="['stocks','xq'].includes(navActive)">
                     <li class="nav-item dropdown" style="display: none" :style="{display:selectedTabName!=undefined?'block':'none'}" :class="{active:navActive==='stocks'}">
                         <a v-text="selectedTabName" id="stockCardTabs" href="#" data-toggle="dropdown" class="nav-link dropdown-toggle"></a>
                         <ul class="dropdown-menu border-0 shadow">

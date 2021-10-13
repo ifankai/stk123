@@ -319,6 +319,14 @@
                                         </blockquote>
                                     </div>
                                     <div class="col-6">
+                                        <div class="mb-3">
+                                            <button @click="$store.commit('setCurrentText', {code:stock.code, type:1})" type="button" class="btn btn-tool" title="新加">
+                                                <i class="fal fa-plus"></i>
+                                            </button>
+                                            <button @click="getTexts()" type="button" class="btn btn-tool ml-3" title="刷新">
+                                                <i class="fal fa-sync"></i>
+                                            </button>
+                                        </div>
                                         <datatable :="{...common.texts, ...stock.texts}">
                                             <template v-slot:title-and-detail="{row, rowNumber}">
                                                 <b v-if="row.title"><span v-html="row.title"></span></b>
@@ -329,6 +337,9 @@
                                                     <br v-if="row.title"><span v-html="row.content"></span>
                                                 </template>
                                                 <i v-if="row.content != null" @click="$store.commit('setCurrentText', row)" class="fal fa-file" title="详情/编辑"></i>
+                                            </template>
+                                            <template v-slot:action="{row, rowNumber}">
+                                                <i @click="deleteText(row)" class="fal fa-trash-alt" title="删除"></i>
                                             </template>
                                         </datatable>
                                     </div>
@@ -623,7 +634,8 @@
                     texts:{
                         columns: [
                             {slot:"title-and-detail"},
-                            {data:"insertTimeShow"}
+                            {data:"insertTimeShow"},
+                            {slot:"action"}
                         ],
                         columnDefs: [
                             { className: "text-nowrap text-center", "targets": [ 1 ] }
@@ -714,6 +726,39 @@
                     }
                 }
             },
+            getTexts:function (){
+                let _this = this;
+                axios.get("/text/"+code+"/texts").then(function (res) {
+                    let data = res.data.data;
+                    data.forEach(text => {
+                        let html = text.content;
+                        let el = document.createElement('p');
+                        el.innerHTML = html;
+                        let t = el.innerText;
+                        text.desc = t.length > 200 ? t.substring(0, 200) : t;
+                        text.insertTimeShow = new Date(text.insertTime).format("yyyy-MM-dd hh:mm:ss");
+                        text.modalId = '_stockTextModal';
+                        text.modalNotEdit = true;
+                    })
+                    _this.stock.texts = {data: data};
+                })
+            },
+            deleteText:function (text){
+                let _this = this;
+                jc.confirm({
+                    content: "确定要删除?",
+                    confirmAction: function () {
+                        axios.delete("/text/"+text.id).then(function (res) {
+                            if(res.data.success){
+                                toastify({text: "删除成功"});
+                                _this.getTexts();
+                            }else{
+                                toastify({text: "删除失败：\n"+res.data.data});
+                            }
+                        });
+                    }
+                });
+            }
         },
         computed: {
             fnTypeDisplayName: function(){
@@ -755,26 +800,13 @@
                 });
             });
 
-            axios.get("/text/"+code+"/texts").then(function (res) {
-                let data = res.data.data;
-                data.forEach(text => {
-                    let html = text.content;
-                    let el = document.createElement('p');
-                    el.innerHTML = html;
-                    let t = el.innerText;
-                    text.desc = t.length > 200 ? t.substring(0, 200) : t;
-                    text.insertTimeShow = new Date(text.insertTime).format("yyyy-MM-dd hh:mm:ss");
-                    text.modalId = '_stockTextModal';
-                    text.modalNotEdit = true;
-                })
-                _this.stock.texts = {data: data};
-            })
+            this.getTexts();
 
             axios.get("/text/"+code+"/post").then(function (res) {
                 let data = res.data.data;
                 data.forEach(post => {
                     //post.title = post.title == null ? post.desc : post.title;
-                    if(post.userId == -1) {
+                    if(post.userId === -1) {
                         post.followersCount = null;
                         post.user = '<a href="https://xueqiu.com/S/' + codeWithPlace + '" target="_blank">' + post.userName + '</a>';
                         post.reply = '<a href="https://xueqiu.com/S/' + codeWithPlace + '/' + post.postId + '" target="_blank">' + post.replyCount + '</a>';

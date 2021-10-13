@@ -130,6 +130,10 @@
         .dropdown-divider{
             margin: unset;
         }
+        .trade-bar {
+            width: 40px;
+            float: left;
+        }
     </style>
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed text-sm pace-primary pace-done">
@@ -162,6 +166,9 @@
                                     <label for="bk-rb-0" class="custom-control-label">全部股票<span v-text="' ('+total+')'"></span></label>
                                 </div>
                                 <div class="card-tools">
+                                    <button @click="displayType='trade'" :disabled="displayType==='trade'" type="button" class="btn btn-sm" title="交易时间">
+                                        <i class="fal fa-alien"></i>
+                                    </button>
                                     <button @click="displayType='card'" :disabled="displayType==='card'" type="button" class="btn btn-sm" title="卡片呈现">
                                         <i class="fal fa-grip-vertical"></i>
                                     </button>
@@ -263,11 +270,29 @@
                                                     :title="getExcludeTitle(row)">
                                                 <i class="fal fa-times" :class="row.statuses.find(s=>s.type===1)?'has-value':''"></i>
                                             </button>
-
                                         </div>
                                         <div>
                                             <tag :tags="row.tags" :type="['highlight']"></tag>
                                         </div>
+                                    </template>
+                                </datatable>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                <template v-else-if="displayType==='trade'">
+                    <div class="row">
+                        <div class="card col-md-12">
+                            <div class="card-body">
+                                <datatable :="{...common.trade}" :data="stocks.map(stk => stk.stock)">
+                                    <template v-slot:name-and-tags="{row, rowNumber}">
+                                        <div><span v-html="row.nameAndCodeWithLink"></span></div>
+                                        <div><tag :tags="row.tags" :type="['highlight']"></tag></div>
+                                    </template>
+                                    <template v-slot:bar-images="{row, rowNumber}">
+                                        <div class="trade-bar" v-html="row.dayBarImage"></div>
+                                        <div class="trade-bar ml-1" v-html="row.weekBarImage"></div>
+                                        <div class="trade-bar ml-1" v-html="row.monthBarImage"></div>
                                     </template>
                                 </datatable>
                             </div>
@@ -335,6 +360,7 @@
     const title = [[${title}]];
     const code = [[${code}]];
     const codeType = [[${codeType}]];
+    let navActive = window.location.href.indexOf('/xq')>=0?'xq':'stocks';
 
     function parseStocks(_this, res){
         let data = res.data.data;
@@ -374,7 +400,7 @@
     let config = {
         data() {
             return {
-                navActive: 'stocks',
+                navActive: navActive,
                 title: title,
                 loading: true,
                 displayType:'table',
@@ -395,6 +421,19 @@
                         columnDefs: [
                             { className: "img-width", "targets": [ 1,2,3 ] }
                         ],
+                        pageLength: 100
+                    },
+                    trade:{
+                        type: 1,
+                        columns: [
+                            {title:"股票", slot:"name-and-tags"},
+                            {title:"K线", slot:"bar-images"},
+                            {title:"最新价", data:"code"},
+                            {title:"涨跌幅", data:"code"}],
+                        columnDefs: [
+                            { className: "text-center", "targets": [ 1,2,3 ] }
+                        ],
+                        tableClass:{'table-hover':true},
                         pageLength: 100
                     },
                     news:{
@@ -420,6 +459,15 @@
                     let nsName = this.common.niusans.map(ns => ns.text);
                     this.stocks = this.stocks.filter(stk => stk.stock.owners.find(owner => nsName.includes(owner.orgName)) );
                 }else{
+                }
+            },
+            displayType: function (newVal, oldVal){
+                clearTimer();
+                if(newVal === 'trade'){
+                    console.log('trade refresh...')
+                    timer = setInterval(function () {
+                        console.log('trade refresh...')
+                    }, 5 * 1000);
                 }
             }
         },

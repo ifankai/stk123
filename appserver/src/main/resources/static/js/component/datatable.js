@@ -102,7 +102,7 @@ const _datatableTemplate = `
                     <td v-else-if="column.data == 'dayBarImage'">
                         <span v-html="row.dayBarImage"></span>
                         <span v-if="row.market==='CN'" style="display: flex;margin-right: 6px;">
-                            <img class="img-flow" :src="'data:image/png;base64,'+row.dayFlowImage">
+                            <img class="img-flow lazyload" :data-src="'data:image/png;base64,'+row.dayFlowImage">
                         </span>
                     </td>
                     <td v-else-if="column.slot !== undefined">
@@ -125,7 +125,10 @@ function getDataTableOpt (_this){
         //columns: this.columns
         //paging:   false,
 
-        ..._this.$props
+        ..._this.$props,
+        "initComplete": function(settings, json) {
+
+        }
     }
     delete opt.columns;
     delete opt.data;
@@ -149,7 +152,7 @@ const _datatable = {
         info: {type: Boolean, default: true},
         pageLength: {type: Number, default: 10},
         searching: {type: Boolean, default: true},
-        columnDefs:{},
+        columnDefs:Array,
         tableClass:{},
         selected: {type: Boolean, default: false},
     },
@@ -216,9 +219,11 @@ const _datatable = {
             $('#_datatable_' + this.datatableId).DataTable(opt);
             //$("div.toolbar").html('<span>Custom tool bar! Text/images etc.</span>');
         });*/
-        if(this.type == 1) {
+        if(this.type === 1) {
+            let _this = this;
             let opt = getDataTableOpt(this);
-            $('#_datatable_' + this.datatableId).DataTable(opt);
+            let dt = $('#_datatable_' + this.datatableId).DataTable(opt);
+            $.fn.dataTable.ext.errMode = 'none'; //disable the warning message
         }
     },
     watch: {
@@ -227,12 +232,13 @@ const _datatable = {
             $('#_datatable_' + this.datatableId).DataTable().destroy();
             $('#_datatable_' + this.datatableId).DataTable(opt);*/
 
-            if(this.type == 0) {
+            if(this.type === 0) {
                 this.$nextTick(function () {
                     let opt = getDataTableOpt(this);
                     //$('#_datatable_' + this.datatableId).DataTable().destroy();
-                    $('#_datatable_' + this.datatableId).DataTable(opt);
+                    let dt = $('#_datatable_' + this.datatableId).DataTable(opt);
                     //$("div.toolbar").html('<span>Custom tool bar! Text/images etc.</span>');
+                    $.fn.dataTable.ext.errMode = 'none'; //disable the warning message
                 });
             }
         }

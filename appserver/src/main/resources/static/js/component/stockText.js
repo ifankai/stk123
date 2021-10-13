@@ -1,5 +1,5 @@
 const _stockTextTemplate = `
-    <div class="modal hide" ref="textModal" id="_textModal" aria-modal="true" role="dialog" tabindex='-1'>
+    <div class="modal hide" ref="textModal" id="_textModal" aria-modal="true" role="dialog" tabindex='-1' data-backdrop="static">
         <div class="modal-dialog" :style="text.modalWidth?text.modalWidth:{'max-width': '800px'}">
             <div class="modal-content">
                 <div class="modal-header">
@@ -42,7 +42,7 @@ const _stockText = {
     methods:{
         getConfig: function (){
             return {
-                height: 150,
+                height: window.innerHeight / 2,
                 hint: {
                     match: /:([\-+\w]+)$/,
                     search: function (keyword, callback) {
@@ -72,8 +72,9 @@ const _stockText = {
         doOnShow: function () {
             let _this = this;
             this.text = this.$store.state.currentText;
+            console.log('text', this.text)
             $('#summernote').summernote(this.getConfig());
-            $('#summernote').summernote('code', this.text === undefined ? '' : this.text.content);
+            $('#summernote').summernote('code', this.text.content === undefined ? '' : this.text.content);
             if (this.text.modalNotEdit !== undefined)
                 $('#summernote').summernote('destroy');
             //this.$refs.content.focus()
@@ -84,7 +85,6 @@ const _stockText = {
         saveText: function (){
             var html = $('#summernote').summernote('code');
             let t = Object.assign(this.text || {}, {
-                type:6,
                 content: html
             });
             this.$store.commit('setCurrentText', t);
