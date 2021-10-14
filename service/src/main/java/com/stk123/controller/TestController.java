@@ -28,7 +28,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
-@RequestMapping
+@RequestMapping("/test")
 @CommonsLog
 public class TestController {
 
@@ -52,7 +52,7 @@ public class TestController {
     private StockService stockService;
 
 
-    @RequestMapping(value = "/test")
+    @RequestMapping(value = "")
     @ResponseBody
     public RequestResult test() throws Exception {
 

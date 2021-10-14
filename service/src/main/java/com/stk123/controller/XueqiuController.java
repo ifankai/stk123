@@ -5,12 +5,15 @@ import com.stk123.model.RequestResult;
 import com.stk123.model.core.Stock;
 import com.stk123.model.json.View;
 import com.stk123.service.XueqiuService;
+import lombok.SneakyThrows;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.net.URLDecoder;
 import java.util.Set;
@@ -47,4 +50,11 @@ public class XueqiuController {
         return RequestResult.success(result);
     }
 
+    @SneakyThrows
+    @GetMapping(value = {"/{type}"})
+    public ModelAndView query(@PathVariable(value = "type", required = false)String type){
+        Set<String> codes = XueqiuService.getFollowStks(type);
+        ModelAndView model = new ModelAndView("forward:/s/"+ String.join(",", codes));
+        return model;
+    }
 }

@@ -1,34 +1,40 @@
 package com.stk123.controller;
 
+import com.alicp.jetcache.anno.CacheType;
+import com.alicp.jetcache.anno.Cached;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.entity.StkKlineEntity;
 import com.stk123.model.RequestResult;
 import com.stk123.model.core.BarSeries;
+import com.stk123.model.core.Cache;
+import com.stk123.model.core.Stock;
 import com.stk123.model.enumeration.EnumPeriod;
 import com.stk123.model.strategy.Strategy;
 import com.stk123.model.json.View;
 import com.stk123.service.core.BarService;
+import com.stk123.service.core.StockService;
 import com.stk123.util.ServiceUtils;
 import lombok.extern.apachecommons.CommonsLog;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.stream.Collectors;
 
-@Controller
+@RestController
 @RequestMapping("/k")
-@CommonsLog
+@Slf4j
 public class KController {
 
     @Autowired
     private BarService barService;
+    @Autowired
+    private StockService stockService;
 
     /**
      * @return 返回格式： RequestResult:{..., data:["600600":[], "000001":[]]}
@@ -71,5 +77,20 @@ public class KController {
         System.out.println("example:====="+example.getClass().getTypeParameters()[0].getClass());
         return RequestResult.success(results);
     }
+
+    @GetMapping("/trade/{code}")
+    @JsonView(View.All.class) //Infinite recursion (StackOverflowError); nested exception is com.fasterxml.jackson.databind.JsonMappingException: Infinite recursion (StackOverflowError)
+    public RequestResult trade(@PathVariable("code")String code){
+        String[] codes = StringUtils.split(code, ",");
+        List<Stock> stocks = stockService.getStocksCached(codes);
+        stockService.buildBarSeriesWithRealtimeBar(stocks);
+        Map result = stocks.stream().collect(Collectors.toMap(Stock::getCode, stock -> {
+            return new HashMap(){{
+                put("k", stock.getBar());
+            }};
+        } ));
+        return RequestResult.success(result);
+    }
+
 
 }

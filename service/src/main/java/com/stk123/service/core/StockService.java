@@ -1,5 +1,7 @@
 package com.stk123.service.core;
 
+import com.alicp.jetcache.anno.CacheType;
+import com.alicp.jetcache.anno.Cached;
 import com.stk123.common.CommonUtils;
 import com.stk123.common.util.BeanUtils;
 import com.stk123.common.util.ListUtils;
@@ -409,6 +411,10 @@ public class StockService {
         stocks = getStocksWithBks(stocks, Cache.getBks(), 60, false);
         Cache.putStocks(stocks);
         return stocks;
+    }
+    @Cached(name = "stocks", expire = 3600, cacheType = CacheType.LOCAL) //1小时
+    public List<Stock> getStocksCached(String... codes){
+        return getStocks(codes);
     }
     public Stock getBk(String code){
         List<Stock> bks = this.getBks(code);

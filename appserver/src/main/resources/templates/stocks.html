@@ -294,6 +294,12 @@
                                         <div class="trade-bar ml-1" v-html="row.weekBarImage"></div>
                                         <div class="trade-bar ml-1" v-html="row.monthBarImage"></div>
                                     </template>
+                                    <template v-slot:close="{row, rowNumber}">
+                                        <span v-text="row.k?row.k.c:''"></span>
+                                    </template>
+                                    <template v-slot:change="{row, rowNumber}">
+                                        <span v-text="row.k?row.k.p:''"></span>
+                                    </template>
                                 </datatable>
                             </div>
                         </div>
@@ -360,7 +366,7 @@
     const title = [[${title}]];
     const code = [[${code}]];
     const codeType = [[${codeType}]];
-    let navActive = window.location.href.indexOf('/xq')>=0?'xq':'stocks';
+    let navActive = window.location.href.indexOf('/xueqiu')>=0?'xq':'stocks';
 
     function parseStocks(_this, res){
         let data = res.data.data;
@@ -428,8 +434,8 @@
                         columns: [
                             {title:"股票", slot:"name-and-tags"},
                             {title:"K线", slot:"bar-images"},
-                            {title:"最新价", data:"code"},
-                            {title:"涨跌幅", data:"code"}],
+                            {title:"最新价", slot:"close"},
+                            {title:"涨跌幅", slot:"change"}],
                         columnDefs: [
                             { className: "text-center", "targets": [ 1,2,3 ] }
                         ],
@@ -464,9 +470,11 @@
             displayType: function (newVal, oldVal){
                 clearTimer();
                 if(newVal === 'trade'){
+                    let _this = this;
                     console.log('trade refresh...')
                     timer = setInterval(function () {
                         console.log('trade refresh...')
+                        _this.trading();
                     }, 5 * 1000);
                 }
             }
@@ -551,7 +559,18 @@
                 });
                 Pace.stop();
             },
-
+            trading:function (){
+                let _this = this;
+                axios.get("/k/trade/"+code).then(function (res) {
+                    let data = res.data.data;
+                    _this.stocks.forEach(stk => {
+                        let stock = stk.stock;
+                        if(data[stock.code]) {
+                            stock.k = data[stock.code].k;
+                        }
+                    })
+                });
+            }
         },
         computed: {
             bksTopN: function () {
@@ -597,16 +616,12 @@
 
             axios.get("/dict/detail/20").then(function(res){
                 _this.common.niusans = res.data.data;
-                console.log(_this.common.niusans)
             });
 
             axios.get("/"+codeType+"/" + code).then(function (res) {
                 parseStocks(_this, res);
                 _this.total = _this.stocks.length;
-                //console.log('mounted')
             });
-
-
 
         },
         created () {

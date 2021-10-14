@@ -4,7 +4,7 @@ function _dateFormat(value, pattern) { //var displayDate = _dateFormat('19700101
     return pattern.replace(/#/g, _ => date[i++]);
 }
 function dateFormat(value, pattern) {
-    if(pattern == undefined){
+    if(pattern === undefined){
         return _dateFormat(value, '####-##-##');
     }else {
         return _dateFormat(value, pattern);
@@ -56,7 +56,7 @@ Date.prototype.format = function (fmt) { //调用：var time1 = new Date().Forma
         fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
     for (var k in o){
         if (new RegExp("(" + k + ")").test(fmt)) {
-            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
         }
     }
     return fmt;
@@ -195,7 +195,7 @@ const store = Vuex.createStore({
             return state.count;
         },
         isInStockLookPool: (state) => (code) => {
-            return state.stockLookPool.find(s => s.code==code)
+            return state.stockLookPool.find(s => s.code===code)
         }
     },
 
@@ -387,8 +387,8 @@ function elem(tagName, attributes, children, isHTML) {
     if (typeof attributes != "undefined" && ["undefined", "boolean"].includes(typeof children) && typeof isHTML == "undefined") {
         let attrType = typeof attributes;
         if (["string", "number"].includes(attrType)
-            || (attrType == "object" && attributes instanceof Array)
-            || (attrType == "object" && attributes instanceof HTMLElement) ) {
+            || (attrType === "object" && attributes instanceof Array)
+            || (attrType === "object" && attributes instanceof HTMLElement) ) {
             isHTML = children;
             children = attributes;
             attributes = null;
@@ -491,12 +491,12 @@ $(function (){
 
     var isIpad = ( navigator.userAgent.match(/(iPad)/) /* iOS pre 13 */ || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
 
-    if(true){
-        /*var sc = document.getElementById("sc");
+    /*if(true){
+        var sc = document.getElementById("sc");
         if(screen.width <= 1024){ //获取屏幕的的宽度
             sc.setAttribute("href","/css/ipad.css"); //设置css引入样式表的路径
-        }*/
-    }
+        }
+    }*/
 
     $("img.lazyload").lazyload();
 
@@ -561,7 +561,6 @@ function toastify(opt){
 const jc = {
     confirm:function (opt) {
         let config = Object.assign({
-            title: '<small><i class="fal fa-exclamation-triangle"></i> 确认</small>',
             buttons: {
                 confirm: {
                     text: "确 定",
@@ -576,7 +575,7 @@ const jc = {
             backgroundDismiss: function(){
                 return true;
             }
-        }, opt)
+        }, opt, {title: null, content: '<div style="font-size: 16px;margin-top: 10px;"><i class="fal fa-exclamation-triangle"></i> '+opt.content+'</div>'})
         return $.confirm(config);
     }
 }

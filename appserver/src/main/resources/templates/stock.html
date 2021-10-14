@@ -833,10 +833,10 @@
                 _this.stock.newsList = {data: data}; //不能用_this.stock.news= {data:data}, 因为stock.news已经有值而且没有多加data：这一层，所有vue会报错
             });
 
-            /*axios.get("/stock/xqnotice/"+code).then(function (res) {
+            axios.get("/stock/xqnotice/"+code).then(function (res) {
                 let data = res.data.data;
                 _this.stock.xqnotice = {data: data};
-            });*/
+            });
 
             axios.get("/text/"+code+"/4/200").then(function (res) {
                 _this.stock.notices = res.data.data;
