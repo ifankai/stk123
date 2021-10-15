@@ -650,6 +650,7 @@ public class Stock {
                     }
                 }
             }else if(this.isMarketHK()){
+                //http://www.aastocks.com/sc/stocks/analysis/moneyflow.aspx?symbol=01801&type=h
                 String url = "http://www.aastocks.com/sc/stocks/analysis/moneyflow.aspx?symbol="+this.code+"&type=h";
                 String page = HttpUtils.get(url);
                 TableTag tab = (TableTag)HtmlUtils.getNodeByAttribute(page, null, "class", "ns2 mar15T");
