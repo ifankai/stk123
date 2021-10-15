@@ -997,6 +997,23 @@ public class CommonUtils {
         }
         return 0;
     }
+    private static final HashMap<String,Integer> AMOUNT_UNIT = new HashMap<String,Integer>(){{
+        put("十", 10);
+        put("百", 100);
+        put("千", 1000);
+        put("万", 10000);
+    }};
+    public static double parseAmount(String amount){
+        double m = 1;
+        String a = amount;
+        for(String key : AMOUNT_UNIT.keySet()){
+            if(StringUtils.contains(a, key)){
+                a = StringUtils.replace(a, key, "");
+                m = m * AMOUNT_UNIT.get(key);
+            }
+        }
+        return Double.parseDouble(a) * m;
+    }
 
     //PEG＝市盈率／未来3至5年年度净利润复合增长率
     //净利润复合增长率 = [(现有价值/基础价值)^(1/年数) - 1] x 100%

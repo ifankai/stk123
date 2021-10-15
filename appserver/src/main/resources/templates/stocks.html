@@ -298,7 +298,7 @@
                                         <span v-text="row.k?row.k.c:''"></span>
                                     </template>
                                     <template v-slot:change="{row, rowNumber}">
-                                        <span v-text="row.k?row.k.p:''"></span>
+                                        <span v-text="row.k?row.k.p.toFixed(2):''"></span>
                                     </template>
                                 </datatable>
                             </div>
@@ -413,7 +413,7 @@
                 selectedTabName: '日线',
                 //selectedTabIndex: 1,
                 seletedRpsName: 'RPS排序',
-                seletedStrategyName: '模型策略过滤',
+                seletedStrategyName: '策略过滤',
                 bkSelected: [],
                 niusanSelected: [],
                 common:{

@@ -253,6 +253,9 @@ public class CommonHttpUtils {
     public static String get(String url, String enc) throws Exception {
         return CommonHttpUtils.get(url, null, enc);
     }
+    public static String get(String url) throws Exception {
+        return CommonHttpUtils.get(url, null);
+    }
 
     public static String get(String url, Map<String, String> reqParams, Map<String, String> requestHeaders, String enc, int tryTimes) throws Exception {
         String exceptionMsg = null;
