@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 @CommonsLog
 @Service
@@ -26,11 +27,11 @@ import java.util.Map;
 @PropertySource("classpath:password.properties")
 public class SyncTask extends AbstractTask {
 
-    private String host = "81.68.255.181";
-    private int port = 22;
-    private String username = "root";
+    public static String host = "81.68.255.181";
+    public static int port = 22;
+    public static String username = "root";
     @Value("${server.password}")
-    private String password;
+    public static String password;
     private String localDir = "D:/share/workspace/stk123/oracle/";
     private String remoteDir = "/var/stk/oracle/";
 
@@ -135,9 +136,18 @@ public class SyncTask extends AbstractTask {
         return String.format(command, tableName, tableName);
     }
 
-
     public static void main(String[] args) {
-        SyncTask task = new SyncTask();
-        task.execute();
+        /*SyncTask task = new SyncTask();
+        task.execute();*/
+
+        Session session = null;
+        try {
+            session = JschUtil.getSession(host, port, username, "Kevin181302");
+            String cmd = "source /etc/profile;source ~/.bash_profile;source ~/.bashrc; " + " curl -A 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36 QIHU 360EE' http://www.aastocks.com/sc/stocks/analysis/moneyflow.aspx?symbol=01801\\&type=h";
+            String output = JschUtil.exec(session, cmd, Charset.forName("UTF-8"));
+            log.info(output);
+        }finally {
+            JschUtil.close(session);
+        }
     }
 }

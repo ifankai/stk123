@@ -35,7 +35,6 @@ import lombok.Data;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.htmlparser.Node;
 import org.htmlparser.tags.TableTag;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,9 +45,7 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.stk123.model.enumeration.EnumMarket.CN;
-import static com.stk123.model.enumeration.EnumMarket.HK;
-import static com.stk123.model.enumeration.EnumMarket.US;
+import static com.stk123.model.enumeration.EnumMarket.*;
 import static com.stk123.model.enumeration.EnumPlace.SH;
 import static com.stk123.model.enumeration.EnumPlace.SZ;
 
@@ -655,6 +652,7 @@ public class Stock {
                 String page = HttpUtils.get(url);
                 TableTag tab = (TableTag)HtmlUtils.getNodeByAttribute(page, null, "class", "ns2 mar15T");
                 List<List<String>> datas = HtmlUtils.getListFromTable(tab);
+                System.out.println(datas);
                 if(datas.size() > 2) {
                     for (int i = 2; i < datas.size(); i++) {
                         List<String> row = datas.get(i);

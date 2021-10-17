@@ -69,7 +69,7 @@ public class StkConstant {
     /** stk_text.type **/
     public final static int TEXT_TYPE_ADD_BY_MYSELF = 0; //收藏文章:0;
     public final static int TEXT_TYPE_MANUAL = 1;//短文:1; => 手动添加
-    public final static int TEXT_TYPE_AUTO = 2;//长文:2; => 系统自动  update stk_text set type=2 where type=1;  @TODO
+    public final static int TEXT_TYPE_AUTO = 2;//长文:2; => 系统自动  deleted
     public final static int TEXT_TYPE_XUEQIU = 3;  //雪球评论:3
     public final static int TEXT_TYPE_NOTICE = 4; //公告
     public final static int TEXT_TYPE_REPORT = 5; //研报

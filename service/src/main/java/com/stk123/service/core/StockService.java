@@ -6,6 +6,7 @@ import com.stk123.common.CommonUtils;
 import com.stk123.common.util.BeanUtils;
 import com.stk123.common.util.ListUtils;
 import com.stk123.common.util.PinYin4jUtils;
+import com.stk123.config.StkProperties;
 import com.stk123.entity.*;
 import com.stk123.model.core.*;
 import com.stk123.model.dto.SearchResult;
@@ -84,6 +85,8 @@ public class StockService {
     private StkKeywordLinkRepository stkKeywordLinkRepository;
     @Autowired
     private StkStatusRepository stkStatusRepository;
+    @Autowired
+    private StkProperties stkProperties;
 
 
     public List<Stock> buildStocks(EnumMarket market, EnumCate cate){
@@ -439,7 +442,7 @@ public class StockService {
     }
 
     public List<Stock> getStocksWithBks(List<Stock> stocks, List<Stock> bks, boolean isIncludeRealtimeBar){
-        return getStocksWithBks(stocks, bks, 500, isIncludeRealtimeBar);
+        return getStocksWithBks(stocks, bks, stkProperties.getBarRowsDefault(), isIncludeRealtimeBar);
     }
 
     public List<Stock> getStocksWithBksAndCalcBkRps(EnumMarket market, EnumCate bkCate, boolean isIncludeRealtimeBar){

@@ -89,6 +89,10 @@ public class StkReportDetailEntity {
     @JsonView(View.All.class)
     private Date checkedTime;
 
+    @Column(name = "OUTPUT_VOLUME_HIGHEST", length = 2000)
+    @JsonView(View.All.class)
+    private String outputVolumeHighest;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

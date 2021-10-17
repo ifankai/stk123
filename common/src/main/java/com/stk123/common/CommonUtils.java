@@ -1002,6 +1002,7 @@ public class CommonUtils {
         put("百", 100);
         put("千", 1000);
         put("万", 10000);
+        put("亿", 10000_0000);
     }};
     public static double parseAmount(String amount){
         double m = 1;

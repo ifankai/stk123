@@ -1,8 +1,11 @@
 package com.stk123.task.schedule;
 
+import cn.hutool.extra.ssh.JschUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jcraft.jsch.Session;
 import com.stk123.common.CommonUtils;
 import com.stk123.common.util.EmailUtils;
+import com.stk123.common.util.HtmlUtils;
 import com.stk123.common.util.ListUtils;
 import com.stk123.entity.*;
 import com.stk123.model.core.Bar;
@@ -34,12 +37,14 @@ import lombok.ToString;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.htmlparser.tags.TableTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -223,14 +228,50 @@ public class BarTask extends AbstractTask {
     public void updateHKCapitalFlow() {
         try{
             List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(EnumMarket.HK, EnumCate.STOCK);
-            for(final StockBasicProjection stk : list) {
-                try {
-                    Stock stock = Stock.build(stk);
-                    stock.updateCapitalFlow();
-                }catch(Exception e){
-                    log.error("updateHKCapitalFlow:"+stk.getCode(), e);
+            Session session = null;
+            try {
+                session = JschUtil.getSession(SyncTask.host, SyncTask.port, SyncTask.username, "Kevin181302");
+
+                for (final StockBasicProjection stk : list) {
+                    try{
+                        //Stock stock = Stock.build(stk);
+                        if (!session.isConnected()) {
+                            session = JschUtil.getSession(SyncTask.host, SyncTask.port, SyncTask.username, "Kevin181302");
+                        }
+                        log.info("updateCapitalFlow:" + stk.getCode());
+
+                        String cmd = "source /etc/profile;source ~/.bash_profile;source ~/.bashrc; " + " curl -A 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36 QIHU 360EE' http://www.aastocks.com/sc/stocks/analysis/moneyflow.aspx?symbol=" + stk.getCode() + "\\&type=h";
+                        String output = JschUtil.exec(session, cmd, Charset.forName("UTF-8"));
+                        //log.info(output);
+
+                        TableTag tab = (TableTag) HtmlUtils.getNodeByAttribute(output, null, "class", "ns2 mar15T");
+                        List<List<String>> datas = HtmlUtils.getListFromTable(tab);
+                        //System.out.println(datas);
+                        if (datas.size() > 2) {
+                            for (int i = 2; i < datas.size(); i++) {
+                                List<String> row = datas.get(i);
+                                String date = org.apache.commons.lang3.StringUtils.replace(row.get(0), "/", "");
+                                double mainAmount = CommonUtils.parseAmount(row.get(5));
+
+                                StkCapitalFlowEntity stkCapitalFlowEntity = stkCapitalFlowRepository.findByCodeAndFlowDate(stk.getCode(), date);
+                                if (stkCapitalFlowEntity == null) {
+                                    stkCapitalFlowEntity = new StkCapitalFlowEntity();
+                                    stkCapitalFlowEntity.setCode(stk.getCode());
+                                    stkCapitalFlowEntity.setFlowDate(date);
+                                    stkCapitalFlowEntity.setMainAmount(mainAmount);
+                                    stkCapitalFlowEntity.setInsertTime(new Date());
+                                    stkCapitalFlowRepository.save(stkCapitalFlowEntity);
+                                }
+                            }
+                        }
+                    }catch (Exception e){
+                        log.error("updateHKCapitalFlow error:"+stk.getCode(), e);
+                    }
                 }
+            }finally {
+                JschUtil.close(session);
             }
+
         }catch(Exception e){
             log.error("updateHKCapitalFlow error", e);
             EmailUtils.send("Initial HK Stock CapitalFlow Error", e);
@@ -822,8 +863,16 @@ public class BarTask extends AbstractTask {
                     List<String> codesIn30 = detailsIn30.stream().filter(detail -> detail.getStrategyCode().equals(rpsStrategy.getCode())).flatMap(detail -> Arrays.stream(StringUtils.split(detail.getRpsStockCode()==null?"":detail.getRpsStockCode(), ","))).distinct().collect(Collectors.toList());
                     String output2 = Arrays.stream(StringUtils.split(rpsStockCode, ",")).filter(code -> !codesIn30.contains(code)).distinct().collect(Collectors.joining(","));
 
+                    String outputVolumeHighest = null;
+                    if(results.size() > 0 && Strategies.STRATEGIES_ON_RPS_VOLUME_HIGHEST.get(rpsStrategy.getCode()) != null){
+                        StrategyBacktesting strategyBacktesting = backtestingService.backtestingOnStock(results, Collections.singletonList(Strategies.STRATEGIES_ON_RPS_VOLUME_HIGHEST.get(rpsStrategy.getCode())));
+                        List<StrategyResult> srResults = strategyBacktesting.getPassedStrategyResult();
+                        List<Stock> finalStocks = srResults.stream().map(StrategyResult::getStock).distinct().collect(Collectors.toList());
+                        outputVolumeHighest = finalStocks.stream().map(Stock::getCode).collect(Collectors.joining(","));
+                    }
+
                     StkReportDetailEntity stkReportDetailEntity = reportService.createReportDetailEntity(null, rpsStrategy.getCode(), report,
-                        null, null, null, null, rpsStockCode, null, output1, output2
+                        null, null, null, null, rpsStockCode, null, output1, output2, outputVolumeHighest
                     );
                     stkReportHeaderEntity.addDetail(stkReportDetailEntity);
                 }

@@ -29,6 +29,11 @@ public class Strategies {
 
     public static String STRATEGIES_ON_RPS = "01e,04d,04e,04f,06c";
 
+    //RPS 排序个股再筛选，选出量能历史最高的
+    public static HashMap<String, String> STRATEGIES_ON_RPS_VOLUME_HIGHEST = new HashMap<String, String>(){{
+        put("rps_09", "14a"); // 1天量能
+    }};
+
     public static String STRATEGIES_ON_BK_OUTSTANDING_STOCKS = "13a"; //板块精选个股策略
 
 
@@ -99,7 +104,9 @@ public class Strategies {
     }
 
     public static Strategy strategy_0(){
-        return new Strategy<>("0","Empty Strategy", Stock.class);
+        Strategy strategy = new Strategy<>("0","Empty Strategy", Stock.class);
+        strategy.setIgnore(true);
+        return strategy;
     }
 
     /**** 阳线放量 阴线缩量 *****/
@@ -505,6 +512,29 @@ public class Strategies {
         };
         strategy.addFilter("即将创新高", filter);
         return strategy;
+    }
+
+    /**
+     * m 天内 days的量能之和达到最高
+     */
+    public static Strategy strategy_14(String code, String name, int days, int m){
+        Strategy<Stock> strategy = new Strategy<>(code, name, Stock.class);
+        Filter<Stock> filter = (strg, stock) -> {
+            Bar bar = stock.getBar();
+            Bar highBar = bar.getHighestBar(m, k -> k.getSUM(days, Bar.EnumValue.V));
+            if (highBar.getDate().equals(bar.getDate())){
+                return FilterResult.TRUE();
+            }
+            return FilterResult.FALSE(highBar.getDate());
+        };
+        strategy.addFilter("量能历史最高", filter);
+        return strategy;
+    }
+    public static Strategy strategy_14a(){
+        return strategy_14("strategy_14a", "1天量能历史最高", 1, 500);
+    }
+    public static Strategy strategy_14b(){
+        return strategy_14("strategy_14b", "2天量能历史最高", 2, 500);
     }
 
     /**************** Rps *********************/
