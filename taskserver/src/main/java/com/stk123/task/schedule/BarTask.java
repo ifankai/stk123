@@ -129,6 +129,7 @@ public class BarTask extends AbstractTask {
         this.runByName("analyseAllHKRps", this::analyseAllHKRps);
         this.runByName("analyseAllUSRps", this::analyseAllUSRps);
         this.runByName("analyseCNRpsStocksByStrategies", this::analyseCNRpsStocksByStrategies);
+        this.runByName("analyseCNRpsStocksByStrategy15a", this::analyseCNRpsStocksByStrategy15a);
         this.runByName("analyseBks", this::analyseBks);
         this.runByName("stat", this::statAllStocks);
         this.runByName("clearAll", this::clearAll);
@@ -864,8 +865,8 @@ public class BarTask extends AbstractTask {
                     String output2 = Arrays.stream(StringUtils.split(rpsStockCode, ",")).filter(code -> !codesIn30.contains(code)).distinct().collect(Collectors.joining(","));
 
                     String outputVolumeHighest = null;
-                    if(results.size() > 0 && Strategies.STRATEGIES_ON_RPS_VOLUME_HIGHEST.get(rpsStrategy.getCode()) != null){
-                        StrategyBacktesting strategyBacktesting = backtestingService.backtestingOnStock(results, Collections.singletonList(Strategies.STRATEGIES_ON_RPS_VOLUME_HIGHEST.get(rpsStrategy.getCode())));
+                    if(results.size() > 0 && Strategies.STRATEGIES_ON_RPS_14A.get(rpsStrategy.getCode()) != null){
+                        StrategyBacktesting strategyBacktesting = backtestingService.backtestingOnStock(results, Collections.singletonList(Strategies.STRATEGIES_ON_RPS_14A.get(rpsStrategy.getCode())));
                         List<StrategyResult> srResults = strategyBacktesting.getPassedStrategyResult();
                         List<Stock> finalStocks = srResults.stream().map(StrategyResult::getStock).distinct().collect(Collectors.toList());
                         outputVolumeHighest = finalStocks.stream().map(Stock::getCode).collect(Collectors.joining(","));
@@ -1191,6 +1192,103 @@ public class BarTask extends AbstractTask {
             log.error("analyseCNRpsStocksByStrategies", e);
         }
         log.info("end analyseCNRpsStocksByStrategies");
+    }
+
+    //k线云梯
+    public void analyseCNRpsStocksByStrategy15a(){
+        log.info("start analyseCNRpsStocksByStrategy15a");
+        String title = "RPS股票(A股)策略-K线云梯(15a)";
+        try{
+            StkReportHeaderEntity stkReportHeaderEntity = null;
+            String reportDateStart = CommonUtils.addDay2String(new Date(), -12);
+            String reportDateEnd = CommonUtils.addDay2String(new Date(), -5);
+
+            List<StkReportHeaderEntity> headers = stkReportHeaderRepository.findAllByTypeAndReportDateBetweenOrderByInsertTimeDesc(StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS, reportDateStart, reportDateEnd);
+            List<StkReportDetailEntity> details = headers.stream().flatMap(header -> header.getStkReportDetailEntities().stream().filter(detail -> StringUtils.contains(Strategies.STRATEGIES_ON_RPS_15A, detail.getStrategyCode()) )).collect(Collectors.toList());
+            List<String> codes = details.stream().flatMap(detail -> Arrays.stream(detail.getRpsStockCode().split(","))).distinct().collect(Collectors.toList());
+            List<Stock> stocks = stockService.getStocks(codes);
+
+            String strategies = "15a";
+            if(StringUtils.isNotEmpty(strategy)){
+                strategies = strategy;
+            }
+
+            StrategyBacktesting strategyBacktesting = new StrategyBacktesting();
+            backtestingService.backtestingOnStock(strategyBacktesting, stocks, Arrays.asList(StringUtils.split(strategies, ",")),
+                    startDate, endDate, realtime!=null);
+
+            List<StrategyResult> results = strategyBacktesting.getPassedStrategyResult();
+            if(results.size() > 0) {
+                List<List<String>> datasA = new ArrayList<>();
+                Set<String> codeA = new LinkedHashSet<>();
+
+                if(StringUtils.isNotEmpty(report)){
+                    String type = StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS_15A;
+                    stkReportHeaderEntity = reportService.createReportHeaderEntity(report, type, realtime!=null?1:0, title);
+                }
+
+                String rowCode = null;
+                for (StrategyResult strategyResult : results) {
+                    Stock stock = strategyResult.getStock();
+
+                    boolean displayCode = true;
+                    if(stock.getCode().equals(rowCode)){
+                        displayCode = false;
+                    }else{
+                        rowCode = stock.getCode();
+                    }
+
+                    Stock.BkInfoList bkInfoList = stock.getBkInfos(15, Rps.CODE_BK_60, Rps.CODE_BK_STOCKS_SCORE_30);
+                    List<String> data = ListUtils.createList(
+                            displayCode ? stock.getNameAndCodeWithLinkAndBold() + bkInfoList.toHtml() : "",
+                            strategyResult.getDate()+"<br/>"
+                                    + strategyResult.getStrategy().getName().replaceAll("，", "<br/>")
+                                    + "<br/>-----------<br/>" + StringUtils.join(strategyResult.getResults(),"<br/>"),
+                            displayCode?stock.getDayBarImage():"",displayCode?stock.getWeekBarImage():"",
+                            //backtesting.getStrategies().get(0).getPassRateString().replaceAll("]", "]<br/>") +
+                            //        (StringUtils.isNotEmpty(backtesting.getStrategies().get(0).getPassedFilterResultLog()) ? "<br/>"+backtesting.getStrategies().get(0).getPassedFilterResultLog() : "")
+                            ""
+                    );
+
+                    datasA.add(data);
+                    codeA.add(stock.getCode());
+
+                    if(stkReportHeaderEntity != null){
+                        StkReportDetailEntity stkReportDetailEntity = reportService.createReportDetailEntity(stock.getCode(),strategyResult.getStrategy().getCode(), strategyResult.getDate(),
+                                StringUtils.join(strategyResult.getResults(),"<br/>"),
+                                StringUtils.join(bkInfoList.getBkInfos().stream().map(bkInfo -> bkInfo.getBkSr().getStrategy().getCode()).collect(Collectors.toList()), ";"),
+                                StringUtils.join(bkInfoList.getBkInfos().stream().map(bkInfo -> CommonUtils.numberFormat2Digits(bkInfo.getBkSr().getPercentile())).collect(Collectors.toList()), ";"),
+                                StringUtils.join(bkInfoList.getBkInfos().stream().map(bkInfo -> bkInfo.getBkSr().getStock().getCode()).collect(Collectors.toList()), ";"),
+                                StringUtils.join(bkInfoList.getBkInfos().stream().map(bkInfo -> bkInfo.getStockInfoList().getCodes()).collect(Collectors.toList()), ";"),
+                                "", null, null
+                        );
+                        stkReportHeaderEntity.addDetail(stkReportDetailEntity);
+                    }
+
+                }
+
+                // report save
+                if(stkReportHeaderEntity != null){
+                    reportService.save(stkReportHeaderEntity);
+                }
+
+                StringBuffer sb = new StringBuffer();
+                sb.append(CommonUtils.k("查看", title, codeA)).append("<br/><br/>");
+
+                sb.append("A股");
+                List<String> titles = ListUtils.createList("标的", "日期/策略", "日K线", "周K线", "");
+                sb.append(CommonUtils.createHtmlTable(titles, datasA));sb.append("<br/>");
+
+                EmailUtils.send((realtime!=null?"[**实时**]":"")+title+" " + (datasA.stream().filter(data -> StringUtils.isNotEmpty(data.get(0))).count()) + "个", sb.toString());
+            }else{
+                EmailUtils.send((realtime!=null?"[**实时**]":"")+title+" 0个标的", "");
+            }
+
+        } catch (Exception e) {
+            EmailUtils.send("报错[analyseCNRpsStocksByStrategy15a]", ExceptionUtils.getExceptionAsString(e));
+            log.error("analyseCNRpsStocksByStrategy15a", e);
+        }
+        log.info("end analyseCNRpsStocksByStrategy15a");
     }
 
     public void analyseBks(){

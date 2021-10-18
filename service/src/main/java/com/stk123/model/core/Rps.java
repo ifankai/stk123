@@ -25,6 +25,7 @@ public class Rps{
     public final static String CODE_STOCK_SCORE_JSM_LOW = "rps_03c";
     public final static String CODE_STOCK_MONTH_3_VOLUME = "rps_04";
     public final static String CODE_STOCK_MONTH_1_VOLUME = "rps_05";
+    public final static String CODE_STOCK_MONTH_2_VOLUME = "rps_15";
     public final static String CODE_STOCK_WEEK_1_VOLUME_A = "rps_06a";
     public final static String CODE_STOCK_WEEK_1_VOLUME_B = "rps_06b";
     public final static String CODE_STOCK_WEEK_2_VOLUME = "rps_07";

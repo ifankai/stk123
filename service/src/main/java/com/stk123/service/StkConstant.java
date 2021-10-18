@@ -123,6 +123,7 @@ public class StkConstant {
     public final static String REPORT_HEADER_TYPE_ALLSTOCKS_RPS = "allstocks_rps";
     public final static String REPORT_HEADER_TYPE_ALLSTOCKS_RPS_HK = "allstocks_rps_hk";
     public final static String REPORT_HEADER_TYPE_ALLSTOCKS_RPS_US = "allstocks_rps_us";
+    public final static String REPORT_HEADER_TYPE_ALLSTOCKS_RPS_15A = "allstocks_rps_15a";
 
     /** stk_keyword_link.link_type **/
     public final static int KEYWORD_LINK_TYPE_DEFAULT = 0; //default(manually add):0

@@ -109,7 +109,7 @@ public class Tasks {
             TaskBuilder.of(BarTask.class, "AllCNRps", "report="+reportDate),
             TaskBuilder.of(BarTask.class, "AllHKRps", "report="+reportDate),
             TaskBuilder.of(BarTask.class, "Bks", "report="+reportDate),
-            TaskBuilder.of(BarTask.class, "RpsStocks", "report="+reportDate),
+            TaskBuilder.of(BarTask.class, "analyseCNRpsStocksByStrategies", "report="+reportDate),
             TaskBuilder.of(BarTask.class, "Mass", "report="+reportDate),
             TaskBuilder.of(BarTask.class, "stat", "report="+reportDate)
             //TaskBuilder.of(BarTask.class, "clearAll"),

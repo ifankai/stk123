@@ -30,9 +30,19 @@ public class Strategies {
     public static String STRATEGIES_ON_RPS = "01e,04d,04e,04f,06c";
 
     //RPS 排序个股再筛选，选出量能历史最高的
-    public static HashMap<String, String> STRATEGIES_ON_RPS_VOLUME_HIGHEST = new HashMap<String, String>(){{
-        put("rps_09", "14a"); // 1天量能
+    public static HashMap<String, String> STRATEGIES_ON_RPS_14A = new HashMap<String, String>(){{
+        put(Rps.CODE_STOCK_DAY_1_VOLUME, "14a"); // 1天量能
+        put(Rps.CODE_STOCK_DAY_2_VOLUME, "14b"); // 2天量能
+        put(Rps.CODE_STOCK_DAY_3_VOLUME, "14c"); // 3天量能
+        put(Rps.CODE_STOCK_WEEK_1_VOLUME_A, "14d"); // 5天量能
+        put(Rps.CODE_STOCK_WEEK_2_VOLUME, "14e"); // 10天量能
+        put(Rps.CODE_STOCK_WEEK_3_VOLUME, "14f"); // 15天量能
+        put(Rps.CODE_STOCK_MONTH_1_VOLUME, "14g"); // 20天量能
+        put(Rps.CODE_STOCK_MONTH_2_VOLUME, "14h"); // 40天量能
     }};
+
+    //k线云梯
+    public static String STRATEGIES_ON_RPS_15A = "rps_09,rps_10,rps_11,rps_06a";
 
     public static String STRATEGIES_ON_BK_OUTSTANDING_STOCKS = "13a"; //板块精选个股策略
 
@@ -536,6 +546,48 @@ public class Strategies {
     public static Strategy strategy_14b(){
         return strategy_14("strategy_14b", "2天量能历史最高", 2, 500);
     }
+    public static Strategy strategy_14c(){
+        return strategy_14("strategy_14c", "3天量能历史最高", 3, 500);
+    }
+    public static Strategy strategy_14d(){
+        return strategy_14("strategy_14d", "5天量能历史最高", 5, 500);
+    }
+    public static Strategy strategy_14e(){
+        return strategy_14("strategy_14e", "10天量能历史最高", 10, 500);
+    }
+    public static Strategy strategy_14f(){
+        return strategy_14("strategy_14f", "15天量能历史最高", 15, 500);
+    }
+    public static Strategy strategy_14g(){
+        return strategy_14("strategy_14g", "20天量能历史最高", 20, 500);
+    }
+    public static Strategy strategy_14h(){
+        return strategy_14("strategy_14h", "40天量能历史最高", 40, 500);
+    }
+
+
+    /**
+     * K线云梯
+     */
+    public static Strategy strategy_15a(){
+        Strategy<Stock> strategy = new Strategy<>("strategy_15a", "K线云梯", Stock.class);
+        Filter<Stock> filter = (strg, stock) -> {
+            Bar bar = stock.getBar();
+            Bar bar5 = bar.before(5);
+            if (bar5.getClose() > bar.getClose()){
+                return FilterResult.FALSE();
+            }else if(bar.getClose()/bar5.getClose() > 1.15){
+                return FilterResult.FALSE();
+            }
+            Bar barHighest = bar5.getHighestBar(10, Bar.EnumValue.C);
+            if(bar.getClose() <= barHighest.getClose()){
+                return FilterResult.FALSE();
+            }
+            return FilterResult.TRUE();
+        };
+        strategy.addFilter("K线云梯", filter);
+        return strategy;
+    }
 
     /**************** Rps *********************/
 
@@ -897,6 +949,25 @@ public class Strategies {
             Fn fn = stock.getFn();
             Integer type = strgy.getFirstArgAsInteger();
             return FilterResult.Sortable(CommonUtils.numberFormat(fn.getValueByType(type), 2));
+        }, false);
+        return strategy;
+    }
+
+    public static Strategy rps_15() {
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_MONTH_1_VOLUME,"40天(2月)放量", Stock.class);
+        //strategy.setAsc(false);
+        strategy.addFilter("2个月放量", (strgy, stock) -> {
+            if(stock.getBarSeries().size() < 60){
+                return FilterResult.FALSE();
+            }
+            Bar bar = stock.getBar();
+            double sum = bar.getSUM(40, Bar.EnumValue.V);
+            double minSum = bar.before(40).getSUM(40, Bar.EnumValue.V);
+            double rpsValue = sum/minSum;
+            if(rpsValue < 1.5){
+                return FilterResult.FALSE();
+            }
+            return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
         }, false);
         return strategy;
     }

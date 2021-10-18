@@ -134,7 +134,7 @@ public class StockController {
         String[] stks = StringUtils.split(code, ",");
         //List<Stock> stocks = stockService.buildStocks(stks);
         //stocks = stockService.getStocksWithBks(stocks, Stocks.getBks(), 60, false);
-        List<Stock> stocks = stockService.getStocks(Arrays.asList(stks).stream().distinct().collect(Collectors.toList()));
+        List<Stock> stocks = stockService.getStocks(Arrays.stream(stks).distinct().filter(StringUtils::isNotEmpty).collect(Collectors.toList()));
 
         Map result = null;
         if(StringUtils.isNotEmpty(rpsCode)) {

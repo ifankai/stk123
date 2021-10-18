@@ -466,6 +466,26 @@
 
     const config = {
         data() {
+            let allStocksRps = {
+                    columns: [
+                        {title:"策略", data:"strategyName"},
+                        {title:"日期", data:"strategyDate"},
+                        {title:"操作", data:"action"},
+                        {title:"操作", data:"action7"},
+                        {title:"操作", data:"action30"},
+                        {title:"操作", data:"volume"},
+                        {title:"已读", slot:"checked"}
+                    ],
+                    paging:   false,
+                    info: false,
+                    searching : false,
+                    columnDefs: [
+                        { className: "text-center", "targets": [ 1,2,3,4,5 ] }
+                    ],
+                    tableClass:{'table-hover':true},
+                    selected:true
+                };
+
             return {
                 navActive:'report',
                 loading: true,
@@ -502,57 +522,9 @@
                         ],
                         pageLength: 50
                     },
-                    allStocksRpsA:{
-                        columns: [
-                            {title:"策略", data:"strategyName"},
-                            {title:"日期", data:"strategyDate"},
-                            {title:"操作", data:"action"},
-                            {title:"操作", data:"action7"},
-                            {title:"操作", data:"action30"},
-                            {title:"已读", slot:"checked"}
-                        ],
-                        paging:   false,
-                        info: false,
-                        searching : false,
-                        columnDefs: [
-                            { className: "text-center", "targets": [ 1,2,3,4,5 ] }
-                        ],
-                        tableClass:{'table-hover':true}
-                    },
-                    allStocksRpsH:{
-                        columns: [
-                            {title:"策略", data:"strategyName"},
-                            {title:"日期", data:"strategyDate"},
-                            {title:"操作", data:"action"},
-                            {title:"操作", data:"action7"},
-                            {title:"操作", data:"action30"},
-                            {title:"已读", slot:"checked"}
-                        ],
-                        paging:   false,
-                        info: false,
-                        searching : false,
-                        columnDefs: [
-                            { className: "text-center", "targets": [ 1,2,3,4,5 ] }
-                        ],
-                        tableClass:{'table-hover':true}
-                    },
-                    allStocksRpsU:{
-                        columns: [
-                            {title:"策略", data:"strategyName"},
-                            {title:"日期", data:"strategyDate"},
-                            {title:"操作", data:"action"},
-                            {title:"操作", data:"action7"},
-                            {title:"操作", data:"action30"},
-                            {title:"已读", slot:"checked"}
-                        ],
-                        paging:   false,
-                        info: false,
-                        searching : false,
-                        columnDefs: [
-                            { className: "text-center", "targets": [ 1,2,3,4,5 ] }
-                        ],
-                        tableClass:{'table-hover':true}
-                    }
+                    allStocksRpsA:_.cloneDeep(allStocksRps),
+                    allStocksRpsH:_.cloneDeep(allStocksRps),
+                    allStocksRpsU:_.cloneDeep(allStocksRps)
                 },
                 hotBks:[],
                 hotBksNew:[],
@@ -675,7 +647,7 @@
 
                 _this.currentAllStocks = {data: data.currentAllStocks};
                 //_this.currentAllStocksChecked = data.currentAllStocksChecked;
-                _this.currentAllStocks.data = convertStocks(_this.currentAllStocks.data);
+                //_this.currentAllStocks.data = convertStocks(_this.currentAllStocks.data);
                 _this.currentTabSize = _this.currentAllStocks.data.length;
                 _this.currentTabStocks = _this.currentAllStocks.data.map(d => d.code).join(',');
 
@@ -716,19 +688,23 @@
         let allCodes = '';
         let allCodes7 = '';
         let allCodes30 = '';
+        let volume = '';
         currentAllStocksRps.data.forEach(item => {
             item.strategyDate = dateFormat(item.strategyDate);
             item.action = elem('a', {href:'/s/'+item.rpsStockCode+'?title='+item.strategyName+' - 全部', target:'_blank'}, '查看全部 ('+item.rpsStockCode.split(',').length+")").outerHTML;
-            item.action7 = elem('a', {href:'/s/'+item.output1+'?title='+item.strategyName+' - 7天内新增加的股票', target:'_blank'}, '7天内新增加的股票 ('+(item.output1==null?"0":item.output1.split(',').length)+")").outerHTML;
-            item.action30 = elem('a', {href:'/s/'+item.output2+'?title='+item.strategyName+' - 30天内新增加的股票', target:'_blank'}, '30天内新增加的股票 ('+(item.output2==null?"0":item.output2.split(',').length)+")").outerHTML;
+            item.action7 = elem('a', {href:'/s/'+item.output1+'?title='+item.strategyName+' - 7天内新增', target:'_blank'}, '7天内新增 ('+(item.output1==null?"0":item.output1.split(',').length)+")").outerHTML;
+            item.action30 = elem('a', {href:'/s/'+item.output2+'?title='+item.strategyName+' - 30天内新增', target:'_blank'}, '30天内新增 ('+(item.output2==null?"0":item.output2.split(',').length)+")").outerHTML;
+            item.volume = elem('a', {href:'/s/'+item.outputVolumeHighest+'?title='+item.strategyName+' - 量能500日新高', target:'_blank'}, '量能500日新高 ('+(item.outputVolumeHighest==null?"0":item.outputVolumeHighest.split(',').length)+")").outerHTML;
 
             allCodes = allCodes+item.rpsStockCode+','
             allCodes7 = allCodes7+item.output1+','
             allCodes30 = allCodes30+item.output2+','
+            volume = volume+item.outputVolumeHighest+','
         })
-        allStockRps.columns[2].title = allStockRps.columns[2].title + ' <a title="查看全部个股" target="_blank" href="/s/'+allCodes+'"><i class="fas fa-th"></i></a>'
-        allStockRps.columns[3].title = allStockRps.columns[3].title + ' <a title="查看7天内新增加的全部个股" target="_blank" href="/s/'+allCodes7+'"><i class="fas fa-th"></i></a>'
-        allStockRps.columns[4].title = allStockRps.columns[4].title + ' <a title="查看30天内新增加的全部个股" target="_blank" href="/s/'+allCodes30+'"><i class="fas fa-th"></i></a>'
+        allStockRps.columns.find(item => item.data==='action').title += ' <a title="查看全部个股" target="_blank" href="/s/'+allCodes+'"><i class="fas fa-th"></i></a>'
+        allStockRps.columns.find(item => item.data==='action7').title += ' <a title="查看7天内新增加的全部个股" target="_blank" href="/s/'+allCodes7+'"><i class="fas fa-th"></i></a>'
+        allStockRps.columns.find(item => item.data==='action30').title += ' <a title="查看30天内新增加的全部个股" target="_blank" href="/s/'+allCodes30+'"><i class="fas fa-th"></i></a>'
+        allStockRps.columns.find(item => item.data==='volume').title += ' <a title="查看量能500日新高的全部个股" target="_blank" href="/s/'+volume+'"><i class="fas fa-th"></i></a>'
     }
 
     function convertStocks(data){
