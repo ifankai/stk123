@@ -864,16 +864,27 @@ public class BarTask extends AbstractTask {
                     List<String> codesIn30 = detailsIn30.stream().filter(detail -> detail.getStrategyCode().equals(rpsStrategy.getCode())).flatMap(detail -> Arrays.stream(StringUtils.split(detail.getRpsStockCode()==null?"":detail.getRpsStockCode(), ","))).distinct().collect(Collectors.toList());
                     String output2 = Arrays.stream(StringUtils.split(rpsStockCode, ",")).filter(code -> !codesIn30.contains(code)).distinct().collect(Collectors.joining(","));
 
+                    //量能创历史新高
                     String outputVolumeHighest = null;
-                    if(results.size() > 0 && Strategies.STRATEGIES_ON_RPS_14A.get(rpsStrategy.getCode()) != null){
-                        StrategyBacktesting strategyBacktesting = backtestingService.backtestingOnStock(results, Collections.singletonList(Strategies.STRATEGIES_ON_RPS_14A.get(rpsStrategy.getCode())));
+                    if(results.size() > 0 && Strategies.STRATEGIES_ON_RPS_14.get(rpsStrategy.getCode()) != null){
+                        StrategyBacktesting strategyBacktesting = backtestingService.backtestingOnStock(results, Collections.singletonList(Strategies.STRATEGIES_ON_RPS_14.get(rpsStrategy.getCode())));
                         List<StrategyResult> srResults = strategyBacktesting.getPassedStrategyResult();
                         List<Stock> finalStocks = srResults.stream().map(StrategyResult::getStock).distinct().collect(Collectors.toList());
                         outputVolumeHighest = finalStocks.stream().map(Stock::getCode).collect(Collectors.joining(","));
                     }
 
+                    //从高点调整很久（大于24周/120天）
+                    String outputDownLongtime = null;
+                    if(results.size() > 0){
+                        StrategyBacktesting strategyBacktesting = backtestingService.backtestingOnStock(results, Collections.singletonList(Strategies.STRATEGIES_ON_RPS_16));
+                        List<StrategyResult> srResults = strategyBacktesting.getPassedStrategyResult();
+                        List<Stock> finalStocks = srResults.stream().map(StrategyResult::getStock).distinct().collect(Collectors.toList());
+                        outputDownLongtime = finalStocks.stream().map(Stock::getCode).collect(Collectors.joining(","));
+                    }
+
                     StkReportDetailEntity stkReportDetailEntity = reportService.createReportDetailEntity(null, rpsStrategy.getCode(), report,
-                        null, null, null, null, rpsStockCode, null, output1, output2, outputVolumeHighest
+                        null, null, null, null, rpsStockCode, null,
+                            output1, output2, outputVolumeHighest, outputDownLongtime
                     );
                     stkReportHeaderEntity.addDetail(stkReportDetailEntity);
                 }

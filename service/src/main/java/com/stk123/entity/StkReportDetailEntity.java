@@ -93,6 +93,11 @@ public class StkReportDetailEntity {
     @JsonView(View.All.class)
     private String outputVolumeHighest;
 
+    @Column(name = "OUTPUT_DOWN_LONGTIME", length = 2000)
+    @JsonView(View.All.class)
+    private String outputDownLongtime;
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

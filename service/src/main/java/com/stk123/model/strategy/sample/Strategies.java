@@ -30,7 +30,7 @@ public class Strategies {
     public static String STRATEGIES_ON_RPS = "01e,04d,04e,04f,06c";
 
     //RPS 排序个股再筛选，选出量能历史最高的
-    public static HashMap<String, String> STRATEGIES_ON_RPS_14A = new HashMap<String, String>(){{
+    public static HashMap<String, String> STRATEGIES_ON_RPS_14 = new HashMap<String, String>(){{
         put(Rps.CODE_STOCK_DAY_1_VOLUME, "14a"); // 1天量能
         put(Rps.CODE_STOCK_DAY_2_VOLUME, "14b"); // 2天量能
         put(Rps.CODE_STOCK_DAY_3_VOLUME, "14c"); // 3天量能
@@ -40,6 +40,9 @@ public class Strategies {
         put(Rps.CODE_STOCK_MONTH_1_VOLUME, "14g"); // 20天量能
         put(Rps.CODE_STOCK_MONTH_2_VOLUME, "14h"); // 40天量能
     }};
+
+    //RPS 排序个股再筛选，选出量能历史最高的
+    public static String STRATEGIES_ON_RPS_16 = "16";
 
     //k线云梯
     public static String STRATEGIES_ON_RPS_15A = "rps_09,rps_10,rps_11,rps_06a";
@@ -586,6 +589,22 @@ public class Strategies {
             return FilterResult.TRUE();
         };
         strategy.addFilter("K线云梯", filter);
+        return strategy;
+    }
+
+    //从高点调整很久（大于24周/120天）
+    public static Strategy strategy_16(){
+        Strategy<Stock> strategy = new Strategy<>("strategy_16", "高点调整120天", Stock.class);
+        Filter<Stock> filter = (strg, stock) -> {
+            Bar bar = stock.getBar();
+            Bar barHighest = bar.getHighestBar(500, Bar.EnumValue.H);
+            int n = bar.getDaysBetween(bar.getDate(), barHighest.getDate());
+            if(n < 120){
+                return FilterResult.FALSE(barHighest.getDate());
+            }
+            return FilterResult.TRUE();
+        };
+        strategy.addFilter("高点调整120天", filter);
         return strategy;
     }
 

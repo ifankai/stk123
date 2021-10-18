@@ -367,6 +367,14 @@
                                             </div>
                                         </a>
 
+                                        <a @click="clickTab(currentAllStocksRps15A.data)" class="nav-item nav-link" id="report-allstocksrps15a-tab" data-toggle="tab" href="#report-allstocksrps15a" role="tab" aria-controls="report-allstocksrps15a" aria-selected="false">
+                                            K线云梯 (<span v-text="currentAllStocksRps15A.data.length"></span>)
+                                            <div @click.stop v-if="currentAllStocksRps15AChecked.type" class="custom-control custom-checkbox ml-3" style="float: right">
+                                                <input v-model="currentAllStocksRps15AChk" class="custom-control-input" type="checkbox" id="currentAllStocksRps15AChk">
+                                                <label for="currentAllStocksRps15AChk" class="custom-control-label"></label>
+                                            </div>
+                                        </a>
+
                                         <span class="btn-tab">
                                             <button v-show="currentTabSize!=0" @click="gotoStocks()" type="button" class="btn btn-outline-primary btn-xs" style="margin-bottom: -11px;"><i class="fas fa-th"></i> <span v-text="'查看全部'+currentTabSize+'只个股'"></span></button>
                                         </span>
@@ -419,6 +427,9 @@
                                     </div>
                                     <div class="tab-pane fade" id="report-mystocks-u" role="tabpanel" aria-labelledby="report-mystocks-u-tab">
                                         <datatable :="{...common.allStocks, ...currentMyStocksU}"></datatable>
+                                    </div>
+                                    <div class="tab-pane fade" id="report-allstocksrps15a" role="tabpanel" aria-labelledby="report-allstocksrps15a-tab">
+                                        <datatable :="{...common.allStocks, ...currentAllStocksRps15A}"></datatable>
                                     </div>
                                 </div>
 
@@ -474,6 +485,7 @@
                         {title:"操作", data:"action7"},
                         {title:"操作", data:"action30"},
                         {title:"操作", data:"volume"},
+                        {title:"操作", data:"longtime"},
                         {title:"已读", slot:"checked"}
                     ],
                     paging:   false,
@@ -536,7 +548,9 @@
                 currentAllStocksRpsH:{data:[]},
                 currentAllStocksRpsU:{data:[]},
 
-                currentAllStocksChecked:{},currentAllStocksRpsStrategyChecked:{},currentMyStocksAChecked:{}
+                currentAllStocksRps15A:{data:[]},
+
+                currentAllStocksChecked:{},currentAllStocksRpsStrategyChecked:{},currentMyStocksAChecked:{},currentAllStocksRps15AChecked:{}
             }
         },
         methods:{
@@ -614,6 +628,10 @@
                 get: function (){return this.getChecked(this.currentAllStocksRpsStrategyChecked)},
                 set: function (value) {this.setHeaderChecked(this.currentAllStocksRpsStrategyChecked, value)}
             },
+            currentAllStocksRps15AChk:{
+                get: function (){return this.getChecked(this.currentAllStocksRps15AChecked)},
+                set: function (value) {this.setHeaderChecked(this.currentAllStocksRps15AChecked, value)}
+            },
             currentMyStocksAChk:{
                 get: function (){return this.getChecked(this.currentMyStocksAChecked)},
                 set: function (value) {this.setHeaderChecked(this.currentMyStocksAChecked, value)}
@@ -663,6 +681,8 @@
                 _this.currentAllStocksRpsU = {data: data.currentAllStocksRpsU};
                 parseCurrentAllStocksRps(_this, _this.currentAllStocksRpsU, _this.common.allStocksRpsU);
 
+                _this.currentAllStocksRps15A = {data: data.currentAllStocksRps15A}; //K线云梯
+
                 console.log('mounted', _this.$data)
 
                 _this.$nextTick(function() {
@@ -689,22 +709,26 @@
         let allCodes7 = '';
         let allCodes30 = '';
         let volume = '';
+        let longtime = '';
         currentAllStocksRps.data.forEach(item => {
             item.strategyDate = dateFormat(item.strategyDate);
             item.action = elem('a', {href:'/s/'+item.rpsStockCode+'?title='+item.strategyName+' - 全部', target:'_blank'}, '查看全部 ('+item.rpsStockCode.split(',').length+")").outerHTML;
             item.action7 = elem('a', {href:'/s/'+item.output1+'?title='+item.strategyName+' - 7天内新增', target:'_blank'}, '7天内新增 ('+(item.output1==null?"0":item.output1.split(',').length)+")").outerHTML;
             item.action30 = elem('a', {href:'/s/'+item.output2+'?title='+item.strategyName+' - 30天内新增', target:'_blank'}, '30天内新增 ('+(item.output2==null?"0":item.output2.split(',').length)+")").outerHTML;
             item.volume = elem('a', {href:'/s/'+item.outputVolumeHighest+'?title='+item.strategyName+' - 量能500日新高', target:'_blank'}, '量能500日新高 ('+(item.outputVolumeHighest==null?"0":item.outputVolumeHighest.split(',').length)+")").outerHTML;
+            item.longtime = elem('a', {href:'/s/'+item.outputDownLongtime+'?title='+item.strategyName+' - 高点调整120天', target:'_blank'}, '高点调整120天 ('+(item.outputDownLongtime==null?"0":item.outputDownLongtime.split(',').length)+")").outerHTML;
 
-            allCodes = allCodes+item.rpsStockCode+','
-            allCodes7 = allCodes7+item.output1+','
-            allCodes30 = allCodes30+item.output2+','
-            volume = volume+item.outputVolumeHighest+','
+            allCodes += item.rpsStockCode+','
+            allCodes7 += item.output1+','
+            allCodes30 += item.output2+','
+            volume += item.outputVolumeHighest+','
+            longtime += item.outputDownLongtime
         })
         allStockRps.columns.find(item => item.data==='action').title += ' <a title="查看全部个股" target="_blank" href="/s/'+allCodes+'"><i class="fas fa-th"></i></a>'
         allStockRps.columns.find(item => item.data==='action7').title += ' <a title="查看7天内新增加的全部个股" target="_blank" href="/s/'+allCodes7+'"><i class="fas fa-th"></i></a>'
         allStockRps.columns.find(item => item.data==='action30').title += ' <a title="查看30天内新增加的全部个股" target="_blank" href="/s/'+allCodes30+'"><i class="fas fa-th"></i></a>'
         allStockRps.columns.find(item => item.data==='volume').title += ' <a title="查看量能500日新高的全部个股" target="_blank" href="/s/'+volume+'"><i class="fas fa-th"></i></a>'
+        allStockRps.columns.find(item => item.data==='longtime').title += ' <a title="查看高点调整120天的全部个股" target="_blank" href="/s/'+longtime+'"><i class="fas fa-th"></i></a>'
     }
 
     function convertStocks(data){

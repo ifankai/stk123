@@ -47,13 +47,13 @@ public class ReportService {
                                                           String strategyOutput, String rpsCode, String rpsPercentile,
                                                           String rpsBkCode, String rpsStockCode, String text,
                                                           String output1, String output2){
-        return createReportDetailEntity(stockCode, strategyCode, strategyDate, strategyOutput, rpsCode, rpsPercentile, rpsBkCode, rpsStockCode, text, output1, output2, null);
+        return createReportDetailEntity(stockCode, strategyCode, strategyDate, strategyOutput, rpsCode, rpsPercentile, rpsBkCode, rpsStockCode, text, output1, output2, null, null);
     }
 
     public StkReportDetailEntity createReportDetailEntity(String stockCode, String strategyCode, String strategyDate,
                                                           String strategyOutput, String rpsCode, String rpsPercentile,
                                                           String rpsBkCode, String rpsStockCode, String text,
-                                                          String output1, String output2, String outputVolumeHighest){
+                                                          String output1, String output2, String outputVolumeHighest, String outputDownLongtime){
         StkReportDetailEntity stkReportDetailEntity = new StkReportDetailEntity();
         stkReportDetailEntity.setCode(stockCode);
         stkReportDetailEntity.setStrategyCode(strategyCode);
@@ -67,6 +67,7 @@ public class ReportService {
         stkReportDetailEntity.setOutput1(output1);
         stkReportDetailEntity.setOutput2(output2);
         stkReportDetailEntity.setOutputVolumeHighest(outputVolumeHighest);
+        stkReportDetailEntity.setOutputDownLongtime(outputDownLongtime);
         return stkReportDetailEntity;
     }
 
@@ -94,6 +95,7 @@ public class ReportService {
         Map result = new HashMap();
         result.put("currentAllStocksChecked", getReportHeaderChecked(headers, StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS, finalReportDate));
         result.put("currentAllStocksRpsStrategyChecked", getReportHeaderChecked(headers, StkConstant.REPORT_HEADER_TYPE_RPSSTOCKS_STRATEGIES, finalReportDate));
+        result.put("currentAllStocksRps15AChecked", getReportHeaderChecked(headers, StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS_15A, finalReportDate));
         result.put("currentMyStocksAChecked", getReportHeaderChecked(headers, StkConstant.REPORT_HEADER_TYPE_MYSTOCKS, finalReportDate));
         List<StkReportDetailEntity> detailsCN = getReportDetailChecked(headers, StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS, finalReportDate);
         setCheckedTime(detailsA, detailsCN);
@@ -192,6 +194,9 @@ public class ReportService {
         result.put("currentAllStocksRpsA", getAllStocksRpsByType(headers, finalRptDate, StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS));
         result.put("currentAllStocksRpsH", getAllStocksRpsByType(headers, finalRptDate, StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS_HK));
         result.put("currentAllStocksRpsU", getAllStocksRpsByType(headers, finalRptDate, StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS_US));
+
+        //k线云梯
+        result.put("currentAllStocksRps15A", getAllStocksRpsByType(headers, finalRptDate, StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS_15A));
 
         return result;
     }
