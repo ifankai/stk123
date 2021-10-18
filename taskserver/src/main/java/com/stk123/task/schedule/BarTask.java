@@ -129,7 +129,7 @@ public class BarTask extends AbstractTask {
         this.runByName("analyseAllHKRps", this::analyseAllHKRps);
         this.runByName("analyseAllUSRps", this::analyseAllUSRps);
         this.runByName("analyseCNRpsStocksByStrategies", this::analyseCNRpsStocksByStrategies);
-        this.runByName("analyseCNRpsStocksByStrategy15a", this::analyseCNRpsStocksByStrategy15a);
+        this.runByName("analyseRpsStocksByStrategy15a", this::analyseRpsStocksByStrategy15a);
         this.runByName("analyseBks", this::analyseBks);
         this.runByName("stat", this::statAllStocks);
         this.runByName("clearAll", this::clearAll);
@@ -1206,9 +1206,9 @@ public class BarTask extends AbstractTask {
     }
 
     //k线云梯
-    public void analyseCNRpsStocksByStrategy15a(){
-        log.info("start analyseCNRpsStocksByStrategy15a");
-        String title = "RPS股票(A股)策略-K线云梯(15a)";
+    public void analyseRpsStocksByStrategy15a(){
+        log.info("start analyseRpsStocksByStrategy15a");
+        String title = "RPS股票策略-K线云梯(15a)";
         try{
             StkReportHeaderEntity stkReportHeaderEntity = null;
             String reportDateStart = CommonUtils.addDay2String(new Date(), -12);
@@ -1296,10 +1296,10 @@ public class BarTask extends AbstractTask {
             }
 
         } catch (Exception e) {
-            EmailUtils.send("报错[analyseCNRpsStocksByStrategy15a]", ExceptionUtils.getExceptionAsString(e));
-            log.error("analyseCNRpsStocksByStrategy15a", e);
+            EmailUtils.send("报错[analyseRpsStocksByStrategy15a]", ExceptionUtils.getExceptionAsString(e));
+            log.error("analyseRpsStocksByStrategy15a", e);
         }
-        log.info("end analyseCNRpsStocksByStrategy15a");
+        log.info("end analyseRpsStocksByStrategy15a");
     }
 
     public void analyseBks(){
