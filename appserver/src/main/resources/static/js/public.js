@@ -601,6 +601,7 @@ function createApp(config){
     app.component('stockexclude', _stockExclude);
     app.component('stockheart', _stockHeart);
     app.component('stocktext', _stockText);
+    app.component('stockchart', _stockChart);
 
     app.config.globalProperties.tsFormat = _tsFormat;
     app.config.globalProperties.dateFormat = dateFormat;

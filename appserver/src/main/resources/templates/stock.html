@@ -234,7 +234,18 @@
                         </div>
 
                     </div>
-                </div><!-- 导航  -->
+                </div><!-- 综合信息  -->
+
+                <div class="row">
+                    <div class="col-12">
+                        <div id="bar" class="card">
+                            <div class="card-body">
+                                <stockchart></stockchart>
+                            </div>
+                        </div>
+
+                    </div>
+                </div><!-- K线  -->
 
                 <div class="row">
                     <div class="col-12">
@@ -604,6 +615,7 @@
 <div th:replace="common/js_tippy"></div>
 <script src="/js/diff_match_patch.js"></script>
 <script src="/js/jquery.scrollsync.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.2.1/dist/echarts.min.js"></script>
 <div th:replace="common/js_custom"></div>
 
 <script th:inline="javascript">
