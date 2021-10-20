@@ -43,11 +43,11 @@ public class StkStatusEntity implements Serializable {
     @JsonView(View.Default.class)
     private Integer quantity;
 
-    @Column(name = "start_time")
+    @Column(name = "START_TIME")
     @JsonView(View.Default.class)
     private Date startTime;
 
-    @Column(name = "end_time")
+    @Column(name = "END_TIME")
     @JsonView(View.Default.class)
     private Date endTime;
 
@@ -55,9 +55,9 @@ public class StkStatusEntity implements Serializable {
     @JsonView(View.Default.class)
     private String comments;
 
-    @Column(name = "insert_time")
+    @Column(name = "INSERT_TIME")
     private Date insertTime;
 
-    @Column(name = "update_time")
+    @Column(name = "UPDATE_TIME")
     private Date updateTime;
 }

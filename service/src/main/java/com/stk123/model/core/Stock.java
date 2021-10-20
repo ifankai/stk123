@@ -32,6 +32,7 @@ import com.stk123.util.HttpUtils;
 import com.stk123.util.ServiceUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.SneakyThrows;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -136,8 +137,20 @@ public class Stock {
     private List<StkKeywordLinkEntity> businesses; //主营业务
     @JsonView(View.All.class)
     private List<StkKeywordLinkEntity> products; //主营产品
+    @JsonView(View.All.class)
+    private boolean trading = true;  // is today trading
+    /**
+     * 1分钟
+     * http://push2his.eastmoney.com/api/qt/stock/kline/get?cb=&fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61&ut=7eea3edcaed734bea9cbfc24409ed989&klt=1&fqt=1&secid=1.600600&beg=0&end=20500000&_=1634699093630
+     * http://d.10jqka.com.cn/v2/moneyflow/hs_600027/last.js
+     *
+     * 5分钟
+     * http://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData?symbol=sz002095&scale=5&ma=no&datalen=1023
+     * http://push2his.eastmoney.com/api/qt/stock/kline/get?cb=&fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61&ut=7eea3edcaed734bea9cbfc24409ed989&klt=5&fqt=1&secid=1.600600&beg=0&end=20500000&_=1634699093630
+     **/
+    private BarSeries barSeries5Minutes; //5分钟K线
 
-    private BarSeries barSeries;
+    private BarSeries barSeries; //日K线
     private BarSeries barSeriesWeek;
     private BarSeries barSeriesMonth;
     private List<StkCapitalFlowEntity> flows; //资金流
@@ -418,7 +431,6 @@ public class Stock {
         return period.select(this.getBarSeries(), this.getBarSeriesWeek(), this.getBarSeriesMonth());
     }
 
-
     public synchronized BarSeries getBarSeriesWeek() {
         if(this.barSeriesWeek != null)
             return this.barSeriesWeek;
@@ -519,6 +531,14 @@ public class Stock {
         return this.barSeriesMonth;
     }
 
+    public BarSeries getBarSeries5Minutes(){
+        if(this.barSeries5Minutes == null){
+            this.barSeries5Minutes = new BarSeries();
+        }
+        buildBar5Minutes();
+        return this.barSeries5Minutes;
+    }
+
     public synchronized Stock buildBarRealTime() {
         if(isIncludeRealtimeBarDone) return this;
         isIncludeRealtimeBarDone = true;
@@ -581,6 +601,45 @@ public class Stock {
             }
         }
         return this;
+    }
+
+    @SneakyThrows
+    private void buildBar5Minutes(){
+        log.info("buildBar5Minutes:"+this.code);
+        long time = new Date().getTime();
+        String scode = (this.isPlaceSH() ? "1." : "0.") + code;
+        //http://push2his.eastmoney.com/api/qt/stock/kline/get?cb=&fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61&ut=&klt=5&fqt=1&secid=1.600600&beg=0&end=20500000&_=1634699093630
+        String url = "http://push2his.eastmoney.com/api/qt/stock/kline/get?cb=&fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61&ut=&klt=5&fqt=1&secid="+scode+"&beg=0&end=20500000&_="+time;
+
+        String page = HttpUtils.get(url, null, "UTF-8");
+        String klines = StringUtils.substringBetween(page, "\"klines\":[\"", "\"]}");
+        if(StringUtils.isEmpty(klines)) {
+            this.trading = false;
+            return;
+        }
+        //System.out.println(klines);
+        String[] ks = klines.split("\",\"");
+
+        this.barSeries5Minutes.clear();
+        double close = 0;
+        for(String kk : ks){
+            //System.out.println(kk);
+            String[] k = kk.split(",");
+            Bar bar = new Bar();
+            bar.setCode(this.getCode());
+            bar.setDate(StringUtils.replace(k[0],"-",""));
+            bar.setOpen(Double.parseDouble(k[1]));
+            bar.setClose(Double.parseDouble(k[2]));
+            bar.setLastClose(close);
+            bar.setHigh(Double.parseDouble(k[3]));
+            bar.setLow(Double.parseDouble(k[4]));
+            bar.setVolume(Double.parseDouble(k[5])*(this.isMarketCN()&&this.isCateStock()?100:1));
+            bar.setAmount(Double.parseDouble(k[6]));
+            bar.setHsl(Double.parseDouble(k[10]));
+            bar.setChange(Double.parseDouble(k[8]));
+            this.barSeries5Minutes.addToFirst(bar);
+            close = bar.getClose();
+        }
     }
 
     public void buildCapitalFlow(){
@@ -946,8 +1005,9 @@ public class Stock {
         System.out.println(rating.toMap());*/
 
         Stock stock = new Stock();
-        stock.set("01801", null);
-        stock.updateCapitalFlow();
+        stock.set("600600", null);
+        BarSeries bs = stock.getBarSeries5Minutes();
+        System.out.println(bs);
     }
 
     @Deprecated

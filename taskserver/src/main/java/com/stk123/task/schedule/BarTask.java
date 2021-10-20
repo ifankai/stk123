@@ -568,15 +568,15 @@ public class BarTask extends AbstractTask {
 
             stocks = StockService.filterByBarDate(stocks, CommonUtils.addDay(new Date(), -30));
 
-            String stratgies = Strategies.STRATEGIES_MY_STOCKS;
+            String strategies = Strategies.STRATEGIES_MY_STOCKS;
             if(StringUtils.isNotEmpty(strategy)){
-                stratgies = strategy;
+                strategies = strategy;
             }
             //策略回测开始    01,02 策略在com.stk123.model.strategy.sample.Sample 里定义
             StrategyBacktesting strategyBacktesting = new StrategyBacktesting();
             backtestingService.backtestingOnStock(strategyBacktesting,
                     stocks,
-                    Arrays.asList(StringUtils.split(stratgies, ",")),
+                    Arrays.asList(StringUtils.split(strategies, ",")),
                     startDate, endDate, realtime!=null);
 
             List<StrategyResult> results = strategyBacktesting.getPassedStrategyResult();

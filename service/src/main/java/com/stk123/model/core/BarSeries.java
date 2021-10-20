@@ -72,7 +72,18 @@ public class BarSeries {
     public void addToFirst(Bar bar) {
         Bar f = this.getFirst();
         if(f != null){
-            if (f.getDate().compareTo(bar.getDate()) >= 0) return;
+            int c = f.getDate().compareTo(bar.getDate());
+            if (c > 0) return;
+            else if(c == 0){
+                f.setOpen(bar.getOpen());
+                f.setClose(bar.getClose());
+                f.setHigh(bar.getHigh());
+                f.setLow(bar.getLow());
+                f.setAmount(bar.getAmount());
+                f.setVolume(bar.getVolume());
+                f.setChange(bar.getChange());
+                return;
+            }
             bar.setBefore(f);
             f.setAfter(bar);
         }
@@ -159,6 +170,10 @@ public class BarSeries {
 
     public int size(){
         return this.getList().size();
+    }
+
+    public void clear(){
+        this.list.clear();
     }
 
     @Override

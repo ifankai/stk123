@@ -295,7 +295,7 @@
                                         <div class="trade-bar ml-1" v-html="row.monthBarImage"></div>
                                     </template>
                                     <template v-slot:close="{row, rowNumber}">
-                                        <span v-text="row.k?row.k.c:''"></span>
+                                        <span v-text="row.k?row.k.c.toFixed(2):''"></span>
                                     </template>
                                     <template v-slot:change="{row, rowNumber}">
                                         <span v-text="row.k?row.k.p.toFixed(2):''"></span>
@@ -367,6 +367,12 @@
     const code = [[${code}]];
     const codeType = [[${codeType}]];
     let navActive = window.location.href.indexOf('/xueqiu')>=0?'xq':'stocks';
+
+    Pace.options = {
+        ajax: {
+            ignoreURLs: ['/trade/']
+        }
+    }
 
     function parseStocks(_this, res){
         let data = res.data.data;
@@ -468,14 +474,8 @@
                 }
             },
             displayType: function (newVal, oldVal){
-                clearTimer();
                 if(newVal === 'trade'){
-                    let _this = this;
-                    console.log('trade refresh...')
-                    timer = setInterval(function () {
-                        console.log('trade refresh...')
-                        _this.trading();
-                    }, 5 * 1000);
+                    this.trading();
                 }
             }
         },
@@ -559,17 +559,29 @@
                 });
                 Pace.stop();
             },
-            trading:function (){
+            trading:async function () {
                 let _this = this;
-                axios.get("/k/trade/"+code).then(function (res) {
-                    let data = res.data.data;
-                    _this.stocks.forEach(stk => {
-                        let stock = stk.stock;
-                        if(data[stock.code]) {
-                            stock.k = data[stock.code].k;
-                        }
-                    })
-                });
+                for (let i in this.stocks) {
+                    if (this.displayType !== 'trade') {
+                        break
+                    }
+                    let stock = this.stocks[i].stock;
+                    let code = stock.code;
+                    console.log('trading ....'+code)
+                    axios.get("/trade/" + code).then(function (res) {
+                        let data = res.data.data;
+                        _this.stocks.forEach(stk => {
+                            let stock = stk.stock;
+                            if (data[stock.code]) {
+                                stock.k = data[stock.code].k;
+                            }
+                        })
+                    });
+                    await sleep(1000);
+                }
+                if (_this.displayType === 'trade') {
+                    setTimeout(_this.trading, 1000);
+                }
             }
         },
         computed: {

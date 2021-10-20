@@ -49,6 +49,7 @@ public class Strategies {
 
     public static String STRATEGIES_ON_BK_OUTSTANDING_STOCKS = "13a"; //板块精选个股策略
 
+    public static String STRATEGIES_ON_TRADING = "17a";
 
     private static Map<String, Strategy> CODE_STRATEGY = new HashMap<>();
 
@@ -589,6 +590,22 @@ public class Strategies {
             return FilterResult.TRUE();
         };
         strategy.addFilter("K线云梯", filter);
+        return strategy;
+    }
+
+    public static Strategy strategy_17a(){
+        Strategy<Stock> strategy = new Strategy<>("strategy_17a", "5分钟爆量", Stock.class);
+        Filter<Stock> filter = (strg, stock) -> {
+            Bar bar = stock.getBarSeries5Minutes().getBar();
+            Bar bar1 = bar.before();
+            Bar barHighest = bar.getHighestBar(48*19, Bar.EnumValue.V);  //48 = 1天, 最大可以取 1536
+            if(barHighest.getDate().equals(bar1.getDate()) || barHighest.getDate().equals(bar.getDate()) ||
+                    barHighest.getVolume() < (bar.getVolume() + bar1.getVolume())){
+                return FilterResult.TRUE();
+            }
+            return FilterResult.FALSE();
+        };
+        strategy.addFilter("5分钟爆量", filter);
         return strategy;
     }
 

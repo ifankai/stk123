@@ -6,12 +6,18 @@ import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+import com.stk123.model.core.Stock;
+import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.util.ik.StringSimilarUtils;
 import com.stk123.model.bo.StkErrorLog;
 import com.stk123.common.db.util.CloseUtil;
 import com.stk123.common.db.util.DBUtil;
 import com.stk123.common.util.CommonHttpUtils;
+import lombok.SneakyThrows;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpState;
@@ -123,6 +129,31 @@ public class HttpUtils extends CommonHttpUtils {
             }
         }
         return response;
+    }
+
+    @SneakyThrows
+    //cost:29
+    public static void main(String[] args) {
+        long time = System.currentTimeMillis();
+        final CountDownLatch countDownLatch = new CountDownLatch(10);
+        ExecutorService exec = Executors.newFixedThreadPool(5);
+        for(int i=0;i < 10; i++) {
+            Runnable run = () -> {
+                try{
+                    String page = CommonHttpUtils.get("http://push2his.eastmoney.com/api/qt/stock/kline/get?cb=&fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61&ut=7eea3edcaed734bea9cbfc24409ed989&klt=5&fqt=1&secid=1.600600&beg=0&end=20500000&_=1634699093630");
+                    System.out.println(page);
+                }catch(Exception e){
+                    log.error("initKLines", e);
+                }finally{
+                    countDownLatch.countDown();
+                }
+            };
+            exec.execute(run);
+        }
+        exec.shutdown();
+        countDownLatch.await();
+
+        System.out.println("cost:"+ (System.currentTimeMillis() - time) / 1000);
     }
 
 }

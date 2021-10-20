@@ -78,19 +78,5 @@ public class KController {
         return RequestResult.success(results);
     }
 
-    @GetMapping("/trade/{code}")
-    @JsonView(View.All.class) //Infinite recursion (StackOverflowError); nested exception is com.fasterxml.jackson.databind.JsonMappingException: Infinite recursion (StackOverflowError)
-    public RequestResult trade(@PathVariable("code")String code){
-        String[] codes = StringUtils.split(code, ",");
-        List<Stock> stocks = stockService.getStocksCached(codes);
-        stockService.buildBarSeriesWithRealtimeBar(stocks);
-        Map result = stocks.stream().collect(Collectors.toMap(Stock::getCode, stock -> {
-            return new HashMap(){{
-                put("k", stock.getBar());
-            }};
-        } ));
-        return RequestResult.success(result);
-    }
-
 
 }

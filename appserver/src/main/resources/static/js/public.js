@@ -585,6 +585,9 @@ function clearTimer() {
     timer && clearInterval(timer)
     timer = null
 }
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 function createApp(config){
     //config.methods = Object.assign(config.methods, _stockLookPoolInVuex, _searchInVuex); //和mixins功能类似
