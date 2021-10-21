@@ -657,6 +657,11 @@ public class Stock {
         }
     }
 
+    public List<StkCapitalFlowEntity> getFlows(){
+        this.buildCapitalFlow();
+        return this.flows;
+    }
+
     public void updateCapitalFlow(){
         log.info("updateCapitalFlow:"+code);
         try {
@@ -1174,10 +1179,14 @@ public class Stock {
                 || type.equals(StkConstant.NEWS_TYPE_250) //	业绩大幅增长
                 || type.equals(StkConstant.NEWS_TYPE_130) //	股权激励
                 || type.equals(StkConstant.NEWS_TYPE_210) //	拐点|扭亏
+                || type.equals(StkConstant.NEWS_TYPE_280) //    调研
         ).count();
         score += cnt * 5;
         news.stream().filter(ns -> ns.getType().equals(StkConstant.NEWS_TYPE_240)).findFirst()
                 .ifPresent(lt -> this.tags.add(Tag.builder().name("龙头").detail(lt.getTitle()).build()));
+        news.stream().filter(ns -> ns.getType().equals(StkConstant.NEWS_TYPE_280)).findFirst()
+                .ifPresent(lt -> this.tags.add(Tag.builder().name("调研").detail(lt.getTitle()).build()));
+
         return score;
     }
 
@@ -1201,6 +1210,11 @@ public class Stock {
 
     public int getScoreByFlows() {
         int score = 0;
+        List<StkCapitalFlowEntity> flows = this.getFlows();
+        int cnt = (int) flows.stream().limit(10).filter(flow -> flow.getMainPercent() >= 1).count();
+        if(cnt >= 5){
+            score += 5;
+        }
         return score;
     }
 

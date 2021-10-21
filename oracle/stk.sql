@@ -1052,6 +1052,18 @@ alter table stk_status add constraint pk_status_id primary key (id);
 create index idx_status_code on stk_status (code);
 
 
+create table stk_trade_strategy(
+  id number(8),
+  code varchar2(10),
+  trade_date varchar2(8),
+  strategy_code varchar2(10),  
+  insert_time date  
+);
+create sequence s_trade_strategy_id INCREMENT BY 1 START WITH 10000 NOMAXVALUE NOCYCLE CACHE 10;
+alter table stk_trade_strategy add constraint pk_trade_strategy_id primary key (id);
+create index idx_trade_strategy_code on stk_trade_strategy (code,trade_date);
+
+
 
 select * from tab where tname like 'STK_%';
 
