@@ -122,10 +122,10 @@ public class Tasks {
         PPIIndexNewHighJob.run();
     }
 
-    @Scheduled(cron = "0 10 17 ? * MON-FRI") //因为有延时，所以执行时间往后放
+/*    @Scheduled(cron = "0 10 17 ? * MON-FRI") //因为有延时，所以执行时间往后放
     public void updateHKCapitalFlow() {
         taskContainer.start(BarTask.class, "updateHKCapitalFlow");
-    }
+    }*/
 
     @Scheduled(cron = "0 0 11 ? * MON-FRI")
     public void klineRealtime_am() {

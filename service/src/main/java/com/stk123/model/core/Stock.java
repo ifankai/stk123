@@ -150,6 +150,10 @@ public class Stock {
      * 5分钟
      * http://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData?symbol=sz002095&scale=5&ma=no&datalen=1023
      * http://push2his.eastmoney.com/api/qt/stock/kline/get?cb=&fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61&ut=7eea3edcaed734bea9cbfc24409ed989&klt=5&fqt=1&secid=1.600600&beg=0&end=20500000&_=1634699093630
+     *
+     * HK 5mins:
+     * http://push2his.eastmoney.com/api/qt/stock/kline/get?cb=&fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61&ut=&klt=5&fqt=1&secid=116.01801&beg=0&end=20500000&_=1634699093630
+     * http://tldata.aastocks.com/TradeLogServlet/getTradeLog?id=01801.HK&date=20211022&u=13&t=20211022165435&d=A9EACA46
      **/
     private BarSeries barSeries5Minutes; //5分钟K线
 
@@ -606,11 +610,22 @@ public class Stock {
         return this;
     }
 
+    private String getEasymoneyCode(){
+        if(this.isMarketCN()) {
+            return (this.isPlaceSH() ? "1." : "0.");
+        }else if(this.isMarketHK()){
+            return "116.";
+        }else if(this.isMarketUS()){
+            return "105.";
+        }
+        return null;
+    }
+
     @SneakyThrows
     private void buildBar5Minutes(){
         log.info("buildBar5Minutes:"+this.code);
         long time = new Date().getTime();
-        String scode = (this.isPlaceSH() ? "1." : "0.") + code;
+        String scode = this.getEasymoneyCode() + code;
         //http://push2his.eastmoney.com/api/qt/stock/kline/get?cb=&fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61&ut=&klt=5&fqt=1&secid=1.600600&beg=0&end=20500000&_=1634699093630
         String url = "http://push2his.eastmoney.com/api/qt/stock/kline/get?cb=&fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61&ut=&klt=5&fqt=1&secid="+scode+"&beg=0&end=20500000&_="+time;
 
@@ -665,10 +680,10 @@ public class Stock {
     public void updateCapitalFlow(){
         log.info("updateCapitalFlow:"+code);
         try {
-            if(this.isMarketCN()) {
+            //if(this.isMarketCN()) {
                 //http://push2his.eastmoney.com/api/qt/stock/fflow/daykline/get?cb=jQuery1123004606016255487422_1626750887144&lmt=0&klt=101&fields1=f1%2Cf2%2Cf3%2Cf7&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf62%2Cf63%2Cf64%2Cf65&ut=b2884a393a59ad64002292a3e90d46a5&secid=0.002346&_=1626750887145
                 long time = new Date().getTime();
-                String scode = (this.isPlaceSH() ? "1." : "0.") + code;
+                String scode = this.getEasymoneyCode() + code;
                 String url = "http://push2his.eastmoney.com/api/qt/stock/fflow/daykline/get?cb=jQuery" + time + "&lmt=0&klt=101&fields1=f1%2Cf2%2Cf3%2Cf7&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf62%2Cf63%2Cf64%2Cf65&ut=&secid=" + scode + "&_=" + time;
                 String page = HttpUtils.get(url, null);
                 String json = org.apache.commons.lang.StringUtils.substringBetween(page, "jQuery" + time + "(", ");");
@@ -713,7 +728,7 @@ public class Stock {
                         stkCapitalFlowRepository.save(stkCapitalFlowEntity);
                     }
                 }
-            }else if(this.isMarketHK()){
+            /*}else if(this.isMarketHK()){
                 //http://www.aastocks.com/sc/stocks/analysis/moneyflow.aspx?symbol=01801&type=h
                 String url = "http://www.aastocks.com/sc/stocks/analysis/moneyflow.aspx?symbol="+this.code+"&type=h";
                 String page = HttpUtils.get(url);
@@ -737,7 +752,7 @@ public class Stock {
                         }
                     }
                 }
-            }
+            }*/
 
         }catch (Exception e){
             log.error("updateCapitalFlow error:"+code, e);

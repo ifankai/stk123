@@ -205,6 +205,14 @@ public class CommonUtils {
             //System.out.println(stackElements[i].getFileName());
         }
     }
+    public static void printStackTrace2(){
+        StackTraceElement[] elements = Thread.currentThread().getStackTrace();
+        for (int i = 1; i < elements.length; i++) {
+            StackTraceElement s = elements[i];
+            System.out.println("\tat " + s.getClassName() + "." + s.getMethodName() + "(" + s.getFileName() + ":" + s.getLineNumber() + ")");
+        }
+    }
+
 
     public static Object nvl(Object o, String replace, Object ret){
         return o==null?replace:ret;

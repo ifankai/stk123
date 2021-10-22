@@ -422,7 +422,7 @@ public class BarTask extends AbstractTask {
                         barService.initKLines(stock, 20);
                     }
 
-                    if(stock.isMarketCN()) {
+                    if(stock.isMarketCN() || stock.isMarketHK()) {
                         stock.updateCapitalFlow();
                     }
 
@@ -691,8 +691,9 @@ public class BarTask extends AbstractTask {
             StkReportHeaderEntity stkReportHeaderEntity = null;
             List<Stock> stocks = Cache.getStocksWithBks();
             //stockService.buildHolder(StocksAllCN);
-            stocks = stockService.filterByMarketCap(stocks, 30);
-            stocks = stockService.filterByFn(stocks);
+            stocks = StockService.filterByMarketCap(stocks, 30);
+            stocks = StockService.filterByFn(stocks);
+            stocks = StockService.filterByStatusExclude(stocks);
 
             String strategies = Strategies.STRATEGIES_ALL_STOCKS;
             if(StringUtils.isNotEmpty(strategy)){
@@ -804,8 +805,9 @@ public class BarTask extends AbstractTask {
             StkReportHeaderEntity stkReportHeaderEntity = null;
             List<Stock> stocks = Cache.getStocksWithBks();
 
-            stocks = stockService.filterByMarketCap(stocks, 50);
-            stocks = stockService.filterByFn(stocks);
+            stocks = StockService.filterByMarketCap(stocks, 50);
+            stocks = StockService.filterByFn(stocks);
+            stocks = StockService.filterByStatusExclude(stocks);
 
             if(StringUtils.isNotEmpty(report)){
                 String type = StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS;
@@ -925,6 +927,7 @@ public class BarTask extends AbstractTask {
 
 //            stocks = stockService.filterByMarketCap(stocks, 50);
 //            stocks = stockService.filterByFn(stocks);
+            stocks = StockService.filterByStatusExclude(stocks);
 
             if(StringUtils.isNotEmpty(report)){
                 String type = StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS_HK;
@@ -1026,6 +1029,7 @@ public class BarTask extends AbstractTask {
 
 //            stocks = stockService.filterByMarketCap(stocks, 50);
 //            stocks = stockService.filterByFn(stocks);
+            stocks = StockService.filterByStatusExclude(stocks);
 
             if(StringUtils.isNotEmpty(report)){
                 String type = StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS_US;

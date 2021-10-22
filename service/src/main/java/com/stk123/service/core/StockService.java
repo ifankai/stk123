@@ -21,6 +21,7 @@ import com.stk123.model.strategy.StrategyResult;
 import com.stk123.repository.*;
 import com.stk123.service.StkConstant;
 import com.stk123.util.HttpUtils;
+import joptsimple.internal.Strings;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -33,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -341,7 +343,7 @@ public class StockService {
     }
 
     public List<Stock> buildFn(List<Stock> stocks, String dateAfter){
-        List<StkFnTypeEntity> typeEntities = (List<StkFnTypeEntity>) fnService.getTypesAsMap(EnumMarket.CN, 1).values();
+        List<StkFnTypeEntity> typeEntities = new ArrayList<>(fnService.getTypesAsMap(EnumMarket.CN, 1).values());
         return BaseRepository.findAll1000(stocks,
                 subStocks -> {
                     List<String> codes = subStocks.stream().map(Stock::getCode).collect(Collectors.toList());
@@ -364,6 +366,19 @@ public class StockService {
                         List<StkKeywordLinkEntity> links = map.computeIfAbsent(stock.getCode(), k -> new ArrayList<>());
                         stock.setBusinesses(links.stream().filter(link -> link.getLinkType() == StkConstant.KEYWORD_LINK_TYPE_MAIN_BUSINESS).collect(Collectors.toList()));
                         stock.setProducts(links.stream().filter(link -> link.getLinkType() == StkConstant.KEYWORD_LINK_TYPE_MAIN_PRODUCT).collect(Collectors.toList()));
+                    });
+                    return subStocks;
+                });
+    }
+
+    public List<Stock> buildStatuses(List<Stock> stocks){
+        Map<String, List<StkStatusEntity>> map = stkStatusRepository.getAllByCodeInAndDateIsBetweenStartTimeAndEndTime(new Date());
+        return BaseRepository.findAll1000(stocks,
+                subStocks -> {
+                    subStocks.forEach(stock -> {
+                        List<StkStatusEntity> statusEntities = map.get(stock.getCode());
+                        if(statusEntities == null) statusEntities = Collections.EMPTY_LIST;
+                        stock.setStatuses(statusEntities);
                     });
                     return subStocks;
                 });
@@ -407,12 +422,15 @@ public class StockService {
         return this.getStocks(Arrays.asList(codes));
     }
     public List<Stock> getStocks(List<String> codes){
-        List<Stock> stocks = Cache.getStocksOrNull(codes);
-        if(Cache.inited) return stocks;
-        if(stocks != null && stocks.size() == codes.size()) return stocks;
-        stocks = buildStocks(codes);
-        stocks = getStocksWithBks(stocks, Cache.getBks(), 60, false);
-        Cache.putStocks(stocks);
+        List<Stock> stocks;
+        synchronized (Strings.join(codes, null).intern()) { //多线程同步，只run一次
+            stocks = Cache.getStocksOrNull(codes);
+            if (Cache.inited) return stocks;
+            if (stocks != null && stocks.size() == codes.size()) return stocks;
+            stocks = buildStocks(codes);
+            stocks = getStocksWithBks(stocks, Cache.getBks(), 60, false);
+            Cache.putStocks(stocks);
+        }
         return stocks;
     }
     @Cached(name = "stocks", expire = 3600, cacheType = CacheType.LOCAL) //1小时
@@ -520,6 +538,10 @@ public class StockService {
         }).collect(Collectors.toList());
     }
 
+    public static List<Stock> filterByStatusExclude(List<Stock> stocks){
+        return stocks.stream().filter(stock -> stock.getStatuses().stream().anyMatch(stkStatusEntity -> stkStatusEntity.getType().equals(StkConstant.STATUS_TYPE_1))).collect(Collectors.toList());
+    }
+
     public void buildBkAndCalcBkRps(List<Stock> stocks, EnumMarket market, EnumCate bkCate){
         //建立板块关系，计算rps
         List<Stock> bks = getBks(market, bkCate);
@@ -552,21 +574,25 @@ public class StockService {
     @SneakyThrows
     public List<Stock> getStocksWithAllBuildsAsync(List<Stock> stocks, int barSize, boolean isIncludeRealtimeBar){
         long start = System.currentTimeMillis();
-        Future<List<Stock>> futureBs = stockAsyncService.buildBarSeriesAndCapitalFlow(stocks, barSize, isIncludeRealtimeBar);
-        Future<List<Stock>> futureIndustries = stockAsyncService.buildIndustries(stocks);
-        Future<List<Stock>> futureHolder = stockAsyncService.buildHolder(stocks);
-        Future<List<Stock>> futureOwner = stockAsyncService.buildOwners(stocks);
-        Future<List<Stock>> futureNews = stockAsyncService.buildNews(stocks, CommonUtils.addDay(new Date(), -180));
-        Future<List<Stock>> futureInfo = stockAsyncService.buildImportInfos(stocks, CommonUtils.addDay(new Date(), -180));
-        Future<List<Stock>> futureFn = stockAsyncService.buildFn(stocks, CommonUtils.addDay2String(new Date(), -360 * 5));
-        Future<List<Stock>> futureBusinessAndProduct = stockAsyncService.buildBusinessAndProduct(stocks);
-        while (true) {
+        CompletableFuture<List<Stock>> futureBs = stockAsyncService.buildBarSeriesAndCapitalFlow(stocks, barSize, isIncludeRealtimeBar);
+        CompletableFuture<List<Stock>> futureIndustries = stockAsyncService.buildIndustries(stocks);
+        CompletableFuture<List<Stock>> futureHolder = stockAsyncService.buildHolder(stocks);
+        CompletableFuture<List<Stock>> futureOwner = stockAsyncService.buildOwners(stocks);
+        CompletableFuture<List<Stock>> futureNews = stockAsyncService.buildNews(stocks, CommonUtils.addDay(new Date(), -180));
+        CompletableFuture<List<Stock>> futureInfo = stockAsyncService.buildImportInfos(stocks, CommonUtils.addDay(new Date(), -180));
+        CompletableFuture<List<Stock>> futureFn = stockAsyncService.buildFn(stocks, CommonUtils.addDay2String(new Date(), -360 * 5));
+        CompletableFuture<List<Stock>> futureBusinessAndProduct = stockAsyncService.buildBusinessAndProduct(stocks);
+        CompletableFuture<List<Stock>> futureStatuses = stockAsyncService.buildStatuses(stocks);
+        CompletableFuture.allOf(futureBs, futureIndustries, futureHolder, futureOwner, futureNews, futureInfo, futureFn, futureBusinessAndProduct, futureStatuses).join();
+        /*while (true) {
             if (futureBs.isDone() && futureIndustries.isDone() && futureHolder.isDone() && futureOwner.isDone()
-                && futureNews.isDone() && futureInfo.isDone() && futureFn.isDone() && futureBusinessAndProduct.isDone()) {
+                && futureNews.isDone() && futureInfo.isDone() && futureFn.isDone() && futureBusinessAndProduct.isDone()
+                && futureStatuses.isDone()) {
                 break;
             }
             //Thread.sleep(20);
-        }
+        }*/
+
         long end = System.currentTimeMillis();
         log.info("getStocksWithAllBuildsAsync cost time:"+(end-start)/1000 + "s, build stock size:"+stocks.size());
         return stocks;
@@ -635,7 +661,7 @@ public class StockService {
             map.put("nameWithLink", bk.getNameAndCodeWithLink());
             map.put("code", bk.getCode());
             List<Stock> finalStocks = stocks;
-            map.put("stocks", bk.getStocks().stream().filter(stock -> finalStocks.stream().anyMatch(stock::equals)).map(Stock::getCode).collect(Collectors.toList()));
+            map.put("stocks", bk.getStocks().stream().filter(Objects::nonNull).filter(stock -> finalStocks.stream().anyMatch(stock::equals)).map(Stock::getCode).collect(Collectors.toList()));
             map.put("rps", Cache.getBkRps(bk.getCode()));
             bksList.add(map);
         }

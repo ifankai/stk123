@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -24,6 +25,7 @@ public interface StkHolderRepository extends JpaRepository<StkHolderEntity, StkH
     String sql_findAllByCodes = "select s.code, t.fn_date, t.holder, t.holding_amount, t.holder_change, t.ten_owner_change " +
             "from (select code, fn_date, holder, holding_amount,holder_change,ten_owner_change, ROW_NUMBER() over(PARTITION by code order by fn_date desc) as num from stk_holder) t, stk s "+
             "where t.code=s.code and t.code in (:1) and t.num = 1";
+    @Transactional
     default List<StkHolderEntity> findAll(List<String> codes) {
         return BaseRepository.getInstance().list(sql_findAllByCodes, StkHolderEntity.class, codes);
     }
@@ -32,6 +34,7 @@ public interface StkHolderRepository extends JpaRepository<StkHolderEntity, StkH
         return findAll().stream().collect(Collectors.toMap(StkHolderEntity::getCode, Function.identity()));
     }
 
+    @Transactional
     default Map<String, StkHolderEntity> findAllToMap(List<String> codes) {
         return findAll(codes).stream().collect(Collectors.toMap(StkHolderEntity::getCode, Function.identity()));
     }

@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title th:utext="${title} != null?${title}+' - 小智慧':'小智慧'"></title>
     <div th:replace="common/css_public"></div>
-    <link rel="stylesheet" href="/adminlte/plugins/pace-progress/themes/black/pace-theme-loading-bar.css">
+    <!--<link rel="stylesheet" href="/adminlte/plugins/pace-progress/themes/black/pace-theme-loading-bar.css">-->
     <div th:replace="common/css_datatable"></div>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/vis-timeline/styles/vis-timeline-graph2d.min.css" />
     <link rel="stylesheet" th:href="'/css/public.css'+${_version}">
     <style>
         @media (min-width: 1200px) {
@@ -284,6 +285,13 @@
                     <div class="row">
                         <div class="card col-md-12">
                             <div class="card-body">
+                                <div id="visualization"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="card col-md-12">
+                            <div class="card-body">
                                 <datatable :="{...common.trade}" :data="stocks.map(stk => stk.stock)">
                                     <template v-slot:name-and-tags="{row, rowNumber}">
                                         <div><span v-html="row.nameAndCodeWithLink"></span></div>
@@ -360,6 +368,9 @@
 </html>
 <div th:replace="common/js_public"></div>
 <div th:replace="common/js_datatable"></div>
+<script type="text/javascript" src="https://unpkg.com/moment@latest"></script>
+<script type="text/javascript" src="https://unpkg.com/vis-data@latest/peer/umd/vis-data.min.js"></script>
+<script type="text/javascript" src="https://unpkg.com/vis-timeline@latest/peer/umd/vis-timeline-graph2d.min.js"></script>
 <div th:replace="common/js_custom"></div>
 
 <script th:inline="javascript">
@@ -368,10 +379,12 @@
     const codeType = [[${codeType}]];
     let navActive = window.location.href.indexOf('/xueqiu')>=0?'xq':'stocks';
 
-    Pace.options = {
-        ajax: {
-            ignoreURLs: ['/trade/']
-        }
+    paceOptions = {
+        // Disable the 'elements' source
+        elements: false,
+
+        // Only show the progress on regular and ajax-y page navigation, not every request
+        restartOnRequestAfter: false
     }
 
     function parseStocks(_this, res){
@@ -475,6 +488,28 @@
             },
             displayType: function (newVal, oldVal){
                 if(newVal === 'trade'){
+                    this.$nextTick(function () {
+                        const container = document.getElementById("visualization");
+                        // Create a DataSet (allows two way data-binding)
+                        const items = new vis.DataSet([
+                            {id: 1, content: "item 1", start: moment().subtract(100, 'minutes')},
+                            {id: 2, content: "item 2", start: moment().subtract(90, 'minutes')},
+                            {id: 3, content: "item 3", start: moment().subtract(50, 'minutes')},
+                            {id: 5, content: "item 5", start: moment().subtract(10, 'minutes')},
+                            {id: 6, content: "item 6", start: moment().subtract(1, 'minutes')}
+                        ]);
+                        // Configuration for the Timeline
+                        const options = {
+                            showCurrentTime: true,
+                            zoomable: false,
+                            start: moment().set('hours', 9).set('minutes', 15),
+                            end: moment().set('hours', 16).set('minutes', 15),
+                            timeAxis: {scale: 'minute', step: 5},
+                        };
+                        // Create a Timeline
+                        const timeline = new vis.Timeline(container, items, options);
+                    });
+
                     this.trading();
                 }
             }
@@ -568,21 +603,33 @@
                     let stock = this.stocks[i].stock;
                     let code = stock.code;
                     console.log('trading ....'+code)
-                    axios.get("/trade/" + code).then(function (res) {
-                        let data = res.data.data;
-                        _this.stocks.forEach(stk => {
-                            let stock = stk.stock;
-                            if (data[stock.code]) {
-                                stock.k = data[stock.code].k;
-                            }
-                        })
-                    });
+                    await this.getTrade(code);
                     await sleep(1000);
                 }
                 if (_this.displayType === 'trade') {
                     setTimeout(_this.trading, 1000);
                 }
-            }
+            },
+            getTrade: function (code){
+                let _this = this;
+                return axios({
+                    method: 'get',
+                    url: "/trade/" + code,
+                    timeout: 5000
+                })
+                .then((res) => {
+                    let data = res.data.data;
+                    _this.stocks.forEach(stk => {
+                        let stock = stk.stock;
+                        if (data[stock.code]) {
+                            stock.k = data[stock.code].k;
+                        }
+                    })
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+            },
         },
         computed: {
             bksTopN: function () {
