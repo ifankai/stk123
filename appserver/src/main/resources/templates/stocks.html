@@ -504,7 +504,11 @@
                             zoomable: false,
                             start: moment().set('hours', 9).set('minutes', 15),
                             end: moment().set('hours', 16).set('minutes', 15),
-                            timeAxis: {scale: 'minute', step: 5},
+                            hiddenDates: {
+                                start: moment().set('hours', 12).set('minutes', 1),
+                                end: moment().set('hours', 12).set('minutes', 59)
+                            },
+                            timeAxis: {scale: 'minute', step: 15},
                         };
                         // Create a Timeline
                         const timeline = new vis.Timeline(container, items, options);
