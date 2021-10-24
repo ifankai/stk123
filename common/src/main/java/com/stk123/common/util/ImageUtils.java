@@ -1,14 +1,8 @@
 package com.stk123.common.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import cn.hutool.core.codec.Base64;
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+import java.io.*;
 
 public class ImageUtils {
 	
@@ -30,15 +24,14 @@ public class ImageUtils {
 			e.printStackTrace();
 		}
 		// 对字节数组Base64编码
-		BASE64Encoder encoder = new BASE64Encoder();
-		return encoder.encode(data);// 返回Base64编码过的字节数组字符串
+		return Base64.encode(data);// 返回Base64编码过的字节数组字符串
 	}
 	
 	public static String getImageStr(byte[] data) {
 		if(data == null)return null;
 		// 对字节数组Base64编码
-		BASE64Encoder encoder = new BASE64Encoder();
-		return encoder.encode(data);// 返回Base64编码过的字节数组字符串
+		//BASE64Encoder encoder = new BASE64Encoder();
+		return Base64.encode(data);// 返回Base64编码过的字节数组字符串
 	}
 	
 	/**
@@ -50,11 +43,9 @@ public class ImageUtils {
 	 */
 	public static void decodeBase64ToImage(String base64, String path,
 			String imgName) {
-		BASE64Decoder decoder = new BASE64Decoder();
 		try {
-			FileOutputStream write = new FileOutputStream(new File(path
-					+ imgName));
-			byte[] decoderBytes = decoder.decodeBuffer(base64);
+			FileOutputStream write = new FileOutputStream(path + imgName);
+			byte[] decoderBytes = Base64.decode(base64);
 			write.write(decoderBytes);
 			write.close();
 		} catch (IOException e) {
@@ -65,10 +56,9 @@ public class ImageUtils {
 	public static boolean GenerateImage(String imgStr) {// 对字节数组字符串进行Base64解码并生成图片
 		if (imgStr == null) // 图像数据为空
 			return false;
-		BASE64Decoder decoder = new BASE64Decoder();
 		try {
 			// Base64解码
-			byte[] b = decoder.decodeBuffer(imgStr);
+			byte[] b = Base64.decode(imgStr);
 			for (int i = 0; i < b.length; ++i) {
 				if (b[i] < 0) {// 调整异常数据
 					b[i] += 256;
