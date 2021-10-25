@@ -539,7 +539,7 @@ public class StockService {
     }
 
     public static List<Stock> filterByStatusExclude(List<Stock> stocks){
-        return stocks.stream().filter(stock -> !stock.getStatuses().stream().anyMatch(stkStatusEntity -> stkStatusEntity.getType().equals(StkConstant.STATUS_TYPE_1))).collect(Collectors.toList());
+        return stocks.stream().filter(stock -> stock.getStatuses().stream().noneMatch(stkStatusEntity -> stkStatusEntity.getType().equals(StkConstant.STATUS_TYPE_1))).collect(Collectors.toList());
     }
 
     public void buildBkAndCalcBkRps(List<Stock> stocks, EnumMarket market, EnumCate bkCate){
