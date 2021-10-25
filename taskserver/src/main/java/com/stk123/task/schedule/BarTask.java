@@ -1482,6 +1482,7 @@ public class BarTask extends AbstractTask {
 
             for(Stock stock : stocks){
                 Bar bar = stock.getBar();
+                if(bar == null) continue;
                 if(bar.getChange() > 0){
                     upCount ++;
                 }else if(bar.getChange() < 0){
