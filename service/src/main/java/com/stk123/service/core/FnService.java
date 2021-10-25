@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -41,7 +42,7 @@ public class FnService extends BaseRepository {
                 stkFnTypeEntity.setDispName(stkFnTypeEntity.getDispName()+"(%)");
             }
         });
-        TYPES_MAP = TYPES_LIST.stream().collect(Collectors.toMap(StkFnTypeEntity::getType, Function.identity()));
+        TYPES_MAP = TYPES_LIST.stream().collect(Collectors.toMap(StkFnTypeEntity::getType, Function.identity(), (a, b) -> b, LinkedHashMap::new));
         return TYPES_LIST;
     }
 

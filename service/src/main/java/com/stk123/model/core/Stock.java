@@ -418,8 +418,25 @@ public class Stock {
         return this.priceLimit;
     }
 
+    public int getPriceLimitUpCount(){
+        int cnt = 0;
+        Bar bar = this.getBar();
+        double pl = this.getPriceLimit();
+        while(bar != null && CommonUtils.numberFormat(bar.getLastClose() * (1 + pl), 2) == bar.getClose()){
+            cnt ++;
+            bar = bar.before();
+        }
+        return cnt;
+    }
+
     public Bar getBar(){
         return this.getBarSeries().getFirst();
+    }
+    public Bar getBar(int i){
+        return this.getBarSeries().getFirst().before(i);
+    }
+    public int getBarSize(){
+        return this.getBarSeries().size();
     }
     public BarSeries getBarSeries(){
         return this.getBarSeries(this.BarSeriesRows);

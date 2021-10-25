@@ -155,6 +155,8 @@ const _datatable = {
         columnDefs:Array,
         tableClass:{},
         selected: {type: Boolean, default: false},
+        fixedColumns:{type:Object},
+        scrollX:Boolean,
     },
     //emits: ['click'],
     data: function () {

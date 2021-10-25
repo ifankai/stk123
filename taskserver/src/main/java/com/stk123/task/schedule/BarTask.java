@@ -307,6 +307,7 @@ public class BarTask extends AbstractTask {
     }
 
     public void analyseCN() {
+        if(!isWorkingDay) return;
         log.info("1. CN calculate pe/pb.");
         Map<String, BigDecimal> peMap = stkKlineRepository.calcAvgMidPeTtm(today);
         Map<String, BigDecimal> pbMap = stkKlineRepository.calcAvgMidPbTtm(today);
@@ -1465,22 +1466,65 @@ public class BarTask extends AbstractTask {
             if(reportDate == null){
                 reportDate = CommonUtils.formatDate(new Date(), CommonUtils.sf_ymd2);
             }
+            StkPeEntity entity = stkPeRepository.findFirstByReportDate(reportDate);
+            if(entity == null){
+                return;
+            }
             List<Stock> stocks = Cache.getStocksWithBks();
             int priceLimitUp = 0;
+            List<Stock> priceLimitUp2 = new ArrayList<>();
+            List<Stock> priceLimitUp3 = new ArrayList<>();
             int priceLimitDown = 0;
+            int upCount = 0;
+            int downCount = 0;
+            int gt20Ma = 0; //20日均线上方
+            int gt120Ma = 0; //120日均线上方
+
             for(Stock stock : stocks){
+                Bar bar = stock.getBar();
+                if(bar.getChange() > 0){
+                    upCount ++;
+                }else if(bar.getChange() < 0){
+                    downCount ++;
+                }
                 if(stock.isPriceLimitUp()){
+                    int cnt = stock.getPriceLimitUpCount();
+                    if(cnt +2 > stock.getBarSize()){ //排除新股涨停板
+                        continue;
+                    }
                     priceLimitUp ++;
+                    if(cnt == 2){
+                        priceLimitUp2.add(stock);
+                    }else if(cnt >= 3){
+                        priceLimitUp3.add(stock);
+                    }
                 }
                 if(stock.isPriceLimitDown()){
                     priceLimitDown ++;
                 }
+
+                if(bar.getClose() > bar.getMA(20, Bar.EnumValue.C)){
+                    gt20Ma ++;
+                }
+                if(bar.getClose() > bar.getMA(120, Bar.EnumValue.C)){
+                    gt120Ma ++;
+                }
             }
-            StkPeEntity entity = stkPeRepository.findFirstByReportDate(reportDate);
+            
             if(entity != null){
                 entity.setStockCount(stocks.size());
                 entity.setResult1((double)priceLimitUp);
                 entity.setResult2((double)priceLimitDown);
+                entity.setResult3((double)upCount);
+                entity.setResult4((double)downCount);
+
+                entity.setResult5((double)priceLimitUp2.size());
+                entity.setResult6((double)priceLimitUp3.size());
+                entity.setString1(priceLimitUp2.stream().map(Stock::getCode).collect(Collectors.joining(",")));
+                entity.setString2(priceLimitUp3.stream().sorted(Comparator.comparing(Stock::getPriceLimitUpCount, Comparator.reverseOrder())).map(stock -> stock.getCode()+'|'+stock.getPriceLimitUpCount()).collect(Collectors.joining(",")));
+
+                entity.setResult7((double)gt20Ma);
+                entity.setResult8((double)gt120Ma);
 
                 stkPeRepository.save(entity);
             }

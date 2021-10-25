@@ -1,5 +1,8 @@
 package com.stk123.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.stk123.model.json.View;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -12,6 +15,7 @@ import java.util.Objects;
 @Setter
 @Getter
 @ToString
+@JsonView(View.All.class)
 public class StkPeEntity {
 
     @Id
@@ -36,10 +40,15 @@ public class StkPeEntity {
     private Double eneUpper;
     @Column(name = "ENE_LOWER", nullable = true, precision = 2)
     private Double eneLower;
+
     @Column(name = "RESULT_1", nullable = true, precision = 2)
+    @JsonProperty("upLimitCount")
     private Double result1;
+
     @Column(name = "RESULT_2", nullable = true, precision = 2)
+    @JsonProperty("downLimitCount")
     private Double result2;
+    
     @Column(name = "AVG_PB", nullable = true, precision = 2)
     private Double avgPb;
     @Column(name = "TOTAL_PE", nullable = true, precision = 2)
@@ -50,10 +59,15 @@ public class StkPeEntity {
     private Double midPb;
     @Column(name = "MID_PE", nullable = true, precision = 2)
     private Double midPe;
+
     @Column(name = "RESULT_3", nullable = true, precision = 2)
+    @JsonProperty("upCount")
     private Double result3;
+
     @Column(name = "RESULT_4", nullable = true, precision = 2)
+    @JsonProperty("downCount")
     private Double result4;
+
     @Column(name = "RESULT_5", nullable = true, precision = 2)
     private Double result5;
     @Column(name = "RESULT_6", nullable = true, precision = 2)
@@ -73,6 +87,10 @@ public class StkPeEntity {
     @Column(name = "STOCK_COUNT")
     private Integer stockCount;
 
+    @Column(name = "STRING_1")
+    private String string1;
+    @Column(name = "STRING_2")
+    private String string2;
 
     @Override
     public boolean equals(Object o) {

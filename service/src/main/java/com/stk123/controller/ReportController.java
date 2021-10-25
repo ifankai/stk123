@@ -4,10 +4,12 @@ import com.alicp.jetcache.anno.CacheType;
 import com.alicp.jetcache.anno.Cached;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.common.CommonUtils;
+import com.stk123.entity.StkPeEntity;
 import com.stk123.entity.StkReportDetailEntity;
 import com.stk123.entity.StkReportHeaderEntity;
 import com.stk123.model.RequestResult;
 import com.stk123.model.json.View;
+import com.stk123.repository.StkPeRepository;
 import com.stk123.repository.StkReportDetailRepository;
 import com.stk123.repository.StkReportHeaderRepository;
 import com.stk123.service.core.ReportService;
@@ -32,8 +34,10 @@ public class ReportController {
     private StkReportDetailRepository stkReportDetailRepository;
     @Autowired
     private StkReportHeaderRepository stkReportHeaderRepository;
+    @Autowired
+    private StkPeRepository stkPeRepository;
 
-    @RequestMapping({"","/","/{reportDate}"})
+    @GetMapping({"","/","/{reportDate}"})
     @JsonView(View.All.class)
     public RequestResult report(@PathVariable(value = "reportDate", required = false)String reportDate){
         Date rptDate = new Date();
@@ -79,5 +83,12 @@ public class ReportController {
             stkReportHeaderRepository.save(stkReportHeaderEntity);
         }
         return RequestResult.success();
+    }
+
+    @GetMapping({"/monitor"})
+    public RequestResult monitor(){
+        String date = CommonUtils.addDay2String(new Date(), -90);
+        List<StkPeEntity> entities = stkPeRepository.findAllByReportDateGreaterThanOrderByReportDateDesc(date);
+        return RequestResult.success(entities);
     }
 }

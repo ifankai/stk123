@@ -27,15 +27,14 @@ public class StockWebController {
     @Autowired
     private StkPeRepository stkPeRepository;
 
-    @RequestMapping("/stk")
-    public String stk(){
-        return "stk";
-    }
 
-    @RequestMapping("/{code}")
-    public String stock(@PathVariable(value = "code", required = true)String code,
+    @RequestMapping(value = {"/{code}", "/"})
+    public String stock(@PathVariable(value = "code", required = false) String code,
                         @RequestParam(value="title", required = false) String title,
                         Model model){
+        if(StringUtils.isEmpty(code)){
+            throw new RuntimeException("Stock code is empty!");
+        }
         model.addAttribute("title", title);
         model.addAttribute("code", code);
         model.addAttribute("codeType", "stock");
@@ -44,7 +43,7 @@ public class StockWebController {
         }
         StockProjection stockProjection = stkRepository.getByCode(code);
         if(stockProjection == null){
-            throw new RuntimeException("Stock 404");
+            throw new RuntimeException("Stock code is not found in database : " + code);
         }
         Stock stock = Stock.build(stockProjection);
         model.addAttribute("title", stock.getNameAndCode());

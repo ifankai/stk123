@@ -24,17 +24,22 @@ import java.util.stream.Collectors;
 @Controller
 @Slf4j
 @RequestMapping("/")
-public class HomeWebController {
+public class MainWebController {
 
     @Autowired
     private StkStatusRepository stkStatusRepository;
 
-    @RequestMapping("/heart")
+    @RequestMapping(value = {"/", ""})
+    public String main(){
+        return "main";
+    }
+
+    @RequestMapping("heart")
     public ModelAndView heart(){
         return getStocksByType(StkConstant.STATUS_TYPE_2);
     }
 
-    @RequestMapping("/exclude")
+    @RequestMapping("exclude")
     public ModelAndView exclude(){
         return getStocksByType(StkConstant.STATUS_TYPE_1);
     }

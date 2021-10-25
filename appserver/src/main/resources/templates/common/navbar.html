@@ -7,6 +7,9 @@
         <!-- Left navbar links -->
         <div class="collapse navbar-collapse order-3" id="navbarCollapse">
             <ul class="navbar-nav">
+                <li class="nav-item" :class="{active:navActive==='monitor'}">
+                    <a href="/" target="_blank" class="nav-link">情绪监控</a>
+                </li>
                 <li class="nav-item" :class="{active:navActive==='notice'}">
                     <a href="/notice" target="_blank" class="nav-link">热点公告</a>
                 </li>

@@ -411,6 +411,8 @@ create table STK_PE
 );
 alter table stk_pe add constraint pk_pe primary key (report_date);
 alter table stk_pe add stock_count number(8);
+alter table stk_pe add string_1 varchar2(1000);
+alter table stk_pe add string_2 varchar2(1000);
 
 
 create table stk_earnings_forecast(
@@ -3183,3 +3185,9 @@ select * from stk_text where type in (2,4) and code='600600'  order by insert_ti
 
 delete from stk_text where type=2  order by insert_time desc
 select * from stk_capital_flow order by insert_time desc;
+
+select * from stk_cn order by listing_date desc;--605167
+select * from stk_kline where code='605167' order by kline_date desc;
+update stk_kline set code='6051671' where code='605167' and kline_date >='20210729';
+
+select * from stk_pe order by report_date desc;

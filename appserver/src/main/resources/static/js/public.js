@@ -609,6 +609,7 @@ function createApp(config){
     app.config.globalProperties.tsFormat = _tsFormat;
     app.config.globalProperties.dateFormat = dateFormat;
     app.config.globalProperties._ = _;
+    app.config.globalProperties.moment = moment;
 
     app.mount('#app');
     return app;

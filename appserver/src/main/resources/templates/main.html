@@ -1,10 +1,199 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
-    <title>小智慧365_我的投资地盘</title>
-    <div th:replace="common/header"></div>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>市场情绪监控表 - 小智慧</title>
+    <div th:replace="common/css_public"></div>
+    <div th:replace="common/css_datatable"></div>
+    <link rel="stylesheet" th:href="'/css/public.css'+${_version}">
+    <style>
+        @media (min-width: 1200px) {
+            .img-width img {
+                width: 410px;
+                padding: 2px;
+                text-align: center;
+            }
+            .container{
+                max-width: 1350px;
+            }
+        }
+        @media (max-width: 650px) {
+            .container{
+                min-width: 615px;
+            }
+
+        }
+
+        table.dataTable tbody th, table.dataTable tbody td, table.dataTable thead th, table.dataTable thead td {
+            padding: 2px 2px;
+        }
+        div.dataTables_wrapper div.dataTables_info {
+            padding-top: .1em;
+            float: left;
+        }
+        div.dataTables_wrapper div.dataTables_filter{
+            padding-top: .1em;
+            float: right;
+            margin-right: .2rem;
+        }
+        div.dataTables_wrapper div.dataTables_paginate{
+            float: right;
+        }
+        div.dataTables_wrapper div.dataTables_paginate ul.pagination{
+            margin: 0;
+        }
+        .table thead th {
+            border-bottom: 1px solid #dee2e6;
+            padding: 0 .75rem;
+            color: #9ba2a8;
+            text-align: center;
+            white-space: nowrap;
+        }
+        table.dataTable tbody td{
+            font-size: 1.2rem;
+        }
+        table.dataTable>thead .sorting:before,
+        table.dataTable>thead .sorting:after,
+        table.dataTable>thead .sorting_asc:before,
+        table.dataTable>thead .sorting_asc:after,
+        table.dataTable>thead .sorting_desc:before,
+        table.dataTable>thead .sorting_desc:after,
+        table.dataTable>thead .sorting_asc_disabled:before,
+        table.dataTable>thead .sorting_asc_disabled:after,
+        table.dataTable>thead .sorting_desc_disabled:before,
+        table.dataTable>thead .sorting_desc_disabled:after{
+            bottom: 0;
+        }
+        .pagination-sm {
+            margin: .1rem 0;
+        }
+        .custom-select-sm, .form-control-sm {
+            height: calc(1.5rem);
+            padding-top: .15rem;
+            padding-bottom: .25rem;
+            padding-left: .5rem;
+            font-size: 50%;
+        }
+        .page-link {
+            padding: .2rem .5rem;
+            font-size: .8rem;
+            line-height: 1.5;
+        }
+
+    </style>
 </head>
-<body>
+<body class="hold-transition layout-top-nav layout-navbar-fixed text-sm pace-primary pace-done">
+<div class="pace pace-inactive">
+    <div class="pace-progress" data-progress-text="100%" data-progress="99" style="transform: translate3d(100%, 0px, 0px);">
+        <div class="pace-progress-inner"></div>
+    </div>
+    <div class="pace-activity"></div>
+</div>
+<!-- Site wrapper -->
+<div id="app" class="wrapper">
     <div th:replace="common/navbar"></div>
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header"></section>
+
+        <section class="content">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+
+                        <div id="notice" class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">市场情绪监控表</h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="收起">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="card-body">
+                                <datatable :="{...common.monitor, ...monitor}">
+                                    <template v-slot:report-date="{row, rowNumber}">
+                                        <span v-text="dateFormat(row.reportDate)"></span> <sub v-text="' ('+moment(dateFormat(row.reportDate)).day()+')'"></sub>
+                                    </template>
+                                </datatable>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <a id="back-to-top" href="#" class="btn btn-outline-primary back-to-top" style="display: none" role="button" aria-label="Scroll to top">
+            <i class="fas fa-chevron-up"></i>
+        </a>
+    </div>
+
+    <div th:replace="common/footer"></div>
+</div>
+<!-- ./wrapper -->
 </body>
 </html>
+<div th:replace="common/js_public"></div>
+<div th:replace="common/js_datatable"></div>
+<div th:replace="common/js_custom"></div>
+
+<script th:inline="javascript">
+
+    const config = {
+        data() {
+            return {
+                navActive:'monitor',
+                loading: true,
+                common:{
+                    monitor:{
+                        columns: [
+                            {title:"日期", slot:"report-date"},
+                            {title:"红盘", data:"upCount"},
+                            {title:"绿盘", data:"downCount"},
+                            {title:"涨停", data:"upLimitCount"},
+                            {title:"跌停", data:"downLimitCount"},
+                            {title:"炸板", data:""},
+                            {title:"连板", data:""},
+                            {title:"2连板", data:""},
+                            {title:"3连板", data:""},
+                            {title:"3连板以上", data:""},
+                            {title:"收盘>MA20", data:""},
+                            {title:"收盘>MA120", data:""},
+                        ],
+                        columnDefs: [
+                            { className: "text-nowrap text-center", "targets": [ 0,1,2,3,4 ] },
+                        ],
+                        ordering: true,
+                        order: [ [ 0, "desc" ] ],
+                        tableClass:{'table-hover':true},
+                        scrollX: true,
+                        fixedColumns: {
+                            left: 1
+                        }
+                    }
+                },
+                monitor:{
+                    data:[]
+                }
+            }
+        },
+        methods:{
+        },
+        computed: {
+        },
+        mounted() {
+            let _this = this;
+            axios.get("/rpt/monitor").then(function (res) {
+                let data = res.data.data;
+                _this.monitor = {data: data};
+                console.log('mounted', _this.$data)
+            });
+
+        }
+    };
+    createApp(config);
+
+</script>
