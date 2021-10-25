@@ -54,7 +54,7 @@ public class StockWebController {
         return "stock";
     }
 
-    @RequestMapping("/mystocks")
+    /*@RequestMapping("/mystocks")
     public String mystocks(Model model){
         StkPeEntity stkPeEntity = stkPeRepository.findTopByOrderByReportDateDesc();
         System.out.println(stkPeEntity);
@@ -63,5 +63,5 @@ public class StockWebController {
         model.addAttribute("code", code);
         model.addAttribute("codeType", "stock");
         return "stocks";
-    }
+    }*/
 }
