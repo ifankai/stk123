@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.common.CommonUtils;
 import com.stk123.entity.StkTradeStrategyEntity;
 import com.stk123.model.RequestResult;
+import com.stk123.model.core.Cache;
 import com.stk123.model.core.Stock;
 import com.stk123.model.json.View;
 import com.stk123.model.strategy.Strategy;
@@ -36,6 +37,18 @@ public class TradeController {
     @Autowired
     private StkTradeStrategyRepository stkTradeStrategyRepository;
 
+    @GetMapping("/list")
+    public RequestResult list(){
+        String date = CommonUtils.getToday();
+        List<StkTradeStrategyEntity> entities = stkTradeStrategyRepository.findAllByTradeDateOrderByInsertTime(date);
+        entities.forEach(trade -> {
+            Stock stock = stockService.getStock(trade.getCode());
+            trade.setNameAndCode(stock.getNameAndCodeWithLink());
+            trade.setStrategyName(Strategies.getStrategy(trade.getStrategyCode()).getName());
+        });
+        return RequestResult.success(entities);
+    }
+
     @GetMapping("/{code}")
     @JsonView(View.All.class) //Infinite recursion (StackOverflowError); nested exception is com.fasterxml.jackson.databind.JsonMappingException: Infinite recursion (StackOverflowError)
     public RequestResult trade(@PathVariable("code")String code){
@@ -48,6 +61,7 @@ public class TradeController {
             List<StrategyResult> srs = strategyBacktesting.getPassedStrategyResult();
 
             String tradeDate = CommonUtils.getToday();
+            List<StkTradeStrategyEntity> newTradeEntities = new ArrayList<>();
             final List<StrategyResult> results = srs.stream().filter(strategyResult -> {
                 Stock stk = strategyResult.getStock();
                 Strategy strategy = strategyResult.getStrategy();
@@ -60,14 +74,19 @@ public class TradeController {
                     tradeStrategyEntity.setStrategyCode(strategy.getCode());
                     tradeStrategyEntity.setTradeDate(tradeDate);
                     tradeStrategyEntity.setInsertTime(new Date());
-                    stkTradeStrategyRepository.save(tradeStrategyEntity);
+                    newTradeEntities.add(stkTradeStrategyRepository.save(tradeStrategyEntity));
                     return false;
                 }
             }).collect(Collectors.toList());
 
+            newTradeEntities.forEach(trade -> {
+                trade.setNameAndCode(stock.getNameAndCodeWithLink());
+                trade.setStrategyName(Strategies.getStrategy(trade.getStrategyCode()).getName());
+            });
+
             result.put(stock.getCode(), new HashMap(){{
                 put("k", stock.getBar());
-                put("strategy", results.stream().map(StrategyResult::getStrategy).collect(Collectors.toMap(Strategy::getCode, Strategy::getName)));
+                put("strategy", newTradeEntities);
             }});
         }
         return RequestResult.success(result);

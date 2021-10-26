@@ -20,6 +20,7 @@ public class StkTradeStrategyEntity implements Serializable {
     @Column(name = "ID")
     @GeneratedValue(strategy =GenerationType.SEQUENCE, generator="s_trade_strategy_id")
     @SequenceGenerator(name="s_trade_strategy_id", sequenceName="s_trade_strategy_id", allocationSize = 1)
+    @JsonView(View.Default.class)
     private Integer id;
 
     @Column(name = "CODE")
@@ -38,4 +39,10 @@ public class StkTradeStrategyEntity implements Serializable {
     @JsonView(View.Default.class)
     private Date insertTime;
 
+    @Transient
+    @JsonView(View.Default.class)
+    private String nameAndCode;
+    @Transient
+    @JsonView(View.Default.class)
+    private String strategyName;
 }

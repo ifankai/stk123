@@ -7,7 +7,7 @@
     <div th:replace="common/css_public"></div>
     <!--<link rel="stylesheet" href="/adminlte/plugins/pace-progress/themes/black/pace-theme-loading-bar.css">-->
     <div th:replace="common/css_datatable"></div>
-    <link rel="stylesheet" type="text/css" href="https://unpkg.com/vis-timeline/styles/vis-timeline-graph2d.min.css" />
+    <link rel="stylesheet" type="text/css" href="/plugins/timeline/vis-timeline-graph2d.min.css" />
     <link rel="stylesheet" th:href="'/css/public.css'+${_version}">
     <style>
         @media (min-width: 1200px) {
@@ -138,12 +138,6 @@
     </style>
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed text-sm pace-primary pace-done">
-<div class="pace pace-inactive">
-    <div class="pace-progress" data-progress-text="100%" data-progress="99" style="transform: translate3d(100%, 0px, 0px);">
-        <div class="pace-progress-inner"></div>
-    </div>
-    <div class="pace-activity"></div>
-</div>
 <!-- Site wrapper -->
 <div id="app" class="wrapper">
     <div th:replace="common/navbar"></div>
@@ -285,7 +279,7 @@
                     <div class="row">
                         <div class="card col-md-12">
                             <div class="card-body">
-                                <div id="visualization"></div>
+                                <div id="timeline"></div>
                             </div>
                         </div>
                     </div>
@@ -368,9 +362,9 @@
 </html>
 <div th:replace="common/js_public"></div>
 <div th:replace="common/js_datatable"></div>
-<script type="text/javascript" src="https://unpkg.com/moment@latest"></script>
-<script type="text/javascript" src="https://unpkg.com/vis-data@latest/peer/umd/vis-data.min.js"></script>
-<script type="text/javascript" src="https://unpkg.com/vis-timeline@latest/peer/umd/vis-timeline-graph2d.min.js"></script>
+<script type="text/javascript" src="/plugins/timeline/vis-data.min.js"></script>
+<script type="text/javascript" src="/plugins/timeline/vis-timeline-graph2d.min.js"></script>
+<script type="text/javascript" src="/plugins/notify.min.js"></script>
 <div th:replace="common/js_custom"></div>
 
 <script th:inline="javascript">
@@ -386,6 +380,13 @@
         // Only show the progress on regular and ajax-y page navigation, not every request
         restartOnRequestAfter: false
     }
+
+    //https://github.com/jaywcjlove/iNotify
+    const notify = new Notify({
+        audio:{
+            file: ['/plugins/audio/frog.mp3']
+        },
+    });
 
     function parseStocks(_this, res){
         let data = res.data.data;
@@ -475,7 +476,8 @@
                 },
                 total:0,
                 stocks:[],
-                bks:[]
+                bks:[],
+                trade:[],
             }
         },
         watch:{
@@ -488,32 +490,7 @@
             },
             displayType: function (newVal, oldVal){
                 if(newVal === 'trade'){
-                    this.$nextTick(function () {
-                        const container = document.getElementById("visualization");
-                        // Create a DataSet (allows two way data-binding)
-                        const items = new vis.DataSet([
-                            {id: 1, content: "item 1", start: moment().subtract(100, 'minutes')},
-                            {id: 2, content: "item 2", start: moment().subtract(90, 'minutes')},
-                            {id: 3, content: "item 3", start: moment().subtract(50, 'minutes')},
-                            {id: 5, content: "item 5", start: moment().subtract(10, 'minutes')},
-                            {id: 6, content: "item 6", start: moment().subtract(1, 'minutes')}
-                        ]);
-                        // Configuration for the Timeline
-                        const options = {
-                            showCurrentTime: true,
-                            zoomable: false,
-                            start: moment().set('hours', 9).set('minutes', 15),
-                            end: moment().set('hours', 16).set('minutes', 15),
-                            hiddenDates: {
-                                start: moment().set('hours', 12).set('minutes', 1),
-                                end: moment().set('hours', 12).set('minutes', 59)
-                            },
-                            timeAxis: {scale: 'minute', step: 15},
-                        };
-                        // Create a Timeline
-                        const timeline = new vis.Timeline(container, items, options);
-                    });
-
+                    this.getTradeList();
                     this.trading();
                 }
             }
@@ -567,7 +544,7 @@
                 Pace.stop();
             },
             findRpsByBk:function (bkCode) {
-                return this.bks.find(bk => bk.code==bkCode);
+                return this.bks.find(bk => bk.code===bkCode);
             },
             sortByRps01:function (e) {
                 Pace.start();
@@ -619,21 +596,58 @@
                 return axios({
                     method: 'get',
                     url: "/trade/" + code,
-                    timeout: 5000
-                })
+                    timeout: 5000,
+                    progress: false
+                }, {progress: false})
                 .then((res) => {
                     let data = res.data.data;
-                    _this.stocks.forEach(stk => {
-                        let stock = stk.stock;
-                        if (data[stock.code]) {
-                            stock.k = data[stock.code].k;
+                    let stk = _this.stocks.find(stk => stk.stock.code === code);
+                    let stock = stk.stock;
+                    if (data[stock.code]) {
+                        stock.k = data[stock.code].k;
+                        if(!_.isEmpty(data[stock.code].strategy)){
+                            if(_this.timelineItems) {
+                                data[stock.code].strategy.forEach(item => {
+                                    item.content = item.nameAndCode +' - '+ item.strategyName;
+                                    item.start = moment(item.insertTime);
+                                    _this.timelineItems.add(item);
+                                    notify.player();
+                                });
+                            }
                         }
-                    })
+                    }
                 })
                 .catch(error => {
                     console.log(error);
                 })
             },
+            getTradeList: async function (){
+                console.log('getTradeList...')
+                let _this = this;
+                return axios.get("/trade/list").then(function(res){
+                    _this.trade = res.data.data;
+                    _this.trade.forEach(item => {
+                        item.content = item.nameAndCode +' - '+ item.strategyName;
+                        item.start = moment(item.insertTime);
+                    });
+
+                    const container = document.getElementById("timeline");
+                    _this.timelineItems = new vis.DataSet(_this.trade);
+                    const options = {
+                        showCurrentTime: true,
+                        zoomable: false,
+                        start: moment().set('hours', 9).set('minutes', 15),
+                        end: moment().set('hours', 16).set('minutes', 15),
+                        hiddenDates: {
+                            start: moment().set('hours', 12).set('minutes', 1),
+                            end: moment().set('hours', 12).set('minutes', 59)
+                        },
+                        timeAxis: {scale: 'minute', step: 15},
+                    };
+                    _this.timeline = new vis.Timeline(container, _this.timelineItems, options);
+
+                });
+            }
         },
         computed: {
             bksTopN: function () {

@@ -234,7 +234,7 @@ public class TextController {
     public RequestResult hotNotice(@PathVariable(value = "createdAtAfter", required = false)Long createdAtAfter){
         log.info("hot notice.......................");
         if(createdAtAfter == null) {
-            createdAtAfter = DateUtils.addMonths(new Date(), -2).getTime();
+            createdAtAfter = DateUtils.addMonths(new Date(), -1).getTime();
         }
         Date dateAfter = new Date(createdAtAfter);
         List<StkTextEntity> result = stkTextRepository.findAllByTypeAndCodeTypeAndSubTypeAndReplyPositiveAndInsertTimeGreaterThanOrderByInsertTimeDesc(

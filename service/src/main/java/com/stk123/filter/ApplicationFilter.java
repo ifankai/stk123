@@ -21,7 +21,7 @@ public class ApplicationFilter implements Filter {
 
     private final static String CSS_JS_VERSION = '?'+String.valueOf(new Date().getTime());
 
-    private static final Pattern STATIC_RESOURCES = Pattern.compile("(^/js/.*)|(^/css/.*)|(^/img/.*)|(^/fonts/.*)|(^/adminlte/.*)|(^/dist/.*)");
+    private static final Pattern STATIC_RESOURCES = Pattern.compile("(^/js/.*)|(^/css/.*)|(^/img/.*)|(^/fonts/.*)|(^/adminlte/.*)|(^/dist/.*)|(^/plugins/.*)");
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
