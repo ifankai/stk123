@@ -603,7 +603,7 @@ public class Strategies {
                     barHighest.getVolume() < (bar.getVolume() + bar1.getVolume())){
                 return FilterResult.TRUE();
             }
-            return FilterResult.FALSE();
+            return FilterResult.TRUE();
         };
         strategy.addFilter("5分钟爆量", filter);
         return strategy;

@@ -293,9 +293,9 @@ public class Stock {
     public String getNameWithLink(){
         loadIfNull(this.name);
         if(this.isMarketCN() && this.isCateIndexEastmoneyGn()){
-            return CommonUtils.wrapLink(this.getName(), "/B/"+this.getCode());
+            return CommonUtils.wrapLink(this.getName(), "/b/"+this.getCode());
         }
-        return CommonUtils.wrapLink(this.getName(), "/S/"+this.getCode());
+        return CommonUtils.wrapLink(this.getName(), "/s/"+this.getCode());
     }
     @JsonView(View.Default.class)
     public String getNameAndCodeWithLink(){
@@ -309,10 +309,10 @@ public class Stock {
         loadIfNull(this.name);
         if(this.isMarketCN() && this.isCateIndexEastmoneyGn()){
             return CommonUtils.wrapLink(this.getName(), "https://quote.eastmoney.com/bk/90."+this.getCode()+".html")
-                    + (br?"<br/>":"")+"["+ CommonUtils.wrapLink(this.getCode(), "/B/"+this.getCode()) +"]";
+                    + (br?"<br/>":"")+"["+ CommonUtils.wrapLink(this.getCode(), "/b/"+this.getCode()) +"]";
         }
         return CommonUtils.wrapLink((this.name==null?this.code:this.name), "https://xueqiu.com/S/"+this.getCodeWithPlace())
-                + (br?"<br/>":"")+"["+ CommonUtils.wrapLink(this.getCodeWithPlace(), "/S/"+this.getCode()) +"]";
+                + (br?"<br/>":"")+"["+ CommonUtils.wrapLink(this.getCodeWithPlace(), "/s/"+this.getCode()) +"]";
     }
     public String getNameAndCodeWithLinkAndBold(){
         return "<b>"+this.getNameAndCodeWithLink()+"</b>";

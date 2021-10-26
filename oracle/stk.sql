@@ -1063,7 +1063,7 @@ create table stk_trade_strategy(
 );
 create sequence s_trade_strategy_id INCREMENT BY 1 START WITH 10000 NOMAXVALUE NOCYCLE CACHE 10;
 alter table stk_trade_strategy add constraint pk_trade_strategy_id primary key (id);
-create index idx_trade_strategy_code on stk_trade_strategy (code,trade_date);
+create index idx_trade_strategy_date on stk_trade_strategy (trade_date);
 alter table stk_trade_strategy modify strategy_code varchar2(20);
 
 

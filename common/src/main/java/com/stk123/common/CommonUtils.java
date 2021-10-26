@@ -978,7 +978,7 @@ public class CommonUtils {
     }
     @SneakyThrows
     public static String a2stocks(String name, String title, List<String> codes){
-        return CommonUtils.wrapLink(name,"/S/"+StringUtils.join(codes, ",")+"?title="+ URLEncoder.encode(title, "UTF-8"));
+        return CommonUtils.wrapLink(name,"/s/"+StringUtils.join(codes, ",")+"?title="+ URLEncoder.encode(title, "UTF-8"));
     }
 
     //计算复合增长率
