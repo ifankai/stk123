@@ -4,11 +4,13 @@ import com.alicp.jetcache.anno.CacheType;
 import com.alicp.jetcache.anno.Cached;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.stk123.common.CommonUtils;
+import com.stk123.entity.StkKlineEntity;
 import com.stk123.entity.StkPeEntity;
 import com.stk123.entity.StkReportDetailEntity;
 import com.stk123.entity.StkReportHeaderEntity;
 import com.stk123.model.RequestResult;
 import com.stk123.model.json.View;
+import com.stk123.repository.StkKlineRepository;
 import com.stk123.repository.StkPeRepository;
 import com.stk123.repository.StkReportDetailRepository;
 import com.stk123.repository.StkReportHeaderRepository;
@@ -20,6 +22,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +39,8 @@ public class ReportController {
     private StkReportHeaderRepository stkReportHeaderRepository;
     @Autowired
     private StkPeRepository stkPeRepository;
+    @Autowired
+    private StkKlineRepository stkKlineRepository;
 
     @GetMapping({"","/","/{reportDate}"})
     @JsonView(View.All.class)
@@ -87,8 +92,13 @@ public class ReportController {
 
     @GetMapping({"/monitor"})
     public RequestResult monitor(){
-        String date = CommonUtils.addDay2String(new Date(), -90);
+        String date = CommonUtils.addDay2String(new Date(), -365);
         List<StkPeEntity> entities = stkPeRepository.findAllByReportDateGreaterThanOrderByReportDateDesc(date);
-        return RequestResult.success(entities);
+        List<StkKlineEntity> ks = stkKlineRepository.findAllByCodeAndKlineDateAfterOrderByKlineDateDesc("999999", date);
+        Map map = new HashMap(){{
+            put("monitor", entities);
+            put("ks", ks);
+        }};
+        return RequestResult.success(map);
     }
 }

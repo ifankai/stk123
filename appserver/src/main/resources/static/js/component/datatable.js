@@ -29,7 +29,12 @@ const _datatableTemplate = `
     <table :id="'_datatable_'+datatableId"  class="table table-valign-middle dataTable" :class="tableClass" style="width:100%">
         <thead v-show="columns[0].title">
             <tr>
-                <th v-for="column in columns" v-html="column.title"></th>
+                <template v-for="column in columns" >
+                    <th v-if="column.head !== undefined">
+                        <slot :name="column.head" :="{column:column}"></slot>
+                    </th>
+                    <th v-else v-html="column.title"></th>
+                </template>
             </tr>
         </thead>
         <tbody>

@@ -25,7 +25,10 @@
 
         }
 
-        table.dataTable tbody th, table.dataTable tbody td, table.dataTable thead th, table.dataTable thead td {
+        table.dataTable tbody th, table.dataTable thead th {
+            padding: 4px 2px;
+        }
+        table.dataTable tbody td, table.dataTable thead td {
             padding: 2px 2px;
         }
         div.dataTables_wrapper div.dataTables_info {
@@ -96,7 +99,7 @@
                 <div class="row">
                     <div class="col-12">
 
-                        <div id="notice" class="card">
+                        <div id="monitor" class="card">
                             <div class="card-header">
                                 <h3 class="card-title">市场情绪监控表</h3>
                                 <div class="card-tools">
@@ -108,6 +111,12 @@
 
                             <div class="card-body">
                                 <datatable :="{...common.monitor, ...monitor}">
+                                    <template v-slot:up-count="{column}">
+                                        <span v-text="column.title"></span>
+                                        <button @click.stop="" type="button" class="btn btn-tool ml-1" title="历史走势">
+                                            <i class="fal fa-chart-line"></i>
+                                        </button>
+                                    </template>
                                     <template v-slot:report-date="{row, rowNumber}">
                                         <span v-text="dateFormat(row.reportDate)"></span> <sub v-text="' ('+moment(dateFormat(row.reportDate)).day()+')'"></sub>
                                     </template>
@@ -117,6 +126,29 @@
 
                     </div>
                 </div>
+
+                <div class="row">
+                    <div class="col-12">
+
+                        <div id="monitor-history" class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">市场情绪监控历史走势</h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="收起">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="card-body">
+                                <div id="chart-history" style="width: 100%; height: 500px"></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
             </div>
         </section>
 
@@ -132,9 +164,25 @@
 </html>
 <div th:replace="common/js_public"></div>
 <div th:replace="common/js_datatable"></div>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.2.1/dist/echarts.min.js"></script>
 <div th:replace="common/js_custom"></div>
 
 <script th:inline="javascript">
+</script>
+<script>
+    //判断单双击函数
+    var time1 = new Date();
+    function shuangJi() {
+        var time2 = new Date();
+        //第二次时间减去第一次时间小于300ms为双击事件，否则为单击事件
+        if (time2 - time1 < 300) {
+            return 2;
+        } else {
+            //如果为单击事件 则更新当前第一次时间
+            time1 = time2;
+            return 1;
+        }
+    }
 
     const config = {
         data() {
@@ -145,7 +193,7 @@
                     monitor:{
                         columns: [
                             {title:"日期", slot:"report-date"},
-                            {title:"红盘", data:"upCount"},
+                            {head:"up-count", title:"红盘", data:"upCount"},
                             {title:"绿盘", data:"downCount"},
                             {title:"涨停", data:"upLimitCount"},
                             {title:"跌停", data:"downLimitCount"},
@@ -171,7 +219,9 @@
                 },
                 monitor:{
                     data:[]
-                }
+                },
+                ks:[],
+                history:[]
             }
         },
         methods:{
@@ -182,8 +232,270 @@
             let _this = this;
             axios.get("/rpt/monitor").then(function (res) {
                 let data = res.data.data;
-                _this.monitor = {data: data};
+                _this.monitor = {data: data.monitor.slice(0, 30)};
+                _this.history = data.monitor;
+                _this.history.forEach(item => {
+                    item.upCount = item.upCount == null ? null : (item.upCount/item.stockCount).toFixed(2); // 红盘%
+                })
+                _this.ks = data.ks;
                 console.log('mounted', _this.$data)
+
+                let option = _this.option = {
+                    animation: false,
+                    legend: {
+                        left: 'center',
+                        data: [{name: '全选',icon:'rect'}, '上证指数', '红盘%', '绿盘%', '参数4', '参数5'],
+                        textStyle: {
+                            fontSize: 16,
+                        },
+                        selected: {'全选': true}
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'cross'
+                        },
+                        borderWidth: 1,
+                        borderColor: '#ccc',
+                        padding: 10,
+                        textStyle: {
+                            color: '#000'
+                        }
+                        // extraCssText: 'width: 170px'
+                    },
+                    // 调整表格两边空白的区域
+                    grid: {
+                        // 左侧
+                        x: '3%',
+                        // 上部
+                        // y: 25,
+                        // 右侧
+                         x2: '5%'
+                        // 下部
+                        // y2: 35
+                    },
+                    xAxis: {
+                        name: '日期',
+                        type: 'time',
+                        // boundaryGap: false, //x下标在刻度处显示
+                        splitLine: {
+                            show: true, //想要不显示网格线，改为false
+                            lineStyle: {
+                                // 设置网格为虚线
+                                type: 'dashed'
+                            }
+                        },
+                        min: 'dataMin',
+                        max: 'dataMax',
+                        // splitArea: { show: true }, //保留网格区域
+                    },
+                    yAxis: [
+                        {
+                            //上证指数
+                            type: 'value',
+                            max: (parseInt(_.max(data.ks.map(k => k.c)) / 100 + 1)) * 100,
+                            min: (parseInt(_.min(data.ks.map(k => k.c)) / 100)) * 100,
+                            interval: 100,
+                            //axisLabel: { show: true },
+                            // 设置刻度线的颜色等样式
+                            axisLine: {
+                                lineStyle: {
+                                    width: 3
+                                }
+                            },
+                            splitLine: {
+                                show: true, //想要不显示网格线，改为false
+                                lineStyle: {
+                                    // 设置网格为虚线
+                                    type: 'dashed'
+                                }
+                            }
+                        },
+                        {
+                            // 百分比
+                            // max: 1000,
+                            // min: 0,
+                            type: 'value',
+                            axisLine: {
+                                lineStyle: {
+                                    width: 3
+                                }
+                            },
+                            splitLine: {
+                                show: false //想要不显示网格线，改为false
+                            }
+                        },
+                        {
+                            //连板数
+                            // max: 900,
+                            // min: 0,
+                            type: 'value',
+                            axisLine: {
+                                lineStyle: {
+                                    width: 3
+                                }
+                            },
+                            offset: 30,
+                            splitLine: {
+                                show: false //想要不显示网格线，改为false
+                            }
+                        },
+
+                    ],
+                    series: [
+                        {//全选按钮的假数据
+                            name:'全选',
+                            type: 'line',
+                            data: []
+                        },
+                        {
+                            // 曲线数据配置
+                            data: _this.ks.map(k => {
+                                return {value: [dateFormat(k.d), k.c]}
+                            }),
+                            // 曲线名
+                            name: '上证指数',
+                            // 设置参数对应的y坐标轴的索引
+                            type: 'line',
+                            symbol: 'none',
+                            // 曲线平滑设置
+                            smooth: true
+                        },
+                        {
+                            data: _this.history.map(k => {
+                                return {value: [dateFormat(k.reportDate), k.upCount]}
+                            }),
+                            // 曲线名
+                            name: '红盘%',
+                            // 设置所在曲线对应的y坐标轴的索引
+                            yAxisIndex: 1,
+                            type: 'line',
+                            symbol: 'none',
+                            // 曲线平滑设置
+                            smooth: true
+                        },
+                        {
+                            data:  _this.history.map(k => {
+                                return {value: [dateFormat(k.reportDate), k.downCount]}
+                            }),
+                            name: '绿盘%',
+                            // 设置参数对应的y坐标轴的索引
+                            yAxisIndex: 1,
+                            type: 'line',
+                            symbol: 'none',
+                            // 曲线平滑设置
+                            smooth: true
+                        },
+                        {
+                            data: [
+                                {
+                                    value: ['2021-07-1', 200]
+                                },
+                                {
+                                    value: ['2021-07-2', 400]
+                                },
+                                {
+                                    value: ['2021-07-3', 600]
+                                },
+                                {
+                                    value: ['2021-07-4', 800]
+                                },
+                                {
+                                    value: ['2021-07-5', 1000]
+                                },
+                                {
+                                    value: ['2021-07-6', 1100]
+                                }
+                            ],
+                            name: '参数4',
+                            // 设置参数对应的y坐标轴的索引
+                            yAxisIndex: 2,
+                            type: 'line',
+                            symbol: 'none',
+                            // 曲线平滑设置
+                            smooth: true
+                        },
+                        {
+                            data: [
+                                {
+                                    value: ['2021-07-1', 1100]
+                                },
+                                {
+                                    value: ['2021-07-2', 800]
+                                },
+                                {
+                                    value: ['2021-07-4', null]
+                                },
+                                {
+                                    value: ['2021-07-5', 400]
+                                }
+                            ],
+                            name: '参数5',
+                            // 设置参数对应的y坐标轴的索引
+                            yAxisIndex: 2,
+                            type: 'line',
+                            symbol: 'none',
+                            // 曲线平滑设置
+                            smooth: true
+                        },
+
+                    ]
+
+                }
+                console.log(_this.option)
+                let chartHistory = echarts.init(document.getElementById('chart-history'))
+                chartHistory.setOption(_this.option)
+
+                //增加全选功能
+                var legendWai = "";
+                chartHistory.on("legendselectchanged", e => {
+                    var j = shuangJi();
+                    if (j === 2) { //如果为双击 进行隐藏和显示
+                        let legendData = option.legend.data;
+                        for (var i = 0; i < legendData.length; i++) {
+                            //显示当前legent 关闭非当前legent
+                            if (legendWai === legendData[i]) {
+                                chartHistory.dispatchAction({
+                                    type: 'legendSelect',
+                                    name: legendData[i]
+                                });
+                                option.legend.selected[legendData[i]] = true;
+                            } else {
+                                chartHistory.dispatchAction({
+                                    type: 'legendUnSelect',
+                                    name: legendData[i]
+                                });
+                                option.legend.selected[legendData[i]] = false;
+                            }
+                        }
+                    }else {
+                        let name = legendWai = e.name;
+                        let allSelect = "全选";
+                        if (name === allSelect) {
+                            //全选的点击事件
+                            for (let key in e.selected) {
+                                option.legend.selected[key] = e.selected[allSelect];
+                            }
+                        } else {
+                            //普通多选框的点击事件
+                            option.legend.selected[name] = e.selected[name];
+                            if (e.selected.name == false) {
+                                // 当前选中设置为false时
+                                option.legend.selected[allSelect] = false;
+                            } else {
+                                // 当前选中设置为true时
+                                let arr = Object.values(e.selected).splice(1);
+                                let flag = arr.every(currentValue => {
+                                    return currentValue == true;
+                                });
+                                option.legend.selected[allSelect] = flag;
+                            }
+                        }
+                        chartHistory.setOption(option,);
+                    }
+
+                });
+
             });
 
         }

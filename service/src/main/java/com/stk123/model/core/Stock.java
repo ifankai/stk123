@@ -393,15 +393,21 @@ public class Stock {
     }
 
     public boolean isPriceLimitUp(){
+        return isPriceLimitUp(null);
+    }
+    public boolean isPriceLimitUp(String date){
         double pl = this.getPriceLimit();
-        Bar bar = this.getBar();
+        Bar bar = this.getBar(date);
         if(bar == null) return false;
         return CommonUtils.numberFormat(bar.getLastClose() * (1 + pl), 2) == bar.getClose();
     }
 
     public boolean isPriceLimitDown(){
+        return isPriceLimitDown(null);
+    }
+    public boolean isPriceLimitDown(String date){
         double pl = this.getPriceLimit();
-        Bar bar = this.getBar();
+        Bar bar = this.getBar(date);
         if(bar == null) return false;
         return CommonUtils.numberFormat(bar.getLastClose() * (1 - pl), 2) == bar.getClose();
     }
@@ -419,8 +425,11 @@ public class Stock {
     }
 
     public int getPriceLimitUpCount(){
+        return getPriceLimitUpCount(null);
+    }
+    public int getPriceLimitUpCount(String date){
         int cnt = 0;
-        Bar bar = this.getBar();
+        Bar bar = this.getBar(date);
         double pl = this.getPriceLimit();
         while(bar != null && CommonUtils.numberFormat(bar.getLastClose() * (1 + pl), 2) == bar.getClose()){
             cnt ++;
@@ -434,6 +443,21 @@ public class Stock {
     }
     public Bar getBar(int i){
         return this.getBarSeries().getFirst().before(i);
+    }
+    public Bar getBar(String date){
+        return date == null ? this.getBar() : this.getBarSeries().getBar(date);
+    }
+    public int getBarSize(String date){
+        if(date == null){
+            return this.getBarSize();
+        }
+        Bar bar = this.getBar(date);
+        int cnt = 0;
+        while(bar != null) {
+            cnt ++;
+            bar = bar.before();
+        }
+        return cnt;
     }
     public int getBarSize(){
         return this.getBarSeries().size();

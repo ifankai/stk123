@@ -3192,6 +3192,8 @@ select * from stk_kline where code='605167' order by kline_date desc;
 update stk_kline set code='6051671' where code='605167' and kline_date >='20210729';
 
 select * from stk_pe order by report_date desc;
-select * from stk_trade_strategy for update;
+select * from stk_trade_strategy;
 delete from stk_trade_strategy where code in ('600602','600601');
 insert into stk_trade_strategy select s_trade_strategy_id.nextval,'600600','20211026','15a', sysdate from dual;
+
+select * from stk where cate=2;

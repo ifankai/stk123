@@ -131,7 +131,8 @@ public class BarTask extends AbstractTask {
         this.runByName("analyseCNRpsStocksByStrategies", this::analyseCNRpsStocksByStrategies);
         this.runByName("analyseRpsStocksByStrategy15a", this::analyseRpsStocksByStrategy15a);
         this.runByName("analyseBks", this::analyseBks);
-        this.runByName("stat", this::statAllStocks);
+        this.runByName("statAllStocks", this::statAllStocks);
+        this.runByName("statHistory", this::statHistory);
         this.runByName("clearAll", this::clearAll);
     }
 
@@ -1511,29 +1512,100 @@ public class BarTask extends AbstractTask {
                     gt120Ma ++;
                 }
             }
-            
-            if(entity != null){
-                entity.setStockCount(stocks.size());
-                entity.setResult1((double)priceLimitUp);
-                entity.setResult2((double)priceLimitDown);
-                entity.setResult3((double)upCount);
-                entity.setResult4((double)downCount);
 
-                entity.setResult5((double)priceLimitUp2.size());
-                entity.setResult6((double)priceLimitUp3.size());
-                entity.setString1(priceLimitUp2.stream().map(Stock::getCode).collect(Collectors.joining(",")));
-                entity.setString2(priceLimitUp3.stream().sorted(Comparator.comparing(Stock::getPriceLimitUpCount, Comparator.reverseOrder())).map(stock -> stock.getCode()+'|'+stock.getPriceLimitUpCount()).collect(Collectors.joining(",")));
+            entity.setStockCount(stocks.size());
+            entity.setResult1((double)priceLimitUp);
+            entity.setResult2((double)priceLimitDown);
+            entity.setResult3((double)upCount);
+            entity.setResult4((double)downCount);
 
-                entity.setResult7((double)gt20Ma);
-                entity.setResult8((double)gt120Ma);
+            entity.setResult5((double)priceLimitUp2.size());
+            entity.setResult6((double)priceLimitUp3.size());
+            entity.setString1(priceLimitUp2.stream().map(Stock::getCode).collect(Collectors.joining(",")));
+            entity.setString2(priceLimitUp3.stream().sorted(Comparator.comparing(Stock::getPriceLimitUpCount, Comparator.reverseOrder())).map(stock -> stock.getCode()+'|'+stock.getPriceLimitUpCount()).collect(Collectors.joining(",")));
 
-                stkPeRepository.save(entity);
-            }
+            entity.setResult7((double)gt20Ma);
+            entity.setResult8((double)gt120Ma);
+
+            stkPeRepository.save(entity);
         } catch (Exception e) {
             EmailUtils.send("报错[statAllStocks]", ExceptionUtils.getExceptionAsString(e));
             log.error("statAllStocks", e);
         }
         log.info("end statAllStocks");
+    }
+
+    public void statHistory(){
+        List<StkKlineEntity> ks = stkKlineRepository.findAllByCodeAndKlineDateAfterOrderByKlineDateDesc("999999", "20210101");
+        List<Stock> stocks = Cache.getStocksWithBks();
+        for(StkKlineEntity k : ks){
+            String date = k.getKlineDate();
+
+            int total = 0;
+            int priceLimitUp = 0;
+            List<Stock> priceLimitUp2 = new ArrayList<>();
+            List<Stock> priceLimitUp3 = new ArrayList<>();
+            int priceLimitDown = 0;
+            int upCount = 0;
+            int downCount = 0;
+            int gt20Ma = 0; //20日均线上方
+            int gt120Ma = 0; //120日均线上方
+
+            for(Stock stock : stocks){
+                Bar bar = stock.getBar(date);
+                if(bar == null) continue;
+                total ++;
+                
+                if(bar.getChange() > 0){
+                    upCount ++;
+                }else if(bar.getChange() < 0){
+                    downCount ++;
+                }
+                if(stock.isPriceLimitUp(date)){
+                    int cnt = stock.getPriceLimitUpCount(date);
+                    if(cnt +2 > stock.getBarSize(date)){ //排除新股涨停板
+                        continue;
+                    }
+                    priceLimitUp ++;
+                    if(cnt == 2){
+                        priceLimitUp2.add(stock);
+                    }else if(cnt >= 3){
+                        priceLimitUp3.add(stock);
+                    }
+                }
+                if(stock.isPriceLimitDown(date)){
+                    priceLimitDown ++;
+                }
+
+                if(bar.getClose() > bar.getMA(20, Bar.EnumValue.C)){
+                    gt20Ma ++;
+                }
+                if(bar.getClose() > bar.getMA(120, Bar.EnumValue.C)){
+                    gt120Ma ++;
+                }
+            }
+
+            StkPeEntity entity = stkPeRepository.findFirstByReportDate(date);
+            if(entity == null){
+                entity = new StkPeEntity();
+                entity.setReportDate(date);
+            }
+            entity.setStockCount(total);
+            entity.setResult1((double)priceLimitUp);
+            entity.setResult2((double)priceLimitDown);
+            entity.setResult3((double)upCount);
+            entity.setResult4((double)downCount);
+
+            entity.setResult5((double)priceLimitUp2.size());
+            entity.setResult6((double)priceLimitUp3.size());
+            entity.setString1(priceLimitUp2.stream().map(Stock::getCode).collect(Collectors.joining(",")));
+            entity.setString2(priceLimitUp3.stream().sorted(Comparator.comparing(Stock::getPriceLimitUpCount, Comparator.reverseOrder())).map(stock -> stock.getCode()+'|'+stock.getPriceLimitUpCount()).collect(Collectors.joining(",")));
+
+            entity.setResult7((double)gt20Ma);
+            entity.setResult8((double)gt120Ma);
+
+            stkPeRepository.save(entity);
+        }
     }
 
     public List<Stock> filterByHolder(List<Stock> stocks) {
