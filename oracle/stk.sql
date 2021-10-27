@@ -2995,6 +2995,7 @@ select avg(pe_ttm) as avg_pe_ttm,median(pe_ttm) as mid_pe_ttm from stk_kline whe
 select avg(pb_ttm),median(pb_ttm) from stk_kline where kline_date='20201224' and pb_ttm is not null and pb_ttm>0 and pb_ttm<30;
 
 
+
 select * from stk_task_log order by id desc;
 --delete from stk_task_log;
 
