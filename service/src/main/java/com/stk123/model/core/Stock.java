@@ -1212,7 +1212,7 @@ public class Stock {
                StringUtils.contains(owner.getOrgName(), "养老保险基金")
                     ){
                 this.tags.add(Tag.builder().name("机构投资").detail(owner.getOrgName()).build());
-                score += 5;
+                score += 10;
                 break;
             }
         }
