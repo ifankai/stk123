@@ -18,4 +18,6 @@ public interface StkReportDetailRepository extends JpaRepository<StkReportDetail
     @Transactional
     @Query(value = "update stk_report_detail set checked_time = :date where id = :id", nativeQuery = true)
     void updateCheckedById(@Param("id") Integer id, @Param("date") Date date);
+
+    StkReportDetailEntity findTopByStrategyCodeOrderByIdDesc(String strategyCode);
 }

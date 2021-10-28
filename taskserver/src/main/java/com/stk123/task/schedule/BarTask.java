@@ -49,6 +49,8 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @CommonsLog
@@ -105,6 +107,8 @@ public class BarTask extends AbstractTask {
     private ReportService reportService;
     @Autowired
     private StkReportHeaderRepository stkReportHeaderRepository;
+    @Autowired
+    private StkReportDetailRepository stkReportDetailRepository;
 
     public static void main(String[] args) throws Exception {
         BarTask task = new BarTask();
@@ -1363,12 +1367,36 @@ public class BarTask extends AbstractTask {
                     }
 
                     if(stkReportHeaderEntity != null){
+                        String output1 = null;
+                        String output2 = null;
+                        if (strategyResult.getStrategy().getCode().startsWith("strategy_08")) {
+                            List<StrategyResult> list = (List<StrategyResult>) strategyResult.getStrategy().getStrategyResultsAll();
+                            output1 = list.stream().map(StrategyResult::getStockCode).collect(Collectors.joining(","));
+
+                            StkReportDetailEntity stkReportDetailEntity = stkReportDetailRepository.findTopByStrategyCodeOrderByIdDesc(strategyResult.getStrategy().getCode());
+                            String output1yesterday = stkReportDetailEntity.getOutput1();
+                            if(StringUtils.isNotEmpty(output1yesterday)){
+                                int i = 0;
+                                Map<String, Integer> output1Map = new LinkedHashMap<>();
+                                for(StrategyResult sr : list){
+                                    output1Map.put(sr.getStockCode(), i++);
+                                }
+                                i = 0;
+                                List<String> listYesterday = Arrays.asList(StringUtils.split(output1yesterday, ","));
+                                for(String str : listYesterday){
+                                    int upPosition = output1Map.merge(str, i++, (oldValue, newValue) -> newValue - oldValue);
+                                    output1Map.put(str, -upPosition);
+                                }
+                                // 根据上升位次从高到底排序，然后取前20
+                                output2 = output1Map.entrySet().stream().sorted(Comparator.comparing(Map.Entry::getValue, Comparator.reverseOrder())).map(entry -> entry.getKey()+'|'+entry.getValue()).limit(20).collect(Collectors.joining(","));
+                            }
+                        }
                         StkReportDetailEntity stkReportDetailEntity = reportService.createReportDetailEntity(bk.getCode(), strategyResult.getStrategy().getCode(),
                                 strategyResult.getDate(),
                                 StringUtils.join(strategyResult.getResults(),"<br/>"),
                                 Rps.CODE_STOCK_SCORE, String.valueOf(strategyResult.getPercentile()),
                                 stockInfoList.getBk().getCode(),
-                                stockInfoList.getCodes(),null , null, null);
+                                stockInfoList.getCodes(),null , output1, output2);
                         stkReportHeaderEntity.addDetail(stkReportDetailEntity);
                     }
                 }

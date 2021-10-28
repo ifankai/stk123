@@ -97,10 +97,11 @@ public class StrategyBacktesting {
                 }
                 all = all.stream().sorted(Comparator.comparing(StrategyResult::getPercentile)).collect(Collectors.toList());
 
+                /* 放到 strategy.getStrategyResults() 处理
                 if(strategy.getTopN() != null && strategy.getTopN() < all.size()){
                     all = all.subList(0, strategy.getTopN());
-                }
-                //System.out.println(all);
+                }*/
+
                 strategy.setStrategyResults(all);
                 //strategyResults.addAll(all);
             }else{

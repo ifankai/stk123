@@ -98,7 +98,9 @@ public class StrategyResult {
         return filterResults.stream().map(FilterResult<R>::result).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
-
+    public String getStockCode(){
+        return this.stock.getCode();
+    }
 
     @SneakyThrows
     public String toJson(){

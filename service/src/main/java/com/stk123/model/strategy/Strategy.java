@@ -97,6 +97,13 @@ public class Strategy<X> {
     }
 
     public List<StrategyResult> getStrategyResults(){
+        if(this.getTopN() != null && this.getTopN() < this.strategyResults.size()){
+            return this.strategyResults.subList(0, this.getTopN());
+        }
+        return this.strategyResults;
+    }
+
+    public List<StrategyResult> getStrategyResultsAll(){
         return this.strategyResults;
     }
 
