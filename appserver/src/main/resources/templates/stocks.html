@@ -330,7 +330,7 @@
                                             </div>
                                         </div><!-- /.card-header -->
                                         <div class="card-body">
-                                            <stockbody :stock="stk.stock" tab-show="news"></stockbody>
+                                            <stockbody :stock="stk.stock"></stockbody>
                                         </div><!-- /.card-body -->
                                         <div class="card-footer">
                                             <tag :tags="stk.stock.tags" :type="['highlight']"></tag>
@@ -592,7 +592,7 @@
                 }
                 if (_this.displayType === 'trade'
                     && new Date().getTime() >= moment().set('hours', 9).set('minutes', 25).valueOf()
-                    && new Date().getTime() <= moment().set('hours', 16).valueOf() ) {
+                    && new Date().getTime() <= moment().set('hours', 16).set('minutes', 0).valueOf() ) {
                     setTimeout(_this.trading, 1000);
                 }
             },

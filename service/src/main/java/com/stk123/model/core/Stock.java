@@ -1267,7 +1267,7 @@ public class Stock {
     public int getScoreByFlows() {
         int score = 0;
         List<StkCapitalFlowEntity> flows = this.getFlows();
-        int cnt = (int) flows.stream().limit(10).filter(flow -> flow.getMainPercent() >= 1).count();
+        int cnt = (int) flows.stream().filter(flow -> flow.getMainPercent() != null).limit(10).filter(flow -> flow.getMainPercent() >= 1).count();
         if(cnt >= 5){
             score += 5;
         }
