@@ -30,9 +30,12 @@ public class Rps{
     public final static String CODE_STOCK_WEEK_1_VOLUME_B = "rps_06b";
     public final static String CODE_STOCK_WEEK_2_VOLUME = "rps_07";
     public final static String CODE_STOCK_WEEK_3_VOLUME = "rps_08";
-    public final static String CODE_STOCK_DAY_1_VOLUME = "rps_09";
-    public final static String CODE_STOCK_DAY_2_VOLUME = "rps_10";
-    public final static String CODE_STOCK_DAY_3_VOLUME = "rps_11";
+    public final static String CODE_STOCK_DAY_1_VOLUME = "rps_09a";
+    public final static String CODE_STOCK_DAY_1_VOLUME_FLOW = "rps_09";
+    public final static String CODE_STOCK_DAY_2_VOLUME = "rps_10a";
+    public final static String CODE_STOCK_DAY_2_VOLUME_FLOW = "rps_10";
+    public final static String CODE_STOCK_DAY_3_VOLUME = "rps_11a";
+    public final static String CODE_STOCK_DAY_3_VOLUME_FLOW = "rps_11";
     public final static String CODE_STOCK_DAY_120_VOLUME = "rps_12";
     public final static String CODE_STOCK_GENTLE_CHANGE_VOLUME = "rps_13";
     public final static String CODE_STOCK_FN = "rps_14";
@@ -57,15 +60,11 @@ public class Rps{
         return ListUtils.createList(
                 Strategies.rps_03a(), Strategies.rps_03b(), Strategies.rps_03c(),
                 Strategies.strategy_0(),
-                Strategies.rps_05(),Strategies.rps_04(),Strategies.rps_12(),
+                Strategies.rps_09a(), Strategies.rps_09(), Strategies.rps_10a(), Strategies.rps_10(), Strategies.rps_11a(), Strategies.rps_11(),
                 Strategies.strategy_0(),
-                Strategies.rps_06a(), Strategies.rps_07(), Strategies.rps_08(),
+                Strategies.rps_06a(), Strategies.rps_06b(), Strategies.rps_07(), Strategies.rps_13(), Strategies.rps_08(),
                 Strategies.strategy_0(),
-                Strategies.rps_09(), Strategies.rps_10(), Strategies.rps_11(),
-                Strategies.strategy_0(),
-                Strategies.rps_06b(),
-                Strategies.strategy_0(),
-                Strategies.rps_13()
+                Strategies.rps_05(), Strategies.rps_15(), Strategies.rps_04(), Strategies.rps_12()
         );
     }
     @SneakyThrows

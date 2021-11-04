@@ -97,6 +97,9 @@
                             <div class="card-header">
                                 <h3 class="card-title">字典表</h3>
                                 <div class="card-tools">
+                                    <button @click="reload()" type="button" class="btn btn-tool" title="清空缓存">
+                                        <i class="fal fa-sync"></i>
+                                    </button>
                                     <button @click="editHeader({})" type="button" class="btn btn-tool" title="新增字典类型">
                                         <i class="fal fa-plus-circle"></i>
                                     </button>
@@ -320,6 +323,13 @@
             }
         },
         methods:{
+            reload: function (){
+                axios.get("/dict/reload").then(function (res) {
+                    if(res.data.success){
+                        toastify({text: "重新加载缓存成功"});
+                    }
+                });
+            },
             editHeader:function (row) {
                 this.edit.headerRow = row;
                 $('#dictHeaderModal').modal ('show');

@@ -814,6 +814,9 @@ public class BarTask extends AbstractTask {
             stocks = StockService.filterByMarketCap(stocks, 50);
             stocks = StockService.filterByFn(stocks);
             stocks = StockService.filterByStatusExclude(stocks);
+            // 15天涨幅大于 60% 的过滤掉
+            stocks = StockService.filterByBarChange(stocks,15, 60);
+            stocks = StockService.filterByBarChange(stocks,80, 200);
 
             if(StringUtils.isNotEmpty(report)){
                 String type = StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS;
@@ -934,6 +937,8 @@ public class BarTask extends AbstractTask {
 //            stocks = stockService.filterByMarketCap(stocks, 50);
 //            stocks = stockService.filterByFn(stocks);
             stocks = StockService.filterByStatusExclude(stocks);
+            stocks = StockService.filterByBarChange(stocks,15, 60);
+            stocks = StockService.filterByBarChange(stocks,80, 200);
 
             if(StringUtils.isNotEmpty(report)){
                 String type = StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS_HK;

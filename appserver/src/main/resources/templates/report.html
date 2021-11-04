@@ -382,6 +382,60 @@
                                     </div>
                                     <div class="tab-pane fade" id="report-allstocksrps" role="tabpanel" aria-labelledby="report-allstocksrps-tab">
                                         <datatable :="{...common.allStocksRpsA, ...currentAllStocksRpsA}">
+                                            <template v-slot:head-action="{column}">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input v-model="selectRpsCheckboxAll" class="custom-control-input" type="checkbox" id="cb" checked>
+                                                    <label for="cb" class="custom-control-label">&nbsp;</label>
+                                                    <a title="查看全部个股" @click.stop="postUrl('/s/post', {code: [...new Set(currentAllStocksRpsA.data.filter(item => item.select).map(item => item.rpsStockCode))].join(',')} )" target="_blank" style="cursor: pointer"><i class="fas fa-th"></i></a>
+                                                </div>
+                                            </template>
+                                            <template v-slot:body-action="{row, rowNumber}">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input @click.stop="row.select=!row.select" :checked="row.select" class="custom-control-input" type="checkbox" :id="'cb'+row.id">
+                                                    <label :for="'cb'+row.id" class="custom-control-label"></label>
+                                                    <a target="_blank" :href="'/s/'+row.rpsStockCode+'?title='+row.strategyName+' - 全部'" v-text="'查看全部 ('+row.rpsStockCode.split(',').length+')'"></a>
+                                                </div>
+                                            </template>
+                                            <template v-slot:head-action7="{column}">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input v-model="selectRpsCheckboxAll7" class="custom-control-input" type="checkbox" id="cb7" checked>
+                                                    <label for="cb7" class="custom-control-label">&nbsp;</label>
+                                                    <a title="查看7天内新增加的全部个股" target="_blank" :href="'/s/'+[...new Set(currentAllStocksRpsA.data.filter(item => item.select7).map(item => item.output1))].join(',')"><i class="fas fa-th"></i></a>
+                                                </div>
+                                            </template>
+                                            <template v-slot:body-action7="{row, rowNumber}">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input @click.stop="row.select7=!row.select7" :checked="row.select7" class="custom-control-input" type="checkbox" :id="'cb7'+row.id">
+                                                    <label :for="'cb7'+row.id" class="custom-control-label"></label>
+                                                    <a target="_blank" :href="'/s/'+row.output1+'?title='+row.strategyName+' - 7天内新增'" v-text="'7天内新增 ('+(row.output1==null?0:row.output1.split(',').length)+')'"></a>
+                                                </div>
+                                            </template>
+                                            <template v-slot:head-action30="{column}">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input v-model="selectRpsCheckboxAll30" class="custom-control-input" type="checkbox" id="cb30" checked>
+                                                    <label for="cb30" class="custom-control-label">&nbsp;</label>
+                                                    <a title="查看30天内新增加的全部个股" target="_blank" :href="'/s/'+[...new Set(currentAllStocksRpsA.data.filter(item => item.select30).map(item => item.output2))].join(',')"><i class="fas fa-th"></i></a>
+                                                </div>
+                                            </template>
+                                            <template v-slot:body-action30="{row, rowNumber}">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input @click.stop="row.select30=!row.select30" :checked="row.select30" class="custom-control-input" type="checkbox" :id="'cb30'+row.id">
+                                                    <label :for="'cb30'+row.id" class="custom-control-label"></label>
+                                                    <a target="_blank" :href="'/s/'+row.output2+'?title='+row.strategyName+' - 30天内新增'" v-text="'30天内新增 ('+(row.output2==null?0:row.output2.split(',').length)+')'"></a>
+                                                </div>
+                                            </template>
+                                            <template v-slot:head-volume="{column}">
+                                                <a title="查看量能500日新高的全部个股" target="_blank" :href="'/s/'+[...new Set(currentAllStocksRpsA.data.map(item => item.outputVolumeHighest))].join(',')"><i class="fas fa-th"></i></a>
+                                            </template>
+                                            <template v-slot:body-volume="{row, rowNumber}">
+                                                <a target="_blank" :href="'/s/'+row.outputVolumeHighest+'?title='+row.strategyName+' - 量能500日新高'" v-text="'量能500日新高 ('+(row.outputVolumeHighest==null?0:row.outputVolumeHighest.split(',').length)+')'"></a>
+                                            </template>
+                                            <template v-slot:head-longtime="{column}">
+                                                <a title="查看高点调整200天的全部个股" target="_blank" :href="'/s/'+[...new Set(currentAllStocksRpsA.data.map(item => item.outputDownLongtime))].join(',')"><i class="fas fa-th"></i></a>
+                                            </template>
+                                            <template v-slot:body-longtime="{row, rowNumber}">
+                                                <a target="_blank" :href="'/s/'+row.outputDownLongtime+'?title='+row.strategyName+' - 高点调整200天'" v-text="'高点调整200天 ('+(row.outputDownLongtime==null?0:row.outputDownLongtime.split(',').length)+')'"></a>
+                                            </template>
                                             <template v-slot:checked="{row, rowNumber}">
                                                 <div @click.stop class="custom-control custom-checkbox ml-3">
                                                     <input @click.stop="reportChecked(row)" :checked="row.checkedTime!=null" class="custom-control-input" type="checkbox" :id="'currentAllStocksRpsA-'+row.strategyCode">
@@ -395,6 +449,36 @@
                                     </div>
                                     <div class="tab-pane fade" id="report-allstocksrps-h" role="tabpanel" aria-labelledby="report-allstocksrps-h-tab">
                                         <datatable :="{...common.allStocksRpsH, ...currentAllStocksRpsH}">
+                                            <template v-slot:head-action="{column}">
+                                                <a title="查看全部个股" target="_blank" :href="'/s/'+currentAllStocksRpsH.data.map(item => item.rpsStockCode).join(',')"><i class="fas fa-th"></i></a>
+                                            </template>
+                                            <template v-slot:body-action="{row, rowNumber}">
+                                                <a target="_blank" :href="'/s/'+row.rpsStockCode+'?title='+row.strategyName+' - 全部'" v-text="'查看全部 ('+row.rpsStockCode.split(',').length+')'"></a>
+                                            </template>
+                                            <template v-slot:head-action7="{column}">
+                                                <a title="查看7天内新增加的全部个股" target="_blank" :href="'/s/'+currentAllStocksRpsH.data.map(item => item.output1).join(',')"><i class="fas fa-th"></i></a>
+                                            </template>
+                                            <template v-slot:body-action7="{row, rowNumber}">
+                                                <a target="_blank" :href="'/s/'+row.output1+'?title='+row.strategyName+' - 7天内新增'" v-text="'7天内新增 ('+(row.output1==null?0:row.output1.split(',').length)+')'"></a>
+                                            </template>
+                                            <template v-slot:head-action30="{column}">
+                                                <a title="查看30天内新增加的全部个股" target="_blank" :href="'/s/'+currentAllStocksRpsH.data.map(item => item.output2).join(',')"><i class="fas fa-th"></i></a>
+                                            </template>
+                                            <template v-slot:body-action30="{row, rowNumber}">
+                                                <a target="_blank" :href="'/s/'+row.output2+'?title='+row.strategyName+' - 30天内新增'" v-text="'30天内新增 ('+(row.output2==null?0:row.output2.split(',').length)+')'"></a>
+                                            </template>
+                                            <template v-slot:head-volume="{column}">
+                                                <a title="查看量能500日新高的全部个股" target="_blank" :href="'/s/'+currentAllStocksRpsH.data.map(item => item.outputVolumeHighest).join(',')"><i class="fas fa-th"></i></a>
+                                            </template>
+                                            <template v-slot:body-volume="{row, rowNumber}">
+                                                <a target="_blank" :href="'/s/'+row.outputVolumeHighest+'?title='+row.strategyName+' - 量能500日新高'" v-text="'量能500日新高 ('+(row.outputVolumeHighest==null?0:row.outputVolumeHighest.split(',').length)+')'"></a>
+                                            </template>
+                                            <template v-slot:head-longtime="{column}">
+                                                <a title="查看高点调整200天的全部个股" target="_blank" :href="'/s/'+currentAllStocksRpsH.data.map(item => item.outputDownLongtime).join(',')"><i class="fas fa-th"></i></a>
+                                            </template>
+                                            <template v-slot:body-longtime="{row, rowNumber}">
+                                                <a target="_blank" :href="'/s/'+row.outputDownLongtime+'?title='+row.strategyName+' - 高点调整200天'" v-text="'高点调整200天 ('+(row.outputDownLongtime==null?0:row.outputDownLongtime.split(',').length)+')'"></a>
+                                            </template>
                                             <template v-slot:checked="{row, rowNumber}">
                                                 <div @click.stop class="custom-control custom-checkbox ml-3">
                                                     <input @click.stop="reportChecked(row)" :checked="row.checkedTime!=null" class="custom-control-input" type="checkbox" :id="'currentAllStocksRpsH-'+row.strategyCode">
@@ -405,6 +489,36 @@
                                     </div>
                                     <div class="tab-pane fade" id="report-allstocksrps-u" role="tabpanel" aria-labelledby="report-allstocksrps-u-tab">
                                         <datatable :="{...common.allStocksRpsU, ...currentAllStocksRpsU}">
+                                            <template v-slot:head-action="{column}">
+                                                <a title="查看全部个股" target="_blank" :href="'/s/'+currentAllStocksRpsU.data.map(item => item.rpsStockCode).join(',')"><i class="fas fa-th"></i></a>
+                                            </template>
+                                            <template v-slot:body-action="{row, rowNumber}">
+                                                <a target="_blank" :href="'/s/'+row.rpsStockCode+'?title='+row.strategyName+' - 全部'" v-text="'查看全部 ('+row.rpsStockCode.split(',').length+')'"></a>
+                                            </template>
+                                            <template v-slot:head-action7="{column}">
+                                                <a title="查看7天内新增加的全部个股" target="_blank" :href="'/s/'+currentAllStocksRpsU.data.map(item => item.output1).join(',')"><i class="fas fa-th"></i></a>
+                                            </template>
+                                            <template v-slot:body-action7="{row, rowNumber}">
+                                                <a target="_blank" :href="'/s/'+row.output1+'?title='+row.strategyName+' - 7天内新增'" v-text="'7天内新增 ('+(row.output1==null?0:row.output1.split(',').length)+')'"></a>
+                                            </template>
+                                            <template v-slot:head-action30="{column}">
+                                                <a title="查看30天内新增加的全部个股" target="_blank" :href="'/s/'+currentAllStocksRpsU.data.map(item => item.output2).join(',')"><i class="fas fa-th"></i></a>
+                                            </template>
+                                            <template v-slot:body-action30="{row, rowNumber}">
+                                                <a target="_blank" :href="'/s/'+row.output2+'?title='+row.strategyName+' - 30天内新增'" v-text="'30天内新增 ('+(row.output2==null?0:row.output2.split(',').length)+')'"></a>
+                                            </template>
+                                            <template v-slot:head-volume="{column}">
+                                                <a title="查看量能500日新高的全部个股" target="_blank" :href="'/s/'+currentAllStocksRpsU.data.map(item => item.outputVolumeHighest).join(',')"><i class="fas fa-th"></i></a>
+                                            </template>
+                                            <template v-slot:body-volume="{row, rowNumber}">
+                                                <a target="_blank" :href="'/s/'+row.outputVolumeHighest+'?title='+row.strategyName+' - 量能500日新高'" v-text="'量能500日新高 ('+(row.outputVolumeHighest==null?0:row.outputVolumeHighest.split(',').length)+')'"></a>
+                                            </template>
+                                            <template v-slot:head-longtime="{column}">
+                                                <a title="查看高点调整200天的全部个股" target="_blank" :href="'/s/'+currentAllStocksRpsU.data.map(item => item.outputDownLongtime).join(',')"><i class="fas fa-th"></i></a>
+                                            </template>
+                                            <template v-slot:body-longtime="{row, rowNumber}">
+                                                <a target="_blank" :href="'/s/'+row.outputDownLongtime+'?title='+row.strategyName+' - 高点调整200天'" v-text="'高点调整200天 ('+(row.outputDownLongtime==null?0:row.outputDownLongtime.split(',').length)+')'"></a>
+                                            </template>
                                             <template v-slot:checked="{row, rowNumber}">
                                                 <div @click.stop class="custom-control custom-checkbox ml-3">
                                                     <input @click.stop="reportChecked(row)" :checked="row.checkedTime!=null" class="custom-control-input" type="checkbox" :id="'currentAllStocksRpsU-'+row.strategyCode">
@@ -472,25 +586,25 @@
     const config = {
         data() {
             let allStocksRps = {
-                    columns: [
-                        {title:"策略", data:"strategyName"},
-                        {title:"日期", data:"strategyDate"},
-                        {title:"操作", data:"action"},
-                        {title:"操作", data:"action7"},
-                        {title:"操作", data:"action30"},
-                        {title:"操作", data:"volume"},
-                        {title:"操作", data:"longtime"},
-                        {title:"已读", slot:"checked"}
-                    ],
-                    paging:   false,
-                    info: false,
-                    searching : false,
-                    columnDefs: [
-                        { className: "text-center", "targets": [ 1,2,3,4,5 ] }
-                    ],
-                    tableClass:{'table-hover':true},
-                    selected:true
-                };
+                columns: [
+                    {title:"策略", data:"strategyName"},
+                    {title:"日期", data:"strategyDate"},
+                    {head:"head-action", slot:"body-action"},
+                    {head:"head-action7", slot:"body-action7"},
+                    {head:"head-action30", slot:"body-action30"},
+                    {head:"head-volume", slot:"body-volume"},
+                    {head:"head-longtime", slot:"body-longtime"},
+                    {title:"已读", slot:"checked"}
+                ],
+                paging:   false,
+                info: false,
+                searching : false,
+                columnDefs: [
+                    { className: "text-center", "targets": [ 1,2,3,4,5,6,7 ] }
+                ],
+                tableClass:{'table-hover':true},
+                selected:true
+            };
 
             return {
                 navActive:'report',
@@ -561,8 +675,8 @@
                 window.open('/report/'+reportDate);
             },
             gotoStocks:function (){
-                console.log(this.currentTabStocks)
-                window.open('/S/'+this.currentTabStocks);
+                //console.log(this.currentTabStocks)
+                window.open('/s/'+this.currentTabStocks);
             },
             clickTab:function (data) {
                 this.currentTabSize = data.length;
@@ -629,6 +743,30 @@
             currentMyStocksAChk:{
                 get: function (){return this.getChecked(this.currentMyStocksAChecked)},
                 set: function (value) {this.setHeaderChecked(this.currentMyStocksAChecked, value)}
+            },
+            selectRpsCheckboxAll: {
+                get: function () { return false;},
+                set: function (value) {
+                    this.currentAllStocksRpsA.data.forEach(item => {
+                        item.select = value;
+                    });
+                }
+            },
+            selectRpsCheckboxAll7: {
+                get: function () { return false;},
+                set: function (value) {
+                    this.currentAllStocksRpsA.data.forEach(item => {
+                        item.select7 = value;
+                    });
+                }
+            },
+            selectRpsCheckboxAll30: {
+                get: function () { return false;},
+                set: function (value) {
+                    this.currentAllStocksRpsA.data.forEach(item => {
+                        item.select30 = value;
+                    });
+                }
             }
         },
         mounted() {
@@ -669,11 +807,11 @@
                 _this.currentMyStocksU = {data: data.currentMyStocksU};
 
                 _this.currentAllStocksRpsA = {data: data.currentAllStocksRpsA};
-                parseCurrentAllStocksRps(_this, _this.currentAllStocksRpsA, _this.common.allStocksRpsA);
+                parseCurrentAllStocksRps(_this, _this.currentAllStocksRpsA);
                 _this.currentAllStocksRpsH = {data: data.currentAllStocksRpsH};
-                parseCurrentAllStocksRps(_this, _this.currentAllStocksRpsH, _this.common.allStocksRpsH);
+                parseCurrentAllStocksRps(_this, _this.currentAllStocksRpsH);
                 _this.currentAllStocksRpsU = {data: data.currentAllStocksRpsU};
-                parseCurrentAllStocksRps(_this, _this.currentAllStocksRpsU, _this.common.allStocksRpsU);
+                parseCurrentAllStocksRps(_this, _this.currentAllStocksRpsU);
 
                 _this.currentAllStocksRps15A = {data: data.currentAllStocksRps15A}; //K线云梯
 
@@ -698,31 +836,10 @@
     };
     createApp(config);
 
-    function parseCurrentAllStocksRps(_this, currentAllStocksRps, allStockRps){
-        let allCodes = '';
-        let allCodes7 = '';
-        let allCodes30 = '';
-        let volume = '';
-        let longtime = '';
+    function parseCurrentAllStocksRps(_this, currentAllStocksRps){
         currentAllStocksRps.data.forEach(item => {
             item.strategyDate = dateFormat(item.strategyDate);
-            item.action = elem('a', {href:'/s/'+item.rpsStockCode+'?title='+item.strategyName+' - 全部', target:'_blank'}, '查看全部 ('+item.rpsStockCode.split(',').length+")").outerHTML;
-            item.action7 = elem('a', {href:'/s/'+item.output1+'?title='+item.strategyName+' - 7天内新增', target:'_blank'}, '7天内新增 ('+(item.output1==null?"0":item.output1.split(',').length)+")").outerHTML;
-            item.action30 = elem('a', {href:'/s/'+item.output2+'?title='+item.strategyName+' - 30天内新增', target:'_blank'}, '30天内新增 ('+(item.output2==null?"0":item.output2.split(',').length)+")").outerHTML;
-            item.volume = elem('a', {href:'/s/'+item.outputVolumeHighest+'?title='+item.strategyName+' - 量能500日新高', target:'_blank'}, '量能500日新高 ('+(item.outputVolumeHighest==null?"0":item.outputVolumeHighest.split(',').length)+")").outerHTML;
-            item.longtime = elem('a', {href:'/s/'+item.outputDownLongtime+'?title='+item.strategyName+' - 高点调整120天', target:'_blank'}, '高点调整120天 ('+(item.outputDownLongtime==null?"0":item.outputDownLongtime.split(',').length)+")").outerHTML;
-
-            allCodes += item.rpsStockCode+','
-            allCodes7 += item.output1+','
-            allCodes30 += item.output2+','
-            volume += item.outputVolumeHighest+','
-            longtime += item.outputDownLongtime
         })
-        allStockRps.columns.find(item => item.data==='action').title += ' <a title="查看全部个股" target="_blank" href="/s/'+allCodes+'"><i class="fas fa-th"></i></a>'
-        allStockRps.columns.find(item => item.data==='action7').title += ' <a title="查看7天内新增加的全部个股" target="_blank" href="/s/'+allCodes7+'"><i class="fas fa-th"></i></a>'
-        allStockRps.columns.find(item => item.data==='action30').title += ' <a title="查看30天内新增加的全部个股" target="_blank" href="/s/'+allCodes30+'"><i class="fas fa-th"></i></a>'
-        allStockRps.columns.find(item => item.data==='volume').title += ' <a title="查看量能500日新高的全部个股" target="_blank" href="/s/'+volume+'"><i class="fas fa-th"></i></a>'
-        allStockRps.columns.find(item => item.data==='longtime').title += ' <a title="查看高点调整120天的全部个股" target="_blank" href="/s/'+longtime+'"><i class="fas fa-th"></i></a>'
     }
 
     function convertStocks(data){

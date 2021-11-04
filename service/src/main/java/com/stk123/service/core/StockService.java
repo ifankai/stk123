@@ -529,6 +529,15 @@ public class StockService {
         }).collect(Collectors.toList());
     }
 
+    public static List<Stock> filterByBarChange(List<Stock> stocks, int days, double percent){
+        return stocks.stream().filter(stock -> {
+            if(stock.getBar() == null || stock.getBar().getChange(days, Bar.EnumValue.C) >= percent/100){
+                return false;
+            }
+            return true;
+        }).collect(Collectors.toList());
+    }
+
     public static List<Stock> filterByHot(List<Stock> stocks, int hot){
         return stocks.stream().filter(stock -> {
             if(stock.getHot() < hot && (stock.isMarketHK() || stock.isMarketUS())) {

@@ -23,8 +23,15 @@
                         <li><a href="/exclude" class="dropdown-item">排除股</a></li>
                     </ul>
                 </li>
-                <li class="nav-item" :class="{active:navActive==='xq'}">
-                    <a href="/xueqiu/我的" target="_blank" class="nav-link">雪球-我的</a>
+                <li class="nav-item dropdown" :class="{active:navActive==='xq'}">
+                    <a href="/xueqiu/我的" data-toggle="dropdown" class="nav-link dropdown-toggle">雪球</a>
+                    <ul class="dropdown-menu border-0 shadow">
+                        <li><a href="/xueqiu/我的" class="dropdown-item">雪球-我的</a></li>
+                        <li><a href="/xueqiu/关注C" class="dropdown-item">雪球-关注C</a></li>
+                        <li><a href="/xueqiu/关注H" class="dropdown-item">雪球-关注H</a></li>
+                        <li><a href="/xueqiu/关注U" class="dropdown-item">雪球-关注U</a></li>
+                        <li><a href="/xueqiu/备选" class="dropdown-item">雪球-备选</a></li>
+                    </ul>
                 </li>
                 <template v-if="['stocks','xq'].includes(navActive)">
                     <li class="nav-item dropdown" style="display: none" :style="{display:selectedTabName!=undefined?'block':'none'}" :class="{active:navActive==='stocks'}">
@@ -87,6 +94,18 @@
                             </div>
                         </div>
                     </form>
+                </div>
+            </li>
+
+            <li class="nav-item dropdown">
+                <a class="nav-link" data-toggle="dropdown" href="#">
+                    <i class="fas fa-list"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                    <a href="/stockHolderChange" target="_blank" class="dropdown-item">
+                        <i class="far fa-star mr-2"></i>机构基金季度增减持
+                    </a>
+                    <div class="dropdown-divider"></div>
                 </div>
             </li>
 

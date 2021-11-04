@@ -439,6 +439,8 @@
                 seletedStrategyName: '策略过滤',
                 bkSelected: [],
                 niusanSelected: [],
+                excludeStock: {},
+                heartStock: {},
                 common:{
                     stocks:{
                         type: 1,
@@ -586,13 +588,14 @@
                     }
                     let stock = this.stocks[i].stock;
                     let code = stock.code;
-                    console.log('trading ....'+code)
-                    await this.getTrade(code);
-                    await sleep(1000);
+                    if (new Date().getTime() >= moment().set('hours', 9).set('minutes', 25).valueOf()
+                        && new Date().getTime() <= moment().set('hours', 16).set('minutes', 0).valueOf()){
+                        console.log('trading ....' + code)
+                        await this.getTrade(code);
+                    }
+                    await sleep(500);
                 }
-                if (_this.displayType === 'trade'
-                    && new Date().getTime() >= moment().set('hours', 9).set('minutes', 25).valueOf()
-                    && new Date().getTime() <= moment().set('hours', 16).set('minutes', 0).valueOf() ) {
+                if (_this.displayType === 'trade') {
                     setTimeout(_this.trading, 1000);
                 }
             },
@@ -641,7 +644,7 @@
                     const options = {
                         showCurrentTime: true,
                         zoomable: false,
-                        start: moment().set('hours', 9).set('minutes', 15),
+                        start: moment().set('hours', 9).set('minutes', 0),
                         end: moment().set('hours', 16).set('minutes', 15),
                         hiddenDates: {
                             start: moment().set('hours', 12).set('minutes', 1),
@@ -700,10 +703,17 @@
                 _this.common.niusans = res.data.data;
             });
 
-            axios.get("/"+codeType+"/" + code).then(function (res) {
-                parseStocks(_this, res);
-                _this.total = _this.stocks.length;
-            });
+            if('stock' === codeType) {
+                axios.post("/stock/post", {code: code}).then(function (res) {
+                    parseStocks(_this, res);
+                    _this.total = _this.stocks.length;
+                });
+            }else{
+                axios.get("/"+codeType+"/" + code).then(function (res) {
+                    parseStocks(_this, res);
+                    _this.total = _this.stocks.length;
+                });
+            }
 
         },
         created () {

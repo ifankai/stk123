@@ -611,17 +611,17 @@ public class Strategies {
 
     //从高点调整很久（大于24周/120天）
     public static Strategy strategy_16(){
-        Strategy<Stock> strategy = new Strategy<>("strategy_16", "高点调整120天", Stock.class);
+        Strategy<Stock> strategy = new Strategy<>("strategy_16", "高点调整200天", Stock.class);
         Filter<Stock> filter = (strg, stock) -> {
             Bar bar = stock.getBar();
             Bar barHighest = bar.getHighestBar(500, Bar.EnumValue.H);
             int n = bar.getDaysBetween(bar.getDate(), barHighest.getDate());
-            if(n < 120){
+            if(n < 200){
                 return FilterResult.FALSE(barHighest.getDate());
             }
             return FilterResult.TRUE();
         };
-        strategy.addFilter("高点调整120天", filter);
+        strategy.addFilter("高点调整200天", filter);
         return strategy;
     }
 
@@ -700,20 +700,38 @@ public class Strategies {
         return strategy;
     }
 
-    public static Strategy rps_04() {
-        //StrategyGroup<Stock> strategyGroup = new StrategyGroup<>(Rps.CODE_STOCK_MONTH_3_VOLUME, "3个月放量", Stock.class);
-
-        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_MONTH_3_VOLUME, "60天(3月)放量", Stock.class);
+    public static Strategy rps_09a() {
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_DAY_1_VOLUME, "1天放量", Stock.class);
         //strategy.setAsc(false);
-        strategy.addFilter("3个月放量", (strgy, stock) -> {
+        strategy.addFilter("1天放量", (strgy, stock) -> {
             if(stock.getBarSeries().size() < 60){
                 return FilterResult.FALSE();
             }
             Bar bar = stock.getBar();
-            double sum = bar.getSUM(60, Bar.EnumValue.V);
-            double minSum = bar.getLowest(400, bar1 -> bar1.getSUM(20, Bar.EnumValue.V));
+            double sum = bar.getVolume();
+            double minSum = bar.before().getVolume();
             double rpsValue = sum/minSum;
-            if(rpsValue < 1.2){
+            if(rpsValue < 1.5){
+                return FilterResult.FALSE();
+            }
+            return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
+        }, false);
+
+        return strategy;
+    }
+
+    public static Strategy rps_09() {
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_DAY_1_VOLUME_FLOW, "1天放量+1天资金流", Stock.class);
+        //strategy.setAsc(false);
+        strategy.addFilter("1天放量", (strgy, stock) -> {
+            if(stock.getBarSeries().size() < 60){
+                return FilterResult.FALSE();
+            }
+            Bar bar = stock.getBar();
+            double sum = bar.getVolume();
+            double minSum = bar.before().getVolume();
+            double rpsValue = sum/minSum;
+            if(rpsValue < 1.5){
                 return FilterResult.FALSE();
             }
             return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
@@ -721,28 +739,109 @@ public class Strategies {
 
         //strategy2.setAsc(false);
         //strategy2.setWeight(0.5);
-        strategy.addFilter("站上K线个数", Filters.filter_rps_01(250), false, 0.5);
-
-        //strategy3.setWeight(0.3);
-        strategy.addFilter("最低点涨幅", Filters.filter_rps_02(250), 0.3);
-
-        return strategy;
-    }
-
-    public static Strategy rps_05() {
-        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_MONTH_1_VOLUME,"20天(1月)放量", Stock.class);
-        //strategy.setAsc(false);
-        strategy.addFilter("1个月放量", (strgy, stock) -> {
+        strategy.addFilter("1天资金流", (strgy, stock) -> {
             if(stock.getBarSeries().size() < 60){
                 return FilterResult.FALSE();
             }
             Bar bar = stock.getBar();
-            double sum = bar.getSUM(20, Bar.EnumValue.V);
-            double minSum = bar.before(20).getSUM(20, Bar.EnumValue.V);
+            double rpsValue = bar.getCapitalFlowAmount()/bar.getAmount();
+            return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
+        }, false);
+        return strategy;
+    }
+
+    public static Strategy rps_10a() {
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_DAY_2_VOLUME, "2天放量", Stock.class);
+        //strategy.setAsc(false);
+        strategy.addFilter("2天放量", (strgy, stock) -> {
+            if(stock.getBarSeries().size() < 60){
+                return FilterResult.FALSE();
+            }
+            Bar bar = stock.getBar();
+            double sum = bar.getVolume()+bar.before().getVolume();
+            double minSum = bar.before(2).getVolume() + bar.before(3).getVolume();
             double rpsValue = sum/minSum;
             if(rpsValue < 1.5){
                 return FilterResult.FALSE();
             }
+            return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
+        }, false);
+
+        return strategy;
+    }
+
+    public static Strategy rps_10() {
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_DAY_2_VOLUME_FLOW, "2天放量+2天资金流", Stock.class);
+        //strategy.setAsc(false);
+        strategy.addFilter("2天放量", (strgy, stock) -> {
+            if(stock.getBarSeries().size() < 60){
+                return FilterResult.FALSE();
+            }
+            Bar bar = stock.getBar();
+            double sum = bar.getVolume()+bar.before().getVolume();
+            double minSum = bar.before(2).getVolume() + bar.before(3).getVolume();
+            double rpsValue = sum/minSum;
+            if(rpsValue < 1.5){
+                return FilterResult.FALSE();
+            }
+            return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
+        }, false);
+
+        //strategy2.setAsc(false);
+        //strategy2.setWeight(0.5);
+        strategy.addFilter("2天资金流", (strgy, stock) -> {
+            Bar bar = stock.getBar();
+            double sum = bar.getCapitalFlowAmount()+bar.before().getCapitalFlowAmount();
+            double minSum = bar.getAmount()+bar.before().getAmount();
+            double rpsValue = sum/minSum;;
+            return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
+        }, false);
+        return strategy;
+    }
+
+    public static Strategy rps_11a(){
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_DAY_3_VOLUME, "3天放量", Stock.class);
+        //strategy.setAsc(false);
+        strategy.addFilter("3天放量", (strgy, stock) -> {
+            if(stock.getBarSeries().size() < 60){
+                return FilterResult.FALSE();
+            }
+            Bar bar = stock.getBar();
+            double sum = bar.getVolume()+bar.before().getVolume()+bar.before(2).getVolume();
+            double minSum = bar.before(3).getVolume() + bar.before(4).getVolume() + bar.before(5).getVolume();
+            double rpsValue = sum/minSum;
+            if(rpsValue < 1.5){
+                return FilterResult.FALSE();
+            }
+            return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
+        }, false);
+        return strategy;
+    }
+
+    public static Strategy rps_11() {
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_DAY_3_VOLUME_FLOW, "3天放量+3天资金流", Stock.class);
+        //strategy.setAsc(false);
+        strategy.addFilter("3天放量", (strgy, stock) -> {
+            if(stock.getBarSeries().size() < 60){
+                return FilterResult.FALSE();
+            }
+            Bar bar = stock.getBar();
+            double sum = bar.getVolume()+bar.before().getVolume()+bar.before(2).getVolume();
+            double minSum = bar.before(3).getVolume() + bar.before(4).getVolume() + bar.before(5).getVolume();
+            double rpsValue = sum/minSum;
+            if(rpsValue < 1.5){
+                return FilterResult.FALSE();
+            }
+            return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
+        }, false);
+
+        //strategy2.setAsc(false);
+        //strategy2.setWeight(0.5);
+        strategy.addFilter("3天资金流", (strgy, stock) -> {
+            Bar bar = stock.getBar();
+            double sum = bar.getCapitalFlowAmount()+bar.before().getCapitalFlowAmount()+bar.before(2).getCapitalFlowAmount();
+            double minSum = bar.getAmount()+bar.before().getAmount()+bar.before(2).getAmount();
+            double rpsValue = sum/minSum;;
             return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
         }, false);
         return strategy;
@@ -810,141 +909,6 @@ public class Strategies {
         }, false);
         return strategy;
     }
-
-    public static Strategy rps_08() {
-        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_WEEK_3_VOLUME,"15天(3周)放量", Stock.class);
-        //strategy.setAsc(false);
-        strategy.addFilter("3周放量", (strgy, stock) -> {
-            if(stock.getBarSeries().size() < 60){
-                return FilterResult.FALSE();
-            }
-            Bar bar = stock.getBar();
-            double sum = bar.getSUM(15, Bar.EnumValue.V);;
-            double minSum = bar.before(15).getSUM(15, Bar.EnumValue.V);
-            double rpsValue = sum/minSum;
-            if(rpsValue < 1.5){
-                return FilterResult.FALSE();
-            }
-            return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
-        }, false);
-        return strategy;
-    }
-
-    public static Strategy rps_09() {
-        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_DAY_1_VOLUME, "1天放量", Stock.class);
-        //strategy.setAsc(false);
-        strategy.addFilter("1天放量", (strgy, stock) -> {
-            if(stock.getBarSeries().size() < 60){
-                return FilterResult.FALSE();
-            }
-            Bar bar = stock.getBar();
-            double sum = bar.getVolume();
-            double minSum = bar.before().getVolume();
-            double rpsValue = sum/minSum;
-            if(rpsValue < 1.5){
-                return FilterResult.FALSE();
-            }
-            return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
-        }, false);
-
-        //strategy2.setAsc(false);
-        //strategy2.setWeight(0.5);
-        strategy.addFilter("1天资金流", (strgy, stock) -> {
-            if(stock.getBarSeries().size() < 60){
-                return FilterResult.FALSE();
-            }
-            Bar bar = stock.getBar();
-            double rpsValue = bar.getCapitalFlowAmount()/bar.getAmount();
-            return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
-        }, false);
-        return strategy;
-    }
-
-    public static Strategy rps_10() {
-        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_DAY_2_VOLUME, "2天放量", Stock.class);
-        //strategy.setAsc(false);
-        strategy.addFilter("2天放量", (strgy, stock) -> {
-            if(stock.getBarSeries().size() < 60){
-                return FilterResult.FALSE();
-            }
-            Bar bar = stock.getBar();
-            double sum = bar.getVolume()+bar.before().getVolume();
-            double minSum = bar.before(2).getVolume() + bar.before(3).getVolume();
-            double rpsValue = sum/minSum;
-            if(rpsValue < 1.5){
-                return FilterResult.FALSE();
-            }
-            return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
-        }, false);
-
-        //strategy2.setAsc(false);
-        //strategy2.setWeight(0.5);
-        strategy.addFilter("2天资金流", (strgy, stock) -> {
-            Bar bar = stock.getBar();
-            double sum = bar.getCapitalFlowAmount()+bar.before().getCapitalFlowAmount();
-            double minSum = bar.getAmount()+bar.before().getAmount();
-            double rpsValue = sum/minSum;;
-            return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
-        }, false);
-        return strategy;
-    }
-
-    public static Strategy rps_11() {
-        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_DAY_3_VOLUME, "3天放量", Stock.class);
-        //strategy.setAsc(false);
-        strategy.addFilter("3天放量", (strgy, stock) -> {
-            if(stock.getBarSeries().size() < 60){
-                return FilterResult.FALSE();
-            }
-            Bar bar = stock.getBar();
-            double sum = bar.getVolume()+bar.before().getVolume()+bar.before(2).getVolume();
-            double minSum = bar.before(3).getVolume() + bar.before(4).getVolume() + bar.before(5).getVolume();
-            double rpsValue = sum/minSum;
-            if(rpsValue < 1.5){
-                return FilterResult.FALSE();
-            }
-            return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
-        }, false);
-
-        //strategy2.setAsc(false);
-        //strategy2.setWeight(0.5);
-        strategy.addFilter("3天资金流", (strgy, stock) -> {
-            Bar bar = stock.getBar();
-            double sum = bar.getCapitalFlowAmount()+bar.before().getCapitalFlowAmount()+bar.before(2).getCapitalFlowAmount();
-            double minSum = bar.getAmount()+bar.before().getAmount()+bar.before(2).getAmount();
-            double rpsValue = sum/minSum;;
-            return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
-        }, false);
-        return strategy;
-    }
-
-    public static Strategy rps_12() {
-        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_DAY_120_VOLUME, "6个月放量", Stock.class);
-        //strategy.setAsc(false);
-        strategy.addFilter("120天放量", (strgy, stock) -> {
-            if(stock.getBarSeries().size() < 240){
-                return FilterResult.FALSE();
-            }
-            Bar bar = stock.getBar();
-            double sum = bar.getSUM(120, Bar.EnumValue.V);
-            double minSum = bar.before(120).getSUM(120, Bar.EnumValue.V);
-            double rpsValue = sum/minSum;
-            if(rpsValue < 1.2){
-                return FilterResult.FALSE();
-            }
-            return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
-        }, false);
-
-//        strategy2.setAsc(false);
-//        strategy2.setWeight(0.5);
-        strategy.addFilter("站上K线个数", Filters.filter_rps_01( 250), false, 0.5);
-
-        //strategy3.setWeight(0.3);
-        strategy.addFilter("最低点涨幅", Filters.filter_rps_02( 250), 0.3);
-
-        return strategy;
-    }
-
     //温和放量
     public static Strategy rps_13() {
         Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_GENTLE_CHANGE_VOLUME, "10天(2周)放量+温和涨幅", Stock.class);
@@ -979,18 +943,46 @@ public class Strategies {
         return strategy;
     }
 
-    public static Strategy rps_14() {
-        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_FN, "财务指标", Stock.class);
-        strategy.addFilter("财务指标", (strgy, stock) -> {
-            Fn fn = stock.getFn();
-            Integer type = strgy.getFirstArgAsInteger();
-            return FilterResult.Sortable(CommonUtils.numberFormat(fn.getValueByType(type), 2));
+    public static Strategy rps_08() {
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_WEEK_3_VOLUME,"15天(3周)放量", Stock.class);
+        //strategy.setAsc(false);
+        strategy.addFilter("3周放量", (strgy, stock) -> {
+            if(stock.getBarSeries().size() < 60){
+                return FilterResult.FALSE();
+            }
+            Bar bar = stock.getBar();
+            double sum = bar.getSUM(15, Bar.EnumValue.V);;
+            double minSum = bar.before(15).getSUM(15, Bar.EnumValue.V);
+            double rpsValue = sum/minSum;
+            if(rpsValue < 1.5){
+                return FilterResult.FALSE();
+            }
+            return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
+        }, false);
+        return strategy;
+    }
+
+    public static Strategy rps_05() {
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_MONTH_1_VOLUME,"20天(1月)放量", Stock.class);
+        //strategy.setAsc(false);
+        strategy.addFilter("1个月放量", (strgy, stock) -> {
+            if(stock.getBarSeries().size() < 60){
+                return FilterResult.FALSE();
+            }
+            Bar bar = stock.getBar();
+            double sum = bar.getSUM(20, Bar.EnumValue.V);
+            double minSum = bar.before(20).getSUM(20, Bar.EnumValue.V);
+            double rpsValue = sum/minSum;
+            if(rpsValue < 1.5){
+                return FilterResult.FALSE();
+            }
+            return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
         }, false);
         return strategy;
     }
 
     public static Strategy rps_15() {
-        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_MONTH_1_VOLUME,"40天(2月)放量", Stock.class);
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_MONTH_2_VOLUME,"40天(2月)放量", Stock.class);
         //strategy.setAsc(false);
         strategy.addFilter("2个月放量", (strgy, stock) -> {
             if(stock.getBarSeries().size() < 60){
@@ -1007,6 +999,77 @@ public class Strategies {
         }, false);
         return strategy;
     }
+
+    public static Strategy rps_04() {
+        //StrategyGroup<Stock> strategyGroup = new StrategyGroup<>(Rps.CODE_STOCK_MONTH_3_VOLUME, "3个月放量", Stock.class);
+
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_MONTH_3_VOLUME, "60天(3月)放量", Stock.class);
+        //strategy.setAsc(false);
+        strategy.addFilter("3个月放量", (strgy, stock) -> {
+            if(stock.getBarSeries().size() < 60){
+                return FilterResult.FALSE();
+            }
+            Bar bar = stock.getBar();
+            double sum = bar.getSUM(60, Bar.EnumValue.V);
+            double minSum = bar.getLowest(400, bar1 -> bar1.getSUM(20, Bar.EnumValue.V));
+            double rpsValue = sum/minSum;
+            if(rpsValue < 1.2){
+                return FilterResult.FALSE();
+            }
+            return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
+        }, false);
+
+        //strategy2.setAsc(false);
+        //strategy2.setWeight(0.5);
+        strategy.addFilter("站上K线个数", Filters.filter_rps_01(250), false, 0.5);
+
+        //strategy3.setWeight(0.3);
+        strategy.addFilter("最低点涨幅", Filters.filter_rps_02(250), 0.3);
+
+        return strategy;
+    }
+
+
+    public static Strategy rps_12() {
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_DAY_120_VOLUME, "120天(6月)放量", Stock.class);
+        //strategy.setAsc(false);
+        strategy.addFilter("120天放量", (strgy, stock) -> {
+            if(stock.getBarSeries().size() < 240){
+                return FilterResult.FALSE();
+            }
+            Bar bar = stock.getBar();
+            double sum = bar.getSUM(120, Bar.EnumValue.V);
+            double minSum = bar.before(120).getSUM(120, Bar.EnumValue.V);
+            double rpsValue = sum/minSum;
+            if(rpsValue < 1.2){
+                return FilterResult.FALSE();
+            }
+            return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
+        }, false);
+
+//        strategy2.setAsc(false);
+//        strategy2.setWeight(0.5);
+        strategy.addFilter("站上K线个数", Filters.filter_rps_01( 250), false, 0.5);
+
+        //strategy3.setWeight(0.3);
+        strategy.addFilter("最低点涨幅", Filters.filter_rps_02( 250), 0.3);
+
+        return strategy;
+    }
+
+
+
+    public static Strategy rps_14() {
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_FN, "财务指标", Stock.class);
+        strategy.addFilter("财务指标", (strgy, stock) -> {
+            Fn fn = stock.getFn();
+            Integer type = strgy.getFirstArgAsInteger();
+            return FilterResult.Sortable(CommonUtils.numberFormat(fn.getValueByType(type), 2));
+        }, false);
+        return strategy;
+    }
+
+
 
 
 

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>机构基金季度增减持 - 小智慧</title>
+    <div th:replace="common/css_public"></div>
+    <div th:replace="common/css_datatable"></div>
+    <link rel="stylesheet" th:href="'/css/public.css'+${_version}">
+    <style>
+        /*@media (min-width: 1200px) {
+            .img-width img {
+                width: 410px;
+                padding: 2px;
+                text-align: center;
+            }
+            .container{
+                max-width: 1350px;
+            }
+        }*/
+        @media (max-width: 650px) {
+            .container{
+                min-width: 615px;
+            }
+
+        }
+
+        table.dataTable tbody th, table.dataTable thead th {
+            padding: 4px 2px;
+        }
+        table.dataTable tbody td, table.dataTable thead td {
+            padding: 2px 2px;
+        }
+        div.dataTables_wrapper div.dataTables_info {
+            padding-top: .1em;
+            float: left;
+        }
+        div.dataTables_wrapper div.dataTables_filter{
+            padding-top: .1em;
+            float: right;
+            margin-right: .2rem;
+        }
+        div.dataTables_wrapper div.dataTables_paginate{
+            float: right;
+        }
+        div.dataTables_wrapper div.dataTables_paginate ul.pagination{
+            margin: 0;
+        }
+        .table thead th {
+            border-bottom: 1px solid #dee2e6;
+            padding: 0 .75rem;
+            color: #9ba2a8;
+            text-align: center;
+            white-space: nowrap;
+        }
+        table.dataTable tbody td{
+            font-size: 1rem;
+        }
+        table.dataTable>thead .sorting:before,
+        table.dataTable>thead .sorting:after,
+        table.dataTable>thead .sorting_asc:before,
+        table.dataTable>thead .sorting_asc:after,
+        table.dataTable>thead .sorting_desc:before,
+        table.dataTable>thead .sorting_desc:after,
+        table.dataTable>thead .sorting_asc_disabled:before,
+        table.dataTable>thead .sorting_asc_disabled:after,
+        table.dataTable>thead .sorting_desc_disabled:before,
+        table.dataTable>thead .sorting_desc_disabled:after{
+            bottom: 0;
+        }
+        .pagination-sm {
+            margin: .1rem 0;
+        }
+        .custom-select-sm, .form-control-sm {
+            height: calc(1.5rem);
+            padding-top: .15rem;
+            padding-bottom: .25rem;
+            padding-left: .5rem;
+            font-size: 50%;
+        }
+        .page-link {
+            padding: .2rem .5rem;
+            font-size: .8rem;
+            line-height: 1.5;
+        }
+
+    </style>
+</head>
+<body class="hold-transition layout-top-nav layout-navbar-fixed text-sm pace-primary pace-done">
+<!-- Site wrapper -->
+<div id="app" class="wrapper">
+    <div th:replace="common/navbar"></div>
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header"></section>
+
+        <section class="content">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+
+                        <div id="holder" class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">机构基金季度增减持</h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="收起">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-sm-2">
+                                        <!-- text input -->
+                                        <div class="form-group">
+                                            <label>机构名称</label>
+                                            <input v-model="orgName" type="text" class="form-control" placeholder="Enter ...">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <!-- select -->
+                                        <div class="form-group">
+                                            <label>季度</label>
+                                            <select v-model="quarter1" class="form-control">
+                                                <option v-for="(q,index) in common.quarters" v-text="q"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="form-group">
+                                            <label>&nbsp;</label>
+                                            <select v-model="quarter2" class="form-control">
+                                                <option v-for="(q,index) in common.quarters" v-text="q"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <label>&nbsp;</label>
+                                            <button @click="query" type="button" class="btn btn-block btn-default">查询</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <label>&nbsp;</label>
+                                            <button @click="diff" type="button" class="btn btn-block btn-default">比较</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    牛散：<a @click.stop="fillOrgName(item.text)" v-for="item in common.ns" v-text="item.text" class="mr-2"></a>
+                                </div>
+                                <div class="row">
+                                    牛基：<a @click.stop="fillOrgName(item.text)" v-for="item in common.nj" v-text="item.text" class="mr-2"></a>
+                                </div>
+                                <div class="row">
+                                    雪球私募：<a @click.stop="fillOrgName(item.text)" v-for="item in common.xqsm" v-text="item.text" class="mr-2"></a>
+                                </div>
+                                <div class="row">
+                                    查询基金排行：<a class="mr-2" target="_blank" :href="common.ttjj5">天天基金网 - 基金排行(5年)</a>
+                                    <a target="_blank" :href="common.ttjj10">天天基金网 - 基金排行(10年)</a>
+                                </div>
+
+                                <div v-show="holders.length > 0" class="row mt-3">
+                                    <datatable :="{...common.holder}" :data="holders">
+                                        <template v-slot:select-head="{column}">
+                                            <div class="custom-control custom-checkbox">
+                                                <input v-model="selectAll" class="custom-control-input" type="checkbox" id="cb" checked>
+                                                <label for="cb" class="custom-control-label"> 全选</label>
+                                            </div>
+                                        </template>
+                                        <template v-slot:select-body="{row, rowNumber}">
+                                            <div @click.stop class="custom-control custom-checkbox">
+                                                <input @click.stop="select(row)" :checked="row.select" class="custom-control-input" type="checkbox" :id="'cb'+row.id">
+                                                <label :for="'cb'+row.id" class="custom-control-label"></label>
+                                            </div>
+                                        </template>
+                                    </datatable>
+
+                                </div>
+
+                                <div v-show="keeps.length > 0 || newEntries.length > 0 || quits.length > 0" class="row mt-3">
+                                    <div class="col-md-8">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <datatable :="{...common.stockKeeps}" :data="keeps">
+                                                    <template v-slot:title="{column}">
+                                                        <span class="stock-up" v-text="column.title"></span>
+                                                        <a class="ml-1" @click.stop title="查看全部" target="_blank" :href="'/s/'+keeps.map(item => item.code).join(',')">
+                                                            <i class="fas fa-th"></i>
+                                                        </a>
+                                                    </template>
+                                                </datatable>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <datatable :="{...common.stockNewEntries}" :data="newEntries">
+                                                    <template v-slot:title="{column}">
+                                                        <span class="stock-up" v-text="column.title"></span>
+                                                        <a class="ml-1" @click.stop title="查看全部" target="_blank" :href="'/s/'+newEntries.map(item => item.code).join(',')">
+                                                            <i class="fas fa-th"></i>
+                                                        </a>
+                                                    </template>
+                                                </datatable>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <datatable :="{...common.stockQuits}" :data="quits">
+                                            <template v-slot:title="{column}">
+                                                <span class="stock-down" v-text="column.title"></span>
+                                                <a class="ml-1" @click.stop title="查看全部" target="_blank" :href="'/s/'+quits.map(item => item.code).join(',')">
+                                                    <i class="fas fa-th"></i>
+                                                </a>
+                                            </template>
+                                        </datatable>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <a id="back-to-top" href="#" class="btn btn-outline-primary back-to-top" style="display: none" role="button" aria-label="Scroll to top">
+            <i class="fas fa-chevron-up"></i>
+        </a>
+    </div>
+
+    <div th:replace="common/footer"></div>
+</div>
+<!-- ./wrapper -->
+</body>
+</html>
+<div th:replace="common/js_public"></div>
+<div th:replace="common/js_datatable"></div>
+<div th:replace="common/js_custom"></div>
+
+<script th:inline="javascript">
+</script>
+<script>
+
+    function getQuarters(){
+        let quarters = ['03-31','06-30','09-30','12-31'];
+        let results = [];
+        for(let i = 1; i <= 8; i++){
+            let m = moment().subtract(i, 'quarters');
+            let quarter = m.quarter();
+            results.push(m.year()+'-'+quarters[quarter-1])
+        }
+        return results
+    }
+
+    const config = {
+        data() {
+            return {
+                navActive:'stockHolderChange',
+                loading: true,
+                common:{
+                    quarters: getQuarters(),
+                    ns:[], //牛散
+                    nj:[], //牛基
+                    xqsm:[],
+                    ttjj5: 'http://fund.eastmoney.com/data/fundranking.html#tgp;c0;r;sqjzf;pn50;ddesc;qsd'+moment().subtract(5,'years').format('YYYYMMDD')+';qed'+moment().format('YYYYMMDD')+';qdii;zq;gg;gzbd;gzfs;bbzt;sfbb',
+                    ttjj10: 'http://fund.eastmoney.com/data/fundranking.html#tgp;c0;r;sqjzf;pn50;ddesc;qsd'+moment().subtract(10,'years').format('YYYYMMDD')+';qed'+moment().format('YYYYMMDD')+';qdii;zq;gg;gzbd;gzfs;bbzt;sfbb',
+                    holder:{
+                        type: 0,
+                        columns: [
+                            {head:"select-head", slot:"select-body"},
+                            {title:"机构名称", data:"name"}
+                        ],
+                        columnDefs: [
+                            { className: "text-nowrap text-center", "targets": [ 0 ] },
+                        ],
+                        tableClass:{'table-hover':true},
+                    },
+                    stockKeeps:{
+                        type: 0,
+                        columns: [
+                            {head: 'title', title:"继续持有的股票", data:"nameAndCode"},
+                            {title:"持股比例", data:"rate"},
+                            {title:"增减持", data:"diffRate"}
+                        ],
+                        columnDefs: [
+                            { className: "text-nowrap text-center", "targets": [ 0,1,2 ] },
+                        ],
+                        tableClass:{'table-hover':true},
+                        ordering: true,
+                        order: [ [ 2, "desc" ] ],
+                        pageLength: 25
+                    },
+                    stockNewEntries:{
+                        type: 0,
+                        columns: [
+                            {head: 'title', title:"新进入的股票", data:"nameAndCode"},
+                            {title:"持股比例", data:"rate"}
+                        ],
+                        columnDefs: [
+                            { className: "text-nowrap text-center", "targets": [ 0,1 ] },
+                        ],
+                        tableClass:{'table-hover':true},
+                        ordering: true,
+                        order: [ [ 1, "desc" ] ],
+                        pageLength: 25
+                    },
+                    stockQuits:{
+                        type: 0,
+                        columns: [
+                            {head: 'title', title:"退出的股票", data:"nameAndCode"},
+                            {title:"持股比例", data:"rate"}
+                        ],
+                        columnDefs: [
+                            { className: "text-nowrap text-center", "targets": [ 0,1 ] },
+                        ],
+                        tableClass:{'table-hover':true},
+                        ordering: true,
+                        order: [ [ 1, "desc" ] ],
+                        pageLength: 25
+                    }
+                },
+                holders:[],
+                keeps:[],
+                quits:[],
+                newEntries:[],
+                orgName:'',
+                quarter1:getQuarters()[1],
+                quarter2:getQuarters()[0],
+            }
+        },
+        methods:{
+            fillOrgName:async function (text){
+                this.orgName = text;
+                await this.query();
+                this.diff();
+            },
+            query: async function (){
+                let _this = this;
+                return axios.get("/holder/query/"+_this.orgName).then(function(res){
+                    _this.holders = res.data.data;
+                    _this.holders.forEach(holder => holder.select = true)
+                    console.log(_this.holders)
+                });
+            },
+            diff: function (){
+                let _this = this;
+                axios.get("/holder/diff/"+this.quarter1+"/"+this.quarter2+"/"+this.holders.filter(holder => holder.select).map(holder => holder.id).join(',')).then(function(res){
+                    let data = res.data.data;
+                    _this.keeps = data.keeps;
+                    _this.keeps.forEach(item => {
+                        item.rate = item.rate.toFixed(2);
+                        item.diffRate = item.diffRate.toFixed(2);
+                    });
+                    _this.quits = data.quits;
+                    _this.quits.forEach(item => {
+                        item.rate = item.rate.toFixed(2);
+                    });
+                    _this.newEntries = data.newEntries;
+                    _this.newEntries.forEach(item => {
+                        item.rate = item.rate.toFixed(2);
+                    });
+                    console.log('mounted', _this.$data)
+                });
+            },
+            select: function (row){
+                row.select = !row.select;
+            },
+        },
+        computed: {
+            selectAll: {
+                get: function () {
+                    return true;
+                },
+                set: function (value) {
+                    this.holders.forEach(holder => {
+                        holder.select = value;
+                    });
+                }
+            }
+        },
+        mounted() {
+            let _this = this;
+            axios.get("/dict/detail/20").then(function(res){
+                _this.common.ns = res.data.data;
+            });
+            axios.get("/dict/detail/21").then(function(res){
+                _this.common.nj = res.data.data;
+            });
+            axios.get("/dict/detail/5020").then(function(res){
+                _this.common.xqsm = res.data.data;
+            });
+        }
+    };
+    createApp(config);
+
+</script>

@@ -50,4 +50,8 @@ public class MainWebController {
         return model;
     }
 
+    @RequestMapping("stockHolderChange")
+    public String stockHolderChange(){
+        return "stockHolderChange";
+    }
 }

@@ -77,7 +77,7 @@ const _stockHeart = {
             }
         },
         isChecked: function (key) {
-            return this.stock.statuses && this.stock.statuses.find(s=>s.type===2 && s.subType === key) !== undefined;
+            return this.stock && this.stock.statuses && this.stock.statuses.find(s=>s.type===2 && s.subType === key) !== undefined;
         },
         doOnShow: function (){
             let _this = this;

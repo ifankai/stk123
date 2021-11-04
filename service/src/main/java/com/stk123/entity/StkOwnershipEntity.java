@@ -17,6 +17,7 @@ import java.util.Objects;
 public class StkOwnershipEntity implements Serializable {
     @Id
     @Column(name = "CODE", nullable = true, length = 10)
+    @JsonView(View.All.class)
     private String code;
 
     @Id
@@ -34,6 +35,7 @@ public class StkOwnershipEntity implements Serializable {
 
     @Basic
     @Column(name = "RATE", nullable = true, precision = 2)
+    @JsonView(View.All.class)
     private Double rate;
 
     @Basic
@@ -48,6 +50,12 @@ public class StkOwnershipEntity implements Serializable {
     @Transient
     @JsonView(View.All.class)
     private String orgName;
+    @Transient
+    @JsonView(View.All.class)
+    private Double diffRate;
+    @Transient
+    @JsonView(View.All.class)
+    private String nameAndCode;
 
 
     @Override
@@ -82,6 +90,6 @@ public class StkOwnershipEntity implements Serializable {
     public static class CompositeKey implements Serializable {
         private String code;
         private String fnDate;
-        private Integer orgId;
+        private Long orgId;
     }
 }

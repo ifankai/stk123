@@ -25,9 +25,11 @@ import com.stk123.util.HttpUtils;
 import com.stk123.util.ServiceUtils;
 import lombok.SneakyThrows;
 import lombok.extern.apachecommons.CommonsLog;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -35,7 +37,7 @@ import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/stock")
-@CommonsLog
+@Slf4j
 public class StockController {
 
     @Autowired
@@ -79,9 +81,9 @@ public class StockController {
     public RequestResult updateKline(@PathVariable(value = "code")String code){
         try {
             Stock stock = stockService.buildStocks(code).stream().findFirst().get();
-            log.info("update k line start:"+code);
+            log.info("update k line start:{}", code);
             barService.updateKline(stock, Integer.MAX_VALUE);
-            log.info("update k line end:"+code);
+            log.info("update k line end:{}", code);
         } catch (Exception e) {
             log.error("",e);
             return RequestResult.success(e.getMessage());
@@ -126,7 +128,17 @@ public class StockController {
         return RequestResult.success();
     }
 
-    @RequestMapping(value = {"/{code}", "/rps/{rpsCode}/{code}"})
+    @PostMapping("/post")
+    @ResponseBody
+    @JsonView(View.All.class)
+    public RequestResult stocks(@RequestBody Map map){
+        String code = (String) map.get("code");
+        log.info("stocks: {}", code);
+        String rpsCode = (String) map.get("rpsCode");
+        return stocks(code, rpsCode);
+    }
+
+    @GetMapping(value = {"/{code}", "/rps/{rpsCode}/{code}"})
     @ResponseBody
     @JsonView(View.All.class)
     public RequestResult stocks(@PathVariable(value = "code")String code,

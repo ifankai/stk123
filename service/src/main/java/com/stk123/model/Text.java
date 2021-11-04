@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.stk123.service.StkConstant;
 import com.stk123.util.ServiceUtils;
 import com.stk123.common.db.util.sequence.SequenceUtils;
 import com.stk123.common.util.JdbcUtils;
@@ -35,7 +36,7 @@ public class Text {
 	}
 	
 	public static void insert(Connection conn, String code,String content, int subType) throws Exception{
-		Text.insert(conn, 1, code,null, content, subType);
+		Text.insert(conn, StkConstant.TEXT_TYPE_AUTO, code,null, content, subType);
 	}
 	
 	public static void insert(Connection conn,int type, String code,String title, String content, int subType) throws Exception{

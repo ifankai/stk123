@@ -3,7 +3,7 @@ const _stockTextTemplate = `
         <div class="modal-dialog" :style="text.modalWidth?text.modalWidth:{'max-width': '800px'}">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 v-if="text.modalNotEdit !== undefined" v-text="text.title" class="modal-title">编辑文本</h5>
+                    <h5 v-if="text.modalNotEdit !== undefined" v-text="text.title" class="modal-title"></h5>
                     <input v-else="text.modalNotEdit === undefined" v-model="text.title" class="modal-title form-control" type="text" placeholder="输入标题..."/>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>

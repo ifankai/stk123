@@ -196,7 +196,7 @@ public class ReportService {
         result.put("currentAllStocksRpsU", getAllStocksRpsByType(headers, finalRptDate, StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS_US));
 
         //k线云梯
-        result.put("currentAllStocksRps15A", getAllStocksRpsByType(headers, finalRptDate, StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS_15A));
+        result.put("currentAllStocksRps15A", getStocksByType(headers, StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS_15A, finalRptDate, EnumMarket.CN));
 
         return result;
     }
@@ -225,7 +225,7 @@ public class ReportService {
     private List<StkReportDetailEntity> getAllStocksRpsByType(List<StkReportHeaderEntity> headers, String finalRptDate, String type){
         List<StkReportDetailEntity> allStocksRpsA = getDetailsByTypeAndDate(headers, type, finalRptDate);
         allStocksRpsA.forEach(rps -> {
-            rps.setStrategyName(Rps.getRpsStrategy(rps.getStrategyCode()).getNameWithCode());
+            rps.setStrategyName(Strategies.getStrategy(rps.getStrategyCode()).getNameWithCode());
         });
         return allStocksRpsA;
     }
@@ -252,7 +252,7 @@ public class ReportService {
 
     private List<StkReportDetailEntity> getDetailsByTypeAndDate(List<StkReportHeaderEntity> headers, String type, String date){
         List<StkReportHeaderEntity> headerByDate = headers.stream().filter(stkReportHeaderEntity -> type.equals(stkReportHeaderEntity.getType()) && date.equals(stkReportHeaderEntity.getReportDate())).collect(Collectors.toList());
-        return headerByDate.stream().flatMap(stkReportHeaderEntity -> stkReportHeaderEntity.getStkReportDetailEntities().stream()).collect(Collectors.toList());
+        return headerByDate.stream().flatMap(stkReportHeaderEntity -> stkReportHeaderEntity.getStkReportDetailEntities().stream()).sorted(Comparator.comparing(StkReportDetailEntity::getId)).collect(Collectors.toList());
     }
 
     private List<Map> getStocksByType(List<StkReportHeaderEntity> headers, String type, String finalRptDate, EnumMarket market){

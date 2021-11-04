@@ -54,7 +54,7 @@ public class XueqiuController {
     @GetMapping(value = {"/{type}"})
     public ModelAndView query(@PathVariable(value = "type", required = false)String type){
         Set<String> codes = XueqiuService.getFollowStks(type);
-        ModelAndView model = new ModelAndView("forward:/s/"+ String.join(",", codes));
+        ModelAndView model = new ModelAndView("forward:/s/"+ String.join(",", codes)+"?title="+type);
         return model;
     }
 }

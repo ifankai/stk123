@@ -67,9 +67,9 @@ public class DictController {
         return RequestResult.success();
     }
 
-    @DeleteMapping(value = "")
+    @GetMapping(value = "/reload")
     @ResponseBody
-    public RequestResult init(){
+    public RequestResult reload(){
         dictService.init();
         return RequestResult.success();
     }

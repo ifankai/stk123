@@ -35,4 +35,6 @@ public interface StkOwnershipRepository extends JpaRepository<StkOwnershipEntity
         }
         return result;
     }
+
+    List<StkOwnershipEntity> findAllByFnDateAndOrgIdIn(String fnDate, List<Long> orgIds);
 }

@@ -1209,7 +1209,8 @@ public class Stock {
                StringUtils.contains(owner.getOrgName(), "中央汇金资产") ||
                StringUtils.contains(owner.getOrgName(), "中国证券金融股份") ||
                StringUtils.contains(owner.getOrgName(), "社保基金" ) ||
-               StringUtils.contains(owner.getOrgName(), "养老保险基金")
+               StringUtils.contains(owner.getOrgName(), "养老保险基金") ||
+               StringUtils.contains(owner.getOrgName(), "高毅")
                     ){
                 this.tags.add(Tag.builder().name("机构投资").detail(owner.getOrgName()).build());
                 score += 10;

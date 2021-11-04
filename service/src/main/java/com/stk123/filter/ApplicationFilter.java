@@ -42,7 +42,7 @@ public class ApplicationFilter implements Filter {
             filterChain.doFilter(request, response);
         }finally {
             Map parameters = getParametersAsMap(httpServletRequest);
-            log.info("==> uri: {} {}, {}{}, cost: {}ms", httpServletRequest.getMethod(), uri, parameters.isEmpty()?"":parameters, body, System.currentTimeMillis() - start);
+            log.info("==> uri: {} {}, {}, {}, cost: {}ms", httpServletRequest.getMethod(), uri, parameters.isEmpty()?"":parameters, body, System.currentTimeMillis() - start);
         }
     }
 

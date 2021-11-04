@@ -25,9 +25,9 @@ const _datatableLang =
     };
 
 const _datatableTemplate = `
-<div class="dataTables_wrapper dt-bootstrap4">
+<div class="dataTables_wrapper dt-bootstrap4" style="width:100%">
     <table :id="'_datatable_'+datatableId"  class="table table-valign-middle dataTable" :class="tableClass" style="width:100%">
-        <thead v-show="columns[0].title">
+        <thead v-show="columns[0].title || columns[0].head">
             <tr>
                 <template v-for="column in columns" >
                     <th v-if="column.head !== undefined">
@@ -106,7 +106,7 @@ const _datatableTemplate = `
                     </td>
                     <td v-else-if="column.data == 'dayBarImage'">
                         <span v-html="row.dayBarImage"></span>
-                        <span v-if="row.market==='CN'" style="display: flex;margin-right: 6px;">
+                        <span v-if="row.market!=='US'" style="display: flex;margin-right: 6px;">
                             <img class="img-flow lazyload" :data-src="'data:image/png;base64,'+row.dayFlowImage">
                         </span>
                     </td>

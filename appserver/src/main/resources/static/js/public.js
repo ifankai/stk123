@@ -62,6 +62,25 @@ Date.prototype.format = function (fmt) { //调用：var time1 = new Date().Forma
     return fmt;
 }
 
+function postUrl(url, params) {
+    // 创建form元素
+    var temp_form = document.createElement("form");
+    // 设置form属性
+    temp_form.action = url;
+    temp_form.target = "_blank";
+    temp_form.method = "post";
+    temp_form.style.display = "none";
+    // 处理需要传递的参数
+    for (var x in params) {
+        var opt = document.createElement("textarea");
+        opt.name = x;
+        opt.value = params[x];
+        temp_form.appendChild(opt);
+    }
+    document.body.appendChild(temp_form);
+    // 提交表单
+    temp_form.submit();
+}
 
 function isVisible(elment) {
     var vpH = $(window).height(), // Viewport Height
@@ -608,6 +627,7 @@ function createApp(config){
 
     app.config.globalProperties.tsFormat = _tsFormat;
     app.config.globalProperties.dateFormat = dateFormat;
+    app.config.globalProperties.postUrl = postUrl;
     app.config.globalProperties._ = _;
     app.config.globalProperties.moment = moment;
 

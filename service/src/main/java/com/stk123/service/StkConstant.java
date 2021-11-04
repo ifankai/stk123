@@ -69,7 +69,7 @@ public class StkConstant {
     /** stk_text.type **/
     public final static int TEXT_TYPE_ADD_BY_MYSELF = 0; //收藏文章:0;
     public final static int TEXT_TYPE_MANUAL = 1;//短文:1; => 手动添加
-    public final static int TEXT_TYPE_AUTO = 2;//长文:2; => 系统自动  deleted
+    public final static int TEXT_TYPE_AUTO = 2;//长文:2; => 系统自动
     public final static int TEXT_TYPE_XUEQIU = 3;  //雪球评论:3
     public final static int TEXT_TYPE_NOTICE = 4; //公告
     public final static int TEXT_TYPE_REPORT = 5; //研报
@@ -77,6 +77,7 @@ public class StkConstant {
 
     public final static Map<Integer, String> TEXT_TYPE_MAP_ES_TYPE = new HashMap<Integer, String>(){{
         put(TEXT_TYPE_MANUAL, ES_TYPE_MANUAL);
+        put(TEXT_TYPE_AUTO, ES_TYPE_AUTO);
         put(TEXT_TYPE_XUEQIU, ES_TYPE_POST);
         put(TEXT_TYPE_NOTICE, ES_TYPE_NOTICE);
         put(TEXT_TYPE_REPORT, ES_TYPE_REPORT);
@@ -85,6 +86,7 @@ public class StkConstant {
 
     /** es type 和上面  stk_text.type 基本对应, 再加上其他一些type，比如：stock，industry等 **/
     public final static String ES_TYPE_MANUAL = "manual"; //我添加的文档
+    public final static String ES_TYPE_AUTO = "auto";     //系统自动添加的文档
     public final static String ES_TYPE_STOCK = "stock";
     public final static String ES_TYPE_POST = "post";
     public final static String ES_TYPE_NOTICE = "notice";

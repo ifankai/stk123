@@ -44,8 +44,8 @@ table tr.selected{
 }
 @media (min-width: 1200px) {
     img.img-flow {
-        height: 70px;
-        margin-top: -70px;
+        height: 66px;
+        margin-top: -67px;
         width: 405px !important;
     }
 
@@ -80,4 +80,10 @@ i.has-value{
 }
 .note-popover{
     z-index: 100000;
+}
+.stock-up{
+    color: #d20;
+}
+.stock-down{
+    color: #093;
 }
