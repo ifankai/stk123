@@ -6,6 +6,7 @@ import com.stk123.service.task.Task;
 import com.stk123.task.tool.TaskUtils;
 import lombok.Setter;
 import lombok.extern.apachecommons.CommonsLog;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -16,7 +17,7 @@ import java.util.Map;
 import java.util.Set;
 
 
-@CommonsLog
+@Slf4j
 public abstract class AbstractTask extends Task {
 
     public AbstractTask(){super();}
@@ -64,7 +65,11 @@ public abstract class AbstractTask extends Task {
         for(Map.Entry<String, Runnable> method : methods.entrySet()){
             if(keySet.isEmpty() || StringUtils.startsWith(method.getKey(), "run_") || keySet.stream().anyMatch(key -> StringUtils.contains(method.getKey(), key))){
                 //log.info("["+this.getClass().getSimpleName()+"]" + "...start");
-                method.getValue().run();
+                try {
+                    method.getValue().run();
+                }catch (Exception e){
+                    log.error("["+this.getClass().getSimpleName()+"] error:", e);
+                }
                 //log.info("["+this.getClass().getSimpleName()+"]" + "...end");
             }
         }

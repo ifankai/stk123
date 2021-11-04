@@ -68,7 +68,8 @@ public class Cache {
     }
     public static Map<String,StrategyResult> getBkRps(String bkCode){
         if(Cache.BKsEasymoneyGn == null) initBks();
-        return Cache.BKsEasymoneyGn_Rps.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().get(bkCode)));
+        //return Cache.BKsEasymoneyGn_Rps.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().get(bkCode)));
+        return Cache.BKsEasymoneyGn_Rps.entrySet().stream().collect(HashMap::new, (m,v)->m.put(v.getKey(), v.getValue()==null?null:v.getValue().get(bkCode)), HashMap::putAll);
     }
     public static Stock getBk(String bkCode){
         if(Cache.BKsEasymoneyGn == null) initBks();

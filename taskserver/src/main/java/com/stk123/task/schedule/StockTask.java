@@ -71,11 +71,11 @@ public class StockTask extends AbstractTask {
 
     @Override
     public void register() {
-        this.runByName("initCNNewStock", this::initCNNewStock);
         this.runByName("initCNIndustryEasymoney", this::initCNIndustryEasymoney);
         this.runByName("initCNHolder", this::initCNHolder);
         this.runByName("initCNFinance", this::initCNFinance);
         this.runByName("initCNMainProduct", this::initCNMainProduct);
+        this.runByName("initCNNewStock", this::initCNNewStock);
         this.runByName("initHKBaseInfo", this::initHKBaseInfo);
         this.runByName("initUSBaseInfo", this::initUSBaseInfo);
         this.runByName("clear", this::clear);
@@ -91,6 +91,7 @@ public class StockTask extends AbstractTask {
     }
 
     public void initCNHolder() {
+        log.info("initCNHolder start");
         initCNStocks();
         for(Stock stock : stocksCN) {
             log.info("initCNHolder:"+stock.getCode());
@@ -158,6 +159,7 @@ public class StockTask extends AbstractTask {
                 break;
             }
         }
+        log.info("initCNHolder end");
     }
 
     public void initCNStocks(){
@@ -197,14 +199,14 @@ public class StockTask extends AbstractTask {
     }
 
     public void initCNNewStock() {
+        log.info("initCNNewStock start");
         String[] ss = getAllStocksCode().split(",");
-        List params = new ArrayList();
         StringBuffer sb = new StringBuffer();
         for(int i=0;i<ss.length;i++){
             sb.append(ss[i]+",");
             if((i+1) % 50 == 0 || i == ss.length-1){
                 String page = httpService.getString("http://hq.sinajs.cn/list="+sb);
-                log.info(page);
+                //log.info(page);
                 String[] str = page.split(";");
                 for(int j=0;j<str.length;j++){
                     String s = str[j];
@@ -244,7 +246,7 @@ public class StockTask extends AbstractTask {
                 sb = new StringBuffer();
             }
         }
-
+        log.info("initCNNewStock end");
     }
 
     //http://quote.eastmoney.com/sz002572.html?from=beta
@@ -325,8 +327,10 @@ public class StockTask extends AbstractTask {
     }
 
     public void initCNIndustryEasymoney(){
+        log.info("initCNIndustryEasymoney start");
         initCNIndustryEasymoney("59", "3", "70");
         initCNIndustryEasymoney("65", "2", "60");
+        log.info("initCNIndustryEasymoney end");
     }
 
     //http://quote.eastmoney.com/center/boardlist.html#concept_board
@@ -339,7 +343,7 @@ public class StockTask extends AbstractTask {
                 "&pn=1&pz=2000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=m:90+t:"+type2+"+f:!50&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f26,f22,f33,f11,f62,f128,f136,f115,f152,f124,f107,f104,f105,f140,f141,f207,f208,f209,f222" +
                 "&_="+time;
         try {
-            System.out.println(url);
+            //System.out.println(url);
             String page = httpService.getString(url);
             String json = "{"+StringUtils.substringBetween(page, "({", "})")+"}";
             ObjectMapper mapper = new ObjectMapper();
@@ -411,6 +415,7 @@ public class StockTask extends AbstractTask {
     }
 
     public void initCNFinance(){
+        log.info("initCNFinance start");
         initCNStocks();
         ObjectMapper mapper = new ObjectMapper();
 
@@ -450,6 +455,7 @@ public class StockTask extends AbstractTask {
                 log.error("initCNFinance error:"+stock.getCode(), e);
             }
         }
+        log.info("initCNFinance end");
     }
 
     public void initCNMainProduct(){

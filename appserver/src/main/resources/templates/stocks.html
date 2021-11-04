@@ -443,7 +443,7 @@
                 heartStock: {},
                 common:{
                     stocks:{
-                        type: 1,
+                        //type: 1,
                         columns: [
                             {title:"股票", slot:"name-and-tags"},
                             {title:"日线", data:"dayBarImage"},
@@ -452,7 +452,7 @@
                         columnDefs: [
                             { className: "img-width", "targets": [ 1,2,3 ] }
                         ],
-                        pageLength: 100
+                        pageLength: 200
                     },
                     trade:{
                         type: 1,
@@ -501,9 +501,6 @@
             }
         },
         methods:{
-            okMethods:function (){
-                console.log("ok")
-            },
             cancelMethods:function (){
                 console.log("cancel")
             },
@@ -659,7 +656,7 @@
         },
         computed: {
             bksTopN: function () {
-                return this.bks.slice(0, 10);
+                return this.bks.slice(0, 30);
             },
             selectAllStocks:{
                 get: function () {
