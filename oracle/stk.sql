@@ -3178,7 +3178,7 @@ select * from (select * from stk_kline_hk where code='999999' order by kline_dat
 select * from stk_capital_flow where code='600638' order by flow_date desc;
 
 select * from stk_report_detail order by strategy_date desc, id desc;
-select * from stk_report_detail where header_id=11302;
+select * from stk_report_detail where header_id=11266;
 select * from stk_report_header order by insert_time desc;
 
 select * from stk_text where code='300296' order by insert_time desc;
@@ -3191,7 +3191,7 @@ select * from stk_capital_flow order by insert_time desc;
 
 select * from stk_trade_strategy;
 
-select 
+select * from stk_kline_us where code='TSLA' order by kline_date desc; 
 
 select * from stk_cn order by listing_date desc;--605167
 select * from stk_kline where code='605167' order by kline_date desc;

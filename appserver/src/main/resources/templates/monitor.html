@@ -111,15 +111,26 @@
 
                             <div class="card-body">
                                 <datatable :="{...common.monitor, ...monitor}">
-                                    <template v-slot:up-count="{column}">
+                                    <template v-slot:report-date="{row, rowNumber}">
+                                        <span v-text="dateFormat(row.reportDate)"></span> <sub v-text="' ('+moment(dateFormat(row.reportDate)).day()+')'"></sub>
+                                    </template>
+
+                                    <template v-slot:head-up-count="{column}">
                                         <span v-text="column.title"></span>
                                         <button @click.stop="" type="button" class="btn btn-tool ml-1" title="历史走势">
                                             <i class="fal fa-chart-line"></i>
                                         </button>
                                     </template>
-                                    <template v-slot:report-date="{row, rowNumber}">
-                                        <span v-text="dateFormat(row.reportDate)"></span> <sub v-text="' ('+moment(dateFormat(row.reportDate)).day()+')'"></sub>
+                                    <template v-slot:body-up-count="{row, rowNumber}">
+                                        <div :class="getColorByPercent(row.upCount*100/row.stockCount)">
+                                            <span v-text="row.upCount"></span> (<span v-text="(row.upCount*100/row.stockCount).toFixed(2)"></span>%)
+                                        </div>
                                     </template>
+
+                                    <template v-slot:body-price-limit-up="{row, rowNumber}">
+                                        <span v-text="row.priceLimitUp2+row.priceLimitUp3+row.priceLimitUp4"></span>
+                                    </template>
+
                                 </datatable>
                             </div>
                         </div>
@@ -193,20 +204,20 @@
                     monitor:{
                         columns: [
                             {title:"日期", slot:"report-date"},
-                            {head:"up-count", title:"红盘", data:"upCount"},
+                            {head:"head-up-count", title:"红盘", slot:"body-up-count"},
                             {title:"绿盘", data:"downCount"},
                             {title:"涨停", data:"upLimitCount"},
                             {title:"跌停", data:"downLimitCount"},
                             {title:"炸板", data:""},
-                            {title:"连板", data:""},
-                            {title:"2连板", data:""},
-                            {title:"3连板", data:""},
-                            {title:"3连板以上", data:""},
-                            {title:"收盘>MA20", data:""},
-                            {title:"收盘>MA120", data:""},
+                            {title:"连板", slot:"body-price-limit-up"},
+                            {title:"2连板", data:"priceLimitUp2"},
+                            {title:"3连板", data:"priceLimitUp3"},
+                            {title:"3连板以上", data:"priceLimitUp4"},
+                            {title:"收盘>MA20", data:"gt20Ma"},
+                            {title:"收盘>MA120", data:"gt120Ma"},
                         ],
                         columnDefs: [
-                            { className: "text-nowrap text-center", "targets": [ 0,1,2,3,4 ] },
+                            { className: "text-nowrap text-center", "targets": [ 0,1,2,3,4,5,6,7,8,9,10,11 ] },
                         ],
                         ordering: true,
                         order: [ [ 0, "desc" ] ],
@@ -225,6 +236,18 @@
             }
         },
         methods:{
+            getColorByPercent: function (percent) {
+                if(percent >= 75){
+                    return 'stock-up'
+                }else if(percent >= 60){
+                    return 'stock-up2'
+                }else if(percent <= 25){
+                    return 'stock-down'
+                }else if(percent <= 40){
+                    return 'stock-down2'
+                }
+                return '';
+            }
         },
         computed: {
         },
@@ -234,9 +257,9 @@
                 let data = res.data.data;
                 _this.monitor = {data: data.monitor.slice(0, 30)};
                 _this.history = data.monitor;
-                _this.history.forEach(item => {
+                /*_this.history.forEach(item => {
                     item.upCount = item.upCount == null ? null : (item.upCount/item.stockCount).toFixed(2); // 红盘%
-                })
+                })*/
                 _this.ks = data.ks;
                 console.log('mounted', _this.$data)
 

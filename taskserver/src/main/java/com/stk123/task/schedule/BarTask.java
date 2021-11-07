@@ -400,6 +400,7 @@ public class BarTask extends AbstractTask {
     }
 
     public void analyseUS(){
+        log.info("analyseUS start");
         StkKlineUsEntity stkKlineUsEntity = stkKlineUsRepository.findTop1ByCodeOrderByKlineDateDesc(".DJI");
         today = stkKlineUsEntity.getKlineDate();
         Map<String, BigDecimal> peMap = barService.calcAvgMidPeTtm(today, EnumMarket.US);
@@ -410,6 +411,7 @@ public class BarTask extends AbstractTask {
         Double midPE = NumberUtils.toDouble(peMap.get("mid_pe_ttm"));
         stkPeEntity.setResult10(midPE);
         stkPeRepository.save(stkPeEntity);
+        log.info("analyseUS end");
     }
 
     //多线程 workers
@@ -422,7 +424,7 @@ public class BarTask extends AbstractTask {
                 try{
                     Stock stock = Stock.build(stk);
                     log.info("initKLines=="+stock.getCode());
-                    if(isWorkingDay || stock.isMarketUS()){
+                    if(isWorkingDay/* || stock.isMarketUS()*/){
                         barService.initKLine(stock);
                     }else{
                         barService.initKLines(stock, 20);
@@ -1508,6 +1510,7 @@ public class BarTask extends AbstractTask {
             int priceLimitUp = 0;
             List<Stock> priceLimitUp2 = new ArrayList<>();
             List<Stock> priceLimitUp3 = new ArrayList<>();
+            List<Stock> priceLimitUp4 = new ArrayList<>();
             int priceLimitDown = 0;
             int upCount = 0;
             int downCount = 0;
@@ -1530,8 +1533,10 @@ public class BarTask extends AbstractTask {
                     priceLimitUp ++;
                     if(cnt == 2){
                         priceLimitUp2.add(stock);
-                    }else if(cnt >= 3){
+                    }else if(cnt == 3){
                         priceLimitUp3.add(stock);
+                    }else if(cnt > 3){
+                        priceLimitUp4.add(stock);
                     }
                 }
                 if(stock.isPriceLimitDown()){
@@ -1554,11 +1559,12 @@ public class BarTask extends AbstractTask {
 
             entity.setResult5((double)priceLimitUp2.size());
             entity.setResult6((double)priceLimitUp3.size());
-            entity.setString1(priceLimitUp2.stream().map(Stock::getCode).collect(Collectors.joining(",")));
-            entity.setString2(priceLimitUp3.stream().sorted(Comparator.comparing(Stock::getPriceLimitUpCount, Comparator.reverseOrder())).map(stock -> stock.getCode()+'|'+stock.getPriceLimitUpCount()).collect(Collectors.joining(",")));
+            entity.setResult7((double)priceLimitUp4.size());
+            entity.setString1(priceLimitUp3.stream().map(Stock::getCode).collect(Collectors.joining(",")));
+            entity.setString2(priceLimitUp4.stream().sorted(Comparator.comparing(Stock::getPriceLimitUpCount, Comparator.reverseOrder())).map(stock -> stock.getCode()+'|'+stock.getPriceLimitUpCount()).collect(Collectors.joining(",")));
 
-            entity.setResult7((double)gt20Ma);
-            entity.setResult8((double)gt120Ma);
+            entity.setResult8((double)gt20Ma);
+            entity.setResult9((double)gt120Ma);
 
             stkPeRepository.save(entity);
         } catch (Exception e) {
@@ -1578,6 +1584,7 @@ public class BarTask extends AbstractTask {
             int priceLimitUp = 0;
             List<Stock> priceLimitUp2 = new ArrayList<>();
             List<Stock> priceLimitUp3 = new ArrayList<>();
+            List<Stock> priceLimitUp4 = new ArrayList<>();
             int priceLimitDown = 0;
             int upCount = 0;
             int downCount = 0;
@@ -1602,8 +1609,10 @@ public class BarTask extends AbstractTask {
                     priceLimitUp ++;
                     if(cnt == 2){
                         priceLimitUp2.add(stock);
-                    }else if(cnt >= 3){
+                    }else if(cnt == 3){
                         priceLimitUp3.add(stock);
+                    }else if(cnt > 3){
+                        priceLimitUp4.add(stock);
                     }
                 }
                 if(stock.isPriceLimitDown(date)){
@@ -1623,6 +1632,7 @@ public class BarTask extends AbstractTask {
                 entity = new StkPeEntity();
                 entity.setReportDate(date);
             }
+
             entity.setStockCount(total);
             entity.setResult1((double)priceLimitUp);
             entity.setResult2((double)priceLimitDown);
@@ -1631,11 +1641,12 @@ public class BarTask extends AbstractTask {
 
             entity.setResult5((double)priceLimitUp2.size());
             entity.setResult6((double)priceLimitUp3.size());
-            entity.setString1(priceLimitUp2.stream().map(Stock::getCode).collect(Collectors.joining(",")));
-            entity.setString2(priceLimitUp3.stream().sorted(Comparator.comparing(Stock::getPriceLimitUpCount, Comparator.reverseOrder())).map(stock -> stock.getCode()+'|'+stock.getPriceLimitUpCount()).collect(Collectors.joining(",")));
+            entity.setResult7((double)priceLimitUp4.size());
+            entity.setString1(priceLimitUp3.stream().map(Stock::getCode).collect(Collectors.joining(",")));
+            entity.setString2(priceLimitUp4.stream().sorted(Comparator.comparing(Stock::getPriceLimitUpCount, Comparator.reverseOrder())).map(stock -> stock.getCode()+'|'+stock.getPriceLimitUpCount()).collect(Collectors.joining(",")));
 
-            entity.setResult7((double)gt20Ma);
-            entity.setResult8((double)gt120Ma);
+            entity.setResult8((double)gt20Ma);
+            entity.setResult9((double)gt120Ma);
 
             stkPeRepository.save(entity);
         }

@@ -84,6 +84,15 @@ i.has-value{
 .stock-up{
     color: #d20;
 }
+.stock-up2{
+    color: #fc7c63;
+}
 .stock-down{
     color: #093;
+}
+.stock-down2{
+    color: #47de7a;
+}
+.tippy-box{
+    max-width: unset!important;
 }

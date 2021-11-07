@@ -7,6 +7,7 @@
     <div th:replace="common/css_public"></div>
     <!--<link rel="stylesheet" href="/adminlte/plugins/pace-progress/themes/black/pace-theme-loading-bar.css">-->
     <div th:replace="common/css_datatable"></div>
+    <link rel="stylesheet" href="/css/tippy.css"/>
     <link rel="stylesheet" type="text/css" href="/plugins/timeline/vis-timeline-graph2d.min.css" />
     <link rel="stylesheet" th:href="'/css/public.css'+${_version}">
     <style>
@@ -134,6 +135,10 @@
         .trade-bar {
             width: 40px;
             float: left;
+        }
+        .tippy-content .img-bar{
+            width: 400px;
+            z-index: 99999;
         }
     </style>
 </head>
@@ -362,6 +367,7 @@
 </html>
 <div th:replace="common/js_public"></div>
 <div th:replace="common/js_datatable"></div>
+<div th:replace="common/js_tippy"></div>
 <script type="text/javascript" src="/plugins/timeline/vis-data.min.js"></script>
 <script type="text/javascript" src="/plugins/timeline/vis-timeline-graph2d.min.js"></script>
 <script type="text/javascript" src="/plugins/notify.min.js"></script>
@@ -452,7 +458,7 @@
                         columnDefs: [
                             { className: "img-width", "targets": [ 1,2,3 ] }
                         ],
-                        pageLength: 200
+                        pageLength: 500
                     },
                     trade:{
                         type: 1,
@@ -587,7 +593,7 @@
                     let code = stock.code;
                     if (new Date().getTime() >= moment().set('hours', 9).set('minutes', 25).valueOf()
                         && new Date().getTime() <= moment().set('hours', 16).set('minutes', 0).valueOf()){
-                        console.log('trading ....' + code)
+                        //console.log('trading ....' + code)
                         await this.getTrade(code);
                     }
                     await sleep(500);
@@ -614,11 +620,15 @@
                                 data[stock.code].strategy.forEach(item => {
                                     item.content = item.nameAndCode +' - '+ item.strategyName;
                                     item.start = moment(item.insertTime);
+                                    item.className = 'tippy tippy-'+item.code;
                                     _this.timelineItems.add(item);
                                     _this.timeline.setSelection(item.id);
                                     notify.player();
                                 });
                             }
+                            _this.$nextTick(function () {
+                                _this.tippy();
+                            });
                         }
                     }
                 })
@@ -627,13 +637,14 @@
                 })
             },
             getTradeList: function (){
-                console.log('getTradeList...')
+                //console.log('getTradeList...')
                 let _this = this;
                 axios.get("/trade/list").then(function(res){
                     _this.trade = res.data.data;
                     _this.trade.forEach(item => {
                         item.content = item.nameAndCode +' - '+ item.strategyName;
                         item.start = moment(item.insertTime);
+                        item.className = 'tippy tippy-'+item.code;
                     });
 
                     const container = document.getElementById("timeline");
@@ -651,6 +662,35 @@
                     };
                     _this.timeline = new vis.Timeline(container, _this.timelineItems, options);
 
+                    /*_this.timeline.on('itemover', function(properties){
+
+                    });*/
+
+                    _this.$nextTick(function () {
+                        _this.tippy();
+                    });
+                });
+            },
+            tippy: function () {
+                let _this = this;
+                tippy('.tippy', {
+                    arrow: true,
+                    placement: 'bottom',
+                    theme: 'light-border',
+                    interactive: true,
+                    interactiveBorder: 3,
+                    allowHTML: true,
+                    content: (reference) => {
+                        let clazz = reference.getAttribute("class");
+                        let code = clazz.split(' ').find(item => item.indexOf('tippy-') >= 0).split('-')[1];
+                        let stock = _this.stocks.find(stk => stk.stock.code===code)
+                        return `<table class="tippy-content"><tr>
+                                    <td>${stock.stock.dayBarImage}</td>
+                                    <td>${stock.stock.weekBarImage}</td>
+                                    <td>${stock.stock.monthBarImage}</td>
+                                    </tr>
+                                </table>`;
+                    }
                 });
             }
         },

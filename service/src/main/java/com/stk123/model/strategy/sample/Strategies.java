@@ -599,8 +599,10 @@ public class Strategies {
             Bar bar = stock.getBarSeries5Minutes().getBar();
             Bar bar1 = bar.before();
             Bar barHighest = bar.getHighestBar(48*19, Bar.EnumValue.V);  //48 = 1天, 最大可以取 1536
-            if(barHighest.getDate().equals(bar1.getDate()) || barHighest.getDate().equals(bar.getDate()) ||
-                    barHighest.getVolume() < (bar.getVolume() + bar1.getVolume())){
+            if(barHighest.getDate().equals(bar1.getDate())
+                    || barHighest.getDate().equals(bar.getDate())
+                    || (bar1.getDate().equals(bar.getDate()) && barHighest.getVolume() < (bar.getVolume() + bar1.getVolume()))
+            ){
                 return FilterResult.TRUE();
             }
             return FilterResult.FALSE();

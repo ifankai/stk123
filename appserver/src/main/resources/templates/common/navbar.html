@@ -13,24 +13,31 @@
                 <li class="nav-item" :class="{active:navActive==='notice'}">
                     <a href="/notice" target="_blank" class="nav-link">热点公告</a>
                 </li>
-                <li class="nav-item" :class="{active:navActive==='report'}">
-                    <a href="/report" target="_blank" class="nav-link">每日报告</a>
+                <li class="nav-item dropdown" :class="{active:navActive==='report'}">
+                    <a href="/report" data-toggle="dropdown" class="nav-link dropdown-toggle">报告</a>
+                    <ul class="dropdown-menu border-0 shadow mt-n1">
+                        <li><a target="_blank" href="/report" class="dropdown-item">今日报告</a></li>
+                        <li><a target="_blank" href="/report/yesterday" class="dropdown-item">昨日报告</a></li>
+                    </ul>
                 </li>
                 <li class="nav-item dropdown" :class="{active:['heart','exclude'].includes(navActive)}">
-                    <a href="/heart" data-toggle="dropdown" class="nav-link dropdown-toggle">自选股</a>
-                    <ul class="dropdown-menu border-0 shadow">
-                        <li><a href="/heart" class="dropdown-item">自选股</a></li>
-                        <li><a href="/exclude" class="dropdown-item">排除股</a></li>
+                    <a href="/heart" data-toggle="dropdown" class="nav-link dropdown-toggle">组合</a>
+                    <ul class="dropdown-menu border-0 shadow mt-n1">
+                        <li><a target="_blank" href="/heart" class="dropdown-item">自选股</a></li>
+                        <li><a target="_blank" href="/exclude" class="dropdown-item">排除股</a></li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown" :class="{active:navActive==='xq'}">
-                    <a href="/xueqiu/我的" data-toggle="dropdown" class="nav-link dropdown-toggle">雪球</a>
-                    <ul class="dropdown-menu border-0 shadow">
-                        <li><a href="/xueqiu/我的" class="dropdown-item">雪球-我的</a></li>
-                        <li><a href="/xueqiu/关注C" class="dropdown-item">雪球-关注C</a></li>
-                        <li><a href="/xueqiu/关注H" class="dropdown-item">雪球-关注H</a></li>
-                        <li><a href="/xueqiu/关注U" class="dropdown-item">雪球-关注U</a></li>
-                        <li><a href="/xueqiu/备选" class="dropdown-item">雪球-备选</a></li>
+                    <a target="_blank" href="/xueqiu/我的" data-toggle="dropdown" class="nav-link dropdown-toggle">雪球</a>
+                    <ul class="dropdown-menu border-0 shadow mt-n1">
+                        <li><a target="_blank" href="/xueqiu/我的" class="dropdown-item">雪球 - 我的</a></li>
+                        <li><a target="_blank" href="/xueqiu/持有" class="dropdown-item">雪球 - 持有</a></li>
+                        <li><a target="_blank" href="/xueqiu/备选" class="dropdown-item">雪球 - 备选</a></li>
+                        <li><a target="_blank" href="/xueqiu/关注C" class="dropdown-item">雪球 - 关注C</a></li>
+                        <li><a target="_blank" href="/xueqiu/关注H" class="dropdown-item">雪球 - 关注H</a></li>
+                        <li><a target="_blank" href="/xueqiu/关注U" class="dropdown-item">雪球 - 关注U</a></li>
+                        <li><a target="_blank" href="/xueqiu/牛股研究" class="dropdown-item">雪球 - 牛股研究</a></li>
+                        <li><a target="_blank" href="/xueqiu/全部" class="dropdown-item">雪球 - 全部</a></li>
                     </ul>
                 </li>
                 <template v-if="['stocks','xq'].includes(navActive)">

@@ -31,7 +31,7 @@ public class MainWebController {
 
     @RequestMapping(value = {"/", ""})
     public String main(){
-        return "main";
+        return "monitor";
     }
 
     @RequestMapping("heart")

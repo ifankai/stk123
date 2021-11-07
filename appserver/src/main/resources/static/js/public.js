@@ -487,14 +487,14 @@ function toggleDropdown (e) {
         _m.toggleClass('show', shouldOpen);
         _d.toggleClass('show', shouldOpen);
         $('[data-toggle="dropdown"]', _d).attr('aria-expanded', shouldOpen);
-    }, e.type === 'mouseleave' ? 300 : 0);
+    }, e.type === 'mouseleave' ? 0 : 0);
 }
 
 
 $(function (){
     //处理navbar下拉列表鼠标经过就显示
     $('#navbarCollapse')
-        .on('mouseenter mouseleave','.dropdown',toggleDropdown)
+        .on('mouseenter mouseleave','.dropdown', toggleDropdown)
         .on('click', '.dropdown-menu a', toggleDropdown);
 
     //处理modal垂直居中
