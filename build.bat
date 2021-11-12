@@ -1,7 +1,7 @@
 @echo off
 title build
 
-cd D:\share\workspace\stk123
+cd D:\IdeaProjects\stk123
 d:
 
 set root_dir=%~dp0

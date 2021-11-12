@@ -135,9 +135,10 @@ SQL> alter session set container=XEPDB1;
 impdp stk/stkpwd@localhost:1521/XEPDB1 directory=DPUMP_DIR dumpfile=DB_STK.DP SCHEMAS=stk logfile=DB_STK.DP.log table_exists_action=replace
 
 --create stk table space
-create tablespace stk_tablespace_1 datafile 'D:\oradata\stk_data_1.dbf' size 2048M autoextend on next 200M maxsize 10240M extent management local;
-create tablespace stk_tablespace_2 datafile 'E:\oradata\stk_data_2.dbf' size 2048M autoextend on next 200M maxsize 10240M extent management local;
-create temporary tablespace stk_tablespace_temp tempfile 'D:\oradata\stk_temp.dbf' size 1024M autoextend on next 200M maxsize 10240m extent management local;
+drop tablespace stk_tablespace_2;
+create tablespace stk_tablespace_1 datafile 'D:\tech\oradata\stk_data_1.dbf' size 2048M autoextend on next 200M maxsize 10240M extent management local;
+create tablespace stk_tablespace_2 datafile 'E:\tech\oradata\stk_data_2.dbf' size 2048M autoextend on next 200M maxsize 10240M extent management local;
+create temporary tablespace stk_tablespace_temp tempfile 'D:\tech\oradata\stk_temp.dbf' size 1024M autoextend on next 200M maxsize 10240m extent management local;
 create user stk identified by stkpwd default tablespace stk_tablespace_1 temporary tablespace stk_tablespace_temp;
 grant connect,resource,dba to stk;
 
@@ -169,11 +170,13 @@ grant read,write on directory DPUMP_DIR to public;
 ENDOFSQL
 
 
-CREATE OR REPLACE DIRECTORY DPUMP_DIR AS 'D:/share/workspace/stk123/oracle/';
+CREATE OR REPLACE DIRECTORY DPUMP_DIR AS 'D:\IdeaProjects\stk123\oracle\';
 grant read,write on directory DPUMP_DIR to public;
 --EXCLUDE=TABLE:\"IN\(\'STK_ERROR_LOG\'\)\" 
 expdp stk/stkpwd@XE directory=DPUMP_DIR dumpfile=db_stk.dp REUSE_DUMPFILES=Y SCHEMAS=stk QUERY=STK_ERROR_LOG:\"WHERE 1<>1\",STK_KLINE_US:\"WHERE kline_date>=\'20210101\'\",STK_KLINE:\"WHERE kline_date>=\'20210101\'\",STK_DATA_EASTMONEY_GUBA:\"WHERE 1<>1\",STK_FN_DATA_BAK:\"WHERE 1<>1\",STK_DATA_PPI:\"WHERE 1<>1\",STK_CAPITAL_FLOW:\"WHERE 1<>1\"
 impdp stk/stkpwd@localhost:1539/xepdb1 directory=DPUMP_DIR dumpfile=DB_STK.DP SCHEMAS=stk logfile=DB_STK.DP.log table_exists_action=replace
+
+select * from dba_directories;
 
 --elasticsearch-7.10.2:
 # please execute the following statements to configure elasticsearch service to start automatically using systemd

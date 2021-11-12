@@ -1,7 +1,7 @@
 @echo on
 title git_pull
 
-cd D:\share\workspace\stk123
+cd D:\IdeaProjects\stk123
 d:h
 
 git fetch

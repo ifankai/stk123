@@ -895,7 +895,16 @@ public class Stock {
             return CommonUtils.wrapLink("<img class='img-bar lazyload' width='100%' "+(stkProperties.getBarImageLazyload()?"data-src":"src")+"='http://webquoteklinepic.eastmoney.com/GetPic.aspx?nid=116."+this.getCode()+"&UnitWidth=-6&imageType=KXL&EF=&Formula=MACD&AT=&&type="+period+"&token=' />", xueqiu);
         }else if(this.isMarketUS()){
             //http://webquoteklinepic.eastmoney.com/GetPic.aspx?token=&nid=105.JD&type=&unitWidth=-6&ef=&formula=RSI&imageType=KXL&_=1625985559783
-            return CommonUtils.wrapLink("<img class='img-bar lazyload' width='100%' "+(stkProperties.getBarImageLazyload()?"data-src":"src")+"='http://webquoteklinepic.eastmoney.com/GetPic.aspx?token=&nid=105."+this.getCode()+"&type="+period+"&unitWidth=-6&ef=&formula=MACD&imageType=KXL&_="+new Date().getTime()+"' />", xueqiu);
+            //return CommonUtils.wrapLink("<img class='img-bar lazyload' width='100%' "+(stkProperties.getBarImageLazyload()?"data-src":"src")+"='http://webquoteklinepic.eastmoney.com/GetPic.aspx?token=&nid=105."+this.getCode()+"&type="+period+"&unitWidth=-6&ef=&formula=MACD&imageType=KXL&_="+new Date().getTime()+"' />", xueqiu);
+
+            //http://image.sinajs.cn/newchart/usstock/daily/rblx.gif?1636610069278
+            if("D".equals(period)){
+                return CommonUtils.wrapLink("<img class='img-bar lazyload' width='100%' "+(stkProperties.getBarImageLazyload()?"data-src":"src")+"='http://image.sinajs.cn/newchart/usstock/daily/"+this.getCode()+".gif?"+new Date().getTime()+"' />", xueqiu);
+            }else if("W".equals(period)){
+                return CommonUtils.wrapLink("<img class='img-bar lazyload' width='100%' "+(stkProperties.getBarImageLazyload()?"data-src":"src")+"='http://image.sinajs.cn/newchart/usstock/weekly/"+this.getCode()+".gif?"+new Date().getTime()+"' />", xueqiu);
+            }else if("M".equals(period)){
+                return CommonUtils.wrapLink("<img class='img-bar lazyload' width='100%' "+(stkProperties.getBarImageLazyload()?"data-src":"src")+"='http://image.sinajs.cn/newchart/usstock/monthly/"+this.getCode()+".gif?"+new Date().getTime()+"' />", xueqiu);
+            }
         }
         return "";
     }

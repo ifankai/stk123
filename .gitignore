@@ -31,3 +31,4 @@ oracle/DB_STK.DP
 oracle/DB_STK_FULL.DP
 *.log
 appserver/appserver.jar
+/oracle/dp_files.lnk

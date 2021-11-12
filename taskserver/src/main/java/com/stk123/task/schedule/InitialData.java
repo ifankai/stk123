@@ -126,7 +126,7 @@ public class InitialData {
 			List<StkFnType> fnTypes = JdbcUtils.list(conn, "select * from stk_fn_type where market=2 and status=1", StkFnType.class);
 			for(Stk stk : stks){
 				Index index = new Index(conn,stk.getCode(),stk.getName());
-				System.out.println(stk.getCode());
+				log.info(stk.getCode());
 				try{
 					//update stk status
 					initialUStkStatus(conn,index.getCode());

@@ -132,7 +132,7 @@ public class SyncTask extends AbstractTask {
         return String.format(command, tableName, whereClause, tableName, tableName);
     }
     public String getImpCommand(String tableName){
-        String command = "imp userid=stk/stkpwd@localhost:1539/xepdb1 file='"+remoteDir+"%s.dmp' log='"+remoteDir+"%s.log' full=y ignore=y CONSTRAINTS=y";
+        String command = "imp userid=stk/stkpwd@localhost:1521/xepdb1 file='"+remoteDir+"%s.dmp' log='"+remoteDir+"%s.log' full=y ignore=y CONSTRAINTS=y";
         return String.format(command, tableName, tableName);
     }
 

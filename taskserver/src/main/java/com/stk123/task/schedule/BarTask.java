@@ -401,16 +401,16 @@ public class BarTask extends AbstractTask {
 
     public void analyseUS(){
         log.info("analyseUS start");
-        StkKlineUsEntity stkKlineUsEntity = stkKlineUsRepository.findTop1ByCodeOrderByKlineDateDesc(".DJI");
+        /*StkKlineUsEntity stkKlineUsEntity = stkKlineUsRepository.findTop1ByCodeOrderByKlineDateDesc(".DJI");
         today = stkKlineUsEntity.getKlineDate();
         Map<String, BigDecimal> peMap = barService.calcAvgMidPeTtm(today, EnumMarket.US);
         StkPeEntity stkPeEntity = stkPeRepository.findOrCreateById(today);
         stkPeEntity.setReportDate(today);
         Double avgPe = NumberUtils.toDouble(peMap.get("avg_pe_ttm"));
-        stkPeEntity.setResult9(avgPe);
+        stkPeEntity.setResult9(avgPe); 和 statAllStocks gt120Ma 冲突
         Double midPE = NumberUtils.toDouble(peMap.get("mid_pe_ttm"));
         stkPeEntity.setResult10(midPE);
-        stkPeRepository.save(stkPeEntity);
+        stkPeRepository.save(stkPeEntity);*/
         log.info("analyseUS end");
     }
 
@@ -817,8 +817,9 @@ public class BarTask extends AbstractTask {
             stocks = StockService.filterByFn(stocks);
             stocks = StockService.filterByStatusExclude(stocks);
             // 15天涨幅大于 60% 的过滤掉
-            stocks = StockService.filterByBarChange(stocks,15, 60);
-            stocks = StockService.filterByBarChange(stocks,80, 200);
+            stocks = StockService.filterByBarChange(stocks,15, 50); //排除3周大于50
+            stocks = StockService.filterByBarChange(stocks,80, 150); //排除3个月大于150
+            stocks = StockService.filterByBarChange(stocks,360, 300); //排除一年半大于3倍
 
             if(StringUtils.isNotEmpty(report)){
                 String type = StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS;
@@ -837,8 +838,8 @@ public class BarTask extends AbstractTask {
                 //rpsStocks = rpsStocks.subList(0, Math.min(150, rpsStocks.size()));
 
                 List<Stock> results = new ArrayList<>();
-                int cap20 = 10;
-                int cap30 = 50;
+                int cap20 = 15;
+                int cap30 = 60;
                 int cap100 = 50;
                 int cap200 = 30;
                 int cap500 = 20;
@@ -942,6 +943,8 @@ public class BarTask extends AbstractTask {
             stocks = StockService.filterByBarChange(stocks,15, 60);
             stocks = StockService.filterByBarChange(stocks,80, 200);
 
+            stocks = StockService.filterByBarAmount(stocks, 500_0000);
+
             if(StringUtils.isNotEmpty(report)){
                 String type = StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS_HK;
                 String name = "全市场RPS(HK)";
@@ -1043,6 +1046,7 @@ public class BarTask extends AbstractTask {
 //            stocks = stockService.filterByMarketCap(stocks, 50);
 //            stocks = stockService.filterByFn(stocks);
             stocks = StockService.filterByStatusExclude(stocks);
+            stocks = StockService.filterByBarAmount(stocks, 500_0000);
 
             if(StringUtils.isNotEmpty(report)){
                 String type = StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS_US;

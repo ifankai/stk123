@@ -33,14 +33,14 @@
                                 <!-- remote host and the command to be executed there -->
 
                                 <echo message="export table ..." />
-                                <exec dir="D:\share\workspace\stk123\oracle" executable="cmd">
+                                <exec dir="D:\IdeaProjects\stk123\oracle" executable="cmd">
                                     <arg line="/c export_text.bat"/>
                                 </exec>
 
                                 <!-- file to be transferred -->
                                 <echo message="Transfering dmp file ..." />
                                 <scp trust="true" failonerror="true" verbose="off" sftp="true"
-                                     file="D:\share\workspace\stk123\oracle\stk_text.dmp"
+                                     file="D:\IdeaProjects\stk123\oracle\stk_text.dmp"
                                      todir="${ftp.username}:${ftp.password}@${ftp.host}:/root/oracle/stk_text.dmp" />
 
                                 <!-- remote host and the command to be executed there -->

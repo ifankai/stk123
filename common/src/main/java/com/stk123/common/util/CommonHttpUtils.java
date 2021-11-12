@@ -1,6 +1,5 @@
 package com.stk123.common.util;
 
-import com.sun.net.ssl.HostnameVerifier;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.AuthScope;
@@ -12,7 +11,6 @@ import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.commons.lang.StringUtils;
 
-import javax.net.ssl.SSLSession;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -585,7 +583,7 @@ public class CommonHttpUtils {
             throw new IllegalArgumentException(problem);
         }
     }
-
+/*
     public static HostnameVerifier hv = new HostnameVerifier() {
         public boolean verify(String urlHostName, SSLSession session) {
             System.out.println("Warning: URL Host: " + urlHostName + " vs. "
@@ -597,7 +595,7 @@ public class CommonHttpUtils {
         public boolean verify(String arg0, String arg1) {
             return true;
         }
-    };
+    };*/
 
     public static void trustAllHttpsCertificates(){
         javax.net.ssl.TrustManager[] trustAllCerts = new javax.net.ssl.TrustManager[1];

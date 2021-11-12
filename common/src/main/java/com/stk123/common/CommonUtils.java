@@ -1319,8 +1319,8 @@ public class CommonUtils {
     @SneakyThrows
     public static boolean isDevelopment(){
         InetAddress inet = InetAddress.getLocalHost();
-        String ip = inet.getHostName();
-        if(ip.startsWith("fankai-")){ //fankai-PC
+        String ip = inet.getHostAddress();
+        if(ip.startsWith("192.168")){ //fankai-PC
             return true;
         }
         return false;

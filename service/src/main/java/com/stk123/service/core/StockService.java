@@ -522,7 +522,7 @@ public class StockService {
 
     public static List<Stock> filterByBarDate(List<Stock> stocks, Date date){
         return stocks.stream().filter(stock -> {
-            if(stock.isMarketHK() && (stock.getBar() == null || date.after(CommonUtils.parseDate(stock.getBar().getDate())))){
+            if((stock.isMarketHK() || stock.isMarketUS()) && (stock.getBar() == null || date.after(CommonUtils.parseDate(stock.getBar().getDate())))){
                 return false;
             }
             return true;
@@ -549,6 +549,10 @@ public class StockService {
 
     public static List<Stock> filterByStatusExclude(List<Stock> stocks){
         return stocks.stream().filter(stock -> stock.getStatuses().stream().noneMatch(stkStatusEntity -> stkStatusEntity.getType().equals(StkConstant.STATUS_TYPE_1))).collect(Collectors.toList());
+    }
+
+    public static List<Stock> filterByBarAmount(List<Stock> stocks, int amount){
+        return stocks.stream().filter(stock -> stock.getBar() != null && stock.getBar().getAmount() > amount).collect(Collectors.toList());
     }
 
     public void buildBkAndCalcBkRps(List<Stock> stocks, EnumMarket market, EnumCate bkCate){

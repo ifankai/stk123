@@ -3178,8 +3178,10 @@ select * from (select * from stk_kline_hk where code='999999' order by kline_dat
 select * from stk_capital_flow where code='600638' order by flow_date desc;
 
 select * from stk_report_detail order by strategy_date desc, id desc;
-select * from stk_report_detail where header_id=11266;
+select * from stk_report_detail where header_id=11502;
 select * from stk_report_header order by insert_time desc;
+select * from stk_report_header where type='allstocks_rps' order by insert_time desc;
+select * from stk_report_detail where header_id=11502 and rps_stock_code like '%002666%';
 
 select * from stk_text where code='300296' order by insert_time desc;
 select * from stk_text where type=2;
@@ -3192,13 +3194,14 @@ select * from stk_capital_flow order by insert_time desc;
 select * from stk_trade_strategy;
 
 select * from stk_kline_us where code='TSLA' order by kline_date desc; 
+select * from stk_kline_hk where code='00400' order by kline_date desc;
 
 select * from stk_cn order by listing_date desc;--605167
-select * from stk_kline where code='605167' order by kline_date desc;
+select * from stk_kline where code='002666' order by kline_date desc;
 update stk_kline set code='6051671' where code='605167' and kline_date >='20210729';
 
 select * from stk_pe order by report_date desc;
-select * from stk_trade_strategy;
+select * from stk_trade_strategy order by insert_time desc;
 delete from stk_trade_strategy where code in ('600602','600601');
 insert into stk_trade_strategy select s_trade_strategy_id.nextval,'600600','20211026','15a', sysdate from dual;
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>每日报告 - 小智慧</title>
+    <title th:text="'每日报告 - '+${reportDate}+' - 小智慧'"></title>
     <div th:replace="common/css_public"></div>
     <div th:replace="common/css_datatable"></div>
     <link rel="stylesheet" href="/adminlte/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
@@ -450,22 +450,46 @@
                                     <div class="tab-pane fade" id="report-allstocksrps-h" role="tabpanel" aria-labelledby="report-allstocksrps-h-tab">
                                         <datatable :="{...common.allStocksRpsH, ...currentAllStocksRpsH}">
                                             <template v-slot:head-action="{column}">
-                                                <a title="查看全部个股" target="_blank" :href="'/s/'+currentAllStocksRpsH.data.map(item => item.rpsStockCode).join(',')"><i class="fas fa-th"></i></a>
+                                                <div class="custom-control custom-checkbox">
+                                                    <input v-model="selectRpsCheckboxAllH" class="custom-control-input" type="checkbox" id="cbH" checked>
+                                                    <label for="cbH" class="custom-control-label">&nbsp;</label>
+                                                    <a title="查看全部个股" @click.stop="postUrl('/s/post', {code: [...new Set(currentAllStocksRpsH.data.filter(item => item.select).map(item => item.rpsStockCode))].join(',')} )" target="_blank" style="cursor: pointer"><i class="fas fa-th"></i></a>
+                                                </div>
                                             </template>
                                             <template v-slot:body-action="{row, rowNumber}">
-                                                <a target="_blank" :href="'/s/'+row.rpsStockCode+'?title='+row.strategyName+' - 全部'" v-text="'查看全部 ('+row.rpsStockCode.split(',').length+')'"></a>
+                                                <div class="custom-control custom-checkbox">
+                                                    <input @click.stop="row.select=!row.select" :checked="row.select" class="custom-control-input" type="checkbox" :id="'cbH'+row.id">
+                                                    <label :for="'cbH'+row.id" class="custom-control-label"></label>
+                                                    <a target="_blank" :href="'/s/'+row.rpsStockCode+'?title='+row.strategyName+' - 全部'" v-text="'查看全部 ('+row.rpsStockCode.split(',').length+')'"></a>
+                                                </div>
                                             </template>
                                             <template v-slot:head-action7="{column}">
-                                                <a title="查看7天内新增加的全部个股" target="_blank" :href="'/s/'+currentAllStocksRpsH.data.map(item => item.output1).join(',')"><i class="fas fa-th"></i></a>
+                                                <div class="custom-control custom-checkbox">
+                                                    <input v-model="selectRpsCheckboxAll7H" class="custom-control-input" type="checkbox" id="cb7H" checked>
+                                                    <label for="cb7H" class="custom-control-label">&nbsp;</label>
+                                                    <a title="查看7天内新增加的全部个股" target="_blank" :href="'/s/'+[...new Set(currentAllStocksRpsH.data.filter(item => item.select7).map(item => item.output1))].join(',')"><i class="fas fa-th"></i></a>
+                                                </div>
                                             </template>
                                             <template v-slot:body-action7="{row, rowNumber}">
-                                                <a target="_blank" :href="'/s/'+row.output1+'?title='+row.strategyName+' - 7天内新增'" v-text="'7天内新增 ('+(row.output1==null?0:row.output1.split(',').length)+')'"></a>
+                                                <div class="custom-control custom-checkbox">
+                                                    <input @click.stop="row.select7=!row.select7" :checked="row.select7" class="custom-control-input" type="checkbox" :id="'cb7H'+row.id">
+                                                    <label :for="'cb7H'+row.id" class="custom-control-label"></label>
+                                                    <a target="_blank" :href="'/s/'+row.output1+'?title='+row.strategyName+' - 7天内新增'" v-text="'7天内新增 ('+(row.output1==null?0:row.output1.split(',').length)+')'"></a>
+                                                </div>
                                             </template>
                                             <template v-slot:head-action30="{column}">
-                                                <a title="查看30天内新增加的全部个股" target="_blank" :href="'/s/'+currentAllStocksRpsH.data.map(item => item.output2).join(',')"><i class="fas fa-th"></i></a>
+                                                <div class="custom-control custom-checkbox">
+                                                    <input v-model="selectRpsCheckboxAll30H" class="custom-control-input" type="checkbox" id="cb30H" checked>
+                                                    <label for="cb30H" class="custom-control-label">&nbsp;</label>
+                                                    <a title="查看30天内新增加的全部个股" target="_blank" :href="'/s/'+[...new Set(currentAllStocksRpsH.data.filter(item => item.select30).map(item => item.output2))].join(',')"><i class="fas fa-th"></i></a>
+                                                </div>
                                             </template>
                                             <template v-slot:body-action30="{row, rowNumber}">
-                                                <a target="_blank" :href="'/s/'+row.output2+'?title='+row.strategyName+' - 30天内新增'" v-text="'30天内新增 ('+(row.output2==null?0:row.output2.split(',').length)+')'"></a>
+                                                <div class="custom-control custom-checkbox">
+                                                    <input @click.stop="row.select30=!row.select30" :checked="row.select30" class="custom-control-input" type="checkbox" :id="'cb30H'+row.id">
+                                                    <label :for="'cb30H'+row.id" class="custom-control-label"></label>
+                                                    <a target="_blank" :href="'/s/'+row.output2+'?title='+row.strategyName+' - 30天内新增'" v-text="'30天内新增 ('+(row.output2==null?0:row.output2.split(',').length)+')'"></a>
+                                                </div>
                                             </template>
                                             <template v-slot:head-volume="{column}">
                                                 <a title="查看量能500日新高的全部个股" target="_blank" :href="'/s/'+currentAllStocksRpsH.data.map(item => item.outputVolumeHighest).join(',')"><i class="fas fa-th"></i></a>
@@ -490,22 +514,46 @@
                                     <div class="tab-pane fade" id="report-allstocksrps-u" role="tabpanel" aria-labelledby="report-allstocksrps-u-tab">
                                         <datatable :="{...common.allStocksRpsU, ...currentAllStocksRpsU}">
                                             <template v-slot:head-action="{column}">
-                                                <a title="查看全部个股" target="_blank" :href="'/s/'+currentAllStocksRpsU.data.map(item => item.rpsStockCode).join(',')"><i class="fas fa-th"></i></a>
+                                                <div class="custom-control custom-checkbox">
+                                                    <input v-model="selectRpsCheckboxAllU" class="custom-control-input" type="checkbox" id="cbU" checked>
+                                                    <label for="cbU" class="custom-control-label">&nbsp;</label>
+                                                    <a title="查看全部个股" @click.stop="postUrl('/s/post', {code: [...new Set(currentAllStocksRpsU.data.filter(item => item.select).map(item => item.rpsStockCode))].join(',')} )" target="_blank" style="cursor: pointer"><i class="fas fa-th"></i></a>
+                                                </div>
                                             </template>
                                             <template v-slot:body-action="{row, rowNumber}">
-                                                <a target="_blank" :href="'/s/'+row.rpsStockCode+'?title='+row.strategyName+' - 全部'" v-text="'查看全部 ('+row.rpsStockCode.split(',').length+')'"></a>
+                                                <div class="custom-control custom-checkbox">
+                                                    <input @click.stop="row.select=!row.select" :checked="row.select" class="custom-control-input" type="checkbox" :id="'cbU'+row.id">
+                                                    <label :for="'cbU'+row.id" class="custom-control-label"></label>
+                                                    <a target="_blank" :href="'/s/'+row.rpsStockCode+'?title='+row.strategyName+' - 全部'" v-text="'查看全部 ('+row.rpsStockCode.split(',').length+')'"></a>
+                                                </div>
                                             </template>
                                             <template v-slot:head-action7="{column}">
-                                                <a title="查看7天内新增加的全部个股" target="_blank" :href="'/s/'+currentAllStocksRpsU.data.map(item => item.output1).join(',')"><i class="fas fa-th"></i></a>
+                                                <div class="custom-control custom-checkbox">
+                                                    <input v-model="selectRpsCheckboxAll7U" class="custom-control-input" type="checkbox" id="cb7U" checked>
+                                                    <label for="cb7U" class="custom-control-label">&nbsp;</label>
+                                                    <a title="查看7天内新增加的全部个股" target="_blank" :href="'/s/'+[...new Set(currentAllStocksRpsU.data.filter(item => item.select7).map(item => item.output1))].join(',')"><i class="fas fa-th"></i></a>
+                                                </div>
                                             </template>
                                             <template v-slot:body-action7="{row, rowNumber}">
-                                                <a target="_blank" :href="'/s/'+row.output1+'?title='+row.strategyName+' - 7天内新增'" v-text="'7天内新增 ('+(row.output1==null?0:row.output1.split(',').length)+')'"></a>
+                                                <div class="custom-control custom-checkbox">
+                                                    <input @click.stop="row.select7=!row.select7" :checked="row.select7" class="custom-control-input" type="checkbox" :id="'cb7U'+row.id">
+                                                    <label :for="'cb7U'+row.id" class="custom-control-label"></label>
+                                                    <a target="_blank" :href="'/s/'+row.output1+'?title='+row.strategyName+' - 7天内新增'" v-text="'7天内新增 ('+(row.output1==null?0:row.output1.split(',').length)+')'"></a>
+                                                </div>
                                             </template>
                                             <template v-slot:head-action30="{column}">
-                                                <a title="查看30天内新增加的全部个股" target="_blank" :href="'/s/'+currentAllStocksRpsU.data.map(item => item.output2).join(',')"><i class="fas fa-th"></i></a>
+                                                <div class="custom-control custom-checkbox">
+                                                    <input v-model="selectRpsCheckboxAll30U" class="custom-control-input" type="checkbox" id="cb30U" checked>
+                                                    <label for="cb30U" class="custom-control-label">&nbsp;</label>
+                                                    <a title="查看30天内新增加的全部个股" target="_blank" :href="'/s/'+[...new Set(currentAllStocksRpsU.data.filter(item => item.select30).map(item => item.output2))].join(',')"><i class="fas fa-th"></i></a>
+                                                </div>
                                             </template>
                                             <template v-slot:body-action30="{row, rowNumber}">
-                                                <a target="_blank" :href="'/s/'+row.output2+'?title='+row.strategyName+' - 30天内新增'" v-text="'30天内新增 ('+(row.output2==null?0:row.output2.split(',').length)+')'"></a>
+                                                <div class="custom-control custom-checkbox">
+                                                    <input @click.stop="row.select30=!row.select30" :checked="row.select30" class="custom-control-input" type="checkbox" :id="'cb30U'+row.id">
+                                                    <label :for="'cb30U'+row.id" class="custom-control-label"></label>
+                                                    <a target="_blank" :href="'/s/'+row.output2+'?title='+row.strategyName+' - 30天内新增'" v-text="'30天内新增 ('+(row.output2==null?0:row.output2.split(',').length)+')'"></a>
+                                                </div>
                                             </template>
                                             <template v-slot:head-volume="{column}">
                                                 <a title="查看量能500日新高的全部个股" target="_blank" :href="'/s/'+currentAllStocksRpsU.data.map(item => item.outputVolumeHighest).join(',')"><i class="fas fa-th"></i></a>
@@ -746,27 +794,38 @@
             },
             selectRpsCheckboxAll: {
                 get: function () { return false;},
-                set: function (value) {
-                    this.currentAllStocksRpsA.data.forEach(item => {
-                        item.select = value;
-                    });
-                }
-            },
+                set: function (value) { this.currentAllStocksRpsA.data.forEach(item => { item.select = value; }); } },
             selectRpsCheckboxAll7: {
                 get: function () { return false;},
-                set: function (value) {
-                    this.currentAllStocksRpsA.data.forEach(item => {
-                        item.select7 = value;
-                    });
-                }
+                set: function (value) { this.currentAllStocksRpsA.data.forEach(item => { item.select7 = value; }); }
             },
             selectRpsCheckboxAll30: {
                 get: function () { return false;},
-                set: function (value) {
-                    this.currentAllStocksRpsA.data.forEach(item => {
-                        item.select30 = value;
-                    });
-                }
+                set: function (value) { this.currentAllStocksRpsA.data.forEach(item => { item.select30 = value; }); }
+            },
+            selectRpsCheckboxAllH: {
+                get: function () { return false;},
+                set: function (value) { this.currentAllStocksRpsH.data.forEach(item => { item.select = value; }); }
+            },
+            selectRpsCheckboxAll7H: {
+                get: function () { return false;},
+                set: function (value) { this.currentAllStocksRpsH.data.forEach(item => { item.select7 = value; }); }
+            },
+            selectRpsCheckboxAll30H: {
+                get: function () { return false;},
+                set: function (value) { this.currentAllStocksRpsH.data.forEach(item => { item.select30 = value; }); }
+            },
+            selectRpsCheckboxAllU: {
+                get: function () { return false;},
+                set: function (value) { this.currentAllStocksRpsU.data.forEach(item => { item.select = value; }); }
+            },
+            selectRpsCheckboxAll7U: {
+                get: function () { return false;},
+                set: function (value) { this.currentAllStocksRpsU.data.forEach(item => { item.select7 = value; }); }
+            },
+            selectRpsCheckboxAll30U: {
+                get: function () { return false;},
+                set: function (value) { this.currentAllStocksRpsU.data.forEach(item => { item.select30 = value; }); }
             }
         },
         mounted() {

@@ -140,6 +140,18 @@
             width: 400px;
             z-index: 99999;
         }
+        .vis-timeline, .vis-panel.vis-center, .vis-panel.vis-left, .vis-panel.vis-right{
+            overflow: unset !important;
+        }
+        .vis-bottom{
+            position: inherit;
+        }
+        .card{
+            position: unset;
+        }
+        .dataTables_wrapper .col-sm-12{
+            position: inherit;
+        }
     </style>
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed text-sm pace-primary pace-done">
@@ -261,7 +273,7 @@
                                 <datatable :="{...common.stocks}" :data="stocks.map(stk => stk.stock)">
                                     <template v-slot:name-and-tags="{row, rowNumber}">
                                         <div>
-                                            <span v-html="row.nameAndCodeWithLink"></span><br/>
+                                            {{++rowNumber}}. <span v-html="row.nameAndCodeWithLink"></span><br/>
                                             <button v-if="row.statuses != undefined" @click="openHeartModal(row)" type="button" class="btn btn-tool" title="加入自选">
                                                 <i class="fal fa-heart" :class="row.statuses.find(s=>s.type===2)?'has-value':''"></i>
                                             </button>
@@ -292,8 +304,7 @@
                         <div class="card col-md-12">
                             <div class="card-body">
                                 <datatable :="{...common.trade}" :data="stocks.map(stk => stk.stock)">
-                                    <template v-slot:name-and-tags="{row, rowNumber}">
-                                        <div><span v-html="row.nameAndCodeWithLink"></span></div>
+                                    <template v-slot:tags="{row, rowNumber}">
                                         <div><tag :tags="row.tags" :type="['highlight']"></tag></div>
                                     </template>
                                     <template v-slot:bar-images="{row, rowNumber}">
@@ -463,12 +474,13 @@
                     trade:{
                         type: 1,
                         columns: [
-                            {title:"股票", slot:"name-and-tags"},
+                            {title:"股票", data:"nameAndCodeWithLink"},
+                            {title:"亮点", slot:"tags"},
                             {title:"K线", slot:"bar-images"},
                             {title:"最新价", slot:"close"},
                             {title:"涨跌幅", slot:"change"}],
                         columnDefs: [
-                            { className: "text-center", "targets": [ 1,2,3 ] }
+                            { className: "text-center", "targets": [ 0,2,3,4 ] }
                         ],
                         tableClass:{'table-hover':true},
                         pageLength: 100
@@ -596,7 +608,7 @@
                         //console.log('trading ....' + code)
                         await this.getTrade(code);
                     }
-                    await sleep(500);
+                    await sleep(300);
                 }
                 if (_this.displayType === 'trade') {
                     setTimeout(_this.trading, 1000);
