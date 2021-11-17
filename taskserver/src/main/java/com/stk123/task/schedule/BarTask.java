@@ -198,7 +198,7 @@ public class BarTask extends AbstractTask {
         try {
             List<StockBasicProjection> list = stkRepository.findAllByMarketAndCateOrderByCode(EnumMarket.CN, EnumCate.STOCK);
             log.info("CN initKLines..........start");
-            initKLines(list, 8);
+            initKLines(list, 6);
             log.info("CN initKLines..........end");
 
             list = stkRepository.findStockNotExsitingTodayKline();

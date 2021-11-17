@@ -3180,7 +3180,7 @@ select * from stk_capital_flow where code='600638' order by flow_date desc;
 select * from stk_report_detail order by strategy_date desc, id desc;
 select * from stk_report_detail where header_id=11502;
 select * from stk_report_header order by insert_time desc;
-select * from stk_report_header where type='allstocks_rps' order by insert_time desc;
+select * from stk_report_header order by insert_time desc;
 select * from stk_report_detail where header_id=11502 and rps_stock_code like '%002666%';
 
 select * from stk_text where code='300296' order by insert_time desc;

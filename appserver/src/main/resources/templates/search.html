@@ -159,7 +159,7 @@
                                                     <div class="search-title">
                                                         <div class="title">
                                                             <span class="search-type">[股票] </span><span v-html="result.stock.nameAndCodeWithLink"></span>
-                                                            <i v-if="result.content != null && result.content.length > result.desc.length" @click="openModalDetail(result)" class="fal fa-file" title="F10" data-toggle="modal" :data-target="'#modal-'+result.id"></i>
+                                                            <i v-if="result.content && result.desc && result.content.length > result.desc.length" @click="openModalDetail(result)" class="fal fa-file" title="F10" data-toggle="modal" :data-target="'#modal-'+result.id"></i>
                                                         </div>
                                                     </div>
                                                     <div>
@@ -185,7 +185,7 @@
                                                         <p>
                                                             <span v-text="tsFormat(result.insertTime)" class="search-time"></span>&nbsp;
                                                             <span v-html="result.desc"></span>
-                                                            <i v-if="result.content != null && result.content.length > result.desc.length" @click="openModalDetail(result)" class="fal fa-file" title="查看详情" data-toggle="modal" :data-target="'#modal-'+result.id"></i>
+                                                            <i v-if="result.content && result.desc && result.content.length > result.desc.length" @click="openModalDetail(result)" class="fal fa-file" title="查看详情" data-toggle="modal" :data-target="'#modal-'+result.id"></i>
                                                         </p>
                                                     </div>
                                                 </template>

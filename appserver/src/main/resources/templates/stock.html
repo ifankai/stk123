@@ -561,7 +561,7 @@
                                         <div class="card-header" style="padding: 0.3rem 1.25rem;">
                                             <h4 class="card-title w-100">
                                                 <a class="d-block w-100" data-toggle="collapse" :href="'#collapse'+index">
-                                                    {{nbjb.name}} (<span style="font-size: .8rem;" v-text="stock.notice_left.content[nbjb.code] != null?stock.notice_left.title:'-'"></span> vs <span style="font-size: .8rem;" v-text="stock.notice_right.content[nbjb.code] != null?stock.notice_right.title:'-'"></span>)
+                                                    {{nbjb.name}} (<span style="font-size: .8rem;" v-text="(stock.notice_left.content != null && stock.notice_left.content[nbjb.code] != null)?stock.notice_left.title:'-'"></span> vs <span style="font-size: .8rem;" v-text="(stock.notice_right.content && stock.notice_right.content[nbjb.code] != null)?stock.notice_right.title:'-'"></span>)
                                                 </a>
                                             </h4>
                                         </div>
@@ -709,8 +709,8 @@
                     rating:{},
                     posts:{data:[]},
                     fn:{type:[], table:[]},
-                    notice_left:{content:{}},
-                    notice_right:{content:{}},
+                    notice_left:{content:{100:null, 200:null, 300:null}},
+                    notice_right:{content:{100:null, 200:null, 300:null}},
                     reportSearch:{data:[]}
                 },
             }
@@ -721,13 +721,14 @@
             },
             parseNotice:function (pos, notice) {
                 this.stock['notice_'+pos] = notice;
+                this.stock['notice_'+pos].content = {100:null, 200:null, 300:null}
                 let _this = this;
                 // Object.keys(notice.content).forEach(e => {
                 //     _this.stock['notice_'+pos+'_'+e] = json[e];
                 // });
                 for(i in this.common.nbjb){
                     let nbjb = this.common.nbjb[i];
-                    if(this.stock.notice_left && this.stock.notice_left.content[nbjb.code] != null
+                    if(this.stock.notice_left && this.stock.notice_left.content && this.stock.notice_left.content[nbjb.code] != null
                         && this.stock.notice_right && this.stock.notice_right.content[nbjb.code] != null){
                         let d = dmp.diff_main(this.stock.notice_left.content[nbjb.code], this.stock.notice_right.content[nbjb.code]);
                         this.stock['notice_diff_'+nbjb.code] = dmp.diff_prettyHtml(d);
@@ -776,7 +777,7 @@
             },
             bksByRps01: function (){
                 return this.stock.bks.sort((a, b) => {return b.rps.rps_01.percentile - a.rps.rps_01.percentile})
-            }
+            },
         },
         mounted() {
             let _this = this;

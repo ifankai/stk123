@@ -247,7 +247,7 @@
             </plugin>
 
             <!-- typescript-generator   mvn process-classes -->
-            <plugin>
+            <!--<plugin>
                 <groupId>cz.habarta.typescript-generator</groupId>
                 <artifactId>typescript-generator-maven-plugin</artifactId>
                 <version>1.25.322</version>
@@ -270,7 +270,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
 
 
             <!-- mvn antrun:run@deploy -->

@@ -12,7 +12,8 @@
     <link rel="stylesheet" th:href="'/css/public.css'+${_version}">
     <style>
         @media (min-width: 1200px) {
-            .img-width img {
+            //.img-bar {
+            #table .img-width img{
                 width: 410px;
                 padding: 2px;
                 text-align: center;
@@ -267,7 +268,7 @@
                 </div>
 
                 <template v-if="displayType==='table'">
-                    <div class="row">
+                    <div class="row" id="table">
                         <div class="card col-md-12">
                             <div class="card-body">
                                 <datatable :="{...common.stocks}" :data="stocks.map(stk => stk.stock)">
@@ -293,7 +294,7 @@
                     </div>
                 </template>
                 <template v-else-if="displayType==='trade'">
-                    <div class="row">
+                    <div class="row" id="trade">
                         <div class="card col-md-12">
                             <div class="card-body">
                                 <div id="timeline"></div>
@@ -324,7 +325,7 @@
                     </div>
                 </template>
                 <template v-else-if="displayType==='card'">
-                    <div class="row col-md-10 m-auto">
+                    <div class="row col-md-10 m-auto" id="card">
                         <section v-for="idx in [0,1]" class="col-lg-6 connectedSortable">
                             <!-- Custom tabs (Charts with tabs)-->
                             <template v-for="(stk, index) in stocks">
@@ -608,7 +609,7 @@
                         //console.log('trading ....' + code)
                         await this.getTrade(code);
                     }
-                    await sleep(300);
+                    await sleep(200);
                 }
                 if (_this.displayType === 'trade') {
                     setTimeout(_this.trading, 1000);

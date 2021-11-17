@@ -57,4 +57,11 @@ public class XueqiuController {
         ModelAndView model = new ModelAndView("forward:/s/"+ String.join(",", codes)+"?title="+type);
         return model;
     }
+
+    @GetMapping("/clear")
+    @ResponseBody
+    public RequestResult clear(){
+        XueqiuService.clearFollowStks();
+        return RequestResult.success();
+    }
 }

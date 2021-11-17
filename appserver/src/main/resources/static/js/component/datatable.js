@@ -125,6 +125,7 @@ let _datatable_id = 0;
 function getDataTableOpt (_this){
     let opt = {
         language: _datatableLang,
+        "lengthMenu": [[10, 15, 25, 50, 100, 500, -1], [10, 15, 25, 50, 100, 500, "All"]],
         //dom:'lfrtip',
         //data: this.data,
         //columns: this.columns

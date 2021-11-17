@@ -232,9 +232,8 @@ public class TextController {
     @RequestMapping({"/notice", "/notice/{createdAtAfter}"})
     @Cached(name = "hot-notice", expire = 600, cacheType = CacheType.LOCAL)
     public RequestResult hotNotice(@PathVariable(value = "createdAtAfter", required = false)Long createdAtAfter){
-        log.info("hot notice.......................");
         if(createdAtAfter == null) {
-            createdAtAfter = DateUtils.addMonths(new Date(), -1).getTime();
+            createdAtAfter = DateUtils.addDays(new Date(), -7).getTime();
         }
         Date dateAfter = new Date(createdAtAfter);
         List<StkTextEntity> result = stkTextRepository.findAllByTypeAndCodeTypeAndSubTypeAndReplyPositiveAndInsertTimeGreaterThanOrderByInsertTimeDesc(

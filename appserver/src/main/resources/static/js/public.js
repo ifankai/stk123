@@ -510,12 +510,13 @@ $(function (){
 
     var isIpad = ( navigator.userAgent.match(/(iPad)/) /* iOS pre 13 */ || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
 
-    /*if(true){
-        var sc = document.getElementById("sc");
+    if(true){
+        /*var sc = document.getElementById("sc");
         if(screen.width <= 1024){ //获取屏幕的的宽度
             sc.setAttribute("href","/css/ipad.css"); //设置css引入样式表的路径
-        }
-    }*/
+        }*/
+        //alert(screen.width)
+    }
 
     $("img.lazyload").lazyload();
 

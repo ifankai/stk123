@@ -113,6 +113,9 @@
             </div>
         </section>
 
+        <stockexclude :stock="excludeStock"></stockexclude>
+        <stockheart :stock="heartStock"></stockheart>
+
         <a id="back-to-top" href="#" class="btn btn-outline-primary back-to-top" style="display: none" role="button" aria-label="Scroll to top">
             <i class="fas fa-chevron-up"></i>
         </a>
@@ -149,7 +152,8 @@
                         ],
                         ordering: true,
                         order: [ [ 4, "desc" ] ],
-                        tableClass:{'table-hover':true}
+                        tableClass:{'table-hover':true},
+                        pageLength: 15
                     }
                 },
                 notice:{
