@@ -97,6 +97,11 @@ public class StkReportDetailEntity {
     @JsonView(View.All.class)
     private String outputDownLongtime;
 
+    @Basic
+    @Column(name = "OUTPUT_3", length = 4000)
+    @JsonView(View.All.class)
+    private String output3;
+
 
     @Override
     public boolean equals(Object o) {

@@ -353,7 +353,7 @@ public class StockTask extends AbstractTask {
             for(Map data : diff){
                 String code = String.valueOf(data.get("f12"));
                 String name = String.valueOf(data.get("f14"));
-                log.info("code="+code+",name="+name);
+
                 Optional<StkEntity> stk = stkRepository.findById(code);
                 StkEntity stkEntity;
                 if(!stk.isPresent()){
@@ -386,6 +386,7 @@ public class StockTask extends AbstractTask {
                 Map stkDatas = (Map)stkMap.get("data");
                 List<Map> stkDiff = (List)stkDatas.get("diff");
 
+                log.info("code="+code+",name="+name+",size="+stkDiff.size());
                 if(!stkDiff.isEmpty()) {
 
                     StkIndustryTypeEntity stkIndustryTypeEntity = new StkIndustryTypeEntity();

@@ -231,7 +231,7 @@ public class Bar implements Serializable, Cloneable {
 
 	public double getChange(int days, Function<Bar, Double> func) {
 		double v = func.apply(this);
-		if(days == 0)return 0;
+		if(days == 0) return 0;
 		double kv = this.getValue(days, func);
 		return days > 0 ? (v-kv)/kv : (kv-v)/v;
 	}

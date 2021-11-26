@@ -106,7 +106,9 @@ public class TaskContainer {
 
     public List<Task> getTask(Class cls) {
         List<Task> results = new ArrayList<>();
-        for(Task task : tasks) {
+        Iterator<Task> it = tasks.iterator();
+        while(it.hasNext()) {
+            Task task = it.next();
             if(cls.isInstance(task)){
                 results.add(task);
             }

@@ -44,7 +44,7 @@
                 <template v-if="['stocks','xq'].includes(navActive)">
                     <li class="nav-item dropdown" style="display: none" :style="{display:selectedTabName!=undefined?'block':'none'}" :class="{active:navActive==='stocks'}">
                         <a v-text="selectedTabName" id="stockCardTabs" href="#" data-toggle="dropdown" class="nav-link dropdown-toggle"></a>
-                        <ul class="dropdown-menu border-0 shadow">
+                        <ul class="dropdown-menu border-0 shadow mt-n1">
                             <li><a @click="selectTab('dayBar',$event)" href="#" class="dropdown-item">日线</a></li>
                             <li><a @click="selectTab('weekBar',$event)" href="#" class="dropdown-item">周线</a></li>
                             <li><a @click="selectTab('monthBar',$event)" href="#" class="dropdown-item">月线</a></li>

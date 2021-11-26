@@ -5,6 +5,7 @@ import com.stk123.entity.StkDictionaryEntity;
 import com.stk123.model.RequestResult;
 import com.stk123.repository.StkDictionaryRepository;
 import com.stk123.service.StkConstant;
+import com.stk123.service.XueqiuService;
 import com.stk123.service.core.DictService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -75,7 +76,7 @@ public class CookieController {
         return cookies;
     }
 
-    @RequestMapping(value = "/{code}", method = RequestMethod.POST)
+    @PostMapping(value = "/{code}")
     @ResponseBody
     public RequestResult setCookie(@PathVariable("code")String code,
                                    @RequestBody Cookie cookie){
@@ -86,10 +87,11 @@ public class CookieController {
         co.setValue(value);
         co.setUpdatedTime(new Date());
         saveCookie(co);
+        XueqiuService.clearCookie();
         return RequestResult.success();
     }
 
-    @RequestMapping(value = "/iwencai", method = RequestMethod.POST)
+    @PostMapping(value = "/iwencai")
     @ResponseBody
     public RequestResult setIwencaiCookie(@RequestBody Cookie cookie){
         //log.info("set iwencai cookie:"+cookie.getValue());

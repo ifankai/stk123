@@ -47,13 +47,13 @@ public class ReportService {
                                                           String strategyOutput, String rpsCode, String rpsPercentile,
                                                           String rpsBkCode, String rpsStockCode, String text,
                                                           String output1, String output2){
-        return createReportDetailEntity(stockCode, strategyCode, strategyDate, strategyOutput, rpsCode, rpsPercentile, rpsBkCode, rpsStockCode, text, output1, output2, null, null);
+        return createReportDetailEntity(stockCode, strategyCode, strategyDate, strategyOutput, rpsCode, rpsPercentile, rpsBkCode, rpsStockCode, text, output1, output2, null, null, null);
     }
 
     public StkReportDetailEntity createReportDetailEntity(String stockCode, String strategyCode, String strategyDate,
                                                           String strategyOutput, String rpsCode, String rpsPercentile,
                                                           String rpsBkCode, String rpsStockCode, String text,
-                                                          String output1, String output2, String outputVolumeHighest, String outputDownLongtime){
+                                                          String output1, String output2, String outputVolumeHighest, String outputDownLongtime, String output3){
         StkReportDetailEntity stkReportDetailEntity = new StkReportDetailEntity();
         stkReportDetailEntity.setCode(stockCode);
         stkReportDetailEntity.setStrategyCode(strategyCode);
@@ -68,6 +68,7 @@ public class ReportService {
         stkReportDetailEntity.setOutput2(output2);
         stkReportDetailEntity.setOutputVolumeHighest(outputVolumeHighest);
         stkReportDetailEntity.setOutputDownLongtime(outputDownLongtime);
+        stkReportDetailEntity.setOutput3(output3);
         return stkReportDetailEntity;
     }
 

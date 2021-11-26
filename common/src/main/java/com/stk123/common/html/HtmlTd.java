@@ -5,11 +5,11 @@ import java.util.Map;
 
 public class HtmlTd extends Tag {
 	
-	public static Map<String,String> AlignRight = new HashMap();
+	public static Map<String,String> AlignRight = new HashMap<>();
 	static{
 		AlignRight.put("align","right");
 	}
-	public static Map<String,String> AlignMiddle = new HashMap();
+	public static Map<String,String> AlignMiddle = new HashMap<>();
 	static{
 		AlignMiddle.put("align","middle");
 	}

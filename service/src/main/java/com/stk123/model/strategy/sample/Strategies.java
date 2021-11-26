@@ -51,6 +51,9 @@ public class Strategies {
 
     public static String STRATEGIES_ON_TRADING = "17a";
 
+    //可以取到量能放大倍数的rps
+    public static String RPS_VOLUME = "rps_09a,rps_09,rps_10a,rps_10,rps_11a,rps_11,rps_06a,rps_06b,rps_07,rps_13,rps_08,rps_05,rps_15,rps_04,rps_12";
+
     private static Map<String, Strategy> CODE_STRATEGY = new HashMap<>();
 
     static{
@@ -392,29 +395,29 @@ public class Strategies {
 
     /**** 阶段强势 ****/
     public static Strategy strategy_08a() {
-        String turningPoint20 = Strategies.getTurningPoint(18);
-        return strategy_08("strategy_08a","18日板块阶段强势(08a)，自"+turningPoint20+"以来", turningPoint20);
+        //String turningPoint20 = Strategies.getTurningPoint(18);
+        return strategy_08("strategy_08a","18日板块阶段强势(08a)", 18);
     }
     public static Strategy strategy_08b() {
-        String turningPoint20 = Strategies.getTurningPoint(18);
-        String turningPoint60 = Strategies.getTurningPoint(55);
-        Strategy strategy = strategy_08("strategy_08b","55日板块阶段强势(08b)，自"+turningPoint60+"以来", turningPoint60);
-        if(turningPoint20.equals(turningPoint60)){
+        //String turningPoint20 = Strategies.getTurningPoint(18);
+        //String turningPoint60 = Strategies.getTurningPoint(55);
+        Strategy strategy = strategy_08("strategy_08b","55日板块阶段强势(08b)", 55);
+        /*if(turningPoint20.equals(turningPoint60)){
             strategy.setIgnore(true);
-        }
+        }*/
         return strategy;
     }
     public static Strategy strategy_08c() {
-        String turningPoint20 = Strategies.getTurningPoint(18);
+        /*String turningPoint20 = Strategies.getTurningPoint(18);
         String turningPoint60 = Strategies.getTurningPoint(55);
-        String turningPoint120 = Strategies.getTurningPoint(110);
-        Strategy strategy = strategy_08("strategy_08c","110日板块阶段强势(08c)，自"+turningPoint120+"以来", turningPoint120);
-        if(turningPoint20.equals(turningPoint120) || turningPoint60.equals(turningPoint120)){
+        String turningPoint120 = Strategies.getTurningPoint(110);*/
+        Strategy strategy = strategy_08("strategy_08c","110日板块阶段强势(08c)", 110);
+        /*if(turningPoint20.equals(turningPoint120) || turningPoint60.equals(turningPoint120)){
             strategy.setIgnore(true);
-        }
+        }*/
         return strategy;
     }
-    private static Strategy strategy_08(String code, String name, String turningPoint) {
+    private static Strategy strategy_08(String code, String name, int turningPoint) {
         Strategy<Stock> strategy = new Strategy<>(code, name, Stock.class);
         strategy.setSortable(20).setCanTestHistory(false);
 
@@ -915,19 +918,6 @@ public class Strategies {
     public static Strategy rps_13() {
         Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_GENTLE_CHANGE_VOLUME, "10天(2周)放量+温和涨幅", Stock.class);
 
-        strategy.addFilter("温和涨幅", (strgy, stock) -> {
-            if(stock.getBarSeries().size() < 120){
-                return FilterResult.FALSE();
-            }
-            Bar bar = stock.getBar();
-            Bar lowestBar = bar.getLowestBar(120, Bar.EnumValue.C);
-            Bar highestBar = bar.getHighestBar(bar.getDaysBetween(lowestBar.getDate(), bar.getDate()), Bar.EnumValue.C);
-            if(highestBar == null) return FilterResult.FALSE();
-            double change = highestBar.getHigh()/lowestBar.getLow();
-            double value = Math.abs(change - 1.25);
-            return FilterResult.Sortable(CommonUtils.numberFormat(value, 2));
-        });
-
         strategy.addFilter("10天放量", (strgy, stock) -> {
             if(stock.getBarSeries().size() < 60){
                 return FilterResult.FALSE();
@@ -941,6 +931,19 @@ public class Strategies {
             if(value < 2)return FilterResult.FALSE();
             return FilterResult.Sortable(CommonUtils.numberFormat(value, 2));
         }, false);
+
+        strategy.addFilter("温和涨幅", (strgy, stock) -> {
+            if(stock.getBarSeries().size() < 120){
+                return FilterResult.FALSE();
+            }
+            Bar bar = stock.getBar();
+            Bar lowestBar = bar.getLowestBar(120, Bar.EnumValue.C);
+            Bar highestBar = bar.getHighestBar(bar.getDaysBetween(lowestBar.getDate(), bar.getDate()), Bar.EnumValue.C);
+            if(highestBar == null) return FilterResult.FALSE();
+            double change = highestBar.getHigh()/lowestBar.getLow();
+            double value = Math.abs(change - 1.25);
+            return FilterResult.Sortable(CommonUtils.numberFormat(value, 2));
+        });
 
         return strategy;
     }
@@ -1003,8 +1006,6 @@ public class Strategies {
     }
 
     public static Strategy rps_04() {
-        //StrategyGroup<Stock> strategyGroup = new StrategyGroup<>(Rps.CODE_STOCK_MONTH_3_VOLUME, "3个月放量", Stock.class);
-
         Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_MONTH_3_VOLUME, "60天(3月)放量", Stock.class);
         //strategy.setAsc(false);
         strategy.addFilter("3个月放量", (strgy, stock) -> {
