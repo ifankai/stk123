@@ -58,4 +58,17 @@ public class BkController {
         response.getWriter().println(url);
     }
 
+    @RequestMapping(value = { "/rps/{rpsCode}"})
+    @ResponseBody
+    @JsonView(View.All.class)
+    public RequestResult rps(@PathVariable(value = "rpsCode", required = false)String rpsCode){
+        List<Stock> bks = Cache.getBksWithStocks();
+        if(StringUtils.isEmpty(rpsCode)){
+            rpsCode = Rps.CODE_STOCK_SCORE;
+        }
+        List<StrategyResult> strategyResults = stockService.calcRps(bks, rpsCode);
+        Map result = stockService.getStrategyResultAsMap(strategyResults);
+        return RequestResult.success(result);
+    }
+
 }

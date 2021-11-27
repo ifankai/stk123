@@ -1334,6 +1334,7 @@ public class CommonUtils {
             return 0;
         }else {
             String idx = new String(Files.readAllBytes(path));
+            if(StringUtils.isEmpty(idx)) return 0;
             return Integer.parseInt(idx);
         }
     }

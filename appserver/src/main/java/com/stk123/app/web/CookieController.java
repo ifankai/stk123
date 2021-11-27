@@ -80,7 +80,7 @@ public class CookieController {
     @ResponseBody
     public RequestResult setCookie(@PathVariable("code")String code,
                                    @RequestBody Cookie cookie){
-        log.info("set cookie:"+cookie.getValue());
+        //log.info("set cookie:"+cookie.getValue());
         String value = URLDecoder.decode(cookie.getValue());
         initCookies();
         Cookie co = COOKIE_MAP.get(code);

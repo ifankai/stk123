@@ -1151,6 +1151,14 @@ public class Stock {
         if(this.bks != null){
             StrategyResult sr = this.getMaxBkRpsInBks(Rps.CODE_BK_60);
             if(sr == null) return 0;
+            List<String> reportHotBks = Cache.getReportHotBks();
+            if(reportHotBks != null) {
+                List<Stock> hotBks = this.bks.stream().filter(bk -> reportHotBks.contains(bk.getCode())).collect(Collectors.toList());
+                for(Stock bk : hotBks){
+                    this.tags.add(Tag.builder()
+                            .name("Rpt["+bk.getNameWithLink()+"]").detail("Rpt["+bk.getNameAndCode()+"]").displayOrder(99).build());
+                }
+            }
             if(sr.getPercentile() >= 90){ //板块rps强度大于90百分位，则加10分
                 this.tags.add(Tag.builder()
                         .name("RPS["+sr.getStock().getNameWithLink()+"]"+CommonUtils.numberFormat2Digits(sr.getPercentile())).value(sr.getPercentile())

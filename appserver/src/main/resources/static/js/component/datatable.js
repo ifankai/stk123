@@ -65,7 +65,9 @@ const _datatableTemplate = `
                             <tr v-if="row.bks"><td>
                                 <table class="subtable text-nowrap">
                                     <tr><td>板块</td>
-                                        <td v-for="bk in row.bks" v-html="bk.bk.nameWithLink" class="text-center"></td>
+                                        <template v-for="bk in row.bks">
+                                            <td v-if="bk.bk" v-html="bk.bk.nameWithLink" class="text-center"></td>
+                                        </template>
                                     </tr>
                                     <tr><td>策略</td>
                                         <td v-for="bk in row.bks" v-html="bk.bkRpsName" class="text-center"></td>

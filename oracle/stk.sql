@@ -3178,14 +3178,19 @@ select * from (select * from stk_kline_hk where code='999999' order by kline_dat
 
 select * from stk_capital_flow where code='600638' order by flow_date desc;
 
-select * from stk_report_detail order by strategy_date desc, id desc;
-select * from stk_report_detail where header_id=11502;
 select * from stk_report_header order by insert_time desc;
+select * from stk_report_detail order by strategy_date desc, id desc;
+select * from stk_report_detail where strategy_code='strategy_08a' order by strategy_date desc, id desc;
+select * from stk_report_detail where header_id=11741;
+
 select * from stk_report_header order by insert_time desc;
 select * from stk_report_detail where header_id=11502 and rps_stock_code like '%002666%';
 
 delete from stk_report_detail where header_id in (select id from stk_report_header where report_date='20211123');
 delete from stk_report_header where report_date='20211123';
+
+delete from stk_report_detail where header_id = 11737;
+delete from stk_report_header where id=11737;
 
 select * from stk_text where code='300296' order by insert_time desc;
 select * from stk_text where type=2;
@@ -3209,7 +3214,9 @@ select * from stk_trade_strategy order by insert_time desc;
 delete from stk_trade_strategy where code in ('600602','600601');
 insert into stk_trade_strategy select s_trade_strategy_id.nextval,'600600','20211026','15a', sysdate from dual;
 
-select * from stk where cate=2;
+select * from stk where cate=5 and name like '%电子%';
+select * from stk_industry_type where code='BK0865';
+select * from stk_industry where industry=124977;
 
 select * from stk_organization where name like '%����%';
 select * from stk_ownership o, stk s where s.code=o.code and o.org_id in (select id from stk_organization where name like '%����%') and fn_date = '20210930'

@@ -421,13 +421,14 @@ public class Strategies {
         Strategy<Stock> strategy = new Strategy<>(code, name, Stock.class);
         strategy.setSortable(20).setCanTestHistory(false);
 
-        strategy.addFilter("行业", Filters.filter_mustStockCate(EnumCate.INDEX_eastmoney_gn));
         Filter<Stock> filter = (strg, stock) -> {
             Bar bar = stock.getBar();
             Bar k = bar.before(turningPoint);
             return FilterResult.Sortable(bar.getChange(bar.getDaysBetween(bar.getDate(), k.getDate()), Bar.EnumValue.C));
         };
-        strategy.addFilter("自"+turningPoint+"以来排行", filter, false);
+        strategy.addFilter("自"+turningPoint+"日以来排行", filter, false);
+        strategy.addFilter("行业", Filters.filter_mustStockCate(EnumCate.INDEX_eastmoney_gn));
+
         strategy.setExpectFilter("60日内涨幅>20%", Stock::getBarSeries, Filters.expectFilter(60, 20));
         return strategy;
     }

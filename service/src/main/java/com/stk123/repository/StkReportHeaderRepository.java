@@ -26,4 +26,6 @@ public interface StkReportHeaderRepository extends JpaRepository<StkReportHeader
     void updateCheckedByTypeAndReportDate(@Param("type") String type, @Param("reportDate") String reportDate, @Param("date") Date date);
 
     List<StkReportHeaderEntity> findAllByTypeAndReportDate(String type, String reportDate);
+
+    StkReportHeaderEntity findTopByType(String type);
 }

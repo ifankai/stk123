@@ -161,6 +161,7 @@
                             <div class="card-header">
                                 <h3 class="card-title">
                                     <span v-html="stock.nameAndCode"></span> 评分:<span v-text="stock.rating.total"></span>
+                                    <span class="ml-2"><tag :tags="stock.tags" :type="['highlight']"></tag></span>
                                 </h3>
                                 <div class="card-tools">
                                     <button type="button" class="btn btn-tool" title="交易">

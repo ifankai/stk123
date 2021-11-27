@@ -1,6 +1,8 @@
 package com.stk123.entity;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.stk123.model.json.View;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,6 +16,7 @@ import java.util.Objects;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Setter
 @Getter
+@JsonView(View.Default.class)
 public class StkEntity implements Serializable {
 
     private static final long serialVersionUID = 8946771678849352372L;

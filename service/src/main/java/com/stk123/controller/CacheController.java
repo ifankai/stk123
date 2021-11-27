@@ -33,4 +33,10 @@ public class CacheController {
         Cache.clear();
         return RequestResult.success(true);
     }
+
+    @RequestMapping(value = {"/reportHotBks"})
+    @ResponseBody
+    public RequestResult reportHotBks(){
+        return RequestResult.success(Cache.getReportHotBks());
+    }
 }

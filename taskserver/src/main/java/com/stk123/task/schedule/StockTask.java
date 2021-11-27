@@ -474,6 +474,7 @@ public class StockTask extends AbstractTask {
             try {
                 String url = "http://www.iwencai.com/unifiedwap/unified-wap/v2/result/get-robot-data";
                 String body = "question="+stock.getCode()+"&perpage=50&page=1&secondary_intent=&log_info=%7B%22input_type%22%3A%22click%22%7D&source=Ths_iwencai_Xuangu&version=2.0&query_area=&block_list=&add_info=%7B%22urp%22%3A%7B%22scene%22%3A1%2C%22company%22%3A1%2C%22business%22%3A1%7D%2C%22contentType%22%3A%22json%22%2C%22searchInfo%22%3Atrue%7D";
+
                 Map headers = new HashMap();
                 String cookie = CommonHttpUtils.getCookieByType(StkConstant.COOKIE_IWENCAI);
                 headers.put("Cookie", cookie);
@@ -486,6 +487,15 @@ public class StockTask extends AbstractTask {
                 }
                 ObjectMapper mapper = new ObjectMapper();
                 Map map = mapper.readValue(page, Map.class);
+
+                try{
+                    String address = BeanUtils.getProperty(map, "data.answer.[0].txt.[0].content.components.[0].data.[0].城市");
+                    if(StringUtils.isNotEmpty(address))
+                        stkRepository.updateAddressByCode(code, address);
+                }catch (Exception e){
+                    log.error("Parse 'data.answer.[0].txt.[0].content.components.[0].data.[0].城市' error", e);
+                }
+
                 String products = null;
                 try{
                     products = BeanUtils.getProperty(map, "data.answer.[0].txt.[0].content.components.[0].data.[0].主营产品名称");
@@ -504,6 +514,7 @@ public class StockTask extends AbstractTask {
                     }
                 }
                 CommonUtils.setIndexToTempFile("task_stock_main_product.txt", i+1);
+
             }catch(Exception e){
                 log.error("initCNMainProduct error:"+stock.getCode(), e);
             }

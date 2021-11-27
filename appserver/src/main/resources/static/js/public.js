@@ -538,7 +538,9 @@ let _stockExcludeInVuex = {
 let _stockHeartInVuex = {
     openHeartModal:function (stock){
         this.$store.commit('setCurrentStock', stock);
-        $('#_heartModal').modal ('show');
+        this.$nextTick(function () {
+            $('#_heartModal').modal('show');
+        });
     }
 }
 

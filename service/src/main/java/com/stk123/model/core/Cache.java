@@ -3,6 +3,7 @@ package com.stk123.model.core;
 import com.stk123.model.enumeration.EnumCate;
 import com.stk123.model.enumeration.EnumMarket;
 import com.stk123.model.strategy.StrategyResult;
+import com.stk123.service.core.ReportService;
 import com.stk123.service.core.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,13 +22,13 @@ public class Cache {
     // 债转股[BK0980] 养老金[BK0823] 预亏预减[BK0570] 独角兽[BK0835] 基金重仓[BK0536] 创业板综[BK0742] 证金持股[BK0718] 创业成份[BK0638]
     // 沪股通[BK0707] 深成500[BK0568] 预盈预增[BK0571] 送转预期[BK0633] 中证500[BK0701] MSCI中国[BK0821] 机构重仓[BK0552] 次新股[BK0501]
     // 昨日触板[BK0817] HS300_[BK0500] 上证180_[BK0612] 深证100R[BK0743] 综合行业[BK0539] 茅指数[BK0999] 高送转[BK0723] 深圳特区[BK0549]
-    // 长江三角[BK0594]
+    // 长江三角[BK0594] 注册制次新股[BK0971] 纾困概念[BK0851] PPP模式[BK0721] 华为概念[BK0854] 国企改革[BK0683]
     public static String BK_REMOVE = "BK0498,BK0499,BK0705,BK0528,BK0600,BK0804,BK0925,BK0816,BK0815," +
             "BK0636,BK0535,BK0672,BK0867,BK0879,BK0980,BK0567,BK0596," +
             "BK0980,BK0823,BK0570,BK0835,BK0536,BK0742,BK0718,BK0638,"+
             "BK0707,BK0568,BK0571,BK0633,BK0701,BK0821,BK0552,BK0501," +
             "BK0817,BK0500,BK0612,BK0743,BK0539,BK0999,BK0723,BK0549,"+
-            "BK0594";
+            "BK0594,BK0971,BK0851,BK0721,BK0854,BK0683";
 
     public static List<Stock> StocksAllCN = null;
     private static Map<String, Stock> StocksAll_Map = Collections.synchronizedMap(new HashMap<>());
@@ -42,13 +43,17 @@ public class Cache {
     public static List<Stock> StocksMass = null;
     public static List<Stock> StocksH = null;
 
+    private static List<String> REPORT_HOT_BKS = null;
+
     public static boolean inited = false;
 
     private static StockService stockService;
+    private static ReportService reportService;
 
     @Autowired
-    public Cache(StockService stockService){
+    public Cache(StockService stockService, ReportService reportService){
         Cache.stockService = stockService;
+        Cache.reportService = reportService;
     }
 
     public synchronized static void initAll(){
@@ -169,6 +174,13 @@ public class Cache {
     public static void clearUS(){
         if(Cache.StocksAllUS != null) Cache.StocksAllUS.clear();
         Cache.StocksAllUS = null;
+    }
+
+
+    public static List<String> getReportHotBks(){
+        if(REPORT_HOT_BKS != null) return REPORT_HOT_BKS;
+        REPORT_HOT_BKS = reportService.getHotBks();
+        return REPORT_HOT_BKS;
     }
 
 }

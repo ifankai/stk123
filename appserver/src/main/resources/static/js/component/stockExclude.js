@@ -44,7 +44,7 @@ const _stockExclude = {
     methods:{
         saveExcludeStock:function (key){
             let _this = this;
-            let status = Object.assign(this.stock.statuses.find(s=>s.type===1) || {}, {
+            let status = Object.assign(this.stock.statuses ? this.stock.statuses.find(s=>s.type===1) || {} : {}, {
                 code:_this.stock.code,
                 type:1,
                 subType:key,
@@ -54,6 +54,9 @@ const _stockExclude = {
             axios.post("/stock/status/1", status).then(function (res) {
                 if(res.data.success){
                     toastify({text: "保存成功"});
+                    if(!_this.stock.statuses) {
+                        _this.stock.statuses = []
+                    }
                     _this.stock.statuses.push(status);
                 }else{
                     toastify({text: "保存失败：\n"+res.data.data});

@@ -8,10 +8,13 @@ import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.model.projection.StockCodeNameProjection;
 import com.stk123.model.projection.StockProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -58,4 +61,9 @@ public interface StkRepository extends JpaRepository<StkEntity, String> {
     @Query(value = "select code as code,name as name,market as market,cate as cate,place as place,totalCapital as totalCapital,hot " +
             "from StkEntity where code=:code and market=:market and place=:place")
     StockBasicProjection findByCodeAndMarketAndPlace(@Param("code") String code, @Param("market") Integer market, @Param("place") Integer place);
+
+    @Modifying
+    @Transactional
+    @Query(value = "update stk set address = :address where code = :code", nativeQuery = true)
+    void updateAddressByCode(@Param("code") String code, @Param("address") String address);
 }

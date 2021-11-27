@@ -121,10 +121,10 @@ function start (options) {
     chrome.tabs.query({highlighted: true}, function(tabs) {
         if (tabs && tabs[0]) {
             domain = getDomain(tabs[0].url)
-            if (options.rootSite && domain.indexOf(options.rootSite) === -1) {
+            /*if (options.rootSite && domain.indexOf(options.rootSite) === -1) {
                 chrome.runtime.sendMessage({type: "send", code: -1, info: {msg: '当前域名非设置根域名'}});
                 return
-            }
+            }*/
             clearTimer()
             if (options.times === '一次') {
                 init(tabs[0], options)

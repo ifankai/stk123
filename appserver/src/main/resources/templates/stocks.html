@@ -362,8 +362,8 @@
         </section>
         <!-- /.content -->
 
-        <stockexclude :stock="excludeStock"></stockexclude>
-        <stockheart :stock="heartStock"></stockheart>
+        <stockexclude :stock="$store.state.currentStock"></stockexclude>
+        <stockheart :stock="$store.state.currentStock"></stockheart>
 
         <a id="back-to-top" href="#" class="btn btn-outline-primary back-to-top" style="display: none" role="button" aria-label="Scroll to top">
             <i class="fas fa-chevron-up"></i>

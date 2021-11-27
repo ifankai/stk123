@@ -61,7 +61,7 @@ public class StrategyBacktesting {
         for(Strategy strategy : strategies) {
             if(strategy.isSortable()) {
                 //List<StrategyResult> all = results.stream().filter(strategyResult -> strategyResult.getStrategy().getCode().equals(strategy.getCode()) && strategyResult.isFilterAllPassed()).collect(Collectors.toList());
-                List<StrategyResult> all = (List<StrategyResult>)strategy.getStrategyResults().stream().collect(Collectors.toList());
+                List<StrategyResult> all = (List<StrategyResult>)strategy.getStrategyResultsAll().stream().collect(Collectors.toList());
                 all = all.stream().filter(sr -> sr.isFilterAllPassed()).collect(Collectors.toList());
 
                 List<FilterResult> filterResults = all.stream().flatMap(strategyResult -> strategyResult.getSortableFilterResults().stream()).collect(Collectors.toList());

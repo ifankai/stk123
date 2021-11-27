@@ -36,7 +36,7 @@ const _stockHeartTemplate = `
 const _stockHeart = {
     template: _stockHeartTemplate,
     props: {
-        stock:{}
+        stock:{type:Object, default: {}}
     },
     data: function () {
         return {
@@ -83,6 +83,7 @@ const _stockHeart = {
             let _this = this;
             axios.get("/text/"+this.stock.code+"/6").then(function(res){
                 _this.text = _.head(res.data.data);
+                if(_this.text === undefined) _this.text = {}
                 _this.text.modalId = '_stockHeartTextModal';
                 if(_this.text.title === undefined || _this.text.title === null || _this.text.id === null){
                     _this.text.title = "##加入自选##";
