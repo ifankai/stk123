@@ -65,6 +65,8 @@ public class Bar implements Serializable, Cloneable {
 	private double hsl; //换手率
 
 	private double capitalFlowAmount;  //资金流入金额
+	private double northFlowAmount; //北向资金
+	private double northFlowRate;   //北向资金比例
 
 	private double peTtm;
 	private double pbTtm;

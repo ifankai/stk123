@@ -26,6 +26,7 @@ public class StockAsyncService {
     public CompletableFuture<List<Stock>> buildBarSeriesAndCapitalFlow(List<Stock> stocks, Integer rows, boolean isIncludeRealtimeBar) {
         stocks = stockService.buildBarSeries(stocks, rows, isIncludeRealtimeBar);
         stocks = stockService.buildCapitalFlow(stocks, CommonUtils.addDay(new Date(), -90));
+        stocks = stockService.buildHkMoney(stocks, CommonUtils.addDay(new Date(), -90));
         return CompletableFuture.completedFuture(stocks);
     }
 

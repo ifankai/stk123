@@ -1068,6 +1068,21 @@ create index idx_trade_strategy_date on stk_trade_strategy (trade_date);
 alter table stk_trade_strategy modify strategy_code varchar2(20);
 
 
+create table stk_hk_money(
+  id number(10),
+  code varchar2(10),
+  money_date varchar2(8),
+  holding_volume number(20,2),
+  holding_amount number(20,2),  
+  holding_rate number(6,2)
+);
+create sequence s_hk_money_id INCREMENT BY 1 START WITH 100000 NOMAXVALUE NOCYCLE CACHE 10;
+alter table stk_hk_money add constraint pk_hk_money_id primary key (id);
+create index idx_hk_money_date on stk_hk_money (code,money_date);
+
+
+
+
 select * from tab where tname like 'STK_%';
 
 ----------------------------------
@@ -3220,3 +3235,13 @@ select * from stk_industry where industry=124977;
 
 select * from stk_organization where name like '%����%';
 select * from stk_ownership o, stk s where s.code=o.code and o.org_id in (select id from stk_organization where name like '%����%') and fn_date = '20210930'
+
+select s.code,s.name,count(s.code) from stk s, stk_industry_type t, stk_industry i where s.code=t.code and t.id=i.industry and s.cate=5 and s.address='eastmoney_gn'
+group by s.code,s.name;
+select * from stk_cn where code='603876';
+
+select * from stk_capital_flow
+select * from stk_hk_money order by money_date desc;
+code=000761, klineDate=20210810
+select * from stk_kline where code='600281' order by kline_date desc;
+select * from stk_kline_hk where code='01873' order by kline_date desc;

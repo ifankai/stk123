@@ -110,7 +110,7 @@ public class BarTask extends AbstractTask {
         this.runByName("initCN_Index_eastmoney_gn", this::initCN_Index_eastmoney_gn);
         this.runByName("initCN_Stock", this::initCN_Stock);
         this.runByName("initHK", this::initHK);
-        this.runByName("updateHKCapitalFlow", this::updateHKCapitalFlow);
+        //this.runByName("updateHKCapitalFlow", this::updateHKCapitalFlow);
         this.runByName("initUS", this::initUS);
         this.runByName("analyseCN", this::analyseCN);
         this.runByName("analyseHK", this::analyseHK);
@@ -421,6 +421,9 @@ public class BarTask extends AbstractTask {
 
                     if(stock.isMarketCN() || stock.isMarketHK()) {
                         stock.updateCapitalFlow();
+                    }
+                    if(stock.isMarketCN()){
+                        stock.updateHkMoney();
                     }
 
                 }catch(Exception e){
@@ -802,7 +805,7 @@ public class BarTask extends AbstractTask {
             StkReportHeaderEntity stkReportHeaderEntity = null;
             List<Stock> stocks = Cache.getStocksWithBks();
 
-            stocks = StockService.filterByMarketCap(stocks, 50);
+            //stocks = StockService.filterByMarketCap(stocks, 50);
             stocks = StockService.filterByFn(stocks);
             stocks = StockService.filterByStatusExclude(stocks);
             // 15天涨幅大于 60% 的过滤掉
@@ -810,7 +813,7 @@ public class BarTask extends AbstractTask {
             stocks = StockService.filterByBarChange(stocks,80, 150); //排除3个月大于150
             stocks = StockService.filterByBarChange(stocks,360, 300); //排除一年半大于3倍
 
-            stocks = StockService.filterByHoldingAmount(stocks, 10_0000); //过滤掉人均持股小于10万的股票
+            //stocks = StockService.filterByHoldingAmount(stocks, 10_0000); //过滤掉人均持股小于10万的股票
 
             if(StringUtils.isNotEmpty(report)){
                 String type = StkConstant.REPORT_HEADER_TYPE_ALLSTOCKS_RPS;
@@ -841,7 +844,7 @@ public class BarTask extends AbstractTask {
 
                 for(StrategyResult sr : rpsSrs){
                     Stock stock = sr.getStock();
-                    if(rpsVolume.contains(rpsStrategy.getCode()) && sr.getSortableValue() >= 3 && resultsGreaterThan3.size() <= total){
+                    if(rpsVolume.contains(rpsStrategy.getCode()) && sr.getSortableValue() >= 3 && resultsGreaterThan3.size() < total){
                         resultsGreaterThan3.add(stock);
                     }
                     if(stock.getMarketCap() >= 15 && stock.getMarketCap() < 30){
@@ -975,7 +978,7 @@ public class BarTask extends AbstractTask {
 
                 for(StrategyResult sr : rpsSrs){
                     Stock stock = sr.getStock();
-                    if(rpsVolume.contains(rpsStrategy.getCode()) && sr.getSortableValue() >= 5 && resultsGreaterThan5.size() <= total){
+                    if(rpsVolume.contains(rpsStrategy.getCode()) && sr.getSortableValue() >= 3 && resultsGreaterThan5.size() < total){
                         resultsGreaterThan5.add(stock);
                     }
                     if(stock.getMarketCap() >= 5 && stock.getMarketCap() < 30){
@@ -1012,11 +1015,20 @@ public class BarTask extends AbstractTask {
                     List<String> codesIn30 = detailsIn30.stream().filter(detail -> detail.getStrategyCode().equals(rpsStrategy.getCode())).flatMap(detail -> Arrays.stream(StringUtils.split(detail.getRpsStockCode()==null?"":detail.getRpsStockCode(), ","))).distinct().collect(Collectors.toList());
                     String output2 = Arrays.stream(StringUtils.split(rpsStockCode, ",")).filter(code -> !codesIn30.contains(code)).distinct().collect(Collectors.joining(","));
 
+                    //量能创历史新高
+                    String outputVolumeHighest = null;
+                    if(results.size() > 0 && Strategies.STRATEGIES_ON_RPS_14.get(rpsStrategy.getCode()) != null){
+                        StrategyBacktesting strategyBacktesting = backtestingService.backtestingOnStock(results, Collections.singletonList(Strategies.STRATEGIES_ON_RPS_14.get(rpsStrategy.getCode())));
+                        List<StrategyResult> srResults = strategyBacktesting.getPassedStrategyResult();
+                        List<Stock> finalStocks = srResults.stream().map(StrategyResult::getStock).distinct().collect(Collectors.toList());
+                        outputVolumeHighest = finalStocks.stream().map(Stock::getCode).collect(Collectors.joining(","));
+                    }
+
                     String output3 = resultsGreaterThan5.stream().map(Stock::getCode).collect(Collectors.joining(","));
 
                     StkReportDetailEntity stkReportDetailEntity = reportService.createReportDetailEntity(null, rpsStrategy.getCode(), report,
                             null, null, null, null,
-                            results.stream().map(Stock::getCode).collect(Collectors.joining(",")), null, output1, output2, null, null, output3
+                            results.stream().map(Stock::getCode).collect(Collectors.joining(",")), null, output1, output2, outputVolumeHighest, null, output3
                     );
                     stkReportHeaderEntity.addDetail(stkReportDetailEntity);
                 }
@@ -1071,19 +1083,28 @@ public class BarTask extends AbstractTask {
             // rps start
             StringBuffer rps = new StringBuffer();
             List<Strategy> rpsList = Rps.getAllRpsStrategyOnStock();
+            Set<String> rpsVolume = Arrays.stream(Strategies.RPS_VOLUME.split(",")).collect(Collectors.toSet());
 
             for(Strategy rpsStrategy : rpsList){
                 if(rpsStrategy.isEmptyStrategy())continue;
-                List<Stock> rpsStocks = stockService.calcRps(stocks, rpsStrategy.getCode()).stream().map(StrategyResult::getStock).collect(Collectors.toList());
+                List<StrategyResult> rpsSrs = stockService.calcRps(stocks, rpsStrategy.getCode());
+                //List<Stock> rpsStocks = stockService.calcRps(stocks, rpsStrategy.getCode()).stream().map(StrategyResult::getStock).collect(Collectors.toList());
                 //List<Stock> results = rpsStocks.subList(0, Math.min(150, rpsStocks.size()));
 
                 List<Stock> results = new ArrayList<>();
+                List<Stock> resultsGreaterThan3 = new ArrayList<>();
                 int cap20 = 20;
                 int cap30 = 50;
                 int cap100 = 50;
                 int cap200 = 30;
                 int cap500 = 20;
-                for(Stock stock : rpsStocks){
+                int total = (cap20+cap30+cap100+cap200+cap500);
+
+                for(StrategyResult sr : rpsSrs){
+                    Stock stock = sr.getStock();
+                    if(rpsVolume.contains(rpsStrategy.getCode()) && sr.getSortableValue() >= 3 && resultsGreaterThan3.size() < total){
+                        resultsGreaterThan3.add(stock);
+                    }
                     if(stock.getMarketCap() >= 10 && stock.getMarketCap() < 30){
                         if(cap20-- > 0){
                             results.add(stock);
@@ -1118,9 +1139,11 @@ public class BarTask extends AbstractTask {
                     List<String> codesIn30 = detailsIn30.stream().filter(detail -> detail.getStrategyCode().equals(rpsStrategy.getCode())).flatMap(detail -> Arrays.stream(StringUtils.split(detail.getRpsStockCode()==null?"":detail.getRpsStockCode(), ","))).distinct().collect(Collectors.toList());
                     String output2 = Arrays.stream(StringUtils.split(rpsStockCode, ",")).filter(code -> !codesIn30.contains(code)).distinct().collect(Collectors.joining(","));
 
+                    String output3 = resultsGreaterThan3.stream().map(Stock::getCode).collect(Collectors.joining(","));
+
                     StkReportDetailEntity stkReportDetailEntity = reportService.createReportDetailEntity(null, rpsStrategy.getCode(), report,
                             null, null, null, null,
-                            results.stream().map(Stock::getCode).collect(Collectors.joining(",")), null, output1, output2
+                            results.stream().map(Stock::getCode).collect(Collectors.joining(",")), null, output1, output2, null, null, output3
                     );
                     stkReportHeaderEntity.addDetail(stkReportDetailEntity);
                 }

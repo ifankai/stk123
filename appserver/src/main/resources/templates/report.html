@@ -521,14 +521,14 @@
                                                 <div class="custom-control custom-checkbox">
                                                     <input v-model="selectRpsCheckboxAllMultiple3H" class="custom-control-input" type="checkbox" id="cb3H" checked>
                                                     <label for="cb3H" class="custom-control-label">&nbsp;</label>
-                                                    <a title="量能放大5倍以上的全部个股" target="_blank" :href="'/s/'+[...new Set(currentAllStocksRpsH.data.filter(item => item.select3).map(item => item.output3))].join(',')"><i class="fas fa-th"></i></a>
+                                                    <a title="量能放大3倍以上的全部个股" target="_blank" :href="'/s/'+[...new Set(currentAllStocksRpsH.data.filter(item => item.select3).map(item => item.output3))].join(',')"><i class="fas fa-th"></i></a>
                                                 </div>
                                             </template>
                                             <template v-slot:body-multiple3="{row, rowNumber}">
                                                 <div class="custom-control custom-checkbox">
                                                     <input @click.stop="row.select3=!row.select3" :checked="row.select3" class="custom-control-input" type="checkbox" :id="'cb3H'+row.id">
                                                     <label :for="'cb3H'+row.id" class="custom-control-label"></label>
-                                                    <a target="_blank" :href="'/s/'+row.output3+'?title='+row.strategyName+' - 量能放大5倍以上'" v-text="'量能放大5倍以上 ('+(row.output3==null?0:row.output3.split(',').length)+')'"></a>
+                                                    <a target="_blank" :href="'/s/'+row.output3+'?title='+row.strategyName+' - 量能放大3倍以上'" v-text="'量能放大3倍以上 ('+(row.output3==null?0:row.output3.split(',').length)+')'"></a>
                                                 </div>
                                             </template>
                                             <template v-slot:checked="{row, rowNumber}">
@@ -594,6 +594,20 @@
                                             </template>
                                             <template v-slot:body-longtime="{row, rowNumber}">
                                                 <a target="_blank" :href="'/s/'+row.outputDownLongtime+'?title='+row.strategyName+' - 高点调整200天'" v-text="'高点调整200天 ('+(row.outputDownLongtime==null?0:row.outputDownLongtime.split(',').length)+')'"></a>
+                                            </template>
+                                            <template v-slot:head-multiple3="{column}">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input v-model="selectRpsCheckboxAllMultiple3U" class="custom-control-input" type="checkbox" id="cb3U" checked>
+                                                    <label for="cb3U" class="custom-control-label">&nbsp;</label>
+                                                    <a title="量能放大3倍以上的全部个股" target="_blank" :href="'/s/'+[...new Set(currentAllStocksRpsU.data.filter(item => item.select3).map(item => item.output3))].join(',')"><i class="fas fa-th"></i></a>
+                                                </div>
+                                            </template>
+                                            <template v-slot:body-multiple3="{row, rowNumber}">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input @click.stop="row.select3=!row.select3" :checked="row.select3" class="custom-control-input" type="checkbox" :id="'cb3U'+row.id">
+                                                    <label :for="'cb3U'+row.id" class="custom-control-label"></label>
+                                                    <a target="_blank" :href="'/s/'+row.output3+'?title='+row.strategyName+' - 量能放大3倍以上'" v-text="'量能放大3倍以上 ('+(row.output3==null?0:row.output3.split(',').length)+')'"></a>
+                                                </div>
                                             </template>
                                             <template v-slot:checked="{row, rowNumber}">
                                                 <div @click.stop class="custom-control custom-checkbox ml-3">
@@ -863,7 +877,11 @@
             selectRpsCheckboxAll30U: {
                 get: function () { return false;},
                 set: function (value) { this.currentAllStocksRpsU.data.forEach(item => { item.select30 = value; }); }
-            }
+            },
+            selectRpsCheckboxAllMultiple3U: {
+                get: function () { return false;},
+                set: function (value) { this.currentAllStocksRpsU.data.forEach(item => { item.select3 = value; }); }
+            },
 
         },
         mounted() {

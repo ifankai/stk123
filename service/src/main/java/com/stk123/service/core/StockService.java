@@ -77,6 +77,8 @@ public class StockService {
     private StkStatusRepository stkStatusRepository;
     @Autowired
     private StkProperties stkProperties;
+    @Autowired
+    private StkHkMoneyRepository stkHkMoneyRepository;
 
 
     public List<Stock> buildStocks(EnumMarket market, EnumCate cate){
@@ -186,6 +188,22 @@ public class StockService {
                         if(flows == null) flows = Collections.EMPTY_LIST;
                         stock.setFlows(flows);
                         stock.buildCapitalFlow();
+                    });
+                    return subStocks;
+                });
+    }
+
+    public List<Stock> buildHkMoney(List<Stock> stocks, Date date){
+        String afterDate = CommonUtils.formatDate(date, CommonUtils.sf_ymd2);
+        return BaseRepository.findAll1000(stocks,
+                subStocks -> {
+                    List<String> codes = subStocks.stream().map(Stock::getCode).collect(Collectors.toList());
+                    Map<String, List<StkHkMoneyEntity>> map = stkHkMoneyRepository.getAllByCodeInAndMoneyDateGreaterThanEqualOrderByMoneyDateDesc(codes, afterDate);
+                    subStocks.forEach(stock -> {
+                        List<StkHkMoneyEntity> flows = map.get(stock.getCode());
+                        if(flows == null) flows = Collections.EMPTY_LIST;
+                        stock.setNorthFlows(flows);
+                        stock.buildHkMoney();
                     });
                     return subStocks;
                 });

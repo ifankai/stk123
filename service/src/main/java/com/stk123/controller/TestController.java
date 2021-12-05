@@ -75,8 +75,9 @@ public class TestController {
 //        stock.getBarSeries();
 //        System.out.println(stock.getBar().before(10).getChange(-7, Bar.EnumValue.C));
 
-        Stock stock = Stock.build("605167");
-        return RequestResult.success(stock.getPriceLimitUpCount());
+        Stock stock = Stock.build("600600");
+        stock.updateHkMoney();
+        return RequestResult.success();
     }
 
 

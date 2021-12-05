@@ -38,7 +38,7 @@ public class CookieController {
     @Autowired
     private StkDictionaryRepository stkDictionaryRepository;
 
-    private LinkedBlockingQueue<Cookie> iwencai = new LinkedBlockingQueue<>(100);
+    private LinkedBlockingQueue<Cookie> iwencai = new LinkedBlockingQueue<>(3000);
 
     public static Map<String, Cookie> COOKIE_MAP = null;
 

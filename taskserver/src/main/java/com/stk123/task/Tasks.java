@@ -95,27 +95,27 @@ public class Tasks {
     }
 
 
-    @Scheduled(cron = "0 10 16 ? * MON-FRI")
+    @Scheduled(cron = "0 30 16 ? * MON-FRI")
     public void initialKLine() {
         String reportDate = CommonUtils.formatDate(new Date(), CommonUtils.sf_ymd2);
         taskContainer.start(
-            TaskBuilder.of(BarTask.class, "clearAll"),
-            TaskBuilder.of(BarTask.class, "initCN"),
-            TaskBuilder.of(BarTask.class, "analyseCN"),
-            TaskBuilder.of(BarTask.class, "initHK"),
-            TaskBuilder.of(BarTask.class, "analyseHK"),
-            TaskBuilder.of(BarTask.class, "MyStocks", "report="+reportDate),
-            TaskBuilder.of(BarTask.class, "AllStocks", "report="+reportDate),
-            TaskBuilder.of(BarTask.class, "AllCNRps", "report="+reportDate),
-            TaskBuilder.of(BarTask.class, "AllHKRps", "report="+reportDate),
-            TaskBuilder.of(BarTask.class, "Bks", "report="+reportDate),
-            TaskBuilder.of(BarTask.class, "analyseCNRpsStocksByStrategies", "report="+reportDate),
-            TaskBuilder.of(BarTask.class, "analyseRpsStocksByStrategy15a", "report="+reportDate),
-            TaskBuilder.of(BarTask.class, "Mass", "report="+reportDate),
-            TaskBuilder.of(BarTask.class, "statAllStocks", "report="+reportDate)
-            //TaskBuilder.of(BarTask.class, "clearAll"),
-            //TaskBuilder.of(SyncTask.class, "table=stk_report_header"),
-            //TaskBuilder.of(SyncTask.class, "table=stk_report_detail")
+                TaskBuilder.of(BarTask.class, "clearAll"),
+                TaskBuilder.of(BarTask.class, "initCN"),
+                TaskBuilder.of(BarTask.class, "analyseCN"),
+                TaskBuilder.of(BarTask.class, "initHK"),
+                TaskBuilder.of(BarTask.class, "analyseHK"),
+                TaskBuilder.of(BarTask.class, "MyStocks", "report="+reportDate),
+                TaskBuilder.of(BarTask.class, "AllStocks", "report="+reportDate),
+                TaskBuilder.of(BarTask.class, "AllCNRps", "report="+reportDate),
+                TaskBuilder.of(BarTask.class, "AllHKRps", "report="+reportDate),
+                TaskBuilder.of(BarTask.class, "Bks", "report="+reportDate),
+                TaskBuilder.of(BarTask.class, "analyseCNRpsStocksByStrategies", "report="+reportDate),
+                TaskBuilder.of(BarTask.class, "analyseRpsStocksByStrategy15a", "report="+reportDate),
+                TaskBuilder.of(BarTask.class, "Mass", "report="+reportDate),
+                TaskBuilder.of(BarTask.class, "statAllStocks", "report="+reportDate)
+                //TaskBuilder.of(BarTask.class, "clearAll"),
+                //TaskBuilder.of(SyncTask.class, "table=stk_report_header"),
+                //TaskBuilder.of(SyncTask.class, "table=stk_report_detail")
         );
 
         TaskPpi.run(); //生意社

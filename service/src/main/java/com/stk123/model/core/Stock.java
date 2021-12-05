@@ -1,5 +1,6 @@
 package com.stk123.model.core;
 
+import cn.hutool.core.net.URLEncoder;
 import cn.hutool.core.util.ObjectUtil;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -44,6 +45,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.Charset;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -90,6 +92,8 @@ public class Stock {
     private StkStatusRepository stkStatusRepository;
     @Autowired
     private StkProperties stkProperties;
+    @Autowired
+    private StkHkMoneyRepository stkHkMoneyRepository;
 
 
     @JsonView({View.Default.class, View.Score.class})
@@ -161,6 +165,7 @@ public class Stock {
     private BarSeries barSeriesWeek;
     private BarSeries barSeriesMonth;
     private List<StkCapitalFlowEntity> flows; //资金流
+    private List<StkHkMoneyEntity> northFlows; //北向资金
 
     //是否包含今天最新的k线价格，用于交易时间实时监控
     private boolean isIncludeRealtimeBar = false;
@@ -800,6 +805,63 @@ public class Stock {
         }
     }
 
+    // https://datacenter-web.eastmoney.com/api/data/v1/get?callback=jQuery1638081908373&sortColumns=TRADE_DATE&sortTypes=-1&pageSize=50&pageNumber=1&reportName=RPT_MUTUAL_HOLDSTOCKNORTH_STA&columns=ALL&source=WEB&client=WEB&filter=(SECURITY_CODE=%22600600%22)(TRADE_DATE>=%272021-08-28%27)
+    public void updateHkMoney(){
+        log.info("updateHkMoney:"+code);
+        try {
+            long time = new Date().getTime();
+            String sdate = CommonUtils.formatDate(CommonUtils.addDay(new Date(), -30), CommonUtils.sf_ymd);
+            String filter = URLEncoder.createQuery().encode("(SECURITY_CODE=\""+this.code+"\")(TRADE_DATE>='"+sdate+"')", Charset.forName("utf-8"));
+            String url = "https://datacenter-web.eastmoney.com/api/data/v1/get?callback=jQuery"+time+"&sortColumns=TRADE_DATE&sortTypes=-1&pageSize=50&pageNumber=1&reportName=RPT_MUTUAL_HOLDSTOCKNORTH_STA&columns=ALL&source=WEB&client=WEB&filter="+filter;
+            String page = HttpUtils.get(url, null);
+            String json = org.apache.commons.lang.StringUtils.substringBetween(page, "jQuery" + time + "(", ");");
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map map = objectMapper.readValue(json, HashMap.class);
+            Map data = (Map) map.get("result");
+            if (data == null) return;
+            List<Map> list = (List<Map>) data.get("data");
+            for(Map item : list){
+                String date = (String)item.get("TRADE_DATE");
+                date = StringUtils.replace(StringUtils.substring(date, 0, 10), "-", "");
+                StkHkMoneyEntity stkHkMoneyEntity = stkHkMoneyRepository.findByCodeAndMoneyDate(this.code, date);
+                if(stkHkMoneyEntity == null) {
+                    double HOLD_SHARES = Double.parseDouble(String.valueOf(item.get("HOLD_SHARES")));
+                    double HOLD_MARKET_CAP = Double.parseDouble(String.valueOf(item.get("HOLD_MARKET_CAP")));
+                    double HOLD_SHARES_RATIO = Double.parseDouble(String.valueOf(item.get("HOLD_SHARES_RATIO")));
+
+                    stkHkMoneyEntity = new StkHkMoneyEntity();
+                    stkHkMoneyEntity.setCode(code);
+                    stkHkMoneyEntity.setMoneyDate(date);
+                    stkHkMoneyEntity.setHoldingVolume(HOLD_SHARES);
+                    stkHkMoneyEntity.setHoldingAmount(HOLD_MARKET_CAP);
+                    stkHkMoneyEntity.setHoldingRate(HOLD_SHARES_RATIO);
+                    stkHkMoneyRepository.save(stkHkMoneyEntity);
+                }
+            }
+
+        }catch (Exception e){
+            log.error("updateHkMoney error:"+code, e);
+        }
+    }
+
+    public void buildHkMoney(){
+        if(northFlows == null) {
+            this.northFlows = stkHkMoneyRepository.findTop60ByCodeOrderByMoneyDateDesc(this.getCode());
+        }
+        if(this.barSeries != null){
+            for(StkHkMoneyEntity flowEntity : this.northFlows) {
+                Bar bar = this.barSeries.getBar(flowEntity.getMoneyDate());
+                bar.setNorthFlowAmount(flowEntity.getHoldingAmount());
+                bar.setNorthFlowRate(flowEntity.getHoldingRate());
+            }
+        }
+    }
+
+    public List<StkHkMoneyEntity> getNorthFlows(){
+        this.buildHkMoney();
+        return this.northFlows;
+    }
 
     public synchronized List<StkIndustryEntity> getIndustries(){
         if(industries == null){
@@ -1162,7 +1224,7 @@ public class Stock {
             if(sr.getPercentile() >= 90){ //板块rps强度大于90百分位，则加10分
                 this.tags.add(Tag.builder()
                         .name("RPS["+sr.getStock().getNameWithLink()+"]"+CommonUtils.numberFormat2Digits(sr.getPercentile())).value(sr.getPercentile())
-                        .detail("RPS["+sr.getStock().getNameAndCode()+"]"+sr.getPercentile()).displayOrder(100).build());
+                        .detail("RPS["+sr.getStock().getNameAndCode()+"]"+CommonUtils.numberFormat2Digits(sr.getPercentile())).displayOrder(100).build());
                 return 15;
             }else if(sr.getPercentile() >= 80){
                 this.tags.add(Tag.builder()
@@ -1288,6 +1350,18 @@ public class Stock {
         int cnt = (int) flows.stream().filter(flow -> flow.getMainPercent() != null).limit(10).filter(flow -> flow.getMainPercent() >= 1).count();
         if(cnt >= 5){
             score += 5;
+        }
+        List<StkHkMoneyEntity> northFlows = this.getNorthFlows();
+        if(!northFlows.isEmpty() && northFlows.size() >= 20) {
+            StkHkMoneyEntity north = northFlows.get(0);
+            StkHkMoneyEntity north20 = northFlows.get(19);
+            if(north.getHoldingRate() >= 2){
+                if(north.getHoldingRate() > north20.getHoldingRate()) { //北向资金20天流入
+                    score += 10;
+                    this.tags.add(Tag.builder().name("北向资金流入[" + north.getHoldingRate() + "%]").value(north.getHoldingRate())
+                            .detail("北向资金流入[" + north.getHoldingRate() + "%]").build());
+                }
+            }
         }
         return score;
     }
