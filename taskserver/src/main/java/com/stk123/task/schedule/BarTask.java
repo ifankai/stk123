@@ -35,6 +35,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.apachecommons.CommonsLog;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.htmlparser.tags.TableTag;
@@ -792,7 +793,7 @@ public class BarTask extends AbstractTask {
     public void analyseAllCNRps(){
         log.info("start analyseAllCNRps");
         try {
-            String reportDateStart7 = CommonUtils.addDay2String(new Date(), -7);
+            String reportDateStart7 = CommonUtils.formatDate(CommonUtils.addDayOfWorking(new Date(), -3), CommonUtils.sf_ymd2);
             String reportDateStart30 = CommonUtils.addDay2String(new Date(), -30);
             String reportDateEnd = CommonUtils.addDay2String(new Date(), -1);
 
@@ -805,11 +806,11 @@ public class BarTask extends AbstractTask {
             StkReportHeaderEntity stkReportHeaderEntity = null;
             List<Stock> stocks = Cache.getStocksWithBks();
 
-            //stocks = StockService.filterByMarketCap(stocks, 50);
-            stocks = StockService.filterByFn(stocks);
+            stocks = StockService.filterByMarketCap(stocks, 30);
+            //stocks = StockService.filterByFn(stocks);
             stocks = StockService.filterByStatusExclude(stocks);
             // 15天涨幅大于 60% 的过滤掉
-            stocks = StockService.filterByBarChange(stocks,15, 50); //排除3周大于50
+            stocks = StockService.filterByBarChange(stocks,15, 40); //排除3周大于50
             stocks = StockService.filterByBarChange(stocks,80, 150); //排除3个月大于150
             stocks = StockService.filterByBarChange(stocks,360, 300); //排除一年半大于3倍
 
@@ -836,14 +837,24 @@ public class BarTask extends AbstractTask {
                 List<Stock> results = new ArrayList<>();
                 List<Stock> resultsGreaterThan3 = new ArrayList<>();
                 int cap20 = 15;
-                int cap30 = 60;
-                int cap100 = 50;
-                int cap200 = 30;
-                int cap500 = 20;
+                int cap30 = 80;
+                int cap100 = 55;
+                int cap200 = 35;
+                int cap500 = 25;
                 int total = (cap20+cap30+cap100+cap200+cap500);
+
+                List<String> exclude = null;
+                String rpsExclude = Strategies.RPS_EXCLUDE.get(rpsStrategy.getCode());
+                if(rpsExclude != null && StringUtils.isNotEmpty(report)){
+                    List<StkReportDetailEntity> detailEntities = stkReportDetailRepository.findAllByStrategyDateAndStrategyCodeIn(report, Arrays.stream(StringUtils.split(rpsExclude, ",")).collect(Collectors.toList()));
+                    exclude = detailEntities.stream().flatMap(detail -> Arrays.stream(StringUtils.split(detail.getRpsStockCode(), ","))).collect(Collectors.toList());
+                }
 
                 for(StrategyResult sr : rpsSrs){
                     Stock stock = sr.getStock();
+                    if(CollectionUtils.isNotEmpty(exclude) && exclude.contains(stock.getCode())){
+                        continue;
+                    }
                     if(rpsVolume.contains(rpsStrategy.getCode()) && sr.getSortableValue() >= 3 && resultsGreaterThan3.size() < total){
                         resultsGreaterThan3.add(stock);
                     }
@@ -927,7 +938,7 @@ public class BarTask extends AbstractTask {
     public void analyseAllHKRps(){
         log.info("start analyseAllHKRps");
         try {
-            String reportDateStart7 = CommonUtils.addDay2String(new Date(), -7);
+            String reportDateStart7 = CommonUtils.formatDate(CommonUtils.addDayOfWorking(new Date(), -4), CommonUtils.sf_ymd2);
             String reportDateStart30 = CommonUtils.addDay2String(new Date(), -30);
             String reportDateEnd = CommonUtils.addDay2String(new Date(), -1);
 
@@ -976,8 +987,18 @@ public class BarTask extends AbstractTask {
                 int cap500 = 15;
                 int total = (cap20+cap30+cap100+cap200+cap500);
 
+                List<String> exclude = null;
+                String rpsExclude = Strategies.RPS_EXCLUDE.get(rpsStrategy.getCode());
+                if(rpsExclude != null && StringUtils.isNotEmpty(report)){
+                    List<StkReportDetailEntity> detailEntities = stkReportDetailRepository.findAllByStrategyDateAndStrategyCodeIn(report, Arrays.stream(StringUtils.split(rpsExclude, ",")).collect(Collectors.toList()));
+                    exclude = detailEntities.stream().flatMap(detail -> Arrays.stream(StringUtils.split(detail.getRpsStockCode(), ","))).collect(Collectors.toList());
+                }
+
                 for(StrategyResult sr : rpsSrs){
                     Stock stock = sr.getStock();
+                    if(CollectionUtils.isNotEmpty(exclude) && exclude.contains(stock.getCode())){
+                        continue;
+                    }
                     if(rpsVolume.contains(rpsStrategy.getCode()) && sr.getSortableValue() >= 3 && resultsGreaterThan5.size() < total){
                         resultsGreaterThan5.add(stock);
                     }

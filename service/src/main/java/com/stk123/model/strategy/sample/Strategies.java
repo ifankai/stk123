@@ -54,6 +54,16 @@ public class Strategies {
     //可以取到量能放大倍数的rps
     public static String RPS_VOLUME = "rps_09a,rps_09,rps_10a,rps_10,rps_11a,rps_11,rps_06a,rps_06b,rps_07,rps_13,rps_08,rps_05,rps_15,rps_04,rps_12";
 
+    //排除当天小周期重复的股票
+    public static HashMap<String, String> RPS_EXCLUDE = new HashMap<String, String>(){{
+        put(Rps.CODE_STOCK_DAY_2_VOLUME, Rps.CODE_STOCK_DAY_1_VOLUME); // 2天量能
+        put(Rps.CODE_STOCK_DAY_3_VOLUME, Rps.CODE_STOCK_DAY_1_VOLUME+","+Rps.CODE_STOCK_DAY_2_VOLUME); // 3天量能
+        put(Rps.CODE_STOCK_WEEK_1_VOLUME_A, Rps.CODE_STOCK_DAY_1_VOLUME+","+Rps.CODE_STOCK_DAY_2_VOLUME+","+Rps.CODE_STOCK_DAY_3_VOLUME); // 5天量能
+        put(Rps.CODE_STOCK_WEEK_2_VOLUME, Rps.CODE_STOCK_DAY_1_VOLUME+","+Rps.CODE_STOCK_DAY_2_VOLUME+","+Rps.CODE_STOCK_DAY_3_VOLUME+","+Rps.CODE_STOCK_WEEK_1_VOLUME_A); // 10天量能
+        put(Rps.CODE_STOCK_WEEK_3_VOLUME, Rps.CODE_STOCK_DAY_1_VOLUME+","+Rps.CODE_STOCK_DAY_2_VOLUME+","+Rps.CODE_STOCK_DAY_3_VOLUME+","+Rps.CODE_STOCK_WEEK_1_VOLUME_A+","+Rps.CODE_STOCK_WEEK_2_VOLUME); // 15天量能
+        put(Rps.CODE_STOCK_MONTH_1_VOLUME, Rps.CODE_STOCK_DAY_1_VOLUME+","+Rps.CODE_STOCK_DAY_2_VOLUME+","+Rps.CODE_STOCK_DAY_3_VOLUME+","+Rps.CODE_STOCK_WEEK_1_VOLUME_A+","+Rps.CODE_STOCK_WEEK_2_VOLUME+","+Rps.CODE_STOCK_WEEK_3_VOLUME); // 20天量能
+    }};
+
     private static Map<String, Strategy> CODE_STRATEGY = new HashMap<>();
 
     static{
@@ -419,7 +429,7 @@ public class Strategies {
     }
     private static Strategy strategy_08(String code, String name, int turningPoint) {
         Strategy<Stock> strategy = new Strategy<>(code, name, Stock.class);
-        strategy.setSortable(20).setCanTestHistory(false);
+        strategy.setSortable(30).setCanTestHistory(false);
 
         Filter<Stock> filter = (strg, stock) -> {
             Bar bar = stock.getBar();

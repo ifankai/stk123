@@ -2,6 +2,7 @@ package com.stk123.task;
 
 import com.stk123.common.CommonUtils;
 import com.stk123.common.util.WeatherUtils;
+import com.stk123.service.XueqiuService;
 import com.stk123.service.task.TaskBuilder;
 import com.stk123.service.task.TaskContainer;
 import com.stk123.task.config.TaskCondition;

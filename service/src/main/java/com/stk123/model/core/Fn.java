@@ -7,6 +7,7 @@ import com.stk123.entity.StkFnDataEntity;
 import com.stk123.entity.StkFnTypeEntity;
 import com.stk123.model.json.View;
 import com.stk123.util.ServiceUtils;
+import jnr.ffi.annotations.In;
 import lombok.Data;
 import org.apache.commons.lang.StringUtils;
 
@@ -62,9 +63,28 @@ public class Fn {
             if(fnData.getDispValue() == null){
                 fnData.setDispValue(fnData.getValue() == null ? "-" : CommonUtils.numberFormat2Digits(fnData.getValue()));
             }
+            if(fnData.getType().getReCalc() != null && fnData.getValue() == null){
+                FnData fnData1 = table.get(fnData.getDate(), Integer.valueOf(fnData.getType().getReCalc()));
+                int year = Integer.parseInt(StringUtils.substring(fnData.getDate(), 0, 4)) - 1;
+                FnData fnData2 = table.get(year+StringUtils.substring(fnData.getDate(), 4, 8), Integer.valueOf(fnData.getType().getReCalc()));
+
+                if(fnData1 != null && fnData2 != null) {
+                    if (fnData1.getValue() > 0 && fnData2.getValue() < 0) {
+                        fnData.setDispValue("扭亏");
+                    } else if (fnData1.getValue() < 0 && fnData2.getValue() > 0) {
+                        fnData.setDispValue("转亏");
+                    } else if (fnData1.getValue() > 0 && fnData2.getValue() > 0 && fnData.getValue() == null) {
+                        fnData.setValue(CommonUtils.numberFormat((fnData1.getValue() - fnData2.getValue()) / fnData2.getValue() * 100, 2));
+                        fnData.setDispValue(fnData.getValue().toString());
+                    }
+                }
+            }
         }
     }
 
+    public FnData getFnValueByType(Integer type){
+        return this.table.column(type).values().stream().findFirst().orElse(null);
+    }
     public Double getValueByType(Integer type){
         FnData fnData = this.table.column(type).values().stream().findFirst().orElse(null);
         if(fnData == null || fnData.getValue() == null) return null;

@@ -210,6 +210,23 @@
                                                         </p>
                                                     </div>
                                                 </template>
+
+                                                <template v-else-if="result.subType === '110'">
+                                                    <div class="search-title">
+                                                        <div v-if="result.title != null">
+                                                            <div class="title">
+                                                                <span class="search-type" v-text="'['+result.subTypeName+'] '"></span><a v-html="result.title" :href="result.source" target="_blank"></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <p>
+                                                            <span v-text="tsFormat(result.insertTime)" class="search-time"></span>
+                                                            <i v-if="result.content" @click="openModalDetail(result)" class="fal fa-file" title="查看详情" data-toggle="modal" :data-target="'#modal-'+result.id"></i>
+                                                        </p>
+                                                    </div>
+                                                </template>
+
                                                 <template v-else>
                                                     <div class="search-title">
                                                         <div v-if="result.title != null">
@@ -344,6 +361,7 @@
             },
             search:async function (page) {
                 this.results = await _search(keyword, page, this.type)
+                console.log('results', this.results)
             },
             searchByType:function (type) {
                 this.type = type;

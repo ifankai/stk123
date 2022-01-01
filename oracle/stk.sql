@@ -3194,9 +3194,10 @@ select * from (select * from stk_kline_hk where code='999999' order by kline_dat
 select * from stk_capital_flow where code='600638' order by flow_date desc;
 
 select * from stk_report_header order by insert_time desc;
+select * from stk_report_header where type='bks' order by insert_time desc;
 select * from stk_report_detail order by strategy_date desc, id desc;
 select * from stk_report_detail where strategy_code='strategy_08a' order by strategy_date desc, id desc;
-select * from stk_report_detail where header_id=11741;
+select * from stk_report_detail where header_id=12009;
 
 select * from stk_report_header order by insert_time desc;
 select * from stk_report_detail where header_id=11502 and rps_stock_code like '%002666%';
@@ -3231,6 +3232,7 @@ insert into stk_trade_strategy select s_trade_strategy_id.nextval,'600600','2021
 
 select * from stk where cate=5 and name like '%电子%';
 select * from stk_industry_type where code='BK0865';
+select * from stk_industry_type where code in ('BK1050','BK1052','BK1051','BK0883','BK1034','BK0914','BK0987','BK0479','BK0734','BK0918','BK0728','BK0739','BK0427','BK0556','BK0978','BK0979','BK0926','BK0873','BK0595','BK0519');
 select * from stk_industry where industry=124977;
 
 select * from stk_organization where name like '%����%';
@@ -3244,4 +3246,4 @@ select * from stk_capital_flow
 select * from stk_hk_money order by money_date desc;
 code=000761, klineDate=20210810
 select * from stk_kline where code='600281' order by kline_date desc;
-select * from stk_kline_hk where code='01873' order by kline_date desc;
+select * from stk_kline_hk where code='03320' order by kline_date desc;

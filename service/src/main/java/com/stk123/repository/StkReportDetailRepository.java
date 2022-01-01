@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.Date;
+import java.util.List;
 
 @Repository
 public interface StkReportDetailRepository extends JpaRepository<StkReportDetailEntity, Integer> {
@@ -20,4 +21,7 @@ public interface StkReportDetailRepository extends JpaRepository<StkReportDetail
     void updateCheckedById(@Param("id") Integer id, @Param("date") Date date);
 
     StkReportDetailEntity findTopByStrategyCodeOrderByIdDesc(String strategyCode);
+
+    List<StkReportDetailEntity> findAllByStrategyDateAndStrategyCodeIn(String strategyDate, List<String> strategyCodes);
+
 }

@@ -88,6 +88,7 @@ public class TaskContainer {
                 final String id = tasksSucc.get(i).getId();
                 this.tasks.removeIf(task1 -> task1.getId().equals(id));
             }
+            
             List<Task> tasksFail = tasks.stream().filter(task1 -> task1.getTaskResult()!=null && !task1.getTaskResult().getSuccess()).collect(Collectors.toList());
             tasksSucc.sort(Comparator.comparingLong(Task::getEndTimeToLong));
             for (int i=0; i<tasksFail.size()-1; i++) {

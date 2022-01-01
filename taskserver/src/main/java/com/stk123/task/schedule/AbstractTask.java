@@ -1,11 +1,7 @@
 package com.stk123.task.schedule;
 
-import com.stk123.model.core.Stock;
 import com.stk123.model.enumeration.EnumMarket;
 import com.stk123.service.task.Task;
-import com.stk123.task.tool.TaskUtils;
-import lombok.Setter;
-import lombok.extern.apachecommons.CommonsLog;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;

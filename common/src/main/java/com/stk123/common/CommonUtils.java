@@ -164,7 +164,7 @@ public class CommonUtils {
 
         System.out.println(CommonUtils.getDayOfWeek("20161015"));
 
-        System.out.println(CommonUtils.addDayOfWorking(now, -6));
+        System.out.println("addDayOfWorking="+CommonUtils.addDayOfWorking(now, -6));
 
         System.out.println(CommonUtils.getMatchString("非公开发行股票发行情况报告书", "非公开发行.{0,15}(报告|公告)"));
         System.out.println(CommonUtils.getMatchString("关于公司发行股份及支付现金购买资产并募集配套资金获得中国证券监督管理委员会正式批复的公告", "获得中国(证监会|证券监督).{0,10}(核准|审核|批复)"));

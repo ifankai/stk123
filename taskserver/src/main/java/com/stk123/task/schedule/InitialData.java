@@ -1458,8 +1458,8 @@ public class InitialData {
 								if(obj != null){
 									fnValue = StringUtils.replace(StringUtils.replace(String.valueOf(obj),",",""),"--","");
 								}
-								if(fnValue == null || fnValue.length() == 0)continue;
-								if(!"1".equals(fnEntry.getKey())){
+								//if(fnValue == null || fnValue.length() == 0)continue;
+								if(!"1".equals(fnEntry.getKey()) && fnValue != null){
 									fnValue = String.valueOf(Double.parseDouble(fnValue) * 10000);
 								}
 								params.clear();
@@ -1552,8 +1552,8 @@ public class InitialData {
 							if(obj != null){
 								fnValue = StringUtils.replace(StringUtils.replace(String.valueOf(obj),",",""),"--","");
 							}
-							if(fnValue == null || fnValue.length() == 0)continue;
-							if(!"1".equals(fnEntry.getKey())){
+							//if(fnValue == null || fnValue.length() == 0)continue;
+							if(!"1".equals(fnEntry.getKey()) && fnValue != null){
 								fnValue = String.valueOf(Double.parseDouble(fnValue) * 10000);
 							}
 							params.clear();

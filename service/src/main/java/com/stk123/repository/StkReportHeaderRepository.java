@@ -27,5 +27,5 @@ public interface StkReportHeaderRepository extends JpaRepository<StkReportHeader
 
     List<StkReportHeaderEntity> findAllByTypeAndReportDate(String type, String reportDate);
 
-    StkReportHeaderEntity findTopByType(String type);
+    StkReportHeaderEntity findTopByTypeOrderByReportDateDesc(String type);
 }

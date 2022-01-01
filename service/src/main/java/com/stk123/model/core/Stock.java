@@ -1211,16 +1211,16 @@ public class Stock {
 
     public int getScoreByBk(){
         if(this.bks != null){
-            StrategyResult sr = this.getMaxBkRpsInBks(Rps.CODE_BK_60);
-            if(sr == null) return 0;
             List<String> reportHotBks = Cache.getReportHotBks();
             if(reportHotBks != null) {
-                List<Stock> hotBks = this.bks.stream().filter(bk -> reportHotBks.contains(bk.getCode())).collect(Collectors.toList());
+                List<Stock> hotBks = this.getBks().stream().filter(bk -> reportHotBks.contains(bk.getCode())).collect(Collectors.toList());
                 for(Stock bk : hotBks){
                     this.tags.add(Tag.builder()
                             .name("Rpt["+bk.getNameWithLink()+"]").detail("Rpt["+bk.getNameAndCode()+"]").displayOrder(99).build());
                 }
             }
+            StrategyResult sr = this.getMaxBkRpsInBks(Rps.CODE_BK_60);
+            if(sr == null) return 0;
             if(sr.getPercentile() >= 90){ //板块rps强度大于90百分位，则加10分
                 this.tags.add(Tag.builder()
                         .name("RPS["+sr.getStock().getNameWithLink()+"]"+CommonUtils.numberFormat2Digits(sr.getPercentile())).value(sr.getPercentile())
@@ -1371,34 +1371,35 @@ public class Stock {
         Fn fn = this.getFn();
         Double a = fn.getValueByType(StkConstant.FN_TYPE_110); //主营业务收入增长率(%)
         if(a != null){
-            if(a >= 30) {
-                score += 3;
-            }else if(a >= 50) {
-                score += 5;
+            if(a >= 30) score += 3;
+            if(a >= 50) score += 5;
+            if(a >= 100) score += 5;
+            if(a >= 50){
                 this.tags.add(Tag.builder().name("主营增长"+CommonUtils.numberFormat2Digits(a)+"%").value(a)
                         .detail("主营业务收入增长率"+CommonUtils.numberFormat2Digits(a)+"%").displayOrder(79).build());
-            }else if(a >= 100) {
-                score += 10;
             }
         }
         a = fn.getValueByType(StkConstant.FN_TYPE_111); //净利润增长率(%)
         if(a != null){
             if(a >= 30) score += 3;
-            else if(a >= 50) {
-                score += 5;
-            }
-            else if(a >= 100) score += 10;
+            if(a >= 50) score += 5;
+            if(a >= 100) score += 5;
             if(a >= 35){
                 this.tags.add(Tag.builder().name("净利增长"+CommonUtils.numberFormat2Digits(a)+"%").value(a)
                         .detail("净利润增长率"+CommonUtils.numberFormat2Digits(a)+"%").displayOrder(78).build());
             }
         }
+        Fn.FnData fnData = fn.getFnValueByType(StkConstant.FN_TYPE_111);
+        if(fnData != null && "扭亏".equals(fnData.getDispValue())){
+            score += 10;
+            this.tags.add(Tag.builder().name("扭亏").value(a)
+                    .detail("扭亏").displayOrder(78).build());
+        }
+
         a = fn.getValueByType(StkConstant.FN_TYPE_106); //销售毛利率(%)
         if(a != null){
             if(a >= 30) score += 3;
-            else if(a >= 50) {
-                score += 5;
-            }
+            if(a >= 50) score += 5;
             if(a >= 35){
                 this.tags.add(Tag.builder().name("毛利率"+CommonUtils.numberFormat2Digits(a)+"%").value(a)
                         .detail("毛利率"+CommonUtils.numberFormat2Digits(a)+"%").displayOrder(77).build());

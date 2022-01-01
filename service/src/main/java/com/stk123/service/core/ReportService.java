@@ -326,8 +326,8 @@ public class ReportService {
     }
 
     public List<String> getHotBks(){
-        StkReportHeaderEntity reportHeader = stkReportHeaderRepository.findTopByType(StkConstant.REPORT_HEADER_TYPE_BKS);
-        return reportHeader.getStkReportDetailEntities().stream().filter(stkReportDetailEntity -> StringUtils.startsWith(stkReportDetailEntity.getStrategyCode(), "strategy_08")).map(StkReportDetailEntity::getCode).collect(Collectors.toList());
+        StkReportHeaderEntity reportHeader = stkReportHeaderRepository.findTopByTypeOrderByReportDateDesc(StkConstant.REPORT_HEADER_TYPE_BKS);
+        return reportHeader.getStkReportDetailEntities().stream().filter(stkReportDetailEntity -> StringUtils.startsWith(stkReportDetailEntity.getStrategyCode(), "strategy_08")).map(StkReportDetailEntity::getCode).distinct().collect(Collectors.toList());
     }
 
 }

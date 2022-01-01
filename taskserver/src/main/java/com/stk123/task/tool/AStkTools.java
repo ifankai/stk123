@@ -55,7 +55,7 @@ public class AStkTools {
 
 
 			List<String> result = new ArrayList<String>();
-			String codes = "603305";
+			String codes = "002750";
 			String sql = null;
 			if(codes != null && codes.length() > 0){
 				sql = "select code,name from stk where market=1 and code in ('"+codes+"') order by code";
