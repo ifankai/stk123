@@ -4,12 +4,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.stk123.common.util.HtmlUtils;
 import com.stk123.model.core.Stock;
 import com.stk123.model.projection.StockBasicProjection;
 import com.stk123.util.ik.StringSimilarUtils;
@@ -19,12 +22,14 @@ import com.stk123.common.db.util.DBUtil;
 import com.stk123.common.util.CommonHttpUtils;
 import lombok.SneakyThrows;
 import lombok.extern.apachecommons.CommonsLog;
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpState;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpClientParams;
+import org.htmlparser.Node;
 
 @CommonsLog
 public class HttpUtils extends CommonHttpUtils {
@@ -134,26 +139,23 @@ public class HttpUtils extends CommonHttpUtils {
     @SneakyThrows
     //cost:29
     public static void main(String[] args) {
-        long time = System.currentTimeMillis();
-        final CountDownLatch countDownLatch = new CountDownLatch(10);
-        ExecutorService exec = Executors.newFixedThreadPool(5);
-        for(int i=0;i < 10; i++) {
-            Runnable run = () -> {
-                try{
-                    String page = CommonHttpUtils.get("http://push2his.eastmoney.com/api/qt/stock/kline/get?cb=&fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61&ut=7eea3edcaed734bea9cbfc24409ed989&klt=5&fqt=1&secid=1.600600&beg=0&end=20500000&_=1634699093630");
-                    System.out.println(page);
-                }catch(Exception e){
-                    log.error("initKLines", e);
-                }finally{
-                    countDownLatch.countDown();
-                }
-            };
-            exec.execute(run);
-        }
-        exec.shutdown();
-        countDownLatch.await();
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("gjc", "润建股份");
+        params.put("sslb", "1");
+        params.put("sjfw", "24");
+        params.put("ys", "1");
+        params.put("cxzd", "bt");
+        params.put("px", "sj");
+        Map<String, String> requestHeaders = new HashMap<String, String>();
+        requestHeaders.put("X-Requested-With", "XMLHttpRequest");
+        requestHeaders.put("Cookie", "safedog-flow-item=741F60543E3740526436D199331BB62D; UM_distinctid=17e195f8b7c9c-068b01d9c77f0b-3e604809-1fa400-17e195f8b7dcd9; c=; ASPSESSIONIDSSRQTRSQ=PBPNBJJAEAFFICLBNJJCJDPG; Hm_lvt_d554f0f6d738d9e505c72769d450253d=1641103199; robih=2TdX5UjYnX6T1U; MBpermission=0; MBname=ifankai; ASPSESSIONIDAADAACBB=HOLBPAKACINGDIFAJEIHKOHO; CNZZDATA1752123=cnzz_eid%3D927885274-1641095534-%26ntime%3D1641101658; Hm_lpvt_d554f0f6d738d9e505c72769d450253d=1641103887");
+        List<Header> respHeaders = new ArrayList<Header>();
+        String page = HttpUtils.post("http://www.hibor.com.cn/newweb/HuiSou/sa",params, requestHeaders, "UTF-8", respHeaders);
+        System.out.println(page);
+        List<Node> items = HtmlUtils.getNodeListByTagNameAndAttribute(page, null, "div", "class", "result-dataitem");
+        for(Node node : items){
 
-        System.out.println("cost:"+ (System.currentTimeMillis() - time) / 1000);
+        }
     }
 
 }

@@ -413,6 +413,7 @@ alter table stk_pe add constraint pk_pe primary key (report_date);
 alter table stk_pe add stock_count number(8);
 alter table stk_pe add string_1 varchar2(1000);
 alter table stk_pe add string_2 varchar2(1000);
+alter table stk_pe add string_3 varchar2(2000);
 
 
 create table stk_earnings_forecast(
@@ -3197,13 +3198,14 @@ select * from stk_report_header order by insert_time desc;
 select * from stk_report_header where type='bks' order by insert_time desc;
 select * from stk_report_detail order by strategy_date desc, id desc;
 select * from stk_report_detail where strategy_code='strategy_08a' order by strategy_date desc, id desc;
-select * from stk_report_detail where header_id=12009;
+select * from stk_report_detail where header_id=12241;
+select * from stk_report_detail where output_2 like '%BK1040%';
 
 select * from stk_report_header order by insert_time desc;
 select * from stk_report_detail where header_id=11502 and rps_stock_code like '%002666%';
 
-delete from stk_report_detail where header_id in (select id from stk_report_header where report_date='20211123');
-delete from stk_report_header where report_date='20211123';
+delete from stk_report_detail where header_id in (select id from stk_report_header where report_date='20220106');
+delete from stk_report_header where report_date='20220106';
 
 delete from stk_report_detail where header_id = 11737;
 delete from stk_report_header where id=11737;
@@ -3247,3 +3249,10 @@ select * from stk_hk_money order by money_date desc;
 code=000761, klineDate=20210810
 select * from stk_kline where code='600281' order by kline_date desc;
 select * from stk_kline_hk where code='03320' order by kline_date desc;
+
+select * from stk_fn_type where market=1;
+select * from stk_fn_data where code='600600' and type=121 order by fn_date desc;
+select * from stk_text where code='002929' order by insert_time desc;
+select * from stk_text where sub_type= 100  order by insert_time desc;
+
+select * from stk_dictionary where type=2000 for update;

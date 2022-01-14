@@ -259,7 +259,16 @@
                                 </div>
                             </div>
                             <!-- /.card-body -->
-                            <div class="card-footer"></div>
+                            <div class="card-footer">
+                                <table v-if="isBk">
+                                    <tr>
+                                        <th class="text-center">日线</th><th class="text-center">周线</th><th class="text-center">月线</th>
+                                    </tr>
+                                    <tr>
+                                        <td v-html="bk.dayBarImage"></td><td v-html="bk.weekBarImage"></td><td v-html="bk.monthBarImage"></td>
+                                    </tr>
+                                </table>
+                            </div>
                             <!-- /.card-footer-->
                         </div>
                         <!-- /.card -->
@@ -735,6 +744,9 @@
                     }
                     this.niusanSelected = selected;
                 }
+            },
+            isBk: function (){
+                return codeType === 'bk';
             }
         },
         mounted() {
@@ -751,6 +763,12 @@
             axios.get("/dict/detail/20").then(function(res){
                 _this.common.niusans = res.data.data;
             });
+
+            if(this.isBk){
+                axios.get("/bk/info/" + code).then(function (res) {
+                    _this.bk = res.data.data;
+                });
+            }
 
             if('stock' === codeType) {
                 axios.post("/stock/post", {code: code}).then(function (res) {

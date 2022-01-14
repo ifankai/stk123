@@ -496,7 +496,7 @@ public class BarTask extends AbstractTask {
                 addStocks(allList, myList, "自选股");
 
                 //雪球组合
-                List<Portfolio> portfolios = XueqiuService.getPortfolios("6237744859");
+                /*List<Portfolio> portfolios = XueqiuService.getPortfolios("6237744859");
                 int k = 1;
                 for (Portfolio portfolio : portfolios) {
                     log.info(portfolio);
@@ -523,7 +523,7 @@ public class BarTask extends AbstractTask {
                     String[] suid = StringUtils.split(uid, ",");
                     List<String> xqOtherStks = XueqiuService.getFollowStksByUid(suid[0]);
                     addStocks(allList, xqOtherStks, CommonUtils.wrapLink(suid[1], "https://xueqiu.com/u/"+suid[0]));
-                }
+                }*/
 
                 //成长股
                 /*List<StkIndustryEntity> inds = stkIndustryRepository.findAllByIndustry(1783);
@@ -539,7 +539,7 @@ public class BarTask extends AbstractTask {
                 log.info("反转股个数："+tmpStocks.size());
                 addStocks(allList, tmpStocks.stream().map(Stock::getCode).collect(Collectors.toSet()), "反转股");*/
 
-                allList = allList.stream().filter(stockWrapper -> !excludeList.contains(stockWrapper.getCode())).collect(Collectors.toSet());
+                //allList = allList.stream().filter(stockWrapper -> !excludeList.contains(stockWrapper.getCode())).collect(Collectors.toSet());
 
                 if(!allList.isEmpty()){
                     StkPeEntity stkPeEntity = stkPeRepository.findFirstByReportDate(report);
@@ -807,7 +807,7 @@ public class BarTask extends AbstractTask {
             List<Stock> stocks = Cache.getStocksWithBks();
 
             stocks = StockService.filterByMarketCap(stocks, 30);
-            //stocks = StockService.filterByFn(stocks);
+            stocks = StockService.filterByFn(stocks);
             stocks = StockService.filterByStatusExclude(stocks);
             // 15天涨幅大于 60% 的过滤掉
             stocks = StockService.filterByBarChange(stocks,15, 40); //排除3周大于50
@@ -1622,6 +1622,7 @@ public class BarTask extends AbstractTask {
             entity.setResult5((double)priceLimitUp2.size());
             entity.setResult6((double)priceLimitUp3.size());
             entity.setResult7((double)priceLimitUp4.size());
+            entity.setString3(priceLimitUp2.stream().map(Stock::getCode).collect(Collectors.joining(",")));
             entity.setString1(priceLimitUp3.stream().map(Stock::getCode).collect(Collectors.joining(",")));
             entity.setString2(priceLimitUp4.stream().sorted(Comparator.comparing(Stock::getPriceLimitUpCount, Comparator.reverseOrder())).map(stock -> stock.getCode()+'|'+stock.getPriceLimitUpCount()).collect(Collectors.joining(",")));
 

@@ -947,17 +947,17 @@ public class Stock {
         if(this.isMarketCN()) {
             if(this.isCateIndexEastmoneyGn()){
                 xueqiu = "https://xueqiu.com/k?q="+this.getName()+"#/stock";
-                return CommonUtils.wrapLink("<img class='img-bar lazyload' width='100%' "+(stkProperties.getBarImageLazyload()?"data-src":"src")+"='http://webquoteklinepic.eastmoney.com/GetPic.aspx?token=&nid=90."+this.getCodeWithPlace()+"&type="+period+"&unitWidth=-6&ef=&formula=MACD&imageType=KXL&_="+new Date().getTime()+"' />", xueqiu);
+                return CommonUtils.wrapLink("<img class='img-bar lazyload' width='100%' "+(stkProperties.getBarImageLazyload()?"data-src":"src")+"='http://webquoteklinepic.eastmoney.com/GetPic.aspx?token=&nid=90."+this.getCodeWithPlace()+"&type="+period+"&unitWidth=-5&ef=&formula=MACD&imageType=KXL&_="+new Date().getTime()+"' />", xueqiu);
             }
-            // http://webquoteklinepic.eastmoney.com/GetPic.aspx?nid=0.002020&UnitWidth=-6&imageType=KXL&EF=&Formula=MACD&AT=1&&type=W&token=&_=
-            return CommonUtils.wrapLink("<img class='img-bar lazyload' width='100%' "+(stkProperties.getBarImageLazyload()?"data-src":"src")+"='http://webquoteklinepic.eastmoney.com/GetPic.aspx?nid="+(this.isPlaceSH()?"1":"0")+"."+this.getCode()+"&UnitWidth=-6&imageType=KXL&EF=&Formula=MACD&AT=1&&type="+period+"&token=&_="+new Date().getTime()+"' />", xueqiu);
+            // http://webquoteklinepic.eastmoney.com/GetPic.aspx?nid=0.002020&UnitWidth=-5&imageType=KXL&EF=&Formula=MACD&AT=1&&type=W&token=&_=
+            return CommonUtils.wrapLink("<img class='img-bar lazyload' width='100%' "+(stkProperties.getBarImageLazyload()?"data-src":"src")+"='http://webquoteklinepic.eastmoney.com/GetPic.aspx?nid="+(this.isPlaceSH()?"1":"0")+"."+this.getCode()+"&UnitWidth=-5&imageType=KXL&EF=&Formula=MACD&AT=1&&type="+period+"&token=&_="+new Date().getTime()+"' />", xueqiu);
             //return CommonUtils.wrapLink("<img src='http://image.sinajs.cn/newchart/"+period+"/n/" + this.getCodeWithPlace().toLowerCase() + ".gif' />", xueqiu);
         }else if(this.isMarketHK()){
-            //http://webquoteklinepic.eastmoney.com/GetPic.aspx?nid=116.01812&UnitWidth=-6&imageType=KXL&EF=&Formula=MACD&AT=&&type=D&token=
-            return CommonUtils.wrapLink("<img class='img-bar lazyload' width='100%' "+(stkProperties.getBarImageLazyload()?"data-src":"src")+"='http://webquoteklinepic.eastmoney.com/GetPic.aspx?nid=116."+this.getCode()+"&UnitWidth=-6&imageType=KXL&EF=&Formula=MACD&AT=&&type="+period+"&token=' />", xueqiu);
+            //http://webquoteklinepic.eastmoney.com/GetPic.aspx?nid=116.01812&UnitWidth=-5&imageType=KXL&EF=&Formula=MACD&AT=&&type=D&token=
+            return CommonUtils.wrapLink("<img class='img-bar lazyload' width='100%' "+(stkProperties.getBarImageLazyload()?"data-src":"src")+"='http://webquoteklinepic.eastmoney.com/GetPic.aspx?nid=116."+this.getCode()+"&UnitWidth=-5&imageType=KXL&EF=&Formula=MACD&AT=&&type="+period+"&token=' />", xueqiu);
         }else if(this.isMarketUS()){
-            //http://webquoteklinepic.eastmoney.com/GetPic.aspx?token=&nid=105.JD&type=&unitWidth=-6&ef=&formula=RSI&imageType=KXL&_=1625985559783
-            //return CommonUtils.wrapLink("<img class='img-bar lazyload' width='100%' "+(stkProperties.getBarImageLazyload()?"data-src":"src")+"='http://webquoteklinepic.eastmoney.com/GetPic.aspx?token=&nid=105."+this.getCode()+"&type="+period+"&unitWidth=-6&ef=&formula=MACD&imageType=KXL&_="+new Date().getTime()+"' />", xueqiu);
+            //http://webquoteklinepic.eastmoney.com/GetPic.aspx?token=&nid=105.JD&type=&unitWidth=-5&ef=&formula=RSI&imageType=KXL&_=1625985559783
+            //return CommonUtils.wrapLink("<img class='img-bar lazyload' width='100%' "+(stkProperties.getBarImageLazyload()?"data-src":"src")+"='http://webquoteklinepic.eastmoney.com/GetPic.aspx?token=&nid=105."+this.getCode()+"&type="+period+"&unitWidth=-5&ef=&formula=MACD&imageType=KXL&_="+new Date().getTime()+"' />", xueqiu);
 
             //http://image.sinajs.cn/newchart/usstock/daily/rblx.gif?1636610069278
             if("D".equals(period)){

@@ -13,6 +13,7 @@ import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -45,6 +46,14 @@ public class BkController {
         List<StrategyResult> strategyResults = stockService.calcRps(stocks, rpsCode);
         Map result = stockService.getStrategyResultAsMap(strategyResults);
         return RequestResult.success(result);
+    }
+
+    @GetMapping(value = {"/info/{bkCode}"})
+    @ResponseBody
+    @JsonView(View.All.class)
+    public RequestResult bkInfo(@PathVariable(value = "bkCode")String bkCode){
+        Stock bk = Cache.getBk(bkCode);
+        return RequestResult.success(bk);
     }
 
     @RequestMapping(value = "/score/{code}")

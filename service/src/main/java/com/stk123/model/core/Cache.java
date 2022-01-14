@@ -171,6 +171,7 @@ public class Cache {
         Cache.BKsEasymoneyGn_Rps = new HashMap<>();
         Cache.StocksMass = null;
         Cache.StocksH = null;
+        Cache.REPORT_HOT_BKS = null;
     }
 
     public static void clearUS(){

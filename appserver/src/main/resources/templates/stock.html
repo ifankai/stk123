@@ -262,7 +262,7 @@
                                         <blockquote class="quote-secondary">
                                             <p>
                                                 <span class="mr-2">搜索: </span>
-                                                <a target="_blank" th:href="@{'https://ge1.azurewebsites.net/search?q='+${name}}">Google搜索</a>
+                                                <a target="_blank" th:href="@{'https://google.azureedge.net/search?hl=zh-CN&q='+${name}}">Google搜索</a>
                                                 <a target="_blank" th:href="@{'https://magi.com/search?q='+${name}}">Magi搜索</a>
                                                 <a target="_blank" th:href="@{'https://www.p5w.net/so/?keyword='+${name}}">全景搜索</a>
                                                 <a target="_blank" th:href="@{'https://weixin.sogou.com/weixin?type=2&query='+${name}+'&ie=utf8'}">微信搜索</a>
@@ -283,7 +283,7 @@
                                             <p>
                                                 <span class="mr-2">公告: </span>
                                                 <a target="_blank" th:href="@{'http://www.baidu.com/s?wd='+${name}+' 招股说明书 site:('+${placeCode==1?'sse.com.cn':'szse.cn'}+')&ie=utf-8&cl=3&t=12&fr=news'}">招股说明书</a>
-                                                <a target="_blank" th:href="@{'http://rs.p5w.net/c/'+${code}+'.shtml'}">投资者互动平台</a>
+                                                <a target="_blank" th:href="@{'http://rs.p5w.net/c/'+${code}+'/questionlist.shtml'}">投资者互动平台</a>
                                                 <a target="_blank" th:href="@{'http://www.cninfo.com.cn/information/companyinfo.html?fulltext?'+${code} }">巨潮公告</a>
                                                 <a target="_blank" th:href="@{'http://www.cninfo.com.cn/information/companyinfo.html?periodicalreport?'+${code} }">定期报告</a>
                                                 <a target="_blank" th:href="@{'http://stockdata.stock.hexun.com/2008/ggqw.aspx?page=1&stockid='+${code} }">公告全文</a>
@@ -471,7 +471,7 @@
 
                         <div id="news" class="card">
                             <div class="card-header">
-                                <h3 class="card-title">新闻</h3>
+                                <h3 class="card-title"><a target="_blank" :href="newsTitleLink">新闻</a></h3>
                                 <div class="card-tools">
                                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="收起">
                                         <i class="fas fa-minus"></i>
@@ -779,6 +779,13 @@
             bksByRps01: function (){
                 return this.stock.bks.sort((a, b) => {return b.rps.rps_01.percentile - a.rps.rps_01.percentile})
             },
+            codeWithPlace: function (){
+                return _.toLower(this.stock.place)+this.stock.code;
+            },
+            newsTitleLink: function (){
+                return this.stock.market === 'CN' ? 'https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllNewsStock.php?symbol='+this.codeWithPlace+'&Page=1' :
+                    'http://stock.finance.sina.com.cn/hkstock/go.php/CompanyNews/page/1/code/'+this.stock.code+'/.phtml'
+            }
         },
         mounted() {
             let _this = this;

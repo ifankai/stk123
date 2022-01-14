@@ -8,6 +8,7 @@ public class StkConstant {
     /** cookie code **/
     public static final String COOKIE_XUEQIU = "xueqiu";
     public static final String COOKIE_IWENCAI = "iwencai";
+    public static final String COOKIE_HIBOR = "hibor";
 
     /** dict **/
     public final static Integer DICT_MONITOR_K_PARAM1 = 1;
@@ -34,6 +35,7 @@ public class StkConstant {
     public final static Integer FN_TYPE_111 = 111; //净利润增长率(%)
     public final static Integer FN_TYPE_106 = 106; //销售毛利率(%)
     public final static Integer FN_TYPE_123 = 123; //经营现金净流量与净利润的比率(%)
+    public final static Integer FN_TYPE_121 = 121; //资产负债率(%)
 
 
     /** stk_news.type **/

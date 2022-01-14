@@ -31,6 +31,8 @@ public class Rps{
     public final static String CODE_STOCK_WEEK_2_VOLUME = "rps_07";
     public final static String CODE_STOCK_WEEK_3_VOLUME = "rps_08";
     public final static String CODE_STOCK_DAY_1_VOLUME = "rps_09a";
+    public final static String CODE_STOCK_DAY_1_VOLUME_120MA = "rps_09b";
+    public final static String CODE_STOCK_DAY_1_VOLUME_HIGHEST_500 = "rps_09c";
     public final static String CODE_STOCK_DAY_1_VOLUME_FLOW = "rps_09";
     public final static String CODE_STOCK_DAY_2_VOLUME = "rps_10a";
     public final static String CODE_STOCK_DAY_2_VOLUME_FLOW = "rps_10";
@@ -60,7 +62,7 @@ public class Rps{
         return ListUtils.createList(
                 Strategies.rps_03a(), Strategies.rps_03b(), Strategies.rps_03c(),
                 Strategies.strategy_0(),
-                Strategies.rps_09a(), Strategies.rps_09(), Strategies.rps_10a(), Strategies.rps_10(), Strategies.rps_11a(), Strategies.rps_11(),
+                Strategies.rps_09a(), Strategies.rps_09b(), Strategies.rps_09c(), Strategies.rps_09(), Strategies.rps_10a(), Strategies.rps_10(), Strategies.rps_11a(), Strategies.rps_11(),
                 Strategies.strategy_0(),
                 Strategies.rps_06a(), Strategies.rps_06b(), Strategies.rps_07(), Strategies.rps_13(), Strategies.rps_08(),
                 Strategies.strategy_0(),

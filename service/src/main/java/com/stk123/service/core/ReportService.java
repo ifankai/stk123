@@ -14,6 +14,7 @@ import com.stk123.repository.BaseRepository;
 import com.stk123.repository.StkReportHeaderRepository;
 import com.stk123.service.StkConstant;
 import lombok.extern.apachecommons.CommonsLog;
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -171,10 +172,16 @@ public class ReportService {
         List<StkReportHeaderEntity> bksByToday = bks.stream().filter(stkReportHeaderEntity -> finalRptDate.equals(stkReportHeaderEntity.getReportDate())).collect(Collectors.toList());
         List<StkReportHeaderEntity> bksByNotToday = bks.stream().filter(stkReportHeaderEntity -> !finalRptDate.equals(stkReportHeaderEntity.getReportDate())).collect(Collectors.toList());
 
-        Stream<String> bkCodeByToday = bksByToday.stream().flatMap(stkReportHeaderEntity -> stkReportHeaderEntity.getStkReportDetailEntities().stream()).map(StkReportDetailEntity::getCode);
-        List<String> bkCodeByNotToday = bksByNotToday.stream().flatMap(stkReportHeaderEntity -> stkReportHeaderEntity.getStkReportDetailEntities().stream()).map(StkReportDetailEntity::getCode).collect(Collectors.toList());
-        List<String> bkCodeNew = bkCodeByToday.filter(s -> !bkCodeByNotToday.contains(s)).collect(Collectors.toList());
-        result.put("hotBksNew", bkCodeNew); //新出现的板块
+        Stream<String> bkCodeByTodayA = bksByToday.stream().flatMap(stkReportHeaderEntity -> stkReportHeaderEntity.getStkReportDetailEntities().stream()).filter(item -> StringUtils.startsWith(item.getStrategyCode(), "strategy_08a")).map(StkReportDetailEntity::getCode);
+        List<String> bkCodeByNotTodayA = bksByNotToday.stream().flatMap(stkReportHeaderEntity -> stkReportHeaderEntity.getStkReportDetailEntities().stream()).filter(s -> StringUtils.startsWith(s.getStrategyCode(), "strategy_08a")).map(StkReportDetailEntity::getCode).collect(Collectors.toList());
+        List<String> bkCodeNewA = bkCodeByTodayA.filter(s -> !bkCodeByNotTodayA.contains(s)).collect(Collectors.toList());
+        Stream<String> bkCodeByTodayB = bksByToday.stream().flatMap(stkReportHeaderEntity -> stkReportHeaderEntity.getStkReportDetailEntities().stream()).filter(item -> StringUtils.startsWith(item.getStrategyCode(), "strategy_08b")).map(StkReportDetailEntity::getCode);
+        List<String> bkCodeByNotTodayB = bksByNotToday.stream().flatMap(stkReportHeaderEntity -> stkReportHeaderEntity.getStkReportDetailEntities().stream()).filter(s -> StringUtils.startsWith(s.getStrategyCode(), "strategy_08b")).map(StkReportDetailEntity::getCode).collect(Collectors.toList());
+        List<String> bkCodeNewB = bkCodeByTodayB.filter(s -> !bkCodeByNotTodayB.contains(s)).collect(Collectors.toList());
+        Stream<String> bkCodeByTodayC = bksByToday.stream().flatMap(stkReportHeaderEntity -> stkReportHeaderEntity.getStkReportDetailEntities().stream()).filter(item -> StringUtils.startsWith(item.getStrategyCode(), "strategy_08c")).map(StkReportDetailEntity::getCode);
+        List<String> bkCodeByNotTodayC = bksByNotToday.stream().flatMap(stkReportHeaderEntity -> stkReportHeaderEntity.getStkReportDetailEntities().stream()).filter(s -> StringUtils.startsWith(s.getStrategyCode(), "strategy_08c")).map(StkReportDetailEntity::getCode).collect(Collectors.toList());
+        List<String> bkCodeNewC = bkCodeByTodayC.filter(s -> !bkCodeByNotTodayC.contains(s)).collect(Collectors.toList());
+        result.put("hotBksNew", ListUtils.union(ListUtils.union(bkCodeNewA, bkCodeNewB), bkCodeNewC)); //新出现的板块
 
         Map<String, List<StkReportDetailEntity>> groupbyCodeByStrategy08 = bksByToday.stream().flatMap(stkReportHeaderEntity -> stkReportHeaderEntity.getStkReportDetailEntities().stream()).
                 filter(s -> StringUtils.startsWith(s.getStrategyCode(), "strategy_08")).collect(Collectors.groupingBy(StkReportDetailEntity::getCode));

@@ -210,7 +210,7 @@
                                     <div class="nav nav-tabs" id="hobk-tab" role="tablist">
                                         <a class="nav-item nav-link active" id="hotbk-calendar-tab" data-toggle="tab" href="#hotbk-calendar" role="tab" aria-controls="hotbk-calendar" aria-selected="true">热点板块日历</a>
                                         <a v-text="reportDate && '板块详情 ['+dateFormat(reportDate)+']'" class="nav-item nav-link" id="hotbk-detail-tab" data-toggle="tab" href="#hotbk-detail" role="tab" aria-controls="hotbk-detail" aria-selected="false"></a>
-                                        <a v-text="reportDate && '板块策略 ['+dateFormat(reportDate)+']'" class="nav-item nav-link" id="allbks-strategy-tab" data-toggle="tab" href="#allbks-strategy" role="tab" aria-controls="allbks-strategy" aria-selected="false"></a>
+
                                     </div>
                                 </nav>
                                 <div class="tab-content p-1" id="hotbk-tabContent">
@@ -296,9 +296,7 @@
                                     <div class="tab-pane fade" id="hotbk-detail" role="tabpanel" aria-labelledby="hotbk-detail-tab">
                                         <datatable :="{...common.currentHotBks, ...currentHotBks}"></datatable>
                                     </div>
-                                    <div class="tab-pane fade" id="allbks-strategy" role="tabpanel" aria-labelledby="allbks-strategy-tab">
-                                        <datatable :="{...common.currentHotBks, ...currentBksStrategy}"></datatable>
-                                    </div>
+
                                 </div>
                             </div>
                             <div class="card-footer">
@@ -321,7 +319,11 @@
                             <div class="card-body">
                                 <nav>
                                     <div class="nav nav-tabs" id="report-tab" role="tablist">
-                                        <a @click="clickTab(currentAllStocks.data)" class="nav-item nav-link active" id="report-allstocks-tab" data-toggle="tab" href="#report-allstocks" role="tab" aria-controls="report-allstocks" aria-selected="true" style="color: blueviolet;">
+                                        <a class="nav-item nav-link active" id="allbks-strategy-tab" data-toggle="tab" href="#allbks-strategy" role="tab" aria-controls="allbks-strategy" aria-selected="false">
+                                            板块策略 (<span v-text="currentBksStrategy.data.length"></span>)
+                                        </a>
+
+                                        <a @click="clickTab(currentAllStocks.data)" class="nav-item nav-link" id="report-allstocks-tab" data-toggle="tab" href="#report-allstocks" role="tab" aria-controls="report-allstocks" aria-selected="true" style="color: blueviolet;">
                                             全市场策略 (<span v-text="currentAllStocks.data.length"></span>)
                                             <div @click.stop v-if="currentAllStocksChecked.type" class="custom-control custom-checkbox ml-3" style="float: right">
                                                 <input v-model="currentAllStocksChk" class="custom-control-input" type="checkbox" id="currentAllStocksChk">
@@ -377,7 +379,10 @@
                                 </nav>
 
                                 <div class="tab-content p-1" id="report-tabContent">
-                                    <div class="tab-pane fade show active" id="report-allstocks" role="tabpanel" aria-labelledby="report-allstocks-tab">
+                                    <div class="tab-pane fade show active" id="allbks-strategy" role="tabpanel" aria-labelledby="allbks-strategy-tab">
+                                        <datatable :="{...common.currentHotBks, ...currentBksStrategy}"></datatable>
+                                    </div>
+                                    <div class="tab-pane fade" id="report-allstocks" role="tabpanel" aria-labelledby="report-allstocks-tab">
                                         <datatable :="{...common.allStocks, ...currentAllStocks}"></datatable>
                                     </div>
                                     <div class="tab-pane fade" id="report-allstocksrps" role="tabpanel" aria-labelledby="report-allstocksrps-tab">

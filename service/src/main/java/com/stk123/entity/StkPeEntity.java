@@ -102,6 +102,8 @@ public class StkPeEntity {
     private String string1;
     @Column(name = "STRING_2")
     private String string2;
+    @Column(name = "STRING_3")
+    private String string3;
 
     @Override
     public boolean equals(Object o) {

@@ -108,7 +108,7 @@ const _datatableTemplate = `
                     </td>
                     <td v-else-if="column.data == 'dayBarImage'">
                         <span v-html="row.dayBarImage"></span>
-                        <span v-if="row.market!=='US'" style="display: flex;margin-right: 6px;">
+                        <span v-if="row.market!=='US' && row.code.indexOf('BK') < 0" style="display: flex;margin-right: 6px;">
                             <img class="img-flow lazyload" :data-src="'data:image/png;base64,'+row.dayFlowImage">
                         </span>
                     </td>

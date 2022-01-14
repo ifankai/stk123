@@ -406,12 +406,12 @@ public class Strategies {
     /**** 阶段强势 ****/
     public static Strategy strategy_08a() {
         //String turningPoint20 = Strategies.getTurningPoint(18);
-        return strategy_08("strategy_08a","18日板块阶段强势(08a)", 18);
+        return strategy_08("strategy_08a","18日板块阶段强势(08a)", 16);
     }
     public static Strategy strategy_08b() {
         //String turningPoint20 = Strategies.getTurningPoint(18);
         //String turningPoint60 = Strategies.getTurningPoint(55);
-        Strategy strategy = strategy_08("strategy_08b","55日板块阶段强势(08b)", 55);
+        Strategy strategy = strategy_08("strategy_08b","55日板块阶段强势(08b)", 50);
         /*if(turningPoint20.equals(turningPoint60)){
             strategy.setIgnore(true);
         }*/
@@ -421,7 +421,7 @@ public class Strategies {
         /*String turningPoint20 = Strategies.getTurningPoint(18);
         String turningPoint60 = Strategies.getTurningPoint(55);
         String turningPoint120 = Strategies.getTurningPoint(110);*/
-        Strategy strategy = strategy_08("strategy_08c","110日板块阶段强势(08c)", 110);
+        Strategy strategy = strategy_08("strategy_08c","110日板块阶段强势(08c)", 100);
         /*if(turningPoint20.equals(turningPoint120) || turningPoint60.equals(turningPoint120)){
             strategy.setIgnore(true);
         }*/
@@ -724,6 +724,14 @@ public class Strategies {
                 return FilterResult.FALSE();
             }
             Bar bar = stock.getBar();
+            if(bar.getChange() < 0 && bar.getOpen() > bar.getClose()) return FilterResult.FALSE();
+            if(bar.getHighest(15, Bar.EnumValue.V) != bar.getVolume()) return FilterResult.FALSE();
+            if(stock.isMarketCN() || stock.isMarketHK()){ // 低点不能高于120日均线的1.1倍
+                double ma120 = bar.getMA(120, Bar.EnumValue.C);
+                if(bar.getLow() > ma120 * (stock.isMarketCN()?1.15:1.2)){
+                    return FilterResult.FALSE();
+                }
+            }
             double sum = bar.getVolume();
             double minSum = bar.before().getVolume();
             double rpsValue = sum/minSum;
@@ -731,6 +739,63 @@ public class Strategies {
                 return FilterResult.FALSE();
             }
             return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
+        }, false);
+
+        return strategy;
+    }
+
+    public static Strategy rps_09b() {
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_DAY_1_VOLUME_120MA, "1天放量+120日均线下方", Stock.class);
+        //strategy.setAsc(false);
+        strategy.addFilter("1天放量", (strgy, stock) -> {
+            if(stock.getBarSeries().size() < 60){
+                return FilterResult.FALSE();
+            }
+            Bar bar = stock.getBar();
+            if(bar.getChange() < 0 && bar.getOpen() > bar.getClose()) return FilterResult.FALSE();
+            if(bar.getHighest(15, Bar.EnumValue.V) != bar.getVolume()) return FilterResult.FALSE();
+            double ma120 = bar.getMA(120, Bar.EnumValue.C);
+            if(Math.min(bar.getLow(), bar.getLastClose()) > ma120){
+                return FilterResult.FALSE();
+            }
+            double sum = bar.getVolume();
+            double minSum = bar.before().getVolume();
+            double rpsValue = sum/minSum;
+            if(rpsValue < 1.5){
+                return FilterResult.FALSE();
+            }
+            return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
+        }, false);
+
+        return strategy;
+    }
+
+    public static Strategy rps_09c() {
+        Strategy<Stock> strategy = new Strategy<>(Rps.CODE_STOCK_DAY_1_VOLUME_HIGHEST_500, "1天放量+120日内放过天量", Stock.class);
+        //strategy.setAsc(false);
+        strategy.addFilter("1天放量", (strgy, stock) -> {
+            if(stock.getBarSeries().size() < 450){
+                return FilterResult.FALSE();
+            }
+            Bar bar = stock.getBar();
+            if(bar.getChange() < 0 && bar.getOpen() > bar.getClose()) return FilterResult.FALSE();
+            if(bar.getHighest(10, Bar.EnumValue.V) != bar.getVolume()) return FilterResult.FALSE();
+            double ma120 = bar.getMA(120, Bar.EnumValue.C);
+            if(Math.min(bar.getLow(), bar.getLastClose()) > ma120*1.1){
+                return FilterResult.FALSE();
+            }
+            Bar highVolumeBar120 = bar.getHighestBar(120, k -> k.getMA(20, Bar.EnumValue.V));
+            Bar highVolumeBar500 = bar.getHighestBar(500, k -> k.getMA(20, Bar.EnumValue.V));
+            if(highVolumeBar120 != null && highVolumeBar500 != null && highVolumeBar120.getDate().equals(highVolumeBar500.getDate())){
+                double sum = bar.getVolume();
+                double minSum = bar.before().getVolume();
+                double rpsValue = sum/minSum;
+                if(rpsValue < 1.5){
+                    return FilterResult.FALSE();
+                }
+                return FilterResult.Sortable(CommonUtils.numberFormat(rpsValue, 2));
+            }
+            return FilterResult.FALSE();
         }, false);
 
         return strategy;
@@ -744,6 +809,14 @@ public class Strategies {
                 return FilterResult.FALSE();
             }
             Bar bar = stock.getBar();
+            if(bar.getChange() < 0 && bar.getOpen() > bar.getClose()) return FilterResult.FALSE();
+            if(bar.getHighest(15, Bar.EnumValue.V) != bar.getVolume()) return FilterResult.FALSE();
+            if(stock.isMarketCN() || stock.isMarketHK()){ // 低点不能高于120日均线的1.1倍
+                double ma120 = bar.getMA(120, Bar.EnumValue.C);
+                if(bar.getLow() > ma120 * (stock.isMarketCN()?1.15:1.2)){
+                    return FilterResult.FALSE();
+                }
+            }
             double sum = bar.getVolume();
             double minSum = bar.before().getVolume();
             double rpsValue = sum/minSum;
@@ -774,6 +847,14 @@ public class Strategies {
                 return FilterResult.FALSE();
             }
             Bar bar = stock.getBar();
+            if(bar.getClose() <= bar.before(2).getClose()) return FilterResult.FALSE();
+            if(!bar.getHighestBar(20, b -> b.getSUM(2, Bar.EnumValue.V)).getDate().equals(bar.getDate())) return FilterResult.FALSE();
+            if(stock.isMarketCN() || stock.isMarketHK()){ // 低点不能高于120日均线的1.1倍
+                double ma120 = bar.getMA(120, Bar.EnumValue.C);
+                if(bar.before().getLow() > ma120 * (stock.isMarketCN()?1.15:1.2)){
+                    return FilterResult.FALSE();
+                }
+            }
             double sum = bar.getVolume()+bar.before().getVolume();
             double minSum = bar.before(2).getVolume() + bar.before(3).getVolume();
             double rpsValue = sum/minSum;
@@ -794,6 +875,14 @@ public class Strategies {
                 return FilterResult.FALSE();
             }
             Bar bar = stock.getBar();
+            if(bar.getClose() <= bar.before(2).getClose()) return FilterResult.FALSE();
+            if(!bar.getHighestBar(20, b -> b.getSUM(2, Bar.EnumValue.V)).getDate().equals(bar.getDate())) return FilterResult.FALSE();
+            if(stock.isMarketCN() || stock.isMarketHK()){ // 低点不能高于120日均线的1.1倍
+                double ma120 = bar.getMA(120, Bar.EnumValue.C);
+                if(bar.before().getLow() > ma120 * (stock.isMarketCN()?1.15:1.2)){
+                    return FilterResult.FALSE();
+                }
+            }
             double sum = bar.getVolume()+bar.before().getVolume();
             double minSum = bar.before(2).getVolume() + bar.before(3).getVolume();
             double rpsValue = sum/minSum;
@@ -823,6 +912,14 @@ public class Strategies {
                 return FilterResult.FALSE();
             }
             Bar bar = stock.getBar();
+            if(bar.getClose() <= bar.before(3).getClose()) return FilterResult.FALSE();
+            if(!bar.getHighestBar(20, b -> b.getSUM(3, Bar.EnumValue.V)).getDate().equals(bar.getDate())) return FilterResult.FALSE();
+            if(stock.isMarketCN() || stock.isMarketHK()){ // 低点不能高于120日均线的1.1倍
+                double ma120 = bar.getMA(120, Bar.EnumValue.C);
+                if(bar.before(2).getLow() > ma120 * (stock.isMarketCN()?1.15:1.2)){
+                    return FilterResult.FALSE();
+                }
+            }
             double sum = bar.getVolume()+bar.before().getVolume()+bar.before(2).getVolume();
             double minSum = bar.before(3).getVolume() + bar.before(4).getVolume() + bar.before(5).getVolume();
             double rpsValue = sum/minSum;
@@ -842,6 +939,14 @@ public class Strategies {
                 return FilterResult.FALSE();
             }
             Bar bar = stock.getBar();
+            if(bar.getClose() <= bar.before(3).getClose()) return FilterResult.FALSE();
+            if(!bar.getHighestBar(20, b -> b.getSUM(3, Bar.EnumValue.V)).getDate().equals(bar.getDate())) return FilterResult.FALSE();
+            if(stock.isMarketCN() || stock.isMarketHK()){ // 低点不能高于120日均线的1.1倍
+                double ma120 = bar.getMA(120, Bar.EnumValue.C);
+                if(bar.before(2).getLow() > ma120 * (stock.isMarketCN()?1.15:1.2)){
+                    return FilterResult.FALSE();
+                }
+            }
             double sum = bar.getVolume()+bar.before().getVolume()+bar.before(2).getVolume();
             double minSum = bar.before(3).getVolume() + bar.before(4).getVolume() + bar.before(5).getVolume();
             double rpsValue = sum/minSum;
@@ -871,6 +976,14 @@ public class Strategies {
                 return FilterResult.FALSE();
             }
             Bar bar = stock.getBar();
+            if(bar.getClose() <= bar.before(5).getClose()) return FilterResult.FALSE();
+            if(!bar.getHighestBar(20, b -> b.getSUM(5, Bar.EnumValue.V)).getDate().equals(bar.getDate())) return FilterResult.FALSE();
+            if(stock.isMarketCN() || stock.isMarketHK()){ // 低点不能高于120日均线的1.1倍
+                double ma120 = bar.getMA(120, Bar.EnumValue.C);
+                if(bar.before(4).getLow() > ma120 * (stock.isMarketCN()?1.15:1.2)){
+                    return FilterResult.FALSE();
+                }
+            }
             double sum = bar.getSUM(5, Bar.EnumValue.V);
             double minSum = bar.before(5).getSUM(5, Bar.EnumValue.V);
             double rpsValue = sum/minSum;
@@ -889,6 +1002,14 @@ public class Strategies {
                 return FilterResult.FALSE();
             }
             Bar bar = stock.getBar();
+            if(bar.getClose() <= bar.before(5).getClose()) return FilterResult.FALSE();
+            if(!bar.getHighestBar(20, b -> b.getSUM(5, Bar.EnumValue.V)).getDate().equals(bar.getDate())) return FilterResult.FALSE();
+            if(stock.isMarketCN() || stock.isMarketHK()){ // 低点不能高于120日均线的1.1倍
+                double ma120 = bar.getMA(120, Bar.EnumValue.C);
+                if(bar.before(4).getLow() > ma120 * (stock.isMarketCN()?1.15:1.2)){
+                    return FilterResult.FALSE();
+                }
+            }
             double sum = bar.getSUM(5, Bar.EnumValue.V);
             double minSum = bar.before(5).getSUM(5, Bar.EnumValue.V);
             double rpsValue = sum/minSum;
@@ -915,6 +1036,8 @@ public class Strategies {
         //strategy.setAsc(false);
         strategy.addFilter("2周放量", (strgy, stock) -> {
             Bar bar = stock.getBar();
+            if(bar.getClose() <= bar.before(10).getClose()) return FilterResult.FALSE();
+            if(!bar.getHighestBar(20, b -> b.getSUM(10, Bar.EnumValue.V)).getDate().equals(bar.getDate())) return FilterResult.FALSE();
             double sum = bar.getSUM(10, Bar.EnumValue.V);
             double minSum = bar.before(10).getSUM(10, Bar.EnumValue.V);
             double rpsValue = sum/minSum;
@@ -934,6 +1057,8 @@ public class Strategies {
                 return FilterResult.FALSE();
             }
             Bar bar = stock.getBar();
+            if(bar.getClose() <= bar.before(10).getClose()) return FilterResult.FALSE();
+            if(!bar.getHighestBar(20, b -> b.getSUM(10, Bar.EnumValue.V)).getDate().equals(bar.getDate())) return FilterResult.FALSE();
             List<Bar> barsYang = bar.getBars(10, Bar::isYang);
             List<Bar> barsYin = bar.getBars(10, Bar::isYin);
             double sumYang = barsYang.stream().mapToDouble(Bar::getVolume).sum();
@@ -967,6 +1092,13 @@ public class Strategies {
                 return FilterResult.FALSE();
             }
             Bar bar = stock.getBar();
+            if(!bar.getHighestBar(20, b -> b.getSUM(15, Bar.EnumValue.V)).getDate().equals(bar.getDate())) return FilterResult.FALSE();
+            if(stock.isMarketCN() || stock.isMarketHK()){ // 低点不能高于120日均线的1.1倍
+                double ma120 = bar.getMA(120, Bar.EnumValue.C);
+                if(bar.getLowestBar(15, Bar.EnumValue.C).getLow() > ma120 * (stock.isMarketCN()?1.15:1.2)){
+                    return FilterResult.FALSE();
+                }
+            }
             double sum = bar.getSUM(15, Bar.EnumValue.V);;
             double minSum = bar.before(15).getSUM(15, Bar.EnumValue.V);
             double rpsValue = sum/minSum;
@@ -986,6 +1118,12 @@ public class Strategies {
                 return FilterResult.FALSE();
             }
             Bar bar = stock.getBar();
+            if(stock.isMarketCN() || stock.isMarketHK()){ // 低点不能高于120日均线的1.1倍
+                double ma120 = bar.getMA(120, Bar.EnumValue.C);
+                if(bar.getLowestBar(20, Bar.EnumValue.C).getLow() > ma120 * (stock.isMarketCN()?1.15:1.2)){
+                    return FilterResult.FALSE();
+                }
+            }
             double sum = bar.getSUM(20, Bar.EnumValue.V);
             double minSum = bar.before(20).getSUM(20, Bar.EnumValue.V);
             double rpsValue = sum/minSum;
@@ -1005,6 +1143,12 @@ public class Strategies {
                 return FilterResult.FALSE();
             }
             Bar bar = stock.getBar();
+            if(stock.isMarketCN() || stock.isMarketHK()){ // 低点不能高于120日均线的1.1倍
+                double ma120 = bar.getMA(120, Bar.EnumValue.C);
+                if(bar.getLowestBar(20, Bar.EnumValue.C).getLow() > ma120 * (stock.isMarketCN()?1.15:1.2)){
+                    return FilterResult.FALSE();
+                }
+            }
             double sum = bar.getSUM(40, Bar.EnumValue.V);
             double minSum = bar.before(40).getSUM(40, Bar.EnumValue.V);
             double rpsValue = sum/minSum;
@@ -1024,6 +1168,12 @@ public class Strategies {
                 return FilterResult.FALSE();
             }
             Bar bar = stock.getBar();
+            if(stock.isMarketCN() || stock.isMarketHK()){ // 低点不能高于120日均线的1.1倍
+                double ma120 = bar.getMA(120, Bar.EnumValue.C);
+                if(bar.getLowestBar(20, Bar.EnumValue.C).getLow() > ma120 * (stock.isMarketCN()?1.15:1.2)){
+                    return FilterResult.FALSE();
+                }
+            }
             double sum = bar.getSUM(60, Bar.EnumValue.V);
             double minSum = bar.getLowest(400, bar1 -> bar1.getSUM(20, Bar.EnumValue.V));
             double rpsValue = sum/minSum;
@@ -1052,6 +1202,12 @@ public class Strategies {
                 return FilterResult.FALSE();
             }
             Bar bar = stock.getBar();
+            if(stock.isMarketCN() || stock.isMarketHK()){ // 低点不能高于120日均线的1.1倍
+                double ma120 = bar.getMA(120, Bar.EnumValue.C);
+                if(bar.getLowestBar(20, Bar.EnumValue.C).getLow() > ma120 * (stock.isMarketCN()?1.15:1.2)){
+                    return FilterResult.FALSE();
+                }
+            }
             double sum = bar.getSUM(120, Bar.EnumValue.V);
             double minSum = bar.before(120).getSUM(120, Bar.EnumValue.V);
             double rpsValue = sum/minSum;

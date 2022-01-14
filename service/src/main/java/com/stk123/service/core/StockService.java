@@ -514,13 +514,15 @@ public class StockService {
             if(stock.isMarketCN()){
                 Fn fn = stock.getFn();
                 Double a = fn.getValueByType(StkConstant.FN_TYPE_110);
-                if(a == null) return false;
                 Double b = fn.getValueByType(StkConstant.FN_TYPE_111);
-                if(b == null) return false;
-                if(a > -15 || b > -15){
-                    return true;
+                if(a != null && a < -20 && b != null && b < -20){
+                    return false;
                 }
-                return false;
+                Double c = fn.getValueByType(StkConstant.FN_TYPE_121);
+                if(c != null && c >= 80){
+                    return false;
+                }
+                return true;
             }
             return true;
         }).collect(Collectors.toList());

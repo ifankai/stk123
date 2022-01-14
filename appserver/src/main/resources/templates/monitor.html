@@ -112,7 +112,7 @@
                             <div class="card-body">
                                 <datatable :="{...common.monitor, ...monitor}">
                                     <template v-slot:report-date="{row, rowNumber}">
-                                        <span v-text="dateFormat(row.reportDate)"></span> <sub v-text="' ('+moment(dateFormat(row.reportDate)).day()+')'"></sub>
+                                        <a target="_blank" :href="'/report/'+row.reportDate"><span v-text="dateFormat(row.reportDate)"></span></a> <sub v-text="' ('+moment(dateFormat(row.reportDate)).day()+')'"></sub>
                                     </template>
 
                                     <template v-slot:head-up-count="{column}">
@@ -128,7 +128,16 @@
                                     </template>
 
                                     <template v-slot:body-price-limit-up="{row, rowNumber}">
-                                        <span v-text="row.priceLimitUp2+row.priceLimitUp3+row.priceLimitUp4"></span>
+                                        <a target="_blank" :href="'/s/'+row.string3+','+row.string1+','+row.string2.split(',').map(s => s.substring(0,6)).join(',')" v-text="row.priceLimitUp2+row.priceLimitUp3+row.priceLimitUp4"/>
+                                    </template>
+                                    <template v-slot:price-limit-up2="{row, rowNumber}">
+                                        <a target="_blank" :href="'/s/'+row.string3" v-text="row.priceLimitUp2"/>
+                                    </template>
+                                    <template v-slot:price-limit-up3="{row, rowNumber}">
+                                        <a target="_blank" :href="'/s/'+row.string1" v-text="row.priceLimitUp3"/>
+                                    </template>
+                                    <template v-slot:price-limit-up4="{row, rowNumber}">
+                                        <a target="_blank" :href="'/s/'+row.string2.split(',').map(s => s.substring(0,6)).join(',')" v-text="row.priceLimitUp4"/>
                                     </template>
 
                                 </datatable>
@@ -209,10 +218,10 @@
                             {title:"涨停", data:"upLimitCount"},
                             {title:"跌停", data:"downLimitCount"},
                             {title:"炸板", data:""},
-                            {title:"连板", slot:"body-price-limit-up"},
-                            {title:"2连板", data:"priceLimitUp2"},
-                            {title:"3连板", data:"priceLimitUp3"},
-                            {title:"3连板以上", data:"priceLimitUp4"},
+                            {title:"连板总数", slot:"body-price-limit-up"},
+                            {title:"2连板", slot:"price-limit-up2"},
+                            {title:"3连板", slot:"price-limit-up3"},
+                            {title:"3连板以上", slot:"price-limit-up4"},
                             {title:"收盘>MA20", data:"gt20Ma"},
                             {title:"收盘>MA120", data:"gt120Ma"},
                         ],

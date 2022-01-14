@@ -90,7 +90,7 @@ public class Tasks {
         xueqiuUserJob.execute(null);
     }
 
-    @Scheduled(cron = "0 30 1/2 ? * *")
+    @Scheduled(cron = "0 30 4 ? * *")
     public void researchReportJob() {
         taskContainer.start(ResearchReportTask.class);
     }
